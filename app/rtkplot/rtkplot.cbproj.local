@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2012/05/20 06:22:06.000.259,D:\proj\rtklib\app\rtkplot\geview.h=D:\proj\rtklib\app\rtkplot\Unit1.h</Transaction>
+    <Transaction>2012/05/20 06:22:06.000.259,D:\proj\rtklib\app\rtkplot\geview.dfm=D:\proj\rtklib\app\rtkplot\Unit1.dfm</Transaction>
+  </Transactions>
+</BorlandProject>
