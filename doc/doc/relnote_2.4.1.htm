@@ -1,0 +1,433 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<META name="GENERATOR" content="IBM HomePage Builder 2001 V5.0.3 for Windows">
+<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<TITLE>RTKLIB: Release Notes</TITLE>
+</HEAD>
+<BODY bgcolor="#ffffff" text="#333333" link="#33cc66" vlink="#006666" alink="#99ff00">
+<TABLE width="100%" cellpadding="0" cellspacing="0">
+  <COL span="1" width="64">
+  <TBODY>
+    <TR>
+      <TD><IMG src="rtklib.jpg" width="64" height="64" border="0"></TD>
+      <TD>
+      <TABLE cellpadding="0" cellspacing="0">
+        <TBODY>
+          <TR>
+            <td width="718"><font size="-1"><A href="rtklib.htm">Overview</A> | Release Notes | <A href="rtklib_support.htm">Support</A> | <A href="rtklib_document.htm">Documents</A> | <A href="rtklib_reference.htm">References </A><FONT size="-1">| <A href="rtklib_beagleboard.htm">Porting to BB</A> | <A href="rtklib_todo.htm">To Do</A></FONT> | <a href="rtklib_download.htm">Statistics</a></font></td>
+          </TR>
+        </TBODY>
+      </TABLE>
+      <TABLE width="100%" cellpadding="0">
+        <TBODY>
+          <TR>
+            <TD><FONT size="+2"><B>RTKLIB: Release Notes</B></FONT></TD>
+            <TD align="right" valign="bottom"><FONT size="-1">2011/06/10</FONT></TD>
+            <TD valign="bottom" align="right"></TD>
+          </TR>
+        </TBODY>
+      </TABLE>
+      </TD>
+    </TR>
+  </TBODY>
+</TABLE>
+<HR>
+<P><B><FONT size="+1">RTKLIB ver.2.4.1 Release Notes</FONT></B></P>
+<p><b><u>New Features in ver.2.4.1</u></b></p>
+<blockquote><font size="-1">(1) Support Javad (JNS) receiver, Furuno GW10 receiver<br>
+(2) Support QZSS and enable Galileo (Galileo
+is not yet formally supported)<br>
+(3) Support background image overlay for
+solution plots in RTKPLOT<BR>
+(4) Support IONEX TEC grid for ionosphere
+correction<BR>
+(5) Support multiple-session RINEX conversion
+in RTKCONV<br>
+</font></blockquote>
+<P><B><U>Supported RTCM and Receivers' Proprietary Messages</U></B></P>
+<CENTER>
+<TABLE border="1" cellspacing="0" cellpadding="0">
+  <COL span="1" width="110">
+  <COL span="6" width="90">
+  <TBODY>
+    <TR>
+      <TD rowspan="2" align="center" bgcolor="#eeeeee"><B><FONT size="-1">RTCM version<br>
+      /Receiver</FONT></B></TD>
+      <TD colspan="8" align="center" bgcolor="#eeeeee"><B><FONT size="-1">Data Message Types</FONT></B></TD>
+    </TR>
+    <TR>
+      <TD align="center" bgcolor="#eeeeee"><B><FONT size="-1">GPS/QZS Raw Meas Data</FONT></B></TD>
+      <TD align="center" bgcolor="#eeeeee"><B><FONT size="-1">GLONASS Raw Meas</FONT></B></TD>
+      <TD align="center" bgcolor="#eeeeee"><B><FONT size="-1">GPS/QZS Ephemeris</FONT></B></TD>
+      <TD align="center" bgcolor="#eeeeee"><B><FONT size="-1">GLONASS<BR>
+      Ephemeris</FONT></B></TD>
+      <TD align="center" bgcolor="#eeeeee"><B><FONT size="-1">ION/UTC<br>
+      Parameters</FONT></B></TD>
+      <TD align="center" bgcolor="#eeeeee"><b><FONT size="-1">Antenna<br>
+      Info</FONT></b></TD>
+      <TD bgcolor="#eeeeee" align="center"><B><FONT size="-1">SBAS<BR>
+      Messages</FONT></B></TD>
+      <TD align="center" bgcolor="#eeeeee"><B><FONT size="-1">Others</FONT></B></TD>
+    </TR>
+    <TR>
+      <TD align="center"><FONT size="-1">RTCM v.2.3 <SUP><FONT size="-2">(1)</FONT></SUP></FONT></TD>
+      <TD align="center"><FONT size="-1">Type 18, 19</FONT></TD>
+      <TD align="center"><FONT size="-1">Type 18, 19</FONT></TD>
+      <TD align="center"><FONT size="-1">Type 17</FONT></TD>
+      <TD align="center"><FONT size="-1">-</FONT></TD>
+      <TD align="center"><FONT size="-1">-</FONT></TD>
+      <TD align="center"><FONT size="-1">Type 3, 22</FONT></TD>
+      <TD align="center"><FONT size="-1">-</FONT></TD>
+      <TD align="center"><FONT size="-1">Type 1, 9,<BR>
+      14, 16</FONT></TD>
+    </TR>
+    <TR>
+      <TD align="center"><FONT size="-1">RTCM v.3.1 </FONT><SUP><FONT size="-2">(1)</FONT></SUP></TD>
+      <TD align="center"><FONT size="-1">Type 1002,<BR>
+      1004</FONT></TD>
+      <TD align="center"><FONT size="-1">Type 1010,<BR>
+      1012</FONT></TD>
+      <TD align="center"><FONT size="-1">Type 1019</FONT></TD>
+      <TD align="center"><FONT size="-1">Type 1020</FONT></TD>
+      <TD align="center"><FONT size="-1">-</FONT></TD>
+      <TD align="center"><FONT size="-1">Type 1005,<BR>
+      1006, 1007,<br>
+      1008, 1033<br>
+      </FONT></TD>
+      <TD align="center"><FONT size="-1">-</FONT></TD>
+      <TD align="center"><FONT size="-1">SSR<br>
+      corrections<br>
+      </FONT><font size="-2">(9)</font></TD>
+    </TR>
+    <TR>
+      <TD align="center"><FONT size="-1">NovAtel <BR>
+      OEM4/V, <br>
+      OEMStar </FONT><FONT size="-2"><SUP>(2)</SUP></FONT></TD>
+      <TD align="center"><FONT size="-1">RANGEB, RANGECMPB</FONT></TD>
+      <TD align="center"><FONT size="-1">RANGEB,<BR>
+      RANGECMPB</FONT></TD>
+      <TD align="center"><FONT size="-1">RAWEPHEMB</FONT></TD>
+      <TD align="center"><FONT size="-1">GLO-<BR>
+      EPHEMERISB</FONT></TD>
+      <TD align="center"><FONT size="-1">IONUTCB</FONT></TD>
+      <TD align="center"><FONT size="-1">-</FONT></TD>
+      <TD align="center"><FONT size="-1">RAWWAAS-<BR>
+      FRAMEB</FONT></TD>
+      <TD align="center"><FONT size="-1">-</FONT></TD>
+    </TR>
+    <TR>
+      <TD align="center"><FONT size="-1">NovAtel<br>
+      OEM3 </FONT><FONT size="-2"><SUP> (2)</SUP></FONT></TD>
+      <TD align="center"><FONT size="-1">RGEB,<BR>
+      RGED</FONT></TD>
+      <TD align="center"><FONT size="-1">-</FONT></TD>
+      <TD align="center"><FONT size="-1">REPB</FONT></TD>
+      <TD align="center"><FONT size="-1">-</FONT></TD>
+      <TD align="center"><FONT size="-1">IONB, UTCB</FONT></TD>
+      <TD align="center"><FONT size="-1">-</FONT></TD>
+      <TD align="center"><FONT size="-1">FRMB</FONT></TD>
+      <TD align="center"><FONT size="-1">-</FONT></TD>
+    </TR>
+    <TR>
+      <TD align="center">&nbsp;<font size="-1">NovAtel<br>
+      Superstar II </font><FONT size="-2"><SUP>(2)</SUP></FONT></TD>
+      <TD align="center"><font size="-1">ID#23</font>&nbsp;</TD>
+      <TD align="center">&nbsp;<font size="-1">-</font></TD>
+      <TD align="center"><font size="-1">ID#22</font>&nbsp;</TD>
+      <TD align="center">&nbsp;<font size="-1">-</font></TD>
+      <TD align="center"><font size="-1">-</font>&nbsp;</TD>
+      <TD align="center">&nbsp;<font size="-1">-</font></TD>
+      <TD align="center">&nbsp;<font size="-1">ID#67</font></TD>
+      <TD align="center"><font size="-1">ID#20,<br>
+      #21</font><font size="-2"> (8)</font>&nbsp;</TD>
+    </TR>
+    <TR>
+      <TD align="center"><font size="-1">JAVAD</font><font size="-2"><sup> (10)</sup></font><font size="-1"><br>
+      GRIL/GRIES&nbsp;</font></TD>
+      <TD align="center"><font size="-1">[rc][cp][DC][CE][TC]<br>
+      [1r][1p][1E]<br>
+      [2r][2p][2d][2E]<br>
+      [5r][5p][5d][5E]<br>
+      [3r][3p][c3]&nbsp;</font></TD>
+      <TD align="center"><font size="-1">[rc][cp][DC][CE][TC]<br>
+      [1r][1p][1E]<br>
+      [2r][2p][2d][2E]&nbsp;</font></TD>
+      <TD align="center"><font size="-1">[GE][QE]&nbsp;</font></TD>
+      <TD align="center"><font size="-1">[NE]&nbsp;</font></TD>
+      <TD align="center"><font size="-1">-</font></TD>
+      <TD align="center"><font size="-1">-</font></TD>
+      <TD align="center"><font size="-1">[WD]&nbsp;</font></TD>
+      <TD align="center"><font size="-1">[~~][RD]<br>
+      [ST][NN]</font></TD>
+    </TR>
+    <TR>
+      <TD align="center"><FONT size="-1">u-blox <br>
+      LEA-4T,</FONT><FONT size="-2"><SUP> (3)</SUP></FONT><br>
+      <font size="-1">5T, 6T</font><FONT size="-2"><SUP>(3) (5)</SUP></FONT></TD>
+      <TD align="center"><FONT size="-1">UBX<BR>
+      RXM-RAW</FONT></TD>
+      <TD align="center"><FONT size="-1">-</FONT></TD>
+      <TD align="center"><FONT size="-1">UBX<BR>
+      RXM-SFRB</FONT></TD>
+      <TD align="center"><FONT size="-1">-</FONT></TD>
+      <TD align="center"><FONT size="-1">UBX<BR>
+      RXM-SFRB</FONT></TD>
+      <TD align="center"><FONT size="-1">-</FONT></TD>
+      <TD align="center"><FONT size="-1">UBX<BR>
+      RXM-SFRB</FONT></TD>
+      <TD align="center"><FONT size="-1">-</FONT></TD>
+    </TR>
+    <TR>
+      <TD align="center"><FONT size="-1">Hemisphere<BR>
+      Crescent, <br>
+      Eclipse </FONT><FONT size="-2"><SUP>(4)</SUP></FONT></TD>
+      <TD align="center"><FONT size="-1">bin 96,<br>
+      bin 76</FONT></TD>
+      <TD align="center"><FONT size="-1">-</FONT></TD>
+      <TD align="center"><FONT size="-1">bin 95</FONT></TD>
+      <TD align="center"><FONT size="-1">-</FONT></TD>
+      <TD align="center"><FONT size="-1">bin 94</FONT></TD>
+      <TD align="center"><FONT size="-1">-</FONT></TD>
+      <TD align="center"><FONT size="-1">bin 80</FONT></TD>
+      <TD align="center"><FONT size="-1">-</FONT></TD>
+    </TR>
+    <TR>
+      <TD align="center"><font size="-1">&nbsp;Furuno</font><font size="-2"><sup> (11)</sup></font><font size="-1"><br>
+      GW-10-II/III</font></TD>
+      <TD align="center"><font size="-1">msg 0x08</font></TD>
+      <TD align="center"><font size="-1">-</font></TD>
+      <TD align="center"><font size="-1">msg 0x27</font></TD>
+      <TD align="center"><font size="-1">-</font></TD>
+      <TD align="center"><font size="-1">msg 0x27</font></TD>
+      <TD align="center"><font size="-1">-</font></TD>
+      <TD align="center"><font size="-1">msg 0x27</font></TD>
+      <TD align="center"><font size="-1">msg 0x20</font><font size="-2"><br>
+      (8)</font></TD>
+    </TR>
+    <TR>
+      <TD align="center"><FONT size="-1">SkyTraq</FONT><FONT size="-1"><BR>
+      S1315F <FONT size="-2"><SUP>(6) (7)</SUP></FONT></FONT></TD>
+      <TD align="center"><FONT size="-1"><FONT size="-1">msg 0xDD<BR>
+      (221)</FONT></FONT></TD>
+      <TD align="center"><FONT size="-1">-</FONT></TD>
+      <TD align="center"><FONT size="-1"><FONT size="-1">msg 0xE0<BR>
+      (224)</FONT></FONT></TD>
+      <TD align="center"><FONT size="-1">-</FONT></TD>
+      <TD align="center"><FONT size="-1"><FONT size="-1">msg 0xE0<BR>
+      (224)</FONT></FONT></TD>
+      <TD align="center"><FONT size="-1">-</FONT></TD>
+      <TD align="center"><FONT size="-1">-</FONT></TD>
+      <TD align="center"><FONT size="-1"><FONT size="-1">msg 0xDC<BR>
+      (220)</FONT><font size="-2"> (8)</font></FONT></TD>
+    </TR>
+  </TBODY>
+</TABLE>
+<font size="-1">(1) <A href="http://www.rtcm.org/">http://www.rtcm.org/</A> (2) <A href="http://www.novatel.com/">http://www.novatel.com/</A> (3) <A href="http://www.u-blox.com/">http://u-blox.com/</A> (4) <A href="http://www.hemispheregps.com/">http://www.hemispheregps.com/</A> (5) F/W 6.02<br>
+(6) <A href="http://www.skytraq.com.tw/">http://www.skytraq.com.tw/</A> (7) F/W 1.8.23-091106 or later (8) need the messages to get the measurement
+time for other messages <br>
+(9) Type 1057, 1058, 1059, 1060, 1061, 1062, 1063, 1064, 1065, 1066, 1067,
+1068 (based on 2010-4-12 version draft)(10) <a href="http://www.javad.com">http://www.javad.com</a><br>
+(11) <a href="http://www.furuno.com/">http://www.furuno.com</a></font></CENTER>
+<p><b><u>Supported RINEX Files</u></b></p>
+<div align="center">
+<table border="1" cellspacing="0">
+  <col span="1" width="110">
+  <col span="12" width="45">
+  <col span="2" width="60">
+  <tbody>
+    <tr>
+      <td rowspan="2" align="center" valign="middle" bgcolor="#eeeeee"><b><font size="-1">&nbsp;RINEX<br>
+      Version</font></b></td>
+      <td colspan="6" align="center" valign="middle" bgcolor="#eeeeee"><b><font size="-1">&nbsp;Observation Data</font></b></td>
+      <td colspan="6" align="center" valign="middle" bgcolor="#eeeeee"><b><font size="-1">Navigation Messages&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></b></td>
+      <td rowspan="2" align="center" valign="middle" bgcolor="#eeeeee"><b><font size="-1">&nbsp;Met.</font></b></td>
+      <td rowspan="2" align="center" valign="middle" bgcolor="#eeeeee"><b><font size="-1">Clock&nbsp;</font></b></td>
+    </tr>
+    <tr>
+      <td align="center" valign="middle" bgcolor="#eeeeee"><b><font size="-1">&nbsp;GPS</font></b></td>
+      <td align="center" valign="middle" bgcolor="#eeeeee"><b><font size="-1">GLO</font></b></td>
+      <td align="center" valign="middle" bgcolor="#eeeeee"><b><font size="-1">GAL</font></b></td>
+      <td align="center" valign="middle" bgcolor="#eeeeee"><b><font size="-1">QZSS</font></b></td>
+      <td align="center" valign="middle" bgcolor="#eeeeee"><font size="-1"><b>&nbsp;CMP</b></font></td>
+      <td align="center" valign="middle" bgcolor="#eeeeee"><b><font size="-1">&nbsp;SBAS</font></b></td>
+      <td align="center" valign="middle" bgcolor="#eeeeee"><b><font size="-1">GPS</font></b></td>
+      <td align="center" valign="middle" bgcolor="#eeeeee"><b><font size="-1">GLO</font></b></td>
+      <td align="center" valign="middle" bgcolor="#eeeeee"><b><font size="-1">GAL</font></b></td>
+      <td align="center" valign="middle" bgcolor="#eeeeee"><b><font size="-1">QZSS</font></b></td>
+      <td align="center" valign="middle" bgcolor="#eeeeee"><font size="-1"><b>CMP</b></font></td>
+      <td align="center" valign="middle" bgcolor="#eeeeee"><b><font size="-1">SBAS</font></b></td>
+    </tr>
+    <tr>
+      <td align="center" valign="middle"><font size="-1">&nbsp;2.10, 2.11, 2.12</font></td>
+      <td align="center" valign="middle"><font size="-1">O</font></td>
+      <td align="center" valign="middle"><font size="-1">O</font></td>
+      <td align="center" valign="middle"><font size="-1">O</font></td>
+      <td valign="middle" align="center"><font size="-1">O*</font></td>
+      <td valign="middle" align="center"><font size="-1">&nbsp;-</font></td>
+      <td align="center" valign="middle"><font size="-1">O</font></td>
+      <td align="center" valign="middle"><font size="-1">N</font></td>
+      <td align="center" valign="middle"><font size="-1">G</font></td>
+      <td align="center" valign="middle"><font size="-1">L*</font></td>
+      <td align="center" valign="middle"><font size="-1">J*</font></td>
+      <td align="center" valign="middle"><font size="-1">&nbsp;-</font></td>
+      <td align="center" valign="middle"><font size="-1">H</font></td>
+      <td align="center" valign="middle"><font size="-1">-</font></td>
+      <td align="center" valign="middle"><font size="-1">-</font></td>
+    </tr>
+    <tr>
+      <td align="center" valign="middle"><font size="-1">&nbsp;3.00</font></td>
+      <td align="center" valign="middle"><font size="-1">O</font></td>
+      <td align="center" valign="middle"><font size="-1">O</font></td>
+      <td align="center" valign="middle"><font size="-1">O</font></td>
+      <td valign="middle" align="center"><font size="-1">O*</font></td>
+      <td valign="middle" align="center"><font size="-1">&nbsp;-</font></td>
+      <td align="center" valign="middle"><font size="-1">O</font></td>
+      <td align="center" valign="middle"><font size="-1">N</font></td>
+      <td align="center" valign="middle"><font size="-1">N</font></td>
+      <td align="center" valign="middle"><font size="-1">N</font></td>
+      <td align="center" valign="middle"><font size="-1">N*</font></td>
+      <td align="center" valign="middle"><font size="-1">&nbsp;-</font></td>
+      <td align="center" valign="middle"><font size="-1">N</font></td>
+      <td align="center" valign="middle"><font size="-1">-</font></td>
+      <td align="center" valign="middle"><font size="-1">&nbsp;C**</font></td>
+    </tr>
+  </tbody>
+</table>
+<font size="-1">O, N, G, H, C, L: RINEX file type, GLO: GLONASS,
+GAL: Galileo, CMP: Compass,
+* extension, ** read only, - not supported<BR>
+RINEX QZSS Extensions are based on JAXA proposal
+(2010-8-4 version draft)</font></div>
+<P align="left"><B><U>Changes: ver.2.4.0 -&gt; ver.2.4.1</U></B></P>
+<P><FONT size="-1">(1) The following patches for ver.2.4.0 are included.<BR>
+</FONT></P>
+<BLOCKQUOTE><FONT size="-1">rtklib_2.4.0_p1, <FONT size="-1">rtklib_2.4.0_p2, <FONT size="-1">rtklib_2.4.0_p3, rtklib_2.4.0_p4, rtklib_2.4.0_p5, rtklib_2.4.0_p6, rtklib_2.4.0_p7,
+rtklib_2.4.0_p8, rtklib_2.4.0_p9<BR>
+</FONT></FONT></FONT></BLOCKQUOTE>
+<P><FONT size="-1">(2) The following problems are fixed.</FONT></P>
+<BLOCKQUOTE><FONT size="-1">(a) No.50 Program freezes with BeagleBoard and u-blox receiver<BR>
+(b) No.53 Time synchronization problem between the rover and the base station<br>
+(c) No.55 Real-time PPP is not enabled with products.igs-ip.net/CLK80<br>
+(d) No.58 RTKNAVI crashes due to MKL library<br>
+(e) No.59 NMEA solution data can not be read and displayed<br>
+(f) No.60 50 Hz or higher rate observation
+date are not properly analyzed<br>
+(g) No.61 AP running as a TCP server stops if a TCP client stops<br>
+(h) No.62 Sol1-Sol2 difference mode plot does not indicate proper values<br>
+(i) No. 64 A half hour offset of time-tag in converted RINEX OBS files<BR>
+</FONT></BLOCKQUOTE><P><FONT size="-1">(3) The following APIs are added, deleted
+or changed.</FONT></P>
+<BLOCKQUOTE><FONT size="-1">(a) added<BR>
+uniqnav(), freeobs(), freenav(), ionppp(),
+iontec(), readtec(), ionocorr(), tropcorr(),
+outrnxhnavh(), outrnxlnavh(),<BR>
+outrnxqnavh(), outrnxhnavb(), alm2pos(),
+input_gw10(), input_javad(), input_gw10f(),
+input_javadf(), freesolstatbuff(),<BR>
+strsetproxy()<br>
+</FONT></BLOCKQUOTE>
+<BLOCKQUOTE><FONT size="-1">(b) deleted<BR>
+none<br>
+</FONT></BLOCKQUOTE>
+<BLOCKQUOTE><FONT size="-1">(c) changed<br>
+readrnx(), readrnxt(), outrnxnavh(), outrnxgnavh(),
+satpos(), satposs(), decode_frame(), strsvrstart(),
+rtksvrstart(),<BR>
+rtksvrostat()<BR>
+</FONT></BLOCKQUOTE>
+<P><FONT size="-1">(4) The following source codes for the library are added.</FONT></P>
+<BLOCKQUOTE><FONT size="-1">ionex.c, rcv/javad.c, rcv/gw10.c</FONT></BLOCKQUOTE>
+<P><FONT size="-1">(5) RTKNAVI/RTKNAVI_MKL</FONT></P>
+<BLOCKQUOTE><FONT size="-1">(a) RTKNAVI_MKL AP is added.<BR>
+(b) wide-mode satellite signal plots are
+added<BR>
+(c) GW10 and Javad receiver are supported
+as input stream format<BR>
+(d) Input stream receiver option setting
+is added<BR>
+(e) PPP-Fixed mode is added for Positioning
+Mode option<BR>
+(f) Triple frequency (L1+L2+L5) is supported
+as Frequency option<BR>
+(g) IONEX TEC and QZSS Broadcast is supported
+as Ionosphere Correction<BR>
+(h) Inclusion of unhealthy satellite options
+are supported<BR>
+(i) QZSS is supported and Galileo is enabled<BR>
+(j) Min Elevation to Hold Ambiguity option
+is added<BR>
+(k) Reject Threshold of GDOP option is added<BR>
+(l) HTTP/NTRIP Proxy is supported<BR>
+<FONT size="-1">(m) Overlapped file swap is supported<BR>
+</FONT>(n) The following RTK monitor displays are
+supported: Time/Iono, Iono Correction<BR>
+(o) Command line option to select INI file
+is added<br>
+</FONT></BLOCKQUOTE>
+<P><FONT size="-1">(6) RTKRCV</FONT></P>
+<BLOCKQUOTE><FONT size="-1">(a) The same as (c), (e) - (m) for RTKNAVI<br>
+</FONT></BLOCKQUOTE>
+<P><FONT size="-1">(7) RTKPOST/RTKPOST_MKL</FONT></P>
+<blockquote><font size="-1">(a) Output solution directory option is added<BR>
+(b) The same as (c), (e) (k), (o) for RTKNAVI<br>
+</font></blockquote>
+<P><FONT size="-1">(8) RTKCONV</FONT></P>
+<BLOCKQUOTE><font size="-1">(a) QZSS is supported and Galileo is enabled<BR>
+(b) Keyword replacement in input file path
+is supported<BR>
+(c) Multiple-session RINEX conversion is
+supported<BR>
+(d) Furuno GW10 and Javad are supported as
+Input Format<BR>
+(e) Output directory option is added<BR>
+(f) RINEX file name convention is supported<BR>
+(f) &quot;Process...&quot; button to launch
+RTKPOST is added<BR>
+(g) <FONT size="-1">Command line option to select INI file is
+added<BR>
+</FONT></font></BLOCKQUOTE>
+<P><FONT size="-1">(9) RTKPLOT</FONT></P>
+<BLOCKQUOTE><font size="-1">(a) Image map overlay in &quot;Gnd Trk&quot;
+plot is supported<BR>
+(b) Multiple inputs is supported in real-time
+plot mode<BR>
+(c) The following options are supported:
+Receiver Position, Marker Color 2</font></BLOCKQUOTE>
+<P><FONT size="-1">(10) STRSVR</FONT></P>
+<blockquote><font size="-1">(a) HTTP/NTRIP Proxy is supported<BR>
+(b) File swap margin option is added</font><BR>
+<FONT size="-1">(c) Command line option to select INI file
+is added<BR>
+</FONT></blockquote>
+<P><FONT size="-1">(11) CONVBIN</FONT></P>
+<BLOCKQUOTE><FONT size="-1">(a) The following options are added: -ro
+-hc -hm -hn -ht -ho -hr -ha -hp -hd -y -c
+-q<BR>
+(b) Furuno GW10 and Javad receivers are supported<BR>
+(c) QZSS is supported and Galileo is enabled<BR>
+(d) Triple frequency (L1+L2+L5) is supported<BR>
+(e) RINEX file name convention is supported</FONT></BLOCKQUOTE>
+<P><FONT size="-1">(12) RNX2RTKP</FONT></P>
+<BLOCKQUOTE><FONT size="-1">(a) QZSS is supported and Galileo is enabled<BR>
+(b) Triple frequency (L1+L2+L5) is supported<br>
+</FONT></BLOCKQUOTE>
+<P><FONT size="-1">(13) STR2STR</FONT></P>
+<BLOCKQUOTE><FONT size="-1">(a) Command line option -f, -l and -x are
+added</FONT></BLOCKQUOTE>
+<HR>
+<p><a href="rtklib_2.4.0_releasenote.htm"><b><font size="+1">RTKLIB ver.2.4.0 Relase Notes</font></b></a></p>
+<p><b><font size="+1"><a href="rtklib_2.3.0_releasenote.htm">RTKLIB ver.2.3.0 Release Notes</a></font></b></p>
+<P><B><FONT size="+1"><A href="rtklib_2.2.2_releasenote.htm">RTKLIB ver.2.2.2 Release Notes</A></FONT></B></P>
+<P><B><A href="rtklib_2.2.1_releasenote.htm"><FONT size="+1">RTKLIB ver.2.2.1 Release Notes</FONT></A></B></P>
+<HR>
+<TABLE width="100%">
+  <TBODY>
+    <TR>
+      <td align="center"><font size="-1">Copyright (C) 2007-2011 by <a href="http://gpspp.sakura.ne.jp/indexe.html">T.TAKASU</a>, All rights reserved.</font></td>
+    </TR>
+  </TBODY>
+</TABLE>
+</BODY>
+</HTML>
