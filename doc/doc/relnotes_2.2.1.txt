@@ -1,0 +1,147 @@
+RTKLIB: ver.2.2.1 Release Notes
+                                                                       2009/5/17
+--------------------------------------------------------------------------------
+
+Supported Receivers and Data Messages
+
+
+(1) RTCM 2.3 (http://www.rtcm.org/)
+
+  Type 1, 3, 9, 14, 16, 17, 18, 19, 22
+
+(2) RTCM 3.0/3.1 (http://www.rtcm.org/)
+
+  Type 1002, 1004, 1005, 1006, 1019
+
+(3) NovAtel OEM4/V (http://www.novatel.com/)
+
+  RANGEB, RANGECMPB, RAWEPHEMB, IONUTCB, RAWWAASFRAMEB,
+
+(4) NovAtel OEM3 (Millennium) (http://www.novatel.com/)
+
+  RGEB, REPB, IONB, UTCB, FRMB
+
+(5) u-blox LEA-4T (AEK-4T) (http://u-blox.com/)
+
+  RXMRAW, RXMSFRB
+
+(6) NovAtel Superstar II (http://www.novatel.com/)
+
+  ID#20, ID#21, ID#22, ID#23, ID#67
+
+(7) Hemisphere Crescent (http://www.hemispheregps.com/)
+
+  bin 80, bin 94, bin 95, bin 96
+
+--------------------------------------------------------------------------------
+
+Changes: ver.2.2.0 -> ver.2.2.1
+
+
+(1) The following RTCM 2.3 and RTCM 3.0/3.1 messages are supported.
+
+  (a) RTCM 2.3: Type 1, 3, 9, 14, 16, 17, 18, 19, 22
+  (b) RTCM 3.0/3.1: Type 1002, 1004, 1005, 1006, 1019
+
+(2) The following receiver raw data messages are supported.
+
+  (a) NovAtel OEM3 (Milennium): RGEB, REPB, FRMB, IONB, UTCB
+  (b) NovAtel OEM4/5: RANGEB
+
+(3) The following APIs are added, deleted or modified.
+
+  (a) Added:
+  satno(), satsys(), satid2no(), satno2id(), traceb(), geph2pos(), convrnx(),
+  getbitu(), getbits(), crc32(), crc24q(), decode_word(), decode_frame(),
+  init_raw(), free_raw(), input_raw(), input_rawf(), input_oem4(), input_oem3(),
+  input_ubx(), input_ss2(), input_cres(), input_oem4f(), input_oem3f(),
+  input_ubxf(), input_ss2f(), input_cresf(), init_rtcm(), free_rtcm(),
+  input_rtcm2(), input_rtcm3(), input_rctm2f(), input_rtcm3f(), outnmea_rmc(),
+  outnmea_gga(), outnmea_gsa(), outnmea_gsv()
+  
+  (b) Deleted:
+  readrnxf(), decodefrm(), decodenav(), addobs(), addnav(), addsbs(),
+  addionutc(), convlog(), readlog(), readlogs(), decodelog(), rtksvrgetsol(),
+  SAT(), PRN(), decodenov(), convnov(), readnov(), decodeubx(), convubx(),
+  readubx(), decodess2(), convss2(), readss2(), decodecres(), convcres(),
+  readcres()
+  
+  (c) Modified:
+  outrnxobsh(), outrnxobsb(), outrnxnavh(), outrnxnavb(), outsols(), outsol(),
+  sbsreadmsg(), sbsreadmsgt(), sbsdecodemsg(), sbspntpos(), strsvrstart(),
+  rtksvrstart()
+
+(4) The following library source codes are added or deleted.
+
+  (a) Added:
+  convrnx.c, rcvraw.c, rtcm.c
+
+  (b) Deleted:
+  rcvlog.c, rcv/novatel.h, rcv/ublox.h, rcv/ss2.h, rcv/crescent.h
+
+(5) RTKNAVI
+
+  (a) "RTK Map" window is added. "Gnd Track" plots in the main window are
+      deleted.
+  (b) "Rover : Base/NRTK SNR" plot in the main window is added.
+  (c) "Streams" dialog is separated into "Input Streams", "Output Streams"
+      and "Log Streams" dialogs.
+  (d) "RTCM 2", "RTCM 3" and "NovAtel OEM3" are supported as the input
+      stream format.
+  (e) Transmission of NMEA GPGGA to base-station or NRTK (Network RTK) is
+      supported.
+  (f) Time tagging is supported for the input, output and log file streams.
+  (g) Separated multiple "RTK Monitor" windows are supported.
+  (h) Some "RTK Monitor" windows are added: Covariance, RTCM, RTCM DGPS,
+      Input Rover, Input Base/NRTK, Solution 1/2 and Error/Warning.
+  (i) Hide Button is added to minimize the main window as the task-tray-icon.
+  (j) "Excluded Satellites" is activated in "Options - Setting1" dialog.
+  (k) "RTCM Station Position" is added as "Base/NRTK Station position" in
+      "Options - Position" dialog.
+  (l) "Timeout/Rec-connect Interval" is added in "Options - Misc" dialog.
+  (m) "NMEA Transmission Cycle" is added in "Options - Misc" dialog.
+
+(6) RTKPOST/RTKPOST_MKL
+
+  (a) Time "Unit" options is suppored in the main window.
+  (b) Keyword replacement in input and output file paths is supported for
+      batch processing.
+  (c) "Excluded Satellites" is activated in "Options - Setting1" dialog.
+  (d) "RINEX Header Position" is added as "Base/NRTK Station postion" in
+      "Options - Position" dialog.
+  (e) "Rover List" and "Base Station List" are added in "Options - Misc"
+      dialog.
+  (f) The file mkl_def.dll is added in /bin to execute RTKPOST with MKL for
+      non-mkl environment.
+
+(7) RTKCONV
+
+  (a) "RTCM 2", "RTCM 3" and "NovAtel OEM3" are supported as the input log
+      file format.
+  (b) "Navigation Systems", "Observation Types", "Frequencies", "Output Debug
+      Trace" options are added in "Options" dialog.
+
+(8) RTKPLOT
+
+  (a) "Animation Start/Stop" Menus and "Animation" Button are added in the
+      main window.
+  (b) "View - Toolbar" and "View - Statusbar" menus are added in the main
+      window.
+  (c) "Parity Unknown", "Hide Low Satellite", "Graph Label", "Grid Label",
+      "Compass", "Scale" and "Anim. Interval" options are added in "Options"
+      dialog.
+
+(9) STRSVR
+
+  (a) "Stream Monitor" window is added.
+  (b) Hide Button is added to minimize the main window as the task-tray-icon.
+  (c) "NMEA Request Cycle" and "Lat/Lon/Height" options are added in "Options"
+      dialog.
+
+(10) CONVBIN
+
+  (a) Command line options -f, -od, -os are added.
+  (b) Log format type "rtcm2", "rtcm3", and "oem3" are added for -r command
+     line option.
+
+--------------------------------------------------------------------------------

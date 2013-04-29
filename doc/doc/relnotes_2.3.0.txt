@@ -1,0 +1,158 @@
+RTKLIB: ver.2.3.0 Release Notes
+                                                                      2009/12/17
+--------------------------------------------------------------------------------
+
+Supported Receivers and Data Messages
+
+
+(1) RTCM 2.3 (http://www.rtcm.org/)
+
+  Type 1, 3, 9, 14, 16, 17, 18, 19, 22
+
+(2) RTCM 3.0/3.1 (http://www.rtcm.org/)
+
+  Type 1002, 1004, 1005, 1006, 1010, 1012, 1019, 1020
+
+(3) NovAtel OEM4/V (http://www.novatel.com/)
+
+  RANGEB, RANGECMPB, RAWEPHEMB, IONUTCB, RAWWAASFRAMEB, GLOEPHEMERISB
+
+(4) NovAtel OEM3 (Millennium) (http://www.novatel.com/)
+
+  RGEB, RGED, REPB, IONB, UTCB, FRMB
+
+(5) u-blox LEA-4T (AEK-4T)/LEA-5T (EVK-5T) (http://u-blox.com/)
+
+  RXMRAW, RXMSFRB
+
+(6) NovAtel Superstar II (http://www.novatel.com/)
+
+  ID#20, ID#21, ID#22, ID#23, ID#67
+
+(7) Hemisphere Crescent (http://www.hemispheregps.com/)
+
+  bin 80, bin 94, bin 95, bin 96
+
+(8) SkyTraq S1315F (http://www.hemispheregps.com/)
+
+  msg 0xDD, 0xE0, 0xDC
+
+--------------------------------------------------------------------------------
+
+Changes: ver.2.2.2 -> ver.2.3.0
+
+(1) The following patches for ver.2.2.2 are included.
+  (a) rtklib_2.2.2_p1
+  (b) rtklib_2.2.2_p2
+  (c) rtklib_2.2.2_p3
+
+(2) The following problems are fixed.
+  (a) No.25 Improper row height of string-grid with non-standard DPI font scale
+  (b) No.26 Improper antenna correction when Antenna Type is blank
+  (c) No.30 Inverted Polarity of Doppler Frequency in NovAtel OEM3 REGD
+
+(3) The following APIs are added, deleted or changed.
+  (a) added
+    readnav(), savenav(), tracegnav(), tracepeph(), satwavelen(), opengeoid(),
+    closegeoid(), outrnxgnavh(), outrnxgnavb(), input_stq(), input_stqf(),
+    gen_ubx(), gen_stq(), rtkopenstat(), rtkclosestat(), readsolstat(),
+    strsendnmea(), strsendcmd() 
+  
+  (b) deleted
+    none
+  
+  (c) changed
+    pntpos(), convrnx()
+
+(4) The following source codes are added.
+  rcv/skytraq.c
+
+(5) RTKNAVI
+  (a) GLONASS and GPS/GLONASS combined RTK are supported
+  (b) "Baseline" display mode is added
+  (c) Multiple TCP client connection is supported for TCP server of Output/Log stream
+  (d) Keyword replacement is supported for File of Output/Log stream
+  (e) Vertical solution plot is added to RTK Map
+  (f) "GLONASS Nav" is adde to RTK Monitor
+  (g) "Fix and Hold" mode for ambiguity resolution is supported
+  (h) Receiver Dyamics is supported
+  (i) "Fixed" selection as "Positioning Mode" is added in "Options"-"Setting1" dialog
+  (j) "Receiver Dynamics" option is added in "Options"-"Setting1" dialog
+  (k) "Navi Sys" option is added in "Options"-"Setting1" dialog
+  (l) "Fix and Hold" selection as "Integer Ambiguity Resolution" is added in "Options"-"Setting2" dialog
+  (m) "GLONASS Ambiguity Resolution" option is added in "Options"-"Setting2" dialog
+  (o) "Baseline Length Constraint" options are added in "Options"-"Setting2" dialog
+  (p) "# of Decimals" option is added in "Options"-"Output" dialog
+  (q) "Geoid Model" options are added in "Options"-"Output" dialog
+  (r) "Output Solution Status" option is added in "Options"-"Output" dialog
+  (s) "Meas Errors of Doppler Frequency" option is added in "Options"-"Statistics" dialog
+  (t) "Process Noise of Receiver Accel Horiz/Vertical" option is added in "Options"-"Statistics" dialog
+  (u) "Rover Position" can be set in "Options"-"Postions" dialog if "Fixed" is selected as "Positioning Mode"
+  (v) "Geoid Data File" option is added in "Options"-"Files"
+  (w) SkyTraq S1315F receiver is supported.
+  (x) Hemisphere Eclipse receiver is supported.
+  (y) Binary commands for ublox and SkyTraq are supported for startup/shutdown commands.
+  (z) RTCM 3.1 type 1010, 1012, 1020 messages are supported.
+  (aa) NovAtel OEMV GLOEPHEMERISB message is supported.
+  (ab) GLONASS measurement data in NovAtel OEMV RANGEB and RANGECMPB are supported.
+
+(6) RTKRCV
+  (a) A console version real-time positining AP is added for Linux or other environments.
+
+(7) RTKPOST/RTKPOST_MKL
+  (a) GLONASS and GPS/GLONASS combined positioning are supported
+  (b) "Fix and Hold" mode for ambiguity resolution is supported
+  (c) Receiver Dyamics is supported
+  (d) A Field for GLONASS navigation data is added
+  (e) Buttons to view solution status and debug trace are added
+  (f) "Fixed" selection as "Positioning Mode" is added in "Options"-"Setting1" dialog
+  (g) "Receiver Dynamics" option is added in "Options"-"Setting1" dialog
+  (h) "Navi Sys" option is added in "Options"-"Setting1" dialog
+  (i) "Fix and Hold" selection as "Integer Ambiguity Resolution" is added in "Options"-"Setting2" dialog
+  (j) "GLONASS Ambiguity Resolution" option is added in "Options"-"Setting2" dialog
+  (k) "Baseline Length Constraint" options are added in "Options"-"Setting2" dialog
+  (l) "# of Decimals" option is added in "Options"-"Output" dialog
+  (m) "Geoid Model" options are added in "Options"-"Output" dialog
+  (n) "Output Solution Status" option is added in "Options"-"Output" dialog
+  (o) "Meas Errors of Doppler Frequency" option is added in "Options"-"Statistics" dialog
+  (p) "Process Noise of Receiver Accel Horiz/Vertical" option is added in "Options"-"Statistics" dialog
+  (q) "Rover Position" can be set in "Options"-"Postions" dialog if "Fixed" is selected as "Positioning Mode"
+  (r) "Geoid Data File" option is added in "Options"-"Files"
+  (s) '#' can be used for comment in "Rover List" or "Base Station List" in Options-"Misc" dialog
+  (t) Wild-cards in file path of precise ephemeris (SP3) are supported.
+
+(8) RTKCONV
+  (a) "RINEX GNAV file" field is added as an output file path
+  (b) "Crescent" selection as "Format" option is chaned to "Hemisphere"
+  (c) "Receiver Options" field is added in "Options" dialog instead of "Flip Sign (ublox)" option
+  (d) SkyTraq S1315F receiver is supported.
+  (e) Hemisphere Eclipse receiver is supported.
+  (f) RTCM 3.1 type 1010, 1012, 1020 messages are supported.
+  (g) NovAtel OEMV GLOEPHEMERISB message is supported.
+  (h) GLONASS measurement data in NovAtel OEMV RANGEB and RANGECMPB are supported.
+
+(9) RTKPLOT
+  (a) GLONASS observation data plot is supported
+  (b) NSat/Age/Ratio plot mode is added for solution plot
+  (c) L1/L2 residuals plot mode is added for solution plot
+  (d) "Maximum DOP", "Navigation System" and "Excluded Sats" options are added to "Options" dialog.
+
+(10) STRSVR
+  (a) Multiple TCP client connection is supported for TCP server of Output stream
+  (b) Binary commands for ublox and SkyTraq are supported for startup/shutdown commands.
+
+(11) CONVBIN
+  (a) command line options -r stq, -g, are added.
+  (b) command line option -r cres is changed to -r hemis
+  (c) GLONASS data and RINEX GNAV file are supported.
+
+(12) RNX2RTKP
+  (a) GLONASS is supported.
+  (b) Command line options -p 4, -h, -a, -l, -x are added.
+
+(13) STR2STR
+  (a) A console version stream server AP is supported for Linux or other environments.
+
+
+
+--------------------------------------------------------------------------------

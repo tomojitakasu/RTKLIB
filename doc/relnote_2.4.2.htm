@@ -1,0 +1,219 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<META name="GENERATOR" content="IBM HomePage Builder 2001 V5.0.3 for Windows">
+<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<TITLE>RTKLIB: Release Notes</TITLE>
+</HEAD>
+<BODY bgcolor="#ffffff" text="#333333" link="#33cc66" vlink="#006666" alink="#99ff00">
+<TABLE width="100%" cellpadding="0" cellspacing="0">
+  <COL span="1" width="64">
+  <TBODY>
+    <TR>
+      <TD><IMG src="rtklib.jpg" width="64" height="64" border="0"></TD>
+      <TD>
+      <TABLE cellpadding="0" cellspacing="0">
+        <TBODY>
+          <TR>
+            <td width="718"><font size="-1"><A href="rtklib.htm">Overview</A> | Release Notes | <A href="rtklib_support.htm">Support</A> | <A href="rtklib_document.htm">Documents</A> | <A href="rtklib_reference.htm">References </A><FONT size="-1">| <A href="rtklib_beagleboard.htm">Porting to BB</A> | <A href="rtklib_todo.htm">To Do</A></FONT> | <a href="rtklib_download.htm">Statistics</a></font></td>
+          </TR>
+        </TBODY>
+      </TABLE>
+      <TABLE width="100%" cellpadding="0">
+        <TBODY>
+          <TR>
+            <TD><FONT size="+2"><B>RTKLIB: Release Notes</B></FONT></TD>
+            <TD align="right" valign="bottom"><FONT size="-1">2013/03/12</FONT></TD>
+            <TD valign="bottom" align="right"></TD>
+          </TR>
+        </TBODY>
+      </TABLE>
+      </TD>
+    </TR>
+  </TBODY>
+</TABLE>
+<HR>
+<P><B><FONT size="+1">RTKLIB ver.2.4.2 Release Notes</FONT></B></P>
+<p><b><u>New Features in ver.2.4.2</u></b></p>
+<blockquote><FONT size="-1">(1) Galileo and BeiDou are supported.</FONT><FONT size="-1"><BR>
+(2) Full RINEX 3 complient. Multiple-code
+in a frequency is supported.</FONT><FONT size="-1"><br>
+(3) RTCM 3 MSM, SSR and ephemerides for All
+GNSS are supported.</FONT><FONT size="-1"><br>
+(4) NovAtel OEM6, NVS NVC08 BINR and BINEX
+messages are supported.</FONT><FONT size="-1"><BR>
+(5) Google Earth View and Goolge Map View
+are added to RTKPLOT</FONT><FONT size="-1"><BR>
+(6) NORAD TLE (two-line element) data set
+is supported for satellite positions.</FONT><FONT size="-1"><BR>
+(7) Downloader and launcher APs are added
+(RTKGET and RTKLAUNCH).</FONT><FONT size="-1"><BR>
+(8) Data format conversion is supported in
+STRSVR </FONT><FONT size="-1">and STR2STR</FONT><FONT size="-1">.<BR>
+(9) PPP-AR (ambiguity resolution) is supported.</FONT><FONT size="-1" color="#000000"> </FONT><FONT size="-1" color="#000000">(experimental)</FONT><FONT size="-1" color="#000000">.</FONT><FONT size="-1"><BR>
+</FONT><FONT size="-1"><FONT size="-1">(10) Satellite visibility and multipath analysis
+function is added in RTKPLOT.</FONT><FONT size="-1" color="#FF6600"><BR>
+</FONT></FONT><FONT size="-1">(19) <FONT size="-1">Variable SNR mask and </FONT>RAIM FDE (fault detection and exclution)
+is added.</FONT></blockquote>
+<P align="left"><B><U>Changes: ver.2.4.1 -&gt; ver.2.4.2</U></B></P>
+<BLOCKQUOTE><FONT size="-1">(1) The following patches for ver.2.4.1 are
+included:</FONT></BLOCKQUOTE>
+<BLOCKQUOTE>
+<BLOCKQUOTE><FONT size="-1">rtklib_2.4.1_p1, rtklib_2.4.1_p2, rtklib_2.4.1_p3,
+rtklib_2.4.1_p4, rtklib_2.4.1_p5, rtklib_2.4.1_p6,
+rtklib_2.4.1_p7, </FONT></BLOCKQUOTE>
+</BLOCKQUOTE>
+<BLOCKQUOTE><FONT size="-1">(2) The following source codes are added
+for RTKLIB library:</FONT></BLOCKQUOTE>
+<BLOCKQUOTE>
+<BLOCKQUOTE><FONT size="-1">src/ppp_ar.c, src/qzslex.c, src/rtcm2.c,
+src/rtcm3.c, src/rtcm3e.c, src/tle.c, src/rcv/binex.c,
+src/rcv/nvs.c</FONT></BLOCKQUOTE>
+</BLOCKQUOTE>
+<BLOCKQUOTE><FONT size="-1">(3) The following APIs are added, deleted
+and modified:</FONT></BLOCKQUOTE>
+<BLOCKQUOTE>
+<BLOCKQUOTE><FONT size="-1">(a) Added: satexclude(), testsnr(), setcodepri(),
+getcodepri(), obs2code(), code2obs(), bdt2time(),
+time2bdt(), gpst2bdt(), bdt2gpst(), time2gmst(),
+outrnxcnavh(), init_rnxctr(), free_rnxctr(),
+open_rnxctr(), input_rnxctr(), tle_read(),
+tle_name_read(), tle_pos(), setbitu(), setbits(),
+crc16(), input_binex(), input_nvs(), input_binexf(),
+input_nvsf(), gen_nvs(), gen_rtcm2(), gen_rtcm3(),
+pppos(), ppnx(), pppoutsolstat(), windupcorr(),
+pppamb(), strconvnew(), strconvfree(), dl_readurls(),
+dl_readstas(), dl_exec(), dl_test(), lexupdatecorr(),
+lexreadmsg(), lexoutmsg(), lexconvbin(),
+lexeph2pos(), lexioncorr()</FONT></BLOCKQUOTE>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<BLOCKQUOTE><FONT size="-1">(b) Deleted: setrnxcodepri()</FONT></BLOCKQUOTE>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+<BLOCKQUOTE><FONT size="-1">(c) Modified: <FONT size="-1">obs2code(), code2obs(), antmodel(), readrnx(),
+readrnxt(), readsp3(), eci2ecef(), sunmoonpos()</FONT></FONT> </BLOCKQUOTE>
+</BLOCKQUOTE>
+<BLOCKQUOTE><FONT size="-1">(4) The build environment for Windows APs
+is changed from Turbo C++ to C++ builder
+XE2 or XE3. Turbo C++ is no longer supported.</FONT></BLOCKQUOTE>
+<BLOCKQUOTE><FONT size="-1">(5) RTKNAVI, RTKNAV_MKL</FONT></BLOCKQUOTE>
+<BLOCKQUOTE>
+<BLOCKQUOTE><FONT size="-1">(a) Galileo and BeiDou are supported.<BR>
+(b) RTCM 3 MSM and MSM draft are supported
+for inputs.<BR>
+(c) RTCM 3 Galileo and QZSS ephemerides are
+supported for inputs.<BR>
+(d) NovAtel OEM6, NVS NV08C BINR and BINEX
+are supported as inputs.<BR>
+</FONT><FONT size="-1">(e) Variable SNR mask, PPP options and RAIM
+FDE are supported.</FONT><BR>
+<FONT size="-1">(f) &quot;Sync Solution&quot; option is added.</FONT><BR>
+<FONT size="-1">(g) NMEA sentences GLGSA, GAGSA, GLCSV, GACSV
+are supported for outputs.<BR>
+(h) TLE data are supported for skyplots<BR>
+(i) Message dump functions are added for
+input stream monitor.<BR>
+(j) Variable window size is supported.</FONT></BLOCKQUOTE>
+</BLOCKQUOTE>
+<BLOCKQUOTE><FONT size="-1">(6) RTKPOST, RTKPOST_MKL</FONT></BLOCKQUOTE>
+<BLOCKQUOTE>
+<BLOCKQUOTE><FONT size="-1">(a) Galileo and BeiDou are supported.<BR>
+(b) RINEX 3.01 and 3.02 draft are supported
+for inputs.<BR>
+(c) <FONT size="-1">Variable SNR mask, PPP options and RAIM FDE
+are supported.<BR>
+(d) OTL and pole tide corrections are supported.<BR>
+(e) RTCM SSR corrections are supported for
+ephemeris and clock<BR>
+(f) PPP-AR is supported (experimental)<BR>
+(g) RINEX options are supported for inputs.<BR>
+</FONT></FONT></BLOCKQUOTE>
+</BLOCKQUOTE>
+<BLOCKQUOTE><FONT size="-1">(7) RTKCONV</FONT></BLOCKQUOTE>
+<BLOCKQUOTE>
+<BLOCKQUOTE><FONT size="-1"><FONT size="-1">(a) Galileo and BeiDou are supported.<BR>
+</FONT>(b) Full RINEX 3 complient. Multi-code in
+a frequency is supported.<BR>
+<FONT size="-1">(c) RTCM 3 MSM and MSM draft are supported
+for inputs.<BR>
+(d) RTCM 3 Galileo and QZSS ephemerides are
+supported for inputs.<BR>
+(e) NovAtel OEM6, NVS NV08C BINR and BINEX
+are supported as inputs.<BR>
+</FONT>(f) RINEX 2.10, 2.12, 3.01, 3.02 are supported
+as output format.<BR>
+(g) &quot;Scan Obs Type&quot; feature is
+added.<BR>
+(h) Signal masks are added for manual signal
+selection.</FONT></BLOCKQUOTE>
+</BLOCKQUOTE>
+<BLOCKQUOTE><FONT size="-1">(8) STRSVR</FONT></BLOCKQUOTE>
+<BLOCKQUOTE>
+<BLOCKQUOTE><FONT size="-1">(a) Format conversion options are added.</FONT></BLOCKQUOTE>
+</BLOCKQUOTE>
+<BLOCKQUOTE><FONT size="-1">(9) RTKPLOT</FONT></BLOCKQUOTE>
+<BLOCKQUOTE>
+<BLOCKQUOTE><FONT size="-1"><FONT size="-1"><FONT size="-1">(a) Galileo and BeiDou are supported.<BR>
+</FONT>(b) Multi-code in a frequency is supported.<BR>
+(c) Satellite visbility analysis is added.<BR>
+(d) Multpath analysis functions are added.<BR>
+</FONT><FONT size="-1">(h) TLE data are supported for satellite
+positions</FONT><BR>
+(i) Circle grids are supported.<BR>
+(j) Google Map View and Google Earth View
+are added.</FONT></BLOCKQUOTE>
+</BLOCKQUOTE>
+<BLOCKQUOTE><FONT size="-1">(10) SRCTBLBROWS</FONT></BLOCKQUOTE>
+<BLOCKQUOTE>
+<BLOCKQUOTE><FONT size="-1">(a) Map view is added.</FONT></BLOCKQUOTE>
+</BLOCKQUOTE>
+<BLOCKQUOTE><FONT size="-1">(11) RTKGET</FONT></BLOCKQUOTE>
+<BLOCKQUOTE>
+<BLOCKQUOTE><FONT size="-1">Newly added.</FONT></BLOCKQUOTE>
+</BLOCKQUOTE>
+<BLOCKQUOTE><FONT size="-1">(12) RTKLAUNCH</FONT></BLOCKQUOTE>
+<BLOCKQUOTE>
+<BLOCKQUOTE><FONT size="-1"><FONT size="-1">Newly added.</FONT></FONT></BLOCKQUOTE>
+</BLOCKQUOTE>
+<BLOCKQUOTE><FONT size="-1">(12) RTKRCV</FONT></BLOCKQUOTE>
+<BLOCKQUOTE>
+<BLOCKQUOTE><FONT size="-1">(a) The same as (a)(b)(c)(d)(e)(f)(g) of
+RTKNAVI.</FONT></BLOCKQUOTE>
+</BLOCKQUOTE>
+<BLOCKQUOTE><FONT size="-1">(13) RNX2RTKP</FONT></BLOCKQUOTE>
+<BLOCKQUOTE>
+<BLOCKQUOTE><FONT size="-1">(a) The same as (a)(b)(c)(d)(e)(f)(g) of
+RTKPOST</FONT></BLOCKQUOTE>
+</BLOCKQUOTE>
+<BLOCKQUOTE><FONT size="-1">(14) CONVBIN</FONT></BLOCKQUOTE>
+<BLOCKQUOTE>
+<BLOCKQUOTE><FONT size="-1">(a) The same as (a)(b)(c)(d)(e)(f) of RTKCONV.</FONT><BR>
+<FONT size="-1">(b) Option -scan, -oi, -ot, -ol are added.</FONT></BLOCKQUOTE>
+</BLOCKQUOTE>
+<BLOCKQUOTE><FONT size="-1">(15) STR2STR</FONT></BLOCKQUOTE>
+<BLOCKQUOTE>
+<BLOCKQUOTE><FONT size="-1">(a) Format conversion options are added.<BR>
+(b) Option -msg, -opt, -sta are added.<BR>
+(c) Option -p is modified.</FONT></BLOCKQUOTE>
+<FONT size="-1">(16) Utility</FONT>
+<BLOCKQUOTE><FONT size="-1">(a) Utility PREC2NAV is added.</FONT><FONT size="-1"><BR>
+(b) Utiliity RNX2RTCM is added.</FONT></BLOCKQUOTE>
+</BLOCKQUOTE>
+<HR>
+<P><A href="rtklib_2.4.1_releasenote.htm"><B><FONT size="+1">RTKLIB ver.2.4.1 Relase Notes</FONT></B></A></P>
+<p><a href="rtklib_2.4.0_releasenote.htm"><b><font size="+1">RTKLIB ver.2.4.0 Relase Notes</font></b></a></p>
+<p><b><font size="+1"><a href="rtklib_2.3.0_releasenote.htm">RTKLIB ver.2.3.0 Release Notes</a></font></b></p>
+<P><B><FONT size="+1"><A href="rtklib_2.2.2_releasenote.htm">RTKLIB ver.2.2.2 Release Notes</A></FONT></B></P>
+<P><B><A href="rtklib_2.2.1_releasenote.htm"><FONT size="+1">RTKLIB ver.2.2.1 Release Notes</FONT></A></B></P>
+<HR>
+<TABLE width="100%">
+  <TBODY>
+    <TR>
+      <td align="center"><font size="-1">Copyright (C) 2007-2013 by <a href="http://gpspp.sakura.ne.jp/indexe.html">T.TAKASU</a>, All rights reserved.</font></td>
+    </TR>
+  </TBODY>
+</TABLE>
+</BODY>
+</HTML>

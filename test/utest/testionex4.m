@@ -1,0 +1,8643 @@
+tec=[
+     0  nan   nan
+    30  nan   nan
+    60  nan   nan
+    90  nan   nan
+   120  nan   nan
+   150  nan   nan
+   180  nan   nan
+   210  nan   nan
+   240  nan   nan
+   270  nan   nan
+   300  nan   nan
+   330  nan   nan
+   360  nan   nan
+   390  nan   nan
+   420  nan   nan
+   450  nan   nan
+   480  nan   nan
+   510  nan   nan
+   540  nan   nan
+   570  nan   nan
+   600  nan   nan
+   630  nan   nan
+   660  nan   nan
+   690  nan   nan
+   720  nan   nan
+   750  nan   nan
+   780  nan   nan
+   810  nan   nan
+   840  nan   nan
+   870  nan   nan
+   900  nan   nan
+   930  nan   nan
+   960  nan   nan
+   990  nan   nan
+  1020  nan   nan
+  1050  nan   nan
+  1080  nan   nan
+  1110  nan   nan
+  1140  nan   nan
+  1170  nan   nan
+  1200  nan   nan
+  1230  nan   nan
+  1260  nan   nan
+  1290  nan   nan
+  1320  nan   nan
+  1350  nan   nan
+  1380  nan   nan
+  1410  nan   nan
+  1440  nan   nan
+  1470  nan   nan
+  1500  nan   nan
+  1530  nan   nan
+  1560  nan   nan
+  1590  nan   nan
+  1620  nan   nan
+  1650  nan   nan
+  1680  nan   nan
+  1710  nan   nan
+  1740  nan   nan
+  1770  nan   nan
+  1800  nan   nan
+  1830  nan   nan
+  1860  nan   nan
+  1890  nan   nan
+  1920  nan   nan
+  1950  nan   nan
+  1980  nan   nan
+  2010  nan   nan
+  2040  nan   nan
+  2070  nan   nan
+  2100  nan   nan
+  2130  nan   nan
+  2160  nan   nan
+  2190  nan   nan
+  2220  nan   nan
+  2250  nan   nan
+  2280  nan   nan
+  2310  nan   nan
+  2340  nan   nan
+  2370  nan   nan
+  2400  nan   nan
+  2430  nan   nan
+  2460  nan   nan
+  2490  nan   nan
+  2520  nan   nan
+  2550  nan   nan
+  2580  nan   nan
+  2610  nan   nan
+  2640  nan   nan
+  2670  nan   nan
+  2700  nan   nan
+  2730  nan   nan
+  2760  nan   nan
+  2790  nan   nan
+  2820  nan   nan
+  2850  nan   nan
+  2880  nan   nan
+  2910  nan   nan
+  2940  nan   nan
+  2970  nan   nan
+  3000  nan   nan
+  3030  nan   nan
+  3060  nan   nan
+  3090  nan   nan
+  3120  nan   nan
+  3150  nan   nan
+  3180  nan   nan
+  3210  nan   nan
+  3240  nan   nan
+  3270  nan   nan
+  3300  nan   nan
+  3330  nan   nan
+  3360  nan   nan
+  3390  nan   nan
+  3420  nan   nan
+  3450  nan   nan
+  3480  nan   nan
+  3510  nan   nan
+  3540  nan   nan
+  3570  nan   nan
+  3600  nan   nan
+  3630  nan   nan
+  3660  nan   nan
+  3690  nan   nan
+  3720  nan   nan
+  3750  nan   nan
+  3780  nan   nan
+  3810  nan   nan
+  3840  nan   nan
+  3870  nan   nan
+  3900  nan   nan
+  3930  nan   nan
+  3960  nan   nan
+  3990  nan   nan
+  4020  nan   nan
+  4050  nan   nan
+  4080  nan   nan
+  4110  nan   nan
+  4140  nan   nan
+  4170  nan   nan
+  4200  nan   nan
+  4230  nan   nan
+  4260  nan   nan
+  4290  nan   nan
+  4320  nan   nan
+  4350  nan   nan
+  4380  nan   nan
+  4410  nan   nan
+  4440  nan   nan
+  4470  nan   nan
+  4500  nan   nan
+  4530  nan   nan
+  4560  nan   nan
+  4590  nan   nan
+  4620  nan   nan
+  4650  nan   nan
+  4680  nan   nan
+  4710  nan   nan
+  4740  nan   nan
+  4770  nan   nan
+  4800  nan   nan
+  4830  nan   nan
+  4860  nan   nan
+  4890  nan   nan
+  4920  nan   nan
+  4950  nan   nan
+  4980  nan   nan
+  5010  nan   nan
+  5040  nan   nan
+  5070  nan   nan
+  5100  nan   nan
+  5130  nan   nan
+  5160  nan   nan
+  5190  nan   nan
+  5220  nan   nan
+  5250  nan   nan
+  5280  nan   nan
+  5310  nan   nan
+  5340  nan   nan
+  5370  nan   nan
+  5400  nan   nan
+  5430  nan   nan
+  5460  nan   nan
+  5490  nan   nan
+  5520  nan   nan
+  5550  nan   nan
+  5580  nan   nan
+  5610  nan   nan
+  5640  nan   nan
+  5670  nan   nan
+  5700  nan   nan
+  5730  nan   nan
+  5760  nan   nan
+  5790  nan   nan
+  5820  nan   nan
+  5850  nan   nan
+  5880  nan   nan
+  5910  nan   nan
+  5940  nan   nan
+  5970  nan   nan
+  6000  nan   nan
+  6030  nan   nan
+  6060  nan   nan
+  6090  nan   nan
+  6120  nan   nan
+  6150  nan   nan
+  6180  nan   nan
+  6210  nan   nan
+  6240  nan   nan
+  6270  nan   nan
+  6300  nan   nan
+  6330  nan   nan
+  6360  nan   nan
+  6390  nan   nan
+  6420  nan   nan
+  6450  nan   nan
+  6480  nan   nan
+  6510  nan   nan
+  6540  nan   nan
+  6570  nan   nan
+  6600  nan   nan
+  6630  nan   nan
+  6660  nan   nan
+  6690  nan   nan
+  6720  nan   nan
+  6750  nan   nan
+  6780  nan   nan
+  6810  nan   nan
+  6840  nan   nan
+  6870  nan   nan
+  6900  nan   nan
+  6930  nan   nan
+  6960  nan   nan
+  6990  nan   nan
+  7020  nan   nan
+  7050  nan   nan
+  7080  nan   nan
+  7110  nan   nan
+  7140  nan   nan
+  7170  nan   nan
+  7200  nan   nan
+  7230  nan   nan
+  7260  nan   nan
+  7290  nan   nan
+  7320  nan   nan
+  7350  nan   nan
+  7380  nan   nan
+  7410  nan   nan
+  7440  nan   nan
+  7470  nan   nan
+  7500  nan   nan
+  7530  nan   nan
+  7560  nan   nan
+  7590  nan   nan
+  7620  nan   nan
+  7650  nan   nan
+  7680  nan   nan
+  7710  nan   nan
+  7740  nan   nan
+  7770  nan   nan
+  7800  nan   nan
+  7830  nan   nan
+  7860  nan   nan
+  7890  nan   nan
+  7920  nan   nan
+  7950  nan   nan
+  7980  nan   nan
+  8010  nan   nan
+  8040  nan   nan
+  8070  nan   nan
+  8100  nan   nan
+  8130  nan   nan
+  8160  nan   nan
+  8190  nan   nan
+  8220  nan   nan
+  8250  nan   nan
+  8280  nan   nan
+  8310  nan   nan
+  8340  nan   nan
+  8370  nan   nan
+  8400  nan   nan
+  8430  nan   nan
+  8460  nan   nan
+  8490  nan   nan
+  8520  nan   nan
+  8550  nan   nan
+  8580  nan   nan
+  8610  nan   nan
+  8640  nan   nan
+  8670  nan   nan
+  8700  nan   nan
+  8730  nan   nan
+  8760  nan   nan
+  8790  nan   nan
+  8820  nan   nan
+  8850  nan   nan
+  8880  nan   nan
+  8910  nan   nan
+  8940  nan   nan
+  8970  nan   nan
+  9000  nan   nan
+  9030  nan   nan
+  9060  nan   nan
+  9090  nan   nan
+  9120  nan   nan
+  9150  nan   nan
+  9180  nan   nan
+  9210  nan   nan
+  9240  nan   nan
+  9270  nan   nan
+  9300  nan   nan
+  9330  nan   nan
+  9360  nan   nan
+  9390  nan   nan
+  9420  nan   nan
+  9450  nan   nan
+  9480  nan   nan
+  9510  nan   nan
+  9540  nan   nan
+  9570  nan   nan
+  9600  nan   nan
+  9630  nan   nan
+  9660  nan   nan
+  9690  nan   nan
+  9720  nan   nan
+  9750  nan   nan
+  9780  nan   nan
+  9810  nan   nan
+  9840  nan   nan
+  9870  nan   nan
+  9900  nan   nan
+  9930  nan   nan
+  9960  nan   nan
+  9990  nan   nan
+ 10020  nan   nan
+ 10050  nan   nan
+ 10080  nan   nan
+ 10110  nan   nan
+ 10140  nan   nan
+ 10170  nan   nan
+ 10200  nan   nan
+ 10230  nan   nan
+ 10260  nan   nan
+ 10290  nan   nan
+ 10320  nan   nan
+ 10350  nan   nan
+ 10380  nan   nan
+ 10410  nan   nan
+ 10440  nan   nan
+ 10470  nan   nan
+ 10500  nan   nan
+ 10530  nan   nan
+ 10560  nan   nan
+ 10590  nan   nan
+ 10620  nan   nan
+ 10650  nan   nan
+ 10680  nan   nan
+ 10710  nan   nan
+ 10740  nan   nan
+ 10770  nan   nan
+ 10800  nan   nan
+ 10830  nan   nan
+ 10860  nan   nan
+ 10890  nan   nan
+ 10920  nan   nan
+ 10950  nan   nan
+ 10980  nan   nan
+ 11010  nan   nan
+ 11040  nan   nan
+ 11070  nan   nan
+ 11100  nan   nan
+ 11130  nan   nan
+ 11160  nan   nan
+ 11190  nan   nan
+ 11220  nan   nan
+ 11250  nan   nan
+ 11280  nan   nan
+ 11310  nan   nan
+ 11340  nan   nan
+ 11370  nan   nan
+ 11400  nan   nan
+ 11430  nan   nan
+ 11460  nan   nan
+ 11490  nan   nan
+ 11520  nan   nan
+ 11550  nan   nan
+ 11580  nan   nan
+ 11610  nan   nan
+ 11640  nan   nan
+ 11670  nan   nan
+ 11700  nan   nan
+ 11730  nan   nan
+ 11760  nan   nan
+ 11790  nan   nan
+ 11820  nan   nan
+ 11850  nan   nan
+ 11880  nan   nan
+ 11910  nan   nan
+ 11940  nan   nan
+ 11970  nan   nan
+ 12000  nan   nan
+ 12030  nan   nan
+ 12060  nan   nan
+ 12090  nan   nan
+ 12120  nan   nan
+ 12150  nan   nan
+ 12180  nan   nan
+ 12210  nan   nan
+ 12240  nan   nan
+ 12270  nan   nan
+ 12300  nan   nan
+ 12330  nan   nan
+ 12360  nan   nan
+ 12390  nan   nan
+ 12420  nan   nan
+ 12450  nan   nan
+ 12480  nan   nan
+ 12510  nan   nan
+ 12540  nan   nan
+ 12570  nan   nan
+ 12600  nan   nan
+ 12630  nan   nan
+ 12660  nan   nan
+ 12690  nan   nan
+ 12720  nan   nan
+ 12750  nan   nan
+ 12780  nan   nan
+ 12810  nan   nan
+ 12840  nan   nan
+ 12870  nan   nan
+ 12900  nan   nan
+ 12930  nan   nan
+ 12960  nan   nan
+ 12990  nan   nan
+ 13020  nan   nan
+ 13050  nan   nan
+ 13080  nan   nan
+ 13110  nan   nan
+ 13140  nan   nan
+ 13170  nan   nan
+ 13200  nan   nan
+ 13230  nan   nan
+ 13260  nan   nan
+ 13290  nan   nan
+ 13320  nan   nan
+ 13350  nan   nan
+ 13380  nan   nan
+ 13410  nan   nan
+ 13440  nan   nan
+ 13470  nan   nan
+ 13500  nan   nan
+ 13530  nan   nan
+ 13560  nan   nan
+ 13590  nan   nan
+ 13620  nan   nan
+ 13650  nan   nan
+ 13680  nan   nan
+ 13710  nan   nan
+ 13740  nan   nan
+ 13770  nan   nan
+ 13800  nan   nan
+ 13830  nan   nan
+ 13860  nan   nan
+ 13890  nan   nan
+ 13920  nan   nan
+ 13950  nan   nan
+ 13980  nan   nan
+ 14010  nan   nan
+ 14040  nan   nan
+ 14070  nan   nan
+ 14100  nan   nan
+ 14130  nan   nan
+ 14160  nan   nan
+ 14190  nan   nan
+ 14220  nan   nan
+ 14250  nan   nan
+ 14280  nan   nan
+ 14310  nan   nan
+ 14340  nan   nan
+ 14370  nan   nan
+ 14400  nan   nan
+ 14430  nan   nan
+ 14460  nan   nan
+ 14490  nan   nan
+ 14520  nan   nan
+ 14550  nan   nan
+ 14580  nan   nan
+ 14610  nan   nan
+ 14640  nan   nan
+ 14670  nan   nan
+ 14700  nan   nan
+ 14730  nan   nan
+ 14760  nan   nan
+ 14790  nan   nan
+ 14820  nan   nan
+ 14850  nan   nan
+ 14880  nan   nan
+ 14910  nan   nan
+ 14940  nan   nan
+ 14970  nan   nan
+ 15000  nan   nan
+ 15030  nan   nan
+ 15060  nan   nan
+ 15090  nan   nan
+ 15120  nan   nan
+ 15150  nan   nan
+ 15180  nan   nan
+ 15210  nan   nan
+ 15240  nan   nan
+ 15270  nan   nan
+ 15300  nan   nan
+ 15330  nan   nan
+ 15360  nan   nan
+ 15390  nan   nan
+ 15420  nan   nan
+ 15450  nan   nan
+ 15480  nan   nan
+ 15510  nan   nan
+ 15540  nan   nan
+ 15570  nan   nan
+ 15600  nan   nan
+ 15630  nan   nan
+ 15660  nan   nan
+ 15690  nan   nan
+ 15720  nan   nan
+ 15750  nan   nan
+ 15780  nan   nan
+ 15810  nan   nan
+ 15840  nan   nan
+ 15870  nan   nan
+ 15900  nan   nan
+ 15930  nan   nan
+ 15960  nan   nan
+ 15990  nan   nan
+ 16020  nan   nan
+ 16050  nan   nan
+ 16080  nan   nan
+ 16110  nan   nan
+ 16140  nan   nan
+ 16170  nan   nan
+ 16200  nan   nan
+ 16230  nan   nan
+ 16260  nan   nan
+ 16290  nan   nan
+ 16320  nan   nan
+ 16350  nan   nan
+ 16380  nan   nan
+ 16410  nan   nan
+ 16440  nan   nan
+ 16470  nan   nan
+ 16500  nan   nan
+ 16530  nan   nan
+ 16560  nan   nan
+ 16590  nan   nan
+ 16620  nan   nan
+ 16650  nan   nan
+ 16680  nan   nan
+ 16710  nan   nan
+ 16740  nan   nan
+ 16770  nan   nan
+ 16800  nan   nan
+ 16830  nan   nan
+ 16860  nan   nan
+ 16890  nan   nan
+ 16920  nan   nan
+ 16950  nan   nan
+ 16980  nan   nan
+ 17010  nan   nan
+ 17040  nan   nan
+ 17070  nan   nan
+ 17100  nan   nan
+ 17130  nan   nan
+ 17160  nan   nan
+ 17190  nan   nan
+ 17220  nan   nan
+ 17250  nan   nan
+ 17280  nan   nan
+ 17310  nan   nan
+ 17340  nan   nan
+ 17370  nan   nan
+ 17400  nan   nan
+ 17430  nan   nan
+ 17460  nan   nan
+ 17490  nan   nan
+ 17520  nan   nan
+ 17550  nan   nan
+ 17580  nan   nan
+ 17610  nan   nan
+ 17640  nan   nan
+ 17670  nan   nan
+ 17700  nan   nan
+ 17730  nan   nan
+ 17760  nan   nan
+ 17790  nan   nan
+ 17820  nan   nan
+ 17850  nan   nan
+ 17880  nan   nan
+ 17910  nan   nan
+ 17940  nan   nan
+ 17970  nan   nan
+ 18000  nan   nan
+ 18030  nan   nan
+ 18060  nan   nan
+ 18090  nan   nan
+ 18120  nan   nan
+ 18150  nan   nan
+ 18180  nan   nan
+ 18210  nan   nan
+ 18240  nan   nan
+ 18270  nan   nan
+ 18300  nan   nan
+ 18330  nan   nan
+ 18360  nan   nan
+ 18390  nan   nan
+ 18420  nan   nan
+ 18450  nan   nan
+ 18480  nan   nan
+ 18510  nan   nan
+ 18540  nan   nan
+ 18570  nan   nan
+ 18600  nan   nan
+ 18630  nan   nan
+ 18660  nan   nan
+ 18690  nan   nan
+ 18720  nan   nan
+ 18750  nan   nan
+ 18780  nan   nan
+ 18810  nan   nan
+ 18840  nan   nan
+ 18870  nan   nan
+ 18900  nan   nan
+ 18930  nan   nan
+ 18960  nan   nan
+ 18990  nan   nan
+ 19020  nan   nan
+ 19050  nan   nan
+ 19080  nan   nan
+ 19110  nan   nan
+ 19140  nan   nan
+ 19170  nan   nan
+ 19200  nan   nan
+ 19230  nan   nan
+ 19260  nan   nan
+ 19290  nan   nan
+ 19320  nan   nan
+ 19350  nan   nan
+ 19380  nan   nan
+ 19410  nan   nan
+ 19440  nan   nan
+ 19470  nan   nan
+ 19500  nan   nan
+ 19530  nan   nan
+ 19560  nan   nan
+ 19590  nan   nan
+ 19620  nan   nan
+ 19650  nan   nan
+ 19680  nan   nan
+ 19710  nan   nan
+ 19740  nan   nan
+ 19770  nan   nan
+ 19800  nan   nan
+ 19830  nan   nan
+ 19860  nan   nan
+ 19890  nan   nan
+ 19920  nan   nan
+ 19950  nan   nan
+ 19980  nan   nan
+ 20010  nan   nan
+ 20040  nan   nan
+ 20070  nan   nan
+ 20100  nan   nan
+ 20130  nan   nan
+ 20160  nan   nan
+ 20190  nan   nan
+ 20220  nan   nan
+ 20250  nan   nan
+ 20280  nan   nan
+ 20310  nan   nan
+ 20340  nan   nan
+ 20370  nan   nan
+ 20400  nan   nan
+ 20430  nan   nan
+ 20460  nan   nan
+ 20490  nan   nan
+ 20520  nan   nan
+ 20550  nan   nan
+ 20580  nan   nan
+ 20610  nan   nan
+ 20640  nan   nan
+ 20670  nan   nan
+ 20700  nan   nan
+ 20730  nan   nan
+ 20760  nan   nan
+ 20790  nan   nan
+ 20820  nan   nan
+ 20850  nan   nan
+ 20880  nan   nan
+ 20910  nan   nan
+ 20940  nan   nan
+ 20970  nan   nan
+ 21000  nan   nan
+ 21030  nan   nan
+ 21060  nan   nan
+ 21090  nan   nan
+ 21120  nan   nan
+ 21150  nan   nan
+ 21180  nan   nan
+ 21210  nan   nan
+ 21240  nan   nan
+ 21270  nan   nan
+ 21300  nan   nan
+ 21330  nan   nan
+ 21360  nan   nan
+ 21390  nan   nan
+ 21420  nan   nan
+ 21450  nan   nan
+ 21480  nan   nan
+ 21510  nan   nan
+ 21540  nan   nan
+ 21570  nan   nan
+ 21600  nan   nan
+ 21630  nan   nan
+ 21660  nan   nan
+ 21690  nan   nan
+ 21720  nan   nan
+ 21750  nan   nan
+ 21780  nan   nan
+ 21810  nan   nan
+ 21840  nan   nan
+ 21870  nan   nan
+ 21900  nan   nan
+ 21930  nan   nan
+ 21960  nan   nan
+ 21990  nan   nan
+ 22020  nan   nan
+ 22050  nan   nan
+ 22080  nan   nan
+ 22110  nan   nan
+ 22140  nan   nan
+ 22170  nan   nan
+ 22200  nan   nan
+ 22230  nan   nan
+ 22260  nan   nan
+ 22290  nan   nan
+ 22320  nan   nan
+ 22350  nan   nan
+ 22380  nan   nan
+ 22410  nan   nan
+ 22440  nan   nan
+ 22470  nan   nan
+ 22500  nan   nan
+ 22530  nan   nan
+ 22560  nan   nan
+ 22590  nan   nan
+ 22620  nan   nan
+ 22650  nan   nan
+ 22680  nan   nan
+ 22710  nan   nan
+ 22740  nan   nan
+ 22770  nan   nan
+ 22800  nan   nan
+ 22830  nan   nan
+ 22860  nan   nan
+ 22890  nan   nan
+ 22920  nan   nan
+ 22950  nan   nan
+ 22980  nan   nan
+ 23010  nan   nan
+ 23040  nan   nan
+ 23070  nan   nan
+ 23100  nan   nan
+ 23130  nan   nan
+ 23160  nan   nan
+ 23190  nan   nan
+ 23220  nan   nan
+ 23250  nan   nan
+ 23280  nan   nan
+ 23310  nan   nan
+ 23340  nan   nan
+ 23370  nan   nan
+ 23400  nan   nan
+ 23430  nan   nan
+ 23460  nan   nan
+ 23490  nan   nan
+ 23520  nan   nan
+ 23550  nan   nan
+ 23580  nan   nan
+ 23610  nan   nan
+ 23640  nan   nan
+ 23670  nan   nan
+ 23700  nan   nan
+ 23730  nan   nan
+ 23760  nan   nan
+ 23790  nan   nan
+ 23820  nan   nan
+ 23850  nan   nan
+ 23880  nan   nan
+ 23910  nan   nan
+ 23940  nan   nan
+ 23970  nan   nan
+ 24000  nan   nan
+ 24030  nan   nan
+ 24060  nan   nan
+ 24090  nan   nan
+ 24120  nan   nan
+ 24150  nan   nan
+ 24180  nan   nan
+ 24210  nan   nan
+ 24240  nan   nan
+ 24270  nan   nan
+ 24300  nan   nan
+ 24330  nan   nan
+ 24360  nan   nan
+ 24390  nan   nan
+ 24420  nan   nan
+ 24450  nan   nan
+ 24480  nan   nan
+ 24510  nan   nan
+ 24540  nan   nan
+ 24570  nan   nan
+ 24600  nan   nan
+ 24630  nan   nan
+ 24660  nan   nan
+ 24690  nan   nan
+ 24720  nan   nan
+ 24750  nan   nan
+ 24780  nan   nan
+ 24810  nan   nan
+ 24840  nan   nan
+ 24870  nan   nan
+ 24900  nan   nan
+ 24930  nan   nan
+ 24960  nan   nan
+ 24990  nan   nan
+ 25020  nan   nan
+ 25050  nan   nan
+ 25080  nan   nan
+ 25110  nan   nan
+ 25140  nan   nan
+ 25170  nan   nan
+ 25200  nan   nan
+ 25230  nan   nan
+ 25260  nan   nan
+ 25290  nan   nan
+ 25320  nan   nan
+ 25350  nan   nan
+ 25380  nan   nan
+ 25410  nan   nan
+ 25440  nan   nan
+ 25470  nan   nan
+ 25500  nan   nan
+ 25530  nan   nan
+ 25560  nan   nan
+ 25590  nan   nan
+ 25620  nan   nan
+ 25650  nan   nan
+ 25680  nan   nan
+ 25710  nan   nan
+ 25740  nan   nan
+ 25770  nan   nan
+ 25800  nan   nan
+ 25830  nan   nan
+ 25860  nan   nan
+ 25890  nan   nan
+ 25920  nan   nan
+ 25950  nan   nan
+ 25980  nan   nan
+ 26010  nan   nan
+ 26040  nan   nan
+ 26070  nan   nan
+ 26100  nan   nan
+ 26130  nan   nan
+ 26160  nan   nan
+ 26190  nan   nan
+ 26220  nan   nan
+ 26250  nan   nan
+ 26280  nan   nan
+ 26310  nan   nan
+ 26340  nan   nan
+ 26370  nan   nan
+ 26400  nan   nan
+ 26430  nan   nan
+ 26460  nan   nan
+ 26490  nan   nan
+ 26520  nan   nan
+ 26550  nan   nan
+ 26580  nan   nan
+ 26610  nan   nan
+ 26640  nan   nan
+ 26670  nan   nan
+ 26700  nan   nan
+ 26730  nan   nan
+ 26760  nan   nan
+ 26790  nan   nan
+ 26820  nan   nan
+ 26850  nan   nan
+ 26880  nan   nan
+ 26910  nan   nan
+ 26940  nan   nan
+ 26970  nan   nan
+ 27000  nan   nan
+ 27030  nan   nan
+ 27060  nan   nan
+ 27090  nan   nan
+ 27120  nan   nan
+ 27150  nan   nan
+ 27180  nan   nan
+ 27210  nan   nan
+ 27240  nan   nan
+ 27270  nan   nan
+ 27300  nan   nan
+ 27330  nan   nan
+ 27360  nan   nan
+ 27390  nan   nan
+ 27420  nan   nan
+ 27450  nan   nan
+ 27480  nan   nan
+ 27510  nan   nan
+ 27540  nan   nan
+ 27570  nan   nan
+ 27600  nan   nan
+ 27630  nan   nan
+ 27660  nan   nan
+ 27690  nan   nan
+ 27720  nan   nan
+ 27750  nan   nan
+ 27780  nan   nan
+ 27810  nan   nan
+ 27840  nan   nan
+ 27870  nan   nan
+ 27900  nan   nan
+ 27930  nan   nan
+ 27960  nan   nan
+ 27990  nan   nan
+ 28020  nan   nan
+ 28050  nan   nan
+ 28080  nan   nan
+ 28110  nan   nan
+ 28140  nan   nan
+ 28170  nan   nan
+ 28200  nan   nan
+ 28230  nan   nan
+ 28260  nan   nan
+ 28290  nan   nan
+ 28320  nan   nan
+ 28350  nan   nan
+ 28380  nan   nan
+ 28410  nan   nan
+ 28440  nan   nan
+ 28470  nan   nan
+ 28500  nan   nan
+ 28530  nan   nan
+ 28560  nan   nan
+ 28590  nan   nan
+ 28620  nan   nan
+ 28650  nan   nan
+ 28680  nan   nan
+ 28710  nan   nan
+ 28740  nan   nan
+ 28770  nan   nan
+ 28800  nan   nan
+ 28830  nan   nan
+ 28860  nan   nan
+ 28890  nan   nan
+ 28920  nan   nan
+ 28950  nan   nan
+ 28980  nan   nan
+ 29010  nan   nan
+ 29040  nan   nan
+ 29070  nan   nan
+ 29100  nan   nan
+ 29130  nan   nan
+ 29160  nan   nan
+ 29190  nan   nan
+ 29220  nan   nan
+ 29250  nan   nan
+ 29280  nan   nan
+ 29310  nan   nan
+ 29340  nan   nan
+ 29370  nan   nan
+ 29400  nan   nan
+ 29430  nan   nan
+ 29460  nan   nan
+ 29490  nan   nan
+ 29520  nan   nan
+ 29550  nan   nan
+ 29580  nan   nan
+ 29610  nan   nan
+ 29640  nan   nan
+ 29670  nan   nan
+ 29700  nan   nan
+ 29730  nan   nan
+ 29760  nan   nan
+ 29790  nan   nan
+ 29820  nan   nan
+ 29850  nan   nan
+ 29880  nan   nan
+ 29910  nan   nan
+ 29940  nan   nan
+ 29970  nan   nan
+ 30000  nan   nan
+ 30030  nan   nan
+ 30060  nan   nan
+ 30090  nan   nan
+ 30120  nan   nan
+ 30150  nan   nan
+ 30180  nan   nan
+ 30210  nan   nan
+ 30240  nan   nan
+ 30270  nan   nan
+ 30300  nan   nan
+ 30330  nan   nan
+ 30360  nan   nan
+ 30390  nan   nan
+ 30420  nan   nan
+ 30450  nan   nan
+ 30480  nan   nan
+ 30510  nan   nan
+ 30540  nan   nan
+ 30570  nan   nan
+ 30600  nan   nan
+ 30630  nan   nan
+ 30660  nan   nan
+ 30690  nan   nan
+ 30720  nan   nan
+ 30750  nan   nan
+ 30780  nan   nan
+ 30810  nan   nan
+ 30840  nan   nan
+ 30870  nan   nan
+ 30900  nan   nan
+ 30930  nan   nan
+ 30960  nan   nan
+ 30990  nan   nan
+ 31020  nan   nan
+ 31050  nan   nan
+ 31080  nan   nan
+ 31110  nan   nan
+ 31140  nan   nan
+ 31170  nan   nan
+ 31200  nan   nan
+ 31230  nan   nan
+ 31260  nan   nan
+ 31290  nan   nan
+ 31320  nan   nan
+ 31350  nan   nan
+ 31380  nan   nan
+ 31410  nan   nan
+ 31440  nan   nan
+ 31470  nan   nan
+ 31500  nan   nan
+ 31530  nan   nan
+ 31560  nan   nan
+ 31590  nan   nan
+ 31620  nan   nan
+ 31650  nan   nan
+ 31680  nan   nan
+ 31710  nan   nan
+ 31740  nan   nan
+ 31770  nan   nan
+ 31800  nan   nan
+ 31830  nan   nan
+ 31860  nan   nan
+ 31890  nan   nan
+ 31920  nan   nan
+ 31950  nan   nan
+ 31980  nan   nan
+ 32010  nan   nan
+ 32040  nan   nan
+ 32070  nan   nan
+ 32100  nan   nan
+ 32130  nan   nan
+ 32160  nan   nan
+ 32190  nan   nan
+ 32220  nan   nan
+ 32250  nan   nan
+ 32280  nan   nan
+ 32310  nan   nan
+ 32340  nan   nan
+ 32370  nan   nan
+ 32400  nan   nan
+ 32430  nan   nan
+ 32460  nan   nan
+ 32490  nan   nan
+ 32520  nan   nan
+ 32550  nan   nan
+ 32580  nan   nan
+ 32610  nan   nan
+ 32640  nan   nan
+ 32670  nan   nan
+ 32700  nan   nan
+ 32730  nan   nan
+ 32760  nan   nan
+ 32790  nan   nan
+ 32820  nan   nan
+ 32850  nan   nan
+ 32880  nan   nan
+ 32910  nan   nan
+ 32940  nan   nan
+ 32970  nan   nan
+ 33000  nan   nan
+ 33030  nan   nan
+ 33060  nan   nan
+ 33090  nan   nan
+ 33120  nan   nan
+ 33150  nan   nan
+ 33180  nan   nan
+ 33210  nan   nan
+ 33240  nan   nan
+ 33270  nan   nan
+ 33300  nan   nan
+ 33330  nan   nan
+ 33360  nan   nan
+ 33390  nan   nan
+ 33420  nan   nan
+ 33450  nan   nan
+ 33480  nan   nan
+ 33510  nan   nan
+ 33540  nan   nan
+ 33570  nan   nan
+ 33600  nan   nan
+ 33630  nan   nan
+ 33660  nan   nan
+ 33690  nan   nan
+ 33720  nan   nan
+ 33750  nan   nan
+ 33780  nan   nan
+ 33810  nan   nan
+ 33840  nan   nan
+ 33870  nan   nan
+ 33900  nan   nan
+ 33930  nan   nan
+ 33960  nan   nan
+ 33990  nan   nan
+ 34020  nan   nan
+ 34050  nan   nan
+ 34080  nan   nan
+ 34110  nan   nan
+ 34140  nan   nan
+ 34170  nan   nan
+ 34200  nan   nan
+ 34230  nan   nan
+ 34260  nan   nan
+ 34290  nan   nan
+ 34320  nan   nan
+ 34350  nan   nan
+ 34380  nan   nan
+ 34410  nan   nan
+ 34440  nan   nan
+ 34470  nan   nan
+ 34500  nan   nan
+ 34530  nan   nan
+ 34560  nan   nan
+ 34590  nan   nan
+ 34620  nan   nan
+ 34650  nan   nan
+ 34680  nan   nan
+ 34710  nan   nan
+ 34740  nan   nan
+ 34770  nan   nan
+ 34800  nan   nan
+ 34830  nan   nan
+ 34860  nan   nan
+ 34890  nan   nan
+ 34920  nan   nan
+ 34950  nan   nan
+ 34980  nan   nan
+ 35010  nan   nan
+ 35040  nan   nan
+ 35070  nan   nan
+ 35100  nan   nan
+ 35130  nan   nan
+ 35160  nan   nan
+ 35190  nan   nan
+ 35220  nan   nan
+ 35250  nan   nan
+ 35280  nan   nan
+ 35310  nan   nan
+ 35340  nan   nan
+ 35370  nan   nan
+ 35400  nan   nan
+ 35430  nan   nan
+ 35460  nan   nan
+ 35490  nan   nan
+ 35520  nan   nan
+ 35550  nan   nan
+ 35580  nan   nan
+ 35610  nan   nan
+ 35640  nan   nan
+ 35670  nan   nan
+ 35700  nan   nan
+ 35730  nan   nan
+ 35760  nan   nan
+ 35790  nan   nan
+ 35820  nan   nan
+ 35850  nan   nan
+ 35880  nan   nan
+ 35910  nan   nan
+ 35940  nan   nan
+ 35970  nan   nan
+ 36000  nan   nan
+ 36030  nan   nan
+ 36060  nan   nan
+ 36090  nan   nan
+ 36120  nan   nan
+ 36150  nan   nan
+ 36180  nan   nan
+ 36210  nan   nan
+ 36240  nan   nan
+ 36270  nan   nan
+ 36300  nan   nan
+ 36330  nan   nan
+ 36360  nan   nan
+ 36390  nan   nan
+ 36420  nan   nan
+ 36450  nan   nan
+ 36480  nan   nan
+ 36510  nan   nan
+ 36540  nan   nan
+ 36570  nan   nan
+ 36600  nan   nan
+ 36630  nan   nan
+ 36660  nan   nan
+ 36690  nan   nan
+ 36720  nan   nan
+ 36750  nan   nan
+ 36780  nan   nan
+ 36810  nan   nan
+ 36840  nan   nan
+ 36870  nan   nan
+ 36900  nan   nan
+ 36930  nan   nan
+ 36960  nan   nan
+ 36990  nan   nan
+ 37020  nan   nan
+ 37050  nan   nan
+ 37080  nan   nan
+ 37110  nan   nan
+ 37140  nan   nan
+ 37170  nan   nan
+ 37200  nan   nan
+ 37230  nan   nan
+ 37260  nan   nan
+ 37290  nan   nan
+ 37320  nan   nan
+ 37350  nan   nan
+ 37380  nan   nan
+ 37410  nan   nan
+ 37440  nan   nan
+ 37470  nan   nan
+ 37500  nan   nan
+ 37530  nan   nan
+ 37560  nan   nan
+ 37590  nan   nan
+ 37620  nan   nan
+ 37650  nan   nan
+ 37680  nan   nan
+ 37710  nan   nan
+ 37740  nan   nan
+ 37770  nan   nan
+ 37800  nan   nan
+ 37830  nan   nan
+ 37860  nan   nan
+ 37890  nan   nan
+ 37920  nan   nan
+ 37950  nan   nan
+ 37980  nan   nan
+ 38010  nan   nan
+ 38040  nan   nan
+ 38070  nan   nan
+ 38100  nan   nan
+ 38130  nan   nan
+ 38160  nan   nan
+ 38190  nan   nan
+ 38220  nan   nan
+ 38250  nan   nan
+ 38280  nan   nan
+ 38310  nan   nan
+ 38340  nan   nan
+ 38370  nan   nan
+ 38400  nan   nan
+ 38430  nan   nan
+ 38460  nan   nan
+ 38490  nan   nan
+ 38520  nan   nan
+ 38550  nan   nan
+ 38580  nan   nan
+ 38610  nan   nan
+ 38640  nan   nan
+ 38670  nan   nan
+ 38700  nan   nan
+ 38730  nan   nan
+ 38760  nan   nan
+ 38790  nan   nan
+ 38820  nan   nan
+ 38850  nan   nan
+ 38880  nan   nan
+ 38910  nan   nan
+ 38940  nan   nan
+ 38970  nan   nan
+ 39000  nan   nan
+ 39030  nan   nan
+ 39060  nan   nan
+ 39090  nan   nan
+ 39120  nan   nan
+ 39150  nan   nan
+ 39180  nan   nan
+ 39210  nan   nan
+ 39240  nan   nan
+ 39270  nan   nan
+ 39300  nan   nan
+ 39330  nan   nan
+ 39360  nan   nan
+ 39390  nan   nan
+ 39420  nan   nan
+ 39450  nan   nan
+ 39480  nan   nan
+ 39510  nan   nan
+ 39540  nan   nan
+ 39570  nan   nan
+ 39600  nan   nan
+ 39630  nan   nan
+ 39660  nan   nan
+ 39690  nan   nan
+ 39720  nan   nan
+ 39750  nan   nan
+ 39780  nan   nan
+ 39810  nan   nan
+ 39840  nan   nan
+ 39870  nan   nan
+ 39900  nan   nan
+ 39930  nan   nan
+ 39960  nan   nan
+ 39990  nan   nan
+ 40020  nan   nan
+ 40050  nan   nan
+ 40080  nan   nan
+ 40110  nan   nan
+ 40140  nan   nan
+ 40170  nan   nan
+ 40200  nan   nan
+ 40230  nan   nan
+ 40260  nan   nan
+ 40290  nan   nan
+ 40320  nan   nan
+ 40350  nan   nan
+ 40380  nan   nan
+ 40410  nan   nan
+ 40440  nan   nan
+ 40470  nan   nan
+ 40500  nan   nan
+ 40530  nan   nan
+ 40560  nan   nan
+ 40590  nan   nan
+ 40620  nan   nan
+ 40650  nan   nan
+ 40680  nan   nan
+ 40710  nan   nan
+ 40740  nan   nan
+ 40770  nan   nan
+ 40800  nan   nan
+ 40830  nan   nan
+ 40860  nan   nan
+ 40890  nan   nan
+ 40920  nan   nan
+ 40950  nan   nan
+ 40980  nan   nan
+ 41010  nan   nan
+ 41040  nan   nan
+ 41070  nan   nan
+ 41100  nan   nan
+ 41130  nan   nan
+ 41160  nan   nan
+ 41190  nan   nan
+ 41220  nan   nan
+ 41250  nan   nan
+ 41280  nan   nan
+ 41310  nan   nan
+ 41340  nan   nan
+ 41370  nan   nan
+ 41400  nan   nan
+ 41430  nan   nan
+ 41460  nan   nan
+ 41490  nan   nan
+ 41520  nan   nan
+ 41550  nan   nan
+ 41580  nan   nan
+ 41610  nan   nan
+ 41640  nan   nan
+ 41670  nan   nan
+ 41700  nan   nan
+ 41730  nan   nan
+ 41760  nan   nan
+ 41790  nan   nan
+ 41820  nan   nan
+ 41850  nan   nan
+ 41880  nan   nan
+ 41910  nan   nan
+ 41940  nan   nan
+ 41970  nan   nan
+ 42000  nan   nan
+ 42030  nan   nan
+ 42060  nan   nan
+ 42090  nan   nan
+ 42120  nan   nan
+ 42150  nan   nan
+ 42180  nan   nan
+ 42210  nan   nan
+ 42240  nan   nan
+ 42270  nan   nan
+ 42300  nan   nan
+ 42330  nan   nan
+ 42360  nan   nan
+ 42390  nan   nan
+ 42420  nan   nan
+ 42450  nan   nan
+ 42480  nan   nan
+ 42510  nan   nan
+ 42540  nan   nan
+ 42570  nan   nan
+ 42600  nan   nan
+ 42630  nan   nan
+ 42660  nan   nan
+ 42690  nan   nan
+ 42720  nan   nan
+ 42750  nan   nan
+ 42780  nan   nan
+ 42810  nan   nan
+ 42840  nan   nan
+ 42870  nan   nan
+ 42900  nan   nan
+ 42930  nan   nan
+ 42960  nan   nan
+ 42990  nan   nan
+ 43020  nan   nan
+ 43050  nan   nan
+ 43080  nan   nan
+ 43110  nan   nan
+ 43140  nan   nan
+ 43170  nan   nan
+ 43200 2.858 0.146
+ 43230 2.864 0.149
+ 43260 2.871 0.151
+ 43290 2.877 0.154
+ 43320 2.884 0.156
+ 43350 2.890 0.159
+ 43380 2.897 0.161
+ 43410 2.903 0.164
+ 43440 2.909 0.166
+ 43470 2.916 0.169
+ 43500 2.922 0.171
+ 43530 2.928 0.174
+ 43560 2.934 0.176
+ 43590 2.940 0.178
+ 43620 2.947 0.181
+ 43650 2.953 0.183
+ 43680 2.959 0.185
+ 43710 2.965 0.188
+ 43740 2.971 0.190
+ 43770 2.977 0.192
+ 43800 2.983 0.195
+ 43830 2.989 0.197
+ 43860 2.995 0.199
+ 43890 3.001 0.202
+ 43920 3.006 0.204
+ 43950 3.012 0.206
+ 43980 3.018 0.209
+ 44010 3.024 0.211
+ 44040 3.030 0.213
+ 44070 3.035 0.215
+ 44100 3.041 0.218
+ 44130 3.047 0.220
+ 44160 3.052 0.222
+ 44190 3.058 0.224
+ 44220 3.063 0.226
+ 44250 3.069 0.229
+ 44280 3.074 0.231
+ 44310 3.080 0.233
+ 44340 3.085 0.235
+ 44370 3.091 0.237
+ 44400 3.096 0.239
+ 44430 3.101 0.242
+ 44460 3.106 0.244
+ 44490 3.111 0.246
+ 44520 3.115 0.249
+ 44550 3.120 0.251
+ 44580 3.125 0.253
+ 44610 3.130 0.256
+ 44640 3.134 0.258
+ 44670 3.139 0.260
+ 44700 3.144 0.263
+ 44730 3.148 0.265
+ 44760 3.153 0.267
+ 44790 3.158 0.269
+ 44820 3.162 0.271
+ 44850 3.167 0.274
+ 44880 3.171 0.276
+ 44910 3.175 0.278
+ 44940 3.180 0.280
+ 44970 3.184 0.282
+ 45000 3.189 0.284
+ 45030 3.193 0.287
+ 45060 3.197 0.289
+ 45090 3.201 0.291
+ 45120 3.206 0.293
+ 45150 3.210 0.295
+ 45180 3.214 0.297
+ 45210 3.218 0.299
+ 45240 3.222 0.301
+ 45270 3.226 0.303
+ 45300 3.230 0.305
+ 45330 3.234 0.307
+ 45360 3.238 0.309
+ 45390 3.242 0.311
+ 45420 3.246 0.313
+ 45450 3.250 0.315
+ 45480 3.254 0.317
+ 45510 3.258 0.319
+ 45540 3.262 0.321
+ 45570 3.265 0.323
+ 45600 3.269 0.325
+ 45630 3.273 0.327
+ 45660 3.277 0.328
+ 45690 3.280 0.330
+ 45720 3.284 0.332
+ 45750 3.287 0.333
+ 45780 3.291 0.335
+ 45810 3.295 0.337
+ 45840 3.298 0.339
+ 45870 3.302 0.340
+ 45900 3.305 0.342
+ 45930 3.309 0.344
+ 45960 3.312 0.345
+ 45990 3.316 0.347
+ 46020 3.319 0.349
+ 46050 3.323 0.350
+ 46080 3.326 0.352
+ 46110 3.329 0.354
+ 46140 3.333 0.355
+ 46170 3.336 0.357
+ 46200 3.339 0.359
+ 46230 3.343 0.360
+ 46260 3.346 0.362
+ 46290 3.349 0.364
+ 46320 3.353 0.365
+ 46350 3.356 0.367
+ 46380 3.359 0.368
+ 46410 3.362 0.370
+ 46440 3.365 0.372
+ 46470 3.368 0.373
+ 46500 3.372 0.375
+ 46530 3.375 0.376
+ 46560 3.378 0.378
+ 46590 3.381 0.379
+ 46620 3.384 0.381
+ 46650 3.387 0.382
+ 46680 3.390 0.384
+ 46710 3.393 0.385
+ 46740 3.396 0.387
+ 46770 3.399 0.389
+ 46800 3.402 0.390
+ 46830 3.405 0.391
+ 46860 3.408 0.391
+ 46890 3.412 0.392
+ 46920 3.415 0.393
+ 46950 3.418 0.393
+ 46980 3.421 0.394
+ 47010 3.425 0.395
+ 47040 3.428 0.395
+ 47070 3.431 0.396
+ 47100 3.435 0.397
+ 47130 3.438 0.397
+ 47160 3.441 0.398
+ 47190 3.444 0.399
+ 47220 3.447 0.399
+ 47250 3.451 0.400
+ 47280 3.454 0.401
+ 47310 3.457 0.402
+ 47340 3.460 0.402
+ 47370 3.463 0.403
+ 47400 3.467 0.404
+ 47430 3.470 0.404
+ 47460 3.473 0.405
+ 47490 3.476 0.406
+ 47520 3.479 0.406
+ 47550 3.482 0.407
+ 47580 3.486 0.408
+ 47610 3.489 0.408
+ 47640 3.492 0.409
+ 47670 3.495 0.410
+ 47700 3.498 0.410
+ 47730 3.501 0.411
+ 47760 3.504 0.412
+ 47790 3.507 0.412
+ 47820 3.511 0.413
+ 47850 3.514 0.414
+ 47880 3.517 0.414
+ 47910 3.520 0.415
+ 47940 3.523 0.416
+ 47970 3.526 0.416
+ 48000 3.529 0.417
+ 48030 3.534 0.418
+ 48060 3.539 0.418
+ 48090 3.543 0.419
+ 48120 3.548 0.419
+ 48150 3.553 0.420
+ 48180 3.558 0.420
+ 48210 3.563 0.421
+ 48240 3.568 0.421
+ 48270 3.573 0.422
+ 48300 3.578 0.423
+ 48330 3.583 0.423
+ 48360 3.588 0.424
+ 48390 3.593 0.424
+ 48420 3.598 0.425
+ 48450 3.603 0.425
+ 48480 3.608 0.426
+ 48510 3.613 0.427
+ 48540 3.619 0.427
+ 48570 3.624 0.428
+ 48600 3.629 0.428
+ 48630 3.634 0.429
+ 48660 3.639 0.430
+ 48690 3.645 0.430
+ 48720 3.650 0.431
+ 48750 3.655 0.431
+ 48780 3.661 0.432
+ 48810 3.666 0.433
+ 48840 3.671 0.433
+ 48870 3.677 0.434
+ 48900 3.682 0.435
+ 48930 3.688 0.435
+ 48960 3.693 0.436
+ 48990 3.698 0.437
+ 49020 3.704 0.437
+ 49050 3.709 0.438
+ 49080 3.715 0.438
+ 49110 3.721 0.439
+ 49140 3.726 0.440
+ 49170 3.732 0.440
+ 49200 3.737 0.441
+ 49230 3.745 0.442
+ 49260 3.752 0.443
+ 49290 3.760 0.444
+ 49320 3.767 0.445
+ 49350 3.775 0.447
+ 49380 3.783 0.448
+ 49410 3.791 0.449
+ 49440 3.798 0.450
+ 49470 3.806 0.451
+ 49500 3.814 0.452
+ 49530 3.822 0.453
+ 49560 3.830 0.454
+ 49590 3.838 0.455
+ 49620 3.846 0.457
+ 49650 3.855 0.458
+ 49680 3.863 0.459
+ 49710 3.871 0.460
+ 49740 3.879 0.461
+ 49770 3.888 0.462
+ 49800 3.896 0.463
+ 49830 3.905 0.465
+ 49860 3.913 0.466
+ 49890 3.922 0.467
+ 49920 3.930 0.468
+ 49950 3.939 0.469
+ 49980 3.948 0.470
+ 50010 3.957 0.472
+ 50040 3.966 0.473
+ 50070 3.974 0.474
+ 50100 3.983 0.475
+ 50130 3.992 0.476
+ 50160 4.001 0.477
+ 50190 4.010 0.479
+ 50220 4.020 0.480
+ 50250 4.029 0.481
+ 50280 4.038 0.482
+ 50310 4.047 0.483
+ 50340 4.057 0.485
+ 50370 4.066 0.486
+ 50400 4.076 0.487
+ 50430 4.086 0.488
+ 50460 4.096 0.490
+ 50490 4.107 0.491
+ 50520 4.117 0.492
+ 50550 4.128 0.494
+ 50580 4.138 0.495
+ 50610 4.148 0.496
+ 50640 4.158 0.497
+ 50670 4.168 0.499
+ 50700 4.179 0.500
+ 50730 4.189 0.501
+ 50760 4.199 0.502
+ 50790 4.209 0.504
+ 50820 4.219 0.505
+ 50850 4.229 0.506
+ 50880 4.239 0.507
+ 50910 4.248 0.508
+ 50940 4.258 0.510
+ 50970 4.268 0.511
+ 51000 4.278 0.512
+ 51030 4.288 0.513
+ 51060 4.297 0.515
+ 51090 4.307 0.516
+ 51120 4.317 0.517
+ 51150 4.326 0.518
+ 51180 4.336 0.519
+ 51210 4.345 0.521
+ 51240 4.355 0.522
+ 51270 4.364 0.523
+ 51300 4.373 0.524
+ 51330 4.383 0.525
+ 51360 4.392 0.527
+ 51390 4.401 0.528
+ 51420 4.411 0.529
+ 51450 4.420 0.530
+ 51480 4.429 0.531
+ 51510 4.438 0.532
+ 51540 4.447 0.534
+ 51570 4.456 0.535
+ 51600 4.465 0.536
+ 51630 4.472 0.537
+ 51660 4.479 0.538
+ 51690 4.486 0.539
+ 51720 4.493 0.540
+ 51750 4.500 0.542
+ 51780 4.507 0.543
+ 51810 4.514 0.544
+ 51840 4.520 0.545
+ 51870 4.527 0.546
+ 51900 4.534 0.547
+ 51930 4.541 0.548
+ 51960 4.548 0.549
+ 51990 4.554 0.550
+ 52020 4.561 0.552
+ 52050 4.568 0.553
+ 52080 4.575 0.554
+ 52110 4.581 0.555
+ 52140 4.588 0.556
+ 52170 4.595 0.557
+ 52200 4.601 0.558
+ 52230 4.608 0.559
+ 52260 4.614 0.560
+ 52290 4.621 0.561
+ 52320 4.628 0.562
+ 52350 4.634 0.564
+ 52380 4.641 0.565
+ 52410 4.647 0.566
+ 52440 4.654 0.567
+ 52470 4.660 0.568
+ 52500 4.667 0.569
+ 52530 4.673 0.570
+ 52560 4.680 0.571
+ 52590 4.686 0.572
+ 52620 4.692 0.573
+ 52650 4.699 0.574
+ 52680 4.705 0.575
+ 52710 4.711 0.576
+ 52740 4.718 0.577
+ 52770 4.724 0.578
+ 52800 4.730 0.579
+ 52830 4.735 0.578
+ 52860 4.740 0.577
+ 52890 4.745 0.577
+ 52920 4.750 0.576
+ 52950 4.754 0.575
+ 52980 4.759 0.574
+ 53010 4.764 0.573
+ 53040 4.768 0.572
+ 53070 4.773 0.572
+ 53100 4.778 0.571
+ 53130 4.782 0.570
+ 53160 4.787 0.569
+ 53190 4.792 0.569
+ 53220 4.796 0.568
+ 53250 4.801 0.567
+ 53280 4.806 0.566
+ 53310 4.810 0.566
+ 53340 4.815 0.565
+ 53370 4.819 0.564
+ 53400 4.824 0.564
+ 53430 4.828 0.563
+ 53460 4.833 0.562
+ 53490 4.837 0.562
+ 53520 4.842 0.561
+ 53550 4.846 0.560
+ 53580 4.851 0.560
+ 53610 4.855 0.559
+ 53640 4.860 0.559
+ 53670 4.864 0.558
+ 53700 4.868 0.557
+ 53730 4.873 0.557
+ 53760 4.877 0.556
+ 53790 4.882 0.556
+ 53820 4.886 0.555
+ 53850 4.890 0.555
+ 53880 4.895 0.554
+ 53910 4.899 0.554
+ 53940 4.903 0.553
+ 53970 4.907 0.553
+ 54000 4.912 0.552
+ 54030 4.914 0.552
+ 54060 4.916 0.551
+ 54090 4.919 0.551
+ 54120 4.921 0.550
+ 54150 4.923 0.550
+ 54180 4.926 0.550
+ 54210 4.928 0.549
+ 54240 4.930 0.549
+ 54270 4.933 0.548
+ 54300 4.935 0.548
+ 54330 4.938 0.547
+ 54360 4.940 0.547
+ 54390 4.943 0.547
+ 54420 4.945 0.546
+ 54450 4.948 0.546
+ 54480 4.950 0.545
+ 54510 4.953 0.545
+ 54540 4.955 0.544
+ 54570 4.958 0.544
+ 54600 4.960 0.544
+ 54630 4.963 0.543
+ 54660 4.966 0.543
+ 54690 4.968 0.542
+ 54720 4.971 0.542
+ 54750 4.974 0.542
+ 54780 4.977 0.541
+ 54810 4.979 0.541
+ 54840 4.982 0.541
+ 54870 4.985 0.540
+ 54900 4.988 0.540
+ 54930 4.991 0.539
+ 54960 4.994 0.539
+ 54990 4.996 0.539
+ 55020 4.999 0.538
+ 55050 5.002 0.538
+ 55080 5.005 0.538
+ 55110 5.008 0.537
+ 55140 5.011 0.537
+ 55170 5.014 0.537
+ 55200 5.017 0.536
+ 55230 5.018 0.536
+ 55260 5.018 0.535
+ 55290 5.018 0.535
+ 55320 5.018 0.534
+ 55350 5.019 0.534
+ 55380 5.019 0.533
+ 55410 5.019 0.533
+ 55440 5.020 0.532
+ 55470 5.020 0.532
+ 55500 5.021 0.531
+ 55530 5.021 0.531
+ 55560 5.022 0.530
+ 55590 5.023 0.530
+ 55620 5.023 0.529
+ 55650 5.024 0.529
+ 55680 5.024 0.528
+ 55710 5.025 0.528
+ 55740 5.026 0.527
+ 55770 5.027 0.527
+ 55800 5.027 0.526
+ 55830 5.028 0.525
+ 55860 5.029 0.525
+ 55890 5.030 0.524
+ 55920 5.031 0.524
+ 55950 5.032 0.523
+ 55980 5.033 0.523
+ 56010 5.034 0.522
+ 56040 5.035 0.521
+ 56070 5.036 0.521
+ 56100 5.037 0.520
+ 56130 5.038 0.520
+ 56160 5.039 0.519
+ 56190 5.041 0.519
+ 56220 5.042 0.518
+ 56250 5.043 0.517
+ 56280 5.044 0.517
+ 56310 5.046 0.516
+ 56340 5.047 0.516
+ 56370 5.048 0.515
+ 56400 5.050 0.514
+ 56430 5.050 0.513
+ 56460 5.050 0.511
+ 56490 5.050 0.510
+ 56520 5.051 0.509
+ 56550 5.051 0.507
+ 56580 5.051 0.506
+ 56610 5.052 0.504
+ 56640 5.052 0.503
+ 56670 5.052 0.501
+ 56700 5.053 0.500
+ 56730 5.053 0.498
+ 56760 5.054 0.497
+ 56790 5.054 0.495
+ 56820 5.055 0.494
+ 56850 5.056 0.493
+ 56880 5.056 0.491
+ 56910 5.057 0.490
+ 56940 5.058 0.488
+ 56970 5.058 0.487
+ 57000 5.059 0.485
+ 57030 5.060 0.484
+ 57060 5.061 0.482
+ 57090 5.062 0.481
+ 57120 5.063 0.479
+ 57150 5.064 0.478
+ 57180 5.065 0.476
+ 57210 5.066 0.475
+ 57240 5.067 0.473
+ 57270 5.068 0.472
+ 57300 5.069 0.470
+ 57330 5.070 0.469
+ 57360 5.071 0.467
+ 57390 5.073 0.465
+ 57420 5.074 0.464
+ 57450 5.075 0.462
+ 57480 5.077 0.461
+ 57510 5.078 0.459
+ 57540 5.079 0.458
+ 57570 5.081 0.456
+ 57600 5.082 0.455
+ 57630 5.079 0.453
+ 57660 5.076 0.452
+ 57690 5.073 0.450
+ 57720 5.070 0.449
+ 57750 5.067 0.447
+ 57780 5.064 0.446
+ 57810 5.061 0.444
+ 57840 5.058 0.443
+ 57870 5.055 0.441
+ 57900 5.052 0.440
+ 57930 5.050 0.438
+ 57960 5.047 0.437
+ 57990 5.044 0.435
+ 58020 5.041 0.434
+ 58050 5.039 0.432
+ 58080 5.036 0.431
+ 58110 5.033 0.429
+ 58140 5.031 0.428
+ 58170 5.028 0.426
+ 58200 5.025 0.425
+ 58230 5.023 0.423
+ 58260 5.020 0.422
+ 58290 5.018 0.420
+ 58320 5.015 0.419
+ 58350 5.013 0.417
+ 58380 5.010 0.415
+ 58410 5.008 0.414
+ 58440 5.006 0.412
+ 58470 5.003 0.411
+ 58500 5.001 0.409
+ 58530 4.999 0.408
+ 58560 4.997 0.406
+ 58590 4.994 0.405
+ 58620 4.992 0.403
+ 58650 4.990 0.401
+ 58680 4.988 0.400
+ 58710 4.986 0.398
+ 58740 4.984 0.397
+ 58770 4.981 0.395
+ 58800 4.979 0.394
+ 58830 4.975 0.392
+ 58860 4.971 0.391
+ 58890 4.967 0.390
+ 58920 4.962 0.389
+ 58950 4.958 0.388
+ 58980 4.954 0.386
+ 59010 4.950 0.385
+ 59040 4.946 0.384
+ 59070 4.942 0.383
+ 59100 4.938 0.382
+ 59130 4.934 0.380
+ 59160 4.930 0.379
+ 59190 4.926 0.378
+ 59220 4.922 0.377
+ 59250 4.918 0.376
+ 59280 4.914 0.374
+ 59310 4.911 0.373
+ 59340 4.907 0.372
+ 59370 4.903 0.371
+ 59400 4.900 0.369
+ 59430 4.896 0.368
+ 59460 4.892 0.367
+ 59490 4.889 0.366
+ 59520 4.885 0.364
+ 59550 4.882 0.363
+ 59580 4.878 0.362
+ 59610 4.875 0.361
+ 59640 4.871 0.359
+ 59670 4.868 0.358
+ 59700 4.865 0.357
+ 59730 4.861 0.356
+ 59760 4.858 0.354
+ 59790 4.855 0.353
+ 59820 4.852 0.352
+ 59850 4.849 0.351
+ 59880 4.845 0.349
+ 59910 4.842 0.348
+ 59940 4.839 0.347
+ 59970 4.836 0.345
+ 60000 4.833 0.344
+ 60030 4.831 0.343
+ 60060 4.828 0.341
+ 60090 4.826 0.339
+ 60120 4.823 0.338
+ 60150 4.820 0.336
+ 60180 4.818 0.335
+ 60210 4.815 0.333
+ 60240 4.813 0.332
+ 60270 4.810 0.331
+ 60300 4.808 0.329
+ 60330 4.805 0.328
+ 60360 4.803 0.326
+ 60390 4.800 0.325
+ 60420 4.798 0.324
+ 60450 4.795 0.322
+ 60480 4.793 0.321
+ 60510 4.790 0.319
+ 60540 4.788 0.318
+ 60570 4.785 0.317
+ 60600 4.783 0.316
+ 60630 4.780 0.314
+ 60660 4.778 0.313
+ 60690 4.775 0.312
+ 60720 4.773 0.311
+ 60750 4.770 0.309
+ 60780 4.768 0.308
+ 60810 4.765 0.307
+ 60840 4.763 0.306
+ 60870 4.760 0.305
+ 60900 4.758 0.303
+ 60930 4.755 0.302
+ 60960 4.753 0.301
+ 60990 4.750 0.300
+ 61020 4.748 0.299
+ 61050 4.745 0.298
+ 61080 4.743 0.297
+ 61110 4.740 0.296
+ 61140 4.738 0.295
+ 61170 4.736 0.294
+ 61200 4.733 0.293
+ 61230 4.729 0.293
+ 61260 4.724 0.293
+ 61290 4.720 0.294
+ 61320 4.715 0.294
+ 61350 4.711 0.294
+ 61380 4.707 0.294
+ 61410 4.702 0.295
+ 61440 4.698 0.295
+ 61470 4.694 0.295
+ 61500 4.690 0.295
+ 61530 4.685 0.296
+ 61560 4.681 0.296
+ 61590 4.677 0.296
+ 61620 4.673 0.296
+ 61650 4.669 0.296
+ 61680 4.665 0.297
+ 61710 4.661 0.297
+ 61740 4.657 0.297
+ 61770 4.653 0.297
+ 61800 4.649 0.297
+ 61830 4.645 0.297
+ 61860 4.641 0.298
+ 61890 4.637 0.298
+ 61920 4.633 0.298
+ 61950 4.629 0.298
+ 61980 4.625 0.298
+ 62010 4.621 0.298
+ 62040 4.617 0.298
+ 62070 4.614 0.299
+ 62100 4.610 0.299
+ 62130 4.606 0.299
+ 62160 4.602 0.299
+ 62190 4.599 0.299
+ 62220 4.595 0.299
+ 62250 4.591 0.299
+ 62280 4.588 0.299
+ 62310 4.584 0.299
+ 62340 4.581 0.299
+ 62370 4.577 0.299
+ 62400 4.573 0.299
+ 62430 4.570 0.300
+ 62460 4.566 0.300
+ 62490 4.562 0.301
+ 62520 4.558 0.301
+ 62550 4.554 0.302
+ 62580 4.550 0.302
+ 62610 4.546 0.303
+ 62640 4.543 0.303
+ 62670 4.539 0.304
+ 62700 4.535 0.305
+ 62730 4.531 0.305
+ 62760 4.527 0.306
+ 62790 4.524 0.306
+ 62820 4.520 0.307
+ 62850 4.516 0.307
+ 62880 4.512 0.308
+ 62910 4.509 0.308
+ 62940 4.505 0.309
+ 62970 4.501 0.309
+ 63000 4.498 0.310
+ 63030 4.494 0.310
+ 63060 4.490 0.311
+ 63090 4.487 0.311
+ 63120 4.483 0.312
+ 63150 4.480 0.312
+ 63180 4.476 0.313
+ 63210 4.472 0.313
+ 63240 4.469 0.314
+ 63270 4.465 0.315
+ 63300 4.462 0.315
+ 63330 4.458 0.316
+ 63360 4.455 0.316
+ 63390 4.451 0.317
+ 63420 4.448 0.317
+ 63450 4.444 0.318
+ 63480 4.441 0.318
+ 63510 4.438 0.319
+ 63540 4.434 0.319
+ 63570 4.431 0.320
+ 63600 4.427 0.320
+ 63630 4.426 0.320
+ 63660 4.424 0.319
+ 63690 4.423 0.318
+ 63720 4.422 0.318
+ 63750 4.420 0.317
+ 63780 4.419 0.316
+ 63810 4.417 0.316
+ 63840 4.416 0.315
+ 63870 4.415 0.315
+ 63900 4.413 0.314
+ 63930 4.412 0.313
+ 63960 4.411 0.313
+ 63990 4.410 0.312
+ 64020 4.409 0.311
+ 64050 4.407 0.311
+ 64080 4.406 0.310
+ 64110 4.405 0.309
+ 64140 4.404 0.309
+ 64170 4.403 0.308
+ 64200 4.402 0.307
+ 64230 4.401 0.306
+ 64260 4.400 0.306
+ 64290 4.398 0.305
+ 64320 4.397 0.304
+ 64350 4.396 0.304
+ 64380 4.396 0.303
+ 64410 4.395 0.302
+ 64440 4.394 0.301
+ 64470 4.393 0.301
+ 64500 4.392 0.300
+ 64530 4.391 0.299
+ 64560 4.390 0.298
+ 64590 4.389 0.298
+ 64620 4.388 0.297
+ 64650 4.388 0.296
+ 64680 4.387 0.295
+ 64710 4.386 0.295
+ 64740 4.385 0.294
+ 64770 4.385 0.293
+ 64800 4.384 0.292
+ 64830 4.380 0.293
+ 64860 4.376 0.294
+ 64890 4.372 0.296
+ 64920 4.368 0.297
+ 64950 4.364 0.298
+ 64980 4.360 0.299
+ 65010 4.356 0.300
+ 65040 4.352 0.301
+ 65070 4.348 0.301
+ 65100 4.344 0.302
+ 65130 4.340 0.303
+ 65160 4.336 0.304
+ 65190 4.332 0.305
+ 65220 4.329 0.306
+ 65250 4.325 0.307
+ 65280 4.321 0.308
+ 65310 4.317 0.308
+ 65340 4.314 0.309
+ 65370 4.310 0.310
+ 65400 4.306 0.311
+ 65430 4.303 0.311
+ 65460 4.299 0.312
+ 65490 4.295 0.313
+ 65520 4.292 0.313
+ 65550 4.288 0.314
+ 65580 4.285 0.315
+ 65610 4.281 0.315
+ 65640 4.278 0.316
+ 65670 4.274 0.317
+ 65700 4.271 0.317
+ 65730 4.267 0.318
+ 65760 4.264 0.318
+ 65790 4.261 0.319
+ 65820 4.257 0.319
+ 65850 4.254 0.320
+ 65880 4.251 0.320
+ 65910 4.248 0.321
+ 65940 4.244 0.321
+ 65970 4.241 0.322
+ 66000 4.238 0.322
+ 66030 4.233 0.322
+ 66060 4.229 0.323
+ 66090 4.224 0.323
+ 66120 4.219 0.323
+ 66150 4.215 0.324
+ 66180 4.210 0.324
+ 66210 4.206 0.324
+ 66240 4.201 0.325
+ 66270 4.196 0.325
+ 66300 4.192 0.325
+ 66330 4.187 0.326
+ 66360 4.182 0.326
+ 66390 4.178 0.327
+ 66420 4.173 0.327
+ 66450 4.168 0.327
+ 66480 4.163 0.328
+ 66510 4.159 0.328
+ 66540 4.154 0.328
+ 66570 4.149 0.329
+ 66600 4.145 0.329
+ 66630 4.140 0.329
+ 66660 4.135 0.330
+ 66690 4.130 0.330
+ 66720 4.126 0.330
+ 66750 4.121 0.331
+ 66780 4.116 0.331
+ 66810 4.111 0.331
+ 66840 4.106 0.332
+ 66870 4.102 0.332
+ 66900 4.097 0.332
+ 66930 4.092 0.333
+ 66960 4.087 0.333
+ 66990 4.082 0.333
+ 67020 4.078 0.334
+ 67050 4.073 0.334
+ 67080 4.068 0.334
+ 67110 4.063 0.335
+ 67140 4.058 0.335
+ 67170 4.053 0.335
+ 67200 4.048 0.336
+ 67230 4.042 0.335
+ 67260 4.036 0.335
+ 67290 4.029 0.335
+ 67320 4.023 0.335
+ 67350 4.017 0.335
+ 67380 4.010 0.334
+ 67410 4.004 0.334
+ 67440 3.998 0.334
+ 67470 3.991 0.334
+ 67500 3.985 0.334
+ 67530 3.978 0.333
+ 67560 3.972 0.333
+ 67590 3.966 0.333
+ 67620 3.959 0.333
+ 67650 3.953 0.332
+ 67680 3.946 0.332
+ 67710 3.940 0.332
+ 67740 3.933 0.332
+ 67770 3.927 0.331
+ 67800 3.921 0.331
+ 67830 3.914 0.331
+ 67860 3.908 0.331
+ 67890 3.901 0.330
+ 67920 3.895 0.330
+ 67950 3.888 0.330
+ 67980 3.882 0.329
+ 68010 3.876 0.329
+ 68040 3.869 0.329
+ 68070 3.863 0.329
+ 68100 3.856 0.328
+ 68130 3.850 0.328
+ 68160 3.843 0.328
+ 68190 3.837 0.327
+ 68220 3.830 0.327
+ 68250 3.824 0.327
+ 68280 3.817 0.326
+ 68310 3.811 0.326
+ 68340 3.804 0.326
+ 68370 3.798 0.325
+ 68400 3.791 0.325
+ 68430 3.784 0.325
+ 68460 3.776 0.325
+ 68490 3.768 0.325
+ 68520 3.760 0.325
+ 68550 3.753 0.324
+ 68580 3.745 0.324
+ 68610 3.737 0.324
+ 68640 3.729 0.324
+ 68670 3.722 0.324
+ 68700 3.714 0.324
+ 68730 3.706 0.324
+ 68760 3.698 0.324
+ 68790 3.690 0.323
+ 68820 3.682 0.323
+ 68850 3.675 0.323
+ 68880 3.667 0.323
+ 68910 3.659 0.323
+ 68940 3.651 0.323
+ 68970 3.643 0.323
+ 69000 3.635 0.322
+ 69030 3.627 0.322
+ 69060 3.619 0.322
+ 69090 3.611 0.322
+ 69120 3.603 0.322
+ 69150 3.595 0.322
+ 69180 3.587 0.322
+ 69210 3.579 0.321
+ 69240 3.571 0.321
+ 69270 3.563 0.321
+ 69300 3.555 0.321
+ 69330 3.547 0.321
+ 69360 3.539 0.321
+ 69390 3.531 0.321
+ 69420 3.523 0.321
+ 69450 3.515 0.320
+ 69480 3.507 0.320
+ 69510 3.499 0.320
+ 69540 3.491 0.320
+ 69570 3.483 0.320
+ 69600 3.475 0.320
+ 69630 3.467 0.320
+ 69660 3.458 0.320
+ 69690 3.450 0.320
+ 69720 3.442 0.320
+ 69750 3.433 0.320
+ 69780 3.425 0.320
+ 69810 3.416 0.320
+ 69840 3.408 0.320
+ 69870 3.399 0.320
+ 69900 3.391 0.320
+ 69930 3.382 0.320
+ 69960 3.374 0.320
+ 69990 3.365 0.320
+ 70020 3.357 0.320
+ 70050 3.348 0.320
+ 70080 3.339 0.320
+ 70110 3.331 0.320
+ 70140 3.322 0.321
+ 70170 3.313 0.321
+ 70200 3.304 0.321
+ 70230 3.295 0.321
+ 70260 3.287 0.321
+ 70290 3.278 0.321
+ 70320 3.269 0.321
+ 70350 3.260 0.321
+ 70380 3.251 0.322
+ 70410 3.242 0.322
+ 70440 3.233 0.322
+ 70470 3.224 0.322
+ 70500 3.215 0.322
+ 70530 3.206 0.323
+ 70560 3.197 0.323
+ 70590 3.188 0.323
+ 70620 3.178 0.323
+ 70650 3.169 0.323
+ 70680 3.160 0.324
+ 70710 3.151 0.324
+ 70740 3.142 0.324
+ 70770 3.132 0.324
+ 70800 3.123 0.325
+ 70830 3.116 0.324
+ 70860 3.109 0.324
+ 70890 3.102 0.323
+ 70920 3.095 0.323
+ 70950 3.088 0.322
+ 70980 3.080 0.322
+ 71010 3.073 0.322
+ 71040 3.066 0.321
+ 71070 3.059 0.321
+ 71100 3.052 0.320
+ 71130 3.044 0.320
+ 71160 3.037 0.319
+ 71190 3.030 0.319
+ 71220 3.022 0.318
+ 71250 3.015 0.318
+ 71280 3.008 0.318
+ 71310 3.000 0.317
+ 71340 2.993 0.317
+ 71370 2.986 0.316
+ 71400 2.978 0.316
+ 71430 2.971 0.316
+ 71460 2.963 0.315
+ 71490 2.956 0.315
+ 71520 2.948 0.314
+ 71550 2.941 0.314
+ 71580 2.933 0.314
+ 71610 2.926 0.313
+ 71640 2.918 0.313
+ 71670 2.910 0.312
+ 71700 2.903 0.312
+ 71730 2.895 0.312
+ 71760 2.887 0.311
+ 71790 2.880 0.311
+ 71820 2.872 0.311
+ 71850 2.864 0.310
+ 71880 2.857 0.310
+ 71910 2.849 0.310
+ 71940 2.841 0.309
+ 71970 2.833 0.309
+ 72000 2.825 0.309
+ 72030 2.817 0.310
+ 72060 2.809 0.311
+ 72090 2.801 0.312
+ 72120 2.793 0.313
+ 72150 2.785 0.314
+ 72180 2.777 0.315
+ 72210 2.769 0.316
+ 72240 2.761 0.317
+ 72270 2.753 0.318
+ 72300 2.745 0.320
+ 72330 2.737 0.321
+ 72360 2.729 0.322
+ 72390 2.721 0.323
+ 72420 2.714 0.324
+ 72450 2.706 0.325
+ 72480 2.698 0.326
+ 72510 2.690 0.327
+ 72540 2.682 0.328
+ 72570 2.675 0.328
+ 72600 2.667 0.329
+ 72630 2.659 0.330
+ 72660 2.652 0.331
+ 72690 2.644 0.332
+ 72720 2.636 0.333
+ 72750 2.629 0.334
+ 72780 2.621 0.335
+ 72810 2.613 0.336
+ 72840 2.606 0.337
+ 72870 2.598 0.337
+ 72900 2.591 0.338
+ 72930 2.583 0.339
+ 72960 2.576 0.340
+ 72990 2.568 0.341
+ 73020 2.561 0.342
+ 73050 2.554 0.342
+ 73080 2.546 0.343
+ 73110 2.539 0.344
+ 73140 2.531 0.345
+ 73170 2.524 0.346
+ 73200 2.517 0.346
+ 73230 2.512 0.346
+ 73260 2.507 0.346
+ 73290 2.502 0.346
+ 73320 2.496 0.346
+ 73350 2.491 0.346
+ 73380 2.486 0.346
+ 73410 2.481 0.346
+ 73440 2.476 0.346
+ 73470 2.471 0.345
+ 73500 2.466 0.345
+ 73530 2.460 0.345
+ 73560 2.455 0.345
+ 73590 2.450 0.345
+ 73620 2.445 0.345
+ 73650 2.440 0.345
+ 73680 2.434 0.344
+ 73710 2.429 0.344
+ 73740 2.424 0.344
+ 73770 2.419 0.344
+ 73800 2.413 0.344
+ 73830 2.408 0.343
+ 73860 2.403 0.343
+ 73890 2.397 0.343
+ 73920 2.392 0.343
+ 73950 2.387 0.342
+ 73980 2.381 0.342
+ 74010 2.376 0.342
+ 74040 2.371 0.342
+ 74070 2.365 0.341
+ 74100 2.360 0.341
+ 74130 2.355 0.341
+ 74160 2.349 0.340
+ 74190 2.344 0.340
+ 74220 2.338 0.340
+ 74250 2.333 0.339
+ 74280 2.328 0.339
+ 74310 2.322 0.339
+ 74340 2.317 0.338
+ 74370 2.311 0.338
+ 74400 2.306 0.338
+ 74430 2.302 0.337
+ 74460 2.299 0.336
+ 74490 2.295 0.336
+ 74520 2.292 0.335
+ 74550 2.288 0.334
+ 74580 2.284 0.334
+ 74610 2.281 0.333
+ 74640 2.277 0.332
+ 74670 2.273 0.332
+ 74700 2.270 0.331
+ 74730 2.266 0.330
+ 74760 2.262 0.330
+ 74790 2.258 0.329
+ 74820 2.254 0.328
+ 74850 2.251 0.328
+ 74880 2.247 0.327
+ 74910 2.243 0.326
+ 74940 2.239 0.326
+ 74970 2.235 0.325
+ 75000 2.231 0.324
+ 75030 2.227 0.324
+ 75060 2.222 0.323
+ 75090 2.218 0.322
+ 75120 2.214 0.322
+ 75150 2.210 0.321
+ 75180 2.206 0.321
+ 75210 2.201 0.320
+ 75240 2.197 0.319
+ 75270 2.193 0.319
+ 75300 2.188 0.318
+ 75330 2.184 0.318
+ 75360 2.180 0.317
+ 75390 2.175 0.316
+ 75420 2.171 0.316
+ 75450 2.166 0.315
+ 75480 2.162 0.315
+ 75510 2.157 0.314
+ 75540 2.153 0.313
+ 75570 2.148 0.313
+ 75600 2.143 0.312
+ 75630 2.140 0.312
+ 75660 2.138 0.311
+ 75690 2.135 0.310
+ 75720 2.132 0.309
+ 75750 2.129 0.309
+ 75780 2.126 0.308
+ 75810 2.123 0.307
+ 75840 2.120 0.306
+ 75870 2.117 0.306
+ 75900 2.114 0.305
+ 75930 2.111 0.304
+ 75960 2.108 0.303
+ 75990 2.105 0.302
+ 76020 2.102 0.302
+ 76050 2.098 0.301
+ 76080 2.095 0.300
+ 76110 2.092 0.299
+ 76140 2.089 0.298
+ 76170 2.086 0.297
+ 76200 2.082 0.296
+ 76230 2.079 0.296
+ 76260 2.076 0.295
+ 76290 2.073 0.294
+ 76320 2.069 0.293
+ 76350 2.066 0.292
+ 76380 2.063 0.291
+ 76410 2.059 0.290
+ 76440 2.056 0.289
+ 76470 2.052 0.288
+ 76500 2.049 0.287
+ 76530 2.045 0.286
+ 76560 2.042 0.285
+ 76590 2.038 0.284
+ 76620 2.035 0.283
+ 76650 2.031 0.282
+ 76680 2.028 0.281
+ 76710 2.024 0.280
+ 76740 2.021 0.279
+ 76770 2.017 0.278
+ 76800 2.013 0.277
+ 76830 2.012 0.277
+ 76860 2.010 0.276
+ 76890 2.009 0.276
+ 76920 2.007 0.275
+ 76950 2.006 0.275
+ 76980 2.004 0.275
+ 77010 2.003 0.274
+ 77040 2.001 0.274
+ 77070 1.999 0.273
+ 77100 1.998 0.273
+ 77130 1.996 0.272
+ 77160 1.995 0.272
+ 77190 1.993 0.272
+ 77220 1.991 0.271
+ 77250 1.990 0.271
+ 77280 1.988 0.270
+ 77310 1.986 0.270
+ 77340 1.984 0.269
+ 77370 1.983 0.269
+ 77400 1.981 0.268
+ 77430 1.979 0.268
+ 77460 1.977 0.267
+ 77490 1.976 0.267
+ 77520 1.974 0.266
+ 77550 1.972 0.266
+ 77580 1.970 0.265
+ 77610 1.968 0.265
+ 77640 1.966 0.264
+ 77670 1.965 0.264
+ 77700 1.963 0.263
+ 77730 1.961 0.262
+ 77760 1.959 0.262
+ 77790 1.957 0.261
+ 77820 1.955 0.261
+ 77850 1.953 0.260
+ 77880 1.951 0.260
+ 77910 1.949 0.259
+ 77940 1.947 0.258
+ 77970 1.945 0.258
+ 78000 1.943 0.257
+ 78030 1.941 0.257
+ 78060 1.940 0.257
+ 78090 1.938 0.256
+ 78120 1.937 0.256
+ 78150 1.935 0.256
+ 78180 1.933 0.255
+ 78210 1.932 0.255
+ 78240 1.930 0.255
+ 78270 1.928 0.255
+ 78300 1.927 0.254
+ 78330 1.925 0.254
+ 78360 1.923 0.254
+ 78390 1.921 0.253
+ 78420 1.920 0.253
+ 78450 1.918 0.253
+ 78480 1.916 0.252
+ 78510 1.914 0.252
+ 78540 1.912 0.252
+ 78570 1.910 0.251
+ 78600 1.909 0.251
+ 78630 1.907 0.251
+ 78660 1.905 0.250
+ 78690 1.903 0.250
+ 78720 1.901 0.250
+ 78750 1.899 0.249
+ 78780 1.897 0.249
+ 78810 1.895 0.249
+ 78840 1.893 0.248
+ 78870 1.891 0.248
+ 78900 1.889 0.247
+ 78930 1.887 0.247
+ 78960 1.885 0.247
+ 78990 1.882 0.246
+ 79020 1.880 0.246
+ 79050 1.878 0.246
+ 79080 1.876 0.245
+ 79110 1.874 0.245
+ 79140 1.872 0.244
+ 79170 1.870 0.244
+ 79200 1.867 0.244
+ 79230 1.866 0.244
+ 79260 1.865 0.244
+ 79290 1.864 0.244
+ 79320 1.863 0.244
+ 79350 1.863 0.245
+ 79380 1.862 0.245
+ 79410 1.861 0.245
+ 79440 1.860 0.245
+ 79470 1.859 0.246
+ 79500 1.858 0.246
+ 79530 1.858 0.246
+ 79560 1.857 0.246
+ 79590 1.856 0.247
+ 79620 1.855 0.247
+ 79650 1.855 0.247
+ 79680 1.854 0.248
+ 79710 1.853 0.248
+ 79740 1.853 0.248
+ 79770 1.852 0.249
+ 79800 1.852 0.249
+ 79830 1.851 0.249
+ 79860 1.851 0.250
+ 79890 1.850 0.250
+ 79920 1.850 0.250
+ 79950 1.849 0.251
+ 79980 1.849 0.251
+ 80010 1.849 0.252
+ 80040 1.848 0.252
+ 80070 1.848 0.252
+ 80100 1.847 0.253
+ 80130 1.847 0.253
+ 80160 1.847 0.254
+ 80190 1.847 0.254
+ 80220 1.846 0.255
+ 80250 1.846 0.255
+ 80280 1.846 0.256
+ 80310 1.846 0.256
+ 80340 1.846 0.256
+ 80370 1.846 0.257
+ 80400 1.846 0.258
+ 80430 1.845 0.258
+ 80460 1.845 0.258
+ 80490 1.845 0.258
+ 80520 1.844 0.259
+ 80550 1.844 0.259
+ 80580 1.844 0.259
+ 80610 1.843 0.260
+ 80640 1.843 0.260
+ 80670 1.843 0.260
+ 80700 1.843 0.261
+ 80730 1.843 0.261
+ 80760 1.843 0.261
+ 80790 1.843 0.261
+ 80820 1.843 0.262
+ 80850 1.843 0.262
+ 80880 1.843 0.262
+ 80910 1.843 0.263
+ 80940 1.843 0.263
+ 80970 1.843 0.263
+ 81000 1.843 0.263
+ 81030 1.843 0.264
+ 81060 1.843 0.264
+ 81090 1.843 0.264
+ 81120 1.844 0.265
+ 81150 1.844 0.265
+ 81180 1.844 0.265
+ 81210 1.845 0.265
+ 81240 1.845 0.266
+ 81270 1.845 0.266
+ 81300 1.846 0.266
+ 81330 1.846 0.266
+ 81360 1.846 0.267
+ 81390 1.847 0.267
+ 81420 1.847 0.267
+ 81450 1.848 0.267
+ 81480 1.849 0.268
+ 81510 1.849 0.268
+ 81540 1.850 0.268
+ 81570 1.850 0.269
+ 81600 1.851 0.269
+ 81630 1.852 0.269
+ 81660 1.853 0.269
+ 81690 1.854 0.270
+ 81720 1.855 0.270
+ 81750 1.857 0.270
+ 81780 1.858 0.270
+ 81810 1.859 0.270
+ 81840 1.860 0.271
+ 81870 1.861 0.271
+ 81900 1.862 0.271
+ 81930 1.863 0.271
+ 81960 1.865 0.272
+ 81990 1.866 0.272
+ 82020 1.867 0.272
+ 82050 1.868 0.272
+ 82080 1.869 0.273
+ 82110 1.870 0.273
+ 82140 1.872 0.273
+ 82170 1.873 0.273
+ 82200 1.874 0.274
+ 82230 1.875 0.274
+ 82260 1.876 0.274
+ 82290 1.878 0.274
+ 82320 1.879 0.274
+ 82350 1.880 0.275
+ 82380 1.881 0.275
+ 82410 1.883 0.275
+ 82440 1.884 0.275
+ 82470 1.885 0.275
+ 82500 1.887 0.276
+ 82530 1.888 0.276
+ 82560 1.889 0.276
+ 82590 1.890 0.276
+ 82620 1.892 0.277
+ 82650 1.893 0.277
+ 82680 1.894 0.277
+ 82710 1.896 0.277
+ 82740 1.897 0.277
+ 82770 1.898 0.278
+ 82800 1.900 0.278
+ 82830 1.900 0.278
+ 82860 1.901 0.278
+ 82890 1.902 0.278
+ 82920 1.903 0.278
+ 82950 1.903 0.278
+ 82980 1.904 0.278
+ 83010 1.905 0.278
+ 83040 1.905 0.278
+ 83070 1.906 0.278
+ 83100 1.907 0.278
+ 83130 1.907 0.278
+ 83160 1.908 0.278
+ 83190 1.909 0.278
+ 83220 1.909 0.278
+ 83250 1.910 0.278
+ 83280 1.910 0.278
+ 83310 1.911 0.278
+ 83340 1.912 0.278
+ 83370 1.912 0.278
+ 83400 1.913 0.278
+ 83430 1.913 0.278
+ 83460 1.914 0.278
+ 83490 1.914 0.278
+ 83520 1.915 0.278
+ 83550 1.915 0.278
+ 83580 1.916 0.278
+ 83610 1.916 0.278
+ 83640 1.917 0.278
+ 83670 1.917 0.277
+ 83700 1.918 0.277
+ 83730 1.918 0.277
+ 83760 1.918 0.277
+ 83790 1.919 0.277
+ 83820 1.919 0.277
+ 83850 1.920 0.277
+ 83880 1.920 0.277
+ 83910 1.920 0.276
+ 83940 1.921 0.276
+ 83970 1.921 0.276
+ 84000 1.921 0.276
+ 84030 1.921 0.276
+ 84060 1.921 0.277
+ 84090 1.921 0.277
+ 84120 1.920 0.278
+ 84150 1.920 0.278
+ 84180 1.920 0.278
+ 84210 1.919 0.279
+ 84240 1.919 0.279
+ 84270 1.918 0.280
+ 84300 1.918 0.280
+ 84330 1.918 0.281
+ 84360 1.917 0.281
+ 84390 1.916 0.281
+ 84420 1.916 0.282
+ 84450 1.915 0.282
+ 84480 1.915 0.283
+ 84510 1.914 0.283
+ 84540 1.913 0.284
+ 84570 1.913 0.284
+ 84600 1.912 0.284
+ 84630 1.911 0.285
+ 84660 1.910 0.285
+ 84690 1.910 0.286
+ 84720 1.909 0.286
+ 84750 1.908 0.286
+ 84780 1.907 0.287
+ 84810 1.906 0.287
+ 84840 1.905 0.288
+ 84870 1.904 0.288
+ 84900 1.903 0.289
+ 84930 1.902 0.289
+ 84960 1.901 0.289
+ 84990 1.900 0.290
+ 85020 1.899 0.290
+ 85050 1.898 0.291
+ 85080 1.897 0.291
+ 85110 1.895 0.291
+ 85140 1.894 0.292
+ 85170 1.893 0.292
+ 85200 1.892 0.293
+ 85230 1.891 0.292
+ 85260 1.890 0.292
+ 85290 1.889 0.292
+ 85320 1.887 0.292
+ 85350 1.886 0.291
+ 85380 1.885 0.291
+ 85410 1.884 0.291
+ 85440 1.883 0.291
+ 85470 1.882 0.290
+ 85500 1.880 0.290
+ 85530 1.879 0.290
+ 85560 1.878 0.289
+ 85590 1.877 0.289
+ 85620 1.875 0.289
+ 85650 1.874 0.288
+ 85680 1.873 0.288
+ 85710 1.871 0.288
+ 85740 1.870 0.287
+ 85770 1.869 0.287
+ 85800 1.867 0.286
+ 85830 1.866 0.286
+ 85860 1.864 0.286
+ 85890 1.863 0.285
+ 85920 1.861 0.285
+ 85950 1.860 0.284
+ 85980 1.858 0.284
+ 86010 1.857 0.283
+ 86040 1.855 0.283
+ 86070 1.854 0.282
+ 86100 1.852 0.282
+ 86130 1.850 0.281
+ 86160 1.849 0.281
+ 86190 1.847 0.280
+ 86220 1.845 0.280
+ 86250 1.844 0.279
+ 86280 1.842 0.278
+ 86310 1.840 0.278
+ 86340 1.838 0.277
+ 86370 1.837 0.277
+ 86400 1.835 0.276
+ 86430 1.832 0.276
+ 86460 1.830 0.276
+ 86490 1.828 0.276
+ 86520 1.825 0.276
+ 86550 1.823 0.276
+ 86580 1.821 0.276
+ 86610 1.818 0.277
+ 86640 1.816 0.277
+ 86670 1.814 0.277
+ 86700 1.811 0.277
+ 86730 1.809 0.277
+ 86760 1.807 0.277
+ 86790 1.804 0.277
+ 86820 1.802 0.277
+ 86850 1.800 0.277
+ 86880 1.797 0.277
+ 86910 1.795 0.277
+ 86940 1.793 0.277
+ 86970 1.790 0.277
+ 87000 1.788 0.277
+ 87030 1.786 0.277
+ 87060 1.784 0.277
+ 87090 1.781 0.278
+ 87120 1.779 0.278
+ 87150 1.777 0.278
+ 87180 1.774 0.278
+ 87210 1.772 0.278
+ 87240 1.770 0.278
+ 87270 1.768 0.278
+ 87300 1.765 0.278
+ 87330 1.763 0.278
+ 87360 1.761 0.278
+ 87390 1.759 0.278
+ 87420 1.756 0.278
+ 87450 1.754 0.278
+ 87480 1.752 0.278
+ 87510 1.750 0.278
+ 87540 1.747 0.278
+ 87570 1.745 0.278
+ 87600 1.743 0.278
+ 87630 1.741 0.279
+ 87660 1.739 0.279
+ 87690 1.737 0.279
+ 87720 1.736 0.279
+ 87750 1.734 0.280
+ 87780 1.732 0.280
+ 87810 1.730 0.280
+ 87840 1.728 0.280
+ 87870 1.726 0.281
+ 87900 1.725 0.281
+ 87930 1.723 0.281
+ 87960 1.721 0.281
+ 87990 1.719 0.281
+ 88020 1.718 0.281
+ 88050 1.716 0.282
+ 88080 1.714 0.282
+ 88110 1.712 0.282
+ 88140 1.710 0.282
+ 88170 1.709 0.282
+ 88200 1.707 0.282
+ 88230 1.705 0.282
+ 88260 1.703 0.283
+ 88290 1.702 0.283
+ 88320 1.700 0.283
+ 88350 1.698 0.283
+ 88380 1.696 0.283
+ 88410 1.695 0.283
+ 88440 1.693 0.283
+ 88470 1.691 0.283
+ 88500 1.690 0.283
+ 88530 1.688 0.283
+ 88560 1.686 0.283
+ 88590 1.684 0.283
+ 88620 1.683 0.283
+ 88650 1.681 0.283
+ 88680 1.679 0.283
+ 88710 1.678 0.283
+ 88740 1.676 0.283
+ 88770 1.674 0.283
+ 88800 1.672 0.283
+ 88830 1.671 0.283
+ 88860 1.669 0.283
+ 88890 1.667 0.282
+ 88920 1.665 0.282
+ 88950 1.663 0.282
+ 88980 1.661 0.281
+ 89010 1.660 0.281
+ 89040 1.658 0.281
+ 89070 1.656 0.280
+ 89100 1.654 0.280
+ 89130 1.652 0.280
+ 89160 1.651 0.279
+ 89190 1.649 0.279
+ 89220 1.647 0.279
+ 89250 1.645 0.278
+ 89280 1.643 0.278
+ 89310 1.641 0.278
+ 89340 1.640 0.277
+ 89370 1.638 0.277
+ 89400 1.636 0.277
+ 89430 1.634 0.276
+ 89460 1.632 0.276
+ 89490 1.630 0.276
+ 89520 1.629 0.275
+ 89550 1.627 0.275
+ 89580 1.625 0.275
+ 89610 1.623 0.274
+ 89640 1.621 0.274
+ 89670 1.619 0.273
+ 89700 1.618 0.273
+ 89730 1.616 0.273
+ 89760 1.614 0.272
+ 89790 1.612 0.272
+ 89820 1.610 0.271
+ 89850 1.609 0.271
+ 89880 1.607 0.271
+ 89910 1.605 0.270
+ 89940 1.603 0.270
+ 89970 1.601 0.269
+ 90000 1.599 0.269
+ 90030 1.598 0.269
+ 90060 1.596 0.269
+ 90090 1.594 0.269
+ 90120 1.592 0.269
+ 90150 1.590 0.269
+ 90180 1.588 0.269
+ 90210 1.586 0.269
+ 90240 1.585 0.269
+ 90270 1.583 0.269
+ 90300 1.581 0.269
+ 90330 1.579 0.269
+ 90360 1.577 0.269
+ 90390 1.575 0.268
+ 90420 1.573 0.268
+ 90450 1.571 0.268
+ 90480 1.569 0.268
+ 90510 1.567 0.268
+ 90540 1.565 0.268
+ 90570 1.563 0.268
+ 90600 1.561 0.268
+ 90630 1.560 0.268
+ 90660 1.558 0.268
+ 90690 1.556 0.268
+ 90720 1.554 0.268
+ 90750 1.552 0.268
+ 90780 1.550 0.267
+ 90810 1.548 0.267
+ 90840 1.546 0.267
+ 90870 1.544 0.267
+ 90900 1.542 0.267
+ 90930 1.539 0.267
+ 90960 1.537 0.267
+ 90990 1.535 0.267
+ 91020 1.533 0.266
+ 91050 1.531 0.266
+ 91080 1.529 0.266
+ 91110 1.527 0.266
+ 91140 1.525 0.266
+ 91170 1.523 0.266
+ 91200 1.521 0.266
+ 91230 1.520 0.266
+ 91260 1.519 0.266
+ 91290 1.517 0.267
+ 91320 1.516 0.267
+ 91350 1.515 0.268
+ 91380 1.514 0.268
+ 91410 1.513 0.269
+ 91440 1.512 0.269
+ 91470 1.511 0.270
+ 91500 1.509 0.270
+ 91530 1.508 0.270
+ 91560 1.507 0.271
+ 91590 1.506 0.271
+ 91620 1.505 0.272
+ 91650 1.504 0.272
+ 91680 1.502 0.273
+ 91710 1.501 0.273
+ 91740 1.500 0.274
+ 91770 1.499 0.274
+ 91800 1.498 0.275
+ 91830 1.497 0.275
+ 91860 1.496 0.276
+ 91890 1.494 0.276
+ 91920 1.493 0.277
+ 91950 1.492 0.277
+ 91980 1.491 0.277
+ 92010 1.490 0.278
+ 92040 1.489 0.278
+ 92070 1.488 0.279
+ 92100 1.486 0.279
+ 92130 1.485 0.280
+ 92160 1.484 0.281
+ 92190 1.483 0.281
+ 92220 1.482 0.282
+ 92250 1.481 0.282
+ 92280 1.479 0.283
+ 92310 1.478 0.283
+ 92340 1.477 0.284
+ 92370 1.476 0.284
+ 92400 1.475 0.285
+ 92430 1.474 0.285
+ 92460 1.474 0.285
+ 92490 1.474 0.285
+ 92520 1.473 0.285
+ 92550 1.473 0.285
+ 92580 1.473 0.286
+ 92610 1.472 0.286
+ 92640 1.472 0.286
+ 92670 1.471 0.286
+ 92700 1.471 0.286
+ 92730 1.471 0.286
+ 92760 1.470 0.287
+ 92790 1.470 0.287
+ 92820 1.470 0.287
+ 92850 1.469 0.287
+ 92880 1.469 0.287
+ 92910 1.468 0.287
+ 92940 1.468 0.288
+ 92970 1.468 0.288
+ 93000 1.467 0.288
+ 93030 1.467 0.288
+ 93060 1.467 0.288
+ 93090 1.466 0.289
+ 93120 1.466 0.289
+ 93150 1.466 0.289
+ 93180 1.465 0.289
+ 93210 1.465 0.289
+ 93240 1.465 0.290
+ 93270 1.465 0.290
+ 93300 1.464 0.290
+ 93330 1.464 0.290
+ 93360 1.464 0.290
+ 93390 1.463 0.291
+ 93420 1.463 0.291
+ 93450 1.463 0.291
+ 93480 1.462 0.291
+ 93510 1.462 0.292
+ 93540 1.462 0.292
+ 93570 1.462 0.292
+ 93600 1.461 0.292
+ 93630 1.461 0.292
+ 93660 1.461 0.293
+ 93690 1.461 0.293
+ 93720 1.460 0.293
+ 93750 1.460 0.293
+ 93780 1.460 0.294
+ 93810 1.460 0.294
+ 93840 1.459 0.294
+ 93870 1.459 0.294
+ 93900 1.459 0.294
+ 93930 1.459 0.295
+ 93960 1.458 0.295
+ 93990 1.458 0.295
+ 94020 1.458 0.295
+ 94050 1.458 0.296
+ 94080 1.457 0.296
+ 94110 1.457 0.296
+ 94140 1.457 0.296
+ 94170 1.457 0.296
+ 94200 1.457 0.297
+ 94230 1.456 0.297
+ 94260 1.456 0.297
+ 94290 1.456 0.297
+ 94320 1.456 0.298
+ 94350 1.456 0.298
+ 94380 1.455 0.298
+ 94410 1.455 0.298
+ 94440 1.455 0.298
+ 94470 1.455 0.299
+ 94500 1.455 0.299
+ 94530 1.455 0.299
+ 94560 1.454 0.299
+ 94590 1.454 0.299
+ 94620 1.454 0.300
+ 94650 1.454 0.300
+ 94680 1.454 0.300
+ 94710 1.454 0.300
+ 94740 1.454 0.301
+ 94770 1.453 0.301
+ 94800 1.453 0.301
+ 94830 1.453 0.301
+ 94860 1.453 0.301
+ 94890 1.454 0.301
+ 94920 1.454 0.301
+ 94950 1.454 0.300
+ 94980 1.454 0.300
+ 95010 1.454 0.300
+ 95040 1.454 0.300
+ 95070 1.454 0.300
+ 95100 1.454 0.300
+ 95130 1.455 0.300
+ 95160 1.455 0.300
+ 95190 1.455 0.300
+ 95220 1.455 0.300
+ 95250 1.455 0.300
+ 95280 1.455 0.300
+ 95310 1.455 0.300
+ 95340 1.455 0.299
+ 95370 1.455 0.299
+ 95400 1.455 0.299
+ 95430 1.455 0.299
+ 95460 1.455 0.299
+ 95490 1.455 0.299
+ 95520 1.456 0.299
+ 95550 1.456 0.299
+ 95580 1.456 0.299
+ 95610 1.456 0.299
+ 95640 1.456 0.299
+ 95670 1.456 0.299
+ 95700 1.456 0.299
+ 95730 1.456 0.299
+ 95760 1.456 0.299
+ 95790 1.456 0.299
+ 95820 1.456 0.299
+ 95850 1.456 0.299
+ 95880 1.456 0.299
+ 95910 1.456 0.299
+ 95940 1.456 0.299
+ 95970 1.456 0.299
+ 96000 1.456 0.299
+ 96030 1.456 0.300
+ 96060 1.456 0.300
+ 96090 1.456 0.300
+ 96120 1.455 0.300
+ 96150 1.455 0.301
+ 96180 1.455 0.301
+ 96210 1.455 0.301
+ 96240 1.455 0.301
+ 96270 1.455 0.302
+ 96300 1.455 0.302
+ 96330 1.455 0.302
+ 96360 1.455 0.303
+ 96390 1.454 0.303
+ 96420 1.454 0.303
+ 96450 1.454 0.303
+ 96480 1.454 0.304
+ 96510 1.454 0.304
+ 96540 1.454 0.304
+ 96570 1.454 0.305
+ 96600 1.454 0.305
+ 96630 1.454 0.305
+ 96660 1.454 0.305
+ 96690 1.454 0.306
+ 96720 1.454 0.306
+ 96750 1.454 0.306
+ 96780 1.454 0.306
+ 96810 1.454 0.307
+ 96840 1.453 0.307
+ 96870 1.453 0.307
+ 96900 1.453 0.308
+ 96930 1.453 0.308
+ 96960 1.453 0.308
+ 96990 1.453 0.308
+ 97020 1.453 0.309
+ 97050 1.453 0.309
+ 97080 1.453 0.309
+ 97110 1.453 0.309
+ 97140 1.453 0.310
+ 97170 1.453 0.310
+ 97200 1.453 0.310
+ 97230 1.453 0.310
+ 97260 1.453 0.310
+ 97290 1.453 0.310
+ 97320 1.452 0.311
+ 97350 1.452 0.311
+ 97380 1.452 0.311
+ 97410 1.452 0.311
+ 97440 1.452 0.311
+ 97470 1.451 0.311
+ 97500 1.451 0.311
+ 97530 1.451 0.311
+ 97560 1.451 0.312
+ 97590 1.451 0.312
+ 97620 1.450 0.312
+ 97650 1.450 0.312
+ 97680 1.450 0.312
+ 97710 1.450 0.312
+ 97740 1.450 0.312
+ 97770 1.449 0.312
+ 97800 1.449 0.313
+ 97830 1.449 0.313
+ 97860 1.449 0.313
+ 97890 1.449 0.313
+ 97920 1.448 0.313
+ 97950 1.448 0.313
+ 97980 1.448 0.314
+ 98010 1.448 0.314
+ 98040 1.448 0.314
+ 98070 1.447 0.314
+ 98100 1.447 0.314
+ 98130 1.447 0.314
+ 98160 1.447 0.315
+ 98190 1.447 0.315
+ 98220 1.446 0.315
+ 98250 1.446 0.315
+ 98280 1.446 0.315
+ 98310 1.446 0.316
+ 98340 1.446 0.316
+ 98370 1.445 0.316
+ 98400 1.445 0.316
+ 98430 1.445 0.316
+ 98460 1.445 0.316
+ 98490 1.445 0.316
+ 98520 1.444 0.316
+ 98550 1.444 0.316
+ 98580 1.444 0.316
+ 98610 1.444 0.316
+ 98640 1.444 0.316
+ 98670 1.444 0.316
+ 98700 1.444 0.316
+ 98730 1.443 0.316
+ 98760 1.443 0.316
+ 98790 1.443 0.316
+ 98820 1.443 0.316
+ 98850 1.443 0.316
+ 98880 1.443 0.316
+ 98910 1.443 0.316
+ 98940 1.443 0.316
+ 98970 1.443 0.316
+ 99000 1.443 0.316
+ 99030 1.443 0.316
+ 99060 1.443 0.316
+ 99090 1.443 0.316
+ 99120 1.443 0.316
+ 99150 1.443 0.316
+ 99180 1.443 0.316
+ 99210 1.443 0.316
+ 99240 1.443 0.316
+ 99270 1.443 0.316
+ 99300 1.444 0.316
+ 99330 1.444 0.316
+ 99360 1.444 0.316
+ 99390 1.444 0.315
+ 99420 1.444 0.315
+ 99450 1.444 0.315
+ 99480 1.444 0.315
+ 99510 1.445 0.315
+ 99540 1.445 0.315
+ 99570 1.445 0.315
+ 99600 1.445 0.315
+ 99630 1.444 0.315
+ 99660 1.443 0.315
+ 99690 1.443 0.314
+ 99720 1.442 0.314
+ 99750 1.441 0.314
+ 99780 1.440 0.314
+ 99810 1.439 0.314
+ 99840 1.439 0.314
+ 99870 1.438 0.313
+ 99900 1.437 0.313
+ 99930 1.436 0.313
+ 99960 1.435 0.313
+ 99990 1.435 0.313
+100020 1.434 0.313
+100050 1.433 0.313
+100080 1.432 0.312
+100110 1.431 0.312
+100140 1.431 0.312
+100170 1.430 0.312
+100200 1.429 0.312
+100230 1.428 0.312
+100260 1.427 0.311
+100290 1.426 0.311
+100320 1.426 0.311
+100350 1.425 0.311
+100380 1.424 0.311
+100410 1.423 0.311
+100440 1.422 0.310
+100470 1.422 0.310
+100500 1.421 0.310
+100530 1.420 0.310
+100560 1.419 0.310
+100590 1.418 0.310
+100620 1.418 0.309
+100650 1.417 0.309
+100680 1.416 0.309
+100710 1.415 0.309
+100740 1.414 0.309
+100770 1.413 0.309
+100800 1.413 0.309
+100830 1.411 0.308
+100860 1.410 0.307
+100890 1.408 0.307
+100920 1.406 0.306
+100950 1.405 0.306
+100980 1.403 0.306
+101010 1.402 0.305
+101040 1.401 0.305
+101070 1.399 0.304
+101100 1.398 0.304
+101130 1.396 0.303
+101160 1.395 0.303
+101190 1.393 0.302
+101220 1.392 0.302
+101250 1.390 0.301
+101280 1.389 0.301
+101310 1.388 0.300
+101340 1.386 0.300
+101370 1.385 0.299
+101400 1.384 0.299
+101430 1.382 0.299
+101460 1.381 0.298
+101490 1.380 0.298
+101520 1.378 0.297
+101550 1.377 0.297
+101580 1.376 0.297
+101610 1.374 0.296
+101640 1.373 0.296
+101670 1.372 0.295
+101700 1.371 0.295
+101730 1.369 0.295
+101760 1.368 0.294
+101790 1.367 0.294
+101820 1.366 0.293
+101850 1.364 0.293
+101880 1.363 0.293
+101910 1.362 0.292
+101940 1.361 0.292
+101970 1.360 0.291
+102000 1.359 0.291
+102030 1.358 0.291
+102060 1.357 0.290
+102090 1.356 0.290
+102120 1.356 0.289
+102150 1.355 0.289
+102180 1.354 0.288
+102210 1.354 0.288
+102240 1.353 0.288
+102270 1.352 0.287
+102300 1.352 0.287
+102330 1.351 0.286
+102360 1.350 0.286
+102390 1.350 0.285
+102420 1.349 0.285
+102450 1.348 0.285
+102480 1.348 0.284
+102510 1.347 0.284
+102540 1.347 0.283
+102570 1.346 0.283
+102600 1.346 0.282
+102630 1.345 0.282
+102660 1.345 0.281
+102690 1.344 0.281
+102720 1.344 0.281
+102750 1.343 0.280
+102780 1.343 0.280
+102810 1.342 0.279
+102840 1.342 0.279
+102870 1.341 0.278
+102900 1.341 0.278
+102930 1.340 0.277
+102960 1.340 0.277
+102990 1.339 0.276
+103020 1.339 0.276
+103050 1.339 0.276
+103080 1.338 0.275
+103110 1.338 0.275
+103140 1.338 0.274
+103170 1.337 0.274
+103200 1.337 0.273
+103230 1.336 0.273
+103260 1.336 0.273
+103290 1.335 0.273
+103320 1.335 0.273
+103350 1.335 0.273
+103380 1.334 0.273
+103410 1.334 0.273
+103440 1.333 0.273
+103470 1.333 0.273
+103500 1.332 0.273
+103530 1.332 0.273
+103560 1.332 0.273
+103590 1.331 0.273
+103620 1.331 0.273
+103650 1.331 0.273
+103680 1.330 0.272
+103710 1.330 0.272
+103740 1.329 0.272
+103770 1.329 0.272
+103800 1.329 0.272
+103830 1.328 0.272
+103860 1.328 0.272
+103890 1.328 0.272
+103920 1.327 0.272
+103950 1.327 0.272
+103980 1.327 0.272
+104010 1.327 0.272
+104040 1.326 0.272
+104070 1.326 0.272
+104100 1.326 0.272
+104130 1.325 0.272
+104160 1.325 0.271
+104190 1.325 0.271
+104220 1.325 0.271
+104250 1.324 0.271
+104280 1.324 0.271
+104310 1.324 0.271
+104340 1.324 0.271
+104370 1.324 0.271
+104400 1.323 0.271
+104430 1.324 0.271
+104460 1.325 0.272
+104490 1.326 0.272
+104520 1.327 0.272
+104550 1.327 0.272
+104580 1.328 0.273
+104610 1.329 0.273
+104640 1.330 0.273
+104670 1.331 0.273
+104700 1.331 0.273
+104730 1.332 0.274
+104760 1.333 0.274
+104790 1.334 0.274
+104820 1.334 0.274
+104850 1.335 0.274
+104880 1.336 0.275
+104910 1.337 0.275
+104940 1.337 0.275
+104970 1.338 0.275
+105000 1.339 0.275
+105030 1.340 0.275
+105060 1.340 0.275
+105090 1.341 0.276
+105120 1.342 0.276
+105150 1.343 0.276
+105180 1.343 0.276
+105210 1.344 0.276
+105240 1.345 0.276
+105270 1.345 0.276
+105300 1.346 0.276
+105330 1.347 0.276
+105360 1.348 0.277
+105390 1.348 0.277
+105420 1.349 0.277
+105450 1.350 0.277
+105480 1.350 0.277
+105510 1.351 0.277
+105540 1.352 0.277
+105570 1.352 0.277
+105600 1.353 0.277
+105630 1.354 0.277
+105660 1.354 0.278
+105690 1.355 0.278
+105720 1.355 0.278
+105750 1.356 0.279
+105780 1.356 0.279
+105810 1.357 0.279
+105840 1.357 0.279
+105870 1.358 0.280
+105900 1.359 0.280
+105930 1.359 0.280
+105960 1.360 0.281
+105990 1.360 0.281
+106020 1.361 0.281
+106050 1.361 0.281
+106080 1.362 0.282
+106110 1.362 0.282
+106140 1.363 0.282
+106170 1.363 0.282
+106200 1.364 0.283
+106230 1.364 0.283
+106260 1.365 0.283
+106290 1.366 0.283
+106320 1.366 0.284
+106350 1.367 0.284
+106380 1.367 0.284
+106410 1.368 0.284
+106440 1.368 0.285
+106470 1.369 0.285
+106500 1.369 0.285
+106530 1.370 0.285
+106560 1.370 0.285
+106590 1.371 0.286
+106620 1.372 0.286
+106650 1.372 0.286
+106680 1.373 0.286
+106710 1.373 0.287
+106740 1.374 0.287
+106770 1.374 0.287
+106800 1.375 0.287
+106830 1.375 0.288
+106860 1.376 0.288
+106890 1.376 0.289
+106920 1.377 0.289
+106950 1.377 0.290
+106980 1.378 0.291
+107010 1.378 0.291
+107040 1.379 0.292
+107070 1.379 0.292
+107100 1.380 0.293
+107130 1.380 0.293
+107160 1.381 0.294
+107190 1.381 0.295
+107220 1.382 0.295
+107250 1.382 0.296
+107280 1.383 0.296
+107310 1.383 0.297
+107340 1.384 0.297
+107370 1.384 0.298
+107400 1.385 0.298
+107430 1.385 0.299
+107460 1.386 0.299
+107490 1.387 0.300
+107520 1.387 0.301
+107550 1.388 0.301
+107580 1.388 0.302
+107610 1.389 0.302
+107640 1.389 0.303
+107670 1.390 0.303
+107700 1.390 0.304
+107730 1.391 0.304
+107760 1.392 0.305
+107790 1.392 0.305
+107820 1.393 0.306
+107850 1.393 0.306
+107880 1.394 0.307
+107910 1.395 0.307
+107940 1.395 0.308
+107970 1.396 0.308
+108000 1.396 0.309
+108030 1.396 0.309
+108060 1.395 0.310
+108090 1.394 0.310
+108120 1.393 0.311
+108150 1.392 0.311
+108180 1.391 0.312
+108210 1.390 0.312
+108240 1.389 0.313
+108270 1.388 0.313
+108300 1.388 0.314
+108330 1.387 0.314
+108360 1.386 0.315
+108390 1.385 0.315
+108420 1.384 0.315
+108450 1.383 0.316
+108480 1.382 0.316
+108510 1.381 0.317
+108540 1.381 0.317
+108570 1.380 0.318
+108600 1.379 0.318
+108630 1.378 0.318
+108660 1.377 0.319
+108690 1.376 0.319
+108720 1.375 0.320
+108750 1.374 0.320
+108780 1.374 0.320
+108810 1.373 0.321
+108840 1.372 0.321
+108870 1.371 0.321
+108900 1.370 0.322
+108930 1.369 0.322
+108960 1.368 0.322
+108990 1.367 0.323
+109020 1.366 0.323
+109050 1.366 0.323
+109080 1.365 0.324
+109110 1.364 0.324
+109140 1.363 0.324
+109170 1.362 0.324
+109200 1.361 0.325
+109230 1.360 0.325
+109260 1.359 0.325
+109290 1.358 0.326
+109320 1.357 0.326
+109350 1.356 0.326
+109380 1.355 0.327
+109410 1.354 0.327
+109440 1.353 0.327
+109470 1.352 0.328
+109500 1.351 0.328
+109530 1.350 0.328
+109560 1.349 0.329
+109590 1.348 0.329
+109620 1.347 0.329
+109650 1.346 0.329
+109680 1.345 0.330
+109710 1.344 0.330
+109740 1.343 0.330
+109770 1.342 0.331
+109800 1.342 0.331
+109830 1.341 0.331
+109860 1.340 0.331
+109890 1.339 0.332
+109920 1.338 0.332
+109950 1.337 0.332
+109980 1.337 0.332
+110010 1.336 0.333
+110040 1.335 0.333
+110070 1.334 0.333
+110100 1.333 0.333
+110130 1.333 0.334
+110160 1.332 0.334
+110190 1.331 0.334
+110220 1.330 0.334
+110250 1.330 0.335
+110280 1.329 0.335
+110310 1.328 0.335
+110340 1.327 0.335
+110370 1.327 0.335
+110400 1.326 0.336
+110430 1.325 0.335
+110460 1.324 0.335
+110490 1.322 0.334
+110520 1.321 0.334
+110550 1.320 0.333
+110580 1.319 0.333
+110610 1.318 0.332
+110640 1.317 0.332
+110670 1.315 0.331
+110700 1.314 0.331
+110730 1.313 0.330
+110760 1.312 0.330
+110790 1.311 0.330
+110820 1.310 0.329
+110850 1.309 0.329
+110880 1.307 0.328
+110910 1.306 0.328
+110940 1.305 0.327
+110970 1.304 0.327
+111000 1.303 0.326
+111030 1.302 0.326
+111060 1.301 0.325
+111090 1.300 0.325
+111120 1.299 0.324
+111150 1.298 0.324
+111180 1.297 0.323
+111210 1.296 0.323
+111240 1.295 0.322
+111270 1.294 0.322
+111300 1.293 0.321
+111330 1.292 0.321
+111360 1.291 0.321
+111390 1.290 0.320
+111420 1.289 0.320
+111450 1.288 0.319
+111480 1.287 0.319
+111510 1.286 0.318
+111540 1.285 0.318
+111570 1.284 0.317
+111600 1.283 0.317
+111630 1.282 0.316
+111660 1.282 0.315
+111690 1.281 0.315
+111720 1.281 0.314
+111750 1.280 0.313
+111780 1.280 0.313
+111810 1.279 0.312
+111840 1.279 0.311
+111870 1.278 0.311
+111900 1.278 0.310
+111930 1.277 0.309
+111960 1.277 0.309
+111990 1.276 0.308
+112020 1.276 0.308
+112050 1.275 0.307
+112080 1.275 0.306
+112110 1.275 0.306
+112140 1.274 0.305
+112170 1.274 0.304
+112200 1.273 0.304
+112230 1.273 0.303
+112260 1.272 0.303
+112290 1.272 0.302
+112320 1.272 0.301
+112350 1.271 0.301
+112380 1.271 0.300
+112410 1.271 0.300
+112440 1.270 0.299
+112470 1.270 0.298
+112500 1.270 0.298
+112530 1.269 0.297
+112560 1.269 0.297
+112590 1.269 0.296
+112620 1.268 0.296
+112650 1.268 0.295
+112680 1.268 0.294
+112710 1.267 0.294
+112740 1.267 0.293
+112770 1.267 0.293
+112800 1.267 0.292
+112830 1.266 0.292
+112860 1.265 0.291
+112890 1.264 0.291
+112920 1.263 0.290
+112950 1.262 0.290
+112980 1.261 0.289
+113010 1.260 0.289
+113040 1.259 0.288
+113070 1.258 0.288
+113100 1.257 0.287
+113130 1.256 0.287
+113160 1.255 0.286
+113190 1.254 0.286
+113220 1.254 0.285
+113250 1.253 0.285
+113280 1.252 0.284
+113310 1.251 0.284
+113340 1.250 0.283
+113370 1.249 0.283
+113400 1.248 0.282
+113430 1.247 0.282
+113460 1.246 0.281
+113490 1.246 0.281
+113520 1.245 0.280
+113550 1.244 0.280
+113580 1.243 0.279
+113610 1.242 0.279
+113640 1.241 0.278
+113670 1.240 0.278
+113700 1.240 0.278
+113730 1.239 0.277
+113760 1.238 0.277
+113790 1.237 0.276
+113820 1.236 0.276
+113850 1.235 0.275
+113880 1.235 0.275
+113910 1.234 0.275
+113940 1.233 0.274
+113970 1.232 0.274
+114000 1.231 0.273
+114030 1.230 0.273
+114060 1.228 0.273
+114090 1.227 0.273
+114120 1.225 0.273
+114150 1.224 0.273
+114180 1.222 0.273
+114210 1.220 0.273
+114240 1.219 0.274
+114270 1.217 0.274
+114300 1.216 0.274
+114330 1.214 0.274
+114360 1.213 0.274
+114390 1.211 0.274
+114420 1.210 0.274
+114450 1.208 0.274
+114480 1.206 0.274
+114510 1.205 0.274
+114540 1.203 0.274
+114570 1.202 0.274
+114600 1.200 0.274
+114630 1.199 0.274
+114660 1.197 0.274
+114690 1.196 0.274
+114720 1.194 0.274
+114750 1.192 0.274
+114780 1.191 0.275
+114810 1.189 0.275
+114840 1.188 0.275
+114870 1.186 0.275
+114900 1.185 0.275
+114930 1.183 0.275
+114960 1.182 0.275
+114990 1.180 0.275
+115020 1.178 0.275
+115050 1.177 0.275
+115080 1.175 0.276
+115110 1.174 0.276
+115140 1.172 0.276
+115170 1.171 0.276
+115200 1.169 0.276
+115230 1.168 0.276
+115260 1.168 0.276
+115290 1.167 0.275
+115320 1.166 0.275
+115350 1.166 0.275
+115380 1.165 0.274
+115410 1.165 0.274
+115440 1.164 0.274
+115470 1.163 0.274
+115500 1.163 0.273
+115530 1.162 0.273
+115560 1.162 0.273
+115590 1.161 0.273
+115620 1.161 0.272
+115650 1.160 0.272
+115680 1.160 0.272
+115710 1.159 0.272
+115740 1.159 0.271
+115770 1.158 0.271
+115800 1.158 0.271
+115830 1.157 0.271
+115860 1.157 0.270
+115890 1.156 0.270
+115920 1.156 0.270
+115950 1.155 0.269
+115980 1.155 0.269
+116010 1.155 0.269
+116040 1.154 0.269
+116070 1.154 0.268
+116100 1.153 0.268
+116130 1.153 0.268
+116160 1.153 0.268
+116190 1.152 0.267
+116220 1.152 0.267
+116250 1.152 0.267
+116280 1.151 0.267
+116310 1.151 0.266
+116340 1.151 0.266
+116370 1.150 0.266
+116400 1.150 0.265
+116430 1.151 0.266
+116460 1.152 0.266
+116490 1.153 0.266
+116520 1.154 0.266
+116550 1.155 0.266
+116580 1.156 0.266
+116610 1.156 0.266
+116640 1.157 0.266
+116670 1.158 0.266
+116700 1.159 0.266
+116730 1.160 0.266
+116760 1.161 0.266
+116790 1.162 0.266
+116820 1.163 0.266
+116850 1.164 0.266
+116880 1.165 0.266
+116910 1.166 0.266
+116940 1.167 0.266
+116970 1.168 0.266
+117000 1.169 0.266
+117030 1.170 0.266
+117060 1.171 0.266
+117090 1.172 0.266
+117120 1.173 0.266
+117150 1.174 0.266
+117180 1.175 0.266
+117210 1.176 0.266
+117240 1.177 0.266
+117270 1.178 0.266
+117300 1.180 0.266
+117330 1.181 0.266
+117360 1.182 0.266
+117390 1.183 0.266
+117420 1.184 0.266
+117450 1.185 0.266
+117480 1.186 0.266
+117510 1.187 0.266
+117540 1.188 0.265
+117570 1.190 0.265
+117600 1.191 0.265
+117630 1.194 0.265
+117660 1.196 0.265
+117690 1.199 0.266
+117720 1.202 0.266
+117750 1.205 0.266
+117780 1.207 0.266
+117810 1.210 0.266
+117840 1.213 0.266
+117870 1.216 0.266
+117900 1.218 0.266
+117930 1.221 0.266
+117960 1.224 0.266
+117990 1.227 0.266
+118020 1.229 0.266
+118050 1.232 0.266
+118080 1.235 0.266
+118110 1.237 0.266
+118140 1.240 0.267
+118170 1.243 0.267
+118200 1.246 0.267
+118230 1.248 0.267
+118260 1.251 0.267
+118290 1.254 0.267
+118320 1.256 0.267
+118350 1.259 0.267
+118380 1.262 0.267
+118410 1.264 0.267
+118440 1.267 0.267
+118470 1.270 0.267
+118500 1.272 0.267
+118530 1.275 0.267
+118560 1.278 0.267
+118590 1.280 0.268
+118620 1.283 0.268
+118650 1.286 0.268
+118680 1.288 0.268
+118710 1.291 0.268
+118740 1.294 0.268
+118770 1.296 0.268
+118800 1.299 0.268
+118830 1.303 0.268
+118860 1.307 0.269
+118890 1.311 0.269
+118920 1.315 0.269
+118950 1.319 0.269
+118980 1.323 0.270
+119010 1.327 0.270
+119040 1.331 0.270
+119070 1.336 0.270
+119100 1.340 0.271
+119130 1.344 0.271
+119160 1.348 0.271
+119190 1.352 0.271
+119220 1.356 0.271
+119250 1.360 0.272
+119280 1.364 0.272
+119310 1.368 0.272
+119340 1.372 0.272
+119370 1.376 0.272
+119400 1.380 0.273
+119430 1.384 0.273
+119460 1.388 0.273
+119490 1.392 0.273
+119520 1.396 0.273
+119550 1.400 0.274
+119580 1.405 0.274
+119610 1.409 0.274
+119640 1.413 0.274
+119670 1.417 0.274
+119700 1.421 0.275
+119730 1.425 0.275
+119760 1.429 0.275
+119790 1.433 0.275
+119820 1.437 0.275
+119850 1.441 0.275
+119880 1.445 0.275
+119910 1.449 0.276
+119940 1.453 0.276
+119970 1.457 0.276
+120000 1.461 0.276
+120030 1.467 0.276
+120060 1.472 0.277
+120090 1.477 0.277
+120120 1.482 0.277
+120150 1.488 0.277
+120180 1.493 0.278
+120210 1.498 0.278
+120240 1.503 0.278
+120270 1.508 0.279
+120300 1.514 0.279
+120330 1.519 0.279
+120360 1.524 0.280
+120390 1.529 0.280
+120420 1.534 0.280
+120450 1.539 0.280
+120480 1.544 0.281
+120510 1.550 0.281
+120540 1.555 0.281
+120570 1.560 0.282
+120600 1.565 0.282
+120630 1.570 0.282
+120660 1.575 0.283
+120690 1.580 0.283
+120720 1.585 0.284
+120750 1.590 0.284
+120780 1.595 0.284
+120810 1.600 0.285
+120840 1.605 0.285
+120870 1.610 0.285
+120900 1.615 0.286
+120930 1.620 0.286
+120960 1.625 0.286
+120990 1.630 0.287
+121020 1.635 0.287
+121050 1.640 0.288
+121080 1.645 0.288
+121110 1.650 0.288
+121140 1.655 0.289
+121170 1.659 0.289
+121200 1.664 0.290
+121230 1.670 0.290
+121260 1.675 0.290
+121290 1.680 0.291
+121320 1.685 0.291
+121350 1.690 0.292
+121380 1.695 0.292
+121410 1.701 0.293
+121440 1.706 0.293
+121470 1.711 0.293
+121500 1.716 0.294
+121530 1.721 0.294
+121560 1.726 0.295
+121590 1.731 0.295
+121620 1.737 0.296
+121650 1.742 0.296
+121680 1.747 0.297
+121710 1.752 0.297
+121740 1.757 0.297
+121770 1.762 0.298
+121800 1.767 0.298
+121830 1.772 0.299
+121860 1.777 0.299
+121890 1.782 0.300
+121920 1.787 0.300
+121950 1.792 0.301
+121980 1.797 0.301
+122010 1.803 0.302
+122040 1.808 0.302
+122070 1.813 0.303
+122100 1.818 0.303
+122130 1.823 0.304
+122160 1.828 0.304
+122190 1.833 0.305
+122220 1.838 0.305
+122250 1.843 0.306
+122280 1.847 0.306
+122310 1.852 0.307
+122340 1.857 0.307
+122370 1.862 0.308
+122400 1.867 0.309
+122430 1.872 0.308
+122460 1.876 0.308
+122490 1.881 0.308
+122520 1.885 0.308
+122550 1.890 0.307
+122580 1.894 0.307
+122610 1.899 0.307
+122640 1.903 0.307
+122670 1.908 0.306
+122700 1.912 0.306
+122730 1.917 0.306
+122760 1.921 0.306
+122790 1.926 0.305
+122820 1.930 0.305
+122850 1.935 0.305
+122880 1.939 0.305
+122910 1.944 0.304
+122940 1.948 0.304
+122970 1.953 0.304
+123000 1.957 0.304
+123030 1.962 0.303
+123060 1.966 0.303
+123090 1.971 0.303
+123120 1.975 0.303
+123150 1.980 0.302
+123180 1.984 0.302
+123210 1.988 0.302
+123240 1.993 0.302
+123270 1.997 0.301
+123300 2.002 0.301
+123330 2.006 0.301
+123360 2.011 0.301
+123390 2.015 0.300
+123420 2.019 0.300
+123450 2.024 0.300
+123480 2.028 0.300
+123510 2.033 0.299
+123540 2.037 0.299
+123570 2.041 0.299
+123600 2.046 0.299
+123630 2.050 0.298
+123660 2.054 0.297
+123690 2.058 0.297
+123720 2.062 0.296
+123750 2.065 0.295
+123780 2.069 0.295
+123810 2.073 0.294
+123840 2.077 0.293
+123870 2.081 0.293
+123900 2.085 0.292
+123930 2.089 0.291
+123960 2.092 0.291
+123990 2.096 0.290
+124020 2.100 0.289
+124050 2.104 0.289
+124080 2.108 0.288
+124110 2.112 0.288
+124140 2.115 0.287
+124170 2.119 0.286
+124200 2.123 0.286
+124230 2.127 0.285
+124260 2.131 0.284
+124290 2.134 0.284
+124320 2.138 0.283
+124350 2.142 0.282
+124380 2.146 0.282
+124410 2.149 0.281
+124440 2.153 0.280
+124470 2.157 0.280
+124500 2.161 0.279
+124530 2.164 0.278
+124560 2.168 0.278
+124590 2.172 0.277
+124620 2.175 0.276
+124650 2.179 0.276
+124680 2.183 0.275
+124710 2.186 0.274
+124740 2.190 0.274
+124770 2.194 0.273
+124800 2.197 0.272
+124830 2.200 0.272
+124860 2.202 0.272
+124890 2.204 0.271
+124920 2.206 0.271
+124950 2.208 0.270
+124980 2.210 0.270
+125010 2.213 0.270
+125040 2.215 0.269
+125070 2.217 0.269
+125100 2.219 0.268
+125130 2.221 0.268
+125160 2.223 0.268
+125190 2.225 0.267
+125220 2.227 0.267
+125250 2.230 0.266
+125280 2.232 0.266
+125310 2.234 0.266
+125340 2.236 0.265
+125370 2.238 0.265
+125400 2.240 0.264
+125430 2.242 0.264
+125460 2.244 0.263
+125490 2.246 0.263
+125520 2.248 0.263
+125550 2.251 0.262
+125580 2.253 0.262
+125610 2.255 0.261
+125640 2.257 0.261
+125670 2.259 0.260
+125700 2.261 0.260
+125730 2.263 0.259
+125760 2.265 0.259
+125790 2.267 0.258
+125820 2.269 0.258
+125850 2.271 0.257
+125880 2.273 0.257
+125910 2.275 0.256
+125940 2.277 0.256
+125970 2.279 0.255
+126000 2.281 0.255
+126030 2.283 0.254
+126060 2.285 0.253
+126090 2.287 0.252
+126120 2.288 0.251
+126150 2.290 0.250
+126180 2.292 0.249
+126210 2.294 0.249
+126240 2.295 0.248
+126270 2.297 0.247
+126300 2.299 0.246
+126330 2.300 0.245
+126360 2.302 0.244
+126390 2.303 0.243
+126420 2.305 0.242
+126450 2.306 0.241
+126480 2.308 0.240
+126510 2.309 0.239
+126540 2.311 0.238
+126570 2.312 0.237
+126600 2.314 0.236
+126630 2.315 0.235
+126660 2.317 0.234
+126690 2.318 0.233
+126720 2.319 0.232
+126750 2.321 0.231
+126780 2.322 0.230
+126810 2.323 0.229
+126840 2.325 0.228
+126870 2.326 0.227
+126900 2.327 0.226
+126930 2.328 0.225
+126960 2.329 0.224
+126990 2.331 0.223
+127020 2.332 0.222
+127050 2.333 0.221
+127080 2.334 0.220
+127110 2.335 0.219
+127140 2.336 0.218
+127170 2.337 0.217
+127200 2.338 0.216
+127230 2.340 0.216
+127260 2.343 0.215
+127290 2.345 0.215
+127320 2.347 0.214
+127350 2.349 0.214
+127380 2.351 0.213
+127410 2.353 0.212
+127440 2.355 0.212
+127470 2.357 0.211
+127500 2.359 0.211
+127530 2.361 0.210
+127560 2.363 0.210
+127590 2.365 0.209
+127620 2.366 0.209
+127650 2.368 0.208
+127680 2.370 0.207
+127710 2.372 0.207
+127740 2.373 0.206
+127770 2.375 0.206
+127800 2.377 0.205
+127830 2.378 0.204
+127860 2.380 0.204
+127890 2.381 0.203
+127920 2.383 0.202
+127950 2.384 0.202
+127980 2.386 0.201
+128010 2.387 0.200
+128040 2.389 0.200
+128070 2.390 0.199
+128100 2.391 0.198
+128130 2.393 0.197
+128160 2.394 0.197
+128190 2.395 0.196
+128220 2.396 0.195
+128250 2.398 0.194
+128280 2.399 0.194
+128310 2.400 0.193
+128340 2.401 0.192
+128370 2.402 0.191
+128400 2.403 0.190
+128430 2.406 0.189
+128460 2.409 0.189
+128490 2.412 0.188
+128520 2.415 0.187
+128550 2.418 0.186
+128580 2.421 0.185
+128610 2.424 0.184
+128640 2.426 0.183
+128670 2.429 0.182
+128700 2.432 0.181
+128730 2.435 0.180
+128760 2.437 0.179
+128790 2.440 0.179
+128820 2.443 0.178
+128850 2.445 0.177
+128880 2.448 0.175
+128910 2.450 0.174
+128940 2.453 0.173
+128970 2.455 0.172
+129000 2.458 0.171
+129030 2.460 0.170
+129060 2.463 0.169
+129090 2.465 0.168
+129120 2.467 0.167
+129150 2.470 0.166
+129180 2.472 0.164
+129210 2.474 0.163
+129240 2.476 0.162
+129270 2.479 0.161
+129300 2.481 0.160
+129330 2.483 0.158
+129360 2.485 0.157
+129390 2.487 0.156
+129420 2.489 0.154
+129450 2.491 0.153
+129480 2.493 0.152
+129510 2.495 0.150
+129540 2.497 0.149
+129570 2.499 0.148
+129600 2.501 0.146
+129630 2.507 0.148
+129660 2.513 0.150
+129690 2.520 0.152
+129720 2.526 0.153
+129750 2.532 0.155
+129780 2.539 0.157
+129810 2.545 0.159
+129840 2.551 0.161
+129870 2.557 0.162
+129900 2.564 0.164
+129930 2.570 0.166
+129960 2.576 0.167
+129990 2.582 0.169
+130020 2.588 0.171
+130050 2.594 0.173
+130080 2.600 0.174
+130110 2.606 0.176
+130140 2.612 0.177
+130170 2.618 0.179
+130200 2.624 0.181
+130230 2.630 0.182
+130260 2.636 0.184
+130290 2.642 0.185
+130320 2.648 0.187
+130350 2.654 0.188
+130380 2.660 0.190
+130410 2.665 0.192
+130440 2.671 0.193
+130470 2.677 0.195
+130500 2.683 0.196
+130530 2.688 0.198
+130560 2.694 0.199
+130590 2.700 0.201
+130620 2.705 0.202
+130650 2.711 0.203
+130680 2.717 0.205
+130710 2.722 0.206
+130740 2.728 0.208
+130770 2.733 0.209
+130800 2.739 0.211
+130830 2.745 0.212
+130860 2.751 0.214
+130890 2.758 0.216
+130920 2.764 0.218
+130950 2.770 0.220
+130980 2.776 0.222
+131010 2.783 0.224
+131040 2.789 0.226
+131070 2.795 0.227
+131100 2.801 0.229
+131130 2.807 0.231
+131160 2.814 0.233
+131190 2.820 0.234
+131220 2.826 0.236
+131250 2.832 0.238
+131280 2.838 0.240
+131310 2.844 0.241
+131340 2.850 0.243
+131370 2.856 0.245
+131400 2.862 0.246
+131430 2.868 0.248
+131460 2.874 0.249
+131490 2.880 0.251
+131520 2.885 0.253
+131550 2.891 0.254
+131580 2.897 0.256
+131610 2.903 0.257
+131640 2.909 0.259
+131670 2.915 0.260
+131700 2.920 0.262
+131730 2.926 0.263
+131760 2.932 0.265
+131790 2.937 0.266
+131820 2.943 0.268
+131850 2.949 0.269
+131880 2.954 0.271
+131910 2.960 0.272
+131940 2.966 0.273
+131970 2.971 0.275
+132000 2.977 0.276
+132030 2.983 0.277
+132060 2.988 0.278
+132090 2.994 0.280
+132120 3.000 0.281
+132150 3.006 0.282
+132180 3.011 0.283
+132210 3.017 0.284
+132240 3.023 0.285
+132270 3.028 0.287
+132300 3.034 0.288
+132330 3.039 0.289
+132360 3.045 0.290
+132390 3.050 0.291
+132420 3.056 0.292
+132450 3.061 0.293
+132480 3.067 0.294
+132510 3.072 0.295
+132540 3.078 0.297
+132570 3.083 0.298
+132600 3.088 0.299
+132630 3.094 0.300
+132660 3.099 0.301
+132690 3.104 0.302
+132720 3.110 0.303
+132750 3.115 0.304
+132780 3.120 0.305
+132810 3.125 0.306
+132840 3.130 0.307
+132870 3.136 0.308
+132900 3.141 0.309
+132930 3.146 0.309
+132960 3.151 0.310
+132990 3.156 0.311
+133020 3.161 0.312
+133050 3.166 0.313
+133080 3.171 0.314
+133110 3.176 0.315
+133140 3.181 0.316
+133170 3.186 0.317
+133200 3.191 0.318
+133230 3.196 0.319
+133260 3.201 0.320
+133290 3.206 0.321
+133320 3.212 0.322
+133350 3.217 0.323
+133380 3.222 0.324
+133410 3.227 0.325
+133440 3.232 0.326
+133470 3.237 0.327
+133500 3.242 0.328
+133530 3.247 0.329
+133560 3.252 0.330
+133590 3.257 0.331
+133620 3.262 0.332
+133650 3.267 0.332
+133680 3.272 0.333
+133710 3.277 0.334
+133740 3.282 0.335
+133770 3.287 0.336
+133800 3.291 0.337
+133830 3.296 0.338
+133860 3.301 0.339
+133890 3.306 0.340
+133920 3.310 0.341
+133950 3.315 0.342
+133980 3.320 0.342
+134010 3.324 0.343
+134040 3.329 0.344
+134070 3.334 0.345
+134100 3.338 0.346
+134130 3.343 0.347
+134160 3.347 0.348
+134190 3.352 0.348
+134220 3.356 0.349
+134250 3.361 0.350
+134280 3.365 0.351
+134310 3.370 0.352
+134340 3.374 0.352
+134370 3.378 0.353
+134400 3.383 0.354
+134430 3.388 0.354
+134460 3.393 0.355
+134490 3.398 0.355
+134520 3.403 0.355
+134550 3.408 0.356
+134580 3.412 0.356
+134610 3.417 0.356
+134640 3.422 0.357
+134670 3.427 0.357
+134700 3.432 0.357
+134730 3.437 0.357
+134760 3.441 0.358
+134790 3.446 0.358
+134820 3.451 0.358
+134850 3.456 0.359
+134880 3.460 0.359
+134910 3.465 0.359
+134940 3.470 0.359
+134970 3.474 0.359
+135000 3.479 0.360
+135030 3.483 0.360
+135060 3.488 0.360
+135090 3.493 0.360
+135120 3.497 0.361
+135150 3.502 0.361
+135180 3.506 0.361
+135210 3.511 0.361
+135240 3.515 0.361
+135270 3.519 0.361
+135300 3.524 0.361
+135330 3.528 0.362
+135360 3.533 0.362
+135390 3.537 0.362
+135420 3.541 0.362
+135450 3.546 0.362
+135480 3.550 0.362
+135510 3.554 0.362
+135540 3.558 0.362
+135570 3.563 0.362
+135600 3.567 0.362
+135630 3.573 0.363
+135660 3.578 0.364
+135690 3.584 0.364
+135720 3.590 0.365
+135750 3.596 0.365
+135780 3.601 0.366
+135810 3.607 0.366
+135840 3.613 0.367
+135870 3.619 0.367
+135900 3.624 0.368
+135930 3.630 0.368
+135960 3.636 0.369
+135990 3.642 0.369
+136020 3.648 0.370
+136050 3.653 0.370
+136080 3.659 0.370
+136110 3.665 0.371
+136140 3.671 0.371
+136170 3.677 0.371
+136200 3.682 0.372
+136230 3.688 0.372
+136260 3.694 0.372
+136290 3.700 0.372
+136320 3.706 0.373
+136350 3.712 0.373
+136380 3.717 0.373
+136410 3.723 0.373
+136440 3.729 0.373
+136470 3.735 0.373
+136500 3.741 0.374
+136530 3.747 0.374
+136560 3.753 0.374
+136590 3.758 0.374
+136620 3.764 0.374
+136650 3.770 0.374
+136680 3.776 0.374
+136710 3.782 0.374
+136740 3.788 0.374
+136770 3.794 0.374
+136800 3.800 0.373
+136830 3.808 0.374
+136860 3.816 0.374
+136890 3.825 0.374
+136920 3.833 0.375
+136950 3.841 0.375
+136980 3.849 0.376
+137010 3.858 0.376
+137040 3.866 0.376
+137070 3.874 0.377
+137100 3.882 0.377
+137130 3.891 0.377
+137160 3.899 0.378
+137190 3.907 0.378
+137220 3.915 0.379
+137250 3.923 0.379
+137280 3.931 0.379
+137310 3.939 0.380
+137340 3.947 0.380
+137370 3.955 0.381
+137400 3.963 0.381
+137430 3.971 0.381
+137460 3.979 0.382
+137490 3.987 0.382
+137520 3.995 0.383
+137550 4.003 0.383
+137580 4.011 0.383
+137610 4.019 0.384
+137640 4.026 0.384
+137670 4.034 0.385
+137700 4.042 0.385
+137730 4.050 0.386
+137760 4.058 0.386
+137790 4.065 0.386
+137820 4.073 0.387
+137850 4.081 0.387
+137880 4.088 0.388
+137910 4.096 0.388
+137940 4.104 0.389
+137970 4.111 0.389
+138000 4.119 0.390
+138030 4.126 0.391
+138060 4.132 0.392
+138090 4.139 0.393
+138120 4.146 0.394
+138150 4.153 0.395
+138180 4.159 0.396
+138210 4.166 0.397
+138240 4.173 0.398
+138270 4.180 0.398
+138300 4.187 0.399
+138330 4.193 0.400
+138360 4.200 0.401
+138390 4.207 0.402
+138420 4.214 0.403
+138450 4.220 0.404
+138480 4.227 0.405
+138510 4.234 0.406
+138540 4.241 0.406
+138570 4.247 0.407
+138600 4.254 0.408
+138630 4.261 0.409
+138660 4.268 0.410
+138690 4.274 0.411
+138720 4.281 0.411
+138750 4.288 0.412
+138780 4.295 0.413
+138810 4.302 0.414
+138840 4.308 0.414
+138870 4.315 0.415
+138900 4.322 0.416
+138930 4.329 0.417
+138960 4.335 0.417
+138990 4.342 0.418
+139020 4.349 0.419
+139050 4.356 0.419
+139080 4.362 0.420
+139110 4.369 0.421
+139140 4.376 0.421
+139170 4.383 0.422
+139200 4.389 0.423
+139230 4.396 0.422
+139260 4.404 0.421
+139290 4.411 0.421
+139320 4.418 0.420
+139350 4.424 0.419
+139380 4.431 0.418
+139410 4.438 0.418
+139440 4.445 0.417
+139470 4.452 0.416
+139500 4.459 0.416
+139530 4.466 0.415
+139560 4.473 0.415
+139590 4.480 0.414
+139620 4.487 0.414
+139650 4.493 0.413
+139680 4.500 0.413
+139710 4.507 0.412
+139740 4.514 0.412
+139770 4.521 0.411
+139800 4.527 0.411
+139830 4.534 0.410
+139860 4.541 0.410
+139890 4.548 0.410
+139920 4.554 0.409
+139950 4.561 0.409
+139980 4.568 0.409
+140010 4.575 0.408
+140040 4.581 0.408
+140070 4.588 0.408
+140100 4.594 0.407
+140130 4.601 0.407
+140160 4.608 0.407
+140190 4.614 0.407
+140220 4.621 0.407
+140250 4.627 0.407
+140280 4.634 0.407
+140310 4.641 0.406
+140340 4.647 0.406
+140370 4.654 0.406
+140400 4.660 0.406
+140430 4.664 0.406
+140460 4.667 0.407
+140490 4.671 0.407
+140520 4.675 0.407
+140550 4.678 0.407
+140580 4.682 0.407
+140610 4.686 0.407
+140640 4.689 0.407
+140670 4.693 0.407
+140700 4.697 0.408
+140730 4.700 0.408
+140760 4.704 0.408
+140790 4.708 0.408
+140820 4.711 0.408
+140850 4.715 0.408
+140880 4.719 0.408
+140910 4.722 0.409
+140940 4.726 0.409
+140970 4.730 0.409
+141000 4.733 0.409
+141030 4.737 0.409
+141060 4.740 0.409
+141090 4.744 0.409
+141120 4.748 0.409
+141150 4.751 0.410
+141180 4.755 0.410
+141210 4.759 0.410
+141240 4.762 0.410
+141270 4.766 0.410
+141300 4.770 0.410
+141330 4.773 0.410
+141360 4.777 0.411
+141390 4.781 0.411
+141420 4.784 0.411
+141450 4.788 0.411
+141480 4.792 0.411
+141510 4.795 0.411
+141540 4.799 0.411
+141570 4.803 0.411
+141600 4.806 0.412
+141630 4.807 0.411
+141660 4.808 0.411
+141690 4.810 0.411
+141720 4.811 0.411
+141750 4.812 0.411
+141780 4.813 0.410
+141810 4.814 0.410
+141840 4.815 0.410
+141870 4.817 0.410
+141900 4.818 0.409
+141930 4.819 0.409
+141960 4.820 0.409
+141990 4.821 0.408
+142020 4.823 0.408
+142050 4.824 0.408
+142080 4.825 0.407
+142110 4.827 0.407
+142140 4.828 0.407
+142170 4.829 0.406
+142200 4.831 0.406
+142230 4.832 0.406
+142260 4.833 0.405
+142290 4.835 0.405
+142320 4.836 0.404
+142350 4.838 0.404
+142380 4.839 0.403
+142410 4.840 0.403
+142440 4.842 0.402
+142470 4.843 0.402
+142500 4.845 0.401
+142530 4.846 0.401
+142560 4.848 0.400
+142590 4.849 0.400
+142620 4.851 0.399
+142650 4.852 0.398
+142680 4.854 0.398
+142710 4.856 0.397
+142740 4.857 0.397
+142770 4.859 0.396
+142800 4.860 0.395
+142830 4.860 0.394
+142860 4.859 0.394
+142890 4.859 0.393
+142920 4.858 0.392
+142950 4.857 0.391
+142980 4.857 0.390
+143010 4.856 0.389
+143040 4.856 0.388
+143070 4.855 0.387
+143100 4.854 0.386
+143130 4.854 0.385
+143160 4.853 0.384
+143190 4.853 0.384
+143220 4.852 0.383
+143250 4.852 0.382
+143280 4.851 0.381
+143310 4.850 0.380
+143340 4.850 0.379
+143370 4.849 0.378
+143400 4.849 0.377
+143430 4.848 0.376
+143460 4.848 0.375
+143490 4.847 0.374
+143520 4.847 0.373
+143550 4.846 0.372
+143580 4.846 0.371
+143610 4.845 0.370
+143640 4.845 0.369
+143670 4.844 0.368
+143700 4.844 0.367
+143730 4.843 0.366
+143760 4.843 0.365
+143790 4.842 0.364
+143820 4.842 0.363
+143850 4.841 0.362
+143880 4.841 0.361
+143910 4.840 0.360
+143940 4.840 0.359
+143970 4.839 0.358
+144000 4.839 0.357
+144030 4.836 0.356
+144060 4.832 0.355
+144090 4.829 0.355
+144120 4.826 0.354
+144150 4.823 0.353
+144180 4.820 0.352
+144210 4.817 0.351
+144240 4.814 0.350
+144270 4.812 0.349
+144300 4.809 0.349
+144330 4.806 0.348
+144360 4.803 0.347
+144390 4.801 0.346
+144420 4.798 0.345
+144450 4.795 0.344
+144480 4.793 0.344
+144510 4.790 0.343
+144540 4.787 0.342
+144570 4.785 0.341
+144600 4.783 0.340
+144630 4.780 0.340
+144660 4.778 0.339
+144690 4.775 0.338
+144720 4.773 0.337
+144750 4.771 0.336
+144780 4.769 0.335
+144810 4.766 0.335
+144840 4.764 0.334
+144870 4.762 0.333
+144900 4.760 0.332
+144930 4.758 0.332
+144960 4.756 0.331
+144990 4.754 0.330
+145020 4.752 0.329
+145050 4.750 0.329
+145080 4.748 0.328
+145110 4.747 0.327
+145140 4.745 0.326
+145170 4.743 0.325
+145200 4.741 0.325
+145230 4.738 0.324
+145260 4.735 0.324
+145290 4.732 0.323
+145320 4.728 0.323
+145350 4.725 0.322
+145380 4.722 0.322
+145410 4.719 0.321
+145440 4.717 0.321
+145470 4.714 0.320
+145500 4.711 0.320
+145530 4.708 0.319
+145560 4.706 0.319
+145590 4.703 0.318
+145620 4.700 0.318
+145650 4.698 0.317
+145680 4.696 0.317
+145710 4.693 0.316
+145740 4.691 0.316
+145770 4.689 0.315
+145800 4.686 0.315
+145830 4.684 0.314
+145860 4.682 0.314
+145890 4.680 0.313
+145920 4.678 0.312
+145950 4.676 0.312
+145980 4.675 0.311
+146010 4.673 0.311
+146040 4.671 0.310
+146070 4.669 0.310
+146100 4.668 0.309
+146130 4.666 0.308
+146160 4.665 0.308
+146190 4.663 0.307
+146220 4.662 0.307
+146250 4.660 0.306
+146280 4.659 0.306
+146310 4.658 0.305
+146340 4.657 0.304
+146370 4.656 0.304
+146400 4.655 0.303
+146430 4.654 0.302
+146460 4.652 0.302
+146490 4.651 0.301
+146520 4.650 0.300
+146550 4.649 0.299
+146580 4.648 0.299
+146610 4.647 0.298
+146640 4.646 0.297
+146670 4.645 0.297
+146700 4.644 0.296
+146730 4.643 0.295
+146760 4.642 0.294
+146790 4.641 0.294
+146820 4.640 0.293
+146850 4.639 0.292
+146880 4.638 0.292
+146910 4.637 0.291
+146940 4.636 0.290
+146970 4.635 0.290
+147000 4.634 0.289
+147030 4.634 0.288
+147060 4.633 0.288
+147090 4.632 0.287
+147120 4.631 0.286
+147150 4.630 0.286
+147180 4.629 0.285
+147210 4.629 0.284
+147240 4.628 0.284
+147270 4.627 0.283
+147300 4.626 0.282
+147330 4.626 0.282
+147360 4.625 0.281
+147390 4.624 0.280
+147420 4.623 0.280
+147450 4.623 0.279
+147480 4.622 0.278
+147510 4.621 0.278
+147540 4.621 0.277
+147570 4.620 0.277
+147600 4.619 0.276
+147630 4.616 0.277
+147660 4.613 0.278
+147690 4.610 0.278
+147720 4.607 0.279
+147750 4.604 0.280
+147780 4.601 0.281
+147810 4.598 0.282
+147840 4.595 0.282
+147870 4.592 0.283
+147900 4.589 0.284
+147930 4.586 0.285
+147960 4.583 0.285
+147990 4.580 0.286
+148020 4.578 0.287
+148050 4.575 0.288
+148080 4.572 0.288
+148110 4.570 0.289
+148140 4.567 0.290
+148170 4.565 0.290
+148200 4.562 0.291
+148230 4.560 0.292
+148260 4.557 0.292
+148290 4.555 0.293
+148320 4.552 0.294
+148350 4.550 0.294
+148380 4.548 0.295
+148410 4.545 0.296
+148440 4.543 0.296
+148470 4.541 0.297
+148500 4.539 0.298
+148530 4.537 0.298
+148560 4.535 0.299
+148590 4.533 0.299
+148620 4.531 0.300
+148650 4.529 0.301
+148680 4.527 0.301
+148710 4.525 0.302
+148740 4.523 0.302
+148770 4.521 0.303
+148800 4.519 0.303
+148830 4.516 0.305
+148860 4.513 0.306
+148890 4.510 0.308
+148920 4.507 0.309
+148950 4.504 0.311
+148980 4.501 0.312
+149010 4.498 0.314
+149040 4.495 0.315
+149070 4.492 0.317
+149100 4.489 0.318
+149130 4.486 0.320
+149160 4.483 0.321
+149190 4.481 0.323
+149220 4.478 0.324
+149250 4.475 0.326
+149280 4.472 0.327
+149310 4.469 0.329
+149340 4.467 0.330
+149370 4.464 0.332
+149400 4.461 0.333
+149430 4.458 0.335
+149460 4.456 0.336
+149490 4.453 0.338
+149520 4.451 0.339
+149550 4.448 0.341
+149580 4.445 0.342
+149610 4.443 0.344
+149640 4.440 0.345
+149670 4.438 0.347
+149700 4.435 0.348
+149730 4.433 0.349
+149760 4.430 0.351
+149790 4.428 0.352
+149820 4.425 0.354
+149850 4.423 0.355
+149880 4.420 0.357
+149910 4.418 0.358
+149940 4.416 0.360
+149970 4.413 0.361
+150000 4.411 0.363
+150030 4.410 0.363
+150060 4.409 0.363
+150090 4.409 0.363
+150120 4.408 0.363
+150150 4.407 0.362
+150180 4.406 0.362
+150210 4.406 0.362
+150240 4.405 0.362
+150270 4.404 0.362
+150300 4.404 0.362
+150330 4.403 0.362
+150360 4.403 0.362
+150390 4.402 0.362
+150420 4.402 0.362
+150450 4.401 0.361
+150480 4.401 0.361
+150510 4.401 0.361
+150540 4.400 0.361
+150570 4.400 0.361
+150600 4.400 0.361
+150630 4.399 0.361
+150660 4.399 0.360
+150690 4.399 0.360
+150720 4.399 0.360
+150750 4.399 0.360
+150780 4.399 0.360
+150810 4.398 0.360
+150840 4.398 0.360
+150870 4.398 0.359
+150900 4.398 0.359
+150930 4.398 0.359
+150960 4.399 0.359
+150990 4.399 0.359
+151020 4.399 0.358
+151050 4.399 0.358
+151080 4.399 0.358
+151110 4.399 0.358
+151140 4.400 0.358
+151170 4.400 0.357
+151200 4.400 0.357
+151230 4.395 0.358
+151260 4.390 0.359
+151290 4.384 0.360
+151320 4.379 0.361
+151350 4.374 0.362
+151380 4.369 0.363
+151410 4.364 0.364
+151440 4.359 0.365
+151470 4.354 0.366
+151500 4.349 0.367
+151530 4.344 0.368
+151560 4.339 0.369
+151590 4.334 0.370
+151620 4.329 0.371
+151650 4.324 0.372
+151680 4.320 0.373
+151710 4.315 0.374
+151740 4.310 0.375
+151770 4.305 0.376
+151800 4.301 0.377
+151830 4.296 0.377
+151860 4.292 0.378
+151890 4.287 0.379
+151920 4.283 0.380
+151950 4.278 0.381
+151980 4.274 0.382
+152010 4.270 0.383
+152040 4.265 0.384
+152070 4.261 0.385
+152100 4.257 0.385
+152130 4.252 0.386
+152160 4.248 0.387
+152190 4.244 0.388
+152220 4.240 0.389
+152250 4.236 0.390
+152280 4.232 0.390
+152310 4.228 0.391
+152340 4.224 0.392
+152370 4.220 0.393
+152400 4.216 0.394
+152430 4.211 0.393
+152460 4.205 0.393
+152490 4.200 0.393
+152520 4.195 0.393
+152550 4.189 0.393
+152580 4.184 0.392
+152610 4.179 0.392
+152640 4.174 0.392
+152670 4.168 0.392
+152700 4.163 0.392
+152730 4.158 0.392
+152760 4.153 0.392
+152790 4.148 0.391
+152820 4.142 0.391
+152850 4.137 0.391
+152880 4.132 0.391
+152910 4.127 0.391
+152940 4.122 0.391
+152970 4.117 0.391
+153000 4.112 0.391
+153030 4.107 0.391
+153060 4.102 0.391
+153090 4.097 0.390
+153120 4.092 0.390
+153150 4.087 0.390
+153180 4.082 0.390
+153210 4.078 0.390
+153240 4.073 0.390
+153270 4.068 0.390
+153300 4.063 0.390
+153330 4.058 0.390
+153360 4.053 0.390
+153390 4.049 0.390
+153420 4.044 0.390
+153450 4.039 0.390
+153480 4.035 0.390
+153510 4.030 0.390
+153540 4.025 0.390
+153570 4.021 0.390
+153600 4.016 0.390
+153630 4.011 0.389
+153660 4.005 0.389
+153690 4.000 0.388
+153720 3.995 0.387
+153750 3.989 0.386
+153780 3.984 0.385
+153810 3.979 0.384
+153840 3.973 0.383
+153870 3.968 0.383
+153900 3.963 0.382
+153930 3.958 0.381
+153960 3.953 0.380
+153990 3.947 0.379
+154020 3.942 0.378
+154050 3.937 0.377
+154080 3.932 0.377
+154110 3.927 0.376
+154140 3.922 0.375
+154170 3.917 0.374
+154200 3.912 0.373
+154230 3.907 0.372
+154260 3.902 0.372
+154290 3.897 0.371
+154320 3.892 0.370
+154350 3.887 0.369
+154380 3.882 0.368
+154410 3.877 0.368
+154440 3.872 0.367
+154470 3.868 0.366
+154500 3.863 0.365
+154530 3.858 0.364
+154560 3.853 0.364
+154590 3.848 0.363
+154620 3.844 0.362
+154650 3.839 0.361
+154680 3.834 0.361
+154710 3.830 0.360
+154740 3.825 0.359
+154770 3.820 0.358
+154800 3.816 0.358
+154830 3.809 0.356
+154860 3.802 0.355
+154890 3.795 0.354
+154920 3.788 0.353
+154950 3.781 0.352
+154980 3.774 0.351
+155010 3.767 0.350
+155040 3.760 0.348
+155070 3.753 0.347
+155100 3.746 0.346
+155130 3.739 0.345
+155160 3.732 0.344
+155190 3.725 0.342
+155220 3.719 0.341
+155250 3.712 0.340
+155280 3.705 0.339
+155310 3.698 0.338
+155340 3.691 0.337
+155370 3.685 0.335
+155400 3.678 0.334
+155430 3.671 0.333
+155460 3.664 0.332
+155490 3.658 0.331
+155520 3.651 0.329
+155550 3.644 0.328
+155580 3.637 0.327
+155610 3.631 0.326
+155640 3.624 0.324
+155670 3.617 0.323
+155700 3.611 0.322
+155730 3.604 0.321
+155760 3.598 0.319
+155790 3.591 0.318
+155820 3.584 0.317
+155850 3.578 0.316
+155880 3.571 0.314
+155910 3.565 0.313
+155940 3.558 0.312
+155970 3.552 0.311
+156000 3.545 0.309
+156030 3.539 0.308
+156060 3.532 0.307
+156090 3.526 0.305
+156120 3.520 0.304
+156150 3.513 0.303
+156180 3.507 0.302
+156210 3.500 0.300
+156240 3.494 0.299
+156270 3.487 0.298
+156300 3.481 0.297
+156330 3.475 0.295
+156360 3.468 0.294
+156390 3.462 0.293
+156420 3.455 0.292
+156450 3.449 0.290
+156480 3.442 0.289
+156510 3.436 0.288
+156540 3.429 0.287
+156570 3.422 0.286
+156600 3.416 0.284
+156630 3.409 0.283
+156660 3.403 0.282
+156690 3.396 0.281
+156720 3.390 0.280
+156750 3.383 0.279
+156780 3.376 0.278
+156810 3.370 0.276
+156840 3.363 0.275
+156870 3.356 0.274
+156900 3.350 0.273
+156930 3.343 0.272
+156960 3.336 0.271
+156990 3.330 0.270
+157020 3.323 0.269
+157050 3.316 0.268
+157080 3.310 0.267
+157110 3.303 0.266
+157140 3.296 0.265
+157170 3.289 0.264
+157200 3.283 0.263
+157230 3.276 0.262
+157260 3.269 0.261
+157290 3.262 0.260
+157320 3.255 0.259
+157350 3.248 0.258
+157380 3.241 0.258
+157410 3.234 0.257
+157440 3.227 0.256
+157470 3.220 0.255
+157500 3.212 0.254
+157530 3.205 0.253
+157560 3.198 0.253
+157590 3.191 0.252
+157620 3.184 0.251
+157650 3.176 0.250
+157680 3.169 0.249
+157710 3.162 0.248
+157740 3.155 0.247
+157770 3.147 0.247
+157800 3.140 0.246
+157830 3.132 0.245
+157860 3.125 0.244
+157890 3.118 0.243
+157920 3.110 0.242
+157950 3.103 0.241
+157980 3.095 0.240
+158010 3.088 0.239
+158040 3.080 0.239
+158070 3.073 0.238
+158100 3.065 0.237
+158130 3.057 0.236
+158160 3.050 0.235
+158190 3.042 0.234
+158220 3.034 0.233
+158250 3.027 0.232
+158280 3.019 0.231
+158310 3.011 0.230
+158340 3.003 0.229
+158370 2.995 0.228
+158400 2.988 0.227
+158430 2.979 0.228
+158460 2.970 0.228
+158490 2.961 0.228
+158520 2.953 0.228
+158550 2.944 0.228
+158580 2.935 0.228
+158610 2.927 0.229
+158640 2.918 0.229
+158670 2.909 0.229
+158700 2.901 0.229
+158730 2.892 0.229
+158760 2.884 0.229
+158790 2.875 0.230
+158820 2.867 0.230
+158850 2.858 0.230
+158880 2.850 0.230
+158910 2.842 0.230
+158940 2.833 0.230
+158970 2.825 0.231
+159000 2.816 0.231
+159030 2.808 0.231
+159060 2.800 0.231
+159090 2.792 0.231
+159120 2.783 0.231
+159150 2.775 0.232
+159180 2.767 0.232
+159210 2.759 0.232
+159240 2.751 0.232
+159270 2.743 0.232
+159300 2.734 0.232
+159330 2.726 0.233
+159360 2.718 0.233
+159390 2.710 0.233
+159420 2.702 0.233
+159450 2.694 0.233
+159480 2.686 0.233
+159510 2.678 0.233
+159540 2.671 0.234
+159570 2.663 0.234
+159600 2.655 0.234
+159630 2.649 0.234
+159660 2.642 0.235
+159690 2.636 0.235
+159720 2.630 0.235
+159750 2.624 0.236
+159780 2.617 0.236
+159810 2.611 0.236
+159840 2.605 0.236
+159870 2.599 0.237
+159900 2.593 0.237
+159930 2.587 0.237
+159960 2.581 0.237
+159990 2.575 0.238
+160020 2.569 0.238
+160050 2.563 0.238
+160080 2.557 0.238
+160110 2.551 0.239
+160140 2.545 0.239
+160170 2.539 0.239
+160200 2.533 0.239
+160230 2.527 0.239
+160260 2.521 0.240
+160290 2.515 0.240
+160320 2.510 0.240
+160350 2.504 0.240
+160380 2.498 0.240
+160410 2.492 0.240
+160440 2.487 0.240
+160470 2.481 0.240
+160500 2.475 0.241
+160530 2.469 0.241
+160560 2.464 0.241
+160590 2.458 0.241
+160620 2.453 0.241
+160650 2.447 0.241
+160680 2.441 0.241
+160710 2.436 0.241
+160740 2.430 0.241
+160770 2.425 0.241
+160800 2.419 0.241
+160830 2.416 0.241
+160860 2.413 0.241
+160890 2.409 0.241
+160920 2.406 0.241
+160950 2.403 0.241
+160980 2.400 0.241
+161010 2.396 0.241
+161040 2.393 0.241
+161070 2.390 0.241
+161100 2.386 0.241
+161130 2.383 0.241
+161160 2.380 0.241
+161190 2.377 0.241
+161220 2.373 0.240
+161250 2.370 0.240
+161280 2.367 0.240
+161310 2.363 0.240
+161340 2.360 0.240
+161370 2.357 0.240
+161400 2.354 0.240
+161430 2.350 0.240
+161460 2.347 0.240
+161490 2.344 0.240
+161520 2.341 0.240
+161550 2.338 0.240
+161580 2.334 0.240
+161610 2.331 0.240
+161640 2.328 0.240
+161670 2.325 0.240
+161700 2.321 0.240
+161730 2.318 0.239
+161760 2.315 0.239
+161790 2.312 0.239
+161820 2.309 0.239
+161850 2.305 0.239
+161880 2.302 0.239
+161910 2.299 0.239
+161940 2.296 0.239
+161970 2.293 0.239
+162000 2.289 0.239
+162030 2.287 0.239
+162060 2.285 0.239
+162090 2.282 0.240
+162120 2.280 0.240
+162150 2.277 0.240
+162180 2.275 0.240
+162210 2.273 0.241
+162240 2.270 0.241
+162270 2.268 0.241
+162300 2.265 0.241
+162330 2.263 0.241
+162360 2.260 0.242
+162390 2.258 0.242
+162420 2.255 0.242
+162450 2.253 0.242
+162480 2.250 0.242
+162510 2.248 0.243
+162540 2.245 0.243
+162570 2.243 0.243
+162600 2.240 0.243
+162630 2.237 0.243
+162660 2.235 0.243
+162690 2.232 0.243
+162720 2.230 0.243
+162750 2.227 0.244
+162780 2.224 0.244
+162810 2.222 0.244
+162840 2.219 0.244
+162870 2.217 0.244
+162900 2.214 0.244
+162930 2.211 0.244
+162960 2.208 0.244
+162990 2.206 0.244
+163020 2.203 0.244
+163050 2.200 0.244
+163080 2.198 0.244
+163110 2.195 0.245
+163140 2.192 0.245
+163170 2.189 0.245
+163200 2.187 0.245
+163230 2.184 0.245
+163260 2.182 0.245
+163290 2.180 0.246
+163320 2.177 0.246
+163350 2.175 0.246
+163380 2.173 0.246
+163410 2.170 0.247
+163440 2.168 0.247
+163470 2.166 0.247
+163500 2.163 0.248
+163530 2.161 0.248
+163560 2.158 0.248
+163590 2.156 0.248
+163620 2.153 0.249
+163650 2.150 0.249
+163680 2.148 0.249
+163710 2.145 0.249
+163740 2.143 0.250
+163770 2.140 0.250
+163800 2.137 0.250
+163830 2.135 0.251
+163860 2.132 0.251
+163890 2.129 0.251
+163920 2.126 0.251
+163950 2.123 0.251
+163980 2.121 0.252
+164010 2.118 0.252
+164040 2.115 0.252
+164070 2.112 0.252
+164100 2.109 0.253
+164130 2.106 0.253
+164160 2.103 0.253
+164190 2.100 0.253
+164220 2.097 0.253
+164250 2.094 0.254
+164280 2.091 0.254
+164310 2.088 0.254
+164340 2.085 0.254
+164370 2.082 0.254
+164400 2.078 0.255
+164430 2.076 0.254
+164460 2.074 0.254
+164490 2.072 0.253
+164520 2.070 0.253
+164550 2.068 0.252
+164580 2.066 0.252
+164610 2.064 0.251
+164640 2.061 0.250
+164670 2.059 0.250
+164700 2.057 0.249
+164730 2.055 0.249
+164760 2.053 0.248
+164790 2.050 0.247
+164820 2.048 0.247
+164850 2.046 0.246
+164880 2.043 0.246
+164910 2.041 0.245
+164940 2.039 0.244
+164970 2.036 0.244
+165000 2.034 0.243
+165030 2.031 0.242
+165060 2.029 0.242
+165090 2.026 0.241
+165120 2.024 0.240
+165150 2.021 0.239
+165180 2.019 0.239
+165210 2.016 0.238
+165240 2.014 0.237
+165270 2.011 0.236
+165300 2.008 0.236
+165330 2.006 0.235
+165360 2.003 0.234
+165390 2.000 0.233
+165420 1.998 0.232
+165450 1.995 0.232
+165480 1.992 0.231
+165510 1.989 0.230
+165540 1.987 0.229
+165570 1.984 0.228
+165600 1.981 0.227
+165630 1.978 0.228
+165660 1.975 0.228
+165690 1.972 0.228
+165720 1.968 0.228
+165750 1.965 0.228
+165780 1.962 0.229
+165810 1.960 0.229
+165840 1.957 0.229
+165870 1.954 0.229
+165900 1.951 0.229
+165930 1.948 0.230
+165960 1.945 0.230
+165990 1.942 0.230
+166020 1.940 0.230
+166050 1.937 0.231
+166080 1.934 0.231
+166110 1.932 0.231
+166140 1.929 0.231
+166170 1.927 0.232
+166200 1.924 0.232
+166230 1.922 0.232
+166260 1.919 0.232
+166290 1.917 0.233
+166320 1.914 0.233
+166350 1.912 0.233
+166380 1.910 0.233
+166410 1.907 0.234
+166440 1.905 0.234
+166470 1.903 0.234
+166500 1.901 0.235
+166530 1.899 0.235
+166560 1.897 0.235
+166590 1.894 0.235
+166620 1.892 0.236
+166650 1.890 0.236
+166680 1.888 0.236
+166710 1.886 0.237
+166740 1.885 0.237
+166770 1.883 0.237
+166800 1.881 0.238
+166830 1.880 0.238
+166860 1.878 0.238
+166890 1.877 0.238
+166920 1.876 0.237
+166950 1.875 0.237
+166980 1.874 0.237
+167010 1.873 0.237
+167040 1.872 0.237
+167070 1.871 0.237
+167100 1.870 0.237
+167130 1.869 0.237
+167160 1.868 0.237
+167190 1.867 0.237
+167220 1.866 0.237
+167250 1.865 0.237
+167280 1.864 0.237
+167310 1.864 0.237
+167340 1.863 0.237
+167370 1.862 0.237
+167400 1.861 0.237
+167430 1.860 0.237
+167460 1.860 0.237
+167490 1.859 0.237
+167520 1.858 0.237
+167550 1.858 0.237
+167580 1.857 0.237
+167610 1.857 0.237
+167640 1.856 0.237
+167670 1.855 0.237
+167700 1.855 0.237
+167730 1.854 0.237
+167760 1.854 0.237
+167790 1.854 0.237
+167820 1.853 0.237
+167850 1.853 0.237
+167880 1.852 0.237
+167910 1.852 0.237
+167940 1.852 0.237
+167970 1.851 0.237
+168000 1.851 0.238
+168030 1.851 0.238
+168060 1.850 0.238
+168090 1.850 0.238
+168120 1.849 0.239
+168150 1.849 0.239
+168180 1.849 0.239
+168210 1.848 0.239
+168240 1.848 0.240
+168270 1.847 0.240
+168300 1.847 0.240
+168330 1.847 0.240
+168360 1.846 0.240
+168390 1.846 0.241
+168420 1.845 0.241
+168450 1.845 0.241
+168480 1.845 0.241
+168510 1.844 0.242
+168540 1.844 0.242
+168570 1.843 0.242
+168600 1.843 0.242
+168630 1.843 0.243
+168660 1.842 0.243
+168690 1.842 0.243
+168720 1.841 0.243
+168750 1.841 0.243
+168780 1.840 0.244
+168810 1.840 0.244
+168840 1.840 0.244
+168870 1.839 0.244
+168900 1.839 0.245
+168930 1.838 0.245
+168960 1.838 0.245
+168990 1.838 0.245
+169020 1.837 0.245
+169050 1.837 0.246
+169080 1.836 0.246
+169110 1.836 0.246
+169140 1.836 0.246
+169170 1.835 0.246
+169200 1.835 0.247
+169230 1.835 0.247
+169260 1.835 0.247
+169290 1.835 0.247
+169320 1.835 0.248
+169350 1.835 0.248
+169380 1.835 0.248
+169410 1.834 0.249
+169440 1.834 0.249
+169470 1.834 0.249
+169500 1.834 0.250
+169530 1.834 0.250
+169560 1.834 0.250
+169590 1.834 0.250
+169620 1.833 0.251
+169650 1.833 0.251
+169680 1.833 0.251
+169710 1.833 0.251
+169740 1.833 0.252
+169770 1.832 0.252
+169800 1.832 0.252
+169830 1.832 0.252
+169860 1.832 0.253
+169890 1.831 0.253
+169920 1.831 0.253
+169950 1.831 0.253
+169980 1.830 0.254
+170010 1.830 0.254
+170040 1.830 0.254
+170070 1.829 0.254
+170100 1.829 0.254
+170130 1.828 0.255
+170160 1.828 0.255
+170190 1.827 0.255
+170220 1.827 0.255
+170250 1.827 0.255
+170280 1.826 0.256
+170310 1.826 0.256
+170340 1.825 0.256
+170370 1.825 0.256
+170400 1.824 0.256
+170430 1.824 0.257
+170460 1.823 0.257
+170490 1.823 0.257
+170520 1.822 0.257
+170550 1.822 0.258
+170580 1.821 0.258
+170610 1.820 0.258
+170640 1.820 0.258
+170670 1.819 0.258
+170700 1.819 0.259
+170730 1.818 0.259
+170760 1.817 0.259
+170790 1.816 0.259
+170820 1.816 0.259
+170850 1.815 0.260
+170880 1.814 0.260
+170910 1.813 0.260
+170940 1.812 0.260
+170970 1.811 0.260
+171000 1.810 0.260
+171030 1.809 0.261
+171060 1.809 0.261
+171090 1.807 0.261
+171120 1.806 0.261
+171150 1.805 0.261
+171180 1.804 0.261
+171210 1.803 0.261
+171240 1.802 0.261
+171270 1.801 0.262
+171300 1.800 0.262
+171330 1.798 0.262
+171360 1.797 0.262
+171390 1.796 0.262
+171420 1.795 0.262
+171450 1.793 0.262
+171480 1.792 0.262
+171510 1.790 0.262
+171540 1.789 0.262
+171570 1.788 0.262
+171600 1.786 0.262
+171630 1.786 0.262
+171660 1.785 0.262
+171690 1.785 0.263
+171720 1.784 0.263
+171750 1.784 0.263
+171780 1.783 0.263
+171810 1.782 0.263
+171840 1.782 0.263
+171870 1.781 0.263
+171900 1.781 0.263
+171930 1.780 0.263
+171960 1.779 0.263
+171990 1.779 0.263
+172020 1.778 0.263
+172050 1.777 0.263
+172080 1.776 0.263
+172110 1.776 0.263
+172140 1.775 0.263
+172170 1.774 0.263
+172200 1.773 0.263
+172230 1.772 0.263
+172260 1.772 0.262
+172290 1.771 0.262
+172320 1.770 0.262
+172350 1.769 0.262
+172380 1.768 0.262
+172410 1.767 0.262
+172440 1.766 0.262
+172470 1.765 0.262
+172500 1.764 0.262
+172530 1.763 0.261
+172560 1.762 0.261
+172590 1.761 0.261
+172620 1.760 0.261
+172650 1.759 0.261
+172680 1.758 0.261
+172710 1.757 0.260
+172740 1.756 0.260
+172770 1.755 0.260
+172800 1.754 0.260
+172830 1.752 0.260
+172860 1.751 0.260
+172890 1.750 0.260
+172920 1.748 0.261
+172950 1.747 0.261
+172980 1.745 0.261
+173010 1.744 0.261
+173040 1.743 0.261
+173070 1.741 0.262
+173100 1.740 0.262
+173130 1.739 0.262
+173160 1.737 0.262
+173190 1.736 0.262
+173220 1.734 0.262
+173250 1.733 0.263
+173280 1.732 0.263
+173310 1.730 0.263
+173340 1.729 0.263
+173370 1.727 0.263
+173400 1.726 0.263
+173430 1.724 0.264
+173460 1.723 0.264
+173490 1.722 0.264
+173520 1.720 0.264
+173550 1.719 0.264
+173580 1.717 0.264
+173610 1.716 0.264
+173640 1.714 0.264
+173670 1.713 0.265
+173700 1.712 0.265
+173730 1.710 0.265
+173760 1.709 0.265
+173790 1.707 0.265
+173820 1.706 0.265
+173850 1.704 0.265
+173880 1.703 0.265
+173910 1.701 0.265
+173940 1.700 0.265
+173970 1.698 0.265
+174000 1.697 0.265
+174030 1.695 0.266
+174060 1.694 0.266
+174090 1.692 0.266
+174120 1.691 0.266
+174150 1.689 0.266
+174180 1.688 0.266
+174210 1.686 0.266
+174240 1.685 0.267
+174270 1.683 0.267
+174300 1.682 0.267
+174330 1.680 0.267
+174360 1.679 0.267
+174390 1.677 0.267
+174420 1.676 0.267
+174450 1.674 0.268
+174480 1.673 0.268
+174510 1.671 0.268
+174540 1.669 0.268
+174570 1.668 0.268
+174600 1.666 0.268
+174630 1.665 0.268
+174660 1.663 0.269
+174690 1.662 0.269
+174720 1.660 0.269
+174750 1.659 0.269
+174780 1.657 0.269
+174810 1.655 0.269
+174840 1.654 0.269
+174870 1.652 0.270
+174900 1.651 0.270
+174930 1.649 0.270
+174960 1.647 0.270
+174990 1.646 0.270
+175020 1.644 0.270
+175050 1.643 0.270
+175080 1.641 0.271
+175110 1.639 0.271
+175140 1.638 0.271
+175170 1.636 0.271
+175200 1.635 0.271
+175230 1.633 0.271
+175260 1.632 0.271
+175290 1.630 0.271
+175320 1.629 0.271
+175350 1.627 0.270
+175380 1.626 0.270
+175410 1.624 0.270
+175440 1.623 0.270
+175470 1.621 0.270
+175500 1.620 0.270
+175530 1.618 0.270
+175560 1.617 0.270
+175590 1.615 0.270
+175620 1.614 0.270
+175650 1.612 0.270
+175680 1.611 0.270
+175710 1.609 0.270
+175740 1.608 0.269
+175770 1.606 0.269
+175800 1.605 0.269
+175830 1.603 0.269
+175860 1.602 0.269
+175890 1.600 0.269
+175920 1.599 0.269
+175950 1.597 0.269
+175980 1.596 0.269
+176010 1.594 0.269
+176040 1.593 0.269
+176070 1.591 0.269
+176100 1.590 0.269
+176130 1.588 0.269
+176160 1.587 0.269
+176190 1.585 0.269
+176220 1.584 0.269
+176250 1.582 0.269
+176280 1.581 0.269
+176310 1.579 0.269
+176340 1.578 0.269
+176370 1.577 0.269
+176400 1.575 0.269
+176430 1.573 0.269
+176460 1.571 0.270
+176490 1.569 0.270
+176520 1.567 0.271
+176550 1.566 0.271
+176580 1.564 0.272
+176610 1.562 0.272
+176640 1.560 0.273
+176670 1.558 0.273
+176700 1.556 0.273
+176730 1.555 0.274
+176760 1.553 0.274
+176790 1.551 0.275
+176820 1.549 0.275
+176850 1.547 0.276
+176880 1.546 0.276
+176910 1.544 0.277
+176940 1.542 0.277
+176970 1.540 0.278
+177000 1.538 0.278
+177030 1.537 0.279
+177060 1.535 0.279
+177090 1.533 0.280
+177120 1.531 0.280
+177150 1.530 0.281
+177180 1.528 0.281
+177210 1.526 0.282
+177240 1.525 0.282
+177270 1.523 0.283
+177300 1.521 0.283
+177330 1.520 0.284
+177360 1.518 0.284
+177390 1.516 0.285
+177420 1.515 0.285
+177450 1.513 0.286
+177480 1.511 0.286
+177510 1.510 0.287
+177540 1.508 0.287
+177570 1.506 0.288
+177600 1.505 0.288
+177630 1.504 0.289
+177660 1.504 0.289
+177690 1.503 0.289
+177720 1.503 0.290
+177750 1.502 0.290
+177780 1.502 0.290
+177810 1.501 0.290
+177840 1.501 0.291
+177870 1.501 0.291
+177900 1.500 0.291
+177930 1.500 0.291
+177960 1.500 0.292
+177990 1.499 0.292
+178020 1.499 0.292
+178050 1.499 0.292
+178080 1.499 0.293
+178110 1.498 0.293
+178140 1.498 0.293
+178170 1.498 0.293
+178200 1.498 0.294
+178230 1.498 0.294
+178260 1.498 0.294
+178290 1.498 0.294
+178320 1.498 0.295
+178350 1.497 0.295
+178380 1.497 0.295
+178410 1.497 0.295
+178440 1.497 0.296
+178470 1.497 0.296
+178500 1.498 0.296
+178530 1.498 0.296
+178560 1.498 0.297
+178590 1.498 0.297
+178620 1.498 0.297
+178650 1.498 0.297
+178680 1.498 0.298
+178710 1.499 0.298
+178740 1.499 0.298
+178770 1.499 0.298
+178800 1.499 0.299
+178830 1.500 0.299
+178860 1.500 0.299
+178890 1.501 0.299
+178920 1.501 0.299
+178950 1.502 0.300
+178980 1.503 0.300
+179010 1.503 0.300
+179040 1.504 0.300
+179070 1.504 0.301
+179100 1.505 0.301
+179130 1.506 0.301
+179160 1.506 0.301
+179190 1.507 0.301
+179220 1.507 0.302
+179250 1.508 0.302
+179280 1.509 0.302
+179310 1.509 0.302
+179340 1.510 0.303
+179370 1.511 0.303
+179400 1.511 0.303
+179430 1.512 0.303
+179460 1.513 0.304
+179490 1.513 0.304
+179520 1.514 0.304
+179550 1.515 0.304
+179580 1.516 0.305
+179610 1.516 0.305
+179640 1.517 0.305
+179670 1.518 0.305
+179700 1.519 0.306
+179730 1.519 0.306
+179760 1.520 0.306
+179790 1.521 0.307
+179820 1.522 0.307
+179850 1.522 0.307
+179880 1.523 0.307
+179910 1.524 0.308
+179940 1.525 0.308
+179970 1.525 0.308
+180000 1.526 0.309
+180030 1.526 0.308
+180060 1.525 0.308
+180090 1.525 0.308
+180120 1.524 0.307
+180150 1.523 0.307
+180180 1.523 0.307
+180210 1.522 0.307
+180240 1.522 0.306
+180270 1.521 0.306
+180300 1.521 0.306
+180330 1.520 0.306
+180360 1.519 0.305
+180390 1.519 0.305
+180420 1.518 0.305
+180450 1.518 0.305
+180480 1.517 0.304
+180510 1.517 0.304
+180540 1.516 0.304
+180570 1.516 0.303
+180600 1.515 0.303
+180630 1.515 0.303
+180660 1.515 0.303
+180690 1.514 0.302
+180720 1.514 0.302
+180750 1.513 0.302
+180780 1.513 0.302
+180810 1.512 0.301
+180840 1.512 0.301
+180870 1.511 0.301
+180900 1.511 0.301
+180930 1.511 0.300
+180960 1.510 0.300
+180990 1.510 0.300
+181020 1.510 0.300
+181050 1.509 0.299
+181080 1.509 0.299
+181110 1.508 0.299
+181140 1.508 0.298
+181170 1.508 0.298
+181200 1.507 0.298
+181230 1.507 0.297
+181260 1.506 0.297
+181290 1.506 0.296
+181320 1.505 0.296
+181350 1.505 0.295
+181380 1.505 0.295
+181410 1.504 0.294
+181440 1.504 0.294
+181470 1.503 0.294
+181500 1.503 0.293
+181530 1.502 0.293
+181560 1.502 0.292
+181590 1.501 0.292
+181620 1.501 0.291
+181650 1.500 0.291
+181680 1.500 0.291
+181710 1.499 0.290
+181740 1.499 0.290
+181770 1.498 0.289
+181800 1.498 0.289
+181830 1.497 0.289
+181860 1.497 0.288
+181890 1.496 0.288
+181920 1.496 0.288
+181950 1.496 0.287
+181980 1.495 0.287
+182010 1.495 0.287
+182040 1.494 0.286
+182070 1.494 0.286
+182100 1.493 0.286
+182130 1.493 0.285
+182160 1.492 0.285
+182190 1.492 0.285
+182220 1.491 0.285
+182250 1.491 0.284
+182280 1.490 0.284
+182310 1.490 0.284
+182340 1.489 0.284
+182370 1.489 0.283
+182400 1.488 0.283
+182430 1.487 0.283
+182460 1.486 0.282
+182490 1.485 0.282
+182520 1.484 0.282
+182550 1.483 0.281
+182580 1.482 0.281
+182610 1.480 0.281
+182640 1.479 0.280
+182670 1.478 0.280
+182700 1.477 0.280
+182730 1.476 0.279
+182760 1.475 0.279
+182790 1.474 0.279
+182820 1.473 0.278
+182850 1.472 0.278
+182880 1.470 0.278
+182910 1.469 0.277
+182940 1.468 0.277
+182970 1.467 0.277
+183000 1.466 0.276
+183030 1.465 0.276
+183060 1.464 0.276
+183090 1.463 0.275
+183120 1.462 0.275
+183150 1.461 0.275
+183180 1.460 0.275
+183210 1.459 0.274
+183240 1.458 0.274
+183270 1.456 0.274
+183300 1.455 0.274
+183330 1.454 0.273
+183360 1.453 0.273
+183390 1.452 0.273
+183420 1.451 0.272
+183450 1.450 0.272
+183480 1.449 0.272
+183510 1.448 0.272
+183540 1.447 0.271
+183570 1.446 0.271
+183600 1.445 0.271
+183630 1.444 0.271
+183660 1.443 0.271
+183690 1.441 0.270
+183720 1.440 0.270
+183750 1.439 0.270
+183780 1.438 0.270
+183810 1.437 0.269
+183840 1.436 0.269
+183870 1.434 0.269
+183900 1.433 0.269
+183930 1.432 0.269
+183960 1.431 0.268
+183990 1.430 0.268
+184020 1.429 0.268
+184050 1.428 0.268
+184080 1.426 0.268
+184110 1.425 0.267
+184140 1.424 0.267
+184170 1.423 0.267
+184200 1.422 0.267
+184230 1.421 0.267
+184260 1.420 0.266
+184290 1.419 0.266
+184320 1.418 0.266
+184350 1.417 0.266
+184380 1.416 0.266
+184410 1.415 0.266
+184440 1.414 0.266
+184470 1.413 0.265
+184500 1.412 0.265
+184530 1.411 0.265
+184560 1.410 0.265
+184590 1.409 0.265
+184620 1.408 0.265
+184650 1.407 0.264
+184680 1.406 0.264
+184710 1.405 0.264
+184740 1.404 0.264
+184770 1.403 0.264
+184800 1.402 0.264
+184830 1.400 0.264
+184860 1.399 0.263
+184890 1.397 0.263
+184920 1.396 0.263
+184950 1.395 0.263
+184980 1.393 0.262
+185010 1.392 0.262
+185040 1.390 0.262
+185070 1.389 0.262
+185100 1.387 0.261
+185130 1.386 0.261
+185160 1.385 0.261
+185190 1.383 0.260
+185220 1.382 0.260
+185250 1.381 0.260
+185280 1.379 0.259
+185310 1.378 0.259
+185340 1.377 0.259
+185370 1.375 0.258
+185400 1.374 0.258
+185430 1.373 0.258
+185460 1.372 0.257
+185490 1.370 0.257
+185520 1.369 0.257
+185550 1.368 0.256
+185580 1.367 0.256
+185610 1.365 0.256
+185640 1.364 0.255
+185670 1.363 0.255
+185700 1.362 0.254
+185730 1.361 0.254
+185760 1.359 0.254
+185790 1.358 0.253
+185820 1.357 0.253
+185850 1.356 0.252
+185880 1.355 0.252
+185910 1.354 0.251
+185940 1.353 0.251
+185970 1.351 0.251
+186000 1.350 0.250
+186030 1.349 0.250
+186060 1.349 0.249
+186090 1.348 0.249
+186120 1.347 0.248
+186150 1.346 0.248
+186180 1.345 0.247
+186210 1.344 0.247
+186240 1.343 0.246
+186270 1.342 0.246
+186300 1.341 0.245
+186330 1.340 0.245
+186360 1.339 0.244
+186390 1.338 0.244
+186420 1.337 0.243
+186450 1.337 0.243
+186480 1.336 0.242
+186510 1.335 0.242
+186540 1.334 0.241
+186570 1.333 0.240
+186600 1.332 0.240
+186630 1.331 0.239
+186660 1.330 0.239
+186690 1.330 0.238
+186720 1.329 0.238
+186750 1.328 0.237
+186780 1.327 0.236
+186810 1.326 0.236
+186840 1.325 0.235
+186870 1.324 0.235
+186900 1.324 0.234
+186930 1.323 0.233
+186960 1.322 0.233
+186990 1.321 0.232
+187020 1.320 0.231
+187050 1.319 0.231
+187080 1.318 0.230
+187110 1.318 0.229
+187140 1.317 0.229
+187170 1.316 0.228
+187200 1.315 0.227
+187230 1.314 0.227
+187260 1.312 0.227
+187290 1.311 0.226
+187320 1.310 0.226
+187350 1.308 0.226
+187380 1.307 0.225
+187410 1.306 0.225
+187440 1.304 0.225
+187470 1.303 0.224
+187500 1.302 0.224
+187530 1.300 0.224
+187560 1.299 0.223
+187590 1.298 0.223
+187620 1.296 0.223
+187650 1.295 0.222
+187680 1.294 0.222
+187710 1.293 0.222
+187740 1.291 0.222
+187770 1.290 0.221
+187800 1.289 0.221
+187830 1.288 0.221
+187860 1.286 0.220
+187890 1.285 0.220
+187920 1.284 0.220
+187950 1.283 0.219
+187980 1.282 0.219
+188010 1.281 0.219
+188040 1.279 0.218
+188070 1.278 0.218
+188100 1.277 0.218
+188130 1.276 0.217
+188160 1.275 0.217
+188190 1.274 0.217
+188220 1.273 0.216
+188250 1.272 0.216
+188280 1.271 0.216
+188310 1.270 0.215
+188340 1.269 0.215
+188370 1.268 0.215
+188400 1.267 0.214
+188430 1.266 0.215
+188460 1.266 0.215
+188490 1.266 0.215
+188520 1.265 0.216
+188550 1.265 0.216
+188580 1.265 0.216
+188610 1.264 0.217
+188640 1.264 0.217
+188670 1.264 0.217
+188700 1.263 0.218
+188730 1.263 0.218
+188760 1.263 0.218
+188790 1.262 0.219
+188820 1.262 0.219
+188850 1.262 0.219
+188880 1.262 0.219
+188910 1.261 0.220
+188940 1.261 0.220
+188970 1.261 0.220
+189000 1.260 0.221
+189030 1.260 0.221
+189060 1.260 0.221
+189090 1.260 0.221
+189120 1.259 0.222
+189150 1.259 0.222
+189180 1.259 0.222
+189210 1.259 0.222
+189240 1.258 0.223
+189270 1.258 0.223
+189300 1.258 0.223
+189330 1.258 0.223
+189360 1.257 0.224
+189390 1.257 0.224
+189420 1.257 0.224
+189450 1.257 0.224
+189480 1.257 0.224
+189510 1.256 0.225
+189540 1.256 0.225
+189570 1.256 0.225
+189600 1.256 0.225
+189630 1.256 0.226
+189660 1.256 0.226
+189690 1.256 0.227
+189720 1.257 0.228
+189750 1.257 0.228
+189780 1.257 0.229
+189810 1.257 0.229
+189840 1.257 0.230
+189870 1.258 0.230
+189900 1.258 0.231
+189930 1.258 0.231
+189960 1.258 0.232
+189990 1.259 0.232
+190020 1.259 0.233
+190050 1.259 0.234
+190080 1.259 0.234
+190110 1.260 0.235
+190140 1.260 0.235
+190170 1.260 0.236
+190200 1.260 0.236
+190230 1.261 0.237
+190260 1.261 0.237
+190290 1.261 0.238
+190320 1.262 0.238
+190350 1.262 0.239
+190380 1.262 0.239
+190410 1.262 0.240
+190440 1.263 0.240
+190470 1.263 0.241
+190500 1.263 0.241
+190530 1.264 0.242
+190560 1.264 0.242
+190590 1.264 0.243
+190620 1.265 0.243
+190650 1.265 0.243
+190680 1.265 0.244
+190710 1.266 0.244
+190740 1.266 0.245
+190770 1.266 0.245
+190800 1.267 0.246
+190830 1.267 0.246
+190860 1.268 0.247
+190890 1.269 0.247
+190920 1.270 0.247
+190950 1.270 0.248
+190980 1.271 0.248
+191010 1.272 0.249
+191040 1.273 0.249
+191070 1.273 0.250
+191100 1.274 0.250
+191130 1.275 0.250
+191160 1.276 0.251
+191190 1.276 0.251
+191220 1.277 0.252
+191250 1.278 0.252
+191280 1.279 0.252
+191310 1.280 0.253
+191340 1.280 0.253
+191370 1.281 0.254
+191400 1.282 0.254
+191430 1.283 0.254
+191460 1.284 0.255
+191490 1.285 0.255
+191520 1.285 0.255
+191550 1.286 0.256
+191580 1.287 0.256
+191610 1.288 0.256
+191640 1.289 0.257
+191670 1.290 0.257
+191700 1.290 0.258
+191730 1.291 0.258
+191760 1.292 0.258
+191790 1.293 0.259
+191820 1.294 0.259
+191850 1.295 0.259
+191880 1.295 0.260
+191910 1.296 0.260
+191940 1.297 0.260
+191970 1.298 0.260
+192000 1.299 0.261
+192030 1.300 0.261
+192060 1.301 0.262
+192090 1.302 0.262
+192120 1.303 0.262
+192150 1.303 0.263
+192180 1.304 0.263
+192210 1.305 0.264
+192240 1.306 0.264
+192270 1.307 0.264
+192300 1.308 0.265
+192330 1.309 0.265
+192360 1.310 0.266
+192390 1.311 0.266
+192420 1.312 0.266
+192450 1.313 0.267
+192480 1.313 0.267
+192510 1.314 0.267
+192540 1.315 0.268
+192570 1.316 0.268
+192600 1.317 0.268
+192630 1.318 0.269
+192660 1.319 0.269
+192690 1.320 0.269
+192720 1.321 0.269
+192750 1.322 0.270
+192780 1.323 0.270
+192810 1.324 0.270
+192840 1.325 0.271
+192870 1.326 0.271
+192900 1.327 0.271
+192930 1.328 0.271
+192960 1.329 0.272
+192990 1.330 0.272
+193020 1.331 0.272
+193050 1.332 0.272
+193080 1.333 0.273
+193110 1.334 0.273
+193140 1.335 0.273
+193170 1.336 0.273
+193200 1.337 0.273
+193230 1.338 0.274
+193260 1.338 0.274
+193290 1.339 0.275
+193320 1.340 0.275
+193350 1.340 0.276
+193380 1.341 0.276
+193410 1.342 0.277
+193440 1.342 0.277
+193470 1.343 0.278
+193500 1.344 0.278
+193530 1.344 0.279
+193560 1.345 0.279
+193590 1.346 0.280
+193620 1.346 0.280
+193650 1.347 0.280
+193680 1.348 0.281
+193710 1.348 0.281
+193740 1.349 0.282
+193770 1.350 0.282
+193800 1.350 0.283
+193830 1.351 0.283
+193860 1.352 0.284
+193890 1.352 0.284
+193920 1.353 0.285
+193950 1.354 0.285
+193980 1.354 0.286
+194010 1.355 0.286
+194040 1.356 0.287
+194070 1.356 0.287
+194100 1.357 0.288
+194130 1.358 0.288
+194160 1.359 0.288
+194190 1.359 0.289
+194220 1.360 0.289
+194250 1.361 0.290
+194280 1.361 0.290
+194310 1.362 0.291
+194340 1.363 0.291
+194370 1.363 0.292
+194400 1.364 0.292
+194430 1.363 0.292
+194460 1.362 0.292
+194490 1.362 0.292
+194520 1.361 0.293
+194550 1.360 0.293
+194580 1.359 0.293
+194610 1.359 0.293
+194640 1.358 0.293
+194670 1.357 0.293
+194700 1.356 0.293
+194730 1.356 0.293
+194760 1.355 0.293
+194790 1.354 0.293
+194820 1.354 0.293
+194850 1.353 0.293
+194880 1.352 0.293
+194910 1.351 0.293
+194940 1.351 0.294
+194970 1.350 0.294
+195000 1.349 0.294
+195030 1.348 0.294
+195060 1.348 0.294
+195090 1.347 0.294
+195120 1.346 0.294
+195150 1.345 0.294
+195180 1.345 0.294
+195210 1.344 0.294
+195240 1.343 0.294
+195270 1.342 0.294
+195300 1.342 0.294
+195330 1.341 0.294
+195360 1.340 0.294
+195390 1.339 0.295
+195420 1.339 0.295
+195450 1.338 0.295
+195480 1.337 0.295
+195510 1.336 0.295
+195540 1.336 0.295
+195570 1.335 0.295
+195600 1.334 0.295
+195630 1.333 0.295
+195660 1.331 0.294
+195690 1.330 0.294
+195720 1.328 0.294
+195750 1.327 0.293
+195780 1.325 0.293
+195810 1.324 0.293
+195840 1.322 0.292
+195870 1.321 0.292
+195900 1.319 0.292
+195930 1.318 0.291
+195960 1.317 0.291
+195990 1.315 0.291
+196020 1.314 0.290
+196050 1.312 0.290
+196080 1.311 0.290
+196110 1.309 0.289
+196140 1.308 0.289
+196170 1.306 0.289
+196200 1.305 0.288
+196230 1.304 0.288
+196260 1.302 0.288
+196290 1.301 0.287
+196320 1.299 0.287
+196350 1.298 0.287
+196380 1.297 0.286
+196410 1.295 0.286
+196440 1.294 0.286
+196470 1.292 0.285
+196500 1.291 0.285
+196530 1.290 0.285
+196560 1.288 0.284
+196590 1.287 0.284
+196620 1.286 0.284
+196650 1.284 0.283
+196680 1.283 0.283
+196710 1.281 0.283
+196740 1.280 0.282
+196770 1.279 0.282
+196800 1.277 0.282
+196830 1.276 0.281
+196860 1.275 0.280
+196890 1.273 0.279
+196920 1.272 0.279
+196950 1.271 0.278
+196980 1.269 0.277
+197010 1.268 0.276
+197040 1.267 0.276
+197070 1.266 0.275
+197100 1.264 0.274
+197130 1.263 0.273
+197160 1.262 0.273
+197190 1.261 0.272
+197220 1.260 0.271
+197250 1.259 0.270
+197280 1.257 0.270
+197310 1.256 0.269
+197340 1.255 0.268
+197370 1.254 0.267
+197400 1.253 0.267
+197430 1.252 0.266
+197460 1.251 0.265
+197490 1.250 0.264
+197520 1.249 0.264
+197550 1.248 0.263
+197580 1.247 0.262
+197610 1.246 0.261
+197640 1.245 0.261
+197670 1.244 0.260
+197700 1.243 0.259
+197730 1.242 0.259
+197760 1.241 0.258
+197790 1.240 0.257
+197820 1.239 0.256
+197850 1.238 0.256
+197880 1.237 0.255
+197910 1.237 0.254
+197940 1.236 0.253
+197970 1.235 0.253
+198000 1.234 0.252
+198030 1.233 0.251
+198060 1.232 0.251
+198090 1.231 0.250
+198120 1.230 0.250
+198150 1.229 0.249
+198180 1.228 0.249
+198210 1.227 0.248
+198240 1.226 0.248
+198270 1.225 0.247
+198300 1.224 0.247
+198330 1.223 0.246
+198360 1.223 0.246
+198390 1.222 0.245
+198420 1.221 0.245
+198450 1.220 0.244
+198480 1.219 0.244
+198510 1.218 0.243
+198540 1.217 0.243
+198570 1.217 0.242
+198600 1.216 0.242
+198630 1.215 0.241
+198660 1.214 0.241
+198690 1.213 0.240
+198720 1.213 0.240
+198750 1.212 0.240
+198780 1.211 0.239
+198810 1.210 0.239
+198840 1.210 0.238
+198870 1.209 0.238
+198900 1.208 0.237
+198930 1.207 0.237
+198960 1.207 0.237
+198990 1.206 0.236
+199020 1.205 0.236
+199050 1.205 0.235
+199080 1.204 0.235
+199110 1.203 0.234
+199140 1.203 0.234
+199170 1.202 0.234
+199200 1.202 0.233
+199230 1.201 0.233
+199260 1.200 0.233
+199290 1.199 0.233
+199320 1.199 0.233
+199350 1.198 0.233
+199380 1.197 0.233
+199410 1.196 0.233
+199440 1.196 0.233
+199470 1.195 0.233
+199500 1.194 0.233
+199530 1.194 0.234
+199560 1.193 0.234
+199590 1.192 0.234
+199620 1.191 0.234
+199650 1.191 0.234
+199680 1.190 0.234
+199710 1.189 0.234
+199740 1.189 0.234
+199770 1.188 0.234
+199800 1.187 0.234
+199830 1.187 0.234
+199860 1.186 0.234
+199890 1.185 0.234
+199920 1.185 0.234
+199950 1.184 0.234
+199980 1.183 0.235
+200010 1.183 0.235
+200040 1.182 0.235
+200070 1.181 0.235
+200100 1.181 0.235
+200130 1.180 0.235
+200160 1.179 0.235
+200190 1.179 0.235
+200220 1.178 0.235
+200250 1.178 0.236
+200280 1.177 0.236
+200310 1.176 0.236
+200340 1.176 0.236
+200370 1.175 0.236
+200400 1.174 0.236
+200430 1.174 0.237
+200460 1.174 0.237
+200490 1.174 0.238
+200520 1.174 0.238
+200550 1.174 0.239
+200580 1.173 0.239
+200610 1.173 0.240
+200640 1.173 0.241
+200670 1.173 0.241
+200700 1.173 0.242
+200730 1.172 0.242
+200760 1.172 0.243
+200790 1.172 0.243
+200820 1.172 0.244
+200850 1.172 0.245
+200880 1.172 0.245
+200910 1.172 0.246
+200940 1.171 0.246
+200970 1.171 0.247
+201000 1.171 0.247
+201030 1.171 0.248
+201060 1.171 0.249
+201090 1.171 0.249
+201120 1.171 0.250
+201150 1.170 0.250
+201180 1.170 0.251
+201210 1.170 0.252
+201240 1.170 0.252
+201270 1.170 0.253
+201300 1.170 0.253
+201330 1.170 0.254
+201360 1.170 0.255
+201390 1.170 0.255
+201420 1.170 0.256
+201450 1.169 0.257
+201480 1.169 0.257
+201510 1.169 0.258
+201540 1.169 0.259
+201570 1.169 0.259
+201600 1.169 0.260
+201630 1.169 0.260
+201660 1.169 0.261
+201690 1.168 0.261
+201720 1.168 0.262
+201750 1.168 0.262
+201780 1.168 0.263
+201810 1.168 0.263
+201840 1.168 0.264
+201870 1.167 0.264
+201900 1.167 0.265
+201930 1.167 0.265
+201960 1.167 0.266
+201990 1.167 0.266
+202020 1.167 0.267
+202050 1.166 0.267
+202080 1.166 0.268
+202110 1.166 0.268
+202140 1.166 0.268
+202170 1.166 0.269
+202200 1.166 0.269
+202230 1.166 0.270
+202260 1.165 0.270
+202290 1.165 0.270
+202320 1.165 0.271
+202350 1.165 0.271
+202380 1.165 0.272
+202410 1.165 0.272
+202440 1.165 0.272
+202470 1.165 0.273
+202500 1.165 0.273
+202530 1.164 0.273
+202560 1.164 0.274
+202590 1.164 0.274
+202620 1.164 0.274
+202650 1.164 0.275
+202680 1.164 0.275
+202710 1.164 0.275
+202740 1.164 0.275
+202770 1.164 0.276
+202800 1.164 0.276
+202830 1.165 0.276
+202860 1.167 0.276
+202890 1.168 0.276
+202920 1.169 0.276
+202950 1.171 0.276
+202980 1.172 0.276
+203010 1.174 0.276
+203040 1.175 0.276
+203070 1.176 0.276
+203100 1.178 0.276
+203130 1.179 0.276
+203160 1.180 0.276
+203190 1.182 0.276
+203220 1.183 0.276
+203250 1.185 0.276
+203280 1.186 0.276
+203310 1.187 0.276
+203340 1.189 0.276
+203370 1.190 0.276
+203400 1.191 0.276
+203430 1.193 0.276
+203460 1.194 0.276
+203490 1.195 0.276
+203520 1.197 0.276
+203550 1.198 0.276
+203580 1.199 0.276
+203610 1.201 0.276
+203640 1.202 0.276
+203670 1.203 0.276
+203700 1.205 0.276
+203730 1.206 0.276
+203760 1.207 0.276
+203790 1.209 0.276
+203820 1.210 0.276
+203850 1.211 0.276
+203880 1.213 0.276
+203910 1.214 0.276
+203940 1.215 0.276
+203970 1.217 0.276
+204000 1.218 0.276
+204030 1.220 0.276
+204060 1.222 0.277
+204090 1.224 0.277
+204120 1.226 0.278
+204150 1.228 0.278
+204180 1.229 0.278
+204210 1.231 0.279
+204240 1.233 0.279
+204270 1.235 0.280
+204300 1.237 0.280
+204330 1.239 0.280
+204360 1.241 0.281
+204390 1.243 0.281
+204420 1.245 0.282
+204450 1.246 0.282
+204480 1.248 0.283
+204510 1.250 0.283
+204540 1.252 0.283
+204570 1.254 0.284
+204600 1.256 0.284
+204630 1.258 0.285
+204660 1.259 0.285
+204690 1.261 0.285
+204720 1.263 0.286
+204750 1.265 0.286
+204780 1.267 0.287
+204810 1.268 0.287
+204840 1.270 0.287
+204870 1.272 0.288
+204900 1.274 0.288
+204930 1.275 0.289
+204960 1.277 0.289
+204990 1.279 0.289
+205020 1.281 0.290
+205050 1.282 0.290
+205080 1.284 0.291
+205110 1.286 0.291
+205140 1.287 0.291
+205170 1.289 0.292
+205200 1.291 0.292
+205230 1.294 0.292
+205260 1.297 0.293
+205290 1.300 0.293
+205320 1.302 0.293
+205350 1.305 0.293
+205380 1.308 0.293
+205410 1.311 0.294
+205440 1.314 0.294
+205470 1.317 0.294
+205500 1.320 0.294
+205530 1.323 0.294
+205560 1.326 0.294
+205590 1.329 0.295
+205620 1.332 0.295
+205650 1.334 0.295
+205680 1.337 0.295
+205710 1.340 0.295
+205740 1.343 0.295
+205770 1.346 0.296
+205800 1.349 0.296
+205830 1.352 0.296
+205860 1.355 0.296
+205890 1.358 0.296
+205920 1.361 0.296
+205950 1.364 0.296
+205980 1.366 0.296
+206010 1.369 0.297
+206040 1.372 0.297
+206070 1.375 0.297
+206100 1.378 0.297
+206130 1.381 0.297
+206160 1.384 0.297
+206190 1.387 0.297
+206220 1.390 0.297
+206250 1.393 0.297
+206280 1.396 0.297
+206310 1.399 0.298
+206340 1.401 0.298
+206370 1.404 0.298
+206400 1.407 0.298
+206430 1.412 0.298
+206460 1.416 0.297
+206490 1.420 0.297
+206520 1.425 0.297
+206550 1.429 0.297
+206580 1.433 0.297
+206610 1.438 0.296
+206640 1.442 0.296
+206670 1.447 0.296
+206700 1.451 0.296
+206730 1.455 0.296
+206760 1.460 0.296
+206790 1.464 0.295
+206820 1.468 0.295
+206850 1.472 0.295
+206880 1.477 0.295
+206910 1.481 0.295
+206940 1.485 0.295
+206970 1.490 0.294
+207000 1.494 0.294
+207030 1.498 0.294
+207060 1.502 0.294
+207090 1.507 0.294
+207120 1.511 0.294
+207150 1.515 0.294
+207180 1.519 0.294
+207210 1.523 0.293
+207240 1.528 0.293
+207270 1.532 0.293
+207300 1.536 0.293
+207330 1.540 0.293
+207360 1.544 0.293
+207390 1.549 0.293
+207420 1.553 0.293
+207450 1.557 0.293
+207480 1.561 0.293
+207510 1.565 0.292
+207540 1.569 0.292
+207570 1.574 0.292
+207600 1.578 0.292
+207630 1.582 0.292
+207660 1.587 0.292
+207690 1.591 0.292
+207720 1.596 0.292
+207750 1.600 0.292
+207780 1.605 0.292
+207810 1.609 0.292
+207840 1.614 0.292
+207870 1.618 0.292
+207900 1.623 0.292
+207930 1.627 0.292
+207960 1.632 0.292
+207990 1.636 0.292
+208020 1.641 0.292
+208050 1.645 0.292
+208080 1.649 0.292
+208110 1.654 0.292
+208140 1.658 0.292
+208170 1.663 0.292
+208200 1.667 0.292
+208230 1.671 0.292
+208260 1.676 0.292
+208290 1.680 0.292
+208320 1.685 0.292
+208350 1.689 0.292
+208380 1.693 0.292
+208410 1.698 0.292
+208440 1.702 0.292
+208470 1.706 0.292
+208500 1.711 0.292
+208530 1.715 0.292
+208560 1.719 0.292
+208590 1.724 0.292
+208620 1.728 0.292
+208650 1.732 0.292
+208680 1.737 0.292
+208710 1.741 0.292
+208740 1.745 0.292
+208770 1.749 0.292
+208800 1.754 0.292
+208830 1.759 0.292
+208860 1.764 0.292
+208890 1.769 0.292
+208920 1.775 0.292
+208950 1.780 0.292
+208980 1.785 0.292
+209010 1.791 0.291
+209040 1.796 0.291
+209070 1.801 0.291
+209100 1.806 0.291
+209130 1.812 0.291
+209160 1.817 0.291
+209190 1.822 0.291
+209220 1.828 0.291
+209250 1.833 0.291
+209280 1.838 0.291
+209310 1.843 0.291
+209340 1.849 0.290
+209370 1.854 0.290
+209400 1.859 0.290
+209430 1.864 0.290
+209460 1.870 0.290
+209490 1.875 0.290
+209520 1.880 0.290
+209550 1.886 0.290
+209580 1.891 0.290
+209610 1.896 0.290
+209640 1.901 0.290
+209670 1.907 0.290
+209700 1.912 0.290
+209730 1.917 0.290
+209760 1.922 0.290
+209790 1.928 0.290
+209820 1.933 0.290
+209850 1.938 0.290
+209880 1.944 0.290
+209910 1.949 0.290
+209940 1.954 0.290
+209970 1.959 0.290
+210000 1.965 0.290
+210030 1.969 0.289
+210060 1.973 0.289
+210090 1.978 0.288
+210120 1.982 0.288
+210150 1.987 0.288
+210180 1.991 0.287
+210210 1.995 0.287
+210240 2.000 0.286
+210270 2.004 0.286
+210300 2.009 0.286
+210330 2.013 0.285
+210360 2.017 0.285
+210390 2.022 0.285
+210420 2.026 0.284
+210450 2.030 0.284
+210480 2.035 0.284
+210510 2.039 0.283
+210540 2.043 0.283
+210570 2.048 0.282
+210600 2.052 0.282
+210630 2.056 0.282
+210660 2.061 0.281
+210690 2.065 0.281
+210720 2.069 0.281
+210750 2.074 0.280
+210780 2.078 0.280
+210810 2.082 0.280
+210840 2.087 0.280
+210870 2.091 0.279
+210900 2.095 0.279
+210930 2.099 0.279
+210960 2.104 0.278
+210990 2.108 0.278
+211020 2.112 0.278
+211050 2.117 0.277
+211080 2.121 0.277
+211110 2.125 0.277
+211140 2.129 0.277
+211170 2.134 0.276
+211200 2.138 0.276
+211230 2.141 0.276
+211260 2.144 0.276
+211290 2.147 0.276
+211320 2.149 0.275
+211350 2.152 0.275
+211380 2.155 0.275
+211410 2.158 0.275
+211440 2.161 0.275
+211470 2.164 0.275
+211500 2.167 0.275
+211530 2.169 0.274
+211560 2.172 0.274
+211590 2.175 0.274
+211620 2.178 0.274
+211650 2.181 0.274
+211680 2.184 0.273
+211710 2.186 0.273
+211740 2.189 0.273
+211770 2.192 0.273
+211800 2.195 0.273
+211830 2.198 0.272
+211860 2.200 0.272
+211890 2.203 0.272
+211920 2.206 0.272
+211950 2.209 0.272
+211980 2.211 0.271
+212010 2.214 0.271
+212040 2.217 0.271
+212070 2.219 0.271
+212100 2.222 0.271
+212130 2.225 0.270
+212160 2.228 0.270
+212190 2.230 0.270
+212220 2.233 0.270
+212250 2.236 0.269
+212280 2.238 0.269
+212310 2.241 0.269
+212340 2.244 0.269
+212370 2.246 0.268
+212400 2.249 0.268
+212430 2.253 0.268
+212460 2.256 0.268
+212490 2.260 0.268
+212520 2.263 0.268
+212550 2.267 0.268
+212580 2.271 0.268
+212610 2.274 0.268
+212640 2.278 0.267
+212670 2.281 0.267
+212700 2.285 0.267
+212730 2.288 0.267
+212760 2.292 0.267
+212790 2.295 0.267
+212820 2.299 0.267
+212850 2.303 0.267
+212880 2.306 0.267
+212910 2.309 0.267
+212940 2.313 0.267
+212970 2.316 0.267
+213000 2.320 0.267
+213030 2.323 0.267
+213060 2.327 0.267
+213090 2.330 0.266
+213120 2.334 0.266
+213150 2.337 0.266
+213180 2.340 0.266
+213210 2.344 0.266
+213240 2.347 0.266
+213270 2.351 0.266
+213300 2.354 0.266
+213330 2.357 0.266
+213360 2.361 0.266
+213390 2.364 0.266
+213420 2.367 0.266
+213450 2.371 0.266
+213480 2.374 0.266
+213510 2.377 0.266
+213540 2.380 0.265
+213570 2.384 0.265
+213600 2.387 0.265
+213630 2.392 0.265
+213660 2.397 0.265
+213690 2.402 0.266
+213720 2.407 0.266
+213750 2.412 0.266
+213780 2.417 0.266
+213810 2.422 0.266
+213840 2.427 0.266
+213870 2.432 0.266
+213900 2.437 0.266
+213930 2.442 0.266
+213960 2.447 0.266
+213990 2.452 0.266
+214020 2.457 0.266
+214050 2.462 0.266
+214080 2.467 0.266
+214110 2.471 0.266
+214140 2.476 0.266
+214170 2.481 0.266
+214200 2.486 0.266
+214230 2.491 0.266
+214260 2.496 0.266
+214290 2.501 0.266
+214320 2.506 0.266
+214350 2.511 0.266
+214380 2.516 0.266
+214410 2.521 0.266
+214440 2.526 0.266
+214470 2.531 0.266
+214500 2.536 0.266
+214530 2.540 0.266
+214560 2.545 0.266
+214590 2.550 0.266
+214620 2.555 0.266
+214650 2.560 0.266
+214680 2.565 0.266
+214710 2.570 0.266
+214740 2.575 0.266
+214770 2.580 0.266
+214800 2.584 0.265
+214830 2.590 0.265
+214860 2.596 0.265
+214890 2.602 0.265
+214920 2.609 0.265
+214950 2.615 0.265
+214980 2.621 0.265
+215010 2.627 0.265
+215040 2.633 0.265
+215070 2.639 0.265
+215100 2.645 0.265
+215130 2.651 0.265
+215160 2.657 0.265
+215190 2.663 0.265
+215220 2.669 0.265
+215250 2.675 0.265
+215280 2.681 0.265
+215310 2.687 0.265
+215340 2.693 0.264
+215370 2.699 0.264
+215400 2.705 0.264
+215430 2.711 0.264
+215460 2.717 0.264
+215490 2.723 0.264
+215520 2.729 0.264
+215550 2.735 0.263
+215580 2.741 0.263
+215610 2.747 0.263
+215640 2.753 0.263
+215670 2.759 0.263
+215700 2.765 0.262
+215730 2.771 0.262
+215760 2.777 0.262
+215790 2.783 0.262
+215820 2.789 0.261
+215850 2.795 0.261
+215880 2.801 0.261
+215910 2.807 0.261
+215940 2.813 0.260
+215970 2.819 0.260
+216000  nan   nan
+216030  nan   nan
+216060  nan   nan
+216090  nan   nan
+216120  nan   nan
+216150  nan   nan
+216180  nan   nan
+216210  nan   nan
+216240  nan   nan
+216270  nan   nan
+216300  nan   nan
+216330  nan   nan
+216360  nan   nan
+216390  nan   nan
+216420  nan   nan
+216450  nan   nan
+216480  nan   nan
+216510  nan   nan
+216540  nan   nan
+216570  nan   nan
+216600  nan   nan
+216630  nan   nan
+216660  nan   nan
+216690  nan   nan
+216720  nan   nan
+216750  nan   nan
+216780  nan   nan
+216810  nan   nan
+216840  nan   nan
+216870  nan   nan
+216900  nan   nan
+216930  nan   nan
+216960  nan   nan
+216990  nan   nan
+217020  nan   nan
+217050  nan   nan
+217080  nan   nan
+217110  nan   nan
+217140  nan   nan
+217170  nan   nan
+217200  nan   nan
+217230  nan   nan
+217260  nan   nan
+217290  nan   nan
+217320  nan   nan
+217350  nan   nan
+217380  nan   nan
+217410  nan   nan
+217440  nan   nan
+217470  nan   nan
+217500  nan   nan
+217530  nan   nan
+217560  nan   nan
+217590  nan   nan
+217620  nan   nan
+217650  nan   nan
+217680  nan   nan
+217710  nan   nan
+217740  nan   nan
+217770  nan   nan
+217800  nan   nan
+217830  nan   nan
+217860  nan   nan
+217890  nan   nan
+217920  nan   nan
+217950  nan   nan
+217980  nan   nan
+218010  nan   nan
+218040  nan   nan
+218070  nan   nan
+218100  nan   nan
+218130  nan   nan
+218160  nan   nan
+218190  nan   nan
+218220  nan   nan
+218250  nan   nan
+218280  nan   nan
+218310  nan   nan
+218340  nan   nan
+218370  nan   nan
+218400  nan   nan
+218430  nan   nan
+218460  nan   nan
+218490  nan   nan
+218520  nan   nan
+218550  nan   nan
+218580  nan   nan
+218610  nan   nan
+218640  nan   nan
+218670  nan   nan
+218700  nan   nan
+218730  nan   nan
+218760  nan   nan
+218790  nan   nan
+218820  nan   nan
+218850  nan   nan
+218880  nan   nan
+218910  nan   nan
+218940  nan   nan
+218970  nan   nan
+219000  nan   nan
+219030  nan   nan
+219060  nan   nan
+219090  nan   nan
+219120  nan   nan
+219150  nan   nan
+219180  nan   nan
+219210  nan   nan
+219240  nan   nan
+219270  nan   nan
+219300  nan   nan
+219330  nan   nan
+219360  nan   nan
+219390  nan   nan
+219420  nan   nan
+219450  nan   nan
+219480  nan   nan
+219510  nan   nan
+219540  nan   nan
+219570  nan   nan
+219600  nan   nan
+219630  nan   nan
+219660  nan   nan
+219690  nan   nan
+219720  nan   nan
+219750  nan   nan
+219780  nan   nan
+219810  nan   nan
+219840  nan   nan
+219870  nan   nan
+219900  nan   nan
+219930  nan   nan
+219960  nan   nan
+219990  nan   nan
+220020  nan   nan
+220050  nan   nan
+220080  nan   nan
+220110  nan   nan
+220140  nan   nan
+220170  nan   nan
+220200  nan   nan
+220230  nan   nan
+220260  nan   nan
+220290  nan   nan
+220320  nan   nan
+220350  nan   nan
+220380  nan   nan
+220410  nan   nan
+220440  nan   nan
+220470  nan   nan
+220500  nan   nan
+220530  nan   nan
+220560  nan   nan
+220590  nan   nan
+220620  nan   nan
+220650  nan   nan
+220680  nan   nan
+220710  nan   nan
+220740  nan   nan
+220770  nan   nan
+220800  nan   nan
+220830  nan   nan
+220860  nan   nan
+220890  nan   nan
+220920  nan   nan
+220950  nan   nan
+220980  nan   nan
+221010  nan   nan
+221040  nan   nan
+221070  nan   nan
+221100  nan   nan
+221130  nan   nan
+221160  nan   nan
+221190  nan   nan
+221220  nan   nan
+221250  nan   nan
+221280  nan   nan
+221310  nan   nan
+221340  nan   nan
+221370  nan   nan
+221400  nan   nan
+221430  nan   nan
+221460  nan   nan
+221490  nan   nan
+221520  nan   nan
+221550  nan   nan
+221580  nan   nan
+221610  nan   nan
+221640  nan   nan
+221670  nan   nan
+221700  nan   nan
+221730  nan   nan
+221760  nan   nan
+221790  nan   nan
+221820  nan   nan
+221850  nan   nan
+221880  nan   nan
+221910  nan   nan
+221940  nan   nan
+221970  nan   nan
+222000  nan   nan
+222030  nan   nan
+222060  nan   nan
+222090  nan   nan
+222120  nan   nan
+222150  nan   nan
+222180  nan   nan
+222210  nan   nan
+222240  nan   nan
+222270  nan   nan
+222300  nan   nan
+222330  nan   nan
+222360  nan   nan
+222390  nan   nan
+222420  nan   nan
+222450  nan   nan
+222480  nan   nan
+222510  nan   nan
+222540  nan   nan
+222570  nan   nan
+222600  nan   nan
+222630  nan   nan
+222660  nan   nan
+222690  nan   nan
+222720  nan   nan
+222750  nan   nan
+222780  nan   nan
+222810  nan   nan
+222840  nan   nan
+222870  nan   nan
+222900  nan   nan
+222930  nan   nan
+222960  nan   nan
+222990  nan   nan
+223020  nan   nan
+223050  nan   nan
+223080  nan   nan
+223110  nan   nan
+223140  nan   nan
+223170  nan   nan
+223200  nan   nan
+223230  nan   nan
+223260  nan   nan
+223290  nan   nan
+223320  nan   nan
+223350  nan   nan
+223380  nan   nan
+223410  nan   nan
+223440  nan   nan
+223470  nan   nan
+223500  nan   nan
+223530  nan   nan
+223560  nan   nan
+223590  nan   nan
+223620  nan   nan
+223650  nan   nan
+223680  nan   nan
+223710  nan   nan
+223740  nan   nan
+223770  nan   nan
+223800  nan   nan
+223830  nan   nan
+223860  nan   nan
+223890  nan   nan
+223920  nan   nan
+223950  nan   nan
+223980  nan   nan
+224010  nan   nan
+224040  nan   nan
+224070  nan   nan
+224100  nan   nan
+224130  nan   nan
+224160  nan   nan
+224190  nan   nan
+224220  nan   nan
+224250  nan   nan
+224280  nan   nan
+224310  nan   nan
+224340  nan   nan
+224370  nan   nan
+224400  nan   nan
+224430  nan   nan
+224460  nan   nan
+224490  nan   nan
+224520  nan   nan
+224550  nan   nan
+224580  nan   nan
+224610  nan   nan
+224640  nan   nan
+224670  nan   nan
+224700  nan   nan
+224730  nan   nan
+224760  nan   nan
+224790  nan   nan
+224820  nan   nan
+224850  nan   nan
+224880  nan   nan
+224910  nan   nan
+224940  nan   nan
+224970  nan   nan
+225000  nan   nan
+225030  nan   nan
+225060  nan   nan
+225090  nan   nan
+225120  nan   nan
+225150  nan   nan
+225180  nan   nan
+225210  nan   nan
+225240  nan   nan
+225270  nan   nan
+225300  nan   nan
+225330  nan   nan
+225360  nan   nan
+225390  nan   nan
+225420  nan   nan
+225450  nan   nan
+225480  nan   nan
+225510  nan   nan
+225540  nan   nan
+225570  nan   nan
+225600  nan   nan
+225630  nan   nan
+225660  nan   nan
+225690  nan   nan
+225720  nan   nan
+225750  nan   nan
+225780  nan   nan
+225810  nan   nan
+225840  nan   nan
+225870  nan   nan
+225900  nan   nan
+225930  nan   nan
+225960  nan   nan
+225990  nan   nan
+226020  nan   nan
+226050  nan   nan
+226080  nan   nan
+226110  nan   nan
+226140  nan   nan
+226170  nan   nan
+226200  nan   nan
+226230  nan   nan
+226260  nan   nan
+226290  nan   nan
+226320  nan   nan
+226350  nan   nan
+226380  nan   nan
+226410  nan   nan
+226440  nan   nan
+226470  nan   nan
+226500  nan   nan
+226530  nan   nan
+226560  nan   nan
+226590  nan   nan
+226620  nan   nan
+226650  nan   nan
+226680  nan   nan
+226710  nan   nan
+226740  nan   nan
+226770  nan   nan
+226800  nan   nan
+226830  nan   nan
+226860  nan   nan
+226890  nan   nan
+226920  nan   nan
+226950  nan   nan
+226980  nan   nan
+227010  nan   nan
+227040  nan   nan
+227070  nan   nan
+227100  nan   nan
+227130  nan   nan
+227160  nan   nan
+227190  nan   nan
+227220  nan   nan
+227250  nan   nan
+227280  nan   nan
+227310  nan   nan
+227340  nan   nan
+227370  nan   nan
+227400  nan   nan
+227430  nan   nan
+227460  nan   nan
+227490  nan   nan
+227520  nan   nan
+227550  nan   nan
+227580  nan   nan
+227610  nan   nan
+227640  nan   nan
+227670  nan   nan
+227700  nan   nan
+227730  nan   nan
+227760  nan   nan
+227790  nan   nan
+227820  nan   nan
+227850  nan   nan
+227880  nan   nan
+227910  nan   nan
+227940  nan   nan
+227970  nan   nan
+228000  nan   nan
+228030  nan   nan
+228060  nan   nan
+228090  nan   nan
+228120  nan   nan
+228150  nan   nan
+228180  nan   nan
+228210  nan   nan
+228240  nan   nan
+228270  nan   nan
+228300  nan   nan
+228330  nan   nan
+228360  nan   nan
+228390  nan   nan
+228420  nan   nan
+228450  nan   nan
+228480  nan   nan
+228510  nan   nan
+228540  nan   nan
+228570  nan   nan
+228600  nan   nan
+228630  nan   nan
+228660  nan   nan
+228690  nan   nan
+228720  nan   nan
+228750  nan   nan
+228780  nan   nan
+228810  nan   nan
+228840  nan   nan
+228870  nan   nan
+228900  nan   nan
+228930  nan   nan
+228960  nan   nan
+228990  nan   nan
+229020  nan   nan
+229050  nan   nan
+229080  nan   nan
+229110  nan   nan
+229140  nan   nan
+229170  nan   nan
+229200  nan   nan
+229230  nan   nan
+229260  nan   nan
+229290  nan   nan
+229320  nan   nan
+229350  nan   nan
+229380  nan   nan
+229410  nan   nan
+229440  nan   nan
+229470  nan   nan
+229500  nan   nan
+229530  nan   nan
+229560  nan   nan
+229590  nan   nan
+229620  nan   nan
+229650  nan   nan
+229680  nan   nan
+229710  nan   nan
+229740  nan   nan
+229770  nan   nan
+229800  nan   nan
+229830  nan   nan
+229860  nan   nan
+229890  nan   nan
+229920  nan   nan
+229950  nan   nan
+229980  nan   nan
+230010  nan   nan
+230040  nan   nan
+230070  nan   nan
+230100  nan   nan
+230130  nan   nan
+230160  nan   nan
+230190  nan   nan
+230220  nan   nan
+230250  nan   nan
+230280  nan   nan
+230310  nan   nan
+230340  nan   nan
+230370  nan   nan
+230400  nan   nan
+230430  nan   nan
+230460  nan   nan
+230490  nan   nan
+230520  nan   nan
+230550  nan   nan
+230580  nan   nan
+230610  nan   nan
+230640  nan   nan
+230670  nan   nan
+230700  nan   nan
+230730  nan   nan
+230760  nan   nan
+230790  nan   nan
+230820  nan   nan
+230850  nan   nan
+230880  nan   nan
+230910  nan   nan
+230940  nan   nan
+230970  nan   nan
+231000  nan   nan
+231030  nan   nan
+231060  nan   nan
+231090  nan   nan
+231120  nan   nan
+231150  nan   nan
+231180  nan   nan
+231210  nan   nan
+231240  nan   nan
+231270  nan   nan
+231300  nan   nan
+231330  nan   nan
+231360  nan   nan
+231390  nan   nan
+231420  nan   nan
+231450  nan   nan
+231480  nan   nan
+231510  nan   nan
+231540  nan   nan
+231570  nan   nan
+231600  nan   nan
+231630  nan   nan
+231660  nan   nan
+231690  nan   nan
+231720  nan   nan
+231750  nan   nan
+231780  nan   nan
+231810  nan   nan
+231840  nan   nan
+231870  nan   nan
+231900  nan   nan
+231930  nan   nan
+231960  nan   nan
+231990  nan   nan
+232020  nan   nan
+232050  nan   nan
+232080  nan   nan
+232110  nan   nan
+232140  nan   nan
+232170  nan   nan
+232200  nan   nan
+232230  nan   nan
+232260  nan   nan
+232290  nan   nan
+232320  nan   nan
+232350  nan   nan
+232380  nan   nan
+232410  nan   nan
+232440  nan   nan
+232470  nan   nan
+232500  nan   nan
+232530  nan   nan
+232560  nan   nan
+232590  nan   nan
+232620  nan   nan
+232650  nan   nan
+232680  nan   nan
+232710  nan   nan
+232740  nan   nan
+232770  nan   nan
+232800  nan   nan
+232830  nan   nan
+232860  nan   nan
+232890  nan   nan
+232920  nan   nan
+232950  nan   nan
+232980  nan   nan
+233010  nan   nan
+233040  nan   nan
+233070  nan   nan
+233100  nan   nan
+233130  nan   nan
+233160  nan   nan
+233190  nan   nan
+233220  nan   nan
+233250  nan   nan
+233280  nan   nan
+233310  nan   nan
+233340  nan   nan
+233370  nan   nan
+233400  nan   nan
+233430  nan   nan
+233460  nan   nan
+233490  nan   nan
+233520  nan   nan
+233550  nan   nan
+233580  nan   nan
+233610  nan   nan
+233640  nan   nan
+233670  nan   nan
+233700  nan   nan
+233730  nan   nan
+233760  nan   nan
+233790  nan   nan
+233820  nan   nan
+233850  nan   nan
+233880  nan   nan
+233910  nan   nan
+233940  nan   nan
+233970  nan   nan
+234000  nan   nan
+234030  nan   nan
+234060  nan   nan
+234090  nan   nan
+234120  nan   nan
+234150  nan   nan
+234180  nan   nan
+234210  nan   nan
+234240  nan   nan
+234270  nan   nan
+234300  nan   nan
+234330  nan   nan
+234360  nan   nan
+234390  nan   nan
+234420  nan   nan
+234450  nan   nan
+234480  nan   nan
+234510  nan   nan
+234540  nan   nan
+234570  nan   nan
+234600  nan   nan
+234630  nan   nan
+234660  nan   nan
+234690  nan   nan
+234720  nan   nan
+234750  nan   nan
+234780  nan   nan
+234810  nan   nan
+234840  nan   nan
+234870  nan   nan
+234900  nan   nan
+234930  nan   nan
+234960  nan   nan
+234990  nan   nan
+235020  nan   nan
+235050  nan   nan
+235080  nan   nan
+235110  nan   nan
+235140  nan   nan
+235170  nan   nan
+235200  nan   nan
+235230  nan   nan
+235260  nan   nan
+235290  nan   nan
+235320  nan   nan
+235350  nan   nan
+235380  nan   nan
+235410  nan   nan
+235440  nan   nan
+235470  nan   nan
+235500  nan   nan
+235530  nan   nan
+235560  nan   nan
+235590  nan   nan
+235620  nan   nan
+235650  nan   nan
+235680  nan   nan
+235710  nan   nan
+235740  nan   nan
+235770  nan   nan
+235800  nan   nan
+235830  nan   nan
+235860  nan   nan
+235890  nan   nan
+235920  nan   nan
+235950  nan   nan
+235980  nan   nan
+236010  nan   nan
+236040  nan   nan
+236070  nan   nan
+236100  nan   nan
+236130  nan   nan
+236160  nan   nan
+236190  nan   nan
+236220  nan   nan
+236250  nan   nan
+236280  nan   nan
+236310  nan   nan
+236340  nan   nan
+236370  nan   nan
+236400  nan   nan
+236430  nan   nan
+236460  nan   nan
+236490  nan   nan
+236520  nan   nan
+236550  nan   nan
+236580  nan   nan
+236610  nan   nan
+236640  nan   nan
+236670  nan   nan
+236700  nan   nan
+236730  nan   nan
+236760  nan   nan
+236790  nan   nan
+236820  nan   nan
+236850  nan   nan
+236880  nan   nan
+236910  nan   nan
+236940  nan   nan
+236970  nan   nan
+237000  nan   nan
+237030  nan   nan
+237060  nan   nan
+237090  nan   nan
+237120  nan   nan
+237150  nan   nan
+237180  nan   nan
+237210  nan   nan
+237240  nan   nan
+237270  nan   nan
+237300  nan   nan
+237330  nan   nan
+237360  nan   nan
+237390  nan   nan
+237420  nan   nan
+237450  nan   nan
+237480  nan   nan
+237510  nan   nan
+237540  nan   nan
+237570  nan   nan
+237600  nan   nan
+237630  nan   nan
+237660  nan   nan
+237690  nan   nan
+237720  nan   nan
+237750  nan   nan
+237780  nan   nan
+237810  nan   nan
+237840  nan   nan
+237870  nan   nan
+237900  nan   nan
+237930  nan   nan
+237960  nan   nan
+237990  nan   nan
+238020  nan   nan
+238050  nan   nan
+238080  nan   nan
+238110  nan   nan
+238140  nan   nan
+238170  nan   nan
+238200  nan   nan
+238230  nan   nan
+238260  nan   nan
+238290  nan   nan
+238320  nan   nan
+238350  nan   nan
+238380  nan   nan
+238410  nan   nan
+238440  nan   nan
+238470  nan   nan
+238500  nan   nan
+238530  nan   nan
+238560  nan   nan
+238590  nan   nan
+238620  nan   nan
+238650  nan   nan
+238680  nan   nan
+238710  nan   nan
+238740  nan   nan
+238770  nan   nan
+238800  nan   nan
+238830  nan   nan
+238860  nan   nan
+238890  nan   nan
+238920  nan   nan
+238950  nan   nan
+238980  nan   nan
+239010  nan   nan
+239040  nan   nan
+239070  nan   nan
+239100  nan   nan
+239130  nan   nan
+239160  nan   nan
+239190  nan   nan
+239220  nan   nan
+239250  nan   nan
+239280  nan   nan
+239310  nan   nan
+239340  nan   nan
+239370  nan   nan
+239400  nan   nan
+239430  nan   nan
+239460  nan   nan
+239490  nan   nan
+239520  nan   nan
+239550  nan   nan
+239580  nan   nan
+239610  nan   nan
+239640  nan   nan
+239670  nan   nan
+239700  nan   nan
+239730  nan   nan
+239760  nan   nan
+239790  nan   nan
+239820  nan   nan
+239850  nan   nan
+239880  nan   nan
+239910  nan   nan
+239940  nan   nan
+239970  nan   nan
+240000  nan   nan
+240030  nan   nan
+240060  nan   nan
+240090  nan   nan
+240120  nan   nan
+240150  nan   nan
+240180  nan   nan
+240210  nan   nan
+240240  nan   nan
+240270  nan   nan
+240300  nan   nan
+240330  nan   nan
+240360  nan   nan
+240390  nan   nan
+240420  nan   nan
+240450  nan   nan
+240480  nan   nan
+240510  nan   nan
+240540  nan   nan
+240570  nan   nan
+240600  nan   nan
+240630  nan   nan
+240660  nan   nan
+240690  nan   nan
+240720  nan   nan
+240750  nan   nan
+240780  nan   nan
+240810  nan   nan
+240840  nan   nan
+240870  nan   nan
+240900  nan   nan
+240930  nan   nan
+240960  nan   nan
+240990  nan   nan
+241020  nan   nan
+241050  nan   nan
+241080  nan   nan
+241110  nan   nan
+241140  nan   nan
+241170  nan   nan
+241200  nan   nan
+241230  nan   nan
+241260  nan   nan
+241290  nan   nan
+241320  nan   nan
+241350  nan   nan
+241380  nan   nan
+241410  nan   nan
+241440  nan   nan
+241470  nan   nan
+241500  nan   nan
+241530  nan   nan
+241560  nan   nan
+241590  nan   nan
+241620  nan   nan
+241650  nan   nan
+241680  nan   nan
+241710  nan   nan
+241740  nan   nan
+241770  nan   nan
+241800  nan   nan
+241830  nan   nan
+241860  nan   nan
+241890  nan   nan
+241920  nan   nan
+241950  nan   nan
+241980  nan   nan
+242010  nan   nan
+242040  nan   nan
+242070  nan   nan
+242100  nan   nan
+242130  nan   nan
+242160  nan   nan
+242190  nan   nan
+242220  nan   nan
+242250  nan   nan
+242280  nan   nan
+242310  nan   nan
+242340  nan   nan
+242370  nan   nan
+242400  nan   nan
+242430  nan   nan
+242460  nan   nan
+242490  nan   nan
+242520  nan   nan
+242550  nan   nan
+242580  nan   nan
+242610  nan   nan
+242640  nan   nan
+242670  nan   nan
+242700  nan   nan
+242730  nan   nan
+242760  nan   nan
+242790  nan   nan
+242820  nan   nan
+242850  nan   nan
+242880  nan   nan
+242910  nan   nan
+242940  nan   nan
+242970  nan   nan
+243000  nan   nan
+243030  nan   nan
+243060  nan   nan
+243090  nan   nan
+243120  nan   nan
+243150  nan   nan
+243180  nan   nan
+243210  nan   nan
+243240  nan   nan
+243270  nan   nan
+243300  nan   nan
+243330  nan   nan
+243360  nan   nan
+243390  nan   nan
+243420  nan   nan
+243450  nan   nan
+243480  nan   nan
+243510  nan   nan
+243540  nan   nan
+243570  nan   nan
+243600  nan   nan
+243630  nan   nan
+243660  nan   nan
+243690  nan   nan
+243720  nan   nan
+243750  nan   nan
+243780  nan   nan
+243810  nan   nan
+243840  nan   nan
+243870  nan   nan
+243900  nan   nan
+243930  nan   nan
+243960  nan   nan
+243990  nan   nan
+244020  nan   nan
+244050  nan   nan
+244080  nan   nan
+244110  nan   nan
+244140  nan   nan
+244170  nan   nan
+244200  nan   nan
+244230  nan   nan
+244260  nan   nan
+244290  nan   nan
+244320  nan   nan
+244350  nan   nan
+244380  nan   nan
+244410  nan   nan
+244440  nan   nan
+244470  nan   nan
+244500  nan   nan
+244530  nan   nan
+244560  nan   nan
+244590  nan   nan
+244620  nan   nan
+244650  nan   nan
+244680  nan   nan
+244710  nan   nan
+244740  nan   nan
+244770  nan   nan
+244800  nan   nan
+244830  nan   nan
+244860  nan   nan
+244890  nan   nan
+244920  nan   nan
+244950  nan   nan
+244980  nan   nan
+245010  nan   nan
+245040  nan   nan
+245070  nan   nan
+245100  nan   nan
+245130  nan   nan
+245160  nan   nan
+245190  nan   nan
+245220  nan   nan
+245250  nan   nan
+245280  nan   nan
+245310  nan   nan
+245340  nan   nan
+245370  nan   nan
+245400  nan   nan
+245430  nan   nan
+245460  nan   nan
+245490  nan   nan
+245520  nan   nan
+245550  nan   nan
+245580  nan   nan
+245610  nan   nan
+245640  nan   nan
+245670  nan   nan
+245700  nan   nan
+245730  nan   nan
+245760  nan   nan
+245790  nan   nan
+245820  nan   nan
+245850  nan   nan
+245880  nan   nan
+245910  nan   nan
+245940  nan   nan
+245970  nan   nan
+246000  nan   nan
+246030  nan   nan
+246060  nan   nan
+246090  nan   nan
+246120  nan   nan
+246150  nan   nan
+246180  nan   nan
+246210  nan   nan
+246240  nan   nan
+246270  nan   nan
+246300  nan   nan
+246330  nan   nan
+246360  nan   nan
+246390  nan   nan
+246420  nan   nan
+246450  nan   nan
+246480  nan   nan
+246510  nan   nan
+246540  nan   nan
+246570  nan   nan
+246600  nan   nan
+246630  nan   nan
+246660  nan   nan
+246690  nan   nan
+246720  nan   nan
+246750  nan   nan
+246780  nan   nan
+246810  nan   nan
+246840  nan   nan
+246870  nan   nan
+246900  nan   nan
+246930  nan   nan
+246960  nan   nan
+246990  nan   nan
+247020  nan   nan
+247050  nan   nan
+247080  nan   nan
+247110  nan   nan
+247140  nan   nan
+247170  nan   nan
+247200  nan   nan
+247230  nan   nan
+247260  nan   nan
+247290  nan   nan
+247320  nan   nan
+247350  nan   nan
+247380  nan   nan
+247410  nan   nan
+247440  nan   nan
+247470  nan   nan
+247500  nan   nan
+247530  nan   nan
+247560  nan   nan
+247590  nan   nan
+247620  nan   nan
+247650  nan   nan
+247680  nan   nan
+247710  nan   nan
+247740  nan   nan
+247770  nan   nan
+247800  nan   nan
+247830  nan   nan
+247860  nan   nan
+247890  nan   nan
+247920  nan   nan
+247950  nan   nan
+247980  nan   nan
+248010  nan   nan
+248040  nan   nan
+248070  nan   nan
+248100  nan   nan
+248130  nan   nan
+248160  nan   nan
+248190  nan   nan
+248220  nan   nan
+248250  nan   nan
+248280  nan   nan
+248310  nan   nan
+248340  nan   nan
+248370  nan   nan
+248400  nan   nan
+248430  nan   nan
+248460  nan   nan
+248490  nan   nan
+248520  nan   nan
+248550  nan   nan
+248580  nan   nan
+248610  nan   nan
+248640  nan   nan
+248670  nan   nan
+248700  nan   nan
+248730  nan   nan
+248760  nan   nan
+248790  nan   nan
+248820  nan   nan
+248850  nan   nan
+248880  nan   nan
+248910  nan   nan
+248940  nan   nan
+248970  nan   nan
+249000  nan   nan
+249030  nan   nan
+249060  nan   nan
+249090  nan   nan
+249120  nan   nan
+249150  nan   nan
+249180  nan   nan
+249210  nan   nan
+249240  nan   nan
+249270  nan   nan
+249300  nan   nan
+249330  nan   nan
+249360  nan   nan
+249390  nan   nan
+249420  nan   nan
+249450  nan   nan
+249480  nan   nan
+249510  nan   nan
+249540  nan   nan
+249570  nan   nan
+249600  nan   nan
+249630  nan   nan
+249660  nan   nan
+249690  nan   nan
+249720  nan   nan
+249750  nan   nan
+249780  nan   nan
+249810  nan   nan
+249840  nan   nan
+249870  nan   nan
+249900  nan   nan
+249930  nan   nan
+249960  nan   nan
+249990  nan   nan
+250020  nan   nan
+250050  nan   nan
+250080  nan   nan
+250110  nan   nan
+250140  nan   nan
+250170  nan   nan
+250200  nan   nan
+250230  nan   nan
+250260  nan   nan
+250290  nan   nan
+250320  nan   nan
+250350  nan   nan
+250380  nan   nan
+250410  nan   nan
+250440  nan   nan
+250470  nan   nan
+250500  nan   nan
+250530  nan   nan
+250560  nan   nan
+250590  nan   nan
+250620  nan   nan
+250650  nan   nan
+250680  nan   nan
+250710  nan   nan
+250740  nan   nan
+250770  nan   nan
+250800  nan   nan
+250830  nan   nan
+250860  nan   nan
+250890  nan   nan
+250920  nan   nan
+250950  nan   nan
+250980  nan   nan
+251010  nan   nan
+251040  nan   nan
+251070  nan   nan
+251100  nan   nan
+251130  nan   nan
+251160  nan   nan
+251190  nan   nan
+251220  nan   nan
+251250  nan   nan
+251280  nan   nan
+251310  nan   nan
+251340  nan   nan
+251370  nan   nan
+251400  nan   nan
+251430  nan   nan
+251460  nan   nan
+251490  nan   nan
+251520  nan   nan
+251550  nan   nan
+251580  nan   nan
+251610  nan   nan
+251640  nan   nan
+251670  nan   nan
+251700  nan   nan
+251730  nan   nan
+251760  nan   nan
+251790  nan   nan
+251820  nan   nan
+251850  nan   nan
+251880  nan   nan
+251910  nan   nan
+251940  nan   nan
+251970  nan   nan
+252000  nan   nan
+252030  nan   nan
+252060  nan   nan
+252090  nan   nan
+252120  nan   nan
+252150  nan   nan
+252180  nan   nan
+252210  nan   nan
+252240  nan   nan
+252270  nan   nan
+252300  nan   nan
+252330  nan   nan
+252360  nan   nan
+252390  nan   nan
+252420  nan   nan
+252450  nan   nan
+252480  nan   nan
+252510  nan   nan
+252540  nan   nan
+252570  nan   nan
+252600  nan   nan
+252630  nan   nan
+252660  nan   nan
+252690  nan   nan
+252720  nan   nan
+252750  nan   nan
+252780  nan   nan
+252810  nan   nan
+252840  nan   nan
+252870  nan   nan
+252900  nan   nan
+252930  nan   nan
+252960  nan   nan
+252990  nan   nan
+253020  nan   nan
+253050  nan   nan
+253080  nan   nan
+253110  nan   nan
+253140  nan   nan
+253170  nan   nan
+253200  nan   nan
+253230  nan   nan
+253260  nan   nan
+253290  nan   nan
+253320  nan   nan
+253350  nan   nan
+253380  nan   nan
+253410  nan   nan
+253440  nan   nan
+253470  nan   nan
+253500  nan   nan
+253530  nan   nan
+253560  nan   nan
+253590  nan   nan
+253620  nan   nan
+253650  nan   nan
+253680  nan   nan
+253710  nan   nan
+253740  nan   nan
+253770  nan   nan
+253800  nan   nan
+253830  nan   nan
+253860  nan   nan
+253890  nan   nan
+253920  nan   nan
+253950  nan   nan
+253980  nan   nan
+254010  nan   nan
+254040  nan   nan
+254070  nan   nan
+254100  nan   nan
+254130  nan   nan
+254160  nan   nan
+254190  nan   nan
+254220  nan   nan
+254250  nan   nan
+254280  nan   nan
+254310  nan   nan
+254340  nan   nan
+254370  nan   nan
+254400  nan   nan
+254430  nan   nan
+254460  nan   nan
+254490  nan   nan
+254520  nan   nan
+254550  nan   nan
+254580  nan   nan
+254610  nan   nan
+254640  nan   nan
+254670  nan   nan
+254700  nan   nan
+254730  nan   nan
+254760  nan   nan
+254790  nan   nan
+254820  nan   nan
+254850  nan   nan
+254880  nan   nan
+254910  nan   nan
+254940  nan   nan
+254970  nan   nan
+255000  nan   nan
+255030  nan   nan
+255060  nan   nan
+255090  nan   nan
+255120  nan   nan
+255150  nan   nan
+255180  nan   nan
+255210  nan   nan
+255240  nan   nan
+255270  nan   nan
+255300  nan   nan
+255330  nan   nan
+255360  nan   nan
+255390  nan   nan
+255420  nan   nan
+255450  nan   nan
+255480  nan   nan
+255510  nan   nan
+255540  nan   nan
+255570  nan   nan
+255600  nan   nan
+255630  nan   nan
+255660  nan   nan
+255690  nan   nan
+255720  nan   nan
+255750  nan   nan
+255780  nan   nan
+255810  nan   nan
+255840  nan   nan
+255870  nan   nan
+255900  nan   nan
+255930  nan   nan
+255960  nan   nan
+255990  nan   nan
+256020  nan   nan
+256050  nan   nan
+256080  nan   nan
+256110  nan   nan
+256140  nan   nan
+256170  nan   nan
+256200  nan   nan
+256230  nan   nan
+256260  nan   nan
+256290  nan   nan
+256320  nan   nan
+256350  nan   nan
+256380  nan   nan
+256410  nan   nan
+256440  nan   nan
+256470  nan   nan
+256500  nan   nan
+256530  nan   nan
+256560  nan   nan
+256590  nan   nan
+256620  nan   nan
+256650  nan   nan
+256680  nan   nan
+256710  nan   nan
+256740  nan   nan
+256770  nan   nan
+256800  nan   nan
+256830  nan   nan
+256860  nan   nan
+256890  nan   nan
+256920  nan   nan
+256950  nan   nan
+256980  nan   nan
+257010  nan   nan
+257040  nan   nan
+257070  nan   nan
+257100  nan   nan
+257130  nan   nan
+257160  nan   nan
+257190  nan   nan
+257220  nan   nan
+257250  nan   nan
+257280  nan   nan
+257310  nan   nan
+257340  nan   nan
+257370  nan   nan
+257400  nan   nan
+257430  nan   nan
+257460  nan   nan
+257490  nan   nan
+257520  nan   nan
+257550  nan   nan
+257580  nan   nan
+257610  nan   nan
+257640  nan   nan
+257670  nan   nan
+257700  nan   nan
+257730  nan   nan
+257760  nan   nan
+257790  nan   nan
+257820  nan   nan
+257850  nan   nan
+257880  nan   nan
+257910  nan   nan
+257940  nan   nan
+257970  nan   nan
+258000  nan   nan
+258030  nan   nan
+258060  nan   nan
+258090  nan   nan
+258120  nan   nan
+258150  nan   nan
+258180  nan   nan
+258210  nan   nan
+258240  nan   nan
+258270  nan   nan
+258300  nan   nan
+258330  nan   nan
+258360  nan   nan
+258390  nan   nan
+258420  nan   nan
+258450  nan   nan
+258480  nan   nan
+258510  nan   nan
+258540  nan   nan
+258570  nan   nan
+258600  nan   nan
+258630  nan   nan
+258660  nan   nan
+258690  nan   nan
+258720  nan   nan
+258750  nan   nan
+258780  nan   nan
+258810  nan   nan
+258840  nan   nan
+258870  nan   nan
+258900  nan   nan
+258930  nan   nan
+258960  nan   nan
+258990  nan   nan
+259020  nan   nan
+259050  nan   nan
+259080  nan   nan
+259110  nan   nan
+259140  nan   nan
+259170  nan   nan
+259200  nan   nan
+];

@@ -1,0 +1,19 @@
+%
+% sample of elevation mask data for rtkplot
+%
+% azimuth(deg) el-mask(deg)
+%
+
+  0    5
+ 90   15
+120    5
+145   30
+180   10
+210   40
+225   60
+245   45
+255   40
+280   10
+355    5
+360    5
+
