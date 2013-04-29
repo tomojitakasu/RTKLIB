@@ -1,0 +1,171 @@
+#-------------------------------------------------------------------------------
+# URL_LIST.txt : url address list of gnss data for rtkget
+#
+# notes :
+#     keywords in a url address are replaced as follows.
+#
+#         %Y -> yyyy    : year (4 digits) (2000-2099)
+#         %y -> yy      : year (2 digits) (00-99)
+#         %m -> mm      : month           (01-12)
+#         %d -> dd      : day of month    (01-31)
+#         %h -> hh      : hours           (00-23)
+#         %H -> a       : hour code       (a-x)
+#         %M -> mm      : minutes         (00-59)
+#         %n -> ddd     : day of year     (001-366)
+#         %W -> wwww    : gps week        (0001-9999)
+#         %D -> d       : day of gps week (0-6)
+#         %s -> ssss    : station name    (lower-case)
+#         %S -> SSSS    : station name    (upper-case)
+#         %r -> rrrr    : station name
+#         %{env} -> env : environment variable
+#
+#     strings after # in a line are treated as comments
+#
+# version : $Revision:$ $Date:$
+# history : 2012/12/28  1.1  new
+#-------------------------------------------------------------------------------
+
+# data type    url Address                                                      default local directory
+
+#! PRODUCT (CDDIS)
+IGS_EPH        ftp://cddis.gsfc.nasa.gov/gps/products/%W/igs%W%D.sp3.Z          c:\GNSS_DATA\product\%W
+IGS_EPH_GLO    ftp://cddis.gsfc.nasa.gov/gps/products/%W/igl%W%D.sp3.Z          c:\GNSS_DATA\product\%W
+IGS_CLK        ftp://cddis.gsfc.nasa.gov/gps/products/%W/igs%W%D.clk.Z          c:\GNSS_DATA\product\%W
+IGS_CLK_30S    ftp://cddis.gsfc.nasa.gov/gps/products/%W/igs%W%D.clk_30s.Z      c:\GNSS_DATA\product\%W
+IGS_ERP        ftp://cddis.gsfc.nasa.gov/gps/products/%W/igs%W7.erp.Z           c:\GNSS_DATA\product\%W
+IGR_EPH        ftp://cddis.gsfc.nasa.gov/gps/products/%W/igr%W%D.sp3.Z          c:\GNSS_DATA\product\%W
+IGR_CLK        ftp://cddis.gsfc.nasa.gov/gps/products/%W/igr%W%D.clk.Z          c:\GNSS_DATA\product\%W
+IGR_ERP        ftp://cddis.gsfc.nasa.gov/gps/products/%W/igr%W%D.erp.Z          c:\GNSS_DATA\product\%W
+IGU_EPH        ftp://cddis.gsfc.nasa.gov/gps/products/%W/igu%W%D_%h.sp3.Z       c:\GNSS_DATA\product\%W
+IGU_ERP        ftp://cddis.gsfc.nasa.gov/gps/products/%W/igu%W%D_%h.erp.Z       c:\GNSS_DATA\product\%W
+IGS_POS        ftp://cddis.gsfc.nasa.gov/gps/products/%W/igs%yP%W.snx.Z         c:\GNSS_DATA\product\%W
+IGS_ZPD        ftp://cddis.gsfc.nasa.gov/gps/products/troposphere/zpd/%Y/%n/%s%n0.%yzpd.gz c:\GNSS_DATA\product\%W
+IGS_TEC        ftp://cddis.gsfc.nasa.gov/gps/products/ionex/%Y/%n/igsg%n0.%yi.Z c:\GNSS_DATA\product\%W
+IGR_TEC        ftp://cddis.gsfc.nasa.gov/gps/products/ionex/%Y/%n/igrg%n0.%yi.Z c:\GNSS_DATA\product\%W
+
+COD_EPH        ftp://cddis.gsfc.nasa.gov/gps/products/%W/cod%W%D.eph.Z          c:\GNSS_DATA\product\%W
+COD_CLK        ftp://cddis.gsfc.nasa.gov/gps/products/%W/cod%W%D.clk.Z          c:\GNSS_DATA\product\%W
+COD_CLK_5S     ftp://ftp.unibe.ch/aiub/CODE/%Y/COD%W%D.CLK_05S.Z                c:\GNSS_DATA\product\%W
+COD_ERP        ftp://cddis.gsfc.nasa.gov/gps/products/%W/cod%W7.erp.Z           c:\GNSS_DATA\product\%W
+ESA_EPH        ftp://cddis.gsfc.nasa.gov/gps/products/%W/esa%W%D.sp3.Z          c:\GNSS_DATA\product\%W
+ESA_CLK        ftp://cddis.gsfc.nasa.gov/gps/products/%W/esa%W%D.clk.Z          c:\GNSS_DATA\product\%W
+ESA_ERP        ftp://cddis.gsfc.nasa.gov/gps/products/%W/esa%W7.erp.Z           c:\GNSS_DATA\product\%W
+GFZ_EPH        ftp://cddis.gsfc.nasa.gov/gps/products/%W/esa%W%D.sp3.Z          c:\GNSS_DATA\product\%W
+GFZ_CLK        ftp://cddis.gsfc.nasa.gov/gps/products/%W/esa%W%D.clk.Z          c:\GNSS_DATA\product\%W
+GFZ_ERP        ftp://cddis.gsfc.nasa.gov/gps/products/%W/esa%W7.erp.Z           c:\GNSS_DATA\product\%W
+JPL_EPH        ftp://cddis.gsfc.nasa.gov/gps/products/%W/jpl%W%D.sp3.Z          c:\GNSS_DATA\product\%W
+JPL_CLK        ftp://cddis.gsfc.nasa.gov/gps/products/%W/jpl%W%D.clk.Z          c:\GNSS_DATA\product\%W
+JPL_ERP        ftp://cddis.gsfc.nasa.gov/gps/products/%W/jpl%W7.erp.Z           c:\GNSS_DATA\product\%W
+NGS_EPH        ftp://cddis.gsfc.nasa.gov/gps/products/%W/ngs%W%D.sp3.Z          c:\GNSS_DATA\product\%W
+NGS_CLK        ftp://cddis.gsfc.nasa.gov/gps/products/%W/ngs%W%D.clk.Z          c:\GNSS_DATA\product\%W
+NGS_ERP        ftp://cddis.gsfc.nasa.gov/gps/products/%W/ngs%W7.erp.Z           c:\GNSS_DATA\product\%W
+SIO_EPH        ftp://cddis.gsfc.nasa.gov/gps/products/%W/sio%W%D.sp3.Z          c:\GNSS_DATA\product\%W
+SIO_ERP        ftp://cddis.gsfc.nasa.gov/gps/products/%W/sio%W7.erp.Z           c:\GNSS_DATA\product\%W
+EMR_EPH        ftp://cddis.gsfc.nasa.gov/gps/products/%W/emr%W%D.sp3.Z          c:\GNSS_DATA\product\%W
+EMR_CLK        ftp://cddis.gsfc.nasa.gov/gps/products/%W/emr%W%D.clk.Z          c:\GNSS_DATA\product\%W
+EMR_ERP        ftp://cddis.gsfc.nasa.gov/gps/products/%W/emr%W7.erp.Z           c:\GNSS_DATA\product\%W
+MIT_EPH        ftp://cddis.gsfc.nasa.gov/gps/products/%W/mit%W%D.sp3.Z          c:\GNSS_DATA\product\%W
+MIT_CLK        ftp://cddis.gsfc.nasa.gov/gps/products/%W/mit%W%D.clk.Z          c:\GNSS_DATA\product\%W
+MIT_ERP        ftp://cddis.gsfc.nasa.gov/gps/products/%W/mit%W7.erp.Z           c:\GNSS_DATA\product\%W
+GRG_EPH        ftp://cddis.gsfc.nasa.gov/gps/products/%W/grg%W%D.sp3.Z          c:\GNSS_DATA\product\%W
+GRG_CLK        ftp://cddis.gsfc.nasa.gov/gps/products/%W/grg%W%D.clk.Z          c:\GNSS_DATA\product\%W
+GRG_ERP        ftp://cddis.gsfc.nasa.gov/gps/products/%W/grg%W7.erp.Z           c:\GNSS_DATA\product\%W
+BKG_ERP        ftp://igs.ensj.ign.fr/pub/igs/products/%W/bkg%W%D.pre.Z          c:\GNSS_DATA\product\%W
+IAC_ERP        ftp://igs.ensj.ign.fr/pub/igs/products/%W/iac%W%D.sp3.Z          c:\GNSS_DATA\product\%W
+MCC_ERP        ftp://igs.ensj.ign.fr/pub/igs/products/%W/mcc%W%D.sp3.Z          c:\GNSS_DATA\product\%W
+MGEX_EPH_COD   ftp://cddis.gsfc.nasa.gov/gps/products/mgex/%W/com%W%D.sp3.Z     c:\GNSS_DATA\product\mgex\%W
+MGEX_EPH_TUM   ftp://cddis.gsfc.nasa.gov/gps/products/mgex/%W/tum%W%D.sp3.Z     c:\GNSS_DATA\product\mgex\%W
+MGEX_EPH_GFZ   ftp://cddis.gsfc.nasa.gov/gps/products/mgex/%W/gfm%W%D.sp3.Z     c:\GNSS_DATA\product\mgex\%W
+MGEX_EPH_GRG   ftp://cddis.gsfc.nasa.gov/gps/products/mgex/%W/grm%W%D.sp3.Z     c:\GNSS_DATA\product\mgex\%W
+RTPP_CLK       ftp://cddis.gsfc.nasa.gov/gps/products/rtpp/%W/igt%W%D.clk.Z     c:\GNSS_DATA\product\rtpp\%W
+
+#! PRODUCT (IGN)
+IGSE_EPH       ftp://igs.ensg.ign.fr/pub/igs/products/%W/igs%W%D.sp3.Z          c:\GNSS_DATA\product\%W
+IGSE_EPH_GLO   ftp://igs.ensg.ign.fr/pub/igs/products/%W/igl%W%D.sp3.Z          c:\GNSS_DATA\product\%W
+IGSE_CLK       ftp://igs.ensg.ign.fr/pub/igs/products/%W/igs%W%D.clk.Z          c:\GNSS_DATA\product\%W
+IGSE_CLK_30S   ftp://igs.ensg.ign.fr/pub/igs/products/%W/igs%W%D.clk_30s.Z      c:\GNSS_DATA\product\%W
+IGSE_ERP       ftp://igs.ensg.ign.fr/pub/igs/products/%W/igs%W7.erp.Z           c:\GNSS_DATA\product\%W
+IGRE_EPH       ftp://igs.ensg.ign.fr/pub/igs/products/%W/igr%W%D.sp3.Z          c:\GNSS_DATA\product\%W
+IGRE_CLK       ftp://igs.ensg.ign.fr/pub/igs/products/%W/igr%W%D.clk.Z          c:\GNSS_DATA\product\%W
+IGRE_ERP       ftp://igs.ensg.ign.fr/pub/igs/products/%W/igr%W%D.erp.Z          c:\GNSS_DATA\product\%W
+IGUE_EPH       ftp://igs.ensg.ign.fr/pub/igs/products/%W/igu%W%D_%h.sp3.Z       c:\GNSS_DATA\product\%W
+IGUE_ERP       ftp://igs.ensg.ign.fr/pub/igs/products/%W/igu%W%D_%h.erp.Z       c:\GNSS_DATA\product\%W
+IGSE_POS       ftp://igs.ensg.ign.fr/pub/igs/products/%W/igs%yP%W.snx.Z         c:\GNSS_DATA\product\%W
+
+#! PRODUCT (SOPAC)
+IGSS_EPH       ftp://garner.ucsd.edu/pub/products/%W/igs%W%D.sp3.Z              c:\GNSS_DATA\product\%W
+IGSS_EPH_GLO   ftp://garner.ucsd.edu/pub/products/%W/igl%W%D.sp3.Z              c:\GNSS_DATA\product\%W
+IGSS_CLK       ftp://garner.ucsd.edu/pub/products/%W/igs%W%D.clk.Z              c:\GNSS_DATA\product\%W
+IGSS_CLK_30S   ftp://garner.ucsd.edu/pub/products/%W/igs%W%D.clk_30s.Z          c:\GNSS_DATA\product\%W
+IGSS_ERP       ftp://garner.ucsd.edu/pub/products/%W/igs%W7.erp.Z               c:\GNSS_DATA\product\%W
+IGRS_EPH       ftp://garner.ucsd.edu/pub/products/%W/igr%W%D.sp3.Z              c:\GNSS_DATA\product\%W
+IGRS_CLK       ftp://garner.ucsd.edu/pub/products/%W/igr%W%D.clk.Z              c:\GNSS_DATA\product\%W
+IGRS_ERP       ftp://garner.ucsd.edu/pub/products/%W/igr%W%D.erp.Z              c:\GNSS_DATA\product\%W
+IGUS_EPH       ftp://garner.ucsd.edu/pub/products/%W/igu%W%D_%h.sp3.Z           c:\GNSS_DATA\product\%W
+IGUS_ERP       ftp://garner.ucsd.edu/pub/products/%W/igu%W%D_%h.erp.Z           c:\GNSS_DATA\product\%W
+IGSS_POS       ftp://garner.ucsd.edu/pub/products/%W/igs%yp%W%D.snx.Z           c:\GNSS_DATA\product\%W
+
+#! PRODUCT (CODE)
+COD_DCB_P1P2   ftp://ftp.unibe.ch/aiub/CODE/%Y/P1P2%y%m.DCB.Z                   c:\GNSS_DATA\data\dcb
+COD_DCB_P1C1   ftp://ftp.unibe.ch/aiub/CODE/%Y/P1C1%y%m.DCB.Z                   c:\GNSS_DATA\data\dcb
+COD_DCB_P2C2   ftp://ftp.unibe.ch/aiub/CODE/%Y/P2C2%y%m.DCB.Z                   c:\GNSS_DATA\data\dcb
+
+#! PRODUCT (JAXA)
+JAXA_EPH       http://qz-vision.jaxa.jp/USE/archives/final/%Y/qzf%W%D.sp3       c:\GNSS_DATA\product\qzv\%W
+
+#! DATA (CDDIS)
+IGS_OBS        ftp://cddis.gsfc.nasa.gov/gps/data/daily/%Y/%n/%yd/%s%n0.%yd.Z   c:\GNSS_DATA\data\%Y\%n
+IGS_NAV        ftp://cddis.gsfc.nasa.gov/gps/data/daily/%Y/%n/%yn/brdc%n0.%yn.Z c:\GNSS_DATA\data\%Y\%n
+IGS_NAV_GLO    ftp://cddis.gsfc.nasa.gov/gps/data/daily/%Y/%n/%yg/brdc%n0.%yg.Z c:\GNSS_DATA\data\%Y\%n
+IGS_NAV_S      ftp://cddis.gsfc.nasa.gov/gps/data/daily/%Y/%n/%yn/%s%n0.%yn.Z   c:\GNSS_DATA\data\%Y\%n
+IGS_NAV_S_GLO  ftp://cddis.gsfc.nasa.gov/gps/data/daily/%Y/%n/%yg/%s%n0.%yg.Z   c:\GNSS_DATA\data\%Y\%n
+IGS_OBS_H      ftp://cddis.gsfc.nasa.gov/gps/data/hourly/%Y/%n/%h/%s%n%H.%yd.Z  c:\GNSS_DATA\data\%Y\%n
+IGS_NAV_H      ftp://cddis.gsfc.nasa.gov/gps/data/hourly/%Y/%n/%h/%s%n%H.%yn.Z  c:\GNSS_DATA\data\%Y\%n
+IGS_NAV_H_GLO  ftp://cddis.gsfc.nasa.gov/gps/data/hourly/%Y/%n/%h/%s%n%H.%yg.Z  c:\GNSS_DATA\data\%Y\%n
+IGS_OBS_HR     ftp://cddis.gsfc.nasa.gov/gps/data/highrate/%Y/%n/%yd/%h/%s%n%H%M.%yd.Z c:\GNSS_DATA\data\hr\%Y\%n
+IGS_NAV_HR     ftp://cddis.gsfc.nasa.gov/gps/data/highrate/%Y/%n/%yn/%h/%s%n%H%M.%yn.Z c:\GNSS_DATA\data\hr\%Y\%n
+IGS_NAV_HR_GLO ftp://cddis.gsfc.nasa.gov/gps/data/highrate/%Y/%n/%yn/%h/%s%n%H%M.%yg.Z c:\GNSS_DATA\data\hr\%Y\%n
+MGEX_OBS       ftp://cddis.gsfc.nasa.gov/gps/data/campaign/mgex/daily/rinex3/%Y/%n/%yo/%s%n0.%yo.Z d:\GNSS_DATA\data_mgex\%Y\%n
+MGEX_NAV       ftp://cddis.gsfc.nasa.gov/gps/data/campaign/mgex/daily/rinex3/%Y/%n/%yn/%s%n0.%yn.Z d:\GNSS_DATA\data_mgex\%Y\%n
+MGEX_NAV_GLO   ftp://cddis.gsfc.nasa.gov/gps/data/campaign/mgex/daily/rinex3/%Y/%n/%yg/%s%n0.%yg.Z d:\GNSS_DATA\data_mgex\%Y\%n
+MGEX_NAV_GAL   ftp://cddis.gsfc.nasa.gov/gps/data/campaign/mgex/daily/rinex3/%Y/%n/%yl/%s%n0.%yl.Z d:\GNSS_DATA\data_mgex\%Y\%n
+MGEX_NAV_QZS   ftp://cddis.gsfc.nasa.gov/gps/data/campaign/mgex/daily/rinex3/%Y/%n/%yq/%s%n0.%yq.Z d:\GNSS_DATA\data_mgex\%Y\%n
+
+#! DATA (IGN)
+IGSE_OBS       ftp://igs.ensg.ign.fr/pub/igs/data/%Y/%n/%s%n0.%yd.Z             c:\GNSS_DATA\data\%Y\%n
+IGSE_NAV       ftp://igs.ensg.ign.fr/pub/igs/data/%Y/%n/brdc%n0.%yn.Z           c:\GNSS_DATA\data\%Y\%n
+IGSE_NAV_GLO   ftp://igs.ensg.ign.fr/pub/igs/data/%Y/%n/brdc%n0.%yg.Z           c:\GNSS_DATA\data\%Y\%n
+IGSE_NAV_S     ftp://igs.ensg.ign.fr/pub/igs/data/%Y/%n/%s%n0.%yn.Z             c:\GNSS_DATA\data\%Y\%n
+IGSE_NAV_S_GLO ftp://igs.ensg.ign.fr/pub/igs/data/%Y/%n/%s%n0.%yg.Z             c:\GNSS_DATA\data\%Y\%n
+
+#! DATA (SOPAC)
+IGSS_OBS       ftp://garner.ucsd.edu/pub/rinex/%Y/%n/%s%n0.%yd.Z                c:\GNSS_DATA\data\%Y\%n
+IGSS_NAV_S     ftp://garner.ucsd.edu/pub/nav/%Y/%n/%s%n0.%yn.Z                  c:\GNSS_DATA\data\%Y\%n
+
+#! DATA (JAXA)
+JAXA_NAV_GPS   http://qz-vision.jaxa.jp/USE/archives/ephemeris/%Y/brdc%n0.%yn   c:\GNSS_DATA\data_qzss\%Y\%n
+JAXA_NAV_QZS   http://qz-vision.jaxa.jp/USE/archives/ephemeris/%Y/brdc%n0.%yq   c:\GNSS_DATA\data_qzss\%Y\%n
+
+#! DATA (GSI)
+GSI_OBS        ftp://terras.gsi.go.jp/data/GPS_products/%Y/%n/%s%n0.%yo.gz      c:\GNSS_DATA\data_gsi\%Y\%n
+GSI_NAV        ftp://terras.gsi.go.jp/data/GPS_products/%Y/%n/%s%n0.%yn.gz      c:\GNSS_DATA\data_gsi\%Y\%n
+GSI_OBS_QZS    ftp://terras.gsi.go.jp/data/QZSS_products/%Y/%n/%s%n0.%yo.gz     c:\GNSS_DATA\data_gsi\%Y\%n
+GSI_NAV_QZS    ftp://terras.gsi.go.jp/data/QZSS_products/%Y/%n/%s%n0.%yN.tar.gz c:\GNSS_DATA\data_gsi\%Y\%n
+GSI_OBS_3H     ftp://terras.gsi.go.jp/data/GPS_products/%Y/%n/%s%n%N.%yo.gz     c:\GNSS_DATA\data_gsi\%Y\%n
+GSI_NAV_3H     ftp://terras.gsi.go.jp/data/GPS_products/%Y/%n/%s%n%N.%yn.gz     c:\GNSS_DATA\data_gsi\%Y\%n
+GSI_OBS_QZS_3H ftp://terras.gsi.go.jp/data/QZSS_products/%Y/%n/%s%n%N.%yo.gz    c:\GNSS_DATA\data_gsi\%Y\%n
+GSI_NAV_QZS_3H ftp://terras.gsi.go.jp/data/QZSS_products/%Y/%n/%s%n%N.%yN.tar.gz c:\GNSS_DATA\data_gsi\%Y\%n
+
+#! IERS EOP
+IERS_EOP_BULA  ftp://maia.usno.navy.mil/ser7/ser7.dat                           c:\GNSS_DATA\data_iers
+IERS_EOP_BULB  ftp://hpiers.obspm.fr/iers/bul/bulb_new/bulletinb.%N             c:\GNSS_DATA\data_iers
+IERS_EOP_BULC  ftp://hpiers.obspm.fr/iers/bul/bulc/bulletinc.dat                c:\GNSS_DATA\data_iers
+
+#! ANTEX
+IGS_ATX_08     ftp://igs.org/pub/station/general/igs08.atx                      c:\GNSS_DATA\data\pcv
+IGS_ATX_05     ftp://igs.org/pub/station/general/igs05.atx                      c:\GNSS_DATA\data\pcv
+IGS_ATX_08W    ftp://igs.org/pub/station/general/igs08_%W.atx                   c:\GNSS_DATA\data\pcv
+
+#! VMF1 GRID DATA
+VMF_GRID       http://ggosatm.hg.tuwien.ac.at/DELAY/GRID/VMFG/%Y/VMFG_%Y%m%d.H%h c:\GNSS_DATA\data_vmf\%Y
+

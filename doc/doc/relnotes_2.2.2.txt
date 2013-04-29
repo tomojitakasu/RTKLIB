@@ -1,0 +1,91 @@
+RTKLIB: ver.2.2.2 Release Notes
+                                                                        2009/9/5
+--------------------------------------------------------------------------------
+
+Supported Receivers and Data Messages
+
+
+(1) RTCM 2.3 (http://www.rtcm.org/)
+
+  Type 1, 3, 9, 14, 16, 17, 18, 19, 22
+
+(2) RTCM 3.0/3.1 (http://www.rtcm.org/)
+
+  Type 1002, 1004, 1005, 1006, 1019
+
+(3) NovAtel OEM4/V (http://www.novatel.com/)
+
+  RANGEB, RANGECMPB, RAWEPHEMB, IONUTCB, RAWWAASFRAMEB,
+
+(4) NovAtel OEM3 (Millennium) (http://www.novatel.com/)
+
+  RGEB, RGED, REPB, IONB, UTCB, FRMB
+
+(5) u-blox LEA-4T (AEK-4T)/LEA-5T (EVK-5T) (http://u-blox.com/)
+
+  RXMRAW, RXMSFRB
+
+(6) NovAtel Superstar II (http://www.novatel.com/)
+
+  ID#20, ID#21, ID#22, ID#23, ID#67
+
+(7) Hemisphere Crescent (http://www.hemispheregps.com/)
+
+  bin 80, bin 94, bin 95, bin 96
+
+--------------------------------------------------------------------------------
+
+Changes: ver.2.2.1 -> ver.2.2.2
+
+
+(1) The following patchs are incorpolated.
+
+  (a) rtklib_2.2.1_p1.zip
+  (b) rtklib_2.2.1_p2.zip
+  (c) rtklib_2.2.1_p3.zip
+  (d) rtklib_2.2.1_p4.zip
+  (e) rtklib_2.2.1_p5.zip
+
+(2) The following problems are fixed.
+
+  (a) No.2 Unable positioning when SBAS ranging enabled.
+  (b) No.8 No geoid correction outside of the neighborhood of Japan
+  (c) No.13 Flipped or vibrated plots of single point solutions in "RTK Map" window
+  (d) No.14 Sats/DOP plot for 20Hz or higher sampling rate data
+  (e) No.17 Invalid solutions with Moving-Base and Combined modes
+  (f) No.20 Decimal point format error to set the positioning options
+  (g) No.24 No proper default values for the time format and the base station position
+
+(3) No API changed.
+
+(4) No additional source code.
+
+(5) RTKNAVI
+
+  No functional change.
+
+(6) RTKPOST/RTKPOST_MKL
+
+  No functional change.
+
+(7) RTKCONV
+
+  No functional change.
+
+(8) RTKPLOT
+
+  No functional change.
+
+(9) STRSVR
+
+  No functional change.
+
+(10) CONVBIN
+
+  No functional change.
+
+(11) RNX2RTKP
+
+  (a) command line options -p 4, -l, -z are added.
+
+--------------------------------------------------------------------------------
