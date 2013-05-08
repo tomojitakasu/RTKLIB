@@ -31,6 +31,7 @@
 *           2011/12/01 1.8  modify api readsp3()
 *                           precede later ephemeris if ephemeris is NULL
 *                           move eci2ecef() to rtkcmn.c
+*           2013/05/08 1.9  fix bug on computing std-dev of precise clocks
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -479,16 +480,16 @@ static int pephclk(gtime_t time, int sat, const nav_t *nav, double *dts,
     
     if (t[0]<=0.0) {
         if ((dts[0]=c[0])==0.0) return 0;
-        std=nav->pclk[index].std[sat-1][3]*CLIGHT-EXTERR_CLK*t[0];
+        std=nav->pclk[index].std[sat-1][0]*CLIGHT-EXTERR_CLK*t[0];
     }
     else if (t[1]>=0.0) {
         if ((dts[0]=c[1])==0.0) return 0;
-        std=nav->pclk[index+1].std[sat-1][3]*CLIGHT+EXTERR_CLK*t[1];
+        std=nav->pclk[index+1].std[sat-1][0]*CLIGHT+EXTERR_CLK*t[1];
     }
     else if (c[0]!=0.0&&c[1]!=0.0) {
         dts[0]=(c[1]*t[0]-c[0]*t[1])/(t[0]-t[1]);
         i=t[0]<-t[1]?0:1;
-        std=nav->pclk[index+i].std[sat-1][3]+EXTERR_CLK*fabs(t[i]);
+        std=nav->pclk[index+i].std[sat-1][0]+EXTERR_CLK*fabs(t[i]);
     }
     else {
         trace(3,"prec clock outage %s sat=%2d\n",time_str(time,0),sat);

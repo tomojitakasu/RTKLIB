@@ -21,6 +21,7 @@
 *           2013/01/24 1.4  change compass factor for short pseudorange
 *                           add raw option -NOET
 *           2013/02/23 1.6 fix memory access violation problem on arm
+*           2013/05/08 1.7 fix bug on week number of galileo ephemeris
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -488,16 +489,18 @@ static int decode_eph(raw_t *raw, int sys)
         eph.tgd[2]=R4(p); p+=4+13; /* BGD: E1-E5B (s) */
         eph.code  =U1(p);          /* navtype: 0:E1B(INAV),1:E5A(FNAV) */
                                    /*          3:GIOVE E1B,4:GIOVE E5A */
-        eph.week=week;
-        eph.toe=gst2time(eph.week,eph.toes);
+        
+        /* gst week -> galileo week */
+        eph.week=week+1024;
+        eph.toe=gpst2time(eph.week,eph.toes);
         
         /* for week-handover problem */
         tt=timediff(eph.toe,raw->time);
         if      (tt<-302400.0) eph.week++;
         else if (tt> 302400.0) eph.week--;
-        eph.toe=gst2time(eph.week,eph.toes);
+        eph.toe=gpst2time(eph.week,eph.toes);
         
-        eph.toc=gst2time(eph.week,toc);
+        eph.toc=gpst2time(eph.week,toc);
         eph.ttr=adjweek(eph.toe,tow);
     }
     else return 0;
