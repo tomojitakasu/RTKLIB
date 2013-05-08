@@ -72,6 +72,7 @@
 *                           change api outrnxobsh()
 *                           add api outrnxcnavh()
 *                           fix bug on output of fit interval
+*           2013/05/08 1/18 fix bug on reading glo and geo nav in rinex 3
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -1148,6 +1149,7 @@ static int readrnxnavb(FILE *fp, const char *opt, double ver, int sys,
                 strncpy(id,buff,3);
                 sat=satid2no(id);
                 sp=4;
+                if (ver>=3.0) sys=satsys(sat,NULL);
             }
             else {
                 prn=(int)str2num(buff,0,2);

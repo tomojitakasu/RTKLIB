@@ -11,6 +11,7 @@
 *           2012/12/04 1.2  add stream conversion function
 *           2012/12/25 1.3  fix bug on cyclic navigation data output
 *                           suppress warnings
+*           2013/05/08 1.4  fix bug on 1 s offset for javad -> rtcm conversion
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -115,6 +116,7 @@ static void raw2rtcm(rtcm_t *out, const raw_t *raw, int ret)
     
     if (ret==1) {
         for (i=0;i<raw->obs.n;i++) {
+            out->time=raw->obs.data[i].time;
             out->obs.data[i]=raw->obs.data[i];
         }
         out->obs.n=raw->obs.n;
