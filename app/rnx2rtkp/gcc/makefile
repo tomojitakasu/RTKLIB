@@ -24,7 +24,7 @@ LDLIBS  = -lm -lrt -llapack -lblas
 all        : rnx2rtkp
 rnx2rtkp   : rnx2rtkp.o rtkcmn.o rinex.o rtkpos.o postpos.o solution.o
 rnx2rtkp   : lambda.o geoid.o sbas.o preceph.o pntpos.o ephemeris.o options.o
-rnx2rtkp   : ppp.o ppp_ar.o rtcm.o rtcm2.o rtcm3.o rtcm3e.o ionex.o stec.o rtkpos_gsi.o
+rnx2rtkp   : ppp.o ppp_ar.o rtcm.o rtcm2.o rtcm3.o rtcm3e.o ionex.o qzslex.o
 
 rnx2rtkp.o : ../rnx2rtkp.c
 	$(CC) -c $(CFLAGS) ../rnx2rtkp.c
@@ -66,10 +66,8 @@ rtcm3e.o   : $(SRC)/rtcm3e.c
 	$(CC) -c $(CFLAGS) $(SRC)/rtcm3e.c
 ionex.o    : $(SRC)/ionex.c
 	$(CC) -c $(CFLAGS) $(SRC)/ionex.c
-stec.o     : $(SRC)/stec.c
-	$(CC) -c $(CFLAGS) $(SRC)/stec.c
-rtkpos_gsi.o: $(SRC)/rtkpos_gsi.c
-	$(CC) -c $(CFLAGS) $(SRC)/rtkpos_gsi.c
+qzslex.o   : $(SRC)/qzslex.c
+	$(CC) -c $(CFLAGS) $(SRC)/qzslex.c
 
 rnx2rtkp.o : $(SRC)/rtklib.h
 rtkcmn.o   : $(SRC)/rtklib.h
@@ -91,8 +89,7 @@ rtcm2.o    : $(SRC)/rtklib.h
 rtcm3.o    : $(SRC)/rtklib.h
 rtcm3e.o   : $(SRC)/rtklib.h
 ionex.o    : $(SRC)/rtklib.h
-stec.o     : $(SRC)/rtklib.h
-rtkpos_gsi.o: $(SRC)/rtklib.h
+qzslex.o   : $(SRC)/rtklib.h
 
 CMD1    = ./rnx2rtkp
 INPUT11 = ../../../test/data/rinex/07590920.05o ../../../test/data/rinex/30400920.05n
