@@ -104,7 +104,7 @@ ver.2.4.2 and the previous ones.
 LICENSE
 
 The RTKLIB software package is distributed under the following BSD 2-clause
-license (http://opensource.org/licenses/BSD-2-Clause) and additional two
+license (http://opensource.org/licenses/BSD-2-Clause) and additional an
 exclusive clauses. Users are permitted to develop, produce or sell their own
 non-commercial or commercial products utilizing, linking or including RTKLIB as
 long as they comply with the license.
