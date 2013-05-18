@@ -10,6 +10,7 @@
 * version : $Revision:$ $Date:$
 * history : 2013/02/20 1.0 new
 *           2013/04/15 1.1 support 0x01-05 beidou-2/compass ephemeris
+*           2013/05/18 1.2 fix bug on decoding obsflags in message 0x7f-05
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -890,7 +891,7 @@ static unsigned char *decode_bnx_7f_05_obs(raw_t *raw, unsigned char *buff,
     const unsigned char *codes=NULL;
     double range[8],phase[8],cnr[8],dopp[8]={0},acc,wl;
     unsigned char *p=buff;
-    unsigned char flag,flag0,flag1,flag2,flag3;
+    unsigned char flag,flags[4];
     int i,j,k,sys,fcn=-10,code[8],slip[8],pri[8],freq[8],slipcnt[8]={0},mask[8]={0};
     
     trace(5,"decode_bnx_7f_05_obs: sat=%2d nobs=%2d\n",sat,nobs);
@@ -911,15 +912,17 @@ static unsigned char *decode_bnx_7f_05_obs(raw_t *raw, unsigned char *buff,
         slip[i]=getbitu(p,2,1);
         code[i]=getbitu(p,3,5); p++;
         
-        flag0=flag1=flag2=flag3=0;
+        for (j=0;j<4;j++) flags[j]=0;
         
-        if (flag)       flag0=U1(p++);
-        if (flag0&0x80) flag1=U1(p++);
-        if (flag1&0x80) flag2=U1(p++);
-        if (flag2&0x80) flag3=U1(p++);
-        if (flag1&0x80) fcn=getbits(&flag2,2,4);
-        
-        acc=(flag0&0x20)?0.0001:0.00002; /* phase accuracy */
+        for (j=0;flag&&j<4;j++) {
+            flag=U1(p++);
+            flags[flag&0x03]=flag&0x7F;
+            flag&=0x80;
+        }
+        if (flags[2]) {
+            fcn=getbits(flags+2,2,4);
+        }
+        acc=(flags[0]&0x20)?0.0001:0.00002; /* phase accuracy */
         
         cnr[i]=U1(p++)*0.4;
         
@@ -927,31 +930,33 @@ static unsigned char *decode_bnx_7f_05_obs(raw_t *raw, unsigned char *buff,
             cnr[i]+=getbits(p,0,2)*0.1;
             range[i]=getbitu(p,2,32)*0.064+getbitu(p,34,6)*0.001; p+=5;
         }
-        else if (flag0&0x40) {
+        else if (flags[0]&0x40) {
             cnr[i]+=getbits(p,0,2)*0.1;
             range[i]=range[0]+getbits(p,4,20)*0.001; p+=3;
         }
         else {
             range[i]=range[0]+getbits(p,0,16)*0.001; p+=2;
         }
-        if (flag0&0x40) {
+        if (flags[0]&0x40) {
             phase[i]=range[i]+getbits(p,0,24)*acc; p+=3;
         }
         else {
             cnr[i]+=getbits(p,0,2)*0.1;
             phase[i]=range[i]+getbits(p,2,22)*acc; p+=3;
         }
-        if (flag0&0x04) {
+        if (flags[0]&0x04) {
             dopp[i]=getbits(p,0,24)/256.0; p+=3;
         }
-        if (flag0&0x18) {
-            slipcnt[i]=U2(p); p+=2;
-        }
-        else if (flag0&0x08) {
-            slipcnt[i]=U1(p); p+=1;
+        if (flags[0]&0x08) {
+            if (flags[0]&0x10) {
+                slipcnt[i]=U2(p); p+=2;
+            }
+            else {
+                slipcnt[i]=U1(p); p+=1;
+            }
         }
         trace(5,"(%d) CODE=%2d S=%d F=%02X %02X %02X %02X\n",i+1,
-              code[i],slip,flag0,flag1,flag2,flag3);
+              code[i],slip[i],flags[0],flags[1],flags[2],flags[3]);
         trace(5,"(%d) P=%13.3f L=%13.3f D=%7.1f SNR=%4.1f SCNT=%2d\n",
               i+1,range[i],phase[i],dopp[i],cnr[i],slipcnt[i]);
     }
@@ -1064,7 +1069,7 @@ static int decode_bnx_7f_05(raw_t *raw, unsigned char *buff, int len)
             default: sat=0; break;
         }
         /* decode binex mesaage 0x7F-05 obs data */
-        p=decode_bnx_7f_05_obs(raw,p,sat,nobs,&data);
+        if (!(p=decode_bnx_7f_05_obs(raw,p,sat,nobs,&data))) return -1;
         
         if ((int)(p-buff)>len) {
             trace(2,"binex 0x7F-05 length error: nsat=%2d len=%d\n",nsat,len);
