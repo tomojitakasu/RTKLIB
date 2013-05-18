@@ -36,6 +36,7 @@
 *                           (rtklib_2.4.1_p7)
 *           2012/12/25 1.9  compile option SVR_REUSEADDR added
 *           2013/03/10 1.10 fix problem with ntrip mountpoint containing "/"
+*           2013/04/15 1.11 fix bug on swapping files if swapmargin=0
 *-----------------------------------------------------------------------------*/
 #include <ctype.h>
 #include "rtklib.h"
