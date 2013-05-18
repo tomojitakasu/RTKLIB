@@ -222,6 +222,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\qzslex.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\rinex.c"
 				>
 			</File>
@@ -242,6 +246,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\rtcm3e.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\rtkcmn.c"
 				>
 			</File>
@@ -250,19 +258,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\rtkpos_gsi.c"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\src\sbas.c"
 				>
 			</File>
 			<File
 				RelativePath="..\..\..\src\solution.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\stec.c"
 				>
 			</File>
 		</Filter>
