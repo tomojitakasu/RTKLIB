@@ -14,6 +14,7 @@
 *                           fix bug on carrier-phase in 1001-1004,1009-1012
 *           2012/12/28 1.3  fix bug on compass carrier wave length
 *           2013/01/18 1.4  fix bug on ssr message generation
+*           2013/05/11 1.5  change type of arg value of setbig()
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -46,10 +47,10 @@ static const double ssrudint[16]={
     1,2,5,10,15,30,60,120,240,300,600,900,1800,3600,7200,10800
 };
 /* set sign-magnitude bits ---------------------------------------------------*/
-static void setbitg(unsigned char *buff, int pos, int len, double value)
+static void setbitg(unsigned char *buff, int pos, int len, int value)
 {
     setbitu(buff,pos,1,value<0?1:0);
-    setbitu(buff,pos+1,len-1,fabs(value));
+    setbitu(buff,pos+1,len-1,value<0?-value:value);
 }
 /* set signed 38 bit field ---------------------------------------------------*/
 static void set38bits(unsigned char *buff, int pos, double value)
@@ -192,7 +193,7 @@ static void gen_obs_gps(rtcm_t *rtcm, const obsd_t *data, int *code1, int *pr1,
     
     lam1=CLIGHT/FREQ1;
     lam2=CLIGHT/FREQ2;
-    *pr1=*amb=0.0;
+    *pr1=*amb=0;
     if (ppr1) *ppr1=0xFFF80000; /* invalid values */
     if (pr21) *pr21=0xFFFFE000;
     if (ppr2) *ppr2=0xFFF80000;
@@ -240,7 +241,7 @@ static void gen_obs_glo(rtcm_t *rtcm, const obsd_t *data, int fcn, int *code1,
         lam1=CLIGHT/(FREQ1_GLO+DFRQ1_GLO*(fcn-7));
         lam2=CLIGHT/(FREQ2_GLO+DFRQ2_GLO*(fcn-7));
     }
-    *pr1=*amb=0.0;
+    *pr1=*amb=0;
     if (ppr1) *ppr1=0xFFF80000; /* invalid values */
     if (pr21) *pr21=0xFFFFE000;
     if (ppr2) *ppr2=0xFFF80000;
