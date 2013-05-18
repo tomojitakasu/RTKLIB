@@ -72,7 +72,7 @@
 *                           change api outrnxobsh()
 *                           add api outrnxcnavh()
 *                           fix bug on output of fit interval
-*           2013/05/08 1/18 fix bug on reading glo and geo nav in rinex 3
+*           2013/05/08 1.18 fix bug on reading glo and geo nav in rinex 3
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
