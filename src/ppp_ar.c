@@ -404,7 +404,7 @@ static int fix_amb_ILS(rtk_t *rtk, int *sat1, int *sat2, int *NW, int n)
     }
     if (s[0]<=0.0) return 0;
     
-    rtk->sol.ratio=MIN(s[1]/s[0],999.9);
+    rtk->sol.ratio=(float)(MIN(s[1]/s[0],999.9));
     
     /* varidation by ratio-test */
     if (rtk->opt.thresar[0]>0.0&&rtk->sol.ratio<rtk->opt.thresar[0]) {
