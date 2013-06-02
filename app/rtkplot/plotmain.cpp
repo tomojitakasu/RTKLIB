@@ -1661,7 +1661,6 @@ void __fastcall TPlot::TimerTimer(TObject *Sender)
     else return;
     
     UpdateTime();
-    UpdatePlot();
 }
 // set center of x-axis -----------------------------------------------------
 void __fastcall TPlot::SetCentX(double c)

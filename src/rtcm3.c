@@ -16,6 +16,7 @@
 *           2012/12/25 1.2  change compass msm id table
 *           2013/01/31 1.3  change signal id by the latest draft (ref [13])
 *           2013/02/23 1.4  change reference for rtcm 3 message (ref [14])
+*           2013/05/19 1.5  gpst -> bdt of time-tag in beidou msm message
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -1672,6 +1673,11 @@ static int decode_msm_head(rtcm_t *rtcm, int sys, int *sync, int *iod,
             tod   =getbitu(rtcm->buff,i,27)*0.001; i+=27;
             adjday_glot(rtcm,tod);
         }
+        else if (sys==SYS_CMP) {
+            tow   =getbitu(rtcm->buff,i,30)*0.001; i+=30;
+            tow+=14.0; /* BDT -> GPST */
+            adjweek(rtcm,tow);
+        }
         else {
             tow   =getbitu(rtcm->buff,i,30)*0.001; i+=30;
             adjweek(rtcm,tow);
@@ -1971,6 +1977,7 @@ static int decode_msm7(rtcm_t *rtcm, int sys)
     /* save obs data in msm message */
     save_msm_obs(rtcm,sys,&h,r,pr,cp,rr,rrf,cnr,lock,ex,half);
     
+trace(2,"rtcm3 %d: sync=%d\n",type,sync);
     rtcm->obsflag=!sync;
     return sync?0:1;
 }
