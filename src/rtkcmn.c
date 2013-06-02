@@ -9,6 +9,7 @@
 *           -DWIN32    use WIN32 API
 *           -DNOCALLOC no use calloc for zero matrix
 *           -DIERS_MODEL use GMF instead of NMF
+*           -DDLL      built for shared library
 *
 * references :
 *     [1] IS-GPS-200D, Navstar GPS Space Segment/Navigation User Interfaces,
@@ -90,6 +91,7 @@
 *                           change api eci2ecef(),sunmoonpos()
 *           2013/03/26 1.21 tickget() uses clock_gettime() for linux
 *           2013/05/08 1.22 fix bug on nutation coefficients for ast_args()
+*           2013/06/02 1.23 add #ifdef for undefined CLOCK_MONOTONIC_RAW
 *-----------------------------------------------------------------------------*/
 #define _POSIX_C_SOURCE 199309
 #include <stdarg.h>
@@ -1509,6 +1511,7 @@ extern unsigned int tickget(void)
     struct timespec tp={0};
     struct timeval  tv={0};
     
+#ifdef CLOCK_MONOTONIC_RAW
     /* linux kernel > 2.6.28 */
     if (!clock_gettime(CLOCK_MONOTONIC_RAW,&tp)) {
         return tp.tv_sec*1000u+tp.tv_nsec/1000000u;
@@ -1517,7 +1520,11 @@ extern unsigned int tickget(void)
         gettimeofday(&tv,NULL);
         return tv.tv_sec*1000u+tv.tv_usec/1000u;
     }
+#else
+    gettimeofday(&tv,NULL);
+    return tv.tv_sec*1000u+tv.tv_usec/1000u;
 #endif
+#endif /* WIN32 */
 }
 /* sleep ms --------------------------------------------------------------------
 * sleep ms
@@ -3680,7 +3687,7 @@ extern void settspan(gtime_t ts, gtime_t te) {}
 extern void settime(gtime_t time) {}
 #endif
 
-/* dummy functions for extentions --------------------------------------------*/
+/* dummy functions for lex extentions ----------------------------------------*/
 #ifndef EXTLEX
 extern int input_lexr(raw_t *raw, unsigned char data) {return 0;}
 extern int input_lexrf(raw_t *raw, FILE *fp) {return 0;}

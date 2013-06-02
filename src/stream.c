@@ -37,6 +37,7 @@
 *           2012/12/25 1.9  compile option SVR_REUSEADDR added
 *           2013/03/10 1.10 fix problem with ntrip mountpoint containing "/"
 *           2013/04/15 1.11 fix bug on swapping files if swapmargin=0
+*           2013/05/28 1.12 fix bug on playback of file with 64 bit size_t
 *-----------------------------------------------------------------------------*/
 #include <ctype.h>
 #include "rtklib.h"
@@ -613,7 +614,8 @@ static int statefile(file_t *file)
 /* read file -----------------------------------------------------------------*/
 static int readfile(file_t *file, unsigned char *buff, int nmax, char *msg)
 {
-    unsigned int nr=0,t,tick,fpos;
+    unsigned int nr=0,t,tick;
+    size_t fpos;
     
     tracet(4,"readfile: fp=%d nmax=%d\n",file->fp,nmax);
     
@@ -648,7 +650,7 @@ static int readfile(file_t *file, unsigned char *buff, int nmax, char *msg)
             nmax=(int)(fpos-file->fpos);
             
             if (file->repmode||file->speed>0.0) {
-                fseek(file->fp_tag,-(long)sizeof(tick)*2,SEEK_CUR);
+                fseek(file->fp_tag,-(long)(sizeof(tick)+sizeof(fpos)),SEEK_CUR);
             }
             break;
         }

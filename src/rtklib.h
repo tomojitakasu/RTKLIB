@@ -152,6 +152,8 @@ extern "C" {
 #else
 #define MINPRNQZS   0
 #define MAXPRNQZS   0
+#define MINPRNQZS_S 0
+#define MAXPRNQZS_S 0
 #define NSATQZS     0
 #define NSYSQZS     0
 #endif
