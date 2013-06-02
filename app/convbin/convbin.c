@@ -22,6 +22,7 @@
 *                          support compass
 *           2012/11/19 1.6 fix bug on setting code mask in rinex options
 *           2013/02/18 1.7 support binex
+*           2013/05/19 1.8 support auto format for file path with wild-card
 *-----------------------------------------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>
@@ -255,7 +256,7 @@ static int cmdopts(int argc, char **argv, rnxopt_t *opt, char **ifile,
     double eps[]={1980,1,1,0,0,0},epe[]={2037,12,31,0,0,0};
     double epr[]={2010,1,1,0,0,0};
     int i,j,sat,nf=2,nc=2,format=-1;
-    char *p,*sys,*fmt="";
+    char *p,*sys,*fmt="",*paths[1],path[1024];
     
     opt->rnxver =2.11;
     opt->obstype=OBSTYPE_PR|OBSTYPE_CP;
@@ -400,7 +401,9 @@ static int cmdopts(int argc, char **argv, rnxopt_t *opt, char **ifile,
         else if (!strcmp(fmt,"binex")) format=STRFMT_BINEX;
         else if (!strcmp(fmt,"rinex")) format=STRFMT_RINEX;
     }
-    else if ((p=strrchr(*ifile,'.'))) {
+    else {
+        paths[0]=path;
+        if (!expath(*ifile,paths,1)||!(p=strrchr(path,'.'))) return -1;
         if      (!strcmp(p,".rtcm2"))  format=STRFMT_RTCM2;
         else if (!strcmp(p,".rtcm3"))  format=STRFMT_RTCM3;
         else if (!strcmp(p,".gps"  ))  format=STRFMT_OEM4;

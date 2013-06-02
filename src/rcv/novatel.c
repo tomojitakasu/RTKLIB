@@ -36,6 +36,9 @@
 *           2012/11/19 1.12 fix bug on decodeing rangeb
 *           2013/02/23 1.13 fix memory access violation problem on arm
 *           2013/03/28 1.14 fix invalid phase if glonass wavelen unavailable
+*           2013/06/02 1.15 fix bug on reading galephemrisb,galalmanacb,
+*                           galclockb,galionob
+*                           fix bug on decoding rawwaasframeb for qzss-saif
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -500,7 +503,7 @@ static int decode_rawwaasframeb(raw_t *raw)
     }
     prn=U4(p+4);
     
-    if (MINPRNQZS_S<=prn&&prn<=MINPRNQZS_S) {
+    if (MINPRNQZS_S<=prn&&prn<=MAXPRNQZS_S) {
         prn+=10; /* QZSS SAIF PRN -> QZSS PRN */
     }
     else if (prn<MINPRNSBS||MAXPRNSBS<prn) return 0;
@@ -694,7 +697,7 @@ static int decode_galephemerisb(raw_t *raw)
     
     trace(3,"decode_galephemerisb: len=%d\n",raw->len);
     
-    if (raw->len<OEM4HLEN+224) {
+    if (raw->len<OEM4HLEN+220) {
         trace(2,"oem4 galephemrisb length error: len=%d\n",raw->len);
         return -1;
     }
@@ -752,15 +755,15 @@ static int decode_galephemerisb(raw_t *raw)
         trace(2,"oemv galephemeris satellite error: prn=%d\n",prn);
         return -1;
     }
-    tow=time2gst(raw->time,&week);
-    eph.week=week;
-    eph.toe=gst2time(eph.week,eph.toes);
+    tow=time2gpst(raw->time,&week);
+    eph.week=week; /* gps week */
+    eph.toe=gpst2time(eph.week,eph.toes);
     
     /* for week-handover problem */
     tt=timediff(eph.toe,raw->time);
     if      (tt<-302400.0) eph.week++;
     else if (tt> 302400.0) eph.week--;
-    eph.toe=gst2time(eph.week,eph.toes);
+    eph.toe=gpst2time(eph.week,eph.toes);
     eph.toc=adjweek(eph.toe,rcv_fnav?toc_fnav:toc_inav);
     eph.ttr=adjweek(eph.toe,tow);
     
@@ -782,7 +785,7 @@ static int decode_galalmanacb(raw_t *raw)
     
     trace(3,"decode_galalmanacb: len=%d\n",raw->len);
     
-    if (raw->len<OEM4HLEN+104) {
+    if (raw->len<OEM4HLEN+100) {
         trace(2,"oem4 galephemrisb length error: len=%d\n",raw->len);
         return -1;
     }
@@ -793,7 +796,7 @@ static int decode_galalmanacb(raw_t *raw)
     svh_e5a =U1(p)&3; p+=1;
     svh_e5b =U1(p)&3; p+=1+1;
     ioda    =U4(p);   p+=4;
-    alm.week=U4(p);   p+=4;
+    alm.week=U4(p);   p+=4; /* gst week */
     alm.toas=U4(p);   p+=4;
     alm.e   =R8(p);   p+=8;
     alm.OMGd=R8(p);   p+=8;
@@ -824,7 +827,7 @@ static int decode_galclockb(raw_t *raw)
     
     trace(3,"decode_galclockb: len=%d\n",raw->len);
     
-    if (raw->len<OEM4HLEN+68) {
+    if (raw->len<OEM4HLEN+64) {
         trace(2,"oem4 galclockb length error: len=%d\n",raw->len);
         return -1;
     }
@@ -856,7 +859,7 @@ static int decode_galionob(raw_t *raw)
     
     trace(3,"decode_galionob: len=%d\n",raw->len);
     
-    if (raw->len<OEM4HLEN+33) {
+    if (raw->len<OEM4HLEN+29) {
         trace(2,"oem4 galionob length error: len=%d\n",raw->len);
         return -1;
     }
@@ -927,7 +930,7 @@ static int decode_galinavrawwordb(raw_t *raw)
     }
     type=getbitu(buff,0,6);
     if (type==0&&getbitu(buff,6,2)==2) {
-        week=getbitu(buff, 96,12);
+        week=getbitu(buff, 96,12); /* gst week */
         tow =getbitu(buff,108,20);
         time=gst2time(week,tow);
     }
