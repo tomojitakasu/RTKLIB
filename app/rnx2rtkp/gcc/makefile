@@ -6,20 +6,20 @@ SRC     = ../../../src
 OPTS    = -DTRACE -DENAGLO -DENAQZS -DENAGAL -DNFREQ=3
 
 # for no lapack
-#CFLAGS  = -Wall -O3 -ansi -pedantic -I$(SRC) $(OPTS)
-#LDLIBS  = -lm -lrt
+CFLAGS  = -Wall -O3 -ansi -pedantic -I$(SRC) $(OPTS)
+LDLIBS  = -lm -lrt
 
-CFLAGS  = -Wall -O3 -ansi -pedantic -I$(SRC) -DLAPACK $(OPTS)
-LDLIBS  = -lm -lrt -llapack -lblas
+#CFLAGS  = -Wall -O3 -ansi -pedantic -I$(SRC) -DLAPACK $(OPTS)
+#LDLIBS  = -lm -lrt -llapack -lblas
 
 # for gprof
 #CFLAGS  = -Wall -O3 -ansi -pedantic -I$(SRC) -DLAPACK $(OPTS) -pg
 #LDLIBS  = -lm -lrt -llapack -lblas -pg
 
 # for mkl
-#MKLDIR  = /opt/intel
-#CFLAGS  = -O3 -ansi -pedantic -I$(SRC) $(OPTS) -DMKL -I$(MKLDIR)/include
-#LDLIBS  = -L$(MKLDIR)/lib/32 -lm -lmkl_core -lmkl_intel -lmkl_gnu_thread -liomp5 -lpthread
+#MKLDIR  = /opt/intel/mkl
+#CFLAGS  = -O3 -ansi -pedantic -I$(SRC) $(OPTS) -DMKL
+#LDLIBS  = -L$(MKLDIR)/lib/intel64 -lm -lrt -lmkl_core -lmkl_intel_lp64 -lmkl_gnu_thread -liomp5 -lpthread
 
 all        : rnx2rtkp
 rnx2rtkp   : rnx2rtkp.o rtkcmn.o rinex.o rtkpos.o postpos.o solution.o

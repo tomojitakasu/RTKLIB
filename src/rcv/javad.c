@@ -490,7 +490,7 @@ static int decode_eph(raw_t *raw, int sys)
         eph.code  =U1(p);          /* navtype: 0:E1B(INAV),1:E5A(FNAV) */
                                    /*          3:GIOVE E1B,4:GIOVE E5A */
         
-        /* gst week -> galileo week */
+        /* gst week -> gps week */
         eph.week=week+1024;
         eph.toe=gpst2time(eph.week,eph.toes);
         

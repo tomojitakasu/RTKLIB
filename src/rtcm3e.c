@@ -15,6 +15,7 @@
 *           2012/12/28 1.3  fix bug on compass carrier wave length
 *           2013/01/18 1.4  fix bug on ssr message generation
 *           2013/05/11 1.5  change type of arg value of setbig()
+*           2013/05/19 1.5  gpst -> bdt of time-tag in beidou msm message
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -1597,6 +1598,10 @@ static int encode_msm_head(int type, rtcm_t *rtcm, int sys, int sync, int *nsat,
         tow=time2gpst(timeadd(gpst2utc(rtcm->time),10800.0),NULL);
         dow=(unsigned int)(tow/86400.0);
         epoch=(dow<<27)+ROUND_U(fmod(tow,86400.0)*1E3);
+    }
+    else if (sys==SYS_CMP) {
+        /* beidou time (tow-ms) */
+        epoch=ROUND_U(time2gpst(gpst2bdt(rtcm->time),NULL)*1E3);
     }
     else {
         /* gps, qzs and galileo time (tow-ms) */

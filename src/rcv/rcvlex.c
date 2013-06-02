@@ -11,8 +11,11 @@
 *
 * version : $Revision:$ $Date:$
 * history : 2011/05/27 1.0 new
+*           2013/06/02 1.1 fix bug on unable compile
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
+
+#ifdef EXTLEX /* lex extention */
 
 #define LEXFRMPREAMB 0x1ACFFC1Du /* lex message frame preamble */
 
@@ -239,7 +242,7 @@ static int decode_lexr(raw_t *raw)
     if (raw->outtype) {
         sprintf(raw->msgtype,"LEXR 0x%04X (%4d): stat=%08X week=%d tow=%10.3f",
                 type,raw->len,stat,week,tow/1000.0);
-    
+    }
     switch (type) {
         case ID_LEXRAW: return decode_lexraw(raw);
         case ID_LEXMSG: return decode_lexmsg(raw);
@@ -419,3 +422,4 @@ extern int gen_lexr(const char *msg, unsigned char *buff)
     trace(5,"gen_lexr: buff=\n"); traceb(5,buff,len);
     return len;
 }
+#endif /* EXTLEX */
