@@ -712,8 +712,12 @@ extern void satposs(gtime_t teph, const obsd_t *obs, int n, const nav_t *nav,
         for (j=0;j<2;j++) dts[j+i*2]=0.0;
         var[i]=0.0; svh[i]=0;
         
-        /* search any psuedorange */
-        for (j=0,pr=0.0;j<NFREQ;j++) if ((pr=obs[i].P[j])>0.0) break;
+        /* search any pseudorange */
+        for (j=0,pr=0.0;j<NFREQ;j++) {
+            if (fabs(pr=obs[i].P[j])>0.00000001) {
+                break;
+            }
+        }
         
         if (j>=NFREQ) {
             trace(2,"no pseudorange %s sat=%2d\n",time_str(obs[i].time,3),obs[i].sat);
