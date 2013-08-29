@@ -49,6 +49,7 @@ static const char rcsid[]="$Id:$";
 #define VAR_GRA     SQR(0.001)      /*   gradient (m^2) */
 #define VAR_BIAS    SQR(100.0)      /*   phase-bias (m^2) */
 
+#define ERR_ION     5.0             /* ionospheric delay std (m) */
 #define ERR_SAAS    0.3             /* saastamoinen model error std (m) */
 #define ERR_BRDCI   0.5             /* broadcast iono model error factor */
 #define ERR_CBIAS   0.3             /* code bias error std (m) */
@@ -515,8 +516,13 @@ static int corr_ion(gtime_t time, const nav_t *nav, int sat, const double *pos,
     }
 #endif
     /* broadcast model */
-    *ion=ionmodel(time,nav->ion_gps,pos,azel);
-    *var=SQR(*ion*ERR_BRDCI);
+    if (ionoopt==IONOOPT_BRDC) {
+        *ion=ionmodel(time,nav->ion_gps,pos,azel);
+        *var=SQR(*ion*ERR_BRDCI);
+    }
+    /* no model */
+    *ion = 0;
+    *var = SQR(ERR_ION);
     return 1;
 }
 /* ionosphere and antenna corrected measurements -----------------------------*/
