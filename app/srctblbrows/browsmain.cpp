@@ -23,6 +23,13 @@ TMainForm *MainForm;
 
 static char buff[MAXSRCTBL];				// source table buffer
 
+//---------------------------------------------------------------------------
+static double str2dbl(AnsiString str)
+{
+	double val=0.0;
+	sscanf(str.c_str(),"%lf",&val);
+	return val;
+}
 /* get source table -------------------------------------------------------*/
 static char *getsrctbl(const char *path)
 {
@@ -493,7 +500,7 @@ void __fastcall TMainForm::ShowMsg(const char *msg)
 //---------------------------------------------------------------------------
 void __fastcall TMainForm::UpdateMap(void)
 {
-	AnsiString title,msg;
+	AnsiString title,msg,LatText,LonText;
 	double lat,lon;
 	
 	if (Address->Text=="") {
@@ -506,8 +513,10 @@ void __fastcall TMainForm::UpdateMap(void)
 	
 	for (int i=1;i<Table0->RowCount;i++) {
 		if (Table0->Cells[8][i]=="") continue;
-		lat=Table0->Cells[8][i].ToDouble();
-		lon=Table0->Cells[9][i].ToDouble();
+		LatText=Table0->Cells[8][i];
+		LonText=Table0->Cells[9][i];
+		lat=str2dbl(LatText);
+		lon=str2dbl(LonText);
 		title=Table0->Cells[0][i];
 		msg="<b>"+Table0->Cells[0][i]+"</b>: "+
 			Table0->Cells[1][i]+" ("+Table0->Cells[7][i]+"), POS: "+
