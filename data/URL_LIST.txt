@@ -160,6 +160,7 @@ GSI_NAV_QZS_3H ftp://terras.gsi.go.jp/data/QZSS_products/%Y/%n/%s%n%N.%yN.tar.gz
 IERS_EOP_BULA  ftp://maia.usno.navy.mil/ser7/ser7.dat                           c:\GNSS_DATA\data_iers
 IERS_EOP_BULB  ftp://hpiers.obspm.fr/iers/bul/bulb_new/bulletinb.%N             c:\GNSS_DATA\data_iers
 IERS_EOP_BULC  ftp://hpiers.obspm.fr/iers/bul/bulc/bulletinc.dat                c:\GNSS_DATA\data_iers
+IERS_EOP_BULA_2012 ftp://cddis.gsfc.nasa.gov/reports/iers/bulletin_a/volume_xxv/iers_bulletina.xxv_0%N c:\GNSS_DATA\data_iers
 
 #! ANTEX
 IGS_ATX_08     ftp://igs.org/pub/station/general/igs08.atx                      c:\GNSS_DATA\data\pcv
