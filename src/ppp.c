@@ -17,6 +17,8 @@
 *         Code Biases, URA
 *     [6] MacMillan et al., Atmospheric gradients and the VLBI terrestrial and
 *         celestial reference frames, Geophys. Res. Let., 1997
+*     [7] G.Petit and B.Luzum (eds), IERS Technical Note No. 36, IERS
+*         Conventions (2010), 2010
 *
 * version : $Revision:$ $Date:$
 * history : 2010/07/20 1.0  new
@@ -29,6 +31,8 @@
 *                           involve iers model with -DIERS_MODEL
 *                           change initial variances
 *                           suppress acos domain error
+*           2013/09/01 1.4  pole tide model by iers 2010
+*                           add mode of ionosphere model off
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -48,6 +52,8 @@ static const char rcsid[]="$Id:$";
 #define VAR_ZTD     SQR(  0.3)      /*   ztd (m^2) */
 #define VAR_GRA     SQR(0.001)      /*   gradient (m^2) */
 #define VAR_BIAS    SQR(100.0)      /*   phase-bias (m^2) */
+
+#define VAR_IONO_OFF SQR(10.0)      /* variance of iono-model-off */
 
 #define ERR_SAAS    0.3             /* saastamoinen model error std (m) */
 #define ERR_BRDCI   0.5             /* broadcast iono model error factor */
@@ -246,19 +252,44 @@ static void tide_oload(gtime_t tut, const double *odisp, double *denu)
     
     trace(5,"tide_oload: denu=%.3f %.3f %.3f\n",denu[0],denu[1],denu[2]);
 }
-/* displacement by pole tide (ref [2] 7) -------------------------------------*/
-static void tide_pole(const double *pos, const double *erpv, double *denu)
+/* iers mean pole (ref [7] eq.7.25) ------------------------------------------*/
+static void iers_mean_pole(gtime_t tut, double *xp_bar, double *yp_bar)
 {
-    double xp,yp,cosl,sinl;
+    const double ep2000[]={2000,1,1,0,0,0};
+    double y,y2,y3;
+    
+    y=timediff(tut,epoch2time(ep2000))/86400.0/365.25;
+    
+    if (y<3653.0/365.25) { /* until 2010.0 */
+        y2=y*y; y3=y2*y;
+        *xp_bar= 55.974+1.8243*y+0.18413*y2+0.007024*y3; /* (mas) */
+        *yp_bar=346.346+1.7896*y-0.10729*y2-0.000908*y3;
+    }
+    else { /* after 2010.0 */
+        *xp_bar= 23.513+7.6141*y; /* (mas) */
+        *yp_bar=358.891-0.6287*y;
+    }
+}
+/* displacement by pole tide (ref [7] eq.7.26) --------------------------------*/
+static void tide_pole(gtime_t tut, const double *pos, const double *erpv,
+                      double *denu)
+{
+    double xp_bar,yp_bar,m1,m2,cosl,sinl;
     
     trace(3,"tide_pole: pos=%.3f %.3f\n",pos[0]*R2D,pos[1]*R2D);
     
-    xp=erpv[0]/AS2R; /* rad -> arcsec */
-    yp=erpv[1]/AS2R;
-    cosl=cos(pos[1]); sinl=sin(pos[1]);
-    denu[0]=  9E-3*sin(pos[0])    *(xp*sinl+yp*cosl);
-    denu[1]= -9E-3*cos(2.0*pos[0])*(xp*cosl-yp*sinl);
-    denu[2]=-32E-3*sin(2.0*pos[0])*(xp*cosl-yp*sinl);
+    /* iers mean pole (mas) */
+    iers_mean_pole(tut,&xp_bar,&yp_bar);
+    
+    m1= erpv[0]/AS2R-xp_bar*1E-3; /* (as) */
+    m2=-erpv[1]/AS2R-yp_bar*1E-3;
+    
+    /* sin(2*theta) = sin(2*phi), cos(2*theta)=-cos(2*phi) */
+    cosl=cos(pos[1]);
+    sinl=sin(pos[1]);
+    denu[0]=  9E-3*sin(pos[0])    *(m1*sinl-m2*cosl); /* de= Slambda (m) */
+    denu[1]= -9E-3*cos(2.0*pos[0])*(m1*cosl+m2*sinl); /* dn=-Stheta  (m) */
+    denu[2]=-33E-3*sin(2.0*pos[0])*(m1*cosl+m2*sinl); /* du= Sr      (m) */
     
     trace(5,"tide_pole : denu=%.3f %.3f %.3f\n",denu[0],denu[1],denu[2]);
 }
@@ -337,7 +368,7 @@ extern void tidedisp(gtime_t tutc, const double *rr, int opt, const erp_t *erp,
         for (i=0;i<3;i++) dr[i]+=drt[i];
     }
     if ((opt&4)&&erp) { /* pole tide */
-        tide_pole(pos,erpv,denu);
+        tide_pole(tut,pos,erpv,denu);
         matmul("TN",3,1,3,1.0,E,denu,0.0,drt);
         for (i=0;i<3;i++) dr[i]+=drt[i];
     }
@@ -515,8 +546,14 @@ static int corr_ion(gtime_t time, const nav_t *nav, int sat, const double *pos,
     }
 #endif
     /* broadcast model */
-    *ion=ionmodel(time,nav->ion_gps,pos,azel);
-    *var=SQR(*ion*ERR_BRDCI);
+    if (ionoopt==IONOOPT_BRDC) {
+        *ion=ionmodel(time,nav->ion_gps,pos,azel);
+        *var=SQR(*ion*ERR_BRDCI);
+        return 1;
+    }
+    /* ionosphere model off */
+    *ion=0.0;
+    *var=VAR_IONO_OFF;
     return 1;
 }
 /* ionosphere and antenna corrected measurements -----------------------------*/

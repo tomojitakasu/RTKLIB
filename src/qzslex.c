@@ -11,6 +11,7 @@
 *           2011/07/01 1.1  support 24bytes header format for lexconvbin()
 *           2013/03/27 1.2  support message type 12
 *           2013/05/11 1.3  fix bugs on decoding message type 12
+*           2013/09/01 1.4  consolidate mt 12 handling codes provided by T.O.
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -286,10 +287,11 @@ static int lex2rtcm(const unsigned char *msg, int i, unsigned char *buff)
 /* decode type 12: madoca orbit and clock correction -------------------------*/
 static int decode_lextype12(const lexmsg_t *msg, nav_t *nav, gtime_t *tof)
 {
+    static rtcm_t stock_rtcm={0};
     rtcm_t rtcm={0};
     double tow;
     unsigned char buff[1200];
-    int i=0,j,k,n,week;
+    int i=0,j,k,l,n,week;
     
     trace(3,"decode_lextype12:\n");
     
@@ -310,22 +312,56 @@ static int decode_lextype12(const lexmsg_t *msg, nav_t *nav, gtime_t *tof)
         for (j=0;j<n+6;j++) {
             
             /* input rtcm ssr message */
-            if (input_rtcm3(&rtcm,buff[j])!=10) continue;
+            if (input_rtcm3(&rtcm,buff[j])==-1) continue;
             
             /* update ssr corrections in nav data */
             for (k=0;k<MAXSAT;k++) {
                 if (!rtcm.ssr[k].update) continue;
                 
-                /* add zero clock correction for hr-clock */
-                if (rtcm.ssr[k].t0[0].time){
-                    rtcm.ssr[k].t0 [1]=rtcm.ssr[k].t0 [0];
-                    rtcm.ssr[k].udi[1]=rtcm.ssr[k].udi[0];
-                    rtcm.ssr[k].iod[1]=rtcm.ssr[k].iod[0];
-                    rtcm.ssr[k].dclk[0]=rtcm.ssr[k].dclk[1]=rtcm.ssr[k].dclk[2]
-                        =0.0;
-                }
-                nav->ssr[k]=rtcm.ssr[k];
                 rtcm.ssr[k].update=0;
+                
+                if (rtcm.ssr[k].t0[3].time){      /* ura */
+                    stock_rtcm.ssr[k].t0[3]=rtcm.ssr[k].t0[3];
+                    stock_rtcm.ssr[k].udi[3]=rtcm.ssr[k].udi[3];
+                    stock_rtcm.ssr[k].iod[3]=rtcm.ssr[k].iod[3];
+                    stock_rtcm.ssr[k].ura=rtcm.ssr[k].ura;
+                }
+                if (rtcm.ssr[k].t0[2].time){      /* hr-clock correction*/
+                    
+                    /* convert hr-clock correction to clock correction*/
+                    stock_rtcm.ssr[k].t0[1]=rtcm.ssr[k].t0[2];
+                    stock_rtcm.ssr[k].udi[1]=rtcm.ssr[k].udi[2];
+                    stock_rtcm.ssr[k].iod[1]=rtcm.ssr[k].iod[2];
+                    stock_rtcm.ssr[k].dclk[0]=rtcm.ssr[k].hrclk;
+                    stock_rtcm.ssr[k].dclk[1]=stock_rtcm.ssr[k].dclk[2]=0.0;
+                    
+                    /* activate orbit correction(60.0s is tentative) */
+                    if((stock_rtcm.ssr[k].iod[0]==rtcm.ssr[k].iod[2]) &&
+                       (timediff(stock_rtcm.ssr[k].t0[0],rtcm.ssr[k].t0[2]) < 60.0)){
+                        rtcm.ssr[k] = stock_rtcm.ssr[k];
+                    }
+                    else continue; /* not apply */
+                }
+                else if (rtcm.ssr[k].t0[0].time){ /* orbit correction*/
+                    stock_rtcm.ssr[k].t0[0]=rtcm.ssr[k].t0[0];
+                    stock_rtcm.ssr[k].udi[0]=rtcm.ssr[k].udi[0];
+                    stock_rtcm.ssr[k].iod[0]=rtcm.ssr[k].iod[0];
+                    for (l=0;l<3;l++) {
+                        stock_rtcm.ssr[k].deph [l]=rtcm.ssr[k].deph [l];
+                        stock_rtcm.ssr[k].ddeph[l]=rtcm.ssr[k].ddeph[l];
+                    }
+                    stock_rtcm.ssr[k].iode=rtcm.ssr[k].iode;
+                    stock_rtcm.ssr[k].refd=rtcm.ssr[k].refd;
+                    
+                    /* activate clock correction(60.0s is tentative) */
+                    if((stock_rtcm.ssr[k].iod[1]==rtcm.ssr[k].iod[0]) &&
+                      (timediff(stock_rtcm.ssr[k].t0[1],rtcm.ssr[k].t0[0]) < 60.0)){
+                        rtcm.ssr[k] = stock_rtcm.ssr[k];
+                    }
+                    else continue; /* not apply */
+                }
+                /* apply */
+                nav->ssr[k]=rtcm.ssr[k];
             }
         }
         i+=n*8;

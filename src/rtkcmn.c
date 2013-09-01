@@ -92,6 +92,7 @@
 *           2013/03/26 1.21 tickget() uses clock_gettime() for linux
 *           2013/05/08 1.22 fix bug on nutation coefficients for ast_args()
 *           2013/06/02 1.23 add #ifdef for undefined CLOCK_MONOTONIC_RAW
+*           2013/09/01 1.24 fix bug on interpolation of satellite antenna pcv
 *-----------------------------------------------------------------------------*/
 #define _POSIX_C_SOURCE 199309
 #include <stdarg.h>
@@ -3436,7 +3437,7 @@ extern void antmodel_s(const pcv_t *pcv, double nadir, double *dant)
     trace(4,"antmodel_s: nadir=%6.1f\n",nadir*R2D);
     
     for (i=0;i<NFREQ;i++) {
-        dant[i]=interpvar(nadir*R2D/5.0,pcv->var[i]);
+        dant[i]=interpvar(nadir*R2D*5.0,pcv->var[i]);
     }
     trace(5,"antmodel_s: dant=%6.3f %6.3f\n",dant[0],dant[1]);
 }
