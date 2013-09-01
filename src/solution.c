@@ -36,6 +36,7 @@
 *                            add api freesolstatbuf()
 *           2012/02/05  1.10 fix bug on output nmea gpgsv
 *           2013/02/18  1.11 support nmea GLGSA,GAGSA,GLCSV,GACSV sentence
+*           2013/09/01  1.12 fix bug on presentation of nmea time tag
 *-----------------------------------------------------------------------------*/
 #include <ctype.h>
 #include "rtklib.h"
@@ -1021,6 +1022,7 @@ static int outenu(unsigned char *buff, const char *s, const sol_t *sol,
 extern int outnmea_rmc(unsigned char *buff, const sol_t *sol)
 {
     static double dirp=0.0;
+    gtime_t time;
     double ep[6],pos[3],enuv[3],dms1[3],dms2[3],vel,dir,amag=0.0;
     char *p=(char *)buff,*q,sum,*emag="E";
     
@@ -1032,7 +1034,9 @@ extern int outnmea_rmc(unsigned char *buff, const sol_t *sol)
         p+=sprintf(p,"*%02X%c%c",sum,0x0D,0x0A);
         return p-(char *)buff;
     }
-    time2epoch(gpst2utc(sol->time),ep);
+    time=gpst2utc(sol->time);
+    if (time.sec>=0.995) {time.time++; time.sec=0.0;}
+    time2epoch(time,ep);
     ecef2pos(sol->rr,pos);
     ecef2enu(pos,sol->rr+3,enuv);
     vel=norm(enuv,3);
@@ -1056,6 +1060,7 @@ extern int outnmea_rmc(unsigned char *buff, const sol_t *sol)
 /* output solution in the form of nmea GGA sentence --------------------------*/
 extern int outnmea_gga(unsigned char *buff, const sol_t *sol)
 {
+    gtime_t time;
     double h,ep[6],pos[3],dms1[3],dms2[3],dop=1.0;
     int solq;
     char *p=(char *)buff,*q,sum;
@@ -1070,7 +1075,9 @@ extern int outnmea_gga(unsigned char *buff, const sol_t *sol)
     }
     for (solq=0;solq<8;solq++) if (solq_nmea[solq]==sol->stat) break;
     if (solq>=8) solq=0;
-    time2epoch(gpst2utc(sol->time),ep);
+    time=gpst2utc(sol->time);
+    if (time.sec>=0.995) {time.time++; time.sec=0.0;}
+    time2epoch(time,ep);
     ecef2pos(sol->rr,pos);
     h=geoidh(pos);
     deg2dms(fabs(pos[0])*R2D,dms1);
