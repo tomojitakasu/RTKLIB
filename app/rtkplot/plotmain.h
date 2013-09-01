@@ -532,7 +532,7 @@ public:
     double ElMask;
     int ElMaskP;
     int HideLowSat;
-    double MaxDop;
+    double MaxDop,MaxMP;
     int NavSys;
     AnsiString ExSats;
     int ShowErr;

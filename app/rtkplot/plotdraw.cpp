@@ -1519,13 +1519,15 @@ void __fastcall TPlot::DrawSnrE(int level)
     
     trace(3,"DrawSnrE: level=%d\n",level);
     
+    yl[1][0]=-MaxMP; yl[1][1]=MaxMP;
+    
     for (i=0;i<2;i++) if (btn[i]->Down) j=i;
     for (i=0;i<2;i++) {
         if (!btn[i]->Down) continue;
         GraphE[i]->XLPos=i==j?1:0;
         GraphE[i]->YLPos=1;
         GraphE[i]->SetLim(xl,yl[i]);
-        GraphE[i]->SetTick(0.0,5.0);
+        GraphE[i]->SetTick(0.0,0.0);
         GraphE[i]->DrawAxis(1,1);
         
         GraphE[i]->GetPos(p1,p2);
