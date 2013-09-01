@@ -70,6 +70,7 @@ void __fastcall TPlotOptDialog::FormShow(TObject *Sender)
     
     ElMask ->Text=s.sprintf("%g",Plot->ElMask);
     MaxDop ->Text=s.sprintf("%g",Plot->MaxDop);
+    MaxMP  ->Text=s.sprintf("%g",Plot->MaxMP );
     YRange ->Text=s.sprintf("%g",Plot->YRange);
     Origin ->ItemIndex=Plot->Origin;
     RcvPos ->ItemIndex=Plot->RcvPos;
@@ -136,6 +137,7 @@ void __fastcall TPlotOptDialog::BtnOKClick(TObject *Sender)
     
     Plot->ElMask=str2dbl(ElMask->Text);
     Plot->MaxDop=str2dbl(MaxDop->Text);
+    Plot->MaxMP =str2dbl(MaxMP ->Text);
     Plot->YRange=str2dbl(YRange->Text);
     Plot->Origin=Origin->ItemIndex;
     Plot->RcvPos=RcvPos->ItemIndex;

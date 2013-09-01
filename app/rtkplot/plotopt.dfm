@@ -30,7 +30,6 @@ object PlotOptDialog: TPlotOptDialog
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 2
-    ExplicitLeft = -1
     object Label1: TLabel
       Left = 360
       Top = 123
@@ -216,9 +215,9 @@ object PlotOptDialog: TPlotOptDialog
     object Label28: TLabel
       Left = 12
       Top = 211
-      Width = 68
+      Width = 44
       Height = 13
-      Caption = 'Maximum DOP'
+      Caption = 'Max DOP'
     end
     object LabelExSats: TLabel
       Left = 12
@@ -352,6 +351,13 @@ object PlotOptDialog: TPlotOptDialog
         FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
         FF00}
       OnClick = BtnTLESatViewClick
+    end
+    object Label37: TLabel
+      Left = 12
+      Top = 233
+      Width = 67
+      Height = 13
+      Caption = 'Max Multipath'
     end
     object Panel1: TPanel
       Left = 350
@@ -1178,6 +1184,23 @@ object PlotOptDialog: TPlotOptDialog
       ParentFont = False
       TabOrder = 58
       OnClick = BtnTLESatFileClick
+    end
+    object MaxMP: TComboBox
+      Left = 102
+      Top = 230
+      Width = 77
+      Height = 21
+      DropDownCount = 20
+      TabOrder = 59
+      Text = '10'
+      Items.Strings = (
+        '1'
+        '2'
+        '3'
+        '5'
+        '10'
+        '20'
+        '30')
     end
   end
   object BtnCancel: TButton
