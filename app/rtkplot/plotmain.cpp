@@ -133,6 +133,7 @@ __fastcall TPlot::TPlot(TComponent* Owner) : TForm(Owner)
     PlotStyle=MarkSize=Origin=RcvPos=0;
     TimeInt=ElMask=YRange=0.0;
     MaxDop=30.0;
+    MaxMP=10.0;
     TimeStart=TimeEnd=epoch2time(ep);
     DoubleBuffered=true;
     Console1=new TConsole(Owner);
@@ -2167,7 +2168,7 @@ void __fastcall TPlot::SetRange(int all, double range)
     else {
         GraphG[0]->GetLim(tl,xp);
         xl[0]=10.0; xl[1]= 60.0;
-        yl[0]=-10.0; yl[1]=10.0;
+        yl[0]=-MaxMP; yl[1]=MaxMP;
         zl[0]= 0.0; zl[1]= 90.0;
         GraphG[0]->SetLim(tl,xl);
         GraphG[1]->SetLim(tl,yl);
@@ -2348,6 +2349,7 @@ void __fastcall TPlot::LoadOpt(void)
     
     ElMask    =ini->ReadFloat  ("plot","elmask", 0.0);
     MaxDop    =ini->ReadFloat  ("plot","maxdop",30.0);
+    MaxMP     =ini->ReadFloat  ("plot","maxmp" ,10.0);
     YRange    =ini->ReadFloat  ("plot","yrange", 5.0);
     Origin    =ini->ReadInteger("plot","orgin",    2);
     RcvPos    =ini->ReadInteger("plot","rcvpos",   0);
@@ -2477,6 +2479,7 @@ void __fastcall TPlot::SaveOpt(void)
     
     ini->WriteFloat  ("plot","elmask",       ElMask        );
     ini->WriteFloat  ("plot","maxdop",       MaxDop        );
+    ini->WriteFloat  ("plot","maxmp",        MaxMP         );
     ini->WriteFloat  ("plot","yrange",       YRange        );
     ini->WriteInteger("plot","orgin",        Origin        );
     ini->WriteInteger("plot","rcvpos",       RcvPos        );
