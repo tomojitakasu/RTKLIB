@@ -13,6 +13,7 @@
 *           2013/02/23 1.2  fix memory access violation problem on arm
 *           2013/04/24 1.3  fix bug on cycle-slip detection
 *                           add range check of gps ephemeris week
+*           2013/09/01 1.4  add check error of week, time jump, obs data range
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -62,7 +63,7 @@ static int decode_xf5raw(raw_t *raw)
     gtime_t time;
     double tadj=0.0,toff=0.0,tn;
     int dTowInt;
-    double dTowUTC, dTowGPS, dTowFrac;
+    double dTowUTC, dTowGPS, dTowFrac, L1, P1, D1;
     double gpsutcTimescale;
     unsigned char rcvTimeScaleCorr, sys, carrNo;
     int i,j,prn,sat,n=0,nsat,week;
@@ -75,16 +76,23 @@ static int decode_xf5raw(raw_t *raw)
     if ((q=strstr(raw->opt,"-tadj"))) {
         sscanf(q,"-TADJ=%lf",&tadj);
     }
-    dTowUTC =R8(p  );
-    week=adjgpsweek(U2(p+8));
+    dTowUTC =R8(p);
+    week = U2(p+8);
     gpsutcTimescale = R8(p+10);
     /* glonassutcTimescale = R8(p+18); */
     rcvTimeScaleCorr = I1(p+26);
     
+    /* check gps week range */
+    if (week>=4096) {
+        trace(2,"nvs xf5raw obs week error: week=%d\n",week);
+        return -1;
+    }
+    week=adjgpsweek(week);
+    
     if ((raw->len - 31)%30) {
         
         /* Message length is not correct: there could be an error in the stream */
-        trace(2,"raw->len=%d seems not be correct\n",raw->len);
+        trace(2,"nvs xf5raw len=%d seems not be correct\n",raw->len);
         return -1;
     }
     nsat = (raw->len - 31)/30;
@@ -102,29 +110,45 @@ static int decode_xf5raw(raw_t *raw)
         toff=(tn-floor(tn+0.5))*tadj;
         time=timeadd(time,-toff);
     }
+    /* check time tag jump */
+    if (raw->time.time&&fabs(timediff(time,raw->time))>86400.0) {
+        time2str(time,tstr,3);
+        trace(2,"nvs xf5raw time tag jump error: time=%s\n",tstr);
+        return 0;
+    }
     if (fabs(timediff(time,raw->time))<=1e-3) {
         time2str(time,tstr,3);
         trace(2,"nvs xf5raw time tag duplicated: time=%s\n",tstr);
         return 0;
     }
-    for (i=0,p+=27;(i<nsat) && (i<MAXOBS); i++,p+=30) {
+    for (i=0,p+=27;(i<nsat) && (n<MAXOBS); i++,p+=30) {
         raw->obs.data[n].time  = time;
         sys = (U1(p)==1)?SYS_GLO:((U1(p)==2)?SYS_GPS:((U1(p)==4)?SYS_SBS:SYS_NONE));
         prn = U1(p+1);
         if (sys == SYS_SBS) prn += 120; /* Correct this */
         if (!(sat=satno(sys,prn))) {
-            trace(2,"oem3 regb satellite number error: sys=%d prn=%d\n",sys,prn);
+            trace(2,"nvs xf5raw satellite number error: sys=%d prn=%d\n",sys,prn);
             continue;
         }
         carrNo = I1(p+2);
+        L1 = R8(p+ 4);
+        P1 = R8(p+12);
+        D1 = R8(p+20);
+        
+        /* check range error */
+        if (L1<-1E10||L1>1E10||P1<-1E10||P1>1E10||D1<-1E5||D1>1E5) {
+            trace(2,"nvs xf5raw obs range error: sat=%2d L1=%12.5e P1=%12.5e D1=%12.5e\n",
+                  sat,L1,P1,D1);
+            continue;
+        }
         raw->obs.data[n].SNR[0]=(unsigned char)(I1(p+3)*4.0+0.5);
         if (sys==SYS_GLO) {
-            raw->obs.data[n].L[0]  =  R8(p+ 4) - toff*(FREQ1_GLO+DFRQ1_GLO*carrNo);
+            raw->obs.data[n].L[0]  =  L1 - toff*(FREQ1_GLO+DFRQ1_GLO*carrNo);
         } else {
-            raw->obs.data[n].L[0]  =  R8(p+ 4) - toff*FREQ1;
+            raw->obs.data[n].L[0]  =  L1 - toff*FREQ1;
         }
-        raw->obs.data[n].P[0]    = (R8(p+12)-dTowFrac)*CLIGHT*0.001 - toff*CLIGHT; /* in ms, needs to be converted */
-        raw->obs.data[n].D[0]    =  R8(p+20);
+        raw->obs.data[n].P[0]    = (P1-dTowFrac)*CLIGHT*0.001 - toff*CLIGHT; /* in ms, needs to be converted */
+        raw->obs.data[n].D[0]    =  (float)D1;
         
         /* set LLI if meas flag 4 (carrier phase present) off -> on */
         flag=U1(p+28);
@@ -139,24 +163,6 @@ static int decode_xf5raw(raw_t *raw)
         }
 #endif
         raw->obs.data[n].code[0] = CODE_L1C;
-        
-        /* Error checking */
-        if (((raw->obs.data[n].P[0]) < -10E6) || ((raw->obs.data[n].P[0]) > +60E6)) {
-            raw->obs.n = 0;
-            trace(2,"obs.data[%d].P=%e unlikely to be correct\n", n, raw->obs.data[n].P[0]);
-            
-            /* Unlikely to be possible if the clock bias does not run free */
-            /* there could be an error in the stream */
-            return -1;
-        }
-        if (((raw->obs.data[n].D[0]) < -15E3) || ((raw->obs.data[n].D[0]) > +15E3)) {
-            raw->obs.n = 0;
-            trace(2,"obs.data[%d].D=%+7.1f unlikely to be correct\n", n, raw->obs.data[n].D[0]);
-            
-            /* Unlikely to be possible with a TCXO */
-            /* there could be an error in the stream */
-            return -1;
-        }
         raw->obs.data[n].sat = sat;
         
         for (j=1;j<NFREQ+NEXOBS;j++) {
