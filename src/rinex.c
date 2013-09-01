@@ -73,6 +73,7 @@
 *                           add api outrnxcnavh()
 *                           fix bug on output of fit interval
 *           2013/05/08 1.18 fix bug on reading glo and geo nav in rinex 3
+*           2013/09/01 1.19 fix bug on reading galileo "C1" in rinex 2.12
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -212,6 +213,7 @@ static void convcode(double ver, int sys, const char *str, char *type)
     else if (!strcmp(str,"C1")) { /* ver.2.11 GPS L1C,GLO L1C/A */
         if      (sys==SYS_GPS) sprintf(type,"%c1C",'C');
         else if (sys==SYS_GLO) sprintf(type,"%c1C",'C');
+        else if (sys==SYS_GAL) sprintf(type,"%c1X",'C'); /* ver.2.12 */
         else if (sys==SYS_QZS) sprintf(type,"%c1C",'C');
         else if (sys==SYS_SBS) sprintf(type,"%c1C",'C');
     }

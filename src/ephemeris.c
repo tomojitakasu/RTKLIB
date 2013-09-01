@@ -45,6 +45,8 @@
 *                           use newton's method to solve kepler eq.
 *                           update ssr correction algorithm
 *           2013/03/20 1.6  fix problem on ssr clock relativitic correction
+*           2013/09/01 1.7  support negative pseudorange
+*                           fix bug on variance in case of ura ssr = 63
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -93,7 +95,7 @@ static double var_urassr(int ura)
 {
     double std;
     if (ura<= 0) return SQR(DEFURASSR);
-    if (ura>=63) return SQR(546.65);
+    if (ura>=63) return SQR(5.4665);
     std=(pow(3.0,(ura>>3)&7)*(1.0+(ura&7)/4.0)-1.0)*1E-3;
     return SQR(std);
 }
@@ -713,7 +715,7 @@ extern void satposs(gtime_t teph, const obsd_t *obs, int n, const nav_t *nav,
         var[i]=0.0; svh[i]=0;
         
         /* search any psuedorange */
-        for (j=0,pr=0.0;j<NFREQ;j++) if ((pr=obs[i].P[j])>0.0) break;
+        for (j=0,pr=0.0;j<NFREQ;j++) if ((pr=obs[i].P[j])!=0.0) break;
         
         if (j>=NFREQ) {
             trace(2,"no pseudorange %s sat=%2d\n",time_str(obs[i].time,3),obs[i].sat);
@@ -735,7 +737,7 @@ extern void satposs(gtime_t teph, const obsd_t *obs, int n, const nav_t *nav,
             trace(2,"no ephemeris %s sat=%2d\n",time_str(time[i],3),obs[i].sat);
             continue;
         }
-        /* if no precise clock unavailable, use broadcast clock instead */
+        /* if no precise clock available, use broadcast clock instead */
         if (dts[i*2]==0.0) {
             if (!ephclk(time[i],teph,obs[i].sat,nav,dts+i*2)) continue;
             dts[1+i*2]=0.0;
