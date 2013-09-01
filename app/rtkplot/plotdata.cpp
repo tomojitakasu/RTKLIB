@@ -177,8 +177,8 @@ int __fastcall TPlot::ReadObsRnx(TStrings *files, obs_t *obs, nav_t *nav,
     AnsiString s;
     gtime_t ts,te;
     double tint;
-    int i;
-    char obsfile[1024],navfile[1024],*p,*opt=RnxOpts.c_str();
+    int i,n;
+    char obsfile[1024],navfile[1024]="",*p,*q,*opt=RnxOpts.c_str();
     
     trace(3,"ReadObsRnx\n");
     
@@ -212,12 +212,20 @@ int __fastcall TPlot::ReadObsRnx(TStrings *files, obs_t *obs, nav_t *nav,
         }
         else if (!strcmp(p+3,"o" )||!strcmp(p+3,"d" )||
                  !strcmp(p+3,"O" )||!strcmp(p+3,"D" )) {
+            n=nav->n;
+            
             strcpy(p+3,"N"); readrnxt(navfile,1,ts,te,tint,opt,NULL,nav,NULL);
             strcpy(p+3,"G"); readrnxt(navfile,1,ts,te,tint,opt,NULL,nav,NULL);
             strcpy(p+3,"H"); readrnxt(navfile,1,ts,te,tint,opt,NULL,nav,NULL);
             strcpy(p+3,"Q"); readrnxt(navfile,1,ts,te,tint,opt,NULL,nav,NULL);
             strcpy(p+3,"L"); readrnxt(navfile,1,ts,te,tint,opt,NULL,nav,NULL);
             strcpy(p+3,"P"); readrnxt(navfile,1,ts,te,tint,opt,NULL,nav,NULL);
+            
+            if (nav->n>n||!(q=strrchr(navfile,'\\'))) continue;
+            
+            // read brdc navigation data
+            memcpy(q+1,"BRDC",4);
+            strcpy(p+3,"N"); readrnxt(navfile,1,ts,te,tint,opt,NULL,nav,NULL);
         }
     }
     if (obs->n<=0) {
@@ -813,9 +821,10 @@ void __fastcall TPlot::UpdateMp(void)
             
             code2obs(data->code[j],&f1);
             
-            if      (sys==SYS_GAL) f2=f1==1?3:1;
-            else if (sys==SYS_CMP) f2=f1==2?5:2;
-            else                   f2=f1==1?2:1;
+            if      (sys==SYS_GAL) f2=f1==1?3:1; /* E1/E5a */
+            else if (sys==SYS_SBS) f2=f1==1?3:1; /* L1/L5 */
+            else if (sys==SYS_CMP) f2=f1==2?5:2; /* B1/B2 */
+            else                   f2=f1==1?2:1; /* L1/L2 */
             
             lam1=satwavelen(data->sat,f1-1,&Nav);
             lam2=satwavelen(data->sat,f2-1,&Nav);

@@ -130,6 +130,8 @@ __published:
 	TLabel *Label36;
 	TSpeedButton *BtnTLEView;
 	TSpeedButton *BtnTLESatView;
+	TLabel *Label37;
+	TComboBox *MaxMP;
 	void __fastcall BtnOKClick(TObject *Sender);
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall BtnColor1Click(TObject *Sender);
