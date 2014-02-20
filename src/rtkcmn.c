@@ -2344,7 +2344,7 @@ static void uniqeph(nav_t *nav)
     
     qsort(nav->eph,nav->n,sizeof(eph_t),cmpeph);
     
-    for (i=j=0;i<nav->n;i++) {
+    for (i=1,j=0;i<nav->n;i++) {
         if (nav->eph[i].sat!=nav->eph[j].sat||
             nav->eph[i].iode!=nav->eph[j].iode) {
             nav->eph[++j]=nav->eph[i];
