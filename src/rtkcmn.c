@@ -2067,7 +2067,7 @@ static int readantex(const char *file, pcvs_t *pcvs)
 extern int readpcv(const char *file, pcvs_t *pcvs)
 {
     pcv_t *pcv;
-    char *ext;
+    const char *ext;
     int i,stat;
     
     trace(3,"readpcv: file=%s\n",file);
@@ -2848,7 +2848,8 @@ extern int expath(const char *path, char *paths[], int nmax)
 #ifdef WIN32
     WIN32_FIND_DATA file;
     HANDLE h;
-    char dir[1024]="",*p;
+    char dir[1024]="";
+    const char *p;
     
     trace(3,"expath  : path=%s nmax=%d\n",path,nmax);
     
