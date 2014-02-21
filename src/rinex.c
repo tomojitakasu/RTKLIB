@@ -293,7 +293,8 @@ static void decode_obsh(FILE *fp, char *buff, double ver, int *tsys,
     };
     double del[3];
     int i,j,k,n,nt,prn,fcn;
-    char *label=buff+60,*p,str[4];
+    char *label=buff+60,str[4];
+    const char *p;
     
     trace(3,"decode_obsh: ver=%.2f\n",ver);
     
@@ -801,7 +802,8 @@ static int addobsdata(obs_t *obs, const obsd_t *data)
 static void set_index(double ver, int sys, const char *opt,
                       char tobs[MAXOBSTYPE][4], sigind_t *ind)
 {
-    const char *p,str[8],*optstr="";
+    const char *p,*optstr="";
+    char str[8];
     double shift;
     int i,j,k,n;
     

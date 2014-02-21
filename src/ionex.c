@@ -78,8 +78,8 @@ static tec_t *addtec(const double *lats, const double *lons, const double *hgts,
     }
     n=ndata[0]*ndata[1]*ndata[2];
     
-    if (!(p->data=malloc(sizeof(double)*n))||
-        !(p->rms =malloc(sizeof(float )*n))) {
+    if (!(p->data=(double *)malloc(sizeof(double)*n))||
+        !(p->rms =(float *)malloc(sizeof(float )*n))) {
         return NULL;
     }
     for (i=0;i<n;i++) {
