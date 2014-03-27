@@ -2352,14 +2352,6 @@ static void uniqeph(nav_t *nav)
     }
     nav->n=j+1;
     
-    if (!(nav_eph=(eph_t *)realloc(nav->eph,sizeof(eph_t)*nav->n))) {
-        trace(1,"uniqeph malloc error n=%d\n",nav->n);
-        free(nav->eph); nav->eph=NULL; nav->n=nav->nmax=0;
-        return;
-    }
-    nav->eph=nav_eph;
-    nav->nmax=nav->n;
-    
     trace(4,"uniqeph: n=%d\n",nav->n);
 }
 /* compare glonass ephemeris -------------------------------------------------*/
@@ -2382,7 +2374,7 @@ static void uniqgeph(nav_t *nav)
     
     qsort(nav->geph,nav->ng,sizeof(geph_t),cmpgeph);
     
-    for (i=j=0;i<nav->ng;i++) {
+    for (i=1,j=0;i<nav->ng;i++) {
         if (nav->geph[i].sat!=nav->geph[j].sat||
             nav->geph[i].toe.time!=nav->geph[j].toe.time||
             nav->geph[i].svh!=nav->geph[j].svh) {
@@ -2390,14 +2382,6 @@ static void uniqgeph(nav_t *nav)
         }
     }
     nav->ng=j+1;
-    
-    if (!(nav_geph=(geph_t *)realloc(nav->geph,sizeof(geph_t)*nav->ng))) {
-        trace(1,"uniqgeph malloc error ng=%d\n",nav->ng);
-        free(nav->geph); nav->geph=NULL; nav->ng=nav->ngmax=0;
-        return;
-    }
-    nav->geph=nav_geph;
-    nav->ngmax=nav->ng;
     
     trace(4,"uniqgeph: ng=%d\n",nav->ng);
 }
@@ -2421,21 +2405,13 @@ static void uniqseph(nav_t *nav)
     
     qsort(nav->seph,nav->ns,sizeof(seph_t),cmpseph);
     
-    for (i=j=0;i<nav->ns;i++) {
+    for (i=1,j=0;i<nav->ns;i++) {
         if (nav->seph[i].sat!=nav->seph[j].sat||
             nav->seph[i].t0.time!=nav->seph[j].t0.time) {
             nav->seph[++j]=nav->seph[i];
         }
     }
     nav->ns=j+1;
-    
-    if (!(nav_seph=(seph_t *)realloc(nav->seph,sizeof(seph_t)*nav->ns))) {
-        trace(1,"uniqseph malloc error ns=%d\n",nav->ns);
-        free(nav->seph); nav->seph=NULL; nav->ns=nav->nsmax=0;
-        return;
-    }
-    nav->seph=nav_seph;
-    nav->nsmax=nav->ns;
     
     trace(4,"uniqseph: ns=%d\n",nav->ns);
 }
