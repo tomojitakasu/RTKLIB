@@ -2335,7 +2335,6 @@ static int cmpeph(const void *p1, const void *p2)
 /* sort and unique ephemeris -------------------------------------------------*/
 static void uniqeph(nav_t *nav)
 {
-    eph_t *nav_eph;
     int i,j;
     
     trace(3,"uniqeph: n=%d\n",nav->n);
@@ -2365,7 +2364,6 @@ static int cmpgeph(const void *p1, const void *p2)
 /* sort and unique glonass ephemeris -----------------------------------------*/
 static void uniqgeph(nav_t *nav)
 {
-    geph_t *nav_geph;
     int i,j;
     
     trace(3,"uniqgeph: ng=%d\n",nav->ng);
@@ -2396,7 +2394,6 @@ static int cmpseph(const void *p1, const void *p2)
 /* sort and unique sbas ephemeris --------------------------------------------*/
 static void uniqseph(nav_t *nav)
 {
-    seph_t *nav_seph;
     int i,j;
     
     trace(3,"uniqseph: ns=%d\n",nav->ns);
