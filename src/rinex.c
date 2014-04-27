@@ -1763,7 +1763,8 @@ extern int outrnxobsh(FILE *fp, const rnxopt_t *opt, const nav_t *nav)
 #ifdef ENAGLO
   int prn[MAXPRNGLO];
 #endif
-    char date[32],*sys,*tsys="GPS";
+    char date[32],*tsys="GPS";
+    const char *sys;
     
     trace(3,"outrnxobsh:\n");
     
