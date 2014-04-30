@@ -293,7 +293,8 @@ static void decode_obsh(FILE *fp, char *buff, double ver, int *tsys,
     };
     double del[3];
     int i,j,k,n,nt,prn,fcn;
-    char *label=buff+60,*p,str[4];
+    char *label=buff+60,str[4];
+    const char *p;
     
     trace(3,"decode_obsh: ver=%.2f\n",ver);
     
@@ -801,7 +802,8 @@ static int addobsdata(obs_t *obs, const obsd_t *data)
 static void set_index(double ver, int sys, const char *opt,
                       char tobs[MAXOBSTYPE][4], sigind_t *ind)
 {
-    const char *p,str[8],*optstr="";
+    const char *p,*optstr="";
+    char str[8];
     double shift;
     int i,j,k,n;
     
@@ -1757,8 +1759,12 @@ extern int outrnxobsh(FILE *fp, const rnxopt_t *opt, const nav_t *nav)
 {
     const char *glo_codes[]={"C1C","C1P","C2C","C2P"};
     double ep[6],pos[3]={0},del[3]={0};
-    int i,j,k,n,prn[MAXPRNGLO];
-    char date[32],*sys,*tsys="GPS";
+    int i,j,k,n;
+#ifdef ENAGLO
+  int prn[MAXPRNGLO];
+#endif
+    char date[32],*tsys="GPS";
+    const char *sys;
     
     trace(3,"outrnxobsh:\n");
     
@@ -1830,6 +1836,7 @@ extern int outrnxobsh(FILE *fp, const rnxopt_t *opt, const nav_t *nav)
         }
     }
     if (opt->rnxver>=3.02) { /* ver.3.02 */
+#ifdef ENAGLO
         for (i=n=0;i<MAXPRNGLO;i++) {
             if (nav->glo_fcn[i]>=1) prn[n++]=i+1;
         }
@@ -1845,6 +1852,7 @@ extern int outrnxobsh(FILE *fp, const rnxopt_t *opt, const nav_t *nav)
             }
             fprintf(fp," %-20s\n","GLONASS SLOT / FRQ #");
         }
+#endif
     }
     if (opt->rnxver>=3.02) { /* ver.3.02 */
         for (i=0;i<4;i++) fprintf(fp," %3s %8.3f",glo_codes[i],0.0);

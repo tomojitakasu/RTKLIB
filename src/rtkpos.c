@@ -1387,7 +1387,7 @@ static int valpos(rtk_t *rtk, const double *v, const double *R, const int *vflg,
 #endif
     double fact=thres*thres;
     int i,stat=1,sat1,sat2,type,freq;
-    char *stype;
+    const char *stype;
     
     trace(3,"valpos  : nv=%d thres=%.1f\n",nv,thres);
     

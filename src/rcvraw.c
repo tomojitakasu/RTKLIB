@@ -175,16 +175,16 @@ static int decode_subfrm4(const unsigned char *buff, alm_t *alm, double *ion,
             ion[1]=getbits(buff,i, 8)*P2_27;     i+= 8;
             ion[2]=getbits(buff,i, 8)*P2_24;     i+= 8;
             ion[3]=getbits(buff,i, 8)*P2_24;     i+= 8;
-            ion[4]=getbits(buff,i, 8)*pow(2,11); i+= 8;
-            ion[5]=getbits(buff,i, 8)*pow(2,14); i+= 8;
-            ion[6]=getbits(buff,i, 8)*pow(2,16); i+= 8;
-            ion[7]=getbits(buff,i, 8)*pow(2,16);
+            ion[4]=getbits(buff,i, 8)*((double)(1<<11)); i+= 8;
+            ion[5]=getbits(buff,i, 8)*((double)(1<<14)); i+= 8;
+            ion[6]=getbits(buff,i, 8)*((double)(1<<16)); i+= 8;
+            ion[7]=getbits(buff,i, 8)*((double)(1<<16));
         }
         if (utc) {
             i=120;
             utc[1]=getbits(buff,i,24)*P2_50;     i+=24;
             utc[0]=getbits(buff,i,32)*P2_30;     i+=32;
-            utc[2]=getbits(buff,i, 8)*pow(2,12); i+= 8;
+            utc[2]=getbits(buff,i, 8)*((double)(1<<12)); i+= 8;
             utc[3]=getbitu(buff,i, 8);
         }
         if (leaps) {

@@ -2067,7 +2067,7 @@ static int readantex(const char *file, pcvs_t *pcvs)
 extern int readpcv(const char *file, pcvs_t *pcvs)
 {
     pcv_t *pcv;
-    char *ext;
+    const char *ext;
     int i,stat;
     
     trace(3,"readpcv: file=%s\n",file);
@@ -2335,7 +2335,6 @@ static int cmpeph(const void *p1, const void *p2)
 /* sort and unique ephemeris -------------------------------------------------*/
 static void uniqeph(nav_t *nav)
 {
-    eph_t *nav_eph;
     int i,j;
     
     trace(3,"uniqeph: n=%d\n",nav->n);
@@ -2344,21 +2343,13 @@ static void uniqeph(nav_t *nav)
     
     qsort(nav->eph,nav->n,sizeof(eph_t),cmpeph);
     
-    for (i=j=0;i<nav->n;i++) {
+    for (i=1,j=0;i<nav->n;i++) {
         if (nav->eph[i].sat!=nav->eph[j].sat||
             nav->eph[i].iode!=nav->eph[j].iode) {
             nav->eph[++j]=nav->eph[i];
         }
     }
     nav->n=j+1;
-    
-    if (!(nav_eph=(eph_t *)realloc(nav->eph,sizeof(eph_t)*nav->n))) {
-        trace(1,"uniqeph malloc error n=%d\n",nav->n);
-        free(nav->eph); nav->eph=NULL; nav->n=nav->nmax=0;
-        return;
-    }
-    nav->eph=nav_eph;
-    nav->nmax=nav->n;
     
     trace(4,"uniqeph: n=%d\n",nav->n);
 }
@@ -2373,7 +2364,6 @@ static int cmpgeph(const void *p1, const void *p2)
 /* sort and unique glonass ephemeris -----------------------------------------*/
 static void uniqgeph(nav_t *nav)
 {
-    geph_t *nav_geph;
     int i,j;
     
     trace(3,"uniqgeph: ng=%d\n",nav->ng);
@@ -2382,7 +2372,7 @@ static void uniqgeph(nav_t *nav)
     
     qsort(nav->geph,nav->ng,sizeof(geph_t),cmpgeph);
     
-    for (i=j=0;i<nav->ng;i++) {
+    for (i=1,j=0;i<nav->ng;i++) {
         if (nav->geph[i].sat!=nav->geph[j].sat||
             nav->geph[i].toe.time!=nav->geph[j].toe.time||
             nav->geph[i].svh!=nav->geph[j].svh) {
@@ -2390,14 +2380,6 @@ static void uniqgeph(nav_t *nav)
         }
     }
     nav->ng=j+1;
-    
-    if (!(nav_geph=(geph_t *)realloc(nav->geph,sizeof(geph_t)*nav->ng))) {
-        trace(1,"uniqgeph malloc error ng=%d\n",nav->ng);
-        free(nav->geph); nav->geph=NULL; nav->ng=nav->ngmax=0;
-        return;
-    }
-    nav->geph=nav_geph;
-    nav->ngmax=nav->ng;
     
     trace(4,"uniqgeph: ng=%d\n",nav->ng);
 }
@@ -2412,7 +2394,6 @@ static int cmpseph(const void *p1, const void *p2)
 /* sort and unique sbas ephemeris --------------------------------------------*/
 static void uniqseph(nav_t *nav)
 {
-    seph_t *nav_seph;
     int i,j;
     
     trace(3,"uniqseph: ns=%d\n",nav->ns);
@@ -2421,21 +2402,13 @@ static void uniqseph(nav_t *nav)
     
     qsort(nav->seph,nav->ns,sizeof(seph_t),cmpseph);
     
-    for (i=j=0;i<nav->ns;i++) {
+    for (i=1,j=0;i<nav->ns;i++) {
         if (nav->seph[i].sat!=nav->seph[j].sat||
             nav->seph[i].t0.time!=nav->seph[j].t0.time) {
             nav->seph[++j]=nav->seph[i];
         }
     }
     nav->ns=j+1;
-    
-    if (!(nav_seph=(seph_t *)realloc(nav->seph,sizeof(seph_t)*nav->ns))) {
-        trace(1,"uniqseph malloc error ns=%d\n",nav->ns);
-        free(nav->seph); nav->seph=NULL; nav->ns=nav->nsmax=0;
-        return;
-    }
-    nav->seph=nav_seph;
-    nav->nsmax=nav->ns;
     
     trace(4,"uniqseph: ns=%d\n",nav->ns);
 }
@@ -2848,7 +2821,8 @@ extern int expath(const char *path, char *paths[], int nmax)
 #ifdef WIN32
     WIN32_FIND_DATA file;
     HANDLE h;
-    char dir[1024]="",*p;
+    char dir[1024]="";
+    const char *p;
     
     trace(3,"expath  : path=%s nmax=%d\n",path,nmax);
     
