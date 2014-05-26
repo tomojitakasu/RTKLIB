@@ -12,6 +12,7 @@
 *                           add option -h, -a, -l, -x
 *           2010/01/28  1.5 add option -k
 *           2010/08/12  1.6 add option -y implementation (2.4.0_p1)
+*           2014/01/27  1.7 fix bug on default output time format
 *-----------------------------------------------------------------------------*/
 #include <stdarg.h>
 #include "rtklib.h"
@@ -100,6 +101,7 @@ int main(int argc, char **argv)
     prcopt.navsys=SYS_GPS|SYS_GLO;
     prcopt.refpos=1;
     prcopt.glomodear=1;
+    solopt.timef=0;
     sprintf(solopt.prog ,"%s ver.%s",PROGNAME,VER_RTKLIB);
     sprintf(filopt.trace,"%s.trace",PROGNAME);
     

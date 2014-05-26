@@ -1,12 +1,13 @@
 /*------------------------------------------------------------------------------
 * crescent.c : hemisphere crescent/eclipse receiver dependent functions
 *
-*          Copyright (C) 2007-2013 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2007-2014 by T.TAKASU, All rights reserved.
 *
 * reference :
 *     [1] Hemisphere GPS, Grescent Integrator's Manual, December, 2005
 *     [2] Hemisphere GPS, GPS Technical Reference, Part No. 875-0175-000,
 *         Rev.D1, 2008
+*     [3] Hemisphere GPS, Hemisphere GPS Technical Reference, 2014
 *
 * version : $Revision: 1.2 $ $Date: 2008/07/14 00:05:05 $
 * history : 2008/05/21 1.0 new
@@ -18,20 +19,24 @@
 *                          fix problem with ARM compiler
 *           2011/07/01 1.5 suppress warning
 *           2013/02/23 1.6 fix memory access violation problem on arm
+*           2014/05/13 1.7 support bin65 and bin66
+*                          add receiver option -TTCORR
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
-#define CRESSYNC    "$BIN"      /* crescent bin sync code */
+#define CRESSYNC    "$BIN"      /* hemis bin sync code */
 
-#define ID_CRESPOS   1          /* crescent msg id: bin 1 position/velocity */
-#define ID_CRESRAW2 76          /* crescent msg id: bin 76 dual-freq raw */
-#define ID_CRESWAAS 80          /* crescent msg id: bin 80 waas messages */
-#define ID_CRESIONUTC 94        /* crescent msg id: bin 94 ion/utc parameters */
-#define ID_CRESEPH  95          /* crescent msg id: bin 95 raw ephemeris */
-#define ID_CRESRAW  96          /* crescent msg id: bin 96 raw phase and code */
+#define ID_CRESPOS   1          /* hemis msg id: bin 1 position/velocity */
+#define ID_CRESGLOEPH 65        /* hemis msg id: bin 65 glonass ephemeris */
+#define ID_CRESGLORAW 66        /* hemis msg id: bin 66 glonass L1/L2 phase and code */
+#define ID_CRESRAW2 76          /* hemis msg id: bin 76 dual-freq raw */
+#define ID_CRESWAAS 80          /* hemis msg id: bin 80 waas messages */
+#define ID_CRESIONUTC 94        /* hemis msg id: bin 94 ion/utc parameters */
+#define ID_CRESEPH  95          /* hemis msg id: bin 95 raw ephemeris */
+#define ID_CRESRAW  96          /* hemis msg id: bin 96 raw phase and code */
 
-#define SNR2CN0_L1  30.0        /* crescent snr to c/n0 offset (db) L1 */
-#define SNR2CN0_L2  30.0        /* crescent snr to c/n0 offset (db) L2 */
+#define SNR2CN0_L1  30.0        /* hemis snr to c/n0 offset (db) L1 */
+#define SNR2CN0_L2  30.0        /* hemis snr to c/n0 offset (db) L2 */
 
 static const char rcsid[]="$Id: crescent.c,v 1.2 2008/07/14 00:05:05 TTAKA Exp $";
 
@@ -91,7 +96,7 @@ static int decode_crespos(raw_t *raw)
 static int decode_cresraw(raw_t *raw)
 {
     gtime_t time;
-    double tow,tows,toff,cp,pr,dop,snr;
+    double tow,tows,toff=0.0,cp,pr,dop,snr;
     int i,j,n,prn,sat,week,word2,lli=0;
     unsigned int word1,sn,sc;
     unsigned char *p=raw->buff+8;
@@ -105,9 +110,12 @@ static int decode_cresraw(raw_t *raw)
     week=U2(p+2);
     tow =R8(p+4);
     tows=floor(tow*1000.0+0.5)/1000.0; /* round by 1ms */
-    toff=CLIGHT*(tows-tow);            /* time tag offset (m) */
     time=gpst2time(week,tows);
     
+    /* time tag offset correction */
+    if (strstr(raw->opt,"-TTCORR")) {
+        toff=CLIGHT*(tows-tow);
+    }
     for (i=n=0,p+=12;i<12&&n<MAXOBS;i++,p+=24) {
         word1=U4(p  );
         word2=I4(p+4);
@@ -153,8 +161,8 @@ static int decode_cresraw(raw_t *raw)
 static int decode_cresraw2(raw_t *raw)
 {
     gtime_t time;
-    double tow,tows,toff,cp[2]={0},pr1,pr[2]={0},dop[2]={0},snr[2]={0};
-    int i,j,n,prn,sat,week,lli[2]={0};
+    double tow,tows,toff=0.0,cp[2]={0},pr1,pr[2]={0},dop[2]={0},snr[2]={0};
+    int i,j,n=0,prn,sat,week,lli[2]={0};
     unsigned int word1,word2,word3,sc,sn;
     unsigned char *p=raw->buff+8;
     
@@ -167,10 +175,16 @@ static int decode_cresraw2(raw_t *raw)
     tow =R8(p);
     week=U2(p+8);
     tows=floor(tow*1000.0+0.5)/1000.0; /* round by 1ms */
-    toff=CLIGHT*(tows-tow);            /* time tag offset (m) */
     time=gpst2time(week,tows);
     
-    for (i=n=0,p+=16;i<15&&n<MAXOBS;i++) {
+    /* time tag offset correction */
+    if (strstr(raw->opt,"-TTCORR")) {
+        toff=CLIGHT*(tows-tow);
+    }
+    if (fabs(timediff(time,raw->time))<1e-9) {
+        n=raw->obs.n;
+    }
+    for (i=0,p+=16;i<15&&n<MAXOBS;i++) {
         word1=U4(p+324+4*i); /* L1CACodeMSBsPRN */
         if ((prn=word1&0xFF)==0) continue; /* if 0, no data */
         if (!(sat=satno(prn<=MAXPRNGPS?SYS_GPS:SYS_SBS,prn))) {
@@ -252,6 +266,7 @@ static int decode_cresraw2(raw_t *raw)
     }
     raw->time=time;
     raw->obs.n=n;
+    if (strstr(raw->opt,"-ENAGLO")) return 0; /* glonass follows */
     return 1;
 }
 /* decode bin 95 ephemeris ---------------------------------------------------*/
@@ -343,6 +358,229 @@ static int decode_creswaas(raw_t *raw)
     raw->sbsmsg.msg[28]&=0xC0;
     return 3;
 }
+/* decode bin 66 glonass L1/L2 code and carrier phase ------------------------*/
+static int decode_cresgloraw(raw_t *raw)
+{
+    gtime_t time;
+    double tow,tows,toff=0.0,cp[2]={0},pr1,pr[2]={0},dop[2]={0},snr[2]={0};
+    int i,j,n=0,prn,sat,week,lli[2]={0};
+    unsigned int word1,word2,word3,sc,sn;
+    unsigned char *p=raw->buff+8;
+    
+    trace(4,"decode_cregloraw: len=%d\n",raw->len);
+    
+    if (!strstr(raw->opt,"-ENAGLO")) return 0;
+    
+    if (raw->len!=364) {
+        trace(2,"crescent bin 66 message length error: len=%d\n",raw->len);
+        return -1;
+    }
+    tow =R8(p);
+    week=U2(p+8);
+    tows=floor(tow*1000.0+0.5)/1000.0; /* round by 1ms */
+    time=gpst2time(week,tows);
+    
+    /* time tag offset correction */
+    if (strstr(raw->opt,"-TTCORR")) {
+        toff=CLIGHT*(tows-tow);
+    }
+    if (fabs(timediff(time,raw->time))<1e-9) {
+        n=raw->obs.n;
+    }
+    for (i=0,p+=16;i<12&&n<MAXOBS;i++) {
+        word1=U4(p+288+4*i); /* L1CACodeMSBsSlot */
+        if ((prn=word1&0xFF)==0) continue; /* if 0, no data */
+        if (!(sat=satno(SYS_GLO,prn))) {
+            trace(2,"creasent bin 66 satellite number error: prn=%d\n",prn);
+            continue;
+        }
+        pr1=(word1>>13)*256.0; /* upper 19bit of L1CA pseudorange */
+        
+        /* L1Obs */
+        word1=U4(p  +12*i);
+        word2=U4(p+4+12*i);
+        word3=U4(p+8+12*i);
+        sn=word1&0xFFF;
+        snr[0]=sn==0?0.0:10.0*log10(0.1024*sn)+SNR2CN0_L1;
+        sc=(unsigned int)(word1>>24);
+        if (raw->time.time!=0) {
+            lli[0]=(int)((unsigned char)sc-(unsigned char)raw->lockt[sat-1][0])>0;
+        }
+        else {
+            lli[0]=0;
+        }
+        lli[0]|=((word1>>12)&7)?2:0;
+        raw->lockt[sat-1][0]=(unsigned char)sc;
+        dop[0]=((word2>>1)&0x7FFFFF)/512.0;
+        if ((word2>>24)&1) dop[0]=-dop[0];
+        pr[0]=pr1+(word3&0xFFFF)/256.0;
+        cp[0]=floor(pr[0]/lam_carr[0]/8192.0)*8192.0;
+        cp[0]+=((word2&0xFE000000)+((word3&0xFFFF0000)>>7))/524288.0;
+        if      (cp[0]-pr[0]/lam_carr[0]<-4096.0) cp[0]+=8192.0;
+        else if (cp[0]-pr[0]/lam_carr[0]> 4096.0) cp[0]-=8192.0;
+        
+        /* L2Obs */
+        word1=U4(p+144+12*i);
+        word2=U4(p+148+12*i);
+        word3=U4(p+152+12*i);
+        sn=word1&0xFFF;
+        snr[1]=sn==0?0.0:10.0*log10(0.1164*sn)+SNR2CN0_L2;
+        sc=(unsigned int)(word1>>24);
+        if (raw->time.time==0) {
+            lli[1]=(int)((unsigned char)sc-(unsigned char)raw->lockt[sat-1][1])>0;
+        }
+        else {
+            lli[1]=0;
+        }
+        lli[1]|=((word1>>12)&7)?2:0;
+        raw->lockt[sat-1][1]=(unsigned char)sc;
+        dop[1]=((word2>>1)&0x7FFFFF)/512.0;
+        if ((word2>>24)&1) dop[1]=-dop[1];
+        pr[1]=(word3&0xFFFF)/256.0;
+        if (pr[1]!=0.0) {
+            pr[1]+=pr1;
+            if      (pr[1]-pr[0]<-128.0) pr[1]+=256.0;
+            else if (pr[1]-pr[0]> 128.0) pr[1]-=256.0;
+            cp[1]=floor(pr[1]/lam_carr[1]/8192.0)*8192.0;
+            cp[1]+=((word2&0xFE000000)+((word3&0xFFFF0000)>>7))/524288.0;
+            if      (cp[1]-pr[1]/lam_carr[1]<-4096.0) cp[1]+=8192.0;
+            else if (cp[1]-pr[1]/lam_carr[1]> 4096.0) cp[1]-=8192.0;
+        }
+        raw->obs.data[n].time=time;
+        raw->obs.data[n].sat =sat;
+        for (j=0;j<NFREQ;j++) {
+            if (j==0||(j==1&&i<12)) {
+                raw->obs.data[n].P[j]=pr[j]==0.0?0.0:pr[j]-toff;
+                raw->obs.data[n].L[j]=cp[j]==0.0?0.0:cp[j]-toff/lam_carr[j];
+                raw->obs.data[n].D[j]=-(float)dop[j];
+                raw->obs.data[n].SNR[j]=(unsigned char)(snr[j]*4.0+0.5);
+                raw->obs.data[n].LLI[j]=(unsigned char)lli[j];
+                raw->obs.data[n].code[j]=j==0?CODE_L1C:CODE_L2P;
+            }
+            else {
+                raw->obs.data[n].L[j]=raw->obs.data[n].P[j]=0.0;
+                raw->obs.data[n].D[j]=0.0;
+                raw->obs.data[n].SNR[j]=raw->obs.data[n].LLI[j]=0;
+                raw->obs.data[n].code[j]=CODE_NONE;
+            }
+        }
+        n++;
+    }
+    raw->time=time;
+    raw->obs.n=n;
+    return 1;
+}
+/* get sign-magnitude bits ---------------------------------------------------*/
+static double getbitg(const unsigned char *buff, int pos, int len)
+{
+    double value=getbitu(buff,pos+1,len-1);
+    return getbitu(buff,pos,1)?-value:value;
+}
+/* decode glonass ephemeris strings ------------------------------------------*/
+static int decode_glostr(raw_t *raw, int sat, int frq, geph_t *geph)
+{
+    double tow,tod,tof,toe;
+    unsigned char *str;
+    int i=1,n1,n2,n3,n4,P,P1,P2,P3,P4,tk_h,tk_m,tk_s,tb,ln,NT,slot,M,week;
+    
+    /* s1=str[0-9],s2=str[10-19],s3=str[20-29],s4=str[30-39],... */
+    str=raw->subfrm[sat-1];
+    n1          =getbitu(str,i, 4);           i+= 4+2;
+    P1          =getbitu(str,i, 2);           i+= 2;
+    tk_h        =getbitu(str,i, 5);           i+= 5;
+    tk_m        =getbitu(str,i, 6);           i+= 6;
+    tk_s        =getbitu(str,i, 1)*30;        i+= 1;
+    geph->vel[0]=getbitg(str,i,24)*P2_20*1E3; i+=24;
+    geph->acc[0]=getbitg(str,i, 5)*P2_30*1E3; i+= 5;
+    geph->pos[0]=getbitg(str,i,27)*P2_11*1E3; i+=27+4;
+    n2          =getbitu(str,i, 4);           i+= 4;
+    geph->svh   =getbitu(str,i, 3);           i+= 3;
+    P2          =getbitu(str,i, 1);           i+= 1;
+    tb          =getbitu(str,i, 7);           i+= 7+5;
+    geph->vel[1]=getbitg(str,i,24)*P2_20*1E3; i+=24;
+    geph->acc[1]=getbitg(str,i, 5)*P2_30*1E3; i+= 5;
+    geph->pos[1]=getbitg(str,i,27)*P2_11*1E3; i+=27+4;
+    n3          =getbitu(str,i, 4);           i+= 4;
+    P3          =getbitu(str,i, 1);           i+= 1;
+    geph->gamn  =getbitg(str,i,11)*P2_40;     i+=11+1;
+    P           =getbitu(str,i, 2);           i+= 2;
+    ln          =getbitu(str,i, 1);           i+= 1;
+    geph->vel[2]=getbitg(str,i,24)*P2_20*1E3; i+=24;
+    geph->acc[2]=getbitg(str,i, 5)*P2_30*1E3; i+= 5;
+    geph->pos[2]=getbitg(str,i,27)*P2_11*1E3; i+=27+4;
+    n4          =getbitu(str,i, 4);           i+= 4;
+    geph->taun  =getbitg(str,i,22)*P2_30;     i+=22;
+    geph->dtaun =getbitg(str,i, 5)*P2_30;     i+= 5;
+    geph->age   =getbitu(str,i, 5);           i+= 5+14;
+    P4          =getbitu(str,i, 1);           i+= 1;
+    geph->sva   =getbitu(str,i, 4);           i+= 4+3;
+    NT          =getbitu(str,i,11);           i+=11;
+    slot        =getbitu(str,i, 5);           i+= 5;
+    M           =getbitu(str,i, 2);
+    
+    if (n1!=1||n2!=2||n3!=3||n4!=4) {
+        trace(2,"decode_glostr: str no error no=%d %d %d %d\n",n1,n2,n3,n4);
+        return 0;
+    }
+    if (sat!=satno(SYS_GLO,slot)) {
+        trace(2,"decode_glostr: slot no error sat=%2d slot=%2d\n",sat,slot);
+        return 0;
+    }
+    geph->sat=sat;
+    geph->frq=frq;
+    geph->iode=tb;
+    tow=time2gpst(gpst2utc(raw->time),&week);
+    tod=fmod(tow,86400.0); tow-=tod;
+    tof=tk_h*3600.0+tk_m*60.0+tk_s-10800.0; /* lt->utc */
+    if      (tof<tod-43200.0) tof+=86400.0;
+    else if (tof>tod+43200.0) tof-=86400.0;
+    geph->tof=utc2gpst(gpst2time(week,tow+tof));
+    toe=tb*900.0-10800.0; /* lt->utc */
+    if      (toe<tod-43200.0) toe+=86400.0;
+    else if (toe>tod+43200.0) toe-=86400.0;
+    geph->toe=utc2gpst(gpst2time(week,tow+toe)); /* utc->gpst */
+    return 1;
+}
+/* decode bin 65 glonass ephemeris -------------------------------------------*/
+static int decode_cresgloeph(raw_t *raw)
+{
+    geph_t geph={0};
+    unsigned char *p=raw->buff+8,str[12];
+    int i,j,k,sat,prn,frq,time,no;
+    
+    trace(4,"decode_cregloeph: len=%d\n",raw->len);
+    
+    if (!strstr(raw->opt,"-ENAGLO")) return 0;
+    
+    prn =U1(p);   p+=1;
+    frq =U1(p)-8; p+=1+2;
+    time=U4(p);   p+=4;
+    
+    if (!(sat=satno(SYS_GLO,prn))) {
+        trace(2,"creasent bin 65 satellite number error: prn=%d\n",prn);
+        return -1;
+    }
+    for (i=0;i<5;i++) {
+        for (j=0;j<3;j++) for (k=3;k>=0;k--) {
+            str[k+j*4]=U1(p++);
+        }
+        if ((no=getbitu(str,1,4))!=i+1) {
+            trace(2,"creasent bin 65 string no error: sat=%2d no=%d %d\n",sat,
+                  i+1,no);
+            return -1;
+        }
+        memcpy(raw->subfrm[sat-1]+10*i,str,10);
+    }
+    /* decode glonass ephemeris strings */
+    if (!decode_glostr(raw,sat,frq,&geph)) return -1;
+    
+    if (!strstr(raw->opt,"-EPHALL")) {
+        if (geph.iode==raw->nav.geph[prn-1].iode) return 0; /* unchanged */
+    }
+    raw->nav.geph[prn-1]=geph;
+    raw->ephsat=sat;
+    return 2;
+}
 /* decode crescent raw message -----------------------------------------------*/
 static int decode_cres(raw_t *raw)
 {
@@ -364,6 +602,8 @@ static int decode_cres(raw_t *raw)
         case ID_CRESEPH   : return decode_creseph(raw);
         case ID_CRESWAAS  : return decode_creswaas(raw);
         case ID_CRESIONUTC: return decode_cresionutc(raw);
+        case ID_CRESGLORAW: return decode_cresgloraw(raw);
+        case ID_CRESGLOEPH: return decode_cresgloeph(raw);
     }
     return 0;
 }
@@ -385,7 +625,9 @@ static int sync_cres(unsigned char *buff, unsigned char data)
 * notes  : to specify input options, set raw->opt to the following option
 *          strings separated by spaces.
 *
-*          -EPHALL    : input all ephemerides
+*          -EPHALL      : input all ephemerides
+*          -TTCORR      : time-tag offset correction
+*          -ENAGLO      : enable glonass messages
 *
 *-----------------------------------------------------------------------------*/
 extern int input_cres(raw_t *raw, unsigned char data)

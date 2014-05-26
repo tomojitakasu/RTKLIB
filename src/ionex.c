@@ -14,6 +14,7 @@
 * history : 2011/03/29 1.0 new
 *           2013/03/05 1.1 change api readtec()
 *                          fix problem in case of lat>85deg or lat<-85deg
+*           2014/02/22 1.2 fix problem on compiled as C++
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -78,8 +79,8 @@ static tec_t *addtec(const double *lats, const double *lons, const double *hgts,
     }
     n=ndata[0]*ndata[1]*ndata[2];
     
-    if (!(p->data=malloc(sizeof(double)*n))||
-        !(p->rms =malloc(sizeof(float )*n))) {
+    if (!(p->data=(double *)malloc(sizeof(double)*n))||
+        !(p->rms =(float  *)malloc(sizeof(float )*n))) {
         return NULL;
     }
     for (i=0;i<n;i++) {

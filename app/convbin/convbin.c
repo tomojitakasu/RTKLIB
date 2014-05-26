@@ -23,6 +23,7 @@
 *           2012/11/19 1.6 fix bug on setting code mask in rinex options
 *           2013/02/18 1.7 support binex
 *           2013/05/19 1.8 support auto format for file path with wild-card
+*           2014/02/08 1.9 add option -span -trace -mask
 *-----------------------------------------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>
@@ -32,7 +33,8 @@
 
 static const char rcsid[]="$Id: convbin.c,v 1.1 2008/07/17 22:13:04 ttaka Exp $";
 
-#define PRGNAME "CONVBIN"
+#define PRGNAME   "CONVBIN"
+#define TRACEFILE "convbin.trace"
 
 /* help text -----------------------------------------------------------------*/
 static const char *help[]={
@@ -67,26 +69,27 @@ static const char *help[]={
 "",
 " Options [default]",
 "",
-"     file      input receiver binary log file",
+"     file         input receiver binary log file",
 "     -ts y/m/d h:m:s  start time [all]",
 "     -te y/m/d h:m:s  end time [all]",
 "     -tr y/m/d h:m:s  approximated time for rtcm messages",
-"     -ti tint  observation data interval (s) [all]",
-"     -r format log format type",
-"               rtcm2= RTCM 2",
-"               rtcm3= RTCM 3",
-"               nov  = NovAtel OEMV/4/6,OEMStar",
-"               oem3 = NovAtel OEM3",
-"               ubx  = ublox LEA-4T/5T/6T",
-"               ss2  = NovAtel Superstar II",
-"               hemis= Hemisphere Eclipse/Crescent",
-"               stq  = SkyTraq S1315F",
-"               javad= Javad",
-"               nvs  = NVS NV08C BINR",
-"               binex= BINEX",
-"               rinex= RINEX",
-"     -ro opt   receiver options",
-"     -f freq   number of frequencies [2]",
+"     -ti tint     observation data interval (s) [all]",
+"     -span span   time span (h) [all]",
+"     -r format    log format type",
+"                  rtcm2= RTCM 2",
+"                  rtcm3= RTCM 3",
+"                  nov  = NovAtel OEMV/4/6,OEMStar",
+"                  oem3 = NovAtel OEM3",
+"                  ubx  = ublox LEA-4T/5T/6T",
+"                  ss2  = NovAtel Superstar II",
+"                  hemis= Hemisphere Eclipse/Crescent",
+"                  stq  = SkyTraq S1315F",
+"                  javad= Javad",
+"                  nvs  = NVS NV08C BINR",
+"                  binex= BINEX",
+"                  rinex= RINEX",
+"     -ro opt      receiver options",
+"     -f freq      number of frequencies [2]",
 "     -hc comment  rinex header: comment line",
 "     -hm marker   rinex header: marker name",
 "     -hn markno   rinex header: marker number",
@@ -96,24 +99,26 @@ static const char *help[]={
 "     -ha ant      rinex header: antenna number and type separated by /",
 "     -hp pos      rinex header: approx position x/y/z separated by /",
 "     -hd delta    rinex header: antenna delta h/e/n separated by /",
-"     -v ver    rinex version [2.11]",
-"     -od       include doppler frequency in rinex obs [off]",
-"     -os       include snr in rinex obs [off]",
-"     -oi       include iono correction in rinex nav header [off]",
-"     -ot       include time correction in rinex nav header [off]",
-"     -ol       include leap seconds in rinex nav header [off]",
-"     -scan     scan input file [off]",
-"     -x sat    exclude satellite",
-"     -y sys    exclude systems (G:GPS,R:GLONASS,E:Galileo,J:QZSS,S:SBAS,C:BeiDou)",
-"     -d dir    output directory [same as input file]",
-"     -c staid  use RINEX file name convention with staid [off]",
-"     -o ofile  output RINEX OBS file",
-"     -n nfile  output RINEX NAV file",
-"     -g gfile  output RINEX GNAV file",
-"     -h hfile  output RINEX HNAV file",
-"     -q qfile  output RINEX QNAV file",
-"     -l lfile  output RINEX LNAV file",
-"     -s sfile  output SBAS message file",
+"     -v ver       rinex version [2.11]",
+"     -od          include doppler frequency in rinex obs [off]",
+"     -os          include snr in rinex obs [off]",
+"     -oi          include iono correction in rinex nav header [off]",
+"     -ot          include time correction in rinex nav header [off]",
+"     -ol          include leap seconds in rinex nav header [off]",
+"     -scan        scan input file [off]",
+"     -mask [sig[,...]] signal mask(s) (sig={G|R|E|J|S|C}L{1C|1P|1W|...})",
+"     -x sat       exclude satellite",
+"     -y sys       exclude systems (G:GPS,R:GLONASS,E:Galileo,J:QZSS,S:SBAS,C:BeiDou)",
+"     -d dir       output directory [same as input file]",
+"     -c staid     use RINEX file name convention with staid [off]",
+"     -o ofile     output RINEX OBS file",
+"     -n nfile     output RINEX NAV file",
+"     -g gfile     output RINEX GNAV file",
+"     -h hfile     output RINEX HNAV file",
+"     -q qfile     output RINEX QNAV file",
+"     -l lfile     output RINEX LNAV file",
+"     -s sfile     output SBAS message file",
+"     -trace level output trace level [off]",
 "",
 " If any output file specified, default output files (<file>.obs,",
 " <file>.nav, <file>.gnav, <file>.hnav, <file>.qnav, <file>.lnav and",
@@ -121,16 +126,16 @@ static const char *help[]={
 "",
 " If receiver type is not specified, type is recognized by the input",
 " file extension as follows.",
-"     *.rtcm2    RTCM 2",
-"     *.rtcm3    RTCM 3",
-"     *.gps      NovAtel OEMV/4/6,OEMStar",
-"     *.ubx      u-blox LEA-4T/5T/6T",
-"     *.log      NovAtel Superstar II",
-"     *.bin      Hemisphere Eclipse/Crescent",
-"     *.stq      SkyTraq S1315F",
-"     *.jps      Javad",
-"     *.bnx,*binex BINEX",
-"     *.obs,*.*o RINEX OBS"
+"     *.rtcm2       RTCM 2",
+"     *.rtcm3       RTCM 3",
+"     *.gps         NovAtel OEMV/4/6,OEMStar",
+"     *.ubx         u-blox LEA-4T/5T/6T",
+"     *.log         NovAtel Superstar II",
+"     *.bin         Hemisphere Eclipse/Crescent",
+"     *.stq         SkyTraq S1315F",
+"     *.jps         Javad",
+"     *.bnx,*binex  BINEX",
+"     *.obs,*.*o    RINEX OBS"
 };
 /* print help ----------------------------------------------------------------*/
 static void printhelp(void)
@@ -227,7 +232,7 @@ static int convbin(int format, rnxopt_t *opt, const char *ifile, char **file,
         strcat(ofile[6],extlog);
     }
     for (i=0;i<7;i++) {
-        if (!dir||!*ofile[i]) continue;
+        if (!*dir||!*ofile[i]) continue;
         if ((p=strrchr(ofile[i],FILEPATHSEP))) strcpy(work,p+1);
         else strcpy(work,ofile[i]);
         sprintf(ofile[i],"%s%c%s",dir,FILEPATHSEP,work);
@@ -249,20 +254,20 @@ static int convbin(int format, rnxopt_t *opt, const char *ifile, char **file,
     fprintf(stderr,"\n");
     return 0;
 }
-/* analyize command line options ---------------------------------------------*/
+/* parse command line options ------------------------------------------------*/
 static int cmdopts(int argc, char **argv, rnxopt_t *opt, char **ifile,
-                   char **ofile, char **dir)
+                   char **ofile, char **dir, int *trace)
 {
     double eps[]={1980,1,1,0,0,0},epe[]={2037,12,31,0,0,0};
-    double epr[]={2010,1,1,0,0,0};
-    int i,j,sat,nf=2,nc=2,format=-1;
-    char *p,*sys,*fmt="",*paths[1],path[1024];
+    double epr[]={2010,1,1,0,0,0},span=0.0;
+    int i,j,k,sat,code,nf=2,nc=2,format=-1;
+    char *p,*sys,*fmt="",*paths[1],path[1024],buff[1024];
     
-    opt->rnxver =2.11;
+    opt->rnxver=2.11;
     opt->obstype=OBSTYPE_PR|OBSTYPE_CP;
-    opt->navsys =SYS_GPS|SYS_GLO|SYS_GAL|SYS_QZS|SYS_SBS|SYS_CMP;
+    opt->navsys=SYS_GPS|SYS_GLO|SYS_GAL|SYS_QZS|SYS_SBS|SYS_CMP;
     
-    for (i=0;i<6;i++) for (j=0;j<64;j++) opt->mask[i][j]=1;
+    for (i=0;i<6;i++) for (j=0;j<64;j++) opt->mask[i][j]='1';
     
     for (i=1;i<argc;i++) {
         if (!strcmp(argv[i],"-ts")&&i+2<argc) {
@@ -282,6 +287,9 @@ static int cmdopts(int argc, char **argv, rnxopt_t *opt, char **ifile,
         }
         else if (!strcmp(argv[i],"-ti")&&i+1<argc) {
             opt->tint=atof(argv[++i]);
+        }
+        else if (!strcmp(argv[i],"-span")&&i+1<argc) {
+            span=atof(argv[++i]);
         }
         else if (!strcmp(argv[i],"-r" )&&i+1<argc) {
             fmt=argv[++i];
@@ -350,6 +358,23 @@ static int cmdopts(int argc, char **argv, rnxopt_t *opt, char **ifile,
         else if (!strcmp(argv[i],"-scan")) {
             opt->scanobs=1;
         }
+        else if (!strcmp(argv[i],"-mask")&&i+1<argc) {
+            for (j=0;j<6;j++) for (k=0;k<64;k++) opt->mask[j][k]='0';
+            strcpy(buff,argv[++i]);
+            for (p=strtok(buff,",");p;p=strtok(NULL,",")) {
+                if (strlen(p)<4||p[1]!='L') continue;
+                if      (p[0]=='G') j=0;
+                else if (p[0]=='R') j=1;
+                else if (p[0]=='E') j=2;
+                else if (p[0]=='J') j=3;
+                else if (p[0]=='S') j=4;
+                else if (p[0]=='C') j=5;
+                else continue;
+                if ((code=obs2code(p+2,NULL))) {
+                    opt->mask[j][code-1]='1';
+                }
+            }
+        }
         else if (!strcmp(argv[i],"-x" )&&i+1<argc) {
             if ((sat=satid2no(argv[++i]))) opt->exsats[sat-1]=1;
         }
@@ -375,10 +400,15 @@ static int cmdopts(int argc, char **argv, rnxopt_t *opt, char **ifile,
         else if (!strcmp(argv[i],"-q" )&&i+1<argc) ofile[4]=argv[++i];
         else if (!strcmp(argv[i],"-l" )&&i+1<argc) ofile[5]=argv[++i];
         else if (!strcmp(argv[i],"-s" )&&i+1<argc) ofile[6]=argv[++i];
-        
+        else if (!strcmp(argv[i],"-trace" )&&i+1<argc) {
+            *trace=atoi(argv[++i]);
+        }
         else if (!strncmp(argv[i],"-",1)) printhelp();
         
         else *ifile=argv[i];
+    }
+    if (span>0.0&&opt->ts.time) {
+        opt->te=timeadd(opt->ts,span*3600.0-1e-3);
     }
     if (nf>=1) opt->freqtype|=FREQTYPE_L1;
     if (nf>=2) opt->freqtype|=FREQTYPE_L2;
@@ -424,11 +454,11 @@ static int cmdopts(int argc, char **argv, rnxopt_t *opt, char **ifile,
 int main(int argc, char **argv)
 {
     rnxopt_t opt={{0}};
-    int format;
-    char *ifile="",*ofile[7]={0},*dir=".";
+    int format,trace=0,stat;
+    char *ifile="",*ofile[7]={0},*dir="";
     
-    /* analyize command line options */
-    format=cmdopts(argc,argv,&opt,&ifile,ofile,&dir);
+    /* parse command line options */
+    format=cmdopts(argc,argv,&opt,&ifile,ofile,&dir,&trace);
     
     if (!*ifile) {
         fprintf(stderr,"no input file\n");
@@ -445,5 +475,13 @@ int main(int argc, char **argv)
         strcat(opt.comment[1],", option: ");
         strcat(opt.comment[1],opt.rcvopt);
     }
-    return convbin(format,&opt,ifile,ofile,dir);
+    if (trace>0) {
+        traceopen(TRACEFILE);
+        tracelevel(trace);
+    }
+    stat=convbin(format,&opt,ifile,ofile,dir);
+    
+    traceclose();
+    
+    return stat;
 }

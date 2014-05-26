@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * rtcm.c : rtcm functions
 *
-*          Copyright (C) 2009-2013 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2009-2014 by T.TAKASU, All rights reserved.
 *
 * references :
 *     [1] RTCM Recommended Standards for Differential GNSS (Global Navigation
@@ -23,6 +23,8 @@
 *     [13] RTCM Paper 122-2012-SC104-707.r1 (draft MSM messages)
 *     [14] RTCM Standard 10403.2, Differential GNSS (Global Navigation Satellite
 *          Systems) Services - version 3, February 1, 2013
+*     [15] RTCM Standard 10403.2, Differential GNSS (Global Navigation Satellite
+*          Systems) Services - version 3, with amendment 1/2, november 7, 2013
 *
 * version : $Revision:$ $Date:$
 * history : 2009/04/10 1.0  new
@@ -36,6 +38,7 @@
 *                           Amendment 5) (ref [7]) (2.4.1_p6)
 *           2012/05/14 1.6  separate rtcm2.c, rtcm3.c
 *                           add options to select used codes for msm
+*           2013/04/27 1.7  comply with rtcm 3.2 with amendment 1/2 (ref[15])
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 

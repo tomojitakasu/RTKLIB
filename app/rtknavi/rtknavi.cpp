@@ -15,24 +15,25 @@
 
 
 
+
 USEFORM("..\appcmn\tcpoptdlg.cpp", TcpOptDialog);
 USEFORM("..\appcmn\serioptdlg.cpp", SerialOptDialog);
 USEFORM("..\appcmn\refdlg.cpp", RefDialog);
-USEFORM("..\appcmn\viewer.cpp", TextViewer);
-USEFORM("logstrdlg.cpp", LogStrDialog);
 USEFORM("instrdlg.cpp", InputStrDialog);
 USEFORM("..\appcmn\vieweropt.cpp", ViewerOptDialog);
+USEFORM("..\appcmn\viewer.cpp", TextViewer);
+USEFORM("..\appcmn\maskoptdlg.cpp", MaskOptDialog);
 USEFORM("..\appcmn\cmdoptdlg.cpp", CmdOptDialog);
 USEFORM("..\appcmn\aboutdlg.cpp", AboutDialog);
-USEFORM("..\appcmn\confdlg.cpp", ConfDialog);
-USEFORM("..\appcmn\maskoptdlg.cpp", MaskOptDialog);
 USEFORM("..\appcmn\keydlg.cpp", KeyDialog);
 USEFORM("..\appcmn\ftpoptdlg.cpp", FtpOptDialog);
+USEFORM("..\appcmn\confdlg.cpp", ConfDialog);
+USEFORM("logstrdlg.cpp", LogStrDialog);
 USEFORM("naviopt.cpp", OptDialog);
 USEFORM("navimain.cpp", MainForm);
 USEFORM("mondlg.cpp", MonitorDialog);
-USEFORM("outstrdlg.cpp", OutputStrDialog);
 USEFORM("rcvoptdlg.cpp", RcvOptDialog);
+USEFORM("outstrdlg.cpp", OutputStrDialog);
 //---------------------------------------------------------------------------
 WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {

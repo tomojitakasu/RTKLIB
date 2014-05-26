@@ -125,11 +125,12 @@ IGS_NAV_H_GLO  ftp://cddis.gsfc.nasa.gov/gps/data/hourly/%Y/%n/%h/%s%n%H.%yg.Z  
 IGS_OBS_HR     ftp://cddis.gsfc.nasa.gov/gps/data/highrate/%Y/%n/%yd/%h/%s%n%H%M.%yd.Z c:\GNSS_DATA\data\hr\%Y\%n
 IGS_NAV_HR     ftp://cddis.gsfc.nasa.gov/gps/data/highrate/%Y/%n/%yn/%h/%s%n%H%M.%yn.Z c:\GNSS_DATA\data\hr\%Y\%n
 IGS_NAV_HR_GLO ftp://cddis.gsfc.nasa.gov/gps/data/highrate/%Y/%n/%yn/%h/%s%n%H%M.%yg.Z c:\GNSS_DATA\data\hr\%Y\%n
-MGEX_OBS       ftp://cddis.gsfc.nasa.gov/gps/data/campaign/mgex/daily/rinex3/%Y/%n/%yo/%s%n0.%yo.Z d:\GNSS_DATA\data_mgex\%Y\%n
-MGEX_NAV       ftp://cddis.gsfc.nasa.gov/gps/data/campaign/mgex/daily/rinex3/%Y/%n/%yn/%s%n0.%yn.Z d:\GNSS_DATA\data_mgex\%Y\%n
-MGEX_NAV_GLO   ftp://cddis.gsfc.nasa.gov/gps/data/campaign/mgex/daily/rinex3/%Y/%n/%yg/%s%n0.%yg.Z d:\GNSS_DATA\data_mgex\%Y\%n
-MGEX_NAV_GAL   ftp://cddis.gsfc.nasa.gov/gps/data/campaign/mgex/daily/rinex3/%Y/%n/%yl/%s%n0.%yl.Z d:\GNSS_DATA\data_mgex\%Y\%n
-MGEX_NAV_QZS   ftp://cddis.gsfc.nasa.gov/gps/data/campaign/mgex/daily/rinex3/%Y/%n/%yq/%s%n0.%yq.Z d:\GNSS_DATA\data_mgex\%Y\%n
+MGEX_OBS       ftp://cddis.gsfc.nasa.gov/gps/data/campaign/mgex/daily/rinex3/%Y/%n/%yo/%s%n0.%yo.Z c:\GNSS_DATA\data_mgex\%Y\%n
+MGEX_NAV       ftp://cddis.gsfc.nasa.gov/gps/data/campaign/mgex/daily/rinex3/%Y/%n/%yp/brdm%n0.%yp.Z c:\GNSS_DATA\data_mgex\%Y\%n
+MGEX_NAV_S     ftp://cddis.gsfc.nasa.gov/gps/data/campaign/mgex/daily/rinex3/%Y/%n/%yn/%s%n0.%yn.Z c:\GNSS_DATA\data_mgex\%Y\%n
+MGEX_NAV_GLO   ftp://cddis.gsfc.nasa.gov/gps/data/campaign/mgex/daily/rinex3/%Y/%n/%yg/%s%n0.%yg.Z c:\GNSS_DATA\data_mgex\%Y\%n
+MGEX_NAV_GAL   ftp://cddis.gsfc.nasa.gov/gps/data/campaign/mgex/daily/rinex3/%Y/%n/%yl/%s%n0.%yl.Z c:\GNSS_DATA\data_mgex\%Y\%n
+MGEX_NAV_QZS   ftp://cddis.gsfc.nasa.gov/gps/data/campaign/mgex/daily/rinex3/%Y/%n/%yq/%s%n0.%yq.Z c:\GNSS_DATA\data_mgex\%Y\%n
 
 #! DATA (IGN)
 IGSE_OBS       ftp://igs.ensg.ign.fr/pub/igs/data/%Y/%n/%s%n0.%yd.Z             c:\GNSS_DATA\data\%Y\%n
@@ -160,7 +161,6 @@ GSI_NAV_QZS_3H ftp://terras.gsi.go.jp/data/QZSS_products/%Y/%n/%s%n%N.%yN.tar.gz
 IERS_EOP_BULA  ftp://maia.usno.navy.mil/ser7/ser7.dat                           c:\GNSS_DATA\data_iers
 IERS_EOP_BULB  ftp://hpiers.obspm.fr/iers/bul/bulb_new/bulletinb.%N             c:\GNSS_DATA\data_iers
 IERS_EOP_BULC  ftp://hpiers.obspm.fr/iers/bul/bulc/bulletinc.dat                c:\GNSS_DATA\data_iers
-IERS_EOP_BULA_2012 ftp://cddis.gsfc.nasa.gov/reports/iers/bulletin_a/volume_xxv/iers_bulletina.xxv_0%N c:\GNSS_DATA\data_iers
 
 #! ANTEX
 IGS_ATX_08     ftp://igs.org/pub/station/general/igs08.atx                      c:\GNSS_DATA\data\pcv
@@ -169,4 +169,7 @@ IGS_ATX_08W    ftp://igs.org/pub/station/general/igs08_%W.atx                   
 
 #! VMF1 GRID DATA
 VMF_GRID       http://ggosatm.hg.tuwien.ac.at/DELAY/GRID/VMFG/%Y/VMFG_%Y%m%d.H%h c:\GNSS_DATA\data_vmf\%Y
+
+#! NANU
+CELS_NANU      http://celestrak.com/GPS/NANU/%Y/nanu.%Y%n.txt                   c:\GNSS_DATA\nanu
 

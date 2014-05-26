@@ -215,9 +215,9 @@ object PlotOptDialog: TPlotOptDialog
     object Label28: TLabel
       Left = 12
       Top = 211
-      Width = 44
+      Width = 74
       Height = 13
-      Caption = 'Max DOP'
+      Caption = 'Max NSAT/DOP'
     end
     object LabelExSats: TLabel
       Left = 12
