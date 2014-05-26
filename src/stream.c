@@ -1665,7 +1665,7 @@ static ftp_t *openftp(const char *path, int type, char *msg)
     
     msg[0]='\0';
     
-    if (!(ftp=(ftp_t *)malloc(sizeof(ntrip_t)))) return NULL;
+    if (!(ftp=(ftp_t *)malloc(sizeof(ftp_t)))) return NULL;
     
     ftp->state=0;
     ftp->proto=type;
