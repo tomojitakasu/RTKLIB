@@ -11,6 +11,7 @@
 * history : 2013/02/20 1.0 new
 *           2013/04/15 1.1 support 0x01-05 beidou-2/compass ephemeris
 *           2013/05/18 1.2 fix bug on decoding obsflags in message 0x7f-05
+*           2014/04/27 1.3 fix bug on decoding iode for message 0x01-02
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -514,7 +515,7 @@ static int decode_bnx_01_02(raw_t *raw, unsigned char *buff, int len)
     if (raw->time.time==0) return 0;
     geph.toe=utc2gpst(adjday(raw->time,tod-10800.0));
     geph.tof=utc2gpst(adjday(raw->time,tof-10800.0));
-    geph.iode=(int)(fmod(tod+10800.0,86400.0)/900.0+0.5);
+    geph.iode=(int)(fmod(tod,86400.0)/900.0+0.5);
     
     if (!strstr(raw->opt,"-EPHALL")) {
         if (fabs(timediff(geph.toe,raw->nav.geph[prn-MINPRNGLO].toe))<1.0&&
@@ -876,7 +877,7 @@ static unsigned char *decode_bnx_7f_05_obs(raw_t *raw, unsigned char *buff,
         CODE_L5X ,CODE_L5I ,CODE_L5Q ,CODE_L5X                       /*  6- 9 */
     };
     const unsigned char codes_cmp[32]={
-        CODE_L2X ,CODE_L2I ,CODE_L2Q ,CODE_L2X ,CODE_L7X ,CODE_L7I , /*  0- 5 */
+        CODE_L1X ,CODE_L1I ,CODE_L1Q ,CODE_L1X ,CODE_L7X ,CODE_L7I , /*  0- 5 */
         CODE_L7Q ,CODE_L7X ,CODE_L6X ,CODE_L6I ,CODE_L6Q ,CODE_L6X , /*  6-11 */
         CODE_L1X ,CODE_L1S ,CODE_L1L ,CODE_L1X                       /* 12-15 */
     };
@@ -971,6 +972,12 @@ static unsigned char *decode_bnx_7f_05_obs(raw_t *raw, unsigned char *buff,
     for (i=0;i<nobs;i++) {
         code2obs(codes[code[i]&0x3F],freq+i);
         pri[i]=getcodepri(sys,codes[code[i]&0x3F],raw->opt);
+        
+        /* frequency index for beidou */
+        if (sys==SYS_CMP) {
+            if      (freq[i]==5) freq[i]=2; /* B2 */
+            else if (freq[i]==4) freq[i]=3; /* B3 */
+        }
     }
     for (i=0;i<NFREQ;i++) {
         for (j=0,k=-1;j<nobs;j++) {

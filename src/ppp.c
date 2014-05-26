@@ -33,6 +33,7 @@
 *                           suppress acos domain error
 *           2013/09/01 1.4  pole tide model by iers 2010
 *                           add mode of ionosphere model off
+*           2014/05/23 1.5  add output of trop gradient in solution status
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -113,6 +114,11 @@ extern void pppoutsolstat(rtk_t *rtk, int level, FILE *fp)
         i=IT(&rtk->opt);
         fprintf(fp,"$TROP,%d,%.3f,%d,%d,%.4f,%.4f\n",week,tow,rtk->sol.stat,
                 1,rtk->x[i],0.0);
+    }
+    if (rtk->opt.tropopt==TROPOPT_ESTG) {
+        i=IT(&rtk->opt);
+        fprintf(fp,"$TRPG,%d,%.3f,%d,%d,%.5f,%.5f,%.5f,%.5f\n",week,tow,
+                rtk->sol.stat,1,rtk->x[i+1],rtk->x[i+2],0.0,0.0);
     }
     if (rtk->sol.stat==SOLQ_NONE||level<=1) return;
     

@@ -14,6 +14,7 @@
 *                           changed api: ionocorr()
 *           2011/11/08 1.2  enable snr mask for single-mode (rtklib_2.4.1_p3)
 *           2012/12/25 1.3  add variable snr mask
+*           2014/05/26 1.4  support galileo and beidou
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -22,6 +23,8 @@ static const char rcsid[]="$Id:$";
 /* constants -----------------------------------------------------------------*/
 
 #define SQR(x)      ((x)*(x))
+
+#define NX          (4+3)       /* # of estimated parameters */
 
 #define MAXITR      10          /* max number of iteration for point pos */
 #define ERR_ION     5.0         /* ionospheric delay std (m) */
@@ -196,14 +199,12 @@ static int rescode(int iter, const obsd_t *obs, int n, const double *rs,
                    const double *dts, const double *vare, const int *svh,
                    const nav_t *nav, const double *x, const prcopt_t *opt,
                    double *v, double *H, double *var, double *azel, int *vsat,
-                   double *resp, int *nx)
+                   double *resp)
 {
     double r,dion,dtrp,vmeas,vion,vtrp,rr[3],pos[3],dtr,e[3],P;
-    int i,j,nv=0,ns[2]={0},sys;
-    
+    int i,j,nv=0,sys,mask[3]={0};
+	
     trace(3,"resprng : n=%d\n",n);
-    
-    *nx=5;
     
     for (i=0;i<3;i++) rr[i]=x[i]; dtr=x[3];
     
@@ -244,11 +245,12 @@ static int rescode(int iter, const obsd_t *obs, int n, const double *rs,
         v[nv]=P-(r+dtr-CLIGHT*dts[i*2]+dion+dtrp);
         
         /* design matrix */
-        for (j=0;j<4;j++) H[j+nv*5]=j<3?-e[j]:1.0;
+        for (j=0;j<NX;j++) H[j+nv*NX]=j<3?-e[j]:(j==3?1.0:0.0);
         
-        /* time system and receiver bias offset */
-        if (sys==SYS_GLO) {v[nv]-=x[4]; H[4+nv*5]=1.0; ns[1]++;}
-        else              {             H[4+nv*5]=0.0; ns[0]++;}
+        /* time system and receiver bias offset correction */
+        if      (sys==SYS_GLO) {v[nv]-=x[4]; H[4+nv*NX]=1.0; mask[0]=1;}
+        else if (sys==SYS_GAL) {v[nv]-=x[5]; H[5+nv*NX]=1.0; mask[1]=1;}
+        else if (sys==SYS_CMP) {v[nv]-=x[6]; H[6+nv*NX]=1.0; mask[2]=1;}
         
         vsat[i]=1; resp[i]=v[nv];
         
@@ -258,10 +260,12 @@ static int rescode(int iter, const obsd_t *obs, int n, const double *rs,
         trace(4,"sat=%2d azel=%5.1f %4.1f res=%7.3f sig=%5.3f\n",obs[i].sat,
               azel[i*2]*R2D,azel[1+i*2]*R2D,resp[i],sqrt(var[nv-1]));
     }
-    /* shrink design matrix: nx=5->4 */
-    if (!ns[0]||!ns[1]) {
-        for (i=0;i<nv;i++) for (j=0;j<4;j++) H[j+i*4]=H[j+i*5];
-        *nx=4;
+    /* constraint to avoid rank-deficient */
+    for (i=0;i<3;i++) {
+        if (mask[i]) continue;
+        v[nv]=0.0;
+        for (j=0;j<NX;j++) H[j+nv*NX]=j==i+4?1.0:0.0;
+        var[nv++]=1E4;
     }
     return nv;
 }
@@ -301,21 +305,21 @@ static int estpos(const obsd_t *obs, int n, const double *rs, const double *dts,
                   const prcopt_t *opt, sol_t *sol, double *azel, int *vsat,
                   double *resp, char *msg)
 {
-    double x[5]={0},dx[5],Q[25],*v,*H,*var,sig;
-    int i,j,k,info,stat,nx,nv;
+    double x[NX]={0},dx[NX],Q[NX*NX],*v,*H,*var,sig;
+    int i,j,k,info,stat,nv;
     
     trace(3,"estpos  : n=%d\n",n);
     
-    v=mat(n,1); H=mat(5,n); var=mat(n,1);
+    v=mat(n+3,1); H=mat(NX,n+3); var=mat(n+3,1);
     
     for (i=0;i<3;i++) x[i]=sol->rr[i];
     
     for (i=0;i<MAXITR;i++) {
         
         /* pseudorange residuals */
-        nv=rescode(i,obs,n,rs,dts,vare,svh,nav,x,opt,v,H,var,azel,vsat,resp,&nx);
+        nv=rescode(i,obs,n,rs,dts,vare,svh,nav,x,opt,v,H,var,azel,vsat,resp);
         
-        if (nv<nx) {
+        if (nv<NX) {
             sprintf(msg,"lack of valid sats ns=%d",nv);
             break;
         }
@@ -323,30 +327,32 @@ static int estpos(const obsd_t *obs, int n, const double *rs, const double *dts,
         for (j=0;j<nv;j++) {
             sig=sqrt(var[j]);
             v[j]/=sig;
-            for (k=0;k<nx;k++) H[k+j*nx]/=sig;
+            for (k=0;k<NX;k++) H[k+j*NX]/=sig;
         }
         /* least square estimation */
-        if ((info=lsq(H,v,nx,nv,dx,Q))) {
+        if ((info=lsq(H,v,NX,nv,dx,Q))) {
             sprintf(msg,"lsq error info=%d",info);
             break;
         }
-        for (j=0;j<nx;j++) x[j]+=dx[j];
+        for (j=0;j<NX;j++) x[j]+=dx[j];
         
-        if (norm(dx,nx)<1E-4) {
+        if (norm(dx,NX)<1E-4) {
             sol->type=0;
             sol->time=timeadd(obs[0].time,-x[3]/CLIGHT);
             sol->dtr[0]=x[3]/CLIGHT; /* receiver clock bias (s) */
-            sol->dtr[1]=x[4]/CLIGHT; /* glonass-gps time offset (s) */
+            sol->dtr[1]=x[4]/CLIGHT; /* glo-gps time offset (s) */
+            sol->dtr[2]=x[5]/CLIGHT; /* gal-gps time offset (s) */
+            sol->dtr[3]=x[6]/CLIGHT; /* bds-gps time offset (s) */
             for (j=0;j<6;j++) sol->rr[j]=j<3?x[j]:0.0;
-            for (j=0;j<3;j++) sol->qr[j]=(float)Q[j+j*nx];
+            for (j=0;j<3;j++) sol->qr[j]=(float)Q[j+j*NX];
             sol->qr[3]=(float)Q[1];    /* cov xy */
-            sol->qr[4]=(float)Q[2+nx]; /* cov yz */
+            sol->qr[4]=(float)Q[2+NX]; /* cov yz */
             sol->qr[5]=(float)Q[2];    /* cov zx */
             sol->ns=(unsigned char)nv;
             sol->age=sol->ratio=0.0;
             
             /* validate solution */
-            if ((stat=valsol(azel,vsat,n,opt,v,nv,nx,msg))) {
+            if ((stat=valsol(azel,vsat,n,opt,v,nv,NX,msg))) {
                 sol->stat=opt->sateph==EPHOPT_SBAS?SOLQ_SBAS:SOLQ_SINGLE;
             }
             free(v); free(H); free(var);

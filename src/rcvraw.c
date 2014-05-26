@@ -14,6 +14,7 @@
 *           2010/12/06 1.3  add almanac decoding, support of GW10
 *                           change api decode_frame()
 *           2013/04/11 1.4  fix bug on decode fit interval
+*           2014/01/31 1.5  fix bug on decode fit interval
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 

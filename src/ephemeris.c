@@ -47,6 +47,7 @@
 *           2013/03/20 1.6  fix problem on ssr clock relativitic correction
 *           2013/09/01 1.7  support negative pseudorange
 *                           fix bug on variance in case of ura ssr = 63
+*           2013/11/11 1.8  change constant MAXAGESSR 70.0 -> 90.0
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -77,7 +78,7 @@ static const char rcsid[]="$Id:$";
 #define DEFURASSR 0.15            /* default accurary of ssr corr (m) */
 #define MAXECORSSR 10.0           /* max orbit correction of ssr (m) */
 #define MAXCCORSSR (1E-6*CLIGHT)  /* max clock correction of ssr (m) */
-#define MAXAGESSR 70.0            /* max age of ssr orbit and clock (s) */
+#define MAXAGESSR 90.0            /* max age of ssr orbit and clock (s) */
 #define MAXAGESSR_HRCLK 10.0      /* max age of ssr high-rate clock (s) */
 #define STD_BRDCCLK 30.0          /* error of broadcast clock (m) */
 
@@ -623,7 +624,7 @@ static int satpos_ssr(gtime_t time, gtime_t teph, int sat, const nav_t *nav,
     
     /* satellite antenna offset correction */
     if (opt) {
-        satantoff(time,rs,nav->pcvs+sat-1,dant);
+        satantoff(time,rs,sat,nav,dant);
     }
     for (i=0;i<3;i++) {
         rs[i]+=-(er[i]*deph[0]+ea[i]*deph[1]+ec[i]*deph[2])+dant[i];

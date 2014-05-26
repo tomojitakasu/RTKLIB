@@ -291,9 +291,9 @@
 			<FormResources Include="..\appcmn\aboutdlg.dfm"/>
 			<FormResources Include="..\appcmn\maskoptdlg.dfm"/>
 			<FormResources Include="..\appcmn\keydlg.dfm"/>
+			<FormResources Include="postmain.dfm"/>
 			<FormResources Include="kmzconv.dfm"/>
 			<FormResources Include="postopt.dfm"/>
-			<FormResources Include="postmain.dfm"/>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>
 				<CfgParent>Base</CfgParent>

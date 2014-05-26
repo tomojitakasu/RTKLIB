@@ -52,6 +52,9 @@
 #include "viewer.h"
 #pragma link "SHDocVw_OCX"
 
+#define YLIM_AGE    10.0            // ylimit of age of differential
+#define YLIM_RATIO  20.0            // ylimit of raito factor
+
 // instance of TPLOT --------------------------------------------------------
 TPlot *Plot;
 
@@ -2149,9 +2152,9 @@ void __fastcall TPlot::SetRange(int all, double range)
     else if (PlotType==PLOT_NSAT) {
         GraphG[0]->GetLim(tl,xp);
         xl[0]=yl[0]=zl[0]=0.0;
-        xl[1]=20.0;
-        yl[1]=10.0;
-        zl[1]=20.0;
+        xl[1]=MaxDop;
+        yl[1]=YLIM_AGE;
+        zl[1]=YLIM_RATIO;
         GraphG[0]->SetLim(tl,xl);
         GraphG[1]->SetLim(tl,yl);
         GraphG[2]->SetLim(tl,zl);
