@@ -231,6 +231,9 @@
 			<CppCompile Include="..\..\src\rcv\nvs.c">
 				<BuildOrder>26</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="..\..\src\rcv\septentrio.c">
+				<BuildOrder>35</BuildOrder>
+			</CppCompile>
 			<CppCompile Include="..\..\src\rcv\skytraq.c">
 				<BuildOrder>4</BuildOrder>
 				<BuildOrder>14</BuildOrder>
@@ -270,15 +273,15 @@
 				<BuildOrder>22</BuildOrder>
 				<BuildOrder>12</BuildOrder>
 			</CppCompile>
-			<FormResources Include="..\appcmn\vieweropt.dfm"/>
-			<FormResources Include="..\appcmn\viewer.dfm"/>
-			<FormResources Include="convmain.dfm"/>
 			<FormResources Include="codeopt.dfm"/>
+			<FormResources Include="..\appcmn\vieweropt.dfm"/>
+			<FormResources Include="convopt.dfm"/>
+			<FormResources Include="convmain.dfm"/>
+			<FormResources Include="..\appcmn\viewer.dfm"/>
 			<FormResources Include="..\appcmn\confdlg.dfm"/>
 			<FormResources Include="..\appcmn\aboutdlg.dfm"/>
 			<FormResources Include="..\appcmn\timedlg.dfm"/>
 			<FormResources Include="..\appcmn\keydlg.dfm"/>
-			<FormResources Include="convopt.dfm"/>
 			<FormResources Include="startdlg.dfm"/>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>

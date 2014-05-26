@@ -59,7 +59,7 @@
 			<TASM_Defines>_RTLDLL;NO_STRICT;WIN32;TRACE;MKL;ENAGLO;ENAQZS;ENAGAL;NFREQ=3;$(TASM_Defines)</TASM_Defines>
 			<BRCC_Defines>_RTLDLL;NO_STRICT;WIN32;TRACE;MKL;ENAGLO;ENAQZS;ENAGAL;NFREQ=3;$(BRCC_Defines)</BRCC_Defines>
 			<ILINK_AppType>Windows</ILINK_AppType>
-			<BCC_Defines>_RTLDLL;NO_STRICT;WIN32;TRACE;MKL;ENAGLO;ENAQZS;ENAGAL;NFREQ=3;NEXOBS=3;$(BCC_Defines)</BCC_Defines>
+			<BCC_Defines>_RTLDLL;NO_STRICT;WIN32;TRACE;MKL;ENAGLO;ENAQZS;ENAGAL;ENACMP;NFREQ=3;NEXOBS=3;$(BCC_Defines)</BCC_Defines>
 			<BRCC_IncludePath>..\rtkpost;..\appcmn;..\..\src;$(BDS)\include;$(BDS)\include\dinkumware;$(BDS)\include\vcl;$(BRCC_IncludePath)</BRCC_IncludePath>
 			<BCC_PCHWithExternalTypeFiles>false</BCC_PCHWithExternalTypeFiles>
 			<BCC_UserSuppliedOptions> -tWM -AT -xp</BCC_UserSuppliedOptions>
@@ -294,9 +294,9 @@
 			<FormResources Include="..\appcmn\aboutdlg.dfm"/>
 			<FormResources Include="..\appcmn\maskoptdlg.dfm"/>
 			<FormResources Include="..\appcmn\keydlg.dfm"/>
+			<FormResources Include="..\rtkpost\postmain.dfm"/>
 			<FormResources Include="..\rtkpost\kmzconv.dfm"/>
 			<FormResources Include="..\rtkpost\postopt.dfm"/>
-			<FormResources Include="..\rtkpost\postmain.dfm"/>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>
 				<CfgParent>Base</CfgParent>

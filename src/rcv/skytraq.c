@@ -10,6 +10,9 @@
 *         Extension of SkyTraq Venus 6 GPS Receiver, ver 0.5, October 9, 2009
 *     [3] Skytraq, Application Note AN0024G2 Binary Message of SkyTraq Venus 7
 *         GLONASS/GPS Receiver (Raw Measurement F/W), ver 1.4.26, April 26, 2012
+*     [4] Skytraq, Application Note AN0030 Binary Message of Raw Measurement
+*         Data Extension of SkyTraq Venus 8 GNSS Receiver, ver.1.4.29,
+*         April 3, 2014
 *
 * notes   :
 *     The byte order of S1315F raw message is big-endian inconsistent to [1].
@@ -35,6 +38,7 @@
 #define ID_CFGSERI  0x05        /* skytraq message id: configure serial port */
 #define ID_CFGFMT   0x09        /* skytraq message id: configure message format */
 #define ID_CFGRATE  0x12        /* skytraq message id: configure message rate */
+#define ID_CFGBIN   0x1E        /* skytraq message id: configure binary message */
 
 static const char rcsid[]="$Id:$";
 
@@ -121,7 +125,11 @@ static int decode_stqraw(raw_t *raw)
     for (i=0,p+=3;i<nsat&&i<MAXOBS;i++,p+=23) {
         ind                    =U1(p+22);
         prn                    =U1(p);
+#if 0
         raw->obs.data[n].SNR[0]=(unsigned char)(U1(p+1)*4.0+0.5);
+#else
+        raw->obs.data[n].SNR[0]=(unsigned char)(U1(p+1)*8.0+0.5);
+#endif
         raw->obs.data[n].P[0]  =(ind&0x1)?R8(p+ 2):0.0;
         raw->obs.data[n].L[0]  =(ind&0x4)?R8(p+10):0.0;
         raw->obs.data[n].D[0]  =(ind&0x2)?R4(p+18):0.0f;
@@ -138,6 +146,10 @@ static int decode_stqraw(raw_t *raw)
         else if (MINPRNGLO<=prn-64&&prn-64<=MAXPRNGLO) {
             sys=SYS_GLO;
             prn-=64;
+        }
+        else if (MINPRNCMP<=prn-200&&prn-200<=MAXPRNCMP) {
+            sys=SYS_CMP;
+            prn-=200;
         }
         else {
             trace(2,"stq raw satellite number error: prn=%d\n",prn);
@@ -425,6 +437,17 @@ extern int gen_stq(const char *msg, unsigned char *buff)
         *q++=0;
         *q++=8;
         *q++=ID_CFGRATE;
+        if (narg>2) {
+            for (i=0;*hz[i];i++) if (!strcmp(args[1],hz[i])) break;
+            if (*hz[i]) *q++=i; else *q++=(unsigned char)atoi(args[1]);
+        }
+        else *q++=0;
+        for (i=2;i<8;i++) *q++=narg>i+1?(unsigned char)atoi(args[i]):0;
+    }
+    else if (!strcmp(args[0],"CFG-BIN")) {
+        *q++=0;
+        *q++=8;
+        *q++=ID_CFGBIN;
         if (narg>2) {
             for (i=0;*hz[i];i++) if (!strcmp(args[1],hz[i])) break;
             if (*hz[i]) *q++=i; else *q++=(unsigned char)atoi(args[1]);

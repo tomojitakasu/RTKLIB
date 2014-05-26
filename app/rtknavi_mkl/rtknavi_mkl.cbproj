@@ -390,10 +390,10 @@
 			<FormResources Include="..\appcmn\maskoptdlg.dfm"/>
 			<FormResources Include="..\appcmn\keydlg.dfm"/>
 			<FormResources Include="..\appcmn\ftpoptdlg.dfm"/>
-			<FormResources Include="..\rtknavi\mondlg.dfm"/>
-			<FormResources Include="..\rtknavi\outstrdlg.dfm"/>
 			<FormResources Include="..\rtknavi\naviopt.dfm"/>
 			<FormResources Include="..\rtknavi\navimain.dfm"/>
+			<FormResources Include="..\rtknavi\mondlg.dfm"/>
+			<FormResources Include="..\rtknavi\outstrdlg.dfm"/>
 			<FormResources Include="..\rtknavi\rcvoptdlg.dfm"/>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>

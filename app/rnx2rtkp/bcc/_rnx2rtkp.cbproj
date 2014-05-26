@@ -47,7 +47,7 @@
 			<BRCC_Defines>_RTLDLL;NO_STRICT;_NO_VCL;WIN32;ENAGLO;ENAQZS;TRACE;$(BRCC_Defines)</BRCC_Defines>
 			<DCC_ObjPath>..\..\..\extion;..\..\..\extlex;..\;..\..\sbspos;..\..\sbsdump;..\..\..\src\rcv;..\..\convbin;..\..\..\src;..\..\pos2kml;G:\rtklib_2.2.0b\app\pos2kml;G:\rtklib_2.2.0b\app\pos2kml\bcc;$(DCC_ObjPath)</DCC_ObjPath>
 			<BRCC_IncludePath>..\;..\..\..\src\rcv;..\..\convbin;..\..\pos2kml;..\..\..\src;$(BDS)\include;$(BDS)\include\dinkumware;$(BDS)\include\vcl;$(BRCC_IncludePath)</BRCC_IncludePath>
-			<BCC_Defines>_RTLDLL;NO_STRICT;WIN32;ENAGLO;ENAQZS;TRACE;ENAGAL;NFREQ=3;$(BCC_Defines)</BCC_Defines>
+			<BCC_Defines>_RTLDLL;NO_STRICT;WIN32;ENAGLO;ENAGAL;ENAQZS;ENACMP;NFREQ=3;TRACE;$(BCC_Defines)</BCC_Defines>
 			<BCC_PCHWithExternalTypeFiles>false</BCC_PCHWithExternalTypeFiles>
 			<BCC_UserSuppliedOptions> -tWM -tWC -wvoi</BCC_UserSuppliedOptions>
 			<DCC_IncludePath>..\..\..\extion;..\..\..\extlex;..\;..\..\sbspos;..\..\sbsdump;..\..\..\src\rcv;..\..\convbin;..\..\..\src;..\..\pos2kml;G:\rtklib_2.2.0b\app\pos2kml;G:\rtklib_2.2.0b\app\pos2kml\bcc;C:\Users\ttaka\Documents\Borland Studio Projects;$(BDS)\lib;$(BDS)\lib\obj;$(DCC_IncludePath)</DCC_IncludePath>

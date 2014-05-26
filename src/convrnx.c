@@ -23,6 +23,7 @@
 *                           add supported obs types for rinex input
 *           2013/03/11 1.7  support binex and rinex 3.02
 *                           add approx position in rinex obs header if blank
+*           2014/05/24 1.8  support beidou B1
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -52,7 +53,7 @@ static const int navsys[]={     /* system codes */
 /* convert rinex obs type ver.3 -> ver.2 -------------------------------------*/
 static void convcode(double ver, int sys, char *type)
 {
-    if (ver>=2.12&&(sys==SYS_GPS||sys==SYS_QZS||sys==SYS_SBS||sys==SYS_CMP)&&
+    if (ver>=2.12&&(sys==SYS_GPS||sys==SYS_QZS||sys==SYS_SBS)&&
         !strcmp(type+1,"1C")) { /* L1C/A */
         strcpy(type+1,"A");
     }
@@ -61,7 +62,7 @@ static void convcode(double ver, int sys, char *type)
               !strcmp(type+1,"1X"))) { /* L1C */
         strcpy(type+1,"B");
     }
-    else if (ver>=2.12&&(sys==SYS_GPS||sys==SYS_QZS||sys==SYS_CMP)&&
+    else if (ver>=2.12&&(sys==SYS_GPS||sys==SYS_QZS)&&
              (!strcmp(type+1,"2S")||!strcmp(type+1,"2L")||
               !strcmp(type+1,"2X"))) { /* L2C */
         strcpy(type+1,"C");
@@ -71,6 +72,10 @@ static void convcode(double ver, int sys, char *type)
     }
     else if (ver>=2.12&&sys==SYS_GLO&&!strcmp(type+1,"2C")) { /* L2C/A */
         strcpy(type+1,"D");
+    }
+    else if (sys==SYS_CMP&&(!strcmp(type+1,"1I")||!strcmp(type+1,"1Q")||
+             !strcmp(type+1,"1X"))) { /* B1 */
+        strcpy(type+1,"2");
     }
     else if (!strcmp(type,"C1P")||!strcmp(type,"C1W")||!strcmp(type,"C1Y")||
              !strcmp(type,"C1N")) { /* L1P,P(Y) */
@@ -502,7 +507,9 @@ static void set_obstype(int format, rnxopt_t *opt)
     };
     /* supported codes by hemisphere */
     const unsigned char codes_cres[6][8]={
-        {CODE_L1C,CODE_L2P},{0},{0},{0},{CODE_L1C}
+        {CODE_L1C,CODE_L2P},
+        {CODE_L1C,CODE_L2P},
+        {0},{0},{CODE_L1C}
     };
     /* supported codes by javad */
     const unsigned char codes_javad[6][8]={
@@ -511,7 +518,7 @@ static void set_obstype(int format, rnxopt_t *opt)
         {CODE_L1X,CODE_L5X,CODE_L7X,CODE_L8X},
         {CODE_L1C,CODE_L1X,CODE_L1Z,CODE_L2X,CODE_L5X},
         {CODE_L1C,CODE_L5X},
-        {CODE_L1C,CODE_L2C,CODE_L7I}
+        {CODE_L1I,CODE_L2C,CODE_L7I}
     };
     /* supported codes by rinex and binex */
     const unsigned char codes_rinex[6][32]={
@@ -525,7 +532,7 @@ static void set_obstype(int format, rnxopt_t *opt)
         {CODE_L1C,CODE_L1S,CODE_L1L,CODE_L1X,CODE_L1Z,CODE_L2S,CODE_L2L,CODE_L2X,
          CODE_L5I,CODE_L5Q,CODE_L5X,CODE_L6S,CODE_L6L,CODE_L6X},
         {CODE_L1C,CODE_L5I,CODE_L5Q,CODE_L5X},
-        {CODE_L2I,CODE_L2Q,CODE_L2X,CODE_L7I,CODE_L7Q,CODE_L7X,CODE_L6I,CODE_L6Q,
+        {CODE_L1I,CODE_L1Q,CODE_L1X,CODE_L7I,CODE_L7Q,CODE_L7X,CODE_L6I,CODE_L6Q,
          CODE_L6X}
     };
     /* supported codes by others */
