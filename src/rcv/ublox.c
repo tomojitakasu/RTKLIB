@@ -347,7 +347,7 @@ extern int input_ubxf(raw_t *raw, FILE *fp)
 * args   : char  *msg   IO     message string 
 *            "CFG-PRT   portid res0 res1 mode baudrate inmask outmask flags"
 *            "CFG-USB   vendid prodid res1 res2 power flags vstr pstr serino"
-*            "CFG-MSG   msgid rate0 rate1 rate2 rate3"
+*            "CFG-MSG   msgid rate0 rate1 rate2 rate3 rate4 rate5"
 *            "CFG-NMEA  filter version numsv flags"
 *            "CFG-RATE  meas nav time"
 *            "CFG-CFG   clear_mask save_mask load_mask"
