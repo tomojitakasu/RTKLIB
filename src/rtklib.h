@@ -48,8 +48,10 @@ extern "C" {
 
 #define VER_RTKLIB  "2.4.2"             /* library version */
 
+#define PATCH_LEVEL "p5"                /* patch level */
+
 #define COPYRIGHT_RTKLIB \
-            "Copyright (C) 2007-2013 by T.Takasu\nAll rights reserved."
+            "Copyright (C) 2007-2014 by T.Takasu\nAll rights reserved."
 
 #define PI          3.1415926535897932  /* pi */
 #define D2R         (PI/180.0)          /* deg to rad */
@@ -79,9 +81,9 @@ extern "C" {
 #define FREQ2_GLO   1.24600E9           /* GLONASS G2 base frequency (Hz) */
 #define DFRQ2_GLO   0.43750E6           /* GLONASS G2 bias frequency (Hz/n) */
 #define FREQ3_GLO   1.202025E9          /* GLONASS G3 frequency (Hz) */
-#define FREQ2_CMP   1.561098E9          /* BeiDou B1 frequency (Hz) */
-#define FREQ7_CMP   1.20714E9           /* BeiDou B2 frequency (Hz) */
-#define FREQ6_CMP   1.26852E9           /* BeiDou B3 frequency (Hz) */
+#define FREQ1_CMP   1.561098E9          /* BeiDou B1 frequency (Hz) */
+#define FREQ2_CMP   1.20714E9           /* BeiDou B2 frequency (Hz) */
+#define FREQ3_CMP   1.26852E9           /* BeiDou B3 frequency (Hz) */
 
 #define EFACT_GPS   1.0                 /* error factor: GPS */
 #define EFACT_GLO   1.5                 /* error factor: GLONASS */
@@ -97,6 +99,7 @@ extern "C" {
 #define SYS_GAL     0x08                /* navigation system: Galileo */
 #define SYS_QZS     0x10                /* navigation system: QZSS */
 #define SYS_CMP     0x20                /* navigation system: BeiDou */
+#define SYS_LEO     0x40                /* navigation system: LEO */
 #define SYS_ALL     0xFF                /* navigation system: all */
 
 #define TSYS_GPS    0                   /* time system: GPS time */
@@ -168,13 +171,24 @@ extern "C" {
 #define NSATCMP     0
 #define NSYSCMP     0
 #endif
-#define NSYS        (NSYSGPS+NSYSGLO+NSYSGAL+NSYSQZS+NSYSCMP) /* number of systems */
+#ifdef ENALEO
+#define MINPRNLEO   1                   /* min satellite sat number of LEO */
+#define MAXPRNLEO   10                  /* max satellite sat number of LEO */
+#define NSATLEO     (MAXPRNLEO-MINPRNLEO+1) /* number of LEO satellites */
+#define NSYSLEO     1
+#else
+#define MINPRNLEO   0
+#define MAXPRNLEO   0
+#define NSATLEO     0
+#define NSYSLEO     0
+#endif
+#define NSYS        (NSYSGPS+NSYSGLO+NSYSGAL+NSYSQZS+NSYSCMP+NSYSLEO) /* number of systems */
 
 #define MINPRNSBS   120                 /* min satellite PRN number of SBAS */
 #define MAXPRNSBS   142                 /* max satellite PRN number of SBAS */
 #define NSATSBS     (MAXPRNSBS-MINPRNSBS+1) /* number of SBAS satellites */
 
-#define MAXSAT      (NSATGPS+NSATGLO+NSATGAL+NSATQZS+NSATCMP+NSATSBS)
+#define MAXSAT      (NSATGPS+NSATGLO+NSATGAL+NSATQZS+NSATCMP+NSATSBS+NSATLEO)
                                         /* max satellite number (1 to MAXSAT) */
 #ifndef MAXOBS
 #define MAXOBS      64                  /* max number of obs in an epoch */
@@ -276,7 +290,9 @@ extern "C" {
 #define CODE_L3I    44                  /* obs code: G3I        (GLO) */
 #define CODE_L3Q    45                  /* obs code: G3Q        (GLO) */
 #define CODE_L3X    46                  /* obs code: G3I+Q      (GLO) */
-#define MAXCODE     46                  /* max number of obs code */
+#define CODE_L1I    47                  /* obs code: B1I        (BDS) */
+#define CODE_L1Q    48                  /* obs code: B1Q        (BDS) */
+#define MAXCODE     48                  /* max number of obs code */
 
 #define PMODE_SINGLE 0                  /* positioning mode: single */
 #define PMODE_DGPS   1                  /* positioning mode: DGPS/DGNSS */
@@ -545,6 +561,8 @@ typedef struct {        /* precise ephemeris type */
     int index;          /* ephemeris index for multiple files */
     double pos[MAXSAT][4]; /* satellite position/clock (ecef) (m|s) */
     float  std[MAXSAT][4]; /* satellite position/clock std (m|s) */
+    double vel[MAXSAT][4]; /* satellite velocity/clk-rate (m/s|s/s) */
+    float  vst[MAXSAT][4]; /* satellite velocity/clk-rate std (m/s|s/s) */
 } peph_t;
 
 typedef struct {        /* precise clock type */
@@ -1431,7 +1449,7 @@ extern void seph2pos(gtime_t time, const seph_t *seph, double *rs, double *dts,
                      double *var);
 extern int  peph2pos(gtime_t time, int sat, const nav_t *nav, int opt,
                      double *rs, double *dts, double *var);
-extern void satantoff(gtime_t time, const double *rs, const pcv_t *pcv,
+extern void satantoff(gtime_t time, const double *rs, int sat, const nav_t *nav,
                       double *dant);
 extern int  satpos(gtime_t time, gtime_t teph, int sat, int ephopt,
                    const nav_t *nav, double *rs, double *dts, double *var,

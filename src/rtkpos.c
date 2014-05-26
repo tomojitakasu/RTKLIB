@@ -27,6 +27,8 @@
 *                           add slip detectior by L1-L5 gf jump
 *                           output snr of rover receiver in residuals
 *           2013/03/10 1.12 add otl and pole tides corrections
+*           2014/05/26 1.13 support beidou and galileo
+*                           add output of gal-gps and bds-gps time offset
 *-----------------------------------------------------------------------------*/
 #include <stdarg.h>
 #include "rtklib.h"
@@ -118,9 +120,10 @@ static FILE *fp_stat=NULL;       /* rtk status file pointer */
 *   $CLK,week,tow,stat,clk1,clk2,clk3,clk4
 *          week/tow : gps week no/time of week (s)
 *          stat     : solution status
-*          clk1     : receiver clock bias GPS (m)
-*          clk2     : receiver clock bias GLONASS (m)
-*          clk3,clk4: reserved
+*          clk1     : receiver clock bias GPS (ns)
+*          clk2     : receiver clock bias GLO-GPS (ns)
+*          clk3     : receiver clock bias GAL-GPS (ns)
+*          clk4     : receiver clock bias BDS-GPS (ns)
 *
 *   $ION,week,tow,stat,sat,az,el,ion,ion-fixed
 *          week/tow : gps week no/time of week (s)
@@ -232,8 +235,8 @@ static void outsolstat(rtk_t *rtk)
     }
     /* receiver clocks */
     fprintf(fp_stat,"$CLK,%d,%.3f,%d,%d,%.3f,%.3f,%.3f,%.3f\n",
-            week,tow,rtk->sol.stat,1,rtk->sol.dtr[0]*1E9,
-            (rtk->sol.dtr[0]+rtk->sol.dtr[1])*1E9,0.0,0.0);
+            week,tow,rtk->sol.stat,1,rtk->sol.dtr[0]*1E9,rtk->sol.dtr[1]*1E9,
+            rtk->sol.dtr[2]*1E9,rtk->sol.dtr[3]*1E9);
     
     /* ionospheric parameters */
     if (est&&rtk->opt.ionoopt==IONOOPT_EST) {
@@ -957,6 +960,19 @@ static double gloicbcorr(int sat1, int sat2, const prcopt_t *opt, double lam1,
     
     return opt->exterr.gloicb[f]*0.01*dfreq; /* (m) */
 }
+/* test navi system (m=0:gps/qzs/sbs,1:glo,2:gal,3:bds) ----------------------*/
+static int test_sys(int sys, int m)
+{
+    switch (sys) {
+        case SYS_GPS: return m==0;
+        case SYS_QZS: return m==0;
+        case SYS_SBS: return m==0;
+        case SYS_GLO: return m==1;
+        case SYS_GAL: return m==2;
+        case SYS_CMP: return m==3;
+    }
+    return 0;
+}
 /* double-differenced phase/code residuals -----------------------------------*/
 static int ddres(rtk_t *rtk, const nav_t *nav, double dt, const double *x,
                  const double *P, const int *sat, double *y, double *e,
@@ -989,14 +1005,14 @@ static int ddres(rtk_t *rtk, const nav_t *nav, double dt, const double *x,
             tropr[i]=prectrop(rtk->sol.time,posr,1,azel+ir[i]*2,opt,x,dtdxr+i*3);
         }
     }
-    for (m=0;m<2;m++) /* for each system (0:gps/qzss/sbas,1:glonass) */
+    for (m=0;m<4;m++) /* m=0:gps/qzs/sbs,1:glo,2:gal,3:bds */
     
     for (f=opt->mode>PMODE_DGPS?0:nf;f<nf*2;f++) {
         
         /* search reference satellite with highest elevation */
         for (i=-1,j=0;j<ns;j++) {
             sysi=rtk->ssat[sat[j]-1].sys;
-            if ((m==0&&sysi==SYS_GLO)||(m==1&&sysi!=SYS_GLO)) continue;
+            if (!test_sys(sysi,m)) continue;
             if (!validobs(iu[j],ir[j],f,nf,y)) continue;
             if (i<0||azel[1+iu[j]*2]>=azel[1+iu[i]*2]) i=j;
         }
@@ -1007,7 +1023,7 @@ static int ddres(rtk_t *rtk, const nav_t *nav, double dt, const double *x,
             if (i==j) continue;
             sysi=rtk->ssat[sat[i]-1].sys;
             sysj=rtk->ssat[sat[j]-1].sys;
-            if ((m==0&&sysj==SYS_GLO)||(m==1&&sysj!=SYS_GLO)) continue;
+            if (!test_sys(sysj,m)) continue;
             if (!validobs(iu[j],ir[j],f,nf,y)) continue;
             
             ff=f%nf;
@@ -1186,17 +1202,16 @@ static int ddmat(rtk_t *rtk, double *D)
     }
     for (i=0;i<na;i++) D[i+i*nx]=1.0;
     
-    for (m=0;m<2;m++) { /* 0:gps,1:glonass */
+    for (m=0;m<4;m++) { /* m=0:gps/qzs/sbs,1:glo,2:gal,3:bds */
         
         if (m==1&&rtk->opt.glomodear==0) continue;
         
         for (f=0,k=na;f<nf;f++,k+=MAXSAT) {
             
             for (i=k;i<k+MAXSAT;i++) {
-                if (rtk->x[i]==0.0||
-                    (m==0&&rtk->ssat[i-k].sys==SYS_GLO)||
-                    (m==1&&rtk->ssat[i-k].sys!=SYS_GLO)) continue;
-                
+                if (rtk->x[i]==0.0||!test_sys(rtk->ssat[i-k].sys,m)) {
+                    continue;
+                }
                 if (rtk->ssat[i-k].lock[f]>0&&!(rtk->ssat[i-k].slip[f]&2)&&
                     rtk->ssat[i-k].azel[1]>=rtk->opt.elmaskar) {
                     rtk->ssat[i-k].fix[f]=2; /* fix */
@@ -1205,10 +1220,9 @@ static int ddmat(rtk_t *rtk, double *D)
                 else rtk->ssat[i-k].fix[f]=1;
             }
             for (j=k;j<k+MAXSAT;j++) {
-                if (i==j||rtk->x[j]==0.0||
-                    (m==0&&rtk->ssat[j-k].sys==SYS_GLO)||
-                    (m==1&&rtk->ssat[j-k].sys!=SYS_GLO)) continue;
-                
+                if (i==j||rtk->x[j]==0.0||!test_sys(rtk->ssat[j-k].sys,m)) {
+                    continue;
+                }
                 if (rtk->ssat[j-k].lock[f]>0&&!(rtk->ssat[j-k].slip[f]&2)&&
                     rtk->ssat[j-k].azel[1]>=rtk->opt.elmaskar) {
                     D[i+(na+nb)*nx]= 1.0;
@@ -1233,11 +1247,12 @@ static void restamb(rtk_t *rtk, const double *bias, int nb, double *xa)
     for (i=0;i<rtk->nx;i++) xa[i]=rtk->x [i];
     for (i=0;i<rtk->na;i++) xa[i]=rtk->xa[i];
     
-    for (m=0;m<2;m++) for (f=0;f<nf;f++) {
+    for (m=0;m<4;m++) for (f=0;f<nf;f++) {
         
         for (n=i=0;i<MAXSAT;i++) {
-            if ((m==0&&rtk->ssat[i].sys==SYS_GLO)||
-                (m==1&&rtk->ssat[i].sys!=SYS_GLO)||rtk->ssat[i].fix[f]!=2) continue;
+            if (!test_sys(rtk->ssat[i].sys,m)||rtk->ssat[i].fix[f]!=2) {
+                continue;
+            }
             index[n++]=IB(i+1,f,&rtk->opt);
         }
         if (n<2) continue;
@@ -1259,13 +1274,13 @@ static void holdamb(rtk_t *rtk, const double *xa)
     
     v=mat(nb,1); H=zeros(nb,rtk->nx);
     
-    for (m=0;m<2;m++) for (f=0;f<nf;f++) {
+    for (m=0;m<4;m++) for (f=0;f<nf;f++) {
         
         for (n=i=0;i<MAXSAT;i++) {
-            if ((m==0&&rtk->ssat[i].sys==SYS_GLO)||
-                (m==1&&rtk->ssat[i].sys!=SYS_GLO)||rtk->ssat[i].fix[f]!=2||
-                rtk->ssat[i].azel[1]<rtk->opt.elmaskhold) continue;
-            
+            if (!test_sys(rtk->ssat[i].sys,m)||rtk->ssat[i].fix[f]!=2||
+                rtk->ssat[i].azel[1]<rtk->opt.elmaskhold) {
+                continue;
+            }
             index[n++]=IB(i+1,f,&rtk->opt);
             rtk->ssat[i].fix[f]=3; /* hold */
         }

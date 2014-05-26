@@ -38,6 +38,8 @@
 *           2013/03/10 1.10 fix problem with ntrip mountpoint containing "/"
 *           2013/04/15 1.11 fix bug on swapping files if swapmargin=0
 *           2013/05/28 1.12 fix bug on playback of file with 64 bit size_t
+*           2014/05/23 1.13 retry to connect after gethostbyname() error
+*                           fix bug on malloc size in openftp()
 *-----------------------------------------------------------------------------*/
 #include <ctype.h>
 #include "rtklib.h"
@@ -909,9 +911,10 @@ static int gentcp(tcp_t *tcp, int type, char *msg)
         if (!(hp=gethostbyname(tcp->saddr))) {
             sprintf(msg,"address error (%s)",tcp->saddr);
             tracet(1,"gentcp: gethostbyname error addr=%s err=%d\n",tcp->saddr,errsock());
-            tcp->state=1;
             closesocket(tcp->sock);
-            tcp->state=-1;
+            tcp->state=0;
+            tcp->tcon=ticonnect;
+            tcp->tdis=tickget();
             return 0;
         }
         memcpy(&tcp->addr.sin_addr,hp->h_addr,hp->h_length);
@@ -1665,7 +1668,7 @@ static ftp_t *openftp(const char *path, int type, char *msg)
     
     msg[0]='\0';
     
-    if (!(ftp=(ftp_t *)malloc(sizeof(ntrip_t)))) return NULL;
+    if (!(ftp=(ftp_t *)malloc(sizeof(ftp_t)))) return NULL;
     
     ftp->state=0;
     ftp->proto=type;

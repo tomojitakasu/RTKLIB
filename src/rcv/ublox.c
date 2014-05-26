@@ -20,6 +20,8 @@
 *                          fix problem with ARM compiler
 *           2013/02/23 1.8 fix memory access violation problem on arm
 *                          change options -tadj to -TADJ, -invcp to -INVCP
+*           2014/05/26 1.9 fix bug on message size of CFG-MSG
+*                          fix bug on return code of decode_alm1()
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -196,7 +198,7 @@ static int decode_alm1(int sat, raw_t *raw)
     trace(4,"decode_alm1 : sat=%2d\n",sat);
     decode_frame(raw->subfrm[sat-1]+90,NULL,raw->nav.alm,raw->nav.ion_gps,
                  raw->nav.utc_gps,&raw->nav.leaps);
-    return 0;
+    return 9;
 }
 /* decode almanac ------------------------------------------------------------*/
 static int decode_alm2(int sat, raw_t *raw)
@@ -380,7 +382,7 @@ extern int gen_ubx(const char *msg, unsigned char *buff)
     const int prm[][32]={
         {FU1,FU1,FU2,FU4,FU4,FU2,FU2,FU2,FU2},    /* PRT */
         {FU2,FU2,FU2,FU2,FU2,FU2,FS32,FS32,FS32}, /* USB */
-        {FU1,FU1,FU1,FU1,FU1,FU1},                /* MSG */
+        {FU1,FU1,FU1,FU1,FU1,FU1,FU1,FU1},        /* MSG */
         {FU1,FU1,FU1,FU1},                        /* NMEA */
         {FU2,FU2,FU2},                            /* RATE */
         {FU4,FU4,FU4},                            /* CFG */

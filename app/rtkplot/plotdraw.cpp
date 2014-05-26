@@ -1560,7 +1560,7 @@ void __fastcall TPlot::DrawSnrE(int level)
                 if (k>=NFREQ+NEXOBS) continue;
                 if (El[j]<=0.0) continue;
                 
-                x[0][n[0]]=x[1][n[0]]=El[j]*R2D;
+                x[0][n[0]]=x[1][n[1]]=El[j]*R2D;
                 
                 y[0][n[0]]=Obs.data[j].SNR[k]*0.25;
                 y[1][n[1]]=!Mp[k]?0.0:Mp[k][j];

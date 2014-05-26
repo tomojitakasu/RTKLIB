@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * rtkrcv.c : rtk-gps/gnss receiver console ap
 *
-*          Copyright (C) 2009-2013 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2009-2014 by T.TAKASU, All rights reserved.
 *
 * notes   :
 *     current version does not support win32 without pthread library
@@ -14,6 +14,10 @@
 *           2011/08/19 1.4  fix bug on size of arg solopt arg for rtksvrstart()
 *           2012/11/03 1.5  fix bug on setting output format
 *           2013/06/30 1.6  add "nvs" option for inpstr*-format
+*           2014/02/10 1.7  fix bug on printing obs data
+*                           add print of status, glonass nav data
+*                           ignore SIGHUP
+*           2014/04/27 1.8  add "binex" option for inpstr*-format
 *-----------------------------------------------------------------------------*/
 #ifndef WIN32
 #define _POSIX_C_SOURCE 2
@@ -180,7 +184,7 @@ static const char *pathopts[]={         /* path options help */
 #define FLGOPT  "0:off,1:std+2:age/ratio/ns"
 #define ISTOPT  "0:off,1:serial,2:file,3:tcpsvr,4:tcpcli,7:ntripcli,8:ftp,9:http"
 #define OSTOPT  "0:off,1:serial,2:file,3:tcpsvr,4:tcpcli,6:ntripsvr"
-#define FMTOPT  "0:rtcm2,1:rtcm3,2:oem4,3:oem3,4:ubx,5:ss2,6:hemis,7:skytraq,8:gw10,9:javad,10:nvs,15:sp3"
+#define FMTOPT  "0:rtcm2,1:rtcm3,2:oem4,3:oem3,4:ubx,5:ss2,6:hemis,7:skytraq,8:gw10,9:javad,10:nvs,11:binex,15:sp3"
 #define NMEOPT  "0:off,1:latlon,2:single"
 #define SOLOPT  "0:llh,1:xyz,2:enu,3:nmea"
 #define MSGOPT  "0:all,1:rover,2:base,3:corr"
@@ -914,19 +918,19 @@ static void prsolution(vt_t *vt, const sol_t *sol, const double *rb)
 static void prstatus(vt_t *vt)
 {
     rtk_t rtk;
-    const char *svrstate[]={"stop","run"};
+    const char *svrstate[]={"stop","run"},*type[]={"rover","base","corr"};
     const char *sol[]={"-","fix","float","SBAS","DGPS","single","PPP",""};
     const char *mode[]={
          "single","DGPS","kinematic","static","moving-base","fixed",
          "PPP-kinema","PPP-static"
     };
     const char *freq[]={"-","L1","L1+L2","L1+L2+L5","","",""};
-    rtcm_t rtcm[2];
+    rtcm_t rtcm[3];
     int i,j,n,thread,cycle,state,rtkstat,nsat0,nsat1,prcout;
     int cputime,nb[3]={0},nmsg[3][10]={{0}};
     char tstr[64],s[1024],*p;
     double runtime,rt[3]={0},dop[4]={0},rr[3],bl1=0.0,bl2=0.0;
-    double azel[MAXSAT*2],pos[3],vel[3];
+    double azel[MAXSAT*2],pos[3],vel[3],*del;
     
     trace(4,"prstatus:\n");
     
@@ -949,7 +953,7 @@ static void prstatus(vt_t *vt)
         rt[0]=floor(runtime/3600.0); runtime-=rt[0]*3600.0;
         rt[1]=floor(runtime/60.0); rt[2]=runtime-rt[1]*60.0;
     }
-    for (i=0;i<2;i++) rtcm[i]=svr.rtcm[i];
+    for (i=0;i<3;i++) rtcm[i]=svr.rtcm[i];
     rtksvrunlock(&svr);
     
     for (i=n=0;i<MAXSAT;i++) {
@@ -972,13 +976,13 @@ static void prstatus(vt_t *vt)
     printvt(vt,"%-28s: %d\n","cpu time for a cycle (ms)",cputime);
     printvt(vt,"%-28s: %d\n","missing obs data count",prcout);
     printvt(vt,"%-28s: %d,%d\n","bytes in input buffer",nb[0],nb[1]);
-    printvt(vt,"%-28s: obs(%d),nav(%d),gnav(%d),ion(%d),sbs(%d),pos(%d),dgps(%d),err(%d)\n",
-            "# of input data rover",nmsg[0][0],nmsg[0][1],nmsg[0][6],nmsg[0][2],
-            nmsg[0][3],nmsg[0][4],nmsg[0][5],nmsg[0][9]);
-    printvt(vt,"%-28s: obs(%d),nav(%d),gnav(%d),ion(%d),sbs(%d),pos(%d),dgps(%d),err(%d)\n",
-            "# of input data base",nmsg[1][0],nmsg[1][1],nmsg[1][6],nmsg[1][2],
-            nmsg[1][3],nmsg[1][4],nmsg[1][5],nmsg[1][9]);
-    for (i=0;i<2;i++) {
+    for (i=0;i<3;i++) {
+        sprintf(s,"# of input data %s",type[i]);
+        printvt(vt,"%-28s: obs(%d),nav(%d),gnav(%d),ion(%d),sbs(%d),pos(%d),dgps(%d),ssr(%d),err(%d)\n",
+                s,nmsg[i][0],nmsg[i][1],nmsg[i][6],nmsg[i][2],nmsg[i][3],
+                nmsg[i][4],nmsg[i][5],nmsg[i][7],nmsg[i][9]);
+    }
+    for (i=0;i<3;i++) {
         p=s; *p='\0';
         for (j=1;j<100;j++) {
             if (rtcm[i].nmsg2[j]==0) continue;
@@ -994,7 +998,7 @@ static void prstatus(vt_t *vt)
         if (rtcm[i].nmsg3[0]>0) {
             sprintf(p,"%sother3(%d)",p>s?",":"",rtcm[i].nmsg3[0]);
         }
-        printvt(vt,"%-15s %-9s: %s\n","# of rtcm messages",i?"base":"rover",s);
+        printvt(vt,"%-15s %-9s: %s\n","# of rtcm messages",type[i],s);
     }
     printvt(vt,"%-28s: %s\n","solution status",sol[rtkstat]);
     time2str(rtk.sol.time,tstr,9);
@@ -1026,6 +1030,12 @@ static void prstatus(vt_t *vt)
             rtk.Pa?SQRT(rtk.Pa[0]):0,rtk.Pa?SQRT(rtk.Pa[1+1*rtk.na]):0,rtk.Pa?SQRT(rtk.Pa[2+2*rtk.na]):0);
     printvt(vt,"%-28s: %.3f,%.3f,%.3f\n","pos xyz (m) base",
             rtk.rb[0],rtk.rb[1],rtk.rb[2]);
+    printvt(vt,"%-28s: %s\n","ant type rover",rtk.opt.pcvr[0].type);
+    del=rtk.opt.antdel[0];
+    printvt(vt,"%-28s: %.3f %.3f %.3f\n","ant delta rover",del[0],del[1],del[2]);
+    printvt(vt,"%-28s: %s\n","ant type base" ,rtk.opt.pcvr[1].type);
+    del=rtk.opt.antdel[1];
+    printvt(vt,"%-28s: %.3f %.3f %.3f\n","ant delta base",del[0],del[1],del[2]);
     if (norm(rtk.rb,3)>0.0) ecef2pos(rtk.rb,pos); else pos[0]=pos[1]=pos[2]=0.0;
     printvt(vt,"%-28s: %.8f,%.8f,%.3f\n","pos llh (deg,m) base",
             pos[0]*R2D,pos[1]*R2D,pos[2]);
@@ -1114,7 +1124,7 @@ static void probserv(vt_t *vt)
         for (j=0;j<2;j++) printvt(vt,"%12.2f",obs[i].P[j]);
         for (j=0;j<2;j++) printvt(vt,"%13.2f",obs[i].L[j]);
         for (j=0;j<2;j++) printvt(vt,"%8.2f" ,obs[i].D[j]);
-        for (j=0;j<2;j++) printvt(vt,"%2.0f" ,obs[i].SNR[j]*0.25);
+        for (j=0;j<2;j++) printvt(vt,"%3.0f" ,obs[i].SNR[j]*0.25);
         for (j=0;j<2;j++) printvt(vt,"%2d"   ,obs[i].LLI[j]);
         printvt(vt,"\n");
     }
@@ -1123,27 +1133,30 @@ static void probserv(vt_t *vt)
 static void prnavidata(vt_t *vt)
 {
     eph_t eph[MAXSAT];
+    geph_t geph[MAXPRNGLO];
     double ion[8],utc[4];
     gtime_t time;
     char id[32],s1[64],s2[64],s3[64];
-    int i,valid,sys,prn,leaps;
+    int i,valid,prn,leaps;
     
     trace(4,"prnavidata:\n");
     
     rtksvrlock(&svr);
     time=svr.rtk.sol.time;
     for (i=0;i<MAXSAT;i++) eph[i]=svr.nav.eph[i];
+    for (i=0;i<MAXPRNGLO;i++) geph[i]=svr.nav.geph[i];
     for (i=0;i<8;i++) ion[i]=svr.nav.ion_gps[i];
     for (i=0;i<4;i++) utc[i]=svr.nav.utc_gps[i];
     leaps=svr.nav.leaps;
     rtksvrunlock(&svr);
     
     printvt(vt,"\n");
-    printvt(vt,"SAT Stat   IOD  Acc SVH        Toe                 Toc                Ttrans        L2C L2P\n");
+    printvt(vt,"SAT   S IOD C/F A/A SVH        Toe                 Toc                 Ttr/Tof      L2C L2P\n");
     for (i=0;i<MAXSAT;i++) {
-        valid=eph[i].toe.time!=0&&!eph[i].svh&&fabs(timediff(time,eph[i].toe))<=MAXDTOE;
-        sys=satsys(i+1,&prn);
-        if (sys!=SYS_GPS&&sys!=SYS_GAL&&sys!=SYS_QZS) continue;
+        if (!(satsys(i+1,&prn)&(SYS_GPS|SYS_GAL|SYS_QZS))||
+            eph[i].sat!=i+1) continue;
+        valid=eph[i].toe.time!=0&&!eph[i].svh&&
+              fabs(timediff(time,eph[i].toe))<=MAXDTOE;
         satno2id(i+1,id);
         if (eph[i].toe.time!=0) time2str(eph[i].toe,s1,0); else strcpy(s1,"-");
         if (eph[i].toc.time!=0) time2str(eph[i].toc,s2,0); else strcpy(s2,"-");
@@ -1152,9 +1165,21 @@ static void prnavidata(vt_t *vt)
                 id,valid?"OK":"-",eph[i].iode,eph[i].iodc,eph[i].sva,eph[i].svh,
                 s1,s2,s3,eph[i].code,eph[i].flag);
     }
+    for (i=0;i<MAXSAT;i++) {
+        if (!(satsys(i+1,&prn)&SYS_GLO)||geph[prn-1].sat!=i+1) continue;
+        valid=geph[prn-1].toe.time!=0&&!geph[prn-1].svh&&
+              fabs(timediff(time,geph[prn-1].toe))<=MAXDTOE_GLO;
+        satno2id(i+1,id);
+        if (geph[prn-1].toe.time!=0) time2str(geph[prn-1].toe,s1,0); else strcpy(s1,"-");
+        if (geph[prn-1].tof.time!=0) time2str(geph[prn-1].tof,s2,0); else strcpy(s2,"-");
+        printvt(vt,"%3s %3s %3d %3d %3d  %02X %19s %19s %19s %3d %3d\n",
+                id,valid?"OK":"-",geph[prn-1].iode,geph[prn-1].frq,
+                geph[prn-1].age,geph[prn].svh,s1,"-",s2,0,0);
+    }
     printvt(vt,"ION: %9.2E %9.2E %9.2E %9.2E %9.2E %9.2E %9.2E %9.2E\n",
             ion[0],ion[1],ion[2],ion[3],ion[4],ion[5],ion[6],ion[7]);
-    printvt(vt,"UTC: %9.2E %9.2E %9.2E %9.2E LEAPS: %d\n",utc[0],utc[1],utc[2],utc[3],leaps);
+    printvt(vt,"UTC: %9.2E %9.2E %9.2E %9.2E  LEAPS: %d\n",utc[0],utc[1],utc[2],
+            utc[3],leaps);
 }
 /* print error/warning messages ----------------------------------------------*/
 static void prerror(vt_t *vt)
@@ -1531,7 +1556,7 @@ static void cmdshell(vt_t *vt)
         "navidata","stream","error","option","set","load","save","log","help",
         "?","exit","shutdown",""
     };
-    int i,j,narg,ret;
+    int i,j,narg;
     char buff[MAXCMD],*args[MAXARG],*p;
     
     trace(3,"cmdshell:\n");
@@ -1545,7 +1570,7 @@ static void cmdshell(vt_t *vt)
         if (!inpvt(vt,buff,sizeof(buff))) continue;
         
         if (buff[0]=='!') { /* shell escape */
-            ret=cmd_exec(buff+1,vt);
+            cmd_exec(buff+1,vt);
             continue;
         }
         /* parse command */
@@ -1738,7 +1763,9 @@ int main(int argc, char **argv)
     if (start&&!startsvr(&vt)) return -1;
     
     signal(SIGINT, sigint);     /* keyboard interrupt */
-    signal(SIGUSR2,sigshut);    /* external shutdown signal */
+    signal(SIGTERM,sigshut);    /* external shutdown signal */
+    signal(SIGUSR2,sigshut);
+    signal(SIGHUP ,SIG_IGN);
     signal(SIGPIPE,SIG_IGN);
     
     while (!(intflg&2)) {
