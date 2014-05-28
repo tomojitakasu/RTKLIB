@@ -199,10 +199,10 @@ static int rescode(int iter, const obsd_t *obs, int n, const double *rs,
                    const double *dts, const double *vare, const int *svh,
                    const nav_t *nav, const double *x, const prcopt_t *opt,
                    double *v, double *H, double *var, double *azel, int *vsat,
-                   double *resp)
+                   double *resp, int *ns)
 {
     double r,dion,dtrp,vmeas,vion,vtrp,rr[3],pos[3],dtr,e[3],P;
-    int i,j,nv=0,sys,mask[3]={0};
+    int i,j,nv=0,sys,mask[4]={0};
 	
     trace(3,"resprng : n=%d\n",n);
     
@@ -210,7 +210,7 @@ static int rescode(int iter, const obsd_t *obs, int n, const double *rs,
     
     ecef2pos(rr,pos);
     
-    for (i=0;i<n&&i<MAXOBS;i++) {
+    for (i=*ns=0;i<n&&i<MAXOBS;i++) {
         vsat[i]=0; azel[i*2]=azel[1+i*2]=resp[i]=0.0;
         
         if (!(sys=satsys(obs[i].sat,NULL))) continue;
@@ -248,11 +248,12 @@ static int rescode(int iter, const obsd_t *obs, int n, const double *rs,
         for (j=0;j<NX;j++) H[j+nv*NX]=j<3?-e[j]:(j==3?1.0:0.0);
         
         /* time system and receiver bias offset correction */
-        if      (sys==SYS_GLO) {v[nv]-=x[4]; H[4+nv*NX]=1.0; mask[0]=1;}
-        else if (sys==SYS_GAL) {v[nv]-=x[5]; H[5+nv*NX]=1.0; mask[1]=1;}
-        else if (sys==SYS_CMP) {v[nv]-=x[6]; H[6+nv*NX]=1.0; mask[2]=1;}
+        if      (sys==SYS_GLO) {v[nv]-=x[4]; H[4+nv*NX]=1.0; mask[1]=1;}
+        else if (sys==SYS_GAL) {v[nv]-=x[5]; H[5+nv*NX]=1.0; mask[2]=1;}
+        else if (sys==SYS_CMP) {v[nv]-=x[6]; H[6+nv*NX]=1.0; mask[3]=1;}
+        else mask[0]=1;
         
-        vsat[i]=1; resp[i]=v[nv];
+        vsat[i]=1; resp[i]=v[nv]; (*ns)++;
         
         /* error variance */
         var[nv++]=varerr(opt,azel[1+i*2],sys)+vare[i]+vmeas+vion+vtrp;
@@ -261,11 +262,11 @@ static int rescode(int iter, const obsd_t *obs, int n, const double *rs,
               azel[i*2]*R2D,azel[1+i*2]*R2D,resp[i],sqrt(var[nv-1]));
     }
     /* constraint to avoid rank-deficient */
-    for (i=0;i<3;i++) {
+    for (i=0;i<4;i++) {
         if (mask[i]) continue;
         v[nv]=0.0;
-        for (j=0;j<NX;j++) H[j+nv*NX]=j==i+4?1.0:0.0;
-        var[nv++]=1E4;
+        for (j=0;j<NX;j++) H[j+nv*NX]=j==i+3?1.0:0.0;
+        var[nv++]=0.01;
     }
     return nv;
 }
@@ -306,18 +307,19 @@ static int estpos(const obsd_t *obs, int n, const double *rs, const double *dts,
                   double *resp, char *msg)
 {
     double x[NX]={0},dx[NX],Q[NX*NX],*v,*H,*var,sig;
-    int i,j,k,info,stat,nv;
+    int i,j,k,info,stat,nv,ns;
     
     trace(3,"estpos  : n=%d\n",n);
     
-    v=mat(n+3,1); H=mat(NX,n+3); var=mat(n+3,1);
+    v=mat(n+4,1); H=mat(NX,n+4); var=mat(n+4,1);
     
     for (i=0;i<3;i++) x[i]=sol->rr[i];
     
     for (i=0;i<MAXITR;i++) {
         
         /* pseudorange residuals */
-        nv=rescode(i,obs,n,rs,dts,vare,svh,nav,x,opt,v,H,var,azel,vsat,resp);
+        nv=rescode(i,obs,n,rs,dts,vare,svh,nav,x,opt,v,H,var,azel,vsat,resp,
+                   &ns);
         
         if (nv<NX) {
             sprintf(msg,"lack of valid sats ns=%d",nv);
@@ -348,7 +350,7 @@ static int estpos(const obsd_t *obs, int n, const double *rs, const double *dts,
             sol->qr[3]=(float)Q[1];    /* cov xy */
             sol->qr[4]=(float)Q[2+NX]; /* cov yz */
             sol->qr[5]=(float)Q[2];    /* cov zx */
-            sol->ns=(unsigned char)nv;
+            sol->ns=(unsigned char)ns;
             sol->age=sol->ratio=0.0;
             
             /* validate solution */
