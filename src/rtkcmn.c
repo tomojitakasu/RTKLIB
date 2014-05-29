@@ -97,6 +97,7 @@
 *           2014/04/27 1.26 add SYS_LEO for satellite system
 *                           add BDS L1 code for RINEX 3.02 and RTCM 3.2
 *                           support BDS L1 in satwavelen()
+*           2014/05/29 1.27 fix bug on obs2code() to search obs code table
 *-----------------------------------------------------------------------------*/
 #define _POSIX_C_SOURCE 199309
 #include <stdarg.h>
@@ -208,7 +209,7 @@ static char *obscodes[]={       /* observation code strings */
     "1A","1B","1X","1Z","2C", "2D","2S","2L","2X","2P", /* 10-19 */
     "2W","2Y","2M","2N","5I", "5Q","5X","7I","7Q","7X", /* 20-29 */
     "6A","6B","6C","6X","6Z", "6S","6L","8L","8Q","8X", /* 30-39 */
-    "2I","2Q","6I","6Q","3I", "3Q","3X","1I","1Q"       /* 40-49 */
+    "2I","2Q","6I","6Q","3I", "3Q","3X","1I","1Q",""    /* 40-49 */
 };
 static unsigned char obsfreqs[]={ /* 1:L1,2:L2,3:L5,4:L6,5:L7,6:L8,7:L3 */
     
