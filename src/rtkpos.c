@@ -29,6 +29,7 @@
 *           2013/03/10 1.12 add otl and pole tides corrections
 *           2014/05/26 1.13 support beidou and galileo
 *                           add output of gal-gps and bds-gps time offset
+*           2014/05/28 1.14 fix bug on memory exception with many sys and freq
 *-----------------------------------------------------------------------------*/
 #include <stdarg.h>
 #include "rtklib.h"
@@ -982,7 +983,7 @@ static int ddres(rtk_t *rtk, const nav_t *nav, double dt, const double *x,
     prcopt_t *opt=&rtk->opt;
     double bl,dr[3],posu[3],posr[3],didxi=0.0,didxj=0.0,*im;
     double *tropr,*tropu,*dtdxr,*dtdxu,*Ri,*Rj,s,lami,lamj,fi,fj,df,*Hi=NULL;
-    int i,j,k,m,f,ff,nv=0,nb[NFREQ*2*2+2]={0},b=0,sysi,sysj,nf=NF(opt);
+    int i,j,k,m,f,ff,nv=0,nb[NFREQ*4*2+2]={0},b=0,sysi,sysj,nf=NF(opt);
     
     trace(3,"ddres   : dt=%.1f nx=%d ns=%d\n",dt,rtk->nx,ns);
     

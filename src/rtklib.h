@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * rtklib.h : rtklib constants, types and function prototypes
 *
-*          Copyright (C) 2007-2013 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2007-2014 by T.TAKASU, All rights reserved.
 *
 * options : -DENAGLO   enable GLONASS
 *           -DENAGAL   enable Galileo
@@ -48,7 +48,7 @@ extern "C" {
 
 #define VER_RTKLIB  "2.4.2"             /* library version */
 
-#define PATCH_LEVEL "p5"                /* patch level */
+#define PATCH_LEVEL "p7"                /* patch level */
 
 #define COPYRIGHT_RTKLIB \
             "Copyright (C) 2007-2014 by T.Takasu\nAll rights reserved."
