@@ -362,11 +362,20 @@ static void *strsvrthread(void *arg)
     unsigned int tick,ticknmea;
     int i,n;
     
+#if MAXPERCMD > 0
+	int tickpercmds[MAXPERCMD];
+#endif
+    
     tracet(3,"strsvrthread:\n");
     
     svr->state=1;
     svr->tick=tickget();
     ticknmea=svr->tick-1000;
+#if MAXPERCMD > 0
+	for (i=0; i<MAXPERCMD;i++) {
+		tickpercmds[i]=svr->tick;
+	}
+#endif
     
     while (svr->state) {
         tick=tickget();
@@ -388,6 +397,20 @@ static void *strsvrthread(void *arg)
             strsendnmea(svr->stream,svr->nmeapos);
             ticknmea=tick;
         }
+
+#if MAXPERCMD > 0
+		if (svr->percmdsperiods!=NULL && svr->percmds!=NULL) {
+			for (i=0; i<MAXPERCMD;i++) {
+				if (svr->percmdsperiods[i]>0&&
+					(int)(tick-tickpercmds[i])>=svr->percmdsperiods[i]) {
+
+					strsendcmd(svr->stream,svr->percmds[i]);
+					tickpercmds[i]=tick;
+				}
+			}
+		}
+#endif
+
         lock(&svr->lock);
         for (i=0;i<n&&svr->npb<svr->buffsize;i++) {
             svr->pbuf[svr->npb++]=svr->buff[i];
@@ -419,6 +442,10 @@ extern void strsvrinit(strsvr_t *svr, int nout)
     svr->cycle=0;
     svr->buffsize=0;
     svr->nmeacycle=0;
+#if MAXPERCMD > 0
+	svr->percmds=NULL;
+	svr->percmdsperiods=NULL;
+#endif
     svr->npb=0;
     for (i=0;i<3;i++) svr->nmeapos[i]=0.0;
     svr->buff=svr->pbuf=NULL;

@@ -206,6 +206,9 @@ extern "C" {
 #define MAXDTOE_S   86400.0             /* max time difference to ephem toe (s) for other */
 #define MAXGDOP     300.0               /* max GDOP */
 
+#define MAXPERCMD	5					/* max number of periodic commands per input stream */
+#define MINPERIODCMD 1000               /* min period of periodic commands in ms */
+
 #define MAXEXFILE   100                 /* max number of expanded files */
 #define MAXSBSAGEF  30.0                /* max age of SBAS fast correction (s) */
 #define MAXSBSAGEL  1800.0              /* max age of SBAS long term corr (s) */
@@ -1178,6 +1181,10 @@ typedef struct {        /* stream server type */
     int cycle;          /* server cycle (ms) */
     int buffsize;       /* input/monitor buffer size (bytes) */
     int nmeacycle;      /* NMEA request cycle (ms) (0:no) */
+#if MAXPERCMD > 0
+	int* percmdsperiods;//TODO
+	char** percmds;     //TODO
+#endif
     int nstr;           /* number of streams (1 input + (nstr-1) outputs */
     int npb;            /* data length in peek buffer (bytes) */
     double nmeapos[3];  /* NMEA request position (ecef) (m) */

@@ -5,7 +5,7 @@ object CmdOptDialog: TCmdOptDialog
   BorderStyle = bsDialog
   Caption = 'Serial/TCP Commands'
   ClientHeight = 264
-  ClientWidth = 318
+  ClientWidth = 632
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -40,7 +40,7 @@ object CmdOptDialog: TCmdOptDialog
     Left = 2
     Top = 2
     Width = 151
-    Height = 17
+    Height = 16
     Caption = 'Commands at startup'
     TabOrder = 2
     OnClick = ChkOpenCmdClick
@@ -49,7 +49,7 @@ object CmdOptDialog: TCmdOptDialog
     Left = 2
     Top = 120
     Width = 157
-    Height = 17
+    Height = 16
     Caption = 'Commands at shutdown'
     TabOrder = 4
     OnClick = ChkCloseCmdClick
@@ -89,6 +89,42 @@ object CmdOptDialog: TCmdOptDialog
     Caption = '&Save...'
     TabOrder = 7
     OnClick = BtnSaveClick
+  end
+  object ChkPerCmd: TCheckBox
+    Left = 224
+    Top = 2
+    Width = 110
+    Height = 16
+    Alignment = taLeftJustify
+    Caption = 'Periodic commands'
+    TabOrder = 8
+    OnClick = ChkPerCmdClick
+  end
+  object PerCmdTable: TStringGrid
+    Left = 321
+    Top = 18
+    Width = 303
+    Height = 238
+    Hint = 'Use Ctrl+Enter to make wordwraping'
+    ColCount = 2
+    DefaultRowHeight = 36
+    DefaultDrawing = False
+    FixedCols = 0
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goDrawFocusSelected, goRowSizing, goColSizing, goEditing, goAlwaysShowEditor, goThumbTracking]
+    ParentFont = False
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 9
+    Visible = False
+    OnDrawCell = PerCmdTableDrawCell
+    ColWidths = (
+      62
+      230)
   end
   object SaveDialog: TSaveDialog
     Filter = 'Command File (*.cmd)|*.cmd|All File (*.*)|*.*'

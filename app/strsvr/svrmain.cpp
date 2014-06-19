@@ -208,7 +208,17 @@ void __fastcall TMainForm::BtnCmdClick(TObject *Sender)
         CmdOptDialog->CmdEna[0]=CmdEnaTcp[0];
         CmdOptDialog->CmdEna[1]=CmdEnaTcp[1];
     }
+
+#if MAXPERCMD > 0
+	CmdOptDialog->PerCmdsEna=PerCmdsEna;
+	for (int i=0;i<MAXPERCMD;i++) {
+		CmdOptDialog->PerCmds[i]=PerCmds[i];
+		CmdOptDialog->PerCmdsPeriods[i]=PerCmdsPeriods[i];
+	}
+#endif
+
     if (CmdOptDialog->ShowModal()!=mrOk) return;
+
     if (Input->ItemIndex==0) {
         Cmds[0]  =CmdOptDialog->Cmds[0];
         Cmds[1]  =CmdOptDialog->Cmds[1];
@@ -221,6 +231,15 @@ void __fastcall TMainForm::BtnCmdClick(TObject *Sender)
         CmdEnaTcp[0]=CmdOptDialog->CmdEna[0];
         CmdEnaTcp[1]=CmdOptDialog->CmdEna[1];
     }
+
+#if MAXPERCMD > 0
+	PerCmdsEna=CmdOptDialog->PerCmdsEna;
+	for (int i = 0; i < MAXPERCMD; i++) {
+		PerCmds[i]=CmdOptDialog->PerCmds[i];
+		PerCmdsPeriods[i]=CmdOptDialog->PerCmdsPeriods[i];
+	}
+#endif
+
 }
 // callback on button-output1-opt -------------------------------------------
 void __fastcall TMainForm::BtnOutput1Click(TObject *Sender)
@@ -475,6 +494,20 @@ void __fastcall TMainForm::SvrStart(void)
     opt[5]=NmeaReq?SvrOpt[5]:0;
     opt[6]=FileSwapMargin;
     
+#if MAXPERCMD > 0
+	//Periodic commands
+	if (PerCmdsEna > 0) {
+		strsvr.percmdsperiods = MainForm->PerCmdsPeriods;
+		for (int i=0;i<MAXPERCMD;i++) {
+			PerCmdsChar[i]=MainForm->PerCmds[i].c_str();
+		}
+		strsvr.percmds = MainForm->PerCmdsChar;
+	} else {
+		strsvr.percmdsperiods=NULL;
+		strsvr.percmds=NULL;
+	}
+#endif
+    
     for (int i=1;i<4;i++) {
         if (strs[i]!=STR_FILE) continue;
         strcpy(filepath,paths[i]);
@@ -685,6 +718,18 @@ void __fastcall TMainForm::LoadOpt(void)
             if ((p=strstr(p,"@@"))) strncpy(p,"\r\n",2); else break;
         }
     }
+
+#if MAXPERCMD > 0
+	PerCmdsEna = ini->ReadInteger("commands","PerCmdsEna", 0);
+	for (int i = 0; i < MAXPERCMD; i++) {
+		PerCmdsPeriods[i]=ini->ReadInteger("commands",s.sprintf("PerCmdsPeriods_%d",i), 0);
+		PerCmds[i]=ini->ReadString("commands",s.sprintf("PerCmds_%d",i),"");
+			for (char *p=PerCmds[i].c_str();*p;p++) {
+				if ((p=strstr(p,"@@"))) strncpy(p,"\r\n",2); else break;
+			}
+	}
+#endif
+
     for (int i=0;i<MAXHIST;i++) {
         TcpHistory[i]=ini->ReadString("tcpopt",s.sprintf("history%d",i),"");
     }
@@ -756,6 +801,19 @@ void __fastcall TMainForm::SaveOpt(void)
     for (int i=0;i<MAXHIST;i++) {
         ini->WriteString("tcpopt",s.sprintf("mntphist%d",i),TcpOptDialog->MntpHist[i]);
     }
+
+#if MAXPERCMD > 0
+	ini->WriteInteger("commands","PerCmdsEna",PerCmdsEna);
+	for (int i = 0; i < MAXPERCMD; i++) {
+		for (char *p=PerCmds[i].c_str();*p;p++) {
+			if ((p=strstr(p,"\r\n"))) strncpy(p,"@@",2); else break;
+		}
+
+		ini->WriteInteger("commands",s.sprintf("PerCmdsPeriods_%d",i),PerCmdsPeriods[i]);
+		ini->WriteString("commands",s.sprintf("PerCmds_%d",i),PerCmds[i]);
+	}
+#endif
+
     ini->WriteString("stapos","staposfile"    ,StaPosFile    );
     ini->WriteString("dirs"  ,"exedirectory"  ,ExeDirectory  );
     ini->WriteString("dirs"  ,"localdirectory",LocalDirectory);

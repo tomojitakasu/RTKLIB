@@ -123,6 +123,11 @@ private:
 	AnsiString StaPosFile,ExeDirectory,LocalDirectory,SwapInterval;
 	AnsiString ProxyAddress;
 	AnsiString ConvMsg[3],ConvOpt[3],AntType,RcvType;
+#if MAXPERCMD > 0
+	AnsiString PerCmds[MAXPERCMD];
+	char *PerCmdsChar[MAXPERCMD];
+	int PerCmdsPeriods[MAXPERCMD],PerCmdsEna;
+#endif
 	int ConvEna[3],ConvInp[3],ConvOut[3],StaId,StaSel;
 	int TraceLevel,SvrOpt[6],CmdEna[2],CmdEnaTcp[2],NmeaReq,FileSwapMargin;
 	double AntPos[3],AntOff[3];
