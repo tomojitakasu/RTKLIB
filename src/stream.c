@@ -2186,6 +2186,9 @@ extern void strsendcmd(stream_t *str, const char *cmd)
             else if (!strncmp(msg+1,"LEXR",3)) { /* lex receiver */
                 if ((m=gen_lexr(msg+5,buff))>0) strwrite(str,buff,m);
             }
+			else if (!strncmp(msg+1,"HEX",3)) { /* common hex data as is */
+				if ((m=gen_hex(msg+4,buff))>0) strwrite(str,buff,m);
+			}
         }
         else {
             strwrite(str,(unsigned char *)msg,n);
@@ -2193,4 +2196,35 @@ extern void strsendcmd(stream_t *str, const char *cmd)
         }
         if (*q=='\0') break; else p=q+1;
     }
+}
+
+/* generate hex message -------------------------------------------------
+* generate hex message from message string
+* args   : char  *msg   I      message string
+*          unsigned char *buff O hex message
+* return : length of hex message (0: error)
+*-----------------------------------------------------------------------------*/
+int gen_hex(const char *msg, unsigned char *buff)
+{
+    unsigned char *q=buff;
+	char mbuff[1024],*args[256],*p;
+    unsigned int byte;
+    int iRate,n,narg=0;
+    unsigned char ui100Ms;
+
+	trace(4,"gen_hex: msg=%s\n",msg);
+
+    strcpy(mbuff,msg);
+    for (p=strtok(mbuff," ");p&&narg<256;p=strtok(NULL," ")) {
+        args[narg++]=p;
+	}
+
+	for (n=0;(n<narg);n++) {
+		if (sscanf(args[n], "%2x",&byte))
+			*q++=(unsigned char)byte;
+	}
+
+	n=(int)(q-buff);
+
+	return n;
 }

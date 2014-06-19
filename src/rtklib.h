@@ -1608,6 +1608,7 @@ extern void strsendcmd(stream_t *stream, const char *cmd);
 extern void strsettimeout(stream_t *stream, int toinact, int tirecon);
 extern void strsetdir(const char *dir);
 extern void strsetproxy(const char *addr);
+int gen_hex(const char *msg, unsigned char *buff);
 
 /* integer ambiguity resolution ----------------------------------------------*/
 extern int lambda(int n, int m, const double *a, const double *Q, double *F,
