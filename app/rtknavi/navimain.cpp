@@ -1893,7 +1893,7 @@ void __fastcall TMainForm::LoadOpt(void)
             }
         }
         #if MAXPERCMD > 0
-            PerCmdsEna[i]=ini->ReadInteger("serial","percmdsena", 0);
+            PerCmdsEna[i]=ini->ReadInteger("serial",s.sprintf("percmdsena_%d",i), 0);
             for (j=0;j<MAXPERCMD;j++) {
                 PerCmdsPeriods[i][j]=ini->ReadInteger("serial",s.sprintf("percmdsperiods_%d_%d",i,j), 0);
                 PerCmds[i][j]=ini->ReadString("serial",s.sprintf("percmds_%d_%d",i,j),"");
@@ -1912,7 +1912,7 @@ void __fastcall TMainForm::LoadOpt(void)
             }
         }
         #if MAXPERCMD > 0
-            PerCmdsEnaTcp[i]=ini->ReadInteger("tcpip","percmdsena", 0);
+            PerCmdsEnaTcp[i]=ini->ReadInteger("tcpip",s.sprintf("percmdsena_%d",i), 0);
             for (j=0;j<MAXPERCMD;j++) {
                 PerCmdsPeriodsTcp[i][j]=ini->ReadInteger("tcpip",s.sprintf("percmdsperiods_%d_%d",i,j), 0);
                 PerCmdsTcp[i][j]=ini->ReadString("tcpip",s.sprintf("percmds_%d_%d",i,j),"");
@@ -2108,7 +2108,7 @@ void __fastcall TMainForm::SaveOpt(void)
             ini->WriteInteger("serial",s.sprintf("cmdena_%d_%d",i,j),CmdEna[i][j]);
         }
         #if MAXPERCMD > 0
-            ini->WriteInteger("serial","percmdsena",PerCmdsEna[i]);
+            ini->WriteInteger("serial",s.sprintf("percmdsena_%d",i),PerCmdsEna[i]);
             for (j=0;j<MAXPERCMD;j++) {
                 for (char *p=PerCmds[i][j].c_str();*p;p++) {
                     if ((p=strstr(p,"\r\n"))) strncpy(p,"@@",2); else break;
@@ -2128,7 +2128,7 @@ void __fastcall TMainForm::SaveOpt(void)
             ini->WriteInteger("tcpip",s.sprintf("cmdena_%d_%d",i,j),CmdEnaTcp[i][j]);
         }
         #if MAXPERCMD > 0
-            ini->WriteInteger("tcpip","percmdsena",PerCmdsEnaTcp[i]);
+            ini->WriteInteger("tcpip",s.sprintf("percmdsena_%d",i),PerCmdsEnaTcp[i]);
             for (j=0;j<MAXPERCMD;j++) {
                 for (char *p=PerCmdsTcp[i][j].c_str();*p;p++) {
                     if ((p=strstr(p,"\r\n"))) strncpy(p,"@@",2); else break;
