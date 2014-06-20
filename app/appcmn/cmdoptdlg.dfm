@@ -5,7 +5,7 @@ object CmdOptDialog: TCmdOptDialog
   BorderStyle = bsDialog
   Caption = 'Serial/TCP Commands'
   ClientHeight = 264
-  ClientWidth = 336
+  ClientWidth = 318
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
