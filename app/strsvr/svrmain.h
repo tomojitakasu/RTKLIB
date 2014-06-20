@@ -127,6 +127,9 @@ private:
 	AnsiString PerCmds[MAXPERCMD];
 	char *PerCmdsChar[MAXPERCMD];
 	int PerCmdsPeriods[MAXPERCMD],PerCmdsEna;
+    AnsiString PerCmdsTcp[MAXPERCMD];
+	char *PerCmdsCharTcp[MAXPERCMD];
+	int PerCmdsPeriodsTcp[MAXPERCMD],PerCmdsEnaTcp;
 #endif
 	int ConvEna[3],ConvInp[3],ConvOut[3],StaId,StaSel;
 	int TraceLevel,SvrOpt[6],CmdEna[2],CmdEnaTcp[2],NmeaReq,FileSwapMargin;
