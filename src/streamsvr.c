@@ -398,18 +398,18 @@ static void *strsvrthread(void *arg)
             ticknmea=tick;
         }
 
-#if MAXPERCMD > 0
-		if (svr->percmdsperiods!=NULL && svr->percmds!=NULL) {
-			for (i=0; i<MAXPERCMD;i++) {
-				if (svr->percmdsperiods[i]>0&&
-					(int)(tick-tickpercmds[i])>=svr->percmdsperiods[i]) {
-
-					strsendcmd(svr->stream,svr->percmds[i]);
-					tickpercmds[i]=tick;
+		#if MAXPERCMD > 0
+			/* write periodic messages to input stream */
+			if (svr->percmdsperiods!=NULL && svr->percmds!=NULL) {
+				for (i=0;i<MAXPERCMD;i++) {
+					if (svr->percmdsperiods[i]>0&&
+						(int)(tick-tickpercmds[i])>=svr->percmdsperiods[i]) {
+						strsendcmd(svr->stream,svr->percmds[i]);
+						tickpercmds[i]=tick;
+					}
 				}
 			}
-		}
-#endif
+		#endif
 
         lock(&svr->lock);
         for (i=0;i<n&&svr->npb<svr->buffsize;i++) {

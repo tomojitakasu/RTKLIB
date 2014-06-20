@@ -125,11 +125,10 @@ private:
 	AnsiString ConvMsg[3],ConvOpt[3],AntType,RcvType;
 #if MAXPERCMD > 0
 	AnsiString PerCmds[MAXPERCMD];
-	char *PerCmdsChar[MAXPERCMD];
 	int PerCmdsPeriods[MAXPERCMD],PerCmdsEna;
     AnsiString PerCmdsTcp[MAXPERCMD];
-	char *PerCmdsCharTcp[MAXPERCMD];
 	int PerCmdsPeriodsTcp[MAXPERCMD],PerCmdsEnaTcp;
+	char *PerCmdsChar[MAXPERCMD];
 #endif
 	int ConvEna[3],ConvInp[3],ConvOut[3],StaId,StaSel;
 	int TraceLevel,SvrOpt[6],CmdEna[2],CmdEnaTcp[2],NmeaReq,FileSwapMargin;

@@ -402,11 +402,23 @@ void __fastcall TMainForm::BtnInputStrClick(TObject *Sender)
         /* Paths[0]:serial,[1]:tcp,[2]:file,[3]:ftp */
         for (j=0;j<4;j++) InputStrDialog->Paths[i][j]=Paths[i][j];
     }
-    for (i=0;i<3;i++) for (j=0;j<2;j++) {
-        InputStrDialog->CmdEna   [i][j]=CmdEna   [i][j];
-        InputStrDialog->Cmds     [i][j]=Cmds     [i][j];
-        InputStrDialog->CmdEnaTcp[i][j]=CmdEnaTcp[i][j];
-        InputStrDialog->CmdsTcp  [i][j]=CmdsTcp  [i][j];
+    for (i=0;i<3;i++) {
+        for (j=0;j<2;j++) {
+            InputStrDialog->CmdEna   [i][j]=CmdEna   [i][j];
+            InputStrDialog->Cmds     [i][j]=Cmds     [i][j];
+            InputStrDialog->CmdEnaTcp[i][j]=CmdEnaTcp[i][j];
+            InputStrDialog->CmdsTcp  [i][j]=CmdsTcp  [i][j];
+        }
+        #if MAXPERCMD > 0
+            InputStrDialog->PerCmdsEna[i]=PerCmdsEna[i];
+            InputStrDialog->PerCmdsEnaTcp[i]=PerCmdsEnaTcp[i];
+            for (j=0;j<MAXPERCMD;j++) {
+                InputStrDialog->PerCmds[i][j]=PerCmds[i][j];
+                InputStrDialog->PerCmdsPeriods[i][j]=PerCmdsPeriods[i][j];
+                InputStrDialog->PerCmdsTcp[i][j]=PerCmdsTcp[i][j];
+                InputStrDialog->PerCmdsPeriodsTcp[i][j]=PerCmdsPeriodsTcp[i][j];
+            }    
+        #endif
     }
     for (i=0;i<10;i++) {
         InputStrDialog->History [i]=History [i];
@@ -428,11 +440,23 @@ void __fastcall TMainForm::BtnInputStrClick(TObject *Sender)
         RcvOpt [i]=InputStrDialog->RcvOpt[i];
         for (j=0;j<4;j++) Paths[i][j]=InputStrDialog->Paths[i][j];
     }
-    for (i=0;i<3;i++) for (j=0;j<2;j++) {
-        CmdEna   [i][j]=InputStrDialog->CmdEna   [i][j];
-        Cmds     [i][j]=InputStrDialog->Cmds     [i][j];
-        CmdEnaTcp[i][j]=InputStrDialog->CmdEnaTcp[i][j];
-        CmdsTcp  [i][j]=InputStrDialog->CmdsTcp  [i][j];
+    for (i=0;i<3;i++) {
+        for (j=0;j<2;j++) {
+            CmdEna   [i][j]=InputStrDialog->CmdEna   [i][j];
+            Cmds     [i][j]=InputStrDialog->Cmds     [i][j];
+            CmdEnaTcp[i][j]=InputStrDialog->CmdEnaTcp[i][j];
+            CmdsTcp  [i][j]=InputStrDialog->CmdsTcp  [i][j];
+        }
+        #if MAXPERCMD > 0
+            PerCmdsEna[i]=InputStrDialog->PerCmdsEna[i];
+            PerCmdsEnaTcp[i]=InputStrDialog->PerCmdsEnaTcp[i];
+            for (j=0;j<MAXPERCMD;j++) {
+                PerCmds[i][j]=InputStrDialog->PerCmds[i][j];
+                PerCmdsPeriods[i][j]=InputStrDialog->PerCmdsPeriods[i][j];
+                PerCmdsTcp[i][j]=InputStrDialog->PerCmdsTcp[i][j];
+                PerCmdsPeriodsTcp[i][j]=InputStrDialog->PerCmdsPeriodsTcp[i][j];
+            }    
+        #endif
     }
     for (i=0;i<10;i++) {
         History [i]=InputStrDialog->History [i];
@@ -855,10 +879,34 @@ void __fastcall TMainForm::SvrStart(void)
     for (i=0;i<3;i++) {
         if (strs[i]==STR_SERIAL) {
             if (CmdEna[i][0]) cmds[i]=Cmds[i][0].c_str();
+            #if MAXPERCMD > 0
+                if (PerCmdsEna[i] > 0) {
+                    rtksvr.percmdsperiods[i] = MainForm->PerCmdsPeriods[i];
+                    for (int j=0;j<MAXPERCMD;j++) {
+                        PerCmdsChar[i][j]=MainForm->PerCmds[i][j].c_str();
+                    }
+                    rtksvr.percmds[i] = MainForm->PerCmdsChar[i];
+                } else {
+                    rtksvr.percmdsperiods[i]=NULL;
+                    rtksvr.percmds[i]=NULL;
+                }
+            #endif    
         }
         else if (strs[i]==STR_TCPCLI||strs[i]==STR_TCPSVR||
                  strs[i]==STR_NTRIPCLI) {
             if (CmdEnaTcp[i][0]) cmds[i]=CmdsTcp[i][0].c_str();
+            #if MAXPERCMD > 0
+                if (PerCmdsEnaTcp[i] > 0) {
+                    rtksvr.percmdsperiods[i] = MainForm->PerCmdsPeriodsTcp[i];
+                    for (int j=0;j<MAXPERCMD;j++) {
+                        PerCmdsChar[i][j]=MainForm->PerCmdsTcp[i][j].c_str();
+                    }
+                    rtksvr.percmds[i] = MainForm->PerCmdsChar[i];
+                } else {
+                    rtksvr.percmdsperiods[i]=NULL;
+                    rtksvr.percmds[i]=NULL;
+                }
+            #endif 
         }
         rcvopts[i]=RcvOpt[i].c_str();
     }
@@ -1836,19 +1884,43 @@ void __fastcall TMainForm::LoadOpt(void)
     for (i=0;i<3;i++) {
         RcvOpt [i]=ini->ReadString("stream",s.sprintf("rcvopt%d",i+1),"");
     }
-    for (i=0;i<3;i++) for (j=0;j<2;j++) {
-        Cmds[i][j]=ini->ReadString("serial",s.sprintf("cmd_%d_%d",i,j),"");
-        CmdEna[i][j]=ini->ReadInteger("serial",s.sprintf("cmdena_%d_%d",i,j),0);
-        for (p=Cmds[i][j].c_str();*p;p++) {
-            if ((p=strstr(p,"@@"))) strncpy(p,"\r\n",2); else break;
+    for (i=0;i<3;i++) {
+        for (j=0;j<2;j++) {
+            Cmds[i][j]=ini->ReadString("serial",s.sprintf("cmd_%d_%d",i,j),"");
+            CmdEna[i][j]=ini->ReadInteger("serial",s.sprintf("cmdena_%d_%d",i,j),0);
+            for (p=Cmds[i][j].c_str();*p;p++) {
+                if ((p=strstr(p,"@@"))) strncpy(p,"\r\n",2); else break;
+            }
         }
+        #if MAXPERCMD > 0
+            PerCmdsEna[i]=ini->ReadInteger("serial","percmdsena", 0);
+            for (j=0;j<MAXPERCMD;j++) {
+                PerCmdsPeriods[i][j]=ini->ReadInteger("serial",s.sprintf("percmdsperiods_%d_%d",i,j), 0);
+                PerCmds[i][j]=ini->ReadString("serial",s.sprintf("percmds_%d_%d",i,j),"");
+                    for (char *p=PerCmds[i][j].c_str();*p;p++) {
+                        if ((p=strstr(p,"@@"))) strncpy(p,"\r\n",2); else break;
+                    }
+            }
+        #endif
     }
-    for (i=0;i<3;i++) for (j=0;j<2;j++) {
-        CmdsTcp[i][j]=ini->ReadString("tcpip",s.sprintf("cmd_%d_%d",i,j),"");
-        CmdEnaTcp[i][j]=ini->ReadInteger("tcpip",s.sprintf("cmdena_%d_%d",i,j),0);
-        for (p=CmdsTcp[i][j].c_str();*p;p++) {
-            if ((p=strstr(p,"@@"))) strncpy(p,"\r\n",2); else break;
+    for (i=0;i<3;i++) {
+        for (j=0;j<2;j++) {
+            CmdsTcp[i][j]=ini->ReadString("tcpip",s.sprintf("cmd_%d_%d",i,j),"");
+            CmdEnaTcp[i][j]=ini->ReadInteger("tcpip",s.sprintf("cmdena_%d_%d",i,j),0);
+            for (p=CmdsTcp[i][j].c_str();*p;p++) {
+                if ((p=strstr(p,"@@"))) strncpy(p,"\r\n",2); else break;
+            }
         }
+        #if MAXPERCMD > 0
+            PerCmdsEnaTcp[i]=ini->ReadInteger("tcpip","percmdsena", 0);
+            for (j=0;j<MAXPERCMD;j++) {
+                PerCmdsPeriodsTcp[i][j]=ini->ReadInteger("tcpip",s.sprintf("percmdsperiods_%d_%d",i,j), 0);
+                PerCmdsTcp[i][j]=ini->ReadString("tcpip",s.sprintf("percmds_%d_%d",i,j),"");
+                    for (char *p=PerCmdsTcp[i][j].c_str();*p;p++) {
+                        if ((p=strstr(p,"@@"))) strncpy(p,"\r\n",2); else break;
+                    }
+            }
+        #endif
     }
     PrcOpt.mode     =ini->ReadInteger("prcopt", "mode",            0);
     PrcOpt.nf       =ini->ReadInteger("prcopt", "nf",              2);
@@ -2027,19 +2099,45 @@ void __fastcall TMainForm::SaveOpt(void)
     for (i=0;i<3;i++) {
         ini->WriteString("stream",s.sprintf("rcvopt%d",i+1),RcvOpt[i]);
     }
-    for (i=0;i<3;i++) for (j=0;j<2;j++) {
-        for (p=Cmds[i][j].c_str();*p;p++) {
-            if ((p=strstr(p,"\r\n"))) strncpy(p,"@@",2); else break;
+    for (i=0;i<3;i++) {
+        for (j=0;j<2;j++) {
+            for (p=Cmds[i][j].c_str();*p;p++) {
+                if ((p=strstr(p,"\r\n"))) strncpy(p,"@@",2); else break;
+            }
+            ini->WriteString ("serial",s.sprintf("cmd_%d_%d"   ,i,j),Cmds  [i][j]);
+            ini->WriteInteger("serial",s.sprintf("cmdena_%d_%d",i,j),CmdEna[i][j]);
         }
-        ini->WriteString ("serial",s.sprintf("cmd_%d_%d"   ,i,j),Cmds  [i][j]);
-        ini->WriteInteger("serial",s.sprintf("cmdena_%d_%d",i,j),CmdEna[i][j]);
+        #if MAXPERCMD > 0
+            ini->WriteInteger("serial","percmdsena",PerCmdsEna[i]);
+            for (j=0;j<MAXPERCMD;j++) {
+                for (char *p=PerCmds[i][j].c_str();*p;p++) {
+                    if ((p=strstr(p,"\r\n"))) strncpy(p,"@@",2); else break;
+                }
+
+                ini->WriteInteger("serial",s.sprintf("percmdsperiods_%d_%d",i,j),PerCmdsPeriods[i][j]);
+                ini->WriteString("serial",s.sprintf("percmds_%d_%d",i,j),PerCmds[i][j]);
+            }
+        #endif
     }
-    for (i=0;i<3;i++) for (j=0;j<2;j++) {
-        for (p=CmdsTcp[i][j].c_str();*p;p++) {
-            if ((p=strstr(p,"\r\n"))) strncpy(p,"@@",2); else break;
+    for (i=0;i<3;i++) {
+        for (j=0;j<2;j++) {
+            for (p=CmdsTcp[i][j].c_str();*p;p++) {
+                if ((p=strstr(p,"\r\n"))) strncpy(p,"@@",2); else break;
+            }
+            ini->WriteString ("tcpip",s.sprintf("cmd_%d_%d"   ,i,j),CmdsTcp  [i][j]);
+            ini->WriteInteger("tcpip",s.sprintf("cmdena_%d_%d",i,j),CmdEnaTcp[i][j]);
         }
-        ini->WriteString ("tcpip",s.sprintf("cmd_%d_%d"   ,i,j),CmdsTcp  [i][j]);
-        ini->WriteInteger("tcpip",s.sprintf("cmdena_%d_%d",i,j),CmdEnaTcp[i][j]);
+        #if MAXPERCMD > 0
+            ini->WriteInteger("tcpip","percmdsena",PerCmdsEnaTcp[i]);
+            for (j=0;j<MAXPERCMD;j++) {
+                for (char *p=PerCmdsTcp[i][j].c_str();*p;p++) {
+                    if ((p=strstr(p,"\r\n"))) strncpy(p,"@@",2); else break;
+                }
+
+                ini->WriteInteger("tcpip",s.sprintf("percmdsperiods_%d_%d",i,j),PerCmdsPeriodsTcp[i][j]);
+                ini->WriteString("tcpip",s.sprintf("percmds_%d_%d",i,j),PerCmdsTcp[i][j]);
+            }
+        #endif
     }
     ini->WriteInteger("prcopt", "mode",       PrcOpt.mode        );
     ini->WriteInteger("prcopt", "nf",         PrcOpt.nf          );

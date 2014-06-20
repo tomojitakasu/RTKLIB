@@ -22,6 +22,7 @@ __fastcall TCmdOptDialog::TCmdOptDialog(TComponent* Owner)
 	PerCmdTable->RowHeights[0] = 22;
 	PerCmdTable->Cells[0][0] = "Period (ms)";
 	PerCmdTable->Cells[1][0] = "Command";
+    ChkPerCmd->Visible = True;
 #endif
 }
 //---------------------------------------------------------------------------

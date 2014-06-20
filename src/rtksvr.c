@@ -382,12 +382,22 @@ static void *rtksvrthread(void *arg)
     unsigned int tick,ticknmea;
     unsigned char *p,*q;
     int i,j,n,fobs[3]={0},cycle,cputime;
+#if MAXPERCMD > 0
+	int tickpercmds[3][MAXPERCMD];
+#endif
     
     tracet(3,"rtksvrthread:\n");
     
     svr->state=1; obs.data=data;
     svr->tick=tickget();
     ticknmea=svr->tick-1000;
+#if MAXPERCMD > 0
+	for (i=0; i<3;i++) {
+        for (j=0; j<MAXPERCMD;j++) {
+            tickpercmds[i][j]=svr->tick;
+        }
+    }
+#endif
     
     for (cycle=0;svr->state;cycle++) {
         tick=tickget();
@@ -466,6 +476,22 @@ static void *rtksvrthread(void *arg)
             }
             ticknmea=tick;
         }
+
+        #if MAXPERCMD > 0
+        for (i=0;i<3;i++) {
+            /* send periodic commands to input streams */
+            if (svr->percmdsperiods[i]!=NULL&&svr->percmds[i]!=NULL) {
+                for (j=0;j<MAXPERCMD;j++) {
+                    if (svr->percmdsperiods[i][j]>0&&
+                        (int)(tick-tickpercmds[i][j])>=svr->percmdsperiods[i][j]) {
+                        strsendcmd(svr->stream+i,svr->percmds[i][j]);
+                        tickpercmds[i][j]=tick;
+                    }
+                }
+            }
+        }
+        #endif
+
         if ((cputime=(int)(tickget()-tick))>0) svr->cputime=cputime;
         
         /* sleep until next cycle */

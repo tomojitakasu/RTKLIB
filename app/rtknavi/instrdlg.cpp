@@ -91,7 +91,6 @@ void __fastcall TInputStrDialog::StreamC1Click(TObject *Sender)
 	UpdateEnable();
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TInputStrDialog::StreamC2Click(TObject *Sender)
 {
 	UpdateEnable();
@@ -179,88 +178,73 @@ void __fastcall TInputStrDialog::BtnStr3Click(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TInputStrDialog::BtnCmd1Click(TObject *Sender)
 {
-	if (Stream1->ItemIndex==0) {
-		CmdOptDialog->Cmds  [0]=Cmds  [0][0];
-		CmdOptDialog->Cmds  [1]=Cmds  [0][1];
-		CmdOptDialog->CmdEna[0]=CmdEna[0][0];
-		CmdOptDialog->CmdEna[1]=CmdEna[0][1];
-	}
-	else {
-		CmdOptDialog->Cmds  [0]=CmdsTcp  [0][0];
-		CmdOptDialog->Cmds  [1]=CmdsTcp  [0][1];
-		CmdOptDialog->CmdEna[0]=CmdEnaTcp[0][0];
-		CmdOptDialog->CmdEna[1]=CmdEnaTcp[0][1];
-	}
-	if (CmdOptDialog->ShowModal()!=mrOk) return;
-	if (Stream1->ItemIndex==0) {
-		Cmds  [0][0]=CmdOptDialog->Cmds  [0];
-		Cmds  [0][1]=CmdOptDialog->Cmds  [1];
-		CmdEna[0][0]=CmdOptDialog->CmdEna[0];
-		CmdEna[0][1]=CmdOptDialog->CmdEna[1];
-	}
-	else {
-		CmdsTcp  [0][0]=CmdOptDialog->Cmds  [0];
-		CmdsTcp  [0][1]=CmdOptDialog->Cmds  [1];
-		CmdEnaTcp[0][0]=CmdOptDialog->CmdEna[0];
-		CmdEnaTcp[0][1]=CmdOptDialog->CmdEna[1];
-	}
+    BtnCmdClick(0, Stream1->ItemIndex);
 }
 //---------------------------------------------------------------------------
 void __fastcall TInputStrDialog::BtnCmd2Click(TObject *Sender)
 {
-	if (Stream2->ItemIndex==0) {
-		CmdOptDialog->Cmds  [0]=Cmds  [1][0];
-		CmdOptDialog->Cmds  [1]=Cmds  [1][1];
-		CmdOptDialog->CmdEna[0]=CmdEna[1][0];
-		CmdOptDialog->CmdEna[1]=CmdEna[1][1];
-	}
-	else {
-		CmdOptDialog->Cmds  [0]=CmdsTcp  [1][0];
-		CmdOptDialog->Cmds  [1]=CmdsTcp  [1][1];
-		CmdOptDialog->CmdEna[0]=CmdEnaTcp[1][0];
-		CmdOptDialog->CmdEna[1]=CmdEnaTcp[1][1];
-	}
-	if (CmdOptDialog->ShowModal()!=mrOk) return;
-	if (Stream2->ItemIndex==0) {
-		Cmds  [1][0]=CmdOptDialog->Cmds  [0];
-		Cmds  [1][1]=CmdOptDialog->Cmds  [1];
-		CmdEna[1][0]=CmdOptDialog->CmdEna[0];
-		CmdEna[1][1]=CmdOptDialog->CmdEna[1];
-	}
-	else {
-		CmdsTcp  [1][0]=CmdOptDialog->Cmds  [0];
-		CmdsTcp  [1][1]=CmdOptDialog->Cmds  [1];
-		CmdEnaTcp[1][0]=CmdOptDialog->CmdEna[0];
-		CmdEnaTcp[1][1]=CmdOptDialog->CmdEna[1];
-	}
+    BtnCmdClick(1, Stream2->ItemIndex);
 }
 //---------------------------------------------------------------------------
 void __fastcall TInputStrDialog::BtnCmd3Click(TObject *Sender)
 {
-	if (Stream3->ItemIndex==0) {
-		CmdOptDialog->Cmds  [0]=Cmds  [2][0];
-		CmdOptDialog->Cmds  [1]=Cmds  [2][1];
-		CmdOptDialog->CmdEna[0]=CmdEna[2][0];
-		CmdOptDialog->CmdEna[1]=CmdEna[2][1];
+    BtnCmdClick(2, Stream3->ItemIndex);    
+}
+//---------------------------------------------------------------------------
+void __fastcall TInputStrDialog::BtnCmdClick(int btnInd, int streamInd)
+{
+	if (streamInd==0) {
+		CmdOptDialog->Cmds  [0]=Cmds  [btnInd][0];
+		CmdOptDialog->Cmds  [1]=Cmds  [btnInd][1];
+		CmdOptDialog->CmdEna[0]=CmdEna[btnInd][0];
+		CmdOptDialog->CmdEna[1]=CmdEna[btnInd][1];
+        #if MAXPERCMD > 0
+            CmdOptDialog->PerCmdsEna=PerCmdsEna[btnInd];
+            for (int j=0;j<MAXPERCMD;j++) {
+                CmdOptDialog->PerCmds[j]=PerCmds[btnInd][j];
+                CmdOptDialog->PerCmdsPeriods[j]=PerCmdsPeriods[btnInd][j];
+            }
+        #endif
 	}
 	else {
-		CmdOptDialog->Cmds  [0]=CmdsTcp  [2][0];
-		CmdOptDialog->Cmds  [1]=CmdsTcp  [2][1];
-		CmdOptDialog->CmdEna[0]=CmdEnaTcp[2][0];
-		CmdOptDialog->CmdEna[1]=CmdEnaTcp[2][1];
+		CmdOptDialog->Cmds  [0]=CmdsTcp  [btnInd][0];
+		CmdOptDialog->Cmds  [1]=CmdsTcp  [btnInd][1];
+		CmdOptDialog->CmdEna[0]=CmdEnaTcp[btnInd][0];
+		CmdOptDialog->CmdEna[1]=CmdEnaTcp[btnInd][1];
+        #if MAXPERCMD > 0
+            CmdOptDialog->PerCmdsEna=PerCmdsEnaTcp[btnInd];
+            for (int j=0;j<MAXPERCMD;j++) {
+                CmdOptDialog->PerCmds[j]=PerCmdsTcp[btnInd][j];
+                CmdOptDialog->PerCmdsPeriods[j]=PerCmdsPeriodsTcp[btnInd][j];
+            }
+        #endif
 	}
 	if (CmdOptDialog->ShowModal()!=mrOk) return;
-	if (Stream3->ItemIndex==0) {
-		Cmds  [2][0]=CmdOptDialog->Cmds  [0];
-		Cmds  [2][1]=CmdOptDialog->Cmds  [1];
-		CmdEna[2][0]=CmdOptDialog->CmdEna[0];
-		CmdEna[2][1]=CmdOptDialog->CmdEna[1];
+	if (streamInd==0) {
+		Cmds  [btnInd][0]=CmdOptDialog->Cmds  [0];
+		Cmds  [btnInd][1]=CmdOptDialog->Cmds  [1];
+		CmdEna[btnInd][0]=CmdOptDialog->CmdEna[0];
+		CmdEna[btnInd][1]=CmdOptDialog->CmdEna[1];
+        #if MAXPERCMD > 0
+            PerCmdsEna[btnInd]=CmdOptDialog->PerCmdsEna;
+            for (int j=0;j<MAXPERCMD;j++) {
+                PerCmds[btnInd][j]=CmdOptDialog->PerCmds[j];
+                PerCmdsPeriods[btnInd][j]=CmdOptDialog->PerCmdsPeriods[j];
+            }
+        #endif
 	}
 	else {
-		CmdsTcp  [2][0]=CmdOptDialog->Cmds  [0];
-		CmdsTcp  [2][1]=CmdOptDialog->Cmds  [1];
-		CmdEnaTcp[2][0]=CmdOptDialog->CmdEna[0];
-		CmdEnaTcp[2][1]=CmdOptDialog->CmdEna[1];
+		CmdsTcp  [btnInd][0]=CmdOptDialog->Cmds  [0];
+		CmdsTcp  [btnInd][1]=CmdOptDialog->Cmds  [1];
+		CmdEnaTcp[btnInd][0]=CmdOptDialog->CmdEna[0];
+		CmdEnaTcp[btnInd][1]=CmdOptDialog->CmdEna[1];
+        #if MAXPERCMD > 0
+            PerCmdsEnaTcp[btnInd]=CmdOptDialog->PerCmdsEna;
+            for (int j=0;j<MAXPERCMD;j++) {
+                PerCmdsTcp[btnInd][j]=CmdOptDialog->PerCmds[j];
+                PerCmdsPeriodsTcp[btnInd][j]=CmdOptDialog->PerCmdsPeriods[j];
+            }
+        #endif
 	}
 }
 //---------------------------------------------------------------------------

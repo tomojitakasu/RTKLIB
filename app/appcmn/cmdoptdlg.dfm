@@ -5,7 +5,7 @@ object CmdOptDialog: TCmdOptDialog
   BorderStyle = bsDialog
   Caption = 'Serial/TCP Commands'
   ClientHeight = 264
-  ClientWidth = 632
+  ClientWidth = 336
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -98,6 +98,7 @@ object CmdOptDialog: TCmdOptDialog
     Alignment = taLeftJustify
     Caption = 'Periodic commands'
     TabOrder = 8
+    Visible = False
     OnClick = ChkPerCmdClick
   end
   object PerCmdTable: TStringGrid
@@ -115,7 +116,7 @@ object CmdOptDialog: TCmdOptDialog
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
-    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goDrawFocusSelected, goRowSizing, goColSizing, goEditing, goAlwaysShowEditor, goThumbTracking]
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goDrawFocusSelected, goRowSizing, goColSizing, goEditing, goTabs, goAlwaysShowEditor, goThumbTracking]
     ParentFont = False
     ParentShowHint = False
     ShowHint = True

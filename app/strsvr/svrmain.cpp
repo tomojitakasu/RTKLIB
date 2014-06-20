@@ -519,9 +519,9 @@ void __fastcall TMainForm::SvrStart(void)
             if (PerCmdsEnaTcp > 0) {
                 strsvr.percmdsperiods = MainForm->PerCmdsPeriodsTcp;
                 for (int i=0;i<MAXPERCMD;i++) {
-                    PerCmdsCharTcp[i]=MainForm->PerCmdsTcp[i].c_str();
+                    PerCmdsChar[i]=MainForm->PerCmdsTcp[i].c_str();
                 }
-                strsvr.percmds = MainForm->PerCmdsCharTcp;
+                strsvr.percmds = MainForm->PerCmdsChar;
             } else {
                 strsvr.percmdsperiods=NULL;
                 strsvr.percmds=NULL;
@@ -739,8 +739,8 @@ void __fastcall TMainForm::LoadOpt(void)
         }
     }
     #if MAXPERCMD > 0
-        PerCmdsEna = ini->ReadInteger("serial","percmdsena", 0);
-        for (int i = 0; i < MAXPERCMD; i++) {
+        PerCmdsEna=ini->ReadInteger("serial","percmdsena", 0);
+        for (int i=0;i<MAXPERCMD;i++) {
             PerCmdsPeriods[i]=ini->ReadInteger("serial",s.sprintf("percmdsperiods_%d",i), 0);
             PerCmds[i]=ini->ReadString("serial",s.sprintf("percmds_%d",i),"");
                 for (char *p=PerCmds[i].c_str();*p;p++) {
@@ -755,8 +755,8 @@ void __fastcall TMainForm::LoadOpt(void)
         }
     }
     #if MAXPERCMD > 0
-        PerCmdsEnaTcp = ini->ReadInteger("tcpip","percmdsena", 0);
-        for (int i = 0; i < MAXPERCMD; i++) {
+        PerCmdsEnaTcp=ini->ReadInteger("tcpip","percmdsena", 0);
+        for (int i=0;i<MAXPERCMD;i++) {
             PerCmdsPeriodsTcp[i]=ini->ReadInteger("tcpip",s.sprintf("percmdsperiods_%d",i), 0);
             PerCmdsTcp[i]=ini->ReadString("tcpip",s.sprintf("percmds_%d",i),"");
                 for (char *p=PerCmds[i].c_str();*p;p++) {

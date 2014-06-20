@@ -220,7 +220,13 @@ public:
 	AnsiString TLESatFileF,LocalDirectory,PntName[MAXMAPPNT];
 	double PntPos[MAXMAPPNT][3];
 	int NMapPnt;
-	
+    #if MAXPERCMD > 0
+        AnsiString PerCmds[3][MAXPERCMD];
+        int PerCmdsPeriods[3][MAXPERCMD],PerCmdsEna[3];
+        AnsiString PerCmdsTcp[3][MAXPERCMD];
+        int PerCmdsPeriodsTcp[3][MAXPERCMD],PerCmdsEnaTcp[3];
+        char *PerCmdsChar[3][MAXPERCMD];
+    #endif
 	__fastcall TMainForm(TComponent* Owner);
 };
 //---------------------------------------------------------------------------

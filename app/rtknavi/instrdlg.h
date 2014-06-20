@@ -86,6 +86,7 @@ private:
 	void __fastcall TcpOpt(int index, int opt);
 	void __fastcall FtpOpt(int index, int opt);
 	void __fastcall UpdateEnable(void);
+    void __fastcall BtnCmdClick(int btnInd, int streamInd);
 public:
 	int StreamC[3],Stream[3],Format[3],CmdEna[3][2],CmdEnaTcp[3][2];
 	int NmeaReq,TimeTag,NRcv;
@@ -93,6 +94,13 @@ public:
 	AnsiString Paths[3][4],Cmds[3][2],CmdsTcp[3][2],TimeStart,TimeSpeed;
 	AnsiString RcvOpt[3];
 	AnsiString History[10],MntpHist[10];
+    #if MAXPERCMD > 0
+        AnsiString PerCmds[3][MAXPERCMD];
+        int PerCmdsPeriods[3][MAXPERCMD],PerCmdsEna[3];
+        AnsiString PerCmdsTcp[3][MAXPERCMD];
+        int PerCmdsPeriodsTcp[3][MAXPERCMD],PerCmdsEnaTcp[3];
+        char *PerCmdsChar[3][MAXPERCMD];
+    #endif
 	__fastcall TInputStrDialog(TComponent* Owner);
 };
 //---------------------------------------------------------------------------
