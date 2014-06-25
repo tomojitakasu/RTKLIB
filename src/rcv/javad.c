@@ -964,6 +964,104 @@ static int decode_nd(raw_t *raw, int sys)
     }
     return 0;
 }
+
+/*<MODIFY>*/
+#if 1
+/* decode glonass L1 raw navigation data -------------------------------------*/
+static int decode_gloL1nav(raw_t *raw, int sat, int prn, int frq, unsigned char *buff)
+{
+    geph_t geph={0};
+    unsigned char *subfrm,*p;
+    unsigned int word[4];
+    int i,id=(U4((unsigned char*)buff)>>20)&0xF;
+
+    if (id==0) {
+        trace(2,"navigation string number format error: id=%d\n",id);
+        return 0;
+    }
+
+    if (id>4) return 0; /* sport ephemeris only */
+
+    subfrm=raw->subfrm[sat-1];
+
+    p=subfrm+(id-1)*10;
+
+    for(i=0;i<4;i++)word[i]=U4((unsigned char*)buff+4*i);
+
+    p[0]=  ((word[0]>>17)&0xFF);
+    p[1]=  ((word[0]>> 9)&0xFF);
+    p[2]=  ((word[0]>> 1)&0xFF);
+    p[3]= (((word[0]    )&0x01) << 7) | ((word[1]>>18)&0x7F);
+    p[4]=  ((word[1]>>10)&0xFF);
+    p[5]=  ((word[1]>> 2)&0xFF);
+    p[6]= (((word[1]    )&0x03) << 6) | ((word[2]>>19)&0x3F);
+    p[7]=  ((word[2]>>11)&0xFF);
+    p[8]=  ((word[2]>> 3)&0xFF);
+    p[9]= (((word[2]    )&0x07) << 5) |(((word[3]>>23)&0x03) << 3);
+
+    if (id==4) { /* ephemeris */
+
+        /* decode glonass ephemeris strings */
+        if (!decode_glostr(raw,sat,frq,&geph)) return -1;
+
+        if (!strstr(raw->opt,"-EPHALL")) {
+            if (geph.iode==raw->nav.geph[prn-1].iode) return 0; /* unchanged */
+        }
+        raw->nav.geph[prn-1]=geph;
+        raw->ephsat=sat;
+        return 2;
+    }
+    return 0;
+}
+
+/* decode [LD] glonass raw navigation data -----------------------------------*/
+static int decode_LD(raw_t *raw)
+{
+    trace(2,"javad LD not supported\n");
+    
+    return 0;
+}
+/* decode [lD] glonass raw navigation data -----------------------------------*/
+static int decode_lD(raw_t *raw)
+{
+    unsigned char *p=raw->buff+5;
+    char *msg;
+    int sat,prn,frq,time,type,len;
+
+    if (!checksum(raw->buff,raw->len)) {
+        trace(2,"javad nd checksum error: len=%d\n",raw->len);
+        return -1;
+    }
+    trace(3,"decode_*d: prn=%3d\n",U1(p));
+    
+    prn =U1(p); p+=1;
+    frq =I1(p); p+=1;
+    time=U4(p); p+=4;
+    type=U1(p); p+=1;
+    len =U1(p); p+=1;
+
+    if (raw->len!=14+len*4) {
+        trace(2,"javad nd length error: len=%d\n",raw->len);
+        return -1;
+    }
+    if (raw->outtype) {
+        msg=raw->msgtype+strlen(raw->msgtype);
+        sprintf(msg," prn=%3d frq=%2d time=%7d type=%d",prn,frq,time,type);
+    }
+    if (!(sat=satno(SYS_GLO,prn))) {
+        trace(2,"javad nd satellite error: prn=%d\n",prn);
+        return 0;
+    }
+    trace(4,"sat=%2d frq=%2d time=%7d type=%d len=%3d\n",sat,frq,time,type,len);
+
+    switch (type) {
+        case 0: return decode_gloL1nav (raw,sat,prn,frq,p); /* glonass L1 NAV */
+        case 1: return 0;                                   /* glonass L3 NAV(not suported)*/
+    }
+    return 0;
+}
+
+#else
 /* decode [LD] glonass raw navigation data -----------------------------------*/
 static int decode_LD(raw_t *raw)
 {
@@ -978,6 +1076,9 @@ static int decode_ID(raw_t *raw)
     
     return 0;
 }
+#endif
+/*</MODIFY>*/
+
 /* decode [WD] waas raw navigation data --------------------------------------*/
 static int decode_WD(raw_t *raw)
 {
@@ -1567,7 +1668,13 @@ static int decode_javad(raw_t *raw)
     if (!strncmp(p,"ED",2)) return decode_nd(raw,SYS_GAL); /* raw navigation data */
     if (!strncmp(p,"cd",2)) return decode_nd(raw,SYS_CMP); /* raw navigation data */
     if (!strncmp(p,"LD",2)) return decode_LD(raw); /* glonass raw navigation data */
+/*<MODIFY>*/
+#if 1
+    if (!strncmp(p,"lD",2)) return decode_lD(raw); /* glonass raw navigation data */
+#else
     if (!strncmp(p,"ID",2)) return decode_ID(raw); /* glonass raw navigation data */
+#endif
+/*</MODIFY>*/
     if (!strncmp(p,"WD",2)) return decode_WD(raw); /* sbas raw navigation data */
     
     if (!strncmp(p,"TC",2)) return decode_TC(raw); /* CA/L1 continuous track time */

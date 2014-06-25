@@ -604,6 +604,16 @@ extern int getbits(const unsigned char *buff, int pos, int len)
     if (len<=0||32<=len||!(bits&(1u<<(len-1)))) return (int)bits;
     return (int)(bits|(~0u<<len)); /* extend sign */
 }
+
+/*<ADD>*/
+/* get sign-magnitude bits ---------------------------------------------------*/
+extern double getbitg(const unsigned char *buff, int pos, int len)
+{
+    double value=getbitu(buff,pos+1,len-1);
+    return getbitu(buff,pos,1)?-value:value;
+}
+/*</ADD>*/
+
 /* set unsigned/signed bits ----------------------------------------------------
 * set unsigned/signed bits to byte data
 * args   : unsigned char *buff IO byte data
