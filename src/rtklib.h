@@ -1470,6 +1470,9 @@ extern int tle_pos(gtime_t time, const char *name, const char *satno,
 /* receiver raw data functions -----------------------------------------------*/
 extern unsigned int getbitu(const unsigned char *buff, int pos, int len);
 extern int          getbits(const unsigned char *buff, int pos, int len);
+/*<ADD>*/
+extern double getbitg(const unsigned char *buff, int pos, int len);
+/*</ADD>*/
 extern void setbitu(unsigned char *buff, int pos, int len, unsigned int data);
 extern void setbits(unsigned char *buff, int pos, int len, int data);
 extern unsigned int crc32  (const unsigned char *buff, int len);
@@ -1478,6 +1481,9 @@ extern unsigned short crc16(const unsigned char *buff, int len);
 extern int decode_word (unsigned int word, unsigned char *data);
 extern int decode_frame(const unsigned char *buff, eph_t *eph, alm_t *alm,
                         double *ion, double *utc, int *leaps);
+/*<ADD>*/
+extern int decode_glostr(raw_t *raw, int sat, int frq, geph_t *geph);
+/*</ADD>*/
 
 extern int init_raw   (raw_t *raw);
 extern void free_raw  (raw_t *raw);

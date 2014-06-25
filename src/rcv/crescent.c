@@ -470,6 +470,8 @@ static int decode_cresgloraw(raw_t *raw)
     raw->obs.n=n;
     return 1;
 }
+/*<DELTE>*/
+#if 0
 /* get sign-magnitude bits ---------------------------------------------------*/
 static double getbitg(const unsigned char *buff, int pos, int len)
 {
@@ -541,6 +543,9 @@ static int decode_glostr(raw_t *raw, int sat, int frq, geph_t *geph)
     geph->toe=utc2gpst(gpst2time(week,tow+toe)); /* utc->gpst */
     return 1;
 }
+#endif
+/*</DELETE>*/
+
 /* decode bin 65 glonass ephemeris -------------------------------------------*/
 static int decode_cresgloeph(raw_t *raw)
 {
