@@ -48,7 +48,7 @@ extern "C" {
 
 #define VER_RTKLIB  "2.4.2"             /* library version */
 
-#define PATCH_LEVEL "p7"                /* patch level */
+#define PATCH_LEVEL "p8"                /* patch level */
 
 #define COPYRIGHT_RTKLIB \
             "Copyright (C) 2007-2014 by T.Takasu\nAll rights reserved."
@@ -1128,7 +1128,7 @@ typedef struct {        /* receiver raw data control type */
     int ephsat;         /* sat number of update ephemeris (0:no satellite) */
     sbsmsg_t sbsmsg;    /* SBAS message */
     char msgtype[256];  /* last message type */
-    unsigned char subfrm[MAXSAT][150];  /* subframe buffer (1-5) */
+    unsigned char subfrm[MAXSAT][380];  /* subframe buffer */
     lexmsg_t lexmsg;    /* LEX message */
     double lockt[MAXSAT][NFREQ+NEXOBS]; /* lock time (s) */
     double icpp[MAXSAT],off[MAXSAT],icpc; /* carrier params for ss2 */
@@ -1478,6 +1478,9 @@ extern unsigned short crc16(const unsigned char *buff, int len);
 extern int decode_word (unsigned int word, unsigned char *data);
 extern int decode_frame(const unsigned char *buff, eph_t *eph, alm_t *alm,
                         double *ion, double *utc, int *leaps);
+extern int decode_glostr(const unsigned char *str, geph_t *geph);
+extern int decode_bds_d1(const unsigned char *buff, eph_t *eph);
+extern int decode_bds_d2(const unsigned char *buff, eph_t *eph);
 
 extern int init_raw   (raw_t *raw);
 extern void free_raw  (raw_t *raw);

@@ -21,9 +21,10 @@
 *           2011/01/10  1.5  change api: rtksvrstart(),rtksvrostat()
 *           2011/06/21  1.6  fix ephemeris handover problem
 *           2012/05/14  1.7  fix bugs
-*           2013/03/28  1.8  fix program on lack of glonass freq number in raw
-*                            fix program on ephemeris with inverted toe
+*           2013/03/28  1.8  fix problem on lack of glonass freq number in raw
+*                            fix problem on ephemeris with inverted toe
 *                            add api rtksvrfree()
+*           2014/06/28  1.9  fix probram on ephemeris update of beidou
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -146,7 +147,9 @@ static void updatesvr(rtksvr_t *svr, int ret, obs_t *obs, nav_t *nav, int sat,
                 eph2=svr->nav.eph+sat-1;
                 eph3=svr->nav.eph+sat-1+MAXSAT;
                 if (eph2->ttr.time==0||
-                    (eph1->iode!=eph3->iode&&eph1->iode!=eph2->iode)) {
+                    (eph1->iode!=eph3->iode&&eph1->iode!=eph2->iode)||
+                    (timediff(eph1->toe,eph3->toe)!=0.0&&
+                     timediff(eph1->toe,eph2->toe)!=0.0)) {
                     *eph3=*eph2;
                     *eph2=*eph1;
                     updatenav(&svr->nav);

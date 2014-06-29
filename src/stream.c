@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * stream.c : stream input/output functions
 *
-*          Copyright (C) 2008-2013 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2008-2014 by T.TAKASU, All rights reserved.
 *
 * options : -DWIN32    use WIN32 API
 *           -DSVR_REUSEADDR reuse tcp server address
@@ -40,6 +40,7 @@
 *           2013/05/28 1.12 fix bug on playback of file with 64 bit size_t
 *           2014/05/23 1.13 retry to connect after gethostbyname() error
 *                           fix bug on malloc size in openftp()
+*           2014/06/21 1.14 add general hex message rcv command by !HEX ...
 *-----------------------------------------------------------------------------*/
 #include <ctype.h>
 #include "rtklib.h"
@@ -2145,6 +2146,25 @@ extern void strsendnmea(stream_t *stream, const double *pos)
     n=outnmea_gga(buff,&sol);
     strwrite(stream,buff,n);
 }
+/* generate general hex message ----------------------------------------------*/
+static int gen_hex(const char *msg, unsigned char *buff)
+{
+    unsigned char *q=buff;
+    char mbuff[1024]="",*args[256],*p;
+    unsigned int byte;
+    int i,narg=0;
+    
+    trace(4,"gen_hex: msg=%s\n",msg);
+    
+    strncpy(mbuff,msg,1023);
+    for (p=strtok(mbuff," ");p&&narg<256;p=strtok(NULL," ")) {
+        args[narg++]=p;
+    }
+    for (i=0;i<narg;i++) {
+        if (sscanf(args[i],"%x",&byte)) *q++=(unsigned char)byte;
+    }
+    return (int)(q-buff);
+}
 /* send receiver command -------------------------------------------------------
 * send receiver commands to stream
 * args   : stream_t *stream I   stream
@@ -2183,8 +2203,11 @@ extern void strsendcmd(stream_t *str, const char *cmd)
             else if (!strncmp(msg+1,"NVS",3)) { /* nvs */
                 if ((m=gen_nvs(msg+4,buff))>0) strwrite(str,buff,m);
             }
-            else if (!strncmp(msg+1,"LEXR",3)) { /* lex receiver */
+            else if (!strncmp(msg+1,"LEXR",4)) { /* lex receiver */
                 if ((m=gen_lexr(msg+5,buff))>0) strwrite(str,buff,m);
+            }
+            else if (!strncmp(msg+1,"HEX",3)) { /* general hex message */
+                if ((m=gen_hex(msg+4,buff))>0) strwrite(str,buff,m);
             }
         }
         else {

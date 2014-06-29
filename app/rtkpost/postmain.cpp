@@ -709,8 +709,8 @@ int __fastcall TMainForm::ExecProc(void)
     if (InputFile3->Text!="") {
         strcpy(infile[n++],InputFile3_Text.c_str());
     }
-    else if ((prcopt.navsys&SYS_GPS)&&!ObsToNav(InputFile1_Text.c_str(),infile[n++])) {
-        showmsg("error: no gps navigation data");
+    else if (!ObsToNav(InputFile1_Text.c_str(),infile[n++])) {
+        showmsg("error: no navigation data");
         return 0;
     }
     if (InputFile4_Text!="") {

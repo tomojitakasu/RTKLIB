@@ -1054,7 +1054,7 @@ static int decode_eph(double ver, int sat, gtime_t toc, const double *data,
         eph->sva=uraindex(data[23]);  /* ura (m->index) */
         
         eph->tgd[0]=   data[25];      /* TGD1 B1/B3 */
-        eph->tgd[1]=   data[26];      /* TGD2 B1/B3 */
+        eph->tgd[1]=   data[26];      /* TGD2 B2/B3 */
     }
     if (eph->iode<0||1023<eph->iode) {
         trace(2,"rinex nav invalid: sat=%2d iode=%d\n",sat,eph->iode);
