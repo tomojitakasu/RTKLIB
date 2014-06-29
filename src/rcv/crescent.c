@@ -21,6 +21,7 @@
 *           2013/02/23 1.6 fix memory access violation problem on arm
 *           2014/05/13 1.7 support bin65 and bin66
 *                          add receiver option -TTCORR
+*           2014/06/21 1.8 move decode_glostr() to rcvraw.c
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -470,77 +471,6 @@ static int decode_cresgloraw(raw_t *raw)
     raw->obs.n=n;
     return 1;
 }
-/* get sign-magnitude bits ---------------------------------------------------*/
-static double getbitg(const unsigned char *buff, int pos, int len)
-{
-    double value=getbitu(buff,pos+1,len-1);
-    return getbitu(buff,pos,1)?-value:value;
-}
-/* decode glonass ephemeris strings ------------------------------------------*/
-static int decode_glostr(raw_t *raw, int sat, int frq, geph_t *geph)
-{
-    double tow,tod,tof,toe;
-    unsigned char *str;
-    int i=1,n1,n2,n3,n4,P,P1,P2,P3,P4,tk_h,tk_m,tk_s,tb,ln,NT,slot,M,week;
-    
-    /* s1=str[0-9],s2=str[10-19],s3=str[20-29],s4=str[30-39],... */
-    str=raw->subfrm[sat-1];
-    n1          =getbitu(str,i, 4);           i+= 4+2;
-    P1          =getbitu(str,i, 2);           i+= 2;
-    tk_h        =getbitu(str,i, 5);           i+= 5;
-    tk_m        =getbitu(str,i, 6);           i+= 6;
-    tk_s        =getbitu(str,i, 1)*30;        i+= 1;
-    geph->vel[0]=getbitg(str,i,24)*P2_20*1E3; i+=24;
-    geph->acc[0]=getbitg(str,i, 5)*P2_30*1E3; i+= 5;
-    geph->pos[0]=getbitg(str,i,27)*P2_11*1E3; i+=27+4;
-    n2          =getbitu(str,i, 4);           i+= 4;
-    geph->svh   =getbitu(str,i, 3);           i+= 3;
-    P2          =getbitu(str,i, 1);           i+= 1;
-    tb          =getbitu(str,i, 7);           i+= 7+5;
-    geph->vel[1]=getbitg(str,i,24)*P2_20*1E3; i+=24;
-    geph->acc[1]=getbitg(str,i, 5)*P2_30*1E3; i+= 5;
-    geph->pos[1]=getbitg(str,i,27)*P2_11*1E3; i+=27+4;
-    n3          =getbitu(str,i, 4);           i+= 4;
-    P3          =getbitu(str,i, 1);           i+= 1;
-    geph->gamn  =getbitg(str,i,11)*P2_40;     i+=11+1;
-    P           =getbitu(str,i, 2);           i+= 2;
-    ln          =getbitu(str,i, 1);           i+= 1;
-    geph->vel[2]=getbitg(str,i,24)*P2_20*1E3; i+=24;
-    geph->acc[2]=getbitg(str,i, 5)*P2_30*1E3; i+= 5;
-    geph->pos[2]=getbitg(str,i,27)*P2_11*1E3; i+=27+4;
-    n4          =getbitu(str,i, 4);           i+= 4;
-    geph->taun  =getbitg(str,i,22)*P2_30;     i+=22;
-    geph->dtaun =getbitg(str,i, 5)*P2_30;     i+= 5;
-    geph->age   =getbitu(str,i, 5);           i+= 5+14;
-    P4          =getbitu(str,i, 1);           i+= 1;
-    geph->sva   =getbitu(str,i, 4);           i+= 4+3;
-    NT          =getbitu(str,i,11);           i+=11;
-    slot        =getbitu(str,i, 5);           i+= 5;
-    M           =getbitu(str,i, 2);
-    
-    if (n1!=1||n2!=2||n3!=3||n4!=4) {
-        trace(2,"decode_glostr: str no error no=%d %d %d %d\n",n1,n2,n3,n4);
-        return 0;
-    }
-    if (sat!=satno(SYS_GLO,slot)) {
-        trace(2,"decode_glostr: slot no error sat=%2d slot=%2d\n",sat,slot);
-        return 0;
-    }
-    geph->sat=sat;
-    geph->frq=frq;
-    geph->iode=tb;
-    tow=time2gpst(gpst2utc(raw->time),&week);
-    tod=fmod(tow,86400.0); tow-=tod;
-    tof=tk_h*3600.0+tk_m*60.0+tk_s-10800.0; /* lt->utc */
-    if      (tof<tod-43200.0) tof+=86400.0;
-    else if (tof>tod+43200.0) tof-=86400.0;
-    geph->tof=utc2gpst(gpst2time(week,tow+tof));
-    toe=tb*900.0-10800.0; /* lt->utc */
-    if      (toe<tod-43200.0) toe+=86400.0;
-    else if (toe>tod+43200.0) toe-=86400.0;
-    geph->toe=utc2gpst(gpst2time(week,tow+toe)); /* utc->gpst */
-    return 1;
-}
 /* decode bin 65 glonass ephemeris -------------------------------------------*/
 static int decode_cresgloeph(raw_t *raw)
 {
@@ -572,7 +502,9 @@ static int decode_cresgloeph(raw_t *raw)
         memcpy(raw->subfrm[sat-1]+10*i,str,10);
     }
     /* decode glonass ephemeris strings */
-    if (!decode_glostr(raw,sat,frq,&geph)) return -1;
+    geph.tof=raw->time;
+    if (!decode_glostr(raw->subfrm[sat-1],&geph)||geph.sat!=sat) return -1;
+    geph.frq=frq;
     
     if (!strstr(raw->opt,"-EPHALL")) {
         if (geph.iode==raw->nav.geph[prn-1].iode) return 0; /* unchanged */

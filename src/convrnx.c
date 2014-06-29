@@ -537,7 +537,7 @@ static void set_obstype(int format, rnxopt_t *opt)
     };
     /* supported codes by others */
     const unsigned char codes_other[6][8]={
-        {CODE_L1C},{CODE_L1C},{0},{0},{CODE_L1C}
+        {CODE_L1C},{CODE_L1C},{CODE_L1C},{CODE_L1C},{CODE_L1C},{CODE_L1I}
     };
     const unsigned char *codes;
     int i;

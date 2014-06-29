@@ -1,11 +1,16 @@
 /*------------------------------------------------------------------------------
 * rcvraw.c : receiver raw data functions
 *
-*          Copyright (C) 2009-2013 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2009-2014 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2014 by T.SUZUKI, All rights reserved.
 *
 * references :
 *     [1] IS-GPS-200D, Navstar GPS Space Segment/Navigation User Interfaces,
 *         7 March, 2006
+*     [2] Global navigation satellite system GLONASS interface control document
+*         navigation radiosignal in bands L1,L2 (version 5.1), 2008
+*     [3] BeiDou satellite navigation system signal in space interface control
+*         document open service signal (version 2.0), December 2013
 *
 * version : $Revision: 1.1 $ $Date: 2008/07/17 21:48:06 $
 * history : 2009/04/10 1.0  new
@@ -15,12 +20,346 @@
 *                           change api decode_frame()
 *           2013/04/11 1.4  fix bug on decode fit interval
 *           2014/01/31 1.5  fix bug on decode fit interval
+*           2014/06/22 1.6  add api decode_glostr()
+*           2014/06/22 1.7  add api decode_bds_d1(), decode_bds_d2()
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
+#include <stdint.h>
 
 static const char rcsid[]="$Id:$";
 
-/* decode navigation data subframe 1 -----------------------------------------*/
+#define P2_66       1.355252715606881E-20 /* 2^-66 for BeiDou ephemeris */
+
+/* get two component bits ----------------------------------------------------*/
+static unsigned int getbitu2(const unsigned char *buff, int p1, int l1, int p2,
+                             int l2)
+{
+    return (getbitu(buff,p1,l1)<<l2)+getbitu(buff,p2,l2);
+}
+static int getbits2(const unsigned char *buff, int p1, int l1, int p2, int l2)
+{
+    if (getbitu(buff,p1,1))
+        return (int)((getbits(buff,p1,l1)<<l2)+getbitu(buff,p2,l2));
+    else
+        return (int)getbitu2(buff,p1,l1,p2,l2);
+}
+/* get three component bits --------------------------------------------------*/
+static unsigned int getbitu3(const unsigned char *buff, int p1, int l1, int p2,
+                             int l2, int p3, int l3)
+{
+    return (getbitu(buff,p1,l1)<<(l2+l3))+(getbitu(buff,p2,l2)<<l3)+
+            getbitu(buff,p3,l3);
+}
+static int getbits3(const unsigned char *buff, int p1, int l1, int p2, int l2,
+                    int p3, int l3)
+{
+    if (getbitu(buff,p1,1))
+        return (int)((getbits(buff,p1,l1)<<(l2+l3))+
+                   (getbitu(buff,p2,l2)<<l3)+getbitu(buff,p3,l3));
+    else
+        return (int)getbitu3(buff,p1,l1,p2,l2,p3,l3);
+}
+/* merge two components ------------------------------------------------------*/
+static unsigned int merge_two_u(unsigned int a, unsigned int b, int n)
+{
+    return (a<<n)+b;
+}
+static int merge_two_s(int a, unsigned int b, int n)
+{
+    return (int)((a<<n)+b);
+}
+/* get sign-magnitude bits ---------------------------------------------------*/
+static double getbitg(const unsigned char *buff, int pos, int len)
+{
+    double value=getbitu(buff,pos+1,len-1);
+    return getbitu(buff,pos,1)?-value:value;
+}
+/* decode BeiDou D1 ephemeris --------------------------------------------------
+* decode BeiDou D1 ephemeris (IGSO/MEO satellites) (ref [3] 5.2)
+* args   : unsigned char *buff I beidou D1 subframe bits
+*                                  buff[ 0- 37]: subframe 1 (300 bits)
+*                                  buff[38- 75]: subframe 2
+*                                  buff[76-113]: subframe 3
+*          eph_t    *eph    IO  ephemeris structure
+* return : status (1:ok,0:error)
+*-----------------------------------------------------------------------------*/
+extern int decode_bds_d1(const unsigned char *buff, eph_t *eph)
+{
+    double toc_bds,sqrtA;
+    unsigned int toe1,toe2,sow1,sow2,sow3;
+    int i,frn1,frn2,frn3;
+    
+    trace(3,"decode_bds_d1:\n");
+    
+    i=8*38*0; /* subframe 1 */
+    frn1       =getbitu (buff,i+ 15, 3);
+    sow1       =getbitu2(buff,i+ 18, 8,i+30,12);
+    eph->svh   =getbitu (buff,i+ 42, 1); /* SatH1 */
+    eph->iodc  =getbitu (buff,i+ 43, 5); /* AODC */
+    eph->sva   =getbitu (buff,i+ 48, 4);
+    eph->week  =getbitu (buff,i+ 60,13); /* week in BDT */
+    toc_bds    =getbitu2(buff,i+ 73, 9,i+ 90, 8)*8.0;
+    eph->tgd[0]=getbits (buff,i+ 98,10)*0.1*1E-9;
+    eph->tgd[1]=getbits2(buff,i+108, 4,i+120, 6)*0.1*1E-9;
+    eph->f2    =getbits (buff,i+214,11)*P2_66;
+    eph->f0    =getbits2(buff,i+225, 7,i+240,17)*P2_33;
+    eph->f1    =getbits2(buff,i+257, 5,i+270,17)*P2_50;
+    eph->iode  =getbitu (buff,i+287, 5); /* AODE */
+    
+    i=8*38*1; /* subframe 2 */
+    frn2       =getbitu (buff,i+ 15, 3);
+    sow2       =getbitu2(buff,i+ 18, 8,i+30,12);
+    eph->deln  =getbits2(buff,i+ 42,10,i+ 60, 6)*P2_43*SC2RAD;
+    eph->cuc   =getbits2(buff,i+ 66,16,i+ 90, 2)*P2_31;
+    eph->M0    =getbits2(buff,i+ 92,20,i+120,12)*P2_31*SC2RAD;
+    eph->e     =getbitu2(buff,i+132,10,i+150,22)*P2_33;
+    eph->cus   =getbits (buff,i+180,18)*P2_31;
+    eph->crc   =getbits2(buff,i+198, 4,i+210,14)*P2_6;
+    eph->crs   =getbits2(buff,i+224, 8,i+240,10)*P2_6;
+    sqrtA      =getbitu2(buff,i+250,12,i+270,20)*P2_19;
+    toe1       =getbitu (buff,i+290, 2); /* TOE 2-MSB */
+    eph->A     =sqrtA*sqrtA;
+    
+    i=8*38*2; /* subframe 3 */
+    frn3       =getbitu (buff,i+ 15, 3);
+    sow3       =getbitu2(buff,i+ 18, 8,i+30,12);
+    toe2       =getbitu2(buff,i+ 42,10,i+ 60, 5); /* TOE 5-LSB */
+    eph->i0    =getbits2(buff,i+ 65,17,i+ 90,15)*P2_31*SC2RAD;
+    eph->cic   =getbits2(buff,i+105, 7,i+120,11)*P2_31;
+    eph->OMGd  =getbits2(buff,i+131,11,i+150,13)*P2_43*SC2RAD;
+    eph->cis   =getbits2(buff,i+163, 9,i+180, 9)*P2_31;
+    eph->idot  =getbits2(buff,i+189,13,i+210, 1)*P2_43*SC2RAD;
+    eph->OMG0  =getbits2(buff,i+211,21,i+240,11)*P2_31*SC2RAD;
+    eph->omg   =getbits2(buff,i+251,11,i+270,21)*P2_31*SC2RAD;
+    eph->toes  =merge_two_u(toe1,toe2,15)*8.0;
+    
+    /* check consistency of subframe numbers, sows and toe/toc */
+    if (frn1!=1||frn2!=2||frn3!=3) {
+        trace(3,"decode_bds_d1 error: frn=%d %d %d\n",frn1,frn2,frn3);
+        return 0;
+    }
+    if (sow2!=sow1+6||sow3!=sow2+6) {
+        trace(3,"decode_bds_d1 error: sow=%d %d %d\n",sow1,sow2,sow3);
+        return 0;
+    }
+    if (toc_bds!=eph->toes) {
+        trace(3,"decode_bds_d1 error: toe=%.0f toc=%.0f\n",eph->toes,toc_bds);
+        return 0;
+    }
+    eph->ttr=bdt2gpst(bdt2time(eph->week,sow1));      /* bdt -> gpst */
+    if      (eph->toes>sow1+302400.0) eph->week++;
+    else if (eph->toes<sow1-302400.0) eph->week--;
+    eph->toe=bdt2gpst(bdt2time(eph->week,eph->toes)); /* bdt -> gpst */
+    eph->toc=bdt2gpst(bdt2time(eph->week,toc_bds));   /* bdt -> gpst */
+    return 1;
+}
+/* decode BeiDou D2 ephemeris --------------------------------------------------
+* decode BeiDou D2 ephemeris (GEO satellites) (ref [3] 5.3)
+* args   : unsigned char *buff I beidou D2 subframe 1 page bits
+*                                  buff[  0- 37]: page 1 (300 bits)
+*                                  buff[ 38- 75]: page 2
+*                                  ...
+*                                  buff[342-379]: page 10
+*          eph_t    *eph    IO  ephemeris structure
+* return : status (1:ok,0:error)
+*-----------------------------------------------------------------------------*/
+extern int decode_bds_d2(const unsigned char *buff, eph_t *eph)
+{
+    double toc_bds,sqrtA;
+    unsigned int f1p4,cucp5,ep6,cicp7,i0p8,OMGdp9,omgp10;
+    unsigned int sow1,sow3,sow4,sow5,sow6,sow7,sow8,sow9,sow10;
+    int i,toe_bds,f1p3,cucp4,ep5,cicp6,i0p7,OMGdp8,omgp9;
+    int pgn1,pgn3,pgn4,pgn5,pgn6,pgn7,pgn8,pgn9,pgn10;
+    
+    trace(3,"decode_bds_d2:\n");
+    
+    i=8*38*0; /* page 1 */
+    pgn1       =getbitu (buff,i+ 42, 4);
+    sow1       =getbitu2(buff,i+ 18, 8,i+ 30,12);
+    eph->svh   =getbitu (buff,i+ 46, 1); /* SatH1 */
+    eph->iodc  =getbitu (buff,i+ 47, 5); /* AODC */
+    eph->sva   =getbitu (buff,i+ 60, 4);
+    eph->week  =getbitu (buff,i+ 64,13); /* week in BDT */
+    toc_bds    =getbitu2(buff,i+ 77, 5,i+ 90,12)*8.0;
+    eph->tgd[0]=getbits (buff,i+102,10)*0.1*1E-9;
+    eph->tgd[1]=getbits (buff,i+120,10)*0.1*1E-9;
+    
+    i=8*38*2; /* page 3 */
+    pgn3       =getbitu (buff,i+ 42, 4);
+    sow3       =getbitu2(buff,i+ 18, 8,i+ 30,12);
+    eph->f0    =getbits2(buff,i+100,12,i+120,12)*P2_33;
+    f1p3       =getbits (buff,i+132,4);
+    
+    i=8*38*3; /* page 4 */
+    pgn4       =getbitu (buff,i+ 42, 4);
+    sow4       =getbitu2(buff,i+ 18, 8,i+ 30,12);
+    f1p4       =getbitu2(buff,i+ 46, 6,i+ 60,12);
+    eph->f2    =getbits2(buff,i+ 72,10,i+ 90, 1)*P2_66;
+    eph->iode  =getbitu (buff,i+ 91, 5); /* AODE */
+    eph->deln  =getbits (buff,i+ 96,16)*P2_43*SC2RAD;
+    cucp4      =getbits (buff,i+120,14);
+    
+    i=8*38*4; /* page 5 */
+    pgn5       =getbitu (buff,i+ 42, 4);
+    sow5       =getbitu2(buff,i+ 18, 8,i+ 30,12);
+    cucp5      =getbitu (buff,i+ 46, 4);
+    eph->M0    =getbits3(buff,i+ 50, 2,i+ 60,22,i+ 90, 8)*P2_31*SC2RAD;
+    eph->cus   =getbits2(buff,i+ 98,14,i+120, 4)*P2_31;
+    ep5        =getbits (buff,i+124,10);
+    
+    i=8*38*5; /* page 6 */
+    pgn6       =getbitu (buff,i+ 42, 4);
+    sow6       =getbitu2(buff,i+ 18, 8,i+ 30,12);
+    ep6        =getbitu2(buff,i+ 46, 6,i+ 60,16);
+    sqrtA      =getbitu3(buff,i+ 76, 6,i+ 90,22,i+120,4)*P2_19;
+    cicp6      =getbits (buff,i+124,10);
+    eph->A     =sqrtA*sqrtA;
+    
+    i=8*38*6; /* page 7 */
+    pgn7       =getbitu (buff,i+ 42, 4);
+    sow7       =getbitu2(buff,i+ 18, 8,i+ 30,12);
+    cicp7      =getbitu2(buff,i+ 46, 6,i+ 60, 2);
+    eph->cis   =getbits (buff,i+ 62,18)*P2_31;
+    eph->toes  =getbitu2(buff,i+ 80, 2,i+ 90,15)*8.0;
+    i0p7       =getbits2(buff,i+105, 7,i+120,14);
+    
+    i=8*38*7; /* page 8 */
+    pgn8       =getbitu (buff,i+ 42, 4);
+    sow8       =getbitu2(buff,i+ 18, 8,i+ 30,12);
+    i0p8       =getbitu2(buff,i+ 46, 6,i+ 60, 5);
+    eph->crc   =getbits2(buff,i+ 65,17,i+ 90, 1)*P2_6;
+    eph->crs   =getbits (buff,i+ 91,18)*P2_6;
+    OMGdp8     =getbits2(buff,i+109, 3,i+120,16);
+    
+    i=8*38*8; /* page 9 */
+    pgn9       =getbitu (buff,i+ 42, 4);
+    sow9       =getbitu2(buff,i+ 18, 8,i+ 30,12);
+    OMGdp9     =getbitu (buff,i+ 46, 5);
+    eph->OMG0  =getbits3(buff,i+ 51, 1,i+ 60,22,i+ 90, 9)*P2_31*SC2RAD;
+    omgp9      =getbits2(buff,i+ 99,13,i+120,14);
+    
+    i=8*38*9; /* page 10 */
+    pgn10      =getbitu (buff,i+ 42, 4);
+    sow10      =getbitu2(buff,i+ 18, 8,i+ 30,12);
+    omgp10     =getbitu (buff,i+ 46, 5);
+    eph->idot  =getbits2(buff,i+ 51, 1,i+ 60,13)*P2_43*SC2RAD;
+    
+    /* check consistency of page numbers, sows and toe/toc */
+    if (pgn1!=1||pgn3!=3||pgn4!=4||pgn5!=5||pgn6!=6||pgn7!=7||pgn8!=8||pgn9!=9||
+        pgn10!=10) {
+        trace(3,"decode_bds_d2 error: pgn=%d %d %d %d %d %d %d %d %d\n",
+              pgn1,pgn3,pgn4,pgn5,pgn6,pgn7,pgn8,pgn9,pgn10);
+        return 0;
+    }
+    if (sow3!=sow1+6||sow4!=sow3+3||sow5!=sow4+3||sow6!=sow5+3||
+        sow7!=sow6+3||sow8!=sow7+3||sow9!=sow8+3||sow10!=sow9+3) {
+        trace(3,"decode_bds_d2 error: sow=%d %d %d %d %d %d %d %d %d\n",
+              sow1,sow3,sow4,sow5,sow6,sow7,sow8,sow9,sow10);
+        return 0;
+    }
+    if (toc_bds!=eph->toes) {
+        trace(3,"decode_bds_d2 error: toe=%.0f toc=%.0f\n",eph->toes,toc_bds);
+        return 0;
+    }
+    eph->f1  =merge_two_s(f1p3  ,f1p4  ,18)*P2_50;
+    eph->cuc =merge_two_s(cucp4 ,cucp5 , 4)*P2_31;
+    eph->e   =merge_two_s(ep5   ,ep6   ,22)*P2_33;
+    eph->cic =merge_two_s(cicp6 ,cicp7 , 8)*P2_31;
+    eph->i0  =merge_two_s(i0p7  ,i0p8  ,11)*P2_31*SC2RAD;
+    eph->OMGd=merge_two_s(OMGdp8,OMGdp9, 5)*P2_43*SC2RAD;
+    eph->omg =merge_two_s(omgp9 ,omgp10, 5)*P2_31*SC2RAD;
+    
+    eph->ttr=bdt2gpst(bdt2time(eph->week,sow1));      /* bdt -> gpst */
+    if      (eph->toes>sow1+302400.0) eph->week++;
+    else if (eph->toes<sow1-302400.0) eph->week--;
+    eph->toe=bdt2gpst(bdt2time(eph->week,eph->toes)); /* bdt -> gpst */
+    eph->toc=bdt2gpst(bdt2time(eph->week,toc_bds));   /* bdt -> gpst */
+    return 1;
+}
+/* decode glonass ephemeris strings --------------------------------------------
+* decode glonass ephemeris string (ref [2])
+* args   : unsigned char *buff I glonass navigation data string bits in frames
+*                                (without hamming and time mark)
+*                                  buff[ 0- 9]: frame 1 (77 bits)
+*                                  buff[10-19]: frame 2
+*                                  buff[20-29]: frame 3
+*                                  buff[30-39]: frame 4
+*          geph_t *geph  IO     glonass ephemeris message
+* return : status (1:ok,0:error)
+* notes  : geph->tof should be set to frame time witin 1/2 day before calling
+*          geph->frq is set to 0
+*-----------------------------------------------------------------------------*/
+extern int decode_glostr(const unsigned char *buff, geph_t *geph)
+{
+    double tow,tod,tof,toe;
+    int P,P1,P2,P3,P4,tk_h,tk_m,tk_s,tb,ln,NT,slot,M,week;
+    int i=1,frn1,frn2,frn3,frn4;
+    
+    trace(3,"decode_glostr:\n");
+    
+    /* frame 1 */
+    frn1        =getbitu(buff,i, 4);           i+= 4+2;
+    P1          =getbitu(buff,i, 2);           i+= 2;
+    tk_h        =getbitu(buff,i, 5);           i+= 5;
+    tk_m        =getbitu(buff,i, 6);           i+= 6;
+    tk_s        =getbitu(buff,i, 1)*30;        i+= 1;
+    geph->vel[0]=getbitg(buff,i,24)*P2_20*1E3; i+=24;
+    geph->acc[0]=getbitg(buff,i, 5)*P2_30*1E3; i+= 5;
+    geph->pos[0]=getbitg(buff,i,27)*P2_11*1E3; i+=27+4;
+    
+    /* frame 2 */
+    frn2        =getbitu(buff,i, 4);           i+= 4;
+    geph->svh   =getbitu(buff,i, 3);           i+= 3;
+    P2          =getbitu(buff,i, 1);           i+= 1;
+    tb          =getbitu(buff,i, 7);           i+= 7+5;
+    geph->vel[1]=getbitg(buff,i,24)*P2_20*1E3; i+=24;
+    geph->acc[1]=getbitg(buff,i, 5)*P2_30*1E3; i+= 5;
+    geph->pos[1]=getbitg(buff,i,27)*P2_11*1E3; i+=27+4;
+    
+    /* frame 3 */
+    frn3        =getbitu(buff,i, 4);           i+= 4;
+    P3          =getbitu(buff,i, 1);           i+= 1;
+    geph->gamn  =getbitg(buff,i,11)*P2_40;     i+=11+1;
+    P           =getbitu(buff,i, 2);           i+= 2;
+    ln          =getbitu(buff,i, 1);           i+= 1;
+    geph->vel[2]=getbitg(buff,i,24)*P2_20*1E3; i+=24;
+    geph->acc[2]=getbitg(buff,i, 5)*P2_30*1E3; i+= 5;
+    geph->pos[2]=getbitg(buff,i,27)*P2_11*1E3; i+=27+4;
+    
+    /* frame 4 */
+    frn4        =getbitu(buff,i, 4);           i+= 4;
+    geph->taun  =getbitg(buff,i,22)*P2_30;     i+=22;
+    geph->dtaun =getbitg(buff,i, 5)*P2_30;     i+= 5;
+    geph->age   =getbitu(buff,i, 5);           i+= 5+14;
+    P4          =getbitu(buff,i, 1);           i+= 1;
+    geph->sva   =getbitu(buff,i, 4);           i+= 4+3;
+    NT          =getbitu(buff,i,11);           i+=11;
+    slot        =getbitu(buff,i, 5);           i+= 5;
+    M           =getbitu(buff,i, 2);
+    
+    if (frn1!=1||frn2!=2||frn3!=3||frn4!=4) {
+        trace(2,"decode_glostr error: frn=%d %d %d %d %d\n",frn1,frn2,frn3,frn4);
+        return 0;
+    }
+    if (!(geph->sat=satno(SYS_GLO,slot))) {
+        trace(2,"decode_glostr error: slot=%d\n",slot);
+        return 0;
+    }
+    geph->frq=0;
+    geph->iode=tb;
+    tow=time2gpst(gpst2utc(geph->tof),&week);
+    tod=fmod(tow,86400.0); tow-=tod;
+    tof=tk_h*3600.0+tk_m*60.0+tk_s-10800.0; /* lt->utc */
+    if      (tof<tod-43200.0) tof+=86400.0;
+    else if (tof>tod+43200.0) tof-=86400.0;
+    geph->tof=utc2gpst(gpst2time(week,tow+tof));
+    toe=tb*900.0-10800.0; /* lt->utc */
+    if      (toe<tod-43200.0) toe+=86400.0;
+    else if (toe>tod+43200.0) toe-=86400.0;
+    geph->toe=utc2gpst(gpst2time(week,tow+toe)); /* utc->gpst */
+    return 1;
+}
+/* decode gps navigation data subframe 1 -------------------------------------*/
 static int decode_subfrm1(const unsigned char *buff, eph_t *eph)
 {
     double tow,toc;
@@ -50,7 +389,7 @@ static int decode_subfrm1(const unsigned char *buff, eph_t *eph)
     
     return 1;
 }
-/* decode navigation data subframe 2 -----------------------------------------*/
+/* decode gps navigation data subframe 2 -------------------------------------*/
 static int decode_subfrm2(const unsigned char *buff, eph_t *eph)
 {
     double sqrtA;
@@ -74,7 +413,7 @@ static int decode_subfrm2(const unsigned char *buff, eph_t *eph)
     
     return 2;
 }
-/* decode navigation data subframe 3 -----------------------------------------*/
+/* decode gps navigation data subframe 3 -------------------------------------*/
 static int decode_subfrm3(const unsigned char *buff, eph_t *eph)
 {
     double tow,toc;
@@ -107,7 +446,7 @@ static int decode_subfrm3(const unsigned char *buff, eph_t *eph)
     
     return 3;
 }
-/* decode almanac ------------------------------------------------------------*/
+/* decode gps almanac --------------------------------------------------------*/
 static void decode_almanac(const unsigned char *buff, alm_t *alm)
 {
     gtime_t toa;
@@ -140,7 +479,7 @@ static void decode_almanac(const unsigned char *buff, alm_t *alm)
     else if (tt>302400.0) alm[sat-1].week++;
     alm[sat-1].toa=gpst2time(alm[sat-1].week,alm[sat-1].toas);
 }
-/* decode navigation data subframe 4 -----------------------------------------*/
+/* decode gps navigation data subframe 4 -------------------------------------*/
 static int decode_subfrm4(const unsigned char *buff, alm_t *alm, double *ion,
                           double *utc, int *leaps)
 {
@@ -195,7 +534,7 @@ static int decode_subfrm4(const unsigned char *buff, alm_t *alm, double *ion,
     }
     return 4;
 }
-/* decode navigation data subframe 5 -----------------------------------------*/
+/* decode gps navigation data subframe 5 -------------------------------------*/
 static int decode_subfrm5(const unsigned char *buff, alm_t *alm)
 {
     double toas;
@@ -230,9 +569,10 @@ static int decode_subfrm5(const unsigned char *buff, alm_t *alm)
     }
     return 5;
 }
-/* decode navigation data frame ------------------------------------------------
+/* decode gps navigation data frame --------------------------------------------
 * decode navigation data frame and extract ephemeris and ion/utc parameters
-* args   : unsigned char *buff I navigation data frame without parity (8bitx30)
+* args   : unsigned char *buff I gps navigation data frame (without parity)
+*                                  buff[0-29]: 24 bits x 10 words
 *          eph_t *eph    IO     ephemeris message      (NULL: no input)
 *          alm_t *alm    IO     almanac                (NULL: no input)
 *          double *ion   IO     ionospheric parameters (NULL: no input)
@@ -285,7 +625,7 @@ extern int init_raw(raw_t *raw)
     raw->sbsmsg=sbsmsg0;
     raw->msgtype[0]='\0';
     for (i=0;i<MAXSAT;i++) {
-        for (j=0;j<150  ;j++) raw->subfrm[i][j]=0;
+        for (j=0;j<380  ;j++) raw->subfrm[i][j]=0;
         for (j=0;j<NFREQ;j++) raw->lockt[i][j]=0.0;
         for (j=0;j<NFREQ;j++) raw->halfc[i][j]=0;
         raw->icpp[i]=raw->off[i]=raw->prCA[i]=raw->dpCA[i]=0.0;
