@@ -25,6 +25,7 @@
 *           2013/02/23 1.6 fix memory access violation problem on arm
 *           2013/05/08 1.7 fix bug on week number of galileo ephemeris
 *           2014/05/23 1.8 support beidou
+*           2014/06/23 1.9 support [lD] for glonass raw navigation data
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -856,7 +857,7 @@ static int decode_L2nav(unsigned char *buff, int len, int sat, raw_t *raw)
         trace(2,"javad *d sat=%2d L2 CNAV preamble error preamb=%02X\n",preamb);
         return -1;
     }
-    trace(2,"L2CNAV: sat=%2d prn=%2d msgid=%2d tow=%6d alert=%d\n",sat,prn,
+    trace(3,"L2CNAV: sat=%2d prn=%2d msgid=%2d tow=%6d alert=%d\n",sat,prn,
           msgid,tow,alert);
     
     return 0;
@@ -883,7 +884,7 @@ static int decode_L5nav(unsigned char *buff, int len, int sat, raw_t *raw)
         trace(2,"javad *d sat=%2d L5 CNAV preamble error preamb=%02X\n",preamb);
         return -1;
     }
-    trace(2,"L5CNAV: sat=%2d prn=%2d msgid=%2d tow=%6d alert=%d\n",sat,prn,
+    trace(3,"L5CNAV: sat=%2d prn=%2d msgid=%2d tow=%6d alert=%d\n",sat,prn,
           msgid,tow,alert);
     
     return 0;
@@ -971,12 +972,62 @@ static int decode_LD(raw_t *raw)
     
     return 0;
 }
-/* decode [ID] glonass raw navigation data -----------------------------------*/
-static int decode_ID(raw_t *raw)
+/* decode [lD] glonass raw navigation data -----------------------------------*/
+static int decode_lD(raw_t *raw)
 {
-    trace(2,"javad ID not supported\n");
+    geph_t geph={0};
+    unsigned char *p=raw->buff+5;
+    char *msg;
+    int i,sat,prn,frq,time,type,len,id;
     
-    return 0;
+    if (!checksum(raw->buff,raw->len)) {
+        trace(2,"javad lD checksum error: len=%d\n",raw->len);
+        return -1;
+    }
+    trace(3,"decode_lD: prn=%3d\n",U1(p));
+    
+    prn =U1(p); p+=1;
+    frq =I1(p); p+=1;
+    time=U4(p); p+=4;
+    type=U1(p); p+=1;
+    len =U1(p); p+=1;
+    
+    if (raw->len!=14+len*4) {
+        trace(2,"javad lD length error: len=%d\n",raw->len);
+        return -1;
+    }
+    if (raw->outtype) {
+        msg=raw->msgtype+strlen(raw->msgtype);
+        sprintf(msg," prn=%2d frq=%2d time=%7d type=%d",prn,frq,time,type);
+    }
+    if (!(sat=satno(SYS_GLO,prn))) {
+        trace(2,"javad lD satellite error: prn=%d\n",prn);
+        return 0;
+    }
+    if (type!=0) {
+        trace(3,"javad lD type not supported: type=%d\n",type);
+        return 0;
+    }
+    if ((id=(U4(p)>>20)&0xF)<1) return 0;
+    
+    /* get 77 bit (25x3+2) in frame without hamming and time mark */
+    for (i=0;i<4;i++) {
+        setbitu(raw->subfrm[sat-1]+(id-1)*10,i*25,i<3?25:2,
+                U4(p+4*i)>>(i<3?0:23));
+    }
+    if (id!=4) return 0;
+    
+    /* decode glonass ephemeris strings */
+    geph.tof=raw->time;
+    if (!decode_glostr(raw->subfrm[sat-1],&geph)||geph.sat!=sat) return -1;
+    geph.frq=frq;
+    
+    if (!strstr(raw->opt,"-EPHALL")) {
+        if (geph.iode==raw->nav.geph[prn-1].iode) return 0; /* unchanged */
+    }
+    raw->nav.geph[prn-1]=geph;
+    raw->ephsat=sat;
+    return 2;
 }
 /* decode [WD] waas raw navigation data --------------------------------------*/
 static int decode_WD(raw_t *raw)
@@ -1567,7 +1618,7 @@ static int decode_javad(raw_t *raw)
     if (!strncmp(p,"ED",2)) return decode_nd(raw,SYS_GAL); /* raw navigation data */
     if (!strncmp(p,"cd",2)) return decode_nd(raw,SYS_CMP); /* raw navigation data */
     if (!strncmp(p,"LD",2)) return decode_LD(raw); /* glonass raw navigation data */
-    if (!strncmp(p,"ID",2)) return decode_ID(raw); /* glonass raw navigation data */
+    if (!strncmp(p,"lD",2)) return decode_lD(raw); /* glonass raw navigation data */
     if (!strncmp(p,"WD",2)) return decode_WD(raw); /* sbas raw navigation data */
     
     if (!strncmp(p,"TC",2)) return decode_TC(raw); /* CA/L1 continuous track time */

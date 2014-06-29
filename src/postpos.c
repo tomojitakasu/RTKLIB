@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * postpos.c : post-processing positioning
 *
-*          Copyright (C) 2007-2013 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2007-2014 by T.TAKASU, All rights reserved.
 *
 * version : $Revision: 1.1 $ $Date: 2008/07/17 21:48:06 $
 * history : 2007/05/08  1.0  new
@@ -24,6 +24,7 @@
 *           2011/09/15  1.11 add function reading stec file
 *           2012/02/01  1.12 support keyword expansion of rtcm ssr corrections
 *           2013/03/11  1.13 add function reading otl and erp data
+*           2014/06/29  1.14 fix problem on overflow of # of satellites
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -207,8 +208,8 @@ static int inputobs(obsd_t *obs, int solq, const prcopt_t *popt)
                 if (timediff(obss.data[i].time,obss.data[iobsu].time)>DTTOL) break;
         }
         nr=nextobsf(&obss,&iobsr,2);
-        for (i=0;i<nu&&n<MAXOBS;i++) obs[n++]=obss.data[iobsu+i];
-        for (i=0;i<nr&&n<MAXOBS;i++) obs[n++]=obss.data[iobsr+i];
+        for (i=0;i<nu&&n<MAXOBS*2;i++) obs[n++]=obss.data[iobsu+i];
+        for (i=0;i<nr&&n<MAXOBS*2;i++) obs[n++]=obss.data[iobsr+i];
         iobsu+=nu;
         
         /* update sbas corrections */
@@ -264,8 +265,8 @@ static int inputobs(obsd_t *obs, int solq, const prcopt_t *popt)
                 if (timediff(obss.data[i].time,obss.data[iobsu].time)<-DTTOL) break;
         }
         nr=nextobsb(&obss,&iobsr,2);
-        for (i=0;i<nu&&n<MAXOBS;i++) obs[n++]=obss.data[iobsu-nu+1+i];
-        for (i=0;i<nr&&n<MAXOBS;i++) obs[n++]=obss.data[iobsr-nr+1+i];
+        for (i=0;i<nu&&n<MAXOBS*2;i++) obs[n++]=obss.data[iobsu-nu+1+i];
+        for (i=0;i<nr&&n<MAXOBS*2;i++) obs[n++]=obss.data[iobsr-nr+1+i];
         iobsu-=nu;
         
         /* update sbas corrections */
@@ -295,7 +296,7 @@ static void procpos(FILE *fp, const prcopt_t *popt, const solopt_t *sopt,
     gtime_t time={0};
     sol_t sol={{0}};
     rtk_t rtk;
-    obsd_t obs[MAXOBS];
+    obsd_t obs[MAXOBS*2]; /* for rover and base */
     double rb[3]={0};
     int i,nobs,n,solstatic,pri[]={0,1,2,3,4,5,1,6};
     

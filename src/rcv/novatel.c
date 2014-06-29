@@ -1048,7 +1048,7 @@ static int decode_bdsephemerisb(raw_t *raw)
     eph.ttr=raw->time;
     
     if (!strstr(raw->opt,"-EPHALL")) {
-        if (raw->nav.eph[eph.sat-1].iode==eph.iode) return 0; /* unchanged */
+        if (timediff(raw->nav.eph[eph.sat-1].toe,eph.toe)==0.0) return 0; /* unchanged */
     }
     raw->nav.eph[eph.sat-1]=eph;
     raw->ephsat=eph.sat;
