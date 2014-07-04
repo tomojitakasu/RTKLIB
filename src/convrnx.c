@@ -24,6 +24,7 @@
 *           2013/03/11 1.7  support binex and rinex 3.02
 *                           add approx position in rinex obs header if blank
 *           2014/05/24 1.8  support beidou B1
+*           2014/07/03 1.8  add Trimble RT17 support (D.COOK)
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -520,6 +521,11 @@ static void set_obstype(int format, rnxopt_t *opt)
         {CODE_L1C,CODE_L5X},
         {CODE_L1I,CODE_L2C,CODE_L7I}
     };
+    /* supported codes by rt17 */
+    const unsigned char codes_rt17[6][8]={
+        {CODE_L1C,CODE_L1P,CODE_L2C,CODE_L2P},
+        {CODE_L1C,CODE_L1P,CODE_L2C,CODE_L2P}
+    };
     /* supported codes by rinex and binex */
     const unsigned char codes_rinex[6][32]={
         {CODE_L1C,CODE_L1P,CODE_L1W,CODE_L1Y,CODE_L1M,CODE_L1N,CODE_L1S,CODE_L1L,
@@ -552,6 +558,7 @@ static void set_obstype(int format, rnxopt_t *opt)
             case STRFMT_OEM3 : codes=codes_oem3 [i]; break;
             case STRFMT_CRES : codes=codes_cres [i]; break;
             case STRFMT_JAVAD: codes=codes_javad[i]; break;
+            case STRFMT_RT17 : codes=codes_rt17 [i]; break;
             case STRFMT_BINEX: codes=codes_rinex[i]; break;
             case STRFMT_RINEX: codes=codes_rinex[i]; break;
             default:           codes=codes_other[i]; break;

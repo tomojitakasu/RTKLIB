@@ -24,6 +24,7 @@
 *           2013/02/18 1.7 support binex
 *           2013/05/19 1.8 support auto format for file path with wild-card
 *           2014/02/08 1.9 add option -span -trace -mask
+*           2014/07/03 1.10 add Trimble RT17 support (D.COOK)
 *-----------------------------------------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>
@@ -86,6 +87,7 @@ static const char *help[]={
 "                  stq  = SkyTraq S1315F",
 "                  javad= Javad",
 "                  nvs  = NVS NV08C BINR",
+"                  rt17 = Trimble RT17",
 "                  binex= BINEX",
 "                  rinex= RINEX",
 "     -ro opt      receiver options",
@@ -134,6 +136,7 @@ static const char *help[]={
 "     *.bin         Hemisphere Eclipse/Crescent",
 "     *.stq         SkyTraq S1315F",
 "     *.jps         Javad",
+"     *.rt17        Trimble RT17",
 "     *.bnx,*binex  BINEX",
 "     *.obs,*.*o    RINEX OBS"
 };
@@ -428,6 +431,7 @@ static int cmdopts(int argc, char **argv, rnxopt_t *opt, char **ifile,
         else if (!strcmp(fmt,"stq"  )) format=STRFMT_STQ;
         else if (!strcmp(fmt,"javad")) format=STRFMT_JAVAD;
         else if (!strcmp(fmt,"nvs"  )) format=STRFMT_NVS;
+        else if (!strcmp(fmt,"rt17" )) format=STRFMT_RT17;
         else if (!strcmp(fmt,"binex")) format=STRFMT_BINEX;
         else if (!strcmp(fmt,"rinex")) format=STRFMT_RINEX;
     }
@@ -442,6 +446,7 @@ static int cmdopts(int argc, char **argv, rnxopt_t *opt, char **ifile,
         else if (!strcmp(p,".bin"  ))  format=STRFMT_CRES;
         else if (!strcmp(p,".stq"  ))  format=STRFMT_STQ;
         else if (!strcmp(p,".jps"  ))  format=STRFMT_JAVAD;
+        else if (!strcmp(p,".rt17" ))  format=STRFMT_RT17;
         else if (!strcmp(p,".bnx"  ))  format=STRFMT_BINEX;
         else if (!strcmp(p,".binex"))  format=STRFMT_BINEX;
         else if (!strcmp(p,".obs"  ))  format=STRFMT_RINEX;

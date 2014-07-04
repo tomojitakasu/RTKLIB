@@ -98,6 +98,7 @@
 *                           add BDS L1 code for RINEX 3.02 and RTCM 3.2
 *                           support BDS L1 in satwavelen()
 *           2014/05/29 1.27 fix bug on obs2code() to search obs code table
+*           2014/07/03 1.28 add Trimble RT17 support (D.COOK)
 *-----------------------------------------------------------------------------*/
 #define _POSIX_C_SOURCE 199309
 #include <stdarg.h>
@@ -194,13 +195,14 @@ const char *formatstrs[]={      /* stream format strings */
     "Javad",                    /*  9 */
     "NVS BINR",                 /* 10 */
     "BINEX",                    /* 11 */
-    "LEX Receiver",             /* 12 */
-    "SiRF",                     /* 13 */
-    "RINEX",                    /* 14 */
-    "SP3",                      /* 15 */
-    "RINEX CLK",                /* 16 */
-    "SBAS",                     /* 17 */
-    "NMEA 0183",                /* 18 */
+    "Trimble RT17",             /* 12 */
+    "LEX Receiver",             /* 13 */
+    "SiRF",                     /* 14 */
+    "RINEX",                    /* 15 */
+    "SP3",                      /* 16 */
+    "RINEX CLK",                /* 17 */
+    "SBAS",                     /* 18 */
+    "NMEA 0183",                /* 19 */
     NULL
 };
 static char *obscodes[]={       /* observation code strings */
