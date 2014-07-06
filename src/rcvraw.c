@@ -680,6 +680,10 @@ extern int init_raw(raw_t *raw)
         raw->sta.pos[i]=raw->sta.del[i]=0.0;
     }
     raw->sta.hgt=0.0;
+    raw->pbyte=0;
+    raw->plen=0;
+    raw->page=0;
+    raw->reply=0;
     return 1;
 }
 /* free receiver raw data control ----------------------------------------------
