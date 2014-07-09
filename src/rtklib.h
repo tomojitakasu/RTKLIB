@@ -48,7 +48,7 @@ extern "C" {
 
 #define VER_RTKLIB  "2.4.2"             /* library version */
 
-#define PATCH_LEVEL "p8"                /* patch level */
+#define PATCH_LEVEL "p9"                /* patch level */
 
 #define COPYRIGHT_RTKLIB \
             "Copyright (C) 2007-2014 by T.Takasu\nAll rights reserved."
@@ -386,17 +386,18 @@ extern "C" {
 #define STRFMT_JAVAD 9                  /* stream format: JAVAD GRIL/GREIS */
 #define STRFMT_NVS   10                 /* stream format: NVS NVC08C */
 #define STRFMT_BINEX 11                 /* stream format: BINEX */
-#define STRFMT_LEXR  12                 /* stream format: Furuno LPY-10000 */
-#define STRFMT_SIRF  13                 /* stream format: SiRF    (reserved) */
-#define STRFMT_RINEX 14                 /* stream format: RINEX */
-#define STRFMT_SP3   15                 /* stream format: SP3 */
-#define STRFMT_RNXCLK 16                /* stream format: RINEX CLK */
-#define STRFMT_SBAS  17                 /* stream format: SBAS messages */
-#define STRFMT_NMEA  18                 /* stream format: NMEA 0183 */
+#define STRFMT_SEPT  12                 /* stream format: Septentrio */
+#define STRFMT_RT17  13                 /* stream format: Trimble RT17 */
+#define STRFMT_LEXR  14                 /* stream format: Furuno LPY-10000 */
+#define STRFMT_RINEX 15                 /* stream format: RINEX */
+#define STRFMT_SP3   16                 /* stream format: SP3 */
+#define STRFMT_RNXCLK 17                /* stream format: RINEX CLK */
+#define STRFMT_SBAS  18                 /* stream format: SBAS messages */
+#define STRFMT_NMEA  19                 /* stream format: NMEA 0183 */
 #ifndef EXTLEX
-#define MAXRCVFMT    11                 /* max number of receiver format */
+#define MAXRCVFMT    14                 /* max number of receiver format */
 #else
-#define MAXRCVFMT    12
+#define MAXRCVFMT    13
 #endif
 
 #define STR_MODE_R  0x1                 /* stream mode: read */
