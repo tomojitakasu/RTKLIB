@@ -680,6 +680,8 @@ extern int init_raw(raw_t *raw)
         raw->sta.pos[i]=raw->sta.del[i]=0.0;
     }
     raw->sta.hgt=0.0;
+    raw->receive_time=0.0;
+    raw->week=0;
     raw->pbyte=0;
     raw->plen=0;
     raw->page=0;

@@ -1,6 +1,7 @@
 /*
 |    Version: $Revision:$ $Date:$
 |    History: 2014/06/29 1.0  new (D.COOK)
+|             2014/07/31 1.1  bug fixes (D.COOK)
 */
 
 /*
@@ -15,13 +16,14 @@
 |    format streams and another for reading RT17 format files.
 |
 |    To specify receiver dependent options, set raw->opt to the following
-|    case insensitive option strings separated by spaces.
+|    case sensitive option strings separated by spaces.
 |
-|    Case insensitive receiver dependent options:
+|    Receiver dependent options:
 |
-|    -EPHALL : Input all ephemerides
 |    -CO     : Add receiver clock offset
+|    -EPHALL : Input all ephemerides
 |    -LE     : Little endian format data
+|    -WEEK=n : Set starting week number
 |
 |    The -CO option causes the receiver clock offset to be added to the time
 |    of all observables.
@@ -32,6 +34,13 @@
 |    big-endian format, but can sometimes be in little-endian format if a
 |    file transfer or file conversion utility was used and performed such
 |    a conversion as a side-effect.
+|
+|    The -WEEK option sets the starting week number. By default this is the
+|    current week number. Neither the Trimble RT17 observables packets nor
+|    the ION / UTC data packets contain the week number therefore the week
+|    number is ambiguous. The default value is only appropriate if the raw
+|    data is live. If it is recorded and being played back, you will need to
+|    use this option to set the correct starting week number.
 |
 |    Support is provided for the following Trimble RT17 packet Types:
 |
@@ -100,20 +109,13 @@
 |
 |    7. Smooth Phase
 |    8. Smooth Pseudorange
-|	(NOT RECOMMENDED) 
-|
-|    When capturing a real time data stream it is important to
+|	(NO COMMENT) 
 |
 | Design Issues:
 |
-|    RT17 is GPS L1/L2 only. RT27 is GNSS, etc. We would ideally like to handle
-|    both RT17 _and_ RT27, however some parts of Trimble consider RT27 to be
-|    proprietary. An NDA is required to obtain RT27 documentation from Trimble.
-|    Under such an NDA this source code could not be open source, therefore we
-|    limit ourselves to RT17 (which is all the original author of this source
-|    file actually needed anyway). Note that the closed source UNAVCO TEQC
-|    utility handles RT27 files and can be used to convert them to RINEX for
-|    post processing.
+|    This source code handles GPS L1/L2 only. RT17 is GPS. RT27 is GNSS.
+|    If you have RT27 (RAWDATA 57h record subtype 6) documentation, please
+|    forward it to the author.
 |
 |    An RT17 real-time survey data message is a series of RAWDATA (57h,
 |    Real-time survey data report) and RETSVDATA (55h, Satellite information
@@ -212,8 +214,14 @@
 /*
 | Record Interpretation Flags bit masks:
 */
-#define M_CONCISE     1	  /* Concise format */
-#define M_ENHANCED    2	  /* Enhanced record with real-time flags and IODE information */
+#define M_CONCISE     1	   /* Concise format */
+#define M_ENHANCED    2	   /* Enhanced record with real-time flags and IODE information */
+
+/*
+| Raw->flag bit definitions:
+*/
+#define M_WEEK_OPTION 1	   /* Raw=>week contains week number set by WEEK=n option */
+#define M_WEEK_SCAN   2    /* WEEK=n option already looked for, no need to do it again */
 
 /*
 | Data conversion macros:
@@ -259,6 +267,7 @@ static int decode_ion_utc_data(raw_t *raw, int endian);
 static int decode_rawdata(raw_t *raw, int endian);
 static int decode_retsvdata(raw_t *raw, int endian);
 static int decode_type_17(raw_t *raw, unsigned int rif, int endian);
+static int get_week(raw_t *raw, double receive_time);
 static short read_i2(unsigned char *p, int endian);
 static int read_i4(unsigned char *p, int endian);
 static float read_r4(unsigned char *p, int endian);
@@ -267,7 +276,6 @@ static unsigned short read_u2(unsigned char *p, int endian);
 static unsigned int read_u4(unsigned char *p, int endian);
 static int sync_packet(raw_t *raw, unsigned char data);
 static void unwrap_rawdata(raw_t *raw, unsigned int *rif);
-static void upcase(char *string);
 
 
 /*
@@ -398,7 +406,6 @@ extern int input_rt17(raw_t *raw, unsigned char data)
     */
     if (raw->pbuff[2] == RETSVDATA)
     {
-	upcase(raw->opt);
 	status = decode_retsvdata( raw, strstr(raw->opt,"-LE") ?
 					LITTLE_ENDIAN : BIG_ENDIAN );
 	clear_packet_buffer(raw);
@@ -462,7 +469,6 @@ extern int input_rt17(raw_t *raw, unsigned char data)
 
 	if (page == pages)
 	{
-	    upcase(raw->opt);
 	    status = decode_rawdata( raw, strstr(raw->opt,"-LE") ?
 					  LITTLE_ENDIAN : BIG_ENDIAN );
 	    clear_message_buffer(raw);
@@ -849,8 +855,8 @@ static int decode_gps_ephemeris(raw_t *raw, int e)
 */
 static int decode_ion_utc_data(raw_t *raw, int e)
 {
-    unsigned char *p = raw->pbuff;
     int week;
+    unsigned char *p = raw->pbuff;
    
     trace(4, "RT17: decode_ion_utc_data, length=%d.\n", raw->plen);
 
@@ -861,8 +867,11 @@ static int decode_ion_utc_data(raw_t *raw, int e)
         return (-1);
     }
 
-    time2gpst(timeget(), &week);
-
+    /*
+    | ION / UTC data does not have the current week number. Punt!
+    */
+    week = get_week(raw, 0);
+ 
     raw->nav.ion_gps[0] = R8(p+6,e);   /* 006–013: ALPHA 0 (seconds) */
     raw->nav.ion_gps[1] = R8(p+14,e);  /* 014–021: ALPHA 1 (seconds/semi-circle) */
     raw->nav.ion_gps[2] = R8(p+22,e);  /* 022–029: ALPHA 2 (seconds/semi-circle)^2 */ 
@@ -878,7 +887,7 @@ static int decode_ion_utc_data(raw_t *raw, int e)
     raw->nav.leaps =(int) R8(p+94,e);  /* 094–101: DELTATLS (seconds) */
     /* Unused by RTKLIB R8 */          /* 102–109: DELTATLSF */
     /* Unused by RTKLIB R8 */          /* 110–117: IONTIME */
-    /* Unused by RTKLIB u1 */          /* 118-118: WNSUBT */
+    /* Unused by RTKLIB U1 */          /* 118-118: WNSUBT */
     /* Unused by RTKLIB U1 */          /* 119-119: WNSUBLSF */
     /* Unused by RTKLIB U1 */          /* 120-120: DN */
     /* Reserved six bytes */           /* 121–126: RESERVED */
@@ -1080,10 +1089,14 @@ static int decode_type_17(raw_t *raw, unsigned int rif, int e)
 	receive_time += clock_offset;
 
     /*
-    | Get the current GPS week number then turn the receive time in milliseconds since
-    | the start of the current GPS week into time in seconds and fractional seconds.
+    | The observation data does not have the current week number. Punt!
     */
-    time2gpst(timeget(), &week);
+    week = get_week(raw, receive_time);
+ 
+   /*
+    | Turn the receive time in milliseconds since the start of the current GPS week
+    | into time in seconds and fractional seconds.
+    */   
     time = gpst2time(week, receive_time * 0.001);
 
     nsat = U1(p); p++; /* Number of SV data blocks in the record */
@@ -1367,6 +1380,81 @@ static int decode_type_17(raw_t *raw, unsigned int rif, int e)
     return (1);
 }
 
+
+/*
+| Function: get_week
+| Purpose:  Get week number
+| Authors:  Daniel A. Cook
+|
+| Formal Parameters: 
+|
+|    Raw         = Pointer to raw structure [Input]
+|    Receve_time = Receiver time of week    [Input]
+|
+| Implicit Inputs:
+|
+|    raw->flag
+|    raw->week
+|    raw->receive_time
+|
+| Implicit Outputs:
+|
+|    raw->flag
+|    raw->week
+|    raw->receive_time
+|
+| Return Value:
+|
+|    Week number
+|
+| Design Issues:
+|
+*/
+static int get_week(raw_t *raw, double receive_time)
+{
+    int week = 0;
+
+    if (raw->flag & M_WEEK_OPTION)
+    {
+	if ((receive_time && raw->receive_time) && (receive_time < raw->receive_time))
+	    raw->week++;
+	
+	week = raw->week;
+    }
+    else if (!(raw->flag & M_WEEK_SCAN))
+    {
+	char *opt = strstr(raw->opt, "-WEEK=");
+
+	raw->flag |= M_WEEK_SCAN;
+
+	if (opt)
+        {
+	    if (!sscanf(opt+6, "%d", &week) || (week <= 0))
+		trace(2, "RT17: Invalid week number receiver option value.\n");
+	    else
+	    {
+		raw->week = week;
+ 		raw->flag |= M_WEEK_OPTION;
+	    }
+	}
+    }
+
+    if (!week)
+    {
+	time2gpst(timeget(), &week);
+	if (week != raw->week)
+	{
+	    trace(2, "RT17: Week number unknown; week number %d assumed.\n", week);
+	    raw->week = week;
+	}
+    }
+
+    if (receive_time)
+	raw->receive_time = receive_time;
+
+    return (week);
+}
+
 /*
 | Function: read_i2
 | Purpose:  Fetch & convert a signed two byte integer (short)
@@ -1634,8 +1722,8 @@ static unsigned int read_u4(unsigned char *p, int endian)
 |
 | Formal Parameters: 
 |
-|    Raw  = Pointer to raw structure buff     [Input]
-|    Data = Next character in raw data stream [Input]
+|    Raw  = Receiver raw data control structure [Input]
+|    Data = Next character in raw data stream   [Input]
 |
 | Implicit Inputs:
 |
@@ -1726,7 +1814,7 @@ static void unwrap_rawdata(raw_t *raw, unsigned int *rif)
     {
 	if (p_in[7] != *rif)
 	   trace( 3, "RT17: Inconsistent Record Interpretation "
-		     "Flags within a single RAWDATA message." );
+		     "Flags within a single RAWDATA message.\n" );
 
 	length_in = p_in[3] + 6;
 	length_out = p_in[3] - 4;
@@ -1737,40 +1825,4 @@ static void unwrap_rawdata(raw_t *raw, unsigned int *rif)
 	length_in_total -= length_in;  
     }
     raw->nbyte = raw->len = length_out_total;
-}
-
-/*
-| Function: upcase
-| Purpose:  Upcase a string
-| Authors:  Daniel A. Cook
-|
-| Formal Parameters: 
-|
-|    String = String to upcase [Input]
-|
-| Implicit Inputs:
-|
-|    string[]
-|
-| Implicit Outputs:
-|
-|    String[]
-|
-| Return Value:
-|
-|    <none>
-|
-| Design Issues:
-|
-*/
-static void upcase(char *string)
-{
-    unsigned int length = strlen(string);
-
-    while (length > 0)
-    {
-	*((unsigned char*) string) = (unsigned char) toupper(*((unsigned char*) string));
-	string++;
-	length--;
-    }
 }

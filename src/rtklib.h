@@ -1146,10 +1146,12 @@ typedef struct {        /* receiver raw data control type */
     int outtype;        /* output message type */
     unsigned char buff[MAXRAWLEN]; /* message buffer */
     char opt[256];      /* receiver dependent options */
+    double receive_time;/* RT17 Reiceve time of week for week rollover detection */
     unsigned int plen;  /* RT17 Total size of packet to be read */
     unsigned int pbyte; /* RT17 How many packet bytes have been read so far */
     unsigned int page;  /* RT17 Last page number */
     unsigned int reply; /* RT17 Current reply number */
+    int week;           /* RT17 week number */
     unsigned char pbuff[255+4+2]; /* RT17 Packet buffer */
 } raw_t;
 
