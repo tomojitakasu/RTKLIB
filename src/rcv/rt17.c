@@ -1,195 +1,236 @@
 /*
-|    Version: $Revision:$ $Date:$
-|    History: 2014/06/29 1.0  new (D.COOK)
-|             2014/07/31 1.1  bug fixes (D.COOK)
+|   Version: $Revision:$ $Date:$
+|   History: 2014/06/29 1.0  new (D.COOK)
+|            2014/07/31 1.1  GPS week number work (D.COOK)
+|	     2014/08/08 1.2  More GPS week number work (D.COOK)
 */
 
 /*
 | Description:
 |
-|    Trimble RT17 file and stream handler functions for RTKLIB.
+|   Trimble RT17 file and stream handler functions for RTKLIB.
 |
-|    Written in July 2014 by Daniel A. Cook
-|    Copyright © 2014 by Daniel A. Cook and T.TAKASU, All rights reserved.
+|   Written in July 2014 by Daniel A. Cook
+|   Copyright © 2014 by Daniel A. Cook and T.TAKASU, All rights reserved.
 |
-|    This source file implements two public functions, one for reading RT17
-|    format streams and another for reading RT17 format files.
+|   This source file implements two public functions, one for reading RT17
+|   format streams and another for reading RT17 format files.
 |
-|    To specify receiver dependent options, set raw->opt to the following
-|    case sensitive option strings separated by spaces.
+|   To specify receiver dependent options, set raw->opt to the following
+|   case sensitive option strings separated by spaces.
 |
-|    Receiver dependent options:
+|   Receiver dependent options:
 |
-|    -CO     : Add receiver clock offset
-|    -EPHALL : Input all ephemerides
-|    -LE     : Little endian format data
-|    -WEEK=n : Set starting week number
+|   -CO     : Add receiver clock offset
+|   -EPHALL : Input all ephemerides
+|   -LE     : Little endian format data
+|   -WEEK=n : Explicitly set starting GPS week number
 |
-|    The -CO option causes the receiver clock offset to be added to the time
-|    of all observables.
+|   The -CO option causes the receiver clock offset to be added to the time
+|   of all observables.
 |
-|    The -LE option specifies that the input data is in little-endian format.
-|    The default is big-endian format. RT17 data streamed directly from a
-|    receiver is always in big-endian format. RT17 data files are usually in
-|    big-endian format, but can sometimes be in little-endian format if a
-|    file transfer or file conversion utility was used and performed such
-|    a conversion as a side-effect.
+|   The -LE option specifies that the input data is in little-endian format.
+|   The default is big-endian format. RT17 data streamed directly from a
+|   receiver is always in big-endian format. RT17 data files are usually in
+|   big-endian format, but can sometimes be in little-endian format if a
+|   file transfer or file conversion utility was used and performed such
+|   a conversion as a side-effect.
 |
-|    The -WEEK option sets the starting week number. By default this is the
-|    current week number. Neither the Trimble RT17 observables packets nor
-|    the ION / UTC data packets contain the week number therefore the week
-|    number is ambiguous. The default value is only appropriate if the raw
-|    data is live. If it is recorded and being played back, you will need to
-|    use this option to set the correct starting week number.
+|   Neither the Trimble RT17 observables packets nor the ION / UTC data packets
+|   contain the GPS week number. By default the current computer "now" time is
+|   used to determine the GPS week number. This works well in real time, but
+|   can be problematic when later converting and/or post processing recorded
+|   data. When recording data, also enable either GSOF Position & Time (1) or
+|   GSOF Current Time (16) messages on the same serial port along with the
+|   RT17 Real-Time Survey Data output. For best results enable the GSOF
+|   message(s) and get them streaming prior to enabling the RT17 messages.
 |
-|    Support is provided for the following Trimble RT17 packet Types:
+|   If desired the -WEEK=n option can be specified when converting or post
+|   processing recorded data to explicitly set the starting GPS week number.
+|   This option overrides anything and everything, including the current
+|   computer "now" time and any GSOF or other messages read from the raw
+|   data stream or recorded file. Note that the GPS week number explicitly
+|   specified with the -WEEK=n option GPS is automatically incremented when
+|   and if a subsequent GPS week number rollover occurs in the raw data.
 |
-|    Format  Raw Observation Satellite        ION/UTC
-|                 Data       Ephemerides      Parameters
-|    ------- --------------- ---------------- ----------------
-|    Trimble 0x57 (RAWDATA)  0x55 (RETSVDATA) 0x55 (RETSVDATA)
-|    RT17    Recordtype 0    Subtype 1        Subtype 2                           
+|   In addition to enabling RT17 Real-Time Survey Data output, it is very
+|   helpful to also enable GSOF Position & Time (1) or GSOF Current Time (16)
+|   messages on the same serial port. This allows the GPS week number to be
+|   determined without using the current computer "now" time or the -WEEK=n
+|   option. Although not as important for real-time streaming data use where
+|   the current computer "now" time can be used to determine the current GPS
+|   week number, it becomes more important when recording files for later
+|   conversion and/or post processing.  For best results enable the GSOF
+|   message(s) and get them streaming prior to enabling the RT17 messages.
 |
-|    Support is not provided the GPS L2C or L5 signals. Those would likely
-|    require Trimble RT27 protocol support.
+|   Support is provided for the following Trimble RT17 packet Types:
 |
-|    For Trimble GPS receivers which are capable of RT17 binary output, the
-|    receiver and/or receiver configuration software generally provide several
-|    RT17 binary output options:
+|           Raw Observation   Satellite        ION/UTC
+|   Format       Data         Ephemerides      Parameters       GSOF
+|   ------- ---------------   ---------------- ---------------- ------------
+|   Trimble 0x57 (RAWDATA)    0x55 (RETSVDATA) 0x55 (RETSVDATA) 1, 16,
+|   RT17    Recordtype 0 & 7  Subtype  1       Subtype 3        26, 41                   
 |
-|    1. Compact format aka Concise format
-|	(RECOMMENDED)
+|   When the -WEEK=n option is NOT used, the GPS week number is set from any
+|   RAWDATA record type 7 or GENOUT (GSOF) 1, 16, 26, 41 records encountered
+|   in the raw data stream. These messages are only used to obtain the GPS
+|   WEEK number and are not used for any other purpose.
 |
-|    This option causes the raw satellite data to be streamed in a more compact
-|    format. The compact format does not include L2 DOPPLER observables.
+|   Support is not provided the GPS L2C or L5 signals. Those would likely
+|   require Trimble RT27 protocol support.
 |
-|    2. Expanded format
+|   For Trimble GPS receivers which are capable of RT17 binary output, the
+|   receiver and/or receiver configuration software generally provide several
+|   RT17 binary output options:
 |
-|    This is usually the default format if compact format is not enabled. The
-|    only advantage of this format over compact format is that L2 DOPPLER
-|    observables are output when used in combination with the Real Time
-|    Enhancements option. Otherwise this format just consumes more bandwidth
-|    and/or file space than compact format while offering no other advantages.
+|   1. Compact format aka Concise format
+|      (RECOMMENDED)
 |
-|    3. Real Time Enhancements, aka Real-time Enhanced format, aka RT-FLAGS
+|   This option causes the raw satellite data to be streamed in a more compact
+|   format. The compact format does not include L2 DOPPLER observables.
 |
-|    This option adds extra data to the raw satellite data output by the
-|    receiver. When used in combination with expanded format, L2 DOPPLER
-|    observables are output. L2 DOPPLER can be used by RTKLIB.
+|   2. Expanded format
 |
-|    3. Measurements
-|	(REQUIRED)
+|   This is usually the default format if compact format is not enabled. The
+|   only advantage of this format over compact format is that L2 DOPPLER
+|   observables are output when used in combination with the Real Time
+|   Enhancements option. Otherwise this format just consumes more bandwidth
+|   and/or file space than compact format while offering no other advantages.
 |
-|    If your configuration has a measurements option, enable it. Measurements
-|    are the raw satellite data. If you don't see this option then it is
-|    implied and enabled by default.
+|   3. Real Time Enhancements, aka Real-time Enhanced format, aka RT-FLAGS
 |
-|    4. Stream Ephemeris
-|	(HIGHLY RECOMMENDED)
+|   This option adds extra data to the raw satellite data output by the
+|   receiver. When used in combination with expanded format, L2 DOPPLER
+|   observables are output. L2 DOPPLER can be used by RTKLIB.
 |
-|    This option causes satellite ephemerides and UTC / ION data to be streamed
-|    along with the raw satellite data. Streamed ephemerides and UTC / ION data
-|    consume very little extra bandwidth in the stream and/or space in a file.
-|    In most situations with most applications you will need them as well.
+|   3. Measurements
+|      (REQUIRED)
 |
-|    5. Stream Positions, aka Positions
-|	(NOT RECOMMENDED)
+|   If your configuration has a measurements option, enable it. Measurements
+|   are the raw satellite data. If you don't see this option then it is
+|   implied and enabled by default.
 |
-|    Streamed postions are of no use to RTKLIB. They will be ignored. RTKLIB
-|    computes positions from the raw satellite data. It has no use for the
-|    receiver's position solutions. Streamed positions also consume
-|    considerable bandwidth in the stream and/or space in a file.
+|   4. Stream Ephemeris
+|      (HIGHLY RECOMMENDED)
 |
-|    6. Positions Only
-|	(HIGHLY NOT RECOMMENDED)
+|   This option causes satellite ephemerides and UTC / ION data to be streamed
+|   along with the raw satellite data. Streamed ephemerides and UTC / ION data
+|   consume very little extra bandwidth in the stream and/or space in a file.
+|   In most situations with most applications you will need them as well.
 |
-|    Enabling the positions only option causes only positions and nothing else
-|    to be output, including no raw satellite data and no ephemerides and no
-|    ION / UTC data.
+|   5. Stream Positions, aka Positions
+|      (NOT RECOMMENDED)
 |
-|    7. Smooth Phase
-|    8. Smooth Pseudorange
-|	(NO COMMENT) 
+|   Streamed postions are of no use to RTKLIB. They will be ignored. RTKLIB
+|   computes positions from the raw satellite data. It has no use for the
+|   receiver's position solutions. Streamed positions also consume
+|   considerable bandwidth in the stream and/or space in a file.
+|
+|   6. Positions Only
+|      (HIGHLY NOT RECOMMENDED)
+|
+|   Enabling the positions only option causes only positions and nothing else
+|   to be output, including no raw satellite data and no ephemerides and no
+|   ION / UTC data.
 |
 | Design Issues:
 |
-|    This source code handles GPS L1/L2 only. RT17 is GPS. RT27 is GNSS.
-|    If you have RT27 (RAWDATA 57h record subtype 6) documentation, please
-|    forward it to the author.
+|   This source code handles GPS L1/L2 only. RT17 is GPS. RT27 is GNSS.
+|   If you have RT27 (RAWDATA 57h record subtype 6) documentation, please
+|   forward it to the author.
 |
-|    An RT17 real-time survey data message is a series of RAWDATA (57h,
-|    Real-time survey data report) and RETSVDATA (55h, Satellite information
-|    report) packets.
+|   An RT17 real-time survey data message is a series of RAWDATA (57h,
+|   Real-time survey data report) and RETSVDATA (55h, Satellite information
+|   report) packets.
 |
-|    Each assembled RAWDATA message _in an RT17 packet stream_ may contain
-|    any of the following: Compact Format raw satellite measurements, Expanded
-|    Format raw satellite measurements, a receiver computed position or an
-|    event mark. Receiver computed positions and event marks are of no
-|    interest to RTKLIB, therefore we ignore them.
+|   Each assembled RAWDATA message _in an RT17 packet stream_ may contain
+|   any of the following: Compact Format raw satellite measurements, Expanded
+|   Format raw satellite measurements, a receiver computed position or an
+|   event mark. Receiver computed positions and event marks are of no
+|   interest to RTKLIB, therefore we ignore them.
 |
-|    Each RETSVDATA message _in an RT17 packet stream_ may contain any one
-|    of the following: SV flags indicating tracking, a GPS Ephemeris, a GPS
-|    Almanac, ION / UTC Data or an Extended GPS Almanac. Of these only
-|    the GPS Ephemeris and the ION / UTC Data are of interest to RTKLIB.
-|    In practice only GPS Ephemeris and ION / UTC Data are transmitted.
+|   Each RETSVDATA message _in an RT17 packet stream_ may contain any one
+|   of the following: SV flags indicating tracking, a GPS Ephemeris, a GPS
+|   Almanac, ION / UTC Data or an Extended GPS Almanac. Of these only
+|   the GPS Ephemeris and the ION / UTC Data are of interest to RTKLIB.
+|   In practice only GPS Ephemeris and ION / UTC Data are transmitted.
 |
-|    Certain simplifying assumptions are made concerning the way in which
-|    RAWDATA packets are transmitted in the stream or stored into the file.
-|    Unfortunately reference #1 below does not clearly specify these things.
-|    It would certainly be possible to write code that made no assumptions
-|    and handled the worst possible no assumptions interpretation imaginable,
-|    but the code would be more complicated. Needless complication would be
-|    silly if not absolutely required in practice.
+|   Certain simplifying assumptions are made concerning the way in which
+|   RAWDATA and GENOUT packets are transmitted in the stream or stored
+|   into the file. Unfortunately reference #1 below does not clearly
+|   specify these things. It would certainly be possible to write code
+|   that made no assumptions and handled the worst possible no assumptions
+|   interpretation imaginable, but the code would be more complicated.
+|   Needless complication would be silly if not absolutely required in
+|   practice.
 |
-|    Therefore it is assumed that:
+|   Therefore it is assumed that:
 | 
-|    1. The sequence of pages in a RAWDATA message are transmitted in the
-|	stream or stored into a file as packets in order from first to
-|	last. That is, 1 of n, 2 of n, 3 of n, ..., to n of n. We check
-|	for this.
+|   1. RAWDATA and GENOUT packets are never interleaved or interspersed
+|      with packets of other types.
 |
-|    2. The Record Interpretation Flags (RIF) field is repeated within the
-|	page frame of every page making up a single RAWDATA message. It is
-|       assumed that this is redundant and that the actual value of the
-|       record interpretation flags does not change from one page to the
-|       next within a single RAWDATA message. We check for this too.
+|   2. The sequence of page frames in a RAWDATA message are transmitted in the
+|      stream or stored into a file as packets in order from first to last.
+|      RAWDATA page numbers are one based. That is, 1 of n, 2 of n, 3 of n,
+|      ..., to 15 of 15 for a total of 15 possible pages. We check for this
+|      ordering. RAWDATA messages can therefore reach almost 4K in total
+|      length. We check for potential buffer overflows in the input_rt17
+|      function.
 |
-|    Code tested using RT17 data output from the following receivers:
+|   3. The Record Interpretation Flags (RIF) field is repeated within the
+|      page frame of every page making up a single RAWDATA message. It is
+|      assumed that this is redundant and that the actual value of the record
+|      interpretation flags does not change from one page to the next within
+|      a single RAWDATA message. We check for this too.
 |
-|    1. Trimble 4000SSI, firmware version 7.32
-|    2. Trimble 5700, firmware version 2.32
-|    3. Spectra Precision Epoch 25 Base, firmware version 2.32
+|   4. The sequence of pages in a GENOUT message are transmitted in the
+|      stream or stored into a file as packets in order from first to last.
+|      GENOUT page numbers are zero based. That is, 0 of n, 1 of n, 2 of n,
+|      ..., to 255 of 255 for a total of 256 possible pages. We check for
+|      this ordering. GENOUT messages can therefore reach almost 64K in
+|      total length. Such a large GENOUT message could exceed RTKLIB's
+|      maximum buffer size (which was only 4K when this was written).
+|      We check for potential buffer overflows in the input_rt17 function.
 |
-|    The code herein was explicitly written to handle both big-endian and
-|    little-endian machine execution platforms, not just big-endian and
-|    little-endian input data. However I did not have an actual big-endian
-|    machine execution platform to test and debug with. If your platform is
-|    big-endian, please test first and then be prepared to fix big-endian
-|    platform related bugs. You have my sincere apologies if you run into any.
+|   This code was tested using RT17 data output from the following receivers:
 |
-|    By convention functions within this source file appear in alphabetical
-|    order. Public functions appear as a set first (there are only two of
-|    them), followed by private functions as a set. Because of this, forward
-|    definitions are required for the private functions. Please keep that
-|    in mind when making changes to this source file.
+|   1. Trimble 4000SSI, firmware version 7.32
+|   2. Trimble 5700, firmware version 2.32
+|   3. Spectra Precision Epoch 25 Base, firmware version 2.32
+|
+|   The code herein was explicitly written to handle both big-endian and
+|   little-endian machine execution platforms, not just big-endian and
+|   little-endian input data. However I did not have an actual big-endian
+|   machine execution platform to test and debug with. If your platform is
+|   big-endian, please test first and then be prepared to fix big-endian
+|   platform related bugs. You have my sincere apologies if you run into any.
+|
+|   By convention functions within this source file appear in alphabetical
+|   order. Public functions appear as a set first (there are only two of
+|   them), followed by private functions as a set. Because of this, forward
+|   definitions are required for the private functions. Please keep that
+|   in mind when making changes to this source file.
 |
 | References:
 |
-|    1.	Trimble Serial Reference Specification, Version 4.82, Revision A,
-|	December 2013. Though not being in any way specific to the BD9xx
-|       family of receivers, a handy downloadable copy of this document
-|	is contained in the "Trimble OEM BD9xx GNSS Receiver Family ICD"
-|	document located at <http://www.trimble.com/OEM_ReceiverHelp/
-|	v4.85/en/BinaryInterfaceControlDoc.pdf>
+|   1. Trimble Serial Reference Specification, Version 4.82, Revision A,
+|      December 2013. Though not being in any way specific to the BD9xx
+|      family of receivers, a handy downloadable copy of this document
+|      is contained in the "Trimble OEM BD9xx GNSS Receiver Family ICD"
+|      document located at <http://www.trimble.com/OEM_ReceiverHelp/
+|      v4.85/en/BinaryInterfaceControlDoc.pdf>
 |
-|    2. RTKLIB Version 2.4.2 Manual, April 29 2013
-|	<http://www.rtklib.com/prog/manual_2.4.2.pdf>
+|   2. Trimble General Serial Output Format (GSOF)
+|      <http://www.trimble.com/OEM_ReceiverHelp/v4.85/en/GSOFmessages_GSOF.html>
 |
-|    3. ICD-GPS-200C, Interface Control Document, Revision C, 10 October 1993
-|	<http://www.gps.gov/technical/icwg/ICD-GPS-200C.pdf>
+|   3. RTKLIB Version 2.4.2 Manual, April 29 2013
+|      <http://www.rtklib.com/prog/manual_2.4.2.pdf>
 |
-|    4. IS-GPS-200H, Interface Specification, 24 September 2013
-|	<http://www.gps.gov/technical/icwg/IS-GPS-200H.pdf>
+|   4. ICD-GPS-200C, Interface Control Document, Revision C, 10 October 1993
+|      <http://www.gps.gov/technical/icwg/ICD-GPS-200C.pdf>
+|
+|   5. IS-GPS-200H, Interface Specification, 24 September 2013
+|      <http://www.gps.gov/technical/icwg/IS-GPS-200H.pdf>
 */
 			
 
@@ -207,6 +248,7 @@
 #define STX           2	   /* Start of packet character */
 #define ETX           3	   /* End of packet character */
 #define RETSVDATA     0x55 /* Satellite information reports */
+#define GENOUT        0x40 /* General Serial Output Format (GSOF) */
 #define RAWDATA       0x57 /* Position or real-time survey data report */
 #define BIG_ENDIAN    1	   /* Big-endian platform or data stream */
 #define LITTLE_ENDIAN 2	   /* Little-endian platform or data stream */
@@ -220,7 +262,7 @@
 /*
 | Raw->flag bit definitions:
 */
-#define M_WEEK_OPTION 1	   /* Raw=>week contains week number set by WEEK=n option */
+#define M_WEEK_OPTION 1	   /* Raw=>week contains GPS week number set by WEEK=n option */
 #define M_WEEK_SCAN   2    /* WEEK=n option already looked for, no need to do it again */
 
 /*
@@ -244,14 +286,14 @@ typedef union {unsigned short u2; unsigned char c[2];} ENDIAN_TEST;
 
 
 /*
-| Static literals:
+| Static global literals:
 */
 
 static const char rcsid[]="$Id:$";
 
 
 /*
-| Static globals:
+| Static global variables:
 */
 
 
@@ -262,11 +304,17 @@ static const char rcsid[]="$Id:$";
 static int check_packet_checksum(raw_t *raw);
 static void clear_message_buffer(raw_t *raw);
 static void clear_packet_buffer(raw_t *raw);
+static void decode_genout(raw_t *raw, int endian);
 static int decode_gps_ephemeris(raw_t *raw, int endian);
+static void decode_gsof_1(raw_t *raw, unsigned char *p, int endian);
+static void decode_gsof_16(raw_t *raw, unsigned char *p, int endian);
+static void decode_gsof_26(raw_t *raw, unsigned char *p, int endian);
+static void decode_gsof_41(raw_t *raw, unsigned char *p, int endian);
 static int decode_ion_utc_data(raw_t *raw, int endian);
 static int decode_rawdata(raw_t *raw, int endian);
 static int decode_retsvdata(raw_t *raw, int endian);
 static int decode_type_17(raw_t *raw, unsigned int rif, int endian);
+static int decode_type_29(raw_t *raw, int endian);
 static int get_week(raw_t *raw, double receive_time);
 static short read_i2(unsigned char *p, int endian);
 static int read_i4(unsigned char *p, int endian);
@@ -274,9 +322,10 @@ static float read_r4(unsigned char *p, int endian);
 static double read_r8(unsigned char *p, int endian);
 static unsigned short read_u2(unsigned char *p, int endian);
 static unsigned int read_u4(unsigned char *p, int endian);
+static void set_week(raw_t *raw, int week);
 static int sync_packet(raw_t *raw, unsigned char data);
 static void unwrap_rawdata(raw_t *raw, unsigned int *rif);
-
+static void unwrap_genout(raw_t *raw);
 
 /*
 | Public functions (in alphabetical order):
@@ -290,53 +339,53 @@ static void unwrap_rawdata(raw_t *raw, unsigned int *rif);
 |
 | Formal Parameters: 
 |
-|    Raw  = Receiver raw data control structure [Input]
-|    Data = stream data byte                    [Input]
+|   Raw  = Receiver raw data control structure [Input]
+|   Data = stream data byte                    [Input]
 |
 | Implicit Inputs:
 |
-|    Raw->buff[]
-|    Raw->pbuff[]
-|    Raw->len
-|    Raw->plen
-|    Raw->nbyte
-|    Raw->pbyte
-|    Raw->reply
+|   Raw->buff[]
+|   Raw->pbuff[]
+|   Raw->len
+|   Raw->plen
+|   Raw->nbyte
+|   Raw->pbyte
+|   Raw->reply
 |
 | Implicit outputs:
 |
-|    Raw->buff[]
-|    Raw->pbuff[]
-|    Raw->len
-|    Raw->plen
-|    Raw->nbyte
-|    Raw->pbyte
-|    Raw->reply
+|   Raw->buff[]
+|   Raw->pbuff[]
+|   Raw->len
+|   Raw->plen
+|   Raw->nbyte
+|   Raw->pbyte
+|   Raw->reply
 |
 | Return Value:
 |
-|    -1: error message
-|     0: no message (tells caller to please read more data from the stream)
-|     1: input observation data
-|     2: input ephemeris
-|     3: input sbas message
-|     9: input ion/utc parameter
+|   -1: error message
+|    0: no message (tells caller to please read more data from the stream)
+|    1: input observation data
+|    2: input ephemeris
+|    3: input sbas message
+|    9: input ion/utc parameter
 |
 | Design Issues:
 |
 |
-|    Please refer to the Design Issues listed at the top of this source file.
+|   Please refer to the Design Issues listed at the top of this source file.
 |
-|    There's a potential gotcha lurking in this function. When we find what
-|    we thought was a packet, read in what we thought was the rest of the
-|    packet based on what we thought was the data length, but then it turns
-|    out it wasn't really a packet we found (becuase it doesn't end with an
-|    ETX), then we're screwed. Between 1 and 255 bytes that could contain a
-|    valid packet have been discarded and more may be discarded during the
-|    subsequent search for the next packet. I have never seen this scenario
-|    happen in practice with real data, but it could.
-|
-|    We could fix this by implementing an additional layer of buffering.
+|   There could be a potential gotcha lurking in this function. When we find
+|   what we thought was a packet, read in what we thought was the rest of the
+|   packet based on what we thought was the data length, but then it turns
+|   out it wasn't really a packet we found (becuase it doesn't end with an
+|   ETX), then we're screwed. Between 1 and 255 bytes that could contain a
+|   valid packet have been discarded and more may be discarded during the
+|   subsequent search for the next packet. I have never seen this scenario
+|   happen in practice with real data, but it could. If this turns out to be
+|   a real life problem, one could fix this by implementing an additional
+|   layer of buffering.
 */
 extern int input_rt17(raw_t *raw, unsigned char data)
 {
@@ -433,7 +482,7 @@ extern int input_rt17(raw_t *raw, unsigned char data)
 	{	
 	    if (page != 1)
 	    {
-		trace( 3, "RT17: First RAWDATA packet is not page #1. "
+		trace( 2, "RT17: First RAWDATA packet is not page #1. "
 			  "Packet discarded.\n" );
 		clear_packet_buffer(raw);
 		return (0);
@@ -443,8 +492,8 @@ extern int input_rt17(raw_t *raw, unsigned char data)
 	}
 	else if ((reply != raw->reply) || (page != (raw->page + 1)))
 	{
-	    trace(3, "RT17: RAWDATA packet sequence number mismatch or page "
-		     "out of order. %d RAWDATA packets discarded.\n", page);
+	    trace( 2, "RT17: RAWDATA packet sequence number mismatch or page "
+		      "out of order. %d RAWDATA packets discarded.\n", page );
 	    clear_message_buffer(raw);
 	    clear_packet_buffer(raw);
 	    return (0);
@@ -455,7 +504,7 @@ extern int input_rt17(raw_t *raw, unsigned char data)
 	*/
 	if ((raw->nbyte + raw->pbyte) > MAXRAWLEN)
 	{
-	    trace( 3, "RT17: Buffer would overflow. "
+	    trace( 2, "RT17: Buffer would overflow. "
 		      "%d RAWDATA packets discarded.\n", page );
 	    clear_message_buffer(raw);
 	    clear_packet_buffer(raw);
@@ -480,12 +529,81 @@ extern int input_rt17(raw_t *raw, unsigned char data)
 	return (0);
     }
 
+     /*
+    | Accumulate a sequence of GENOUT (GSOF) packets (pages).
+    */
+    if (raw->pbuff[2] == GENOUT)
+    {
+	reply = raw->pbuff[4];
+	page = raw->pbuff[5];
+	pages = raw->pbuff[6];
+
+	/*
+	| If this is the first GENOUT packet in a sequence of GENOUT packets,
+	| then make sure it's page zero and not a packet somewhere in the middle.
+	| If not page zero, then skip it and continue reading from the stream
+	| until we find one that starts at page zero. Otherwise make sure it is
+	| a part of the same requence of packets as the last one, that it's
+	| page number is in sequence.
+	*/
+	if (raw->nbyte == 0)
+	{	
+	    if (page != 0)
+	    {
+		trace( 3, "RT17: First GENOUT packet is not page #0. "
+			  "Packet discarded.\n" );
+		clear_packet_buffer(raw);
+		return (0);
+	    }
+
+	    raw->reply = raw->pbuff[4];
+	}
+	else if ((reply != raw->reply) || (page != (raw->page + 1)))
+	{
+	    trace( 2, "RT17: GENOUT packet sequence number mismatch or page "
+		      "out of order. %d GENOUT packets discarded.\n", page );
+	    clear_message_buffer(raw);
+	    clear_packet_buffer(raw);
+	    return (0);
+	}
+	
+	/*
+	| Check for raw->buff buffer overflow.
+	*/
+	if ((raw->nbyte + raw->pbyte) > MAXRAWLEN)
+	{
+	    trace( 2, "RT17: Buffer would overflow. "
+		      "%d GENOUT packets discarded.\n", page );
+	    clear_message_buffer(raw);
+	    clear_packet_buffer(raw);
+	    return (0);	
+	}
+
+	memcpy(raw->buff + raw->nbyte, raw->pbuff, raw->pbyte);
+	raw->nbyte += raw->pbyte;
+	raw->len += raw->plen;
+	clear_packet_buffer(raw);
+
+	if (page == pages)
+	{
+	    decode_genout( raw, strstr(raw->opt,"-LE") ?
+				    LITTLE_ENDIAN : BIG_ENDIAN );
+	    clear_message_buffer(raw);
+	    return (0);
+	}
+
+	raw->page = page;
+
+	return (0);
+    }
+
     /*
     | If we fall through to here, then the packet is not one that we support
     | (and hence we can't really even get here). Dump the packet on the floor
     | and continue reading from the stream.
     */
-    trace(3, "RT17: Packet is not RAWDATA or RETSVDATA. Packet discarded.\n"); 
+    trace( 2, "RT17: Packet is not GENOUT, RAWDATA or RETSVDATA. "
+	      "Packet discarded.\n" ); 
     clear_packet_buffer(raw);
     return (0);
 }
@@ -497,38 +615,38 @@ extern int input_rt17(raw_t *raw, unsigned char data)
 |
 | Formal Parameters: 
 |
-|    Raw    = Receiver raw data control structure [Input]
-|    FP     = File Pointer                        [Input]
+|   Raw    = Receiver raw data control structure [Input]
+|   FP     = File Pointer                        [Input]
 |
 | Implicit Inputs:
 |
-|    Raw->buff[]
-|    Raw->pbuff[]
-|    Raw->len
-|    Raw->plen
-|    Raw->nbyte
-|    Raw->pbyte
-|    Raw->reply
+|   Raw->buff[]
+|   Raw->pbuff[]
+|   Raw->len
+|   Raw->plen
+|   Raw->nbyte
+|   Raw->pbyte
+|   Raw->reply
 |
 | Implicit outputs:
 |
-|    Raw->buff[]
-|    Raw->pbuff[]
-|    Raw->len
-|    Raw->plen
-|    Raw->nbyte
-|    Raw->pbyte
-|    Raw->reply
+|   Raw->buff[]
+|   Raw->pbuff[]
+|   Raw->len
+|   Raw->plen
+|   Raw->nbyte
+|   Raw->pbyte
+|   Raw->reply
 |
 | Return Value:
 |
-|    -2: End of file (EOF)
-|    -1: error message
-|     0: no message
-|     1: input observation data
-|     2: input ephemeris
-|     3: input sbas message
-|     9: input ion/utc parameter
+|   -2: End of file (EOF)
+|   -1: error message
+|    0: no message
+|    1: input observation data
+|    2: input ephemeris
+|    3: input sbas message
+|    9: input ion/utc parameter
 |
 | Design Issues:
 |
@@ -556,28 +674,28 @@ extern int input_rt17f(raw_t *raw, FILE *fp)
 |
 | Formal Parameters: 
 |
-|    Raw = Receiver raw data control structure [Input]
+|   Raw = Receiver raw data control structure [Input]
 |
 | Implicit Inputs:
 |
-|    Raw->pbuff[]
+|   Raw->pbuff[]
 |
 | Implicit Outputs:
 |
-|    Raw->pbuff[]
+|   Raw->pbuff[]
 |
 | Return Value:
 |
-|    TRUE  = Checksum matched
-|    FALSE = Checksum did not match
+|   TRUE  = Checksum matched
+|   FALSE = Checksum did not match
 |
 | Design issues:
 |
-|    The checksum is computed as the modulo 256 (unsigned 8-bit byte integer)
-|    sum of the packet contents starting with the status byte, including the
-|    packet type byte, length byte, data bytes and ending with the last byte
-|    of the data bytes. It does not include the STX leader, the ETX trailer
-|    nor the checksum byte.
+|   The checksum is computed as the modulo 256 (unsigned 8-bit byte integer)
+|   sum of the packet contents starting with the status byte, including the
+|   packet type byte, length byte, data bytes and ending with the last byte
+|   of the data bytes. It does not include the STX leader, the ETX trailer
+|   nor the checksum byte.
 */
 static int check_packet_checksum(raw_t *raw)
 {
@@ -609,21 +727,21 @@ static int check_packet_checksum(raw_t *raw)
 |
 | Formal Parameters: 
 |
-|    Raw  = Receiver raw data control structure [Input]
+|   Raw  = Receiver raw data control structure [Input]
 |
 | Implicit Inputs:
 |
-|    <none>
+|   <none>
 |
 | Implicit Outputs:
 |
-|    Raw->buff[0-4]
-|    Raw->nbyte;
-|    Raw->len;
+|   Raw->buff[0-4]
+|   Raw->nbyte;
+|   Raw->len;
 |
 | Return Value:
 |
-|    <none>
+|   <none>
 |
 | Design issues:
 |
@@ -646,21 +764,21 @@ static void clear_message_buffer(raw_t *raw)
 |
 | Formal Parameters: 
 |
-|    Raw = Receiver raw data control structure [Input]
+|   Raw = Receiver raw data control structure [Input]
 |
 | Implicit Inputs:
 |
-|    <none>
+|   <none>
 |
 | Implicit Outputs:
 |
-|    Raw->pbuff[0-4]
-|    Raw->pbyte;
-|    Raw->plen;
+|   Raw->pbuff[0-4]
+|   Raw->pbyte;
+|   Raw->plen;
 |
 | Return Value:
 |
-|    <none>
+|   <none>
 |
 | Design issues:
 |
@@ -676,38 +794,163 @@ static void clear_packet_buffer(raw_t *raw)
 }
 
 /*
+| Function: decode_genout
+| Purpose:  Decode a General Serial Output Format (GSOF) message 
+| Authors:  Daniel A. Cook
+|
+| Formal Parameters: 
+|
+|   Raw = Receiver raw data control structure [Input]
+|
+| Implicit Inputs:
+|
+|   Raw->buff[]
+|   Raw->len
+|
+| Implicit outputs:
+|
+|   Raw->buff[]
+|   Raw->len
+|
+| Return Value:
+|
+|   <none>
+|
+| Design Issues:
+|
+*/
+static void decode_genout(raw_t *raw, int endian)
+{
+    static const char *rt[] = { NULL,					/* 00 */
+				"Position Time",			/* 01 */
+				"Latitude Longitude Height",		/* 02 */
+				"ECEF Position",			/* 03 */
+				"Local Datum LLH Position",		/* 04 */
+				"Local Zone ENU Position",		/* 05 */
+				"ECEF Delta",				/* 06 */
+				"Tangent Plane Delta",			/* 07 */
+				"Velocity Data",			/* 08 */
+				"PDOP Information",			/* 09 */
+				"Clock Information",			/* 10 */
+				"Position VCV Information",		/* 11 */
+				"Position Sigma Information",		/* 12 */
+				"SV Brief Information",			/* 13 */
+				"SV Detailed Information",		/* 14 */
+				"Receiver Serial Number",		/* 15 */
+				"Current Time",				/* 16 */
+				NULL,					/* 17 */
+				NULL,					/* 18 */
+				NULL,					/* 19 */
+				NULL,					/* 20 */
+				NULL,					/* 21 */
+				NULL,					/* 22 */
+				NULL,					/* 23 */
+				NULL,					/* 24 */
+				NULL,					/* 25 */
+				"Position Time UTC",			/* 26 */
+				"Attitude Information",			/* 27 */
+				NULL,					/* 28 */
+				NULL,					/* 29 */
+				NULL,					/* 30 */
+				NULL,					/* 31 */
+				NULL,					/* 32 */
+				"All SV Brief Information",		/* 33 */
+				"All SV Detailed Information",		/* 34 */
+				"Received Base Information",		/* 35 */
+				NULL,					/* 36 */
+				"Battery and Memory Information",	/* 37 */
+				NULL,					/* 38 */
+				NULL,					/* 39 */
+				"L-Band Status Information",		/* 40 */
+				"Base Position and Quality Indicator" };/* 41 */
+
+    int input_len;
+    unsigned char len, recordtype, *p;
+    char *recordtype_s = NULL;
+ 
+   /*
+    | Reassemble origional message by removing packet headers,
+    | trailers and page framing.
+    */
+    unwrap_genout(raw);
+
+    p = raw->buff;
+    input_len = raw->len;
+
+    while (input_len)
+    {
+	recordtype = p[0];
+	len = p[1];
+
+  	if (recordtype < (sizeof(rt) / sizeof(char*)))
+	    recordtype_s = (char*) rt[recordtype];
+
+	if (!recordtype_s)
+	    recordtype_s = "Unknown";
+
+   	trace( 4, "RT17: Packet type=0X40 (GENOUT), GSOF record type=%d (%s), "
+	          "length=%d.\n", recordtype, recordtype_s, len );
+      
+	/*
+	| Process (or possibly ignore) the message.
+	*/
+	switch (recordtype)
+	{
+	case 1:
+	    decode_gsof_1(raw, p, endian);
+	    break;
+	case 16:
+	    decode_gsof_16(raw, p, endian);
+	    break;
+	case 26:
+	    decode_gsof_26(raw, p, endian);
+	    break;
+	case 41:
+	    decode_gsof_41(raw, p, endian);
+	    break;
+	default:
+	    trace(4, "RT17: GSOF message not processed.\n");	
+	}
+
+	len += 2;
+	p += len;
+	input_len -= len;
+    }
+}
+
+/*
 | Function: decode_gps_ephemeris
 | Purpose:  Decode a GPS Ephemeris record
 | Authors:  Daniel A. Cook
 |
 | Formal Parameters: 
 |
-|    Raw = Receiver raw data control structure [Input]
-|    Endian = Endianness indicator             [Input]
+|   Raw = Receiver raw data control structure [Input]
+|   Endian = Endianness indicator             [Input]
 |
 | Implicit Inputs:
 |
-|    Raw->pbuff[]
-|    Raw->plen
+|   Raw->pbuff[]
+|   Raw->plen
 |
 | Implicit outputs:
 |
-|    Raw->pbuff[]
-|    Raw->plen
+|   Raw->pbuff[]
+|   Raw->plen
 |
 | Return Value:
 |
-|    -1: error message
-|     0: no message (tells caller to please read more data from the stream)
-|     1: input observation data
-|     2: input ephemeris
-|     3: input sbas message
-|     9: input ion/utc parameter
+|   -1: error message
+|    0: no message (tells caller to please read more data from the stream)
+|    1: input observation data
+|    2: input ephemeris
+|    3: input sbas message
+|    9: input ion/utc parameter
 |
 | Design Issues:
 |
-|    See ICD-GPS-200C.PDF for documentation of the GPS satellite ephemeris.
-|    See reference #1 above for documentation of the RETSVDATA GPS Ephemeris.
+|   See ICD-GPS-200C.PDF for documentation of the GPS satellite ephemeris.
+|   See reference #1 above for documentation of the RETSVDATA GPS Ephemeris.
 */
 static int decode_gps_ephemeris(raw_t *raw, int e)
 {
@@ -820,38 +1063,190 @@ static int decode_gps_ephemeris(raw_t *raw, int e)
 }
 
 /*
+| Function: decode_gsof_1
+| Purpose:  Decode a Position Time GSOF message 
+| Authors:  Daniel A. Cook
+|
+| Formal Parameters: 
+|
+|   Raw    = Receiver raw data control structure [Input]
+|   p      = Buffer pointer                      [Input]
+|   Endian = Endianness indicator                [Input]
+|
+| Implicit Inputs:
+|
+|   <none>
+|
+| Implicit outputs:
+|
+|   Raw->week
+|
+| Return Value:
+|
+|   <none>
+|
+| Design Issues:
+|
+|   We don't actually "decode" this message per-se.
+|   We're only interested in the GPS week number.
+|
+*/
+static void decode_gsof_1(raw_t *raw, unsigned char *p, int endian)
+{
+    if (p[1] < 7)
+       trace( 2, "RT17: GSOF Position Time message "
+		 "record length %d < 7 bytes. Record discarded.\n", p[1] );
+    else
+	set_week(raw, I2(p+6, endian));
+}
+ 
+/*
+| Function: decode_gsof_16
+| Purpose:  Decode a Current Time GSOF message 
+| Authors:  Daniel A. Cook
+|
+| Formal Parameters: 
+|
+|   Raw    = Receiver raw data control structure [Input]
+|   p      = Buffer pointer                      [Input]
+|   Endian = Endianness indicator                [Input]
+|
+| Implicit Inputs:
+|
+|   <none>
+|
+| Implicit outputs:
+|
+|   Raw->week
+|
+| Return Value:
+|
+|   <none>
+|
+| Design Issues:
+|
+|   We don't actually "decode" this message per-se.
+|   We're only interested in the GPS week number.
+|
+*/
+static void decode_gsof_16(raw_t *raw, unsigned char *p, int endian)
+{
+    if (p[1] < 7)
+	trace( 2, "RT17: GSOF Current Time message "
+		  "record length %d < 7 bytes. Record discarded.\n", p[1] );
+    else
+	set_week(raw, I2(p+6, endian));
+}
+
+/*
+| Function: decode_gsof_26
+| Purpose:  Decode a Position Time UTC GSOF message 
+| Authors:  Daniel A. Cook
+|
+| Formal Parameters: 
+|
+|   Raw    = Receiver raw data control structure [Input]
+|   p      = Buffer pointer                      [Input]
+|   Endian = Endianness indicator                [Input]
+|
+| Implicit Inputs:
+|
+|   <none>
+|
+| Implicit outputs:
+|
+|   Raw->week
+|
+| Return Value:
+|
+|   <none>
+|
+| Design Issues:
+|
+|   We don't actually "decode" this message per-se.
+|   We're only interested in the GPS week number.
+|
+*/
+static void decode_gsof_26(raw_t *raw, unsigned char *p, int endian)
+{
+    if (p[1] < 7)
+       trace( 2, "RT17: GSOF Position Time UTC message "
+		 "record length %d < 7 bytes. Record discarded.\n", p[1] );
+    else
+	set_week(raw, I2(p+6, endian));
+}
+
+/*
+| Function: decode_gsof_41
+| Purpose:  Decode a Base Position and Quality Indicator GSOF message 
+| Authors:  Daniel A. Cook
+|
+| Formal Parameters: 
+|
+|   Raw    = Receiver raw data control structure [Input]
+|   p      = Buffer pointer                      [Input]
+|   Endian = Endianness indicator                [Input]
+|
+| Implicit Inputs:
+|
+|   <none>
+|
+| Implicit outputs:
+|
+|   Raw->week
+|
+| Return Value:
+|
+|   <none>
+|
+| Design Issues:
+|
+|   We don't actually "decode" this message per-se.
+|   We're only interested in the GPS week number.
+|
+*/
+static void decode_gsof_41(raw_t *raw, unsigned char *p, int endian)
+{
+    if (p[1] < 7)
+	trace( 2, "RT17: GSOF Base Position and Quality Indicator message "
+		   "record length %d < 7 bytes. Record discarded.\n", p[1] );
+    else 
+	set_week(raw, I2(p+6, endian));
+}
+
+/*
 | Function: decode_ion_utc_data
 | Purpose:  Decode an ION / UTC data record
 | Authors:  Daniel A. Cook
 |
 | Formal Parameters: 
 |
-|    Raw  = Receiver raw data control structure [Input]
-|    Endian = Endianness indicator              [Input]
+|   Raw  = Receiver raw data control structure [Input]
+|   Endian = Endianness indicator              [Input]
 |
 | Implicit Inputs:
 |
-|    Raw->buff[]
-|    Raw->len
+|   Raw->buff[]
+|   Raw->len
 |
 | Implicit outputs:
 |
-|    Raw->buff[]
-|    Raw->len
+|   Raw->buff[]
+|   Raw->len
 |
 | Return Value:
 |
-|    -1: error message
-|     0: no message (tells caller to please read more data from the stream)
-|     1: input observation data
-|     2: input ephemeris
-|     3: input sbas message
-|     9: input ion/utc parameter
+|   -1: error message
+|    0: no message (tells caller to please read more data from the stream)
+|    1: input observation data
+|    2: input ephemeris
+|    3: input sbas message
+|    9: input ion/utc parameter
 |
 | Design Issues:
 |
-|    See ICD-GPS-200C.PDF for documetation of GPS ION / UTC data.
-|    See reference #1 above for documentation of RETSVDATA and ION / UTC data.
+|   See ICD-GPS-200C.PDF for documetation of GPS ION / UTC data.
+|   See reference #1 above for documentation of RETSVDATA and ION / UTC data.
 */
 static int decode_ion_utc_data(raw_t *raw, int e)
 {
@@ -862,15 +1257,15 @@ static int decode_ion_utc_data(raw_t *raw, int e)
 
     if (raw->plen < 129)
     {
-        trace( 2,"RT17: RETSVDATA packet length %d < 129 bytes. "
-		 "GPS ION / UTC data packet discarded.\n", raw->plen );
+        trace( 2, "RT17: RETSVDATA packet length %d < 129 bytes. "
+		  "GPS ION / UTC data packet discarded.\n", raw->plen );
         return (-1);
     }
 
     /*
-    | ION / UTC data does not have the current week number. Punt!
+    | ION / UTC data does not have the current GPS week number. Punt!
     */
-    week = get_week(raw, 0);
+    week = get_week(raw, 0.0);
  
     raw->nav.ion_gps[0] = R8(p+6,e);   /* 006–013: ALPHA 0 (seconds) */
     raw->nav.ion_gps[1] = R8(p+14,e);  /* 014–021: ALPHA 1 (seconds/semi-circle) */
@@ -902,51 +1297,57 @@ static int decode_ion_utc_data(raw_t *raw, int e)
 |
 | Formal Parameters: 
 |
-|    Raw = Receiver raw data control structure [Input]
+|   Raw = Receiver raw data control structure [Input]
 |
 | Implicit Inputs:
 |
-|    Raw->buff[]
-|    Raw->len
+|   Raw->buff[]
+|   Raw->len
 |
 | Implicit outputs:
 |
-|    Raw->buff[]
-|    Raw->len
+|   Raw->buff[]
+|   Raw->len
 |
 | Return Value:
 |
-|    -1: error message
-|     0: no message (tells caller to please read more data from the stream)
-|     1: input observation data
-|     2: input ephemeris
-|     3: input sbas message
-|     9: input ion/utc parameter
+|   -1: error message
+|    0: no message (tells caller to please read more data from the stream)
+|    1: input observation data
+|    2: input ephemeris
+|    3: input sbas message
+|    9: input ion/utc parameter
 |
 | Design Issues:
 |
 */
 static int decode_rawdata(raw_t *raw, int endian)
 {
+    static const char *rt[] = { "Real-time GPS Survey Data (type 17)",	/* 00 */
+				"Position Record (type 11)",		/* 01 */
+				"Event Mark",				/* 02 */
+				NULL,					/* 03 */
+				NULL,					/* 04 */
+				NULL,					/* 05 */
+				"Real-time GNSS Survey Data (type 27)",	/* 06 */
+				"Enhanced Position Record (type 29)" };	/* 07 */
+
     int status = 0;
     unsigned int rif;
-    char *recordtype_s = "Undefined";
+    char *recordtype_s = NULL;
     unsigned char recordtype = raw->buff[4];
-
-    char *rt[] = {"Real-time GPS Survey Data (type 17)",
-		  "Position Record (type 11)","Event Mark","Undefined",
-		  "Undefined","Undefined",
-		  "Real-time GNSS Survey Data (type 27)",
-		  "Enhanced Position Record (type 29)"};
-
+ 
     if (recordtype < (sizeof(rt) / sizeof(char*)))
-	recordtype_s = rt[recordtype];
+	recordtype_s = (char*) rt[recordtype];
+
+    if (!recordtype_s)
+	recordtype_s = "Unknown";
   
-    trace( 4, "RT17: Packet type=0X57 (RAWDATA), recordtype=%d (%s), "
+    trace( 3, "RT17: Packet type=0X57 (RAWDATA), recordtype=%d (%s), "
 	      "length=%d.\n", recordtype, recordtype_s, raw->len );
       
     /*
-    | Reassemble origional message by remove packet headers,
+    | Reassemble origional message by removing packet headers,
     | trailers and page framing.
     */
     unwrap_rawdata(raw, &rif);
@@ -958,6 +1359,9 @@ static int decode_rawdata(raw_t *raw, int endian)
     {
     case 0:
 	status = decode_type_17(raw, rif, endian);
+	break;
+    case 7:
+	status = decode_type_29(raw, endian);
 	break;
     default:
 	trace(3, "RT17: Packet not processed.\n");	
@@ -973,49 +1377,66 @@ static int decode_rawdata(raw_t *raw, int endian)
 |
 | Formal Parameters: 
 |
-|    Raw    = Receiver raw data control structure [Input]
-|    Endian = Endianness indicator                [Input]
+|   Raw    = Receiver raw data control structure [Input]
+|   Endian = Endianness indicator                [Input]
 |
 | Implicit Inputs:
 |
-|    Raw->pbuff[]
-|    Raw->plen
+|   Raw->pbuff[]
+|   Raw->plen
 |
 | Implicit outputs:
 |
-|    Raw->pbuff[]
-|    Raw->plen
+|   Raw->pbuff[]
+|   Raw->plen
 |
 | Return Value:
 |
-|    -1: error message
-|     0: no message (tells caller to please read more data from the stream)
-|     1: input observation data
-|     2: input ephemeris
-|     3: input sbas message
-|     9: input ion/utc parameter
+|   -1: error message
+|    0: no message (tells caller to please read more data from the stream)
+|    1: input observation data
+|    2: input ephemeris
+|    3: input sbas message
+|    9: input ion/utc parameter
 |
 | Design Issues:
 |
 */
 static int decode_retsvdata(raw_t *raw, int endian)
 {
+    static const char *st[] = { "SV Flags",			    /* 00 */
+				"GPS Ephemeris",		    /* 01 */
+				"GPS Almanac","ION / UTC Data",	    /* 02 */
+				"Disable Satellite (Depreciated)",  /* 03 */
+				"Enable Satellite (Depreciated)",   /* 04 */
+				NULL,				    /* 05 */
+				"Extended GPS Almanac",		    /* 06 */
+				"GLONASS Almanac",		    /* 07 */
+				"GLONASS Ephemeris",		    /* 08 */
+				NULL,				    /* 09 */
+				"Galileo Ephemeris",		    /* 10 */
+				"Galileo Almanac",		    /* 11 */
+				NULL,				    /* 12 */
+				"QZSS Ephemeris",		    /* 13 */
+				NULL,				    /* 14 */
+				"QZSS Almanac",			    /* 15 */
+				NULL,				    /* 16 */
+				NULL,				    /* 17 */
+				NULL,				    /* 18 */
+				"SV Flags",			    /* 19 */
+				"BeiDou Ephemeris",		    /* 20 */
+				"BeiDou Almanac" };		    /* 21 */
+ 
     int status = 0;
-    char *subtype_s = "Undefined";
+    char *subtype_s = NULL;
     unsigned char subtype = raw->pbuff[4];
 
-    char *st[] = {"SV Flags","GPS Ephemeris","GPS Almanac",
-		  "ION / UTC Data","Disable Satellite (Depreciated)",
-		  "Enable Satellite (Depreciated)", "Undefined",
-		  "Extended GPS Almanac","GLONASS Almanac",
-		  "GLONASS Ephemeris","Undefined","Galileo Ephemeris",
-		   "Galileo Almanac","Undefined","QZSS Ephemeris",
-		  "Undefined","QZSS Almanac","Undefined","Undefined",
-		  "Undefined","SV Flags","BeiDou Ephemeris","BeiDou Almanac"};
- 
     if (subtype < (sizeof(st) / sizeof(char*)))
-  	subtype_s = st[subtype];
+  	subtype_s = (char*) st[subtype];
   
+    if (!subtype_s)
+	subtype_s = "Unknown";
+ 
     trace( 3, "RT17: packet type=0X55 (RETSVDATA), subtype=%d (%s), "
 	      "length=%d.\n", subtype, subtype_s, raw->plen );
       
@@ -1044,32 +1465,32 @@ static int decode_retsvdata(raw_t *raw, int endian)
 |
 | Formal Parameters: 
 |
-|    Raw    = Receiver raw data control structure [Input]
-|    RIF    = Rcord Interpretation Flags          [Input]
-|    Endian = Endianness indicator                [Input]
+|   Raw    = Receiver raw data control structure [Input]
+|   RIF    = Rcord Interpretation Flags          [Input]
+|   Endian = Endianness indicator                [Input]
 |
 | Implicit Inputs:
 |
-|    Raw->buff[]
-|    Raw->len
+|   Raw->buff[]
+|   Raw->len
 |
 | Implicit outputs:
 |
-|    Raw->buff[]
-|    Raw->len
+|   Raw->buff[]
+|   Raw->len
 |
 | Return Value:
 |
-|    -1: error message
-|     0: no message (tells caller to please read more data from the stream)
-|     1: input observation data
-|     2: input ephemeris
-|     3: input sbas message
-|     9: input ion/utc parameter
+|   -1: error message
+|    0: no message (tells caller to please read more data from the stream)
+|    1: input observation data
+|    2: input ephemeris
+|    3: input sbas message
+|    9: input ion/utc parameter
 |
 | Design Issues:
 |
-|    Handles expanded and concise formats with and without enhanced record data.
+|   Handles expanded and concise formats with and without enhanced record data.
 */
 static int decode_type_17(raw_t *raw, unsigned int rif, int e)
 {
@@ -1089,7 +1510,7 @@ static int decode_type_17(raw_t *raw, unsigned int rif, int e)
 	receive_time += clock_offset;
 
     /*
-    | The observation data does not have the current week number. Punt!
+    | The observation data does not have the current GPS week number. Punt!
     */
     week = get_week(raw, receive_time);
  
@@ -1382,33 +1803,85 @@ static int decode_type_17(raw_t *raw, unsigned int rif, int e)
 
 
 /*
-| Function: get_week
-| Purpose:  Get week number
+| Function: decode_type_29
+| Purpose:  Decode Enhanced position (record type 29)
 | Authors:  Daniel A. Cook
 |
 | Formal Parameters: 
 |
-|    Raw         = Pointer to raw structure [Input]
-|    Receve_time = Receiver time of week    [Input]
+|   Raw    = Receiver raw data control structure [Input]
+|   Endian = Endianness indicator                [Input]
 |
 | Implicit Inputs:
 |
-|    raw->flag
-|    raw->week
-|    raw->receive_time
+|   Raw->buff[]
+|   Raw->len
 |
-| Implicit Outputs:
+| Implicit outputs:
 |
-|    raw->flag
-|    raw->week
-|    raw->receive_time
+|   Raw->buff[]
+|   Raw->len
 |
 | Return Value:
 |
-|    Week number
+|   -1: error message
+|    0: no message (tells caller to please read more data from the stream)
+|    1: input observation data
+|    2: input ephemeris
+|    3: input sbas message
+|    9: input ion/utc parameter
 |
 | Design Issues:
 |
+|   We don't actually "decode" this message per-se.
+|   We're only interested in the GPS week number.
+|
+|   This message can only be output by receivers that can output RT27.
+|   It is enabled for output by outputting positions along with RT27 data.
+*/
+static int decode_type_29(raw_t *raw, int endian)
+{
+    unsigned char *p = raw->buff;
+
+    if (*p < 3)
+       trace( 2, "RT17: Enhanced Position record block #1 length %d < 3 bytes. "
+		 "Record discarded.\n", *p );
+    else
+        set_week(raw, I2(p+1, endian));
+
+    return (0);
+}
+
+/*
+| Function: get_week
+| Purpose:  Get GPS week number
+| Authors:  Daniel A. Cook
+|
+| Formal Parameters: 
+|
+|   Raw         = Pointer to raw structure [Input]
+|   Receve_time = Receiver time of week    [Input]
+|
+| Implicit Inputs:
+|
+|   Raw->flag
+|   Raw->week
+|   Raw->receive_time
+|
+| Implicit Outputs:
+|
+|   Raw->flag
+|   Raw->week
+|   Raw->receive_time
+|
+| Return Value:
+|
+|   GPS week number
+|
+| Design Issues:
+|
+|   The -WEEK=n initial week option overrides everything else.
+|   Week rollover and increment from the initial week and subsequent weeks is handled.
 */
 static int get_week(raw_t *raw, double receive_time)
 {
@@ -1416,10 +1889,14 @@ static int get_week(raw_t *raw, double receive_time)
 
     if (raw->flag & M_WEEK_OPTION)
     {
-	if ((receive_time && raw->receive_time) && (receive_time < raw->receive_time))
+	if ((receive_time && raw->receive_time) &&
+	    (receive_time < raw->receive_time))
+	{
+	    trace( 2, "RT17: GPS WEEK rolled over from %d to %d.\n",
+		   raw->week, raw->week + 1 );
+
 	    raw->week++;
-	
-	week = raw->week;
+	}
     }
     else if (!(raw->flag & M_WEEK_SCAN))
     {
@@ -1430,25 +1907,29 @@ static int get_week(raw_t *raw, double receive_time)
 	if (opt)
         {
 	    if (!sscanf(opt+6, "%d", &week) || (week <= 0))
-		trace(2, "RT17: Invalid week number receiver option value.\n");
+		trace(2, "RT17: Invalid -WEEK=n receiver option value.\n");
 	    else
 	    {
 		raw->week = week;
  		raw->flag |= M_WEEK_OPTION;
+
+		trace( 2, "RT17: Initial GPS WEEK explicitly set to %d "
+			  "by user.\n", week );
 	    }
 	}
     }
 
-    if (!week)
+    week = raw->week;
+
+    if (week == 0)
     {
 	time2gpst(timeget(), &week);
-	if (week != raw->week)
-	{
-	    trace(2, "RT17: Week number unknown; week number %d assumed.\n", week);
-	    raw->week = week;
-	}
+	raw->week = week;
+	
+	trace( 2, "RT17: Initial GPS WEEK number unknown; "
+		  "WEEK number %d assumed.\n", week );
     }
-
+ 
     if (receive_time)
 	raw->receive_time = receive_time;
 
@@ -1462,26 +1943,26 @@ static int get_week(raw_t *raw, double receive_time)
 |
 | Formal Parameters: 
 |
-|    P      = Input pointer        [Input]
-|    Endian = Endianness indicator [Input]
+|   P      = Input pointer        [Input]
+|   Endian = Endianness indicator [Input]
 |
 | Implicit Inputs:
 |
-|    <none>
+|   <none>
 |
 | Implicit Outputs:
 |
-|    <none>
+|   <none>
 |
 | Return Value:
 |
-|    Fetched and converted signed two byte integer (short)
+|   Fetched and converted signed two byte integer (short)
 |
 | Design issues:
 |
-|    The data is fetched one byte at a time so as to handle data that
-|    is not naturally aligned. It is then converted from the input
-|    endianness to our execution platform endianness.
+|   The data is fetched one byte at a time so as to handle data that
+|   is not naturally aligned. It is then converted from the input
+|   endianness to our execution platform endianness.
 */
 static short read_i2(unsigned char *p, int endian) 
 {
@@ -1506,26 +1987,26 @@ static short read_i2(unsigned char *p, int endian)
 |
 | Formal Parameters: 
 |
-|    P      = Input pointer        [Input]
-|    Endian = Endianness indicator [Input]
+|   P      = Input pointer        [Input]
+|   Endian = Endianness indicator [Input]
 |
 | Implicit Inputs:
 |
-|    <none>
+|   <none>
 |
 | Implicit Outputs:
 |
-|    <none>
+|   <none>
 |
 | Return Value:
 |
-|    Fetched and converted four byte signed integer (int)
+|   Fetched and converted four byte signed integer (int)
 |
 | Design issues:
 |
-|    The data is fetched one byte at a time so as to handle data that is not
-|    naturally aligned. It is then converted from the input endianness to our
-|    execution platform endianness.
+|   The data is fetched one byte at a time so as to handle data that is not
+|   naturally aligned. It is then converted from the input endianness to our
+|   execution platform endianness.
 */
 static int read_i4(unsigned char *p, int endian)
 {
@@ -1551,26 +2032,26 @@ static int read_i4(unsigned char *p, int endian)
 |
 | Formal Parameters: 
 |
-|    P      = Input pointer        [Input]
-|    Endian = Endianness indicator [Input]
+|   P      = Input pointer        [Input]
+|   Endian = Endianness indicator [Input]
 |
 | Implicit Inputs:
 |
-|    <none>
+|   <none>
 |
 | Implicit Outputs:
 |
-|    <none>
+|   <none>
 |
 | Return Value:
 |
-|    Fetched and converted IEEE S_FLOAT (float)
+|   Fetched and converted IEEE S_FLOAT (float)
 |
 | Design issues:
 |
-|    The data is fetched one byte at a time so as to handle data that is not
-|    naturally aligned. It is then converted from the input endianness to our
-|    execution platform endianness.
+|   The data is fetched one byte at a time so as to handle data that is not
+|   naturally aligned. It is then converted from the input endianness to our
+|   execution platform endianness.
 */
 static float read_r4(unsigned char *p, int endian)
 {
@@ -1586,26 +2067,26 @@ static float read_r4(unsigned char *p, int endian)
 |
 | Formal Parameters: 
 |
-|    P      = Input pointer        [Input]
-|    Endian = Endianness indicator [Input]
+|   P      = Input pointer        [Input]
+|   Endian = Endianness indicator [Input]
 |
 | Implicit Inputs:
 |
-|    <none>
+|   <none>
 |
 | Implicit Outputs:
 |
-|    <none>
+|   <none>
 |
 | Return Value:
 |
-|    Fetched and converted IEEE T_FLOAT (double)
+|   Fetched and converted IEEE T_FLOAT (double)
 |
 | Design issues:
 |
-|    The data is fetched one byte at a time so as to handle data that is not
-|    naturally aligned. It is then converted from the input endianness to our
-|    execution platform endianness.
+|   The data is fetched one byte at a time so as to handle data that is not
+|   naturally aligned. It is then converted from the input endianness to our
+|   execution platform endianness.
 */
 static double read_r8(unsigned char *p, int endian)
 {
@@ -1633,26 +2114,26 @@ static double read_r8(unsigned char *p, int endian)
 |
 | Formal Parameters: 
 |
-|    P      = Input pointer        [Input]
-|    Endian = Endianness indicator [Input]
+|   P      = Input pointer        [Input]
+|   Endian = Endianness indicator [Input]
 |
 | Implicit Inputs:
 |
-|    <none>
+|   <none>
 |
 | Implicit Outputs:
 |
-|    <none>
+|   <none>
 |
 | Return Value:
 |
-|    Fetched and converted two byte unsigned integer (unsigned short)
+|   Fetched and converted two byte unsigned integer (unsigned short)
 |
 | Design issues:
 |
-|    The data is fetched one byte at a time so as to handle data that
-|    is not naturally aligned. It is then converted from the input
-|    endianness to our execution platform endianness.
+|   The data is fetched one byte at a time so as to handle data that
+|   is not naturally aligned. It is then converted from the input
+|   endianness to our execution platform endianness.
 */
 static unsigned short read_u2(unsigned char *p, int endian)
 {
@@ -1677,26 +2158,26 @@ static unsigned short read_u2(unsigned char *p, int endian)
 |
 | Formal Parameters: 
 |
-|    P      = Input pointer        [Input]
-|    Endian = Endianness indicator [Input]
+|   P      = Input pointer        [Input]
+|   Endian = Endianness indicator [Input]
 |
 | Implicit Inputs:
 |
-|    <none>
+|   <none>
 |
 | Implicit Outputs:
 |
-|    <none>
+|   <none>
 |
 | Return Value:
 |
-|    Fetched and converted four byte unsigned integer (unsigned int)
+|   Fetched and converted four byte unsigned integer (unsigned int)
 |
 | Design issues:
 |
-|    The data is fetched one byte at a time so as to handle data that is not
-|    naturally aligned. It is then converted from the input endianness to our
-|    execution platform endianness.
+|   The data is fetched one byte at a time so as to handle data that is not
+|   naturally aligned. It is then converted from the input endianness to our
+|   execution platform endianness.
 */
 static unsigned int read_u4(unsigned char *p, int endian)
 {
@@ -1716,37 +2197,88 @@ static unsigned int read_u4(unsigned char *p, int endian)
 }
 
 /*
+| Function: set_week
+| Purpose:  Set GPS week number
+| Authors:  Daniel A. Cook
+|
+| Formal Parameters: 
+|
+|   Raw  = Pointer to raw structure [Input]
+|   Week = GPS week number          [Input]
+|
+| Implicit Inputs:
+|
+|   Raw->week
+|   Raw->flag
+|
+| Implicit Outputs:
+|
+|   Raw->week
+|
+| Return Value:
+|
+|   <none>
+|
+| Design Issues:
+|
+|   The -WEEK=n initial week option overrides us.
+|
+*/static void set_week(raw_t *raw, int week)
+{
+    if (!(raw->flag & M_WEEK_OPTION))
+    {
+	if (raw->week)
+	{
+	    if (week != raw->week)
+	    {
+		if (week == (raw->week + 1))
+		    trace(2, "RT17: GPS WEEK rolled over from %d to %d.\n", raw->week, week);
+		else
+		    trace(2, "RT17: GPS WEEK changed from %d to %d.\n", raw->week, week);
+	    }
+	}
+	else
+	    trace(2, "RT17: GPS WEEK initially set to %d.\n", week);
+
+	raw->week = week;
+    }
+}
+/*
 | Function: sync_packet
 | Purpose:  Synchronize the raw data stream to the start of a series of RT17 packets 
 | Authors:  Daniel A. Cook
 |
 | Formal Parameters: 
 |
-|    Raw  = Receiver raw data control structure [Input]
-|    Data = Next character in raw data stream   [Input]
+|   Raw  = Receiver raw data control structure [Input]
+|   Data = Next character in raw data stream   [Input]
 |
 | Implicit Inputs:
 |
-|    Raw->pbuff[1-3]
+|   Raw->pbuff[1-3]
 |
 | Implicit Outputs:
 |
-|    Raw=>pbuff[0-3]
+|   Raw=>pbuff[0-3]
 |
 | Return Value:
 |
-|    TRUE  = Start of packet sequence tentatively found
-|    FALSE = Not found, keep reading data bytes from the stream
+|   TRUE  = Start of packet sequence tentatively found
+|   FALSE = Not found, keep reading data bytes from the stream
 |
 | Design Issues:
 |
 */
 static int sync_packet(raw_t *raw, unsigned char data)
 {
+    unsigned char type;
+
     raw->pbuff[0] = raw->pbuff[1];
     raw->pbuff[1] = raw->pbuff[2];
     raw->pbuff[2] = raw->pbuff[3];
     raw->pbuff[3] = data;
+
+    type = raw->pbuff[2];
 
     /*
     | Byte 0 must be an STX character.
@@ -1755,9 +2287,65 @@ static int sync_packet(raw_t *raw, unsigned char data)
     | Byte 3 = data length which must be non-zero for any packet we're interested in.
     */
     return ( (raw->pbuff[0] == STX) &&
-	     (raw->pbuff[3] != 0) &&
-	     ((raw->pbuff[2] == RAWDATA) ||
-	      (raw->pbuff[2] == RETSVDATA)) );
+	     (data != 0) &&
+	     ((type == GENOUT) || (type == RAWDATA) || (type == RETSVDATA)) );
+}
+
+/*
+| Function: unwrap_genout
+| Purpose:  Reassemble GENOUT message by removing packet headers, trailers and page framing
+| Authors:  Daniel A. Cook
+|
+| Formal Parameters: 
+|
+|   Raw  = Receiver raw data control structure [Input]
+|
+| Implicit Inputs:
+|
+|   Raw->buff[]
+|   Raw->len
+|
+| Implicit Outputs:
+|
+|   Raw->buff[]
+|   Raw->len
+|   Raw->nbyte
+|
+| Return Value:
+|
+|   -1: error message
+|    0: no message (tells caller to please read more data from the stream)
+|    1: input observation data
+|    2: input ephemeris
+|    3: input sbas message
+|    9: input ion/utc parameter
+|
+| Design Issues:
+|
+|   The GENOUT message is broken up on _arbitrary byte boundries_ into
+|   pages of no more than 246 bytes each, then wrapped with page frames,
+|   packet headers and packet trailers. We reassemble the original message
+|   so that it is uninterrupted by removing the extraneous packet headers,
+|   trailers and page framing.
+*/
+static void unwrap_genout(raw_t *raw)
+{
+    unsigned char *p_in = raw->buff;
+    unsigned char *p_out = p_in;
+    unsigned int length_in, length_in_total = raw->len;
+    unsigned int length_out, length_out_total = 0;
+
+    while (length_in_total > 0)
+    {
+	length_in = p_in[3] + 6;
+	length_out = p_in[3] - 3;
+	memmove(p_out, p_in + 7, length_out);
+	p_in += length_in;
+	p_out += length_out;
+	length_out_total += length_out;
+	length_in_total -= length_in;  
+    }
+    raw->nbyte = raw->len = length_out_total;
 }
 
 /*
@@ -1767,39 +2355,39 @@ static int sync_packet(raw_t *raw, unsigned char data)
 |
 | Formal Parameters: 
 |
-|    Raw  = Receiver raw data control structure [Input]
-|    RIF  = Record Interpreation Flags          [Output]
+|   Raw  = Receiver raw data control structure [Input]
+|   RIF  = Record Interpreation Flags          [Output]
 |
 | Implicit Inputs:
 |
-|    Raw->buff[]
-|    Raw->len
+|   Raw->buff[]
+|   Raw->len
 |
 | Implicit Outputs:
 |
-|    raw->buff[]
-|    raw->len
-|    raw->nbyte
+|   Raw->buff[]
+|   Raw->len
+|   Raw->nbyte
 |
 | Return Value:
 |
-|    -1: error message
-|     0: no message (tells caller to please read more data from the stream)
-|     1: input observation data
-|     2: input ephemeris
-|     3: input sbas message
-|     9: input ion/utc parameter
+|   -1: error message
+|    0: no message (tells caller to please read more data from the stream)
+|    1: input observation data
+|    2: input ephemeris
+|    3: input sbas message
+|    9: input ion/utc parameter
 |
 | Design Issues:
 |
-|    The RAWDATA message is broken up on _arbitrary byte boundries_ into
-|    pages of no more than 244 bytes each, then wrapped with page frames,
-|    packet headers and packet trailers. We reassemble the original message
-|    so that it is uninterrupted by removing the extraneous packet headers,
-|    trailers and page framing.
+|   The RAWDATA message is broken up on _arbitrary byte boundries_ into
+|   pages of no more than 244 bytes each, then wrapped with page frames,
+|   packet headers and packet trailers. We reassemble the original message
+|   so that it is uninterrupted by removing the extraneous packet headers,
+|   trailers and page framing.
 |
-|    While we're at it we also check to make sure the Record Interpretation
-|    Flags are consistent. They should be the same in every page frame.
+|   While we're at it we also check to make sure the Record Interpretation
+|   Flags are consistent. They should be the same in every page frame.
 */
 static void unwrap_rawdata(raw_t *raw, unsigned int *rif)
 {
@@ -1813,7 +2401,7 @@ static void unwrap_rawdata(raw_t *raw, unsigned int *rif)
     while (length_in_total > 0)
     {
 	if (p_in[7] != *rif)
-	   trace( 3, "RT17: Inconsistent Record Interpretation "
+	   trace( 2, "RT17: Inconsistent Record Interpretation "
 		     "Flags within a single RAWDATA message.\n" );
 
 	length_in = p_in[3] + 6;
