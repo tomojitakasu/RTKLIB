@@ -22,6 +22,26 @@ static const float geoid[361][181]; /* embedded geoid heights (m) (lon x lat) */
 static FILE *fp_geoid=NULL;         /* geoid file pointer */
 static int model_geoid=GEOID_EMBEDDED; /* geoid model */
 
+typedef struct{
+	int lonSize;
+	int latSize;
+	double minLon;
+	double maxLon;
+	double minLat;
+	double maxLat;
+	double stepLon;
+	double stepLat;
+	int sortOrder;
+	int isCoordinatesPresent;
+	int nvValPerNode;
+	int isPrecisionCodePresent;
+	int translationApplied;
+	int isGridValid;
+	char *name;
+	double **grid;
+}raf09_grid_t;
+static raf09_grid_t raf09_grid;
+
 /* bilinear interpolation ----------------------------------------------------*/
 static double interpb(const double *y, double a, double b)
 {
@@ -48,6 +68,205 @@ static double geoidh_emb(const double *pos)
     y[3]=geoid[i2][j2];
     return interpb(y,a,b);
 }
+void free_raf09_grid() {
+	if(raf09_grid.name != NULL) {
+		free(raf09_grid.name);
+	}
+    if (raf09_grid.grid != NULL) {
+            int i;
+                for (i = 0; i < raf09_grid.lonSize; ++i) {
+                    free(raf09_grid.grid[i]);
+                }
+                free(raf09_grid.grid);
+    }
+    raf09_grid.latSize = 0;
+    raf09_grid.lonSize = 0;
+	raf09_grid.isGridValid = 0;
+}
+/*------------------------------------------------------------------------------
+ * ign raf09 support
+ */
+ssize_t raf09_getline(char **lineptr, size_t *n, FILE *stream)
+{
+
+    char *ptr;
+    ptr = fgetln(stream, n);
+    if (ptr == NULL) {
+        return -1;
+    }
+
+    if (*lineptr != NULL) free(*lineptr);	//ensure that the pointer supplied is free
+    /* Add one more space for '\0' */
+    size_t len = n[0] + 1;
+    n[0] = len;
+    /* Allocate a new buffer */
+    *lineptr = malloc(len);
+    /* Copy over the string */
+    memcpy(*lineptr, ptr, len-1);
+    /* Write the NULL character */
+    (*lineptr)[len-1] = '\0';
+    /* Return the length of the new buffer */
+    return len;
+}
+void get_raf09_grid(FILE *fp)
+{
+	const char SPACE_CHAR = 0x20;
+	const char NULL_CHAR = 0x0;
+
+    const int BUFFER_SIZE = 4096;
+    char buffer[BUFFER_SIZE];
+
+    raf09_grid.latSize=0;
+    raf09_grid.lonSize=0;
+    raf09_grid.isGridValid=0;
+    raf09_grid.grid = NULL;
+    raf09_grid.name = NULL;
+    if (fp != NULL) {
+        if (feof(fp)==0) {
+        	//read ign mnt header
+        	//an IGN type 2 mnt geoid model file is composed of 2 lines:
+        	//		- first line is the header
+        	//		- second line is the geoid
+        	// see http://geodesie.ign.fr/contenu/fichiers/documentation/grilles/notices/Grilles-MNT-TXT_Formats.pdf
+        	// for explanation of format in french
+        	//11 numeric fields + 1 string field
+        	//the first 11 fields are separated by one space
+        	//lines are ended with \r\n
+            if (fgets(buffer,BUFFER_SIZE,fp) != NULL) {
+            	char *pBuffer = buffer;
+            	char *fields[12];
+            	fields[0]=pBuffer;
+            	int cFieldCounter = 1;
+            	while(pBuffer&&(cFieldCounter<12))
+            	{
+            		if (*pBuffer==SPACE_CHAR) {
+            			*pBuffer = NULL_CHAR;
+            			fields[cFieldCounter]=pBuffer+1;
+            			cFieldCounter++;
+            		}
+            		pBuffer++;
+            	}
+            	fields[11][strlen(fields[11])-2]=NULL_CHAR;
+            	raf09_grid.name = (char*)malloc( (strlen(fields[11])+1)*sizeof(*fields[11]));
+            	                    strcpy(raf09_grid.name,fields[11]);
+            	raf09_grid.minLon=atof(fields[0]);
+            	raf09_grid.maxLon=atof(fields[1]);
+            	raf09_grid.minLat=atof(fields[2]);
+            	raf09_grid.maxLat=atof(fields[3]);
+            	raf09_grid.stepLon=atof(fields[4]);
+            	raf09_grid.stepLat=atof(fields[5]);
+            	raf09_grid.sortOrder = atoi(fields[6]);
+            	raf09_grid.isCoordinatesPresent = atoi(fields[7]);
+            	raf09_grid.nvValPerNode = atoi(fields[8]);
+            	raf09_grid.isPrecisionCodePresent = atoi(fields[9]);
+            	raf09_grid.translationApplied = atoi(fields[10]);
+
+            	char *geoid_text = NULL;
+            	ssize_t read;
+            	size_t geoid_text_len=0;
+            	int nbElementsTotal = 0;				//number of different element in geoid line
+            	int nbElementsAltitude = 0;				//number of altitude element in geoid line
+            	int nbElLon=floor((raf09_grid.maxLon-raf09_grid.minLon)/raf09_grid.stepLon)+1;		//do not forget +1 for extremities
+            	int nbElLat=floor((raf09_grid.maxLat-raf09_grid.minLat)/raf09_grid.stepLat)+1;
+
+            	//explanation of nbElPerNode:
+            	// minimum 1 element (the altitude component)
+            	// if coordinates are present for each node +2 elements
+            	// if precision code is present +1 element
+            	int nbElPerNode=raf09_grid.nvValPerNode+raf09_grid.isPrecisionCodePresent+(raf09_grid.isCoordinatesPresent?2:0);
+
+            	raf09_grid.latSize=nbElLat;
+            	raf09_grid.lonSize=nbElLon;
+
+            	if (raf09_grid.sortOrder==2){
+        			read = raf09_getline(&geoid_text,&geoid_text_len,fp);	//attention getline is POSIX2008 only not ANSI
+        																	//if getline is not present we need to count the char for allocation before real reading
+        			char *pGeoidText = geoid_text;							//working pointer on the geoid line
+        			while(*pGeoidText){										//during counting we split the geoid line
+        				if (*pGeoidText==SPACE_CHAR){
+        					*pGeoidText=NULL_CHAR;
+        					nbElementsTotal++;
+        				}
+        				pGeoidText++;
+        			}
+        			nbElementsAltitude = nbElementsTotal/nbElPerNode;
+        			if (nbElementsAltitude == (raf09_grid.latSize*raf09_grid.lonSize)){			//Grid seems valid so we will do parsing
+        																	//so we need to allocate an in memory grid
+        		        raf09_grid.grid = malloc(raf09_grid.lonSize*sizeof(double*));
+        		        int it;
+        		        for(it=0;it<raf09_grid.lonSize;it++)
+        		              raf09_grid.grid[it] = malloc(raf09_grid.latSize*sizeof(double));
+
+        					char *pFirstElement = geoid_text;				//working pointer on the first element
+        					char *pText = geoid_text+read;					//Pointer a the end of the line
+        					char *pCurrentValue;
+        					int i,j=0,kLon=nbElLon-1,lLat=0;				//i is for counting down from end to start of the line
+        																	//j is counting up (faster than subtracting)
+        					for (i=read;i>0;i--){
+        						if(!*pText && *(pText+1)){					//only if pointer is on \Ø and pointer+1 is on a real character
+        							if( (j+1)%nbElPerNode == 0)				//we keep only the altitude component
+        							{
+										pCurrentValue = pText+1;
+										raf09_grid.grid[kLon][lLat]=atof(pCurrentValue);	//placing it into the grid
+										if(kLon==0){						//we are going from SE to NW
+											kLon=nbElLon-1;
+											lLat++;
+										}else{
+											kLon--;
+										}
+        							}
+        							j++;
+        						}
+        						pText--;
+        					}
+        					//last value
+        					raf09_grid.grid[kLon][lLat]=atof(pFirstElement);
+        					//wonderful now we have a double[lon][lat] grid
+        					raf09_grid.isGridValid = 1;
+        					trace(3,"get_raf09_grid: '%s' was parsed correctly\n",raf09_grid.name);
+        			}
+        			free(geoid_text);
+            	}else{	//if sort order is not ==2
+            		trace(2,"sort order %d of IGN mnt geoid model is not yet supported\n",raf09_grid.sortOrder);
+            	}
+            }
+        }
+    } else {	//if fopen failed
+        //<#statements#>
+    }
+
+}
+
+static double geoidh_raf09(const double *pos)
+{
+
+	if (raf09_grid.isGridValid == 0) {
+		trace(2,"RAF09 grid is invalid get RAF09.mnt from http://geodesie.ign.fr/contenu/fichiers/documentation/grilles/metropole/RAF09.mnt");
+		return 0.0;
+	}
+    double a,b,y[4],posd[2];
+    int lat1,lat2,lon1,lon2;
+    posd[0]=pos[0];
+    posd[1]=(pos[1]>180?pos[1]-360:pos[1]);
+
+    if (posd[1]>raf09_grid.maxLon||
+    	posd[1]<raf09_grid.minLon||
+    	posd[0]>raf09_grid.maxLat||
+    	posd[0]<raf09_grid.minLat) {
+        trace(2,"out of geoid model range: lat=%.3f lon=%.3f\n",pos[0],posd[1]);
+        return 0.0;
+    }
+
+    a=(posd[0]-raf09_grid.minLat)/raf09_grid.stepLat;
+    b=(posd[1]-raf09_grid.minLon)/raf09_grid.stepLon;
+    lat1=(int)a; a-=lat1; lat2=lat1<raf09_grid.latSize-1?lat1+1:lat1;
+    lon1=(int)b; b-=lon1; lon2=lon1<raf09_grid.lonSize-1?lon1+1:lon1;
+    y[0]=raf09_grid.grid[lon1][lat1];
+    y[1]=raf09_grid.grid[lon2][lat1];
+    y[2]=raf09_grid.grid[lon1][lat2];
+    y[3]=raf09_grid.grid[lon2][lat2];
+    return interpb(y,a,b);
+}
 /* get 2 byte signed integer from file ---------------------------------------*/
 static short fget2b(FILE *fp, long off)
 {
@@ -66,7 +285,7 @@ static double geoidh_egm96(const double *pos)
     long i1,i2,j1,j2;
     
     if (!fp_geoid) return 0.0;
-    
+
     a=(pos[1]-lon0)/dlon;
     b=(pos[0]-lat0)/dlat;
     i1=(long)a; a-=i1; i2=i1<nlon-1?i1+1:0;
@@ -94,9 +313,9 @@ static double geoidh_egm08(const double *pos, int model)
     double a,b,y[4];
     long i1,i2,j1,j2;
     int nlon,nlat;
-    
+
     if (!fp_geoid) return 0.0;
-    
+
     if (model==GEOID_EGM2008_M25) { /* 2.5 x 2.5" grid */
         dlon= 2.5/60.0;
         dlat=-2.5/60.0;
@@ -205,13 +424,17 @@ extern int opengeoid(int model, const char *file)
         return 1;
     }
     if (model!=GEOID_EGM96_M150 &&model!=GEOID_EGM2008_M25&&
-        model!=GEOID_EGM2008_M10&&model!=GEOID_GSI2000_M15) {
+        model!=GEOID_EGM2008_M10&&model!=GEOID_GSI2000_M15&&
+        model!=GEOID_RAF09) {
         trace(2,"invalid geoid model: model=%d file=%s\n",model,file);
         return 0;
     }
     if (!(fp_geoid=fopen(file,"rb"))) {
         trace(2,"geoid model file open error: model=%d file=%s\n",model,file);
         return 0;
+    }
+    if (model==GEOID_RAF09) {
+    	get_raf09_grid(fp_geoid);
     }
     model_geoid=model;
     return 1;
@@ -224,8 +447,11 @@ extern int opengeoid(int model, const char *file)
 extern void closegeoid(void)
 {
     trace(3,"closegoid:\n");
-    
+
     if (fp_geoid) fclose(fp_geoid);
+    if (model_geoid==GEOID_RAF09) {
+    	free_raf09_grid();
+    }
     fp_geoid=NULL;
     model_geoid=GEOID_EMBEDDED;
 }
@@ -240,9 +466,9 @@ extern void closegeoid(void)
 extern double geoidh(const double *pos)
 {
     double posd[2],h;
-    
+
     posd[1]=pos[1]*R2D; posd[0]=pos[0]*R2D; if (posd[1]<0.0) posd[1]+=360.0;
-    
+
     if (posd[1]<0.0||360.0-1E-12<posd[1]||posd[0]<-90.0||90.0<posd[0]) {
         trace(2,"out of range for geoid model: lat=%.3f lon=%.3f\n",posd[0],posd[1]);
         return 0.0;
@@ -253,6 +479,7 @@ extern double geoidh(const double *pos)
         case GEOID_EGM2008_M25: h=geoidh_egm08(posd,model_geoid); break;
         case GEOID_EGM2008_M10: h=geoidh_egm08(posd,model_geoid); break;
         case GEOID_GSI2000_M15: h=geoidh_gsi  (posd); break;
+        case GEOID_RAF09:       h=geoidh_raf09(posd); break;
         default: return 0.0;
     }
     if (fabs(h)>200.0) {
@@ -261,6 +488,7 @@ extern double geoidh(const double *pos)
     }
     return h;
 }
+
 /*------------------------------------------------------------------------------
 * embedded geoid model
 * notes  : geoid heights are derived from EGM96 (1 x 1 deg grid)
