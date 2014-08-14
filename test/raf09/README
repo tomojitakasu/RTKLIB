@@ -1,0 +1,9 @@
+For launching this test you need two external files:
+
+1 - RAF09 geoid from IGN (french national geographical institute)
+	http://geodesie.ign.fr/contenu/fichiers/documentation/grilles/metropole/RAF09.mnt
+        use filename RAF09.mnt (case sensitive)
+2 - EGM2008_M25 geoid model from US National Geospatial Intelligence Agency  
+            on august 2014 file can be found at:
+        http://earth-info.nga.mil/GandG/wgs84/gravitymod/egm2008/Small_Endian/Und_min2.5x2.5_egm2008_isw=82_WGS84_TideFree_SE.gz   
+	* extract the Und_min2.5x2.5_egm2008_isw=82_WGS84_TideFree_SE file and rename it EGM2008_M25.geoid   

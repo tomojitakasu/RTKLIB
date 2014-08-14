@@ -408,6 +408,7 @@ extern "C" {
 #define GEOID_EGM2008_M25 2             /* geoid model: EGM2008 2.5x2.5" */
 #define GEOID_EGM2008_M10 3             /* geoid model: EGM2008 1.0x1.0" */
 #define GEOID_GSI2000_M15 4             /* geoid model: GSI geoid 2000 1.0x1.5" */
+#define GEOID_RAF09 5             		/* geoid model: IGN RAF09 for France only 1.5"x2" */
 
 #define COMMENTH    "%"                 /* comment line indicator for solution */
 #define MSG_DISCONN "$_DISCONNECT\r\n"  /* disconnect message */
