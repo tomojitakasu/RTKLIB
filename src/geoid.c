@@ -14,6 +14,7 @@
 *                               opengeoid(),closegeoid()
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
+#define RAF09_READ_BUFFER_SIZE 4096
 
 static const char rcsid[]="$Id: geoid.c,v 1.1 2008/07/17 21:48:06 ttaka Exp $";
 
@@ -90,14 +91,15 @@ ssize_t raf09_getline(char **lineptr, size_t *n, FILE *stream)
 {
 
     char *ptr;
+    size_t len;
     ptr = fgetln(stream, n);
     if (ptr == NULL) {
         return -1;
     }
 
-    if (*lineptr != NULL) free(*lineptr);	//ensure that the pointer supplied is free
+    if (*lineptr != NULL) free(*lineptr);	/*ensure that the pointer supplied is free*/
     /* Add one more space for '\0' */
-    size_t len = n[0] + 1;
+    len = n[0] + 1;
     n[0] = len;
     /* Allocate a new buffer */
     *lineptr = malloc(len);
@@ -113,8 +115,22 @@ void get_raf09_grid(FILE *fp)
 	const char SPACE_CHAR = 0x20;
 	const char NULL_CHAR = 0x0;
 
-    const int BUFFER_SIZE = 4096;
-    char buffer[BUFFER_SIZE];
+    char buffer[RAF09_READ_BUFFER_SIZE];
+    int cFieldCounter;
+	char *geoid_text = NULL;
+	char *pGeoidText;
+	char *pCurrentValue;				/*Working pointer on current scanned value*/
+	char *pFirstElement;				/*working pointer on the first element*/
+	char *pText;						/*Pointer a the end of the line*/
+	ssize_t read;
+	size_t geoid_text_len=0;
+	int it;									/*iterator on longitude*/
+	int nbElementsTotal = 0;				/*number of different element in geoid line*/
+	int nbElementsAltitude = 0;				/*number of altitude element in geoid line*/
+	int nbElLon,nbElLat,nbElPerNode;
+	int i,j,kLon,lLat;						/*i is for counting down from end to start of the line*/
+	        								/*j is counting up (faster than subtracting), */
+											/*kLon, lLat are indexes in grid grid[kLon][lLat]*/
 
     raf09_grid.latSize=0;
     raf09_grid.lonSize=0;
@@ -123,20 +139,20 @@ void get_raf09_grid(FILE *fp)
     raf09_grid.name = NULL;
     if (fp != NULL) {
         if (feof(fp)==0) {
-        	//read ign mnt header
-        	//an IGN type 2 mnt geoid model file is composed of 2 lines:
-        	//		- first line is the header
-        	//		- second line is the geoid
-        	// see http://geodesie.ign.fr/contenu/fichiers/documentation/grilles/notices/Grilles-MNT-TXT_Formats.pdf
-        	// for explanation of format in french
-        	//11 numeric fields + 1 string field
-        	//the first 11 fields are separated by one space
-        	//lines are ended with \r\n
-            if (fgets(buffer,BUFFER_SIZE,fp) != NULL) {
+        	/*read ign mnt header*/
+        	/*an IGN type 2 mnt geoid model file is composed of 2 lines:*/
+        	/*		- first line is the header*/
+        	/*		- second line is the geoid*/
+        	/* see http://geodesie.ign.fr/contenu/fichiers/documentation/grilles/notices/Grilles-MNT-TXT_Formats.pdf*/
+        	/* for explanation of format in french*/
+        	/*11 numeric fields + 1 string field*/
+        	/*the first 11 fields are separated by one space*/
+        	/*lines are ended with \r\n*/
+            if (fgets(buffer,RAF09_READ_BUFFER_SIZE,fp) != NULL) {
             	char *pBuffer = buffer;
             	char *fields[12];
             	fields[0]=pBuffer;
-            	int cFieldCounter = 1;
+            	cFieldCounter = 1;
             	while(pBuffer&&(cFieldCounter<12))
             	{
             		if (*pBuffer==SPACE_CHAR) {
@@ -161,28 +177,23 @@ void get_raf09_grid(FILE *fp)
             	raf09_grid.isPrecisionCodePresent = atoi(fields[9]);
             	raf09_grid.translationApplied = atoi(fields[10]);
 
-            	char *geoid_text = NULL;
-            	ssize_t read;
-            	size_t geoid_text_len=0;
-            	int nbElementsTotal = 0;				//number of different element in geoid line
-            	int nbElementsAltitude = 0;				//number of altitude element in geoid line
-            	int nbElLon=floor((raf09_grid.maxLon-raf09_grid.minLon)/raf09_grid.stepLon)+1;		//do not forget +1 for extremities
-            	int nbElLat=floor((raf09_grid.maxLat-raf09_grid.minLat)/raf09_grid.stepLat)+1;
+            	nbElLon=floor((raf09_grid.maxLon-raf09_grid.minLon)/raf09_grid.stepLon)+1;		/*do not forget +1 for extremities*/
+            	nbElLat=floor((raf09_grid.maxLat-raf09_grid.minLat)/raf09_grid.stepLat)+1;
 
-            	//explanation of nbElPerNode:
-            	// minimum 1 element (the altitude component)
-            	// if coordinates are present for each node +2 elements
-            	// if precision code is present +1 element
-            	int nbElPerNode=raf09_grid.nvValPerNode+raf09_grid.isPrecisionCodePresent+(raf09_grid.isCoordinatesPresent?2:0);
+            	/*explanation of nbElPerNode:*/
+            	/* minimum 1 element (the altitude component)*/
+            	/* if coordinates are present for each node +2 elements*/
+            	/* if precision code is present +1 element*/
+            	nbElPerNode=raf09_grid.nvValPerNode+raf09_grid.isPrecisionCodePresent+(raf09_grid.isCoordinatesPresent?2:0);
 
             	raf09_grid.latSize=nbElLat;
             	raf09_grid.lonSize=nbElLon;
 
             	if (raf09_grid.sortOrder==2){
-        			read = raf09_getline(&geoid_text,&geoid_text_len,fp);	//attention getline is POSIX2008 only not ANSI
-        																	//if getline is not present we need to count the char for allocation before real reading
-        			char *pGeoidText = geoid_text;							//working pointer on the geoid line
-        			while(*pGeoidText){										//during counting we split the geoid line
+        			read = raf09_getline(&geoid_text,&geoid_text_len,fp);	/*attention getline is POSIX2008 only not ANSI*/
+        																	/*if getline is not present we need to count the char for allocation before real reading*/
+        			pGeoidText = geoid_text;							/*working pointer on the geoid line*/
+        			while(*pGeoidText){										/*during counting we split the geoid line*/
         				if (*pGeoidText==SPACE_CHAR){
         					*pGeoidText=NULL_CHAR;
         					nbElementsTotal++;
@@ -190,25 +201,23 @@ void get_raf09_grid(FILE *fp)
         				pGeoidText++;
         			}
         			nbElementsAltitude = nbElementsTotal/nbElPerNode;
-        			if (nbElementsAltitude == (raf09_grid.latSize*raf09_grid.lonSize)){			//Grid seems valid so we will do parsing
-        																	//so we need to allocate an in memory grid
+        			if (nbElementsAltitude == (raf09_grid.latSize*raf09_grid.lonSize)){			/*Grid seems valid so we will do parsing*/
+        																	/*so we need to allocate an in memory grid*/
         		        raf09_grid.grid = malloc(raf09_grid.lonSize*sizeof(double*));
-        		        int it;
         		        for(it=0;it<raf09_grid.lonSize;it++)
         		              raf09_grid.grid[it] = malloc(raf09_grid.latSize*sizeof(double));
-
-        					char *pFirstElement = geoid_text;				//working pointer on the first element
-        					char *pText = geoid_text+read;					//Pointer a the end of the line
-        					char *pCurrentValue;
-        					int i,j=0,kLon=nbElLon-1,lLat=0;				//i is for counting down from end to start of the line
-        																	//j is counting up (faster than subtracting)
+        		        	pFirstElement = geoid_text;
+        					pText = geoid_text+read;					/*Pointer a the end of the line*/
+        					j=0;kLon=nbElLon-1;lLat=0;				    /*i is for counting down from end to start of the line*/
+        															    /*j is counting up (faster than subtracting)*/
+        																/*kLon, lLat are indexes in grid grid[kLon][lLat]*/
         					for (i=read;i>0;i--){
-        						if(!*pText && *(pText+1)){					//only if pointer is on \Ø and pointer+1 is on a real character
-        							if( (j+1)%nbElPerNode == 0)				//we keep only the altitude component
+        						if(!*pText && *(pText+1)){					/*only if pointer is on \0 and pointer+1 is on a real character*/
+        							if( (j+1)%nbElPerNode == 0)				/*we keep only the altitude component*/
         							{
 										pCurrentValue = pText+1;
-										raf09_grid.grid[kLon][lLat]=atof(pCurrentValue);	//placing it into the grid
-										if(kLon==0){						//we are going from SE to NW
+										raf09_grid.grid[kLon][lLat]=atof(pCurrentValue);	/*placing it into the grid*/
+										if(kLon==0){						/*we are going from SE to NW*/
 											kLon=nbElLon-1;
 											lLat++;
 										}else{
@@ -219,33 +228,34 @@ void get_raf09_grid(FILE *fp)
         						}
         						pText--;
         					}
-        					//last value
+        					/*last value*/
         					raf09_grid.grid[kLon][lLat]=atof(pFirstElement);
-        					//wonderful now we have a double[lon][lat] grid
+        					/*wonderful now we have a double[lon][lat] grid*/
         					raf09_grid.isGridValid = 1;
         					trace(3,"get_raf09_grid: '%s' was parsed correctly\n",raf09_grid.name);
         			}
         			free(geoid_text);
-            	}else{	//if sort order is not ==2
+            	}else{	/*if sort order is not ==2*/
             		trace(2,"sort order %d of IGN mnt geoid model is not yet supported\n",raf09_grid.sortOrder);
             	}
             }
         }
-    } else {	//if fopen failed
-        //<#statements#>
+    } else {	/*if fopen failed*/
+        /*<#statements#>*/
     }
 
 }
 
 static double geoidh_raf09(const double *pos)
 {
+	double a,b,y[4],posd[2];
+    int lat1,lat2,lon1,lon2;
 
 	if (raf09_grid.isGridValid == 0) {
 		trace(2,"RAF09 grid is invalid get RAF09.mnt from http://geodesie.ign.fr/contenu/fichiers/documentation/grilles/metropole/RAF09.mnt");
 		return 0.0;
 	}
-    double a,b,y[4],posd[2];
-    int lat1,lat2,lon1,lon2;
+
     posd[0]=pos[0];
     posd[1]=(pos[1]>180?pos[1]-360:pos[1]);
 

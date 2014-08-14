@@ -1,6 +1,6 @@
 #compiler
-CC=gcc
-OPTS=-g -c -Wall
+CC=gcc-4.9
+CFLAGS=-std=c89 -pedantic -g -c -Wall
 SOURCES=$(wildcard *.c ) ../../src/rtkcmn.c
 OBJECTS=raf09.o rtkcmn.o
 LIBS=
