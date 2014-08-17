@@ -14,7 +14,7 @@ LDLIBS  = -lm -lrt -lpthread
 all        : str2str
 str2str    : str2str.o stream.o rtkcmn.o solution.o sbas.o geoid.o
 str2str    : rcvraw.o novatel.o ublox.o ss2.o crescent.o skytraq.o gw10.o javad.o
-str2str    : nvs.o binex.o rtcm.o rtcm2.o rtcm3.o rtcm3e.o preceph.o streamsvr.o
+str2str    : nvs.o binex.o rtcm.o rtcm2.o rtcm3.o rtcm3e.o preceph.o streamsvr.o rt17.o
 
 str2str.o  : ../str2str.c
 	$(CC) -c $(CFLAGS) ../str2str.c
@@ -50,6 +50,8 @@ nvs.o      : $(SRC)/rcv/nvs.c
 	$(CC) -c $(CFLAGS) $(SRC)/rcv/nvs.c
 binex.o    : $(SRC)/rcv/binex.c
 	$(CC) -c $(CFLAGS) $(SRC)/rcv/binex.c
+rt17.o     : $(SRC)/rcv/rt17.c
+	$(CC) -c $(CFLAGS) $(SRC)/rcv/rt17.c
 rtcm.o     : $(SRC)/rtcm.c
 	$(CC) -c $(CFLAGS) $(SRC)/rtcm.c
 rtcm2.o    : $(SRC)/rtcm2.c
@@ -83,6 +85,7 @@ rtcm2.o    : $(SRC)/rtklib.h
 rtcm3.o    : $(SRC)/rtklib.h
 rtcm3e.o   : $(SRC)/rtklib.h
 preceph.o  : $(SRC)/rtklib.h
+rt17.o     : $(SRC)/rtklib.h
 
 install:
 	cp str2str $(BINDIR)
