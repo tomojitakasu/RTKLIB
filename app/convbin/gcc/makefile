@@ -10,7 +10,7 @@ LDLIBS = -lm -lrt
 convbin    : convbin.o rtkcmn.o rinex.o sbas.o preceph.o rcvraw.o convrnx.o
 convbin    : rtcm.o rtcm2.o rtcm3.o rtcm3e.o pntpos.o ephemeris.o ionex.o
 convbin    : novatel.o ss2.o ublox.o crescent.o skytraq.o gw10.o javad.o nvs.o
-convbin    : binex.o qzslex.o
+convbin    : binex.o qzslex.o rt17.o
 
 convbin.o  : ../convbin.c
 	$(CC) -c $(CFLAGS) ../convbin.c
@@ -58,6 +58,8 @@ nvs.o      : $(SRC)/rcv/nvs.c
 	$(CC) -c $(CFLAGS) $(SRC)/rcv/nvs.c
 binex.o    : $(SRC)/rcv/binex.c
 	$(CC) -c $(CFLAGS) $(SRC)/rcv/binex.c
+rt17.o      : $(SRC)/rcv/rt17.c
+	$(CC) -c $(CFLAGS) $(SRC)/rcv/rt17.c
 qzslex.o    : $(SRC)/qzslex.c
 	$(CC) -c $(CFLAGS) $(SRC)/qzslex.c
 
@@ -85,6 +87,7 @@ javad.o    : $(SRC)/rtklib.h
 nvs.o      : $(SRC)/rtklib.h
 binex.o    : $(SRC)/rtklib.h
 qzslex.o   : $(SRC)/rtklib.h
+rt17.o     : $(SRC)/rtklib.h
 
 DATDIR = ../../../test/data/rcvraw
 

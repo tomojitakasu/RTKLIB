@@ -24,6 +24,7 @@
 *           2010/07/29 1.8  rtklib ver.2.4.0
 *           2011/05/27 1.9  rtklib ver.2.4.1
 *           2013/03/28 1.10 rtklib ver.2.4.2
+*           2014/07/03 1.11 add Trimble RT17 support (D.COOK)
 *-----------------------------------------------------------------------------*/
 #ifndef RTKLIB_H
 #define RTKLIB_H
@@ -386,17 +387,18 @@ extern "C" {
 #define STRFMT_JAVAD 9                  /* stream format: JAVAD GRIL/GREIS */
 #define STRFMT_NVS   10                 /* stream format: NVS NVC08C */
 #define STRFMT_BINEX 11                 /* stream format: BINEX */
-#define STRFMT_LEXR  12                 /* stream format: Furuno LPY-10000 */
-#define STRFMT_SIRF  13                 /* stream format: SiRF    (reserved) */
-#define STRFMT_RINEX 14                 /* stream format: RINEX */
-#define STRFMT_SP3   15                 /* stream format: SP3 */
-#define STRFMT_RNXCLK 16                /* stream format: RINEX CLK */
-#define STRFMT_SBAS  17                 /* stream format: SBAS messages */
-#define STRFMT_NMEA  18                 /* stream format: NMEA 0183 */
+#define STRFMT_RT17  12                 /* stream format: Trimble RT17 */
+#define STRFMT_LEXR  13                 /* stream format: Furuno LPY-10000 */
+#define STRFMT_SIRF  14                 /* stream format: SiRF    (reserved) */
+#define STRFMT_RINEX 15                 /* stream format: RINEX */
+#define STRFMT_SP3   16                 /* stream format: SP3 */
+#define STRFMT_RNXCLK 17                /* stream format: RINEX CLK */
+#define STRFMT_SBAS  18                 /* stream format: SBAS messages */
+#define STRFMT_NMEA  19                 /* stream format: NMEA 0183 */
 #ifndef EXTLEX
-#define MAXRCVFMT    11                 /* max number of receiver format */
+#define MAXRCVFMT    12                 /* max number of receiver format */
 #else
-#define MAXRCVFMT    12
+#define MAXRCVFMT    13
 #endif
 
 #define STR_MODE_R  0x1                 /* stream mode: read */
@@ -1144,6 +1146,13 @@ typedef struct {        /* receiver raw data control type */
     int outtype;        /* output message type */
     unsigned char buff[MAXRAWLEN]; /* message buffer */
     char opt[256];      /* receiver dependent options */
+    double receive_time;/* RT17 Reiceve time of week for week rollover detection */
+    unsigned int plen;  /* RT17 Total size of packet to be read */
+    unsigned int pbyte; /* RT17 How many packet bytes have been read so far */
+    unsigned int page;  /* RT17 Last page number */
+    unsigned int reply; /* RT17 Current reply number */
+    int week;           /* RT17 week number */
+    unsigned char pbuff[255+4+2]; /* RT17 Packet buffer */
 } raw_t;
 
 typedef struct {        /* stream type */
@@ -1497,6 +1506,7 @@ extern int input_gw10  (raw_t *raw, unsigned char data);
 extern int input_javad (raw_t *raw, unsigned char data);
 extern int input_nvs   (raw_t *raw, unsigned char data);
 extern int input_bnx   (raw_t *raw, unsigned char data);
+extern int input_rt17  (raw_t *raw, unsigned char data);
 extern int input_lexr  (raw_t *raw, unsigned char data);
 extern int input_oem4f (raw_t *raw, FILE *fp);
 extern int input_oem3f (raw_t *raw, FILE *fp);
@@ -1508,6 +1518,7 @@ extern int input_gw10f (raw_t *raw, FILE *fp);
 extern int input_javadf(raw_t *raw, FILE *fp);
 extern int input_nvsf  (raw_t *raw, FILE *fp);
 extern int input_bnxf  (raw_t *raw, FILE *fp);
+extern int input_rt17f (raw_t *raw, FILE *fp);
 extern int input_lexrf (raw_t *raw, FILE *fp);
 
 extern int gen_ubx (const char *msg, unsigned char *buff);

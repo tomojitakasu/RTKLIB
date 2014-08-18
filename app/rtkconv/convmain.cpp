@@ -12,6 +12,7 @@
 // history : 2008/07/14  1.0 new
 //           2010/07/18  1.1 rtklib 2.4.0
 //           2011/06/10  1.2 rtklib 2.4.1
+//           2014/07/03  1.3 add Trimble RT17 support (D.COOK)
 //---------------------------------------------------------------------------
 #include <vcl.h>
 #ifdef TCPP
@@ -716,6 +717,7 @@ void __fastcall TMainWindow::ConvertFile(void)
         else if (!strcmp(p,".log"  )) format=STRFMT_SS2;
         else if (!strcmp(p,".bin"  )) format=STRFMT_CRES;
         else if (!strcmp(p,".jps"  )) format=STRFMT_JAVAD;
+        else if (!strcmp(p,".rt17" )) format=STRFMT_RT17;
         else if (!strcmp(p,".bnx"  )) format=STRFMT_BINEX;
         else if (!strcmp(p,".binex")) format=STRFMT_BINEX;
         else if (!strcmp(p,".obs"  )) format=STRFMT_RINEX;

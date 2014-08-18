@@ -65,6 +65,7 @@ static const char *help[]={
 "    stq          : SkyTraq S1315F (only in)",
 "    javad        : Javad (only in)",
 "    nvs          : NVS BINR (only in)",
+"    rt17         : Trimble RT17",
 "",
 " -msg \"type[(tint)][,type[(tint)]...]\"",
 "                   rtcm message types and output intervals (s)",
@@ -111,6 +112,7 @@ static void decodefmt(char *path, int *fmt)
         else if (!strcmp(p,"#stq"  )) *fmt=STRFMT_STQ;
         else if (!strcmp(p,"#javad")) *fmt=STRFMT_JAVAD;
         else if (!strcmp(p,"#nvs"  )) *fmt=STRFMT_NVS;
+        else if (!strcmp(p,"#rt17" )) *fmt=STRFMT_RT17;
         else return;
         *p='\0';
     }

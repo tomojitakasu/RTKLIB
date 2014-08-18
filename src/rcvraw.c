@@ -22,6 +22,7 @@
 *           2014/01/31 1.5  fix bug on decode fit interval
 *           2014/06/22 1.6  add api decode_glostr()
 *           2014/06/22 1.7  add api decode_bds_d1(), decode_bds_d2()
+*           2014/07/03 1.8  add Trimble RT17 support (D.COOK)
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 #include <stdint.h>
@@ -679,6 +680,12 @@ extern int init_raw(raw_t *raw)
         raw->sta.pos[i]=raw->sta.del[i]=0.0;
     }
     raw->sta.hgt=0.0;
+    raw->receive_time=0.0;
+    raw->week=0;
+    raw->pbyte=0;
+    raw->plen=0;
+    raw->page=0;
+    raw->reply=0;
     return 1;
 }
 /* free receiver raw data control ----------------------------------------------
@@ -721,6 +728,7 @@ extern int input_raw(raw_t *raw, int format, unsigned char data)
         case STRFMT_JAVAD: return input_javad(raw,data);
         case STRFMT_NVS  : return input_nvs  (raw,data);
         case STRFMT_BINEX: return input_bnx  (raw,data);
+        case STRFMT_RT17 : return input_rt17 (raw,data); 
         case STRFMT_LEXR : return input_lexr (raw,data);
     }
     return 0;
@@ -747,6 +755,7 @@ extern int input_rawf(raw_t *raw, int format, FILE *fp)
         case STRFMT_JAVAD: return input_javadf(raw,fp);
         case STRFMT_NVS  : return input_nvsf  (raw,fp);
         case STRFMT_BINEX: return input_bnxf  (raw,fp);
+        case STRFMT_RT17 : return input_rt17f (raw,fp);
         case STRFMT_LEXR : return input_lexrf (raw,fp);
     }
     return -2;
