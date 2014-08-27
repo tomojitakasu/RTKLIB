@@ -2,5 +2,7 @@
 <BorlandProject>
 	<Transactions>
     <Transaction>2013/11/03 19:59:47.000.921,=D:\proj\RTKLIB\src\rcv\septentrio.c</Transaction>
+    <Transaction>2014/07/26 19:54:04.000.649,=D:\proj\RTKLIB\src\rcv\rcvlex.c</Transaction>
+    <Transaction>2014/08/26 09:32:08.000.182,=D:\proj\RTKLIB\src\rcv\rt17.c</Transaction>
   </Transactions>
 </BorlandProject>

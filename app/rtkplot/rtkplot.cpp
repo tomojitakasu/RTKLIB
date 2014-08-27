@@ -20,29 +20,30 @@
 
 
 
-USEFORM("pntdlg.cpp", PntDialog);
+
 USEFORM("satdlg.cpp", SatDialog);
 USEFORM("..\appcmn\serioptdlg.cpp", SerialOptDialog);
 USEFORM("..\appcmn\refdlg.cpp", RefDialog);
 USEFORM("..\appcmn\keydlg.cpp", KeyDialog);
+USEFORM("..\appcmn\tcpoptdlg.cpp", TcpOptDialog);
+USEFORM("..\appcmn\viewer.cpp", TextViewer);
 USEFORM("..\appcmn\tspandlg.cpp", SpanDialog);
 USEFORM("..\appcmn\timedlg.cpp", TimeDialog);
-USEFORM("..\appcmn\tcpoptdlg.cpp", TcpOptDialog);
 USEFORM("..\appcmn\confdlg.cpp", ConfDialog);
 USEFORM("..\appcmn\cmdoptdlg.cpp", CmdOptDialog);
 USEFORM("..\appcmn\aboutdlg.cpp", AboutDialog);
+USEFORM("..\appcmn\console.cpp", Console);
 USEFORM("..\appcmn\ftpoptdlg.cpp", FtpOptDialog);
 USEFORM("..\appcmn\fileoptdlg.cpp", FileOptDialog);
-USEFORM("..\appcmn\console.cpp", Console);
-USEFORM("plotopt.cpp", PlotOptDialog);
 USEFORM("plotmain.cpp", Plot);
-USEFORM("mapdlg.cpp", MapAreaDialog);
+USEFORM("pntdlg.cpp", PntDialog);
+USEFORM("plotopt.cpp", PlotOptDialog);
+USEFORM("fileseldlg.cpp", FileSelDialog);
 USEFORM("conndlg.cpp", ConnectDialog);
 USEFORM("..\appcmn\vieweropt.cpp", ViewerOptDialog);
-USEFORM("..\appcmn\viewer.cpp", TextViewer);
-USEFORM("gmview.cpp", GoogleMapView);
 USEFORM("geview.cpp", GoogleEarthView);
-USEFORM("fileseldlg.cpp", FileSelDialog);
+USEFORM("mapdlg.cpp", MapAreaDialog);
+USEFORM("gmview.cpp", GoogleMapView);
 //---------------------------------------------------------------------------
 WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {

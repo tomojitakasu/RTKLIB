@@ -153,6 +153,9 @@
 			<CppCompile Include="..\..\..\src\rcv\nvs.c">
 				<BuildOrder>18</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="..\..\..\src\rcv\rt17.c">
+				<BuildOrder>25</BuildOrder>
+			</CppCompile>
 			<CppCompile Include="..\..\..\src\rcv\skytraq.c">
 				<BuildOrder>6</BuildOrder>
 				<BuildOrder>13</BuildOrder>

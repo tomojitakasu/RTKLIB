@@ -231,6 +231,12 @@
 			<CppCompile Include="..\..\src\rcv\nvs.c">
 				<BuildOrder>26</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="..\..\src\rcv\rcvlex.c">
+				<BuildOrder>36</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\src\rcv\rt17.c">
+				<BuildOrder>37</BuildOrder>
+			</CppCompile>
 			<CppCompile Include="..\..\src\rcv\septentrio.c">
 				<BuildOrder>35</BuildOrder>
 			</CppCompile>
