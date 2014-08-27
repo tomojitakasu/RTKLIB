@@ -319,6 +319,9 @@
 			<CppCompile Include="..\..\src\rcv\nvs.c">
 				<BuildOrder>51</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="..\..\src\rcv\rt17.c">
+				<BuildOrder>56</BuildOrder>
+			</CppCompile>
 			<CppCompile Include="..\..\src\rcv\skytraq.c">
 				<BuildOrder>33</BuildOrder>
 				<BuildOrder>0</BuildOrder>

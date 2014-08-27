@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * str2str.c : console version of stream server
 *
-*          Copyright (C) 2007-2013 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2007-2014 by T.TAKASU, All rights reserved.
 *
 * version : $Revision: 1.1 $ $Date: 2008/07/17 21:54:53 $
 * history : 2009/06/17  1.0  new
@@ -11,6 +11,9 @@
 *                            add -msg, -opt and -sta options
 *                            modify -p option
 *           2013/01/25  1.4  fix bug on showing message
+*           2014/02/21  1.5  ignore SIG_HUP
+*           2014/08/10  1.5  fix bug on showing message
+*           2014/08/26  1.6  support input format gw10, binex and rt17
 *-----------------------------------------------------------------------------*/
 #include <signal.h>
 #include <unistd.h>
@@ -25,7 +28,7 @@ static const char rcsid[]="$Id:$";
 
 /* global variables ----------------------------------------------------------*/
 static strsvr_t strsvr;                /* stream server */
-static int intrflg=0;                  /* interrupt flag */
+static volatile int intrflg=0;                  /* interrupt flag */
 
 /* help text -----------------------------------------------------------------*/
 static const char *help[]={
@@ -63,8 +66,11 @@ static const char *help[]={
 "    ss2          : NovAtel Superstar II (only in)",
 "    hemis        : Hemisphere Eclipse/Crescent (only in)",
 "    stq          : SkyTraq S1315F (only in)",
+"    gw10         : Furuno GW10 (only in)",
 "    javad        : Javad (only in)",
 "    nvs          : NVS BINR (only in)",
+"    binex        : BINEX (only in)",
+"    rt17         : Trimble RT17 (only in)",
 "",
 " -msg \"type[(tint)][,type[(tint)]...]\"",
 "                   rtcm message types and output intervals (s)",
@@ -109,8 +115,11 @@ static void decodefmt(char *path, int *fmt)
         else if (!strcmp(p,"#ss2"  )) *fmt=STRFMT_SS2;
         else if (!strcmp(p,"#hemis")) *fmt=STRFMT_CRES;
         else if (!strcmp(p,"#stq"  )) *fmt=STRFMT_STQ;
+        else if (!strcmp(p,"#gw10" )) *fmt=STRFMT_GW10;
         else if (!strcmp(p,"#javad")) *fmt=STRFMT_JAVAD;
         else if (!strcmp(p,"#nvs"  )) *fmt=STRFMT_NVS;
+        else if (!strcmp(p,"#binex")) *fmt=STRFMT_BINEX;
+        else if (!strcmp(p,"#rt17" )) *fmt=STRFMT_RT17;
         else return;
         *p='\0';
     }
@@ -172,7 +181,7 @@ int main(int argc, char **argv)
     double pos[3],stapos[3]={0};
     char *paths[MAXSTR],s[MAXSTR][MAXSTRPATH]={{0}},*cmdfile="";
     char *local="",*proxy="",*msg="1004,1019",*opt="",buff[256],*p;
-    char strmsg[MAXSTRMSG];
+    char strmsg[MAXSTRMSG]="";
     int i,n=0,dispint=5000,trlevel=0,opts[]={10000,10000,2000,32768,10,0,30};
     int types[MAXSTR]={0},stat[MAXSTR]={0},byte[MAXSTR]={0},bps[MAXSTR]={0};
     int fmts[MAXSTR],sta=0;
@@ -230,7 +239,9 @@ int main(int argc, char **argv)
             return -1;
         }
     }
-    signal(SIGINT,sigfunc);
+    signal(SIGTERM,sigfunc);
+    signal(SIGINT ,sigfunc);
+    signal(SIGHUP ,SIG_IGN);
     signal(SIGPIPE,SIG_IGN);
     
     strsvrinit(&strsvr,n+1);

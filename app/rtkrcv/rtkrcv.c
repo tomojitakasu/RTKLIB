@@ -18,6 +18,9 @@
 *                           add print of status, glonass nav data
 *                           ignore SIGHUP
 *           2014/04/27 1.8  add "binex" option for inpstr*-format
+*           2014/08/10 1.9  fix cpu overload with abnormal telnet shutdown
+*           2014/08/26 1.10 support input format "rt17"
+*                           change file paths of solution status and debug trace
 *-----------------------------------------------------------------------------*/
 #ifndef WIN32
 #define _POSIX_C_SOURCE 2
@@ -59,8 +62,8 @@ static const char rcsid[]="$Id:$";
 #define OPTSDIR     "."                 /* default config directory */
 #define OPTSFILE    "rtkrcv.conf"       /* default config file */
 #define NAVIFILE    "rtkrcv.nav"        /* navigation save file */
-#define STATFILE    "rtkrcv.stat"       /* solution status file */
-#define TRACEFILE   "rtkrcv.trace"      /* trace file */
+#define STATFILE    "rtkrcv_%Y%m%d%h%M.stat"  /* solution status file */
+#define TRACEFILE   "rtkrcv_%Y%m%d%h%M.trace" /* debug trace file */
 #define INTKEEPALIVE 1000               /* keep alive interval (ms) */
 
 #define NUL         (char)0x00          /* nul */
@@ -184,7 +187,7 @@ static const char *pathopts[]={         /* path options help */
 #define FLGOPT  "0:off,1:std+2:age/ratio/ns"
 #define ISTOPT  "0:off,1:serial,2:file,3:tcpsvr,4:tcpcli,7:ntripcli,8:ftp,9:http"
 #define OSTOPT  "0:off,1:serial,2:file,3:tcpsvr,4:tcpcli,6:ntripsvr"
-#define FMTOPT  "0:rtcm2,1:rtcm3,2:oem4,3:oem3,4:ubx,5:ss2,6:hemis,7:skytraq,8:gw10,9:javad,10:nvs,11:binex,15:sp3"
+#define FMTOPT  "0:rtcm2,1:rtcm3,2:oem4,3:oem3,4:ubx,5:ss2,6:hemis,7:skytraq,8:gw10,9:javad,10:nvs,11:binex,12:rt17,15:sp3"
 #define NMEOPT  "0:off,1:latlon,2:single"
 #define SOLOPT  "0:llh,1:xyz,2:enu,3:nmea"
 #define MSGOPT  "0:all,1:rover,2:base,3:corr"
@@ -1206,7 +1209,7 @@ static void prstream(vt_t *vt)
         "-","serial","file","tcpsvr","tcpcli","udp","ntrips","ntripc","ftp","http"
     };
     const char *fmt[]={"rtcm2","rtcm3","oem4","oem3","ubx","ss2","hemis","skytreq",
-                       "gw10","javad","lexr","","","","","sp3","","",""};
+                       "gw10","javad","nvs","binex","rt17","","","sp3","","",""};
     const char *sol[]={"llh","xyz","enu","nmea"};
     stream_t stream[9];
     int i,format[9]={0};
@@ -1567,7 +1570,7 @@ static void cmdshell(vt_t *vt)
         if (!printvt(vt,"%s",CMDPROMPT)) break;
         
         /* input command */
-        if (!inpvt(vt,buff,sizeof(buff))) continue;
+        if (!inpvt(vt,buff,sizeof(buff))) break;
         
         if (buff[0]=='!') { /* shell escape */
             cmd_exec(buff+1,vt);

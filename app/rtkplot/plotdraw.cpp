@@ -58,6 +58,7 @@ void __fastcall TPlot::UpdateDisp(void)
             case  PLOT_RES : DrawRes (level);   break;
             case  PLOT_SNR : DrawSnr (level);   break;
             case  PLOT_SNRE: DrawSnrE(level);   break;
+            case  PLOT_MPS : DrawMpS (level);   break;
         }
         Buff->SetSize(Disp->ClientWidth,Disp->ClientHeight);
         Buff->Canvas->CopyRect(r,c,r);
@@ -1642,6 +1643,74 @@ void __fastcall TPlot::DrawSnrE(int level)
             GraphE[1]->GetPos(p1,p2);
             p1.x=p2.x-8; p1.y+=6;
             DrawLabel(GraphE[1],p1,s.sprintf("AVE=%.4fm RMS=%.4fm",ave,rms),2,2);
+        }
+    }
+}
+// draw mp-skyplot ----------------------------------------------------------
+void __fastcall TPlot::DrawMpS(int level)
+{
+    AnsiString ObsTypeText=ObsType2->Text,s;
+    TColor col;
+    obsd_t *obs;
+    double x,y,xp,yp,xs,ys,xl[2],yl[2],p[MAXSAT][2]={{0}},r;
+    int i,j,sat,ind=ObsIndex;
+    char *code=ObsTypeText.c_str()+1,id[32];
+    
+    trace(3,"DrawSnrS: level=%d\n",level);
+    
+    GraphS->GetLim(xl,yl);
+    r=(xl[1]-xl[0]<yl[1]-yl[0]?xl[1]-xl[0]:yl[1]-yl[0])*0.45;
+    GraphS->DrawSkyPlot(0.0,0.0,CColor[1],CColor[2],r*2.0);
+    
+    if (!BtnSol1->Down||NObs<=0||SimObs) return;
+    
+    GraphS->GetScale(xs,ys);
+    
+    for (sat=1;sat<=MAXSAT;sat++) {
+        if (SatMask[sat-1]||!SatSel[sat-1]) continue;
+        
+        for (i=0;i<Obs.n;i++) {
+            if (Obs.data[i].sat!=sat) continue;
+            
+            for (j=0;j<NFREQ+NEXOBS;j++) {
+                if (strstr(code2obs(Obs.data[i].code[j],NULL),code)) break;
+            }
+            if (j>=NFREQ+NEXOBS) continue;
+            if (El[i]<=0.0) continue;
+            
+            x=r*sin(Az[i])*(1.0-2.0*El[i]/PI);
+            y=r*cos(Az[i])*(1.0-2.0*El[i]/PI);
+            xp=p[sat-1][0];
+            yp=p[sat-1][1];
+            col=MpColor(!Mp[j]?0.0:Mp[j][i]);
+            
+            if ((x-xp)*(x-xp)+(y-yp)*(y-yp)>=xs*xs) {
+                int siz=PlotStyle<2?MarkSize:1;
+                GraphS->DrawMark(x,y,0,col,siz,0);
+                GraphS->DrawMark(x,y,0,PlotStyle<2?col:CColor[3],siz,0);
+                p[sat-1][0]=x;
+                p[sat-1][1]=y;
+            }
+        }
+    }
+    if (BtnShowTrack->Down&&0<=ind&&ind<NObs) {
+        
+        for (i=IndexObs[ind];i<Obs.n&&i<IndexObs[ind+1];i++) {
+            obs=&Obs.data[i];
+            if (SatMask[obs->sat-1]||!SatSel[obs->sat-1]||El[i]<=0.0) continue;
+            for (j=0;j<NFREQ+NEXOBS;j++) {
+                if (strstr(code2obs(obs->code[j],NULL),code)) break;
+            }
+            if (j>=NFREQ+NEXOBS) continue;
+            col=MpColor(!Mp[j]?0.0:Mp[j][i]);
+            
+            x=r*sin(Az[i])*(1.0-2.0*El[i]/PI);
+            y=r*cos(Az[i])*(1.0-2.0*El[i]/PI);
+            
+            satno2id(obs->sat,id);
+            GraphS->DrawMark(x,y,0,col,Disp->Font->Size*2+5,0);
+            GraphS->DrawMark(x,y,1,CColor[2],Disp->Font->Size*2+5,0);
+            GraphS->DrawText(x,y,s=id,CColor[0],0,0,0);
         }
     }
 }

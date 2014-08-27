@@ -718,6 +718,7 @@ void __fastcall TMainWindow::ConvertFile(void)
         else if (!strcmp(p,".jps"  )) format=STRFMT_JAVAD;
         else if (!strcmp(p,".bnx"  )) format=STRFMT_BINEX;
         else if (!strcmp(p,".binex")) format=STRFMT_BINEX;
+        else if (!strcmp(p,".rt17" )) format=STRFMT_RT17;
         else if (!strcmp(p,".obs"  )) format=STRFMT_RINEX;
         else if (!strcmp(p,".OBS"  )) format=STRFMT_RINEX;
         else if (!strcmp(p,".nav"  )) format=STRFMT_RINEX;
@@ -751,7 +752,7 @@ void __fastcall TMainWindow::ConvertFile(void)
     }
     rnxopt.rnxver=RNXVER[RnxVer];
     
-    if (format==STRFMT_RTCM2||format==STRFMT_RTCM3) {
+    if (format==STRFMT_RTCM2||format==STRFMT_RTCM3||format==STRFMT_RT17) {
         
         // input start date/time for rtcm 2 ro rtcm 3
         if (StartDialog->ShowModal()!=mrOk) return;

@@ -1959,7 +1959,7 @@ void __fastcall TPlot::UpdateEnable(void)
     
     QFlag          ->Visible=PlotType<=PLOT_NSAT;
     ObsType        ->Visible=PlotType==PLOT_OBS||PlotType<=PLOT_SKY;
-    ObsType2       ->Visible=PlotType==PLOT_SNR||PlotType==PLOT_SNRE;
+    ObsType2       ->Visible=PlotType==PLOT_SNR||PlotType==PLOT_SNRE||PlotType==PLOT_MPS;
     ObsType        ->Enabled=!SimObs;
     ObsType2       ->Enabled=!SimObs;
     FrqType        ->Visible=PlotType==PLOT_RES;

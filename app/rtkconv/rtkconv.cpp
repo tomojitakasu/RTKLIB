@@ -15,15 +15,17 @@
 
 
 
-USEFORM("..\appcmn\vieweropt.cpp", ViewerOptDialog);
-USEFORM("..\appcmn\viewer.cpp", TextViewer);
-USEFORM("convmain.cpp", MainWindow);
+
+
 USEFORM("codeopt.cpp", CodeOptDialog);
+USEFORM("..\appcmn\vieweropt.cpp", ViewerOptDialog);
+USEFORM("convopt.cpp", ConvOptDialog);
+USEFORM("convmain.cpp", MainWindow);
+USEFORM("..\appcmn\viewer.cpp", TextViewer);
 USEFORM("..\appcmn\confdlg.cpp", ConfDialog);
 USEFORM("..\appcmn\aboutdlg.cpp", AboutDialog);
 USEFORM("..\appcmn\timedlg.cpp", TimeDialog);
 USEFORM("..\appcmn\keydlg.cpp", KeyDialog);
-USEFORM("convopt.cpp", ConvOptDialog);
 USEFORM("startdlg.cpp", StartDialog);
 //---------------------------------------------------------------------------
 WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
