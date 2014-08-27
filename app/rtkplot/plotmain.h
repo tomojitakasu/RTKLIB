@@ -51,7 +51,8 @@
 #define PLOT_SKY    7                   // plot-type: sky-plot
 #define PLOT_DOP    8                   // plot-type: dop-plot
 #define PLOT_SNR    9                   // plot-type: snr/mp-plot
-#define PLOT_SNRE   10                  // plot-type: snr-el-plot
+#define PLOT_SNRE   10                  // plot-type: snr/mp-el-plot
+#define PLOT_MPS    11                  // plot-type: mp-skyplot
 
 #define ORG_STARTPOS 0                  // plot-origin: start position
 #define ORG_ENDPOS  1                   // plot-origin: end position
@@ -456,7 +457,7 @@ private:
     void __fastcall DrawDopStat  (double *dop, int *ns, int n);
     void __fastcall DrawSnr      (int level);
     void __fastcall DrawSnrE     (int level);
-    void __fastcall DrawMpE      (int level);
+    void __fastcall DrawMpS      (int level);
     
     AnsiString __fastcall U2A    (UnicodeString str);
     UnicodeString __fastcall A2U (AnsiString str);
@@ -475,6 +476,7 @@ private:
     TColor __fastcall ObsColor   (const obsd_t *obs, double az, double el);
     TColor __fastcall SysColor   (int sat);
     TColor __fastcall SnrColor   (double snr);
+    TColor __fastcall MpColor    (double mp);
     void __fastcall ReadStaPos   (const char *file, const char *sta, double *rr);
     int  __fastcall SearchPos    (int x, int y);
     void __fastcall TimeSpan     (gtime_t *ts, gtime_t *te, double *tint);

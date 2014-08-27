@@ -41,7 +41,8 @@
 TMainForm *MainForm;
 
 #define PRGNAME     "RTKNAVI"           // program name
-#define TRACEFILE   "rtknavi.trace"     // debug trace file
+#define TRACEFILE   "rtknavi_%Y%m%d%h%M.trace" // debug trace file
+#define STATFILE    "rtknavi_%Y%m%d%h%M.stat"  // solution status file
 #define CLORANGE    (TColor)0x00AAFF
 #define CLLGRAY     (TColor)0xDDDDDD
 #define CHARDEG     0x00B0              // character code of degree
@@ -752,7 +753,7 @@ void __fastcall TMainForm::SvrStart(void)
 {
     AnsiString s;
     solopt_t solopt[2];
-    double ep[6],pos[3],nmeapos[3];
+    double pos[3],nmeapos[3];
     int itype[]={STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPCLI,STR_FILE,STR_FTP,STR_HTTP};
     int otype[]={STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPSVR,STR_FILE};
     int i,strs[MAXSTRRTK]={0},sat,ex,stropt[8]={0};
@@ -874,17 +875,12 @@ void __fastcall TMainForm::SvrStart(void)
     for (i=3;i<8;i++) {
         if (strs[i]==STR_FILE&&!ConfOverwrite(paths[i])) return;
     }
-    time2epoch(utc2gpst(timeget()),ep);
     if (DebugTraceF>0) {
-        sprintf(file,"rtknavi_%04.0f%02.0f%02.0f%02.0f%02.0f%02.0f.trace",
-                ep[0],ep[1],ep[2],ep[3],ep[4],ep[5]);
-        traceopen(file);
+        traceopen(TRACEFILE);
         tracelevel(DebugTraceF);
     }
     if (DebugStatusF>0) {
-        sprintf(file,"rtknavi_%04.0f%02.0f%02.0f%02.0f%02.0f%02.0f.stat",
-                ep[0],ep[1],ep[2],ep[3],ep[4],ep[5]);
-        rtkopenstat(file,DebugStatusF);
+        rtkopenstat(STATFILE,DebugStatusF);
     }
     if (SolOpt.geoid>0&&GeoidDataFileF!="") {
         opengeoid(SolOpt.geoid,GeoidDataFileF.c_str());

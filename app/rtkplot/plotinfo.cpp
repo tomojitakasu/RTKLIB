@@ -10,7 +10,7 @@
 void __fastcall TPlot::UpdateInfo(void)
 {
     int showobs=(PLOT_OBS<=PlotType&&PlotType<=PLOT_DOP)||
-                PlotType==PLOT_SNR||PlotType==PLOT_SNRE;
+                PlotType==PLOT_SNR||PlotType==PLOT_SNRE||PlotType==PLOT_MPS;
     
     trace(3,"UpdateInfo:\n");
     
@@ -27,6 +27,7 @@ void __fastcall TPlot::UpdateTimeObs(void)
     AnsiString msgs1[]={" OBS=L1/2 "," L1 "," L2 "," L1/2/5 "," L1/5 ",""," L5 "};
     AnsiString msgs2[]={" SNR=...45.","..40.","..35.","..30.","..25 ",""," <25 "};
     AnsiString msgs3[]={" SYS=GPS ","GLO ","GAL ","QZS ","BDS ","SBS ",""};
+    AnsiString msgs4[]={" MP=..0.6","..0.3","..0.0..","-0.3..","-0.6..","",""};
     AnsiString msg,msgs[8],s;
     double azel[MAXOBS*2],dop[4]={0};
     int i,ns=0,no=0,ind=ObsIndex;
@@ -61,6 +62,10 @@ void __fastcall TPlot::UpdateTimeObs(void)
         else if (PlotType<=PLOT_SKY&&ObsType->ItemIndex==0) {
             msg+=s.sprintf("NSAT=%d ",ns);
             for (i=0;i<7;i++) msgs[i]=SimObs?msgs3[i]:msgs1[i];
+        }
+        else if (PlotType==PLOT_MPS) {
+            msg+=s.sprintf("NSAT=%d ",ns);
+            for (i=0;i<7;i++) msgs[i]=msgs4[i];
         }
         else {
             msg+=s.sprintf("NSAT=%d ",ns);
@@ -127,6 +132,7 @@ void __fastcall TPlot::UpdateInfoObs(void)
     AnsiString msgs1[]={" OBS=L1/2 "," L1 "," L2 "," L1/2/5 "," L1/5 ",""," L5 "};
     AnsiString msgs2[]={" SNR=...45.","..40.","..35.","..30.","..25 ",""," <25 "};
     AnsiString msgs3[]={" SYS=GPS ","GLO ","GAL ","QZS ","BDS ","SBS ",""};
+    AnsiString msgs4[]={" MP=..0.6","..0.3","..0.0..","-0.3..","-0.6..","",""};
     AnsiString msg,msgs[8];
     gtime_t ts={0},te={0},t,tp={0};
     int i,n=0,ne=0;
@@ -153,6 +159,9 @@ void __fastcall TPlot::UpdateInfoObs(void)
             }
             else if (PlotType<=PLOT_SKY&&ObsType->ItemIndex==0) {
                 msgs[i]=SimObs?msgs3[i]:msgs1[i];
+            }
+            else if (PlotType==PLOT_MPS) {
+                msgs[i]=msgs4[i];
             }
             else {
                 msgs[i]=SimObs?msgs3[i]:msgs2[i];
@@ -255,6 +264,7 @@ void __fastcall TPlot::UpdatePlotType(void)
     if (NObs>0) {
         PlotTypeS->AddItem(PTypes[PLOT_SNR ],NULL);
         PlotTypeS->AddItem(PTypes[PLOT_SNRE],NULL);
+        PlotTypeS->AddItem(PTypes[PLOT_MPS ],NULL);
     }
     for (i=0;i<PlotTypeS->Items->Count;i++) {
         if (PlotTypeS->Items->Strings[i]!=PTypes[PlotType]) continue;
@@ -360,7 +370,7 @@ void __fastcall TPlot::UpdatePoint(int x, int y)
             msg=LatLonStr(pos,8);
         }
     }
-    else if (PlotType==PLOT_SKY) { // sky-plot
+    else if (PlotType==PLOT_SKY||PlotType==PLOT_MPS) { // sky-plot
         
         GraphS->GetLim(xl,yl);
         GraphS->ToPos(p,q[0],q[1]);

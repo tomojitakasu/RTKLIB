@@ -1,4 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <BorlandProject>
-	<Transactions/>
+	<Transactions>
+    <Transaction>2014/08/26 09:33:43.000.561,=D:\proj\RTKLIB\src\rcv\rt17.c</Transaction>
+  </Transactions>
 </BorlandProject>
