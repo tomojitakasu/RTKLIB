@@ -5,14 +5,16 @@ SRC    = ../../../src
 CFLAGS = -Wall -O3 -ansi -pedantic
 LDLIBS  = -lm
 
+all        : gencrc genxor genmsk
 gencrc     : gencrc.o
-
-install:
-	cp gencr $(BINDIR)
+genxor     : genxor.o
+genmsk     : genmsk.o
 
 clean:
-	rm -f gencrc gencrc.exe *.o
+	rm -f gencrc genxor genmsk *.o
 
 test:
 	./gencrc -16 > crc16.c
 	./gencrc -24 > crc24.c
+	./genxor > xor.c
+	./genmsk > msk.c
