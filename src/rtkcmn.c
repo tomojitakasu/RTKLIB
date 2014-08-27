@@ -98,6 +98,8 @@
 *                           add BDS L1 code for RINEX 3.02 and RTCM 3.2
 *                           support BDS L1 in satwavelen()
 *           2014/05/29 1.27 fix bug on obs2code() to search obs code table
+*           2014/08/26 1.28 fix problem on output of uncompress() for tar file
+*                           add function to swap trace file with keywords
 *-----------------------------------------------------------------------------*/
 #define _POSIX_C_SOURCE 199309
 #include <stdarg.h>
@@ -194,13 +196,14 @@ const char *formatstrs[]={      /* stream format strings */
     "Javad",                    /*  9 */
     "NVS BINR",                 /* 10 */
     "BINEX",                    /* 11 */
-    "LEX Receiver",             /* 12 */
-    "SiRF",                     /* 13 */
-    "RINEX",                    /* 14 */
-    "SP3",                      /* 15 */
-    "RINEX CLK",                /* 16 */
-    "SBAS",                     /* 17 */
-    "NMEA 0183",                /* 18 */
+    "Trimble RT17",             /* 12 */
+    "LEX Receiver",             /* 13 */
+    "Septentrio",               /* 14 */
+    "RINEX",                    /* 15 */
+    "SP3",                      /* 16 */
+    "RINEX CLK",                /* 17 */
+    "SBAS",                     /* 18 */
+    "NMEA 0183",                /* 19 */
     NULL
 };
 static char *obscodes[]={       /* observation code strings */
@@ -2647,18 +2650,54 @@ extern void freenav(nav_t *nav, int opt)
 #ifdef TRACE
 
 static FILE *fp_trace=NULL;     /* file pointer of trace */
+static char file_trace[1024];   /* trace file */
 static int level_trace=0;       /* level of trace */
 static unsigned int tick_trace=0; /* tick time at traceopen (ms) */
+static gtime_t time_trace={0};  /* time at traceopen */
+static lock_t lock_trace;       /* lock for trace */
 
+static void traceswap(void)
+{
+    gtime_t time=utc2gpst(timeget());
+    char path[1024];
+    
+    lock(&lock_trace);
+    
+    if ((int)(time2gpst(time      ,NULL)/INT_SWAP_TRAC)==
+        (int)(time2gpst(time_trace,NULL)/INT_SWAP_TRAC)) {
+        unlock(&lock_trace);
+        return;
+    }
+    time_trace=time;
+    
+    if (!reppath(file_trace,path,time,"","")) {
+        unlock(&lock_trace);
+        return;
+    }
+    if (fp_trace) fclose(fp_trace);
+    
+    if (!(fp_trace=fopen(path,"w"))) {
+        fp_trace=stderr;
+    }
+    unlock(&lock_trace);
+}
 extern void traceopen(const char *file)
 {
-    if (!*file||!(fp_trace=fopen(file,"w"))) fp_trace=stderr;
+    gtime_t time=utc2gpst(timeget());
+    char path[1024];
+    
+    reppath(file,path,time,"","");
+    if (!*path||!(fp_trace=fopen(path,"w"))) fp_trace=stderr;
+    strcpy(file_trace,file);
     tick_trace=tickget();
+    time_trace=time;
+    initlock(&lock_trace);
 }
 extern void traceclose(void)
 {
     if (fp_trace&&fp_trace!=stderr) fclose(fp_trace);
     fp_trace=NULL;
+    file_trace[0]='\0';
 }
 extern void tracelevel(int level)
 {
@@ -2673,6 +2712,7 @@ extern void trace(int level, const char *format, ...)
         va_start(ap,format); vfprintf(stderr,format,ap); va_end(ap);
     }
     if (!fp_trace||level>level_trace) return;
+    traceswap();
     fprintf(fp_trace,"%d ",level);
     va_start(ap,format); vfprintf(fp_trace,format,ap); va_end(ap);
     fflush(fp_trace);
@@ -2682,6 +2722,7 @@ extern void tracet(int level, const char *format, ...)
     va_list ap;
     
     if (!fp_trace||level>level_trace) return;
+    traceswap();
     fprintf(fp_trace,"%d %9.3f: ",level,(tickget()-tick_trace)/1000.0);
     va_start(ap,format); vfprintf(fp_trace,format,ap); va_end(ap);
     fflush(fp_trace);
@@ -3629,10 +3670,7 @@ extern void csmooth(obs_t *obs, int ns)
 extern int uncompress(const char *file, char *uncfile)
 {
     int stat=0;
-    char *p,cmd[2048]="",tmpfile[1024]="";
-#ifdef WIN32
-    char buff[1024],*fname,*dir="";
-#endif
+    char *p,cmd[2048]="",tmpfile[1024]="",buff[1024],*fname,*dir="";
     
     trace(3,"uncompress: file=%s\n",file);
     
@@ -3658,16 +3696,19 @@ extern int uncompress(const char *file, char *uncfile)
     if ((p=strrchr(tmpfile,'.'))&&!strcmp(p,".tar")) {
         
         strcpy(uncfile,tmpfile); uncfile[p-tmpfile]='\0';
-#ifdef WIN32
         strcpy(buff,tmpfile);
         fname=buff;
+#ifdef WIN32
         if ((p=strrchr(buff,'\\'))) {
             *p='\0'; dir=fname; fname=p+1;
         }
         sprintf(cmd,"set PATH=%%CD%%;%%PATH%% & cd /D \"%s\" & tar -xf \"%s\"",
                 dir,fname);
 #else
-        sprintf(cmd,"tar -xf \"%s\"",tmpfile);
+        if ((p=strrchr(buff,'/'))) {
+            *p='\0'; dir=fname; fname=p+1;
+        }
+        sprintf(cmd,"tar -C \"%s\" -xf \"%s\"",dir,tmpfile);
 #endif
         if (execcmd(cmd)) {
             if (stat) remove(tmpfile);

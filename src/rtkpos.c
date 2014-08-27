@@ -30,6 +30,7 @@
 *           2014/05/26 1.13 support beidou and galileo
 *                           add output of gal-gps and bds-gps time offset
 *           2014/05/28 1.14 fix bug on memory exception with many sys and freq
+*           2014/08/26 1.15 add functino to swap sol-stat file with keywords
 *-----------------------------------------------------------------------------*/
 #include <stdarg.h>
 #include "rtklib.h"
@@ -96,12 +97,16 @@ extern int resamb_TCAR(rtk_t *rtk, const obsd_t *obs, const int *sat,
 /* global variables ----------------------------------------------------------*/
 static int statlevel=0;          /* rtk status output level (0:off) */
 static FILE *fp_stat=NULL;       /* rtk status file pointer */
+static char file_stat[1024]="";  /* rtk status file original path */
+static gtime_t time_stat={0};    /* rtk status file time */
 
 /* open solution status file ---------------------------------------------------
 * open solution status file and set output level
 * args   : char     *file   I   rtk status file
 *          int      level   I   rtk status level (0: off)
 * return : status (1:ok,0:error)
+* notes  : file can constain time keywords (%Y,%y,%m...) defined in reppath().
+*          The time to replace keywords is based on UTC of CPU time.
 * output : solution status file record format
 *
 *   $POS,week,tow,stat,posx,posy,posz,posxf,posyf,poszf
@@ -166,13 +171,21 @@ static FILE *fp_stat=NULL;       /* rtk status file pointer */
 *-----------------------------------------------------------------------------*/
 extern int rtkopenstat(const char *file, int level)
 {
+    gtime_t time=utc2gpst(timeget());
+    char path[1024];
+    
     trace(3,"rtkopenstat: file=%s level=%d\n",file,level);
     
     if (level<=0) return 0;
-    if (!(fp_stat=fopen(file,"w"))) {
-        trace(1,"rtkopenstat: file open error file=%s\n",file);
+    
+    reppath(file,path,time,"","");
+    
+    if (!(fp_stat=fopen(path,"w"))) {
+        trace(1,"rtkopenstat: file open error path=%s\n",path);
         return 0;
     }
+    strcpy(file_stat,file);
+    time_stat=time;
     statlevel=level;
     return 1;
 }
@@ -187,7 +200,31 @@ extern void rtkclosestat(void)
     
     if (fp_stat) fclose(fp_stat);
     fp_stat=NULL;
+    file_stat[0]='\0';
     statlevel=0;
+}
+/* swap solution status file -------------------------------------------------*/
+static void swapsolstat(void)
+{
+    gtime_t time=utc2gpst(timeget());
+    char path[1024];
+    
+    if ((int)(time2gpst(time     ,NULL)/INT_SWAP_STAT)==
+        (int)(time2gpst(time_stat,NULL)/INT_SWAP_STAT)) {
+        return;
+    }
+    time_stat=time;
+    
+    if (!reppath(file_stat,path,time,"","")) {
+        return;
+    }
+    if (fp_stat) fclose(fp_stat);
+    
+    if (!(fp_stat=fopen(path,"w"))) {
+        trace(2,"swapsolstat: file open error path=%s\n",path);
+        return;
+    }
+    trace(3,"swapsolstat: path=%s\n",path);
 }
 /* output solution status ----------------------------------------------------*/
 static void outsolstat(rtk_t *rtk)
@@ -200,6 +237,9 @@ static void outsolstat(rtk_t *rtk)
     if (statlevel<=0||!fp_stat) return;
     
     trace(3,"outsolstat:\n");
+    
+    /* swap solution status file */
+    swapsolstat();
     
     est=rtk->opt.mode>=PMODE_DGPS;
     nfreq=est?nf:1;

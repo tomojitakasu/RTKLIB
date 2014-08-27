@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * convrnx.c : rinex translator for rtcm and receiver raw data log
 *
-*          Copyright (C) 2009-2013 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2009-2014 by T.TAKASU, All rights reserved.
 *
 * version : $Revision: 1.2 $ $Date: 2008/07/17 21:48:06 $
 * history : 2009/04/10 1.0  new
@@ -24,6 +24,7 @@
 *           2013/03/11 1.7  support binex and rinex 3.02
 *                           add approx position in rinex obs header if blank
 *           2014/05/24 1.8  support beidou B1
+*           2014/08/26 1.9  support input format rt17
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -535,6 +536,10 @@ static void set_obstype(int format, rnxopt_t *opt)
         {CODE_L1I,CODE_L1Q,CODE_L1X,CODE_L7I,CODE_L7Q,CODE_L7X,CODE_L6I,CODE_L6Q,
          CODE_L6X}
     };
+    /* supported codes by rt17 */
+    const unsigned char codes_rt17[6][8]={
+        {CODE_L1C,CODE_L2W}
+    };
     /* supported codes by others */
     const unsigned char codes_other[6][8]={
         {CODE_L1C},{CODE_L1C},{CODE_L1C},{CODE_L1C},{CODE_L1C},{CODE_L1I}
@@ -553,6 +558,7 @@ static void set_obstype(int format, rnxopt_t *opt)
             case STRFMT_CRES : codes=codes_cres [i]; break;
             case STRFMT_JAVAD: codes=codes_javad[i]; break;
             case STRFMT_BINEX: codes=codes_rinex[i]; break;
+            case STRFMT_RT17 : codes=codes_rt17 [i]; break;
             case STRFMT_RINEX: codes=codes_rinex[i]; break;
             default:           codes=codes_other[i]; break;
         }
@@ -904,8 +910,9 @@ static int convrnx_s(int sess, int format, rnxopt_t *opt, const char *file,
     }
     nf=expath(path,epath,MAXEXFILE);
     
-    if (format==STRFMT_RTCM2||format==STRFMT_RTCM3) time=opt->trtcm;
-    
+    if (format==STRFMT_RTCM2||format==STRFMT_RTCM3||format==STRFMT_RT17) {
+        time=opt->trtcm;
+    }
     if (opt->scanobs) {
         
         /* scan observation types */
