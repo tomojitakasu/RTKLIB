@@ -11,7 +11,7 @@ int showmsg(char *format,...) {return 0;}
 //---------------------------------------------------------------------------
 const char *PTypes[]={
     "Gnd Trk","Position","Velocity","Accel","NSat","Residuals",
-    "Sat Vis","Skyplot","DOP/NSat","SNR/MP/EL","SNR/MP-EL",""
+    "Sat Vis","Skyplot","DOP/NSat","SNR/MP/EL","SNR/MP-EL","MP-Skyplot",""
 };
 // show message in status-bar -----------------------------------------------
 void __fastcall TPlot::ShowMsg(AnsiString msg)
@@ -340,6 +340,34 @@ TColor __fastcall TPlot::SnrColor(double snr)
     i=(int)a; a-=i;
     c1=(unsigned int)MColor[0][4-i];
     c2=(unsigned int)MColor[0][5-i];
+    r1=c1&0xFF; g1=(c1>>8)&0xFF; b1=(c1>>16)&0xFF;
+    r2=c2&0xFF; g2=(c2>>8)&0xFF; b2=(c2>>16)&0xFF;
+    r1=(unsigned int)(a*r1+(1.0-a)*r2)&0xFF;
+    g1=(unsigned int)(a*g1+(1.0-a)*g2)&0xFF;
+    b1=(unsigned int)(a*b1+(1.0-a)*b2)&0xFF;
+    
+    return (TColor)((b1<<16)+(g1<<8)+r1);
+}
+// get mp color -------------------------------------------------------------
+TColor __fastcall TPlot::MpColor(double mp)
+{
+    TColor colors[5];
+    unsigned int c1,c2,r1,r2,g1,g2,b1,b2;
+    double a;
+    int i;
+    
+    colors[4]=MColor[0][5]; /*      mp> 0.6 */
+    colors[3]=MColor[0][4]; /*  0.6>mp> 0.2 */
+    colors[2]=MColor[0][3]; /*  0.2>mp>-0.2 */
+    colors[1]=MColor[0][2]; /* -0.2>mp>-0.6 */
+    colors[0]=MColor[0][1]; /* -0.6>mp      */
+     
+    if (mp>= 0.6) return colors[4];
+    if (mp<=-0.6) return colors[0];
+    a=mp/0.4+0.6;
+    i=(int)a; a-=i;
+    c1=(unsigned int)colors[i  ];
+    c2=(unsigned int)colors[i+1];
     r1=c1&0xFF; g1=(c1>>8)&0xFF; b1=(c1>>16)&0xFF;
     r2=c2&0xFF; g2=(c2>>8)&0xFF; b2=(c2>>16)&0xFF;
     r1=(unsigned int)(a*r1+(1.0-a)*r2)&0xFF;

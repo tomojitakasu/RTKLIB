@@ -60,7 +60,7 @@
 			<TASM_Defines>_RTLDLL;NO_STRICT;WIN32;TRACE;ENAGLO;ENAQZS;ENAGAL;NFREQ=3;$(TASM_Defines)</TASM_Defines>
 			<BRCC_Defines>_RTLDLL;NO_STRICT;WIN32;TRACE;ENAGLO;ENAQZS;ENAGAL;NFREQ=3;$(BRCC_Defines)</BRCC_Defines>
 			<ILINK_AppType>Windows</ILINK_AppType>
-			<BCC_Defines>_RTLDLL;NO_STRICT;WIN32;TRACE;ENAGLO;ENAQZS;ENAGAL;ENACMP;NFREQ=3;NEXOBS=3;$(BCC_Defines)</BCC_Defines>
+			<BCC_Defines>_RTLDLL;NO_STRICT;WIN32;TRACE;ENAGLO;ENAQZS;ENAGAL;ENACMP;NFREQ=3;NEXOBS=3;ENALEX;$(BCC_Defines)</BCC_Defines>
 			<BRCC_IncludePath>..\..\..\rtklib_extlex;..\..\extlex;..\..\src\rcv;..\appcmn;..\..\src;$(BDS)\include;$(BDS)\include\dinkumware;$(BDS)\include\vcl;$(BRCC_IncludePath)</BRCC_IncludePath>
 			<BCC_PCHWithExternalTypeFiles>false</BCC_PCHWithExternalTypeFiles>
 			<BCC_UserSuppliedOptions> -tWM</BCC_UserSuppliedOptions>
@@ -311,6 +311,12 @@
 			<CppCompile Include="..\..\src\rcv\nvs.c">
 				<BuildOrder>51</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="..\..\src\rcv\rcvlex.c">
+				<BuildOrder>55</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\src\rcv\rt17.c">
+				<BuildOrder>56</BuildOrder>
+			</CppCompile>
 			<CppCompile Include="..\..\src\rcv\septentrio.c">
 				<BuildOrder>54</BuildOrder>
 			</CppCompile>
@@ -375,21 +381,21 @@
 			<FormResources Include="..\appcmn\tcpoptdlg.dfm"/>
 			<FormResources Include="..\appcmn\serioptdlg.dfm"/>
 			<FormResources Include="..\appcmn\refdlg.dfm"/>
+			<FormResources Include="..\appcmn\viewer.dfm"/>
+			<FormResources Include="logstrdlg.dfm"/>
 			<FormResources Include="instrdlg.dfm"/>
 			<FormResources Include="..\appcmn\vieweropt.dfm"/>
-			<FormResources Include="..\appcmn\viewer.dfm"/>
-			<FormResources Include="..\appcmn\maskoptdlg.dfm"/>
 			<FormResources Include="..\appcmn\cmdoptdlg.dfm"/>
 			<FormResources Include="..\appcmn\aboutdlg.dfm"/>
+			<FormResources Include="..\appcmn\confdlg.dfm"/>
+			<FormResources Include="..\appcmn\maskoptdlg.dfm"/>
 			<FormResources Include="..\appcmn\keydlg.dfm"/>
 			<FormResources Include="..\appcmn\ftpoptdlg.dfm"/>
-			<FormResources Include="..\appcmn\confdlg.dfm"/>
-			<FormResources Include="logstrdlg.dfm"/>
 			<FormResources Include="naviopt.dfm"/>
 			<FormResources Include="navimain.dfm"/>
 			<FormResources Include="mondlg.dfm"/>
-			<FormResources Include="rcvoptdlg.dfm"/>
 			<FormResources Include="outstrdlg.dfm"/>
+			<FormResources Include="rcvoptdlg.dfm"/>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>
 				<CfgParent>Base</CfgParent>

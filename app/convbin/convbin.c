@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * convbin.c : convert receiver binary log file to rinex obs/nav, sbas messages
 *
-*          Copyright (C) 2007-2013 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2007-2014 by T.TAKASU, All rights reserved.
 *
 * options : -DWIN32 use windows file path separator
 *
@@ -24,6 +24,7 @@
 *           2013/02/18 1.7 support binex
 *           2013/05/19 1.8 support auto format for file path with wild-card
 *           2014/02/08 1.9 add option -span -trace -mask
+*           2014/08/26 1.10 add Trimble RT17 support
 *-----------------------------------------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>
@@ -65,6 +66,7 @@ static const char *help[]={
 " NVS                   : BINR",
 " BINEX                 : big-endian, regular CRC, forward record (0xE2)",
 "                         0x01-01,0x01-02,0x01-03,0x01-04,0x01-06,0x7f-05",
+" Trimble               : RT17",
 " RINEX                 : OBS, NAV, GNAV, HNAV, LNAV, QNAV",
 "",
 " Options [default]",
@@ -87,6 +89,7 @@ static const char *help[]={
 "                  javad= Javad",
 "                  nvs  = NVS NV08C BINR",
 "                  binex= BINEX",
+"                  rt17 = Trimble RT17",
 "                  rinex= RINEX",
 "     -ro opt      receiver options",
 "     -f freq      number of frequencies [2]",
@@ -135,6 +138,7 @@ static const char *help[]={
 "     *.stq         SkyTraq S1315F",
 "     *.jps         Javad",
 "     *.bnx,*binex  BINEX",
+"     *.rt17        Trimble RT17",
 "     *.obs,*.*o    RINEX OBS"
 };
 /* print help ----------------------------------------------------------------*/
@@ -429,6 +433,7 @@ static int cmdopts(int argc, char **argv, rnxopt_t *opt, char **ifile,
         else if (!strcmp(fmt,"javad")) format=STRFMT_JAVAD;
         else if (!strcmp(fmt,"nvs"  )) format=STRFMT_NVS;
         else if (!strcmp(fmt,"binex")) format=STRFMT_BINEX;
+        else if (!strcmp(fmt,"rt17" )) format=STRFMT_RT17;
         else if (!strcmp(fmt,"rinex")) format=STRFMT_RINEX;
     }
     else {
@@ -444,6 +449,7 @@ static int cmdopts(int argc, char **argv, rnxopt_t *opt, char **ifile,
         else if (!strcmp(p,".jps"  ))  format=STRFMT_JAVAD;
         else if (!strcmp(p,".bnx"  ))  format=STRFMT_BINEX;
         else if (!strcmp(p,".binex"))  format=STRFMT_BINEX;
+        else if (!strcmp(p,".rt17" ))  format=STRFMT_RT17;
         else if (!strcmp(p,".obs"  ))  format=STRFMT_RINEX;
         else if (!strcmp(p+3,"o"   ))  format=STRFMT_RINEX;
         else if (!strcmp(p+3,"O"   ))  format=STRFMT_RINEX;
