@@ -29,6 +29,9 @@
 *                           support message NAV-SOL and NAV-TIMEGPS to get time
 *                           support message GFG-GNSS generation
 *           2014/06/23 1.11 support message TRK-MEAS for beidou ephemeris
+*           2014/08/11 1.12 fix bug on unable to read UBX-RXMRAW
+*                           fix problem on decoding glo ephemeris in TRKSFBX
+*                           support message TRK-TRKD5
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -40,6 +43,7 @@
 #define ID_NAVTIME  0x0120      /* ubx message id: nav time gps */
 #define ID_RXMRAW   0x0210      /* ubx message id: raw measurement data */
 #define ID_RXMSFRB  0x0211      /* ubx message id: subframe buffer */
+#define ID_TRKD5    0x030A      /* ubx message id: trace mesurement data */
 #define ID_TRKMEAS  0x0310      /* ubx message id: trace mesurement data */
 #define ID_TRKSFRBX 0x030F      /* ubx message id: trace subframe buffer */
 #define FU1         1           /* ubx message field types */
@@ -147,11 +151,8 @@ static int decode_rxmraw(raw_t *raw)
         toff=(tn-floor(tn+0.5))*tadj;
         time=timeadd(time,-toff);
     }
-    if (fabs(tt=timediff(time,raw->time))<=1e-3) {
-        time2str(time,tstr,3);
-        trace(2,"ubx rxmraw time tag duplicated: time=%s\n",tstr);
-        return 0;
-    }
+    tt=timediff(time,raw->time);
+    
     for (i=0,p+=8;i<nsat&&i<MAXOBS;i++,p+=24) {
         raw->obs.data[n].time=time;
         raw->obs.data[n].L[0]  =R8(p   )-toff*FREQ1;
@@ -173,7 +174,7 @@ static int decode_rxmraw(raw_t *raw)
         raw->obs.data[n].sat=sat;
         
         if (raw->obs.data[n].LLI[0]&1) raw->lockt[sat-1][0]=0.0;
-        else if (tt<0.0||10.0<tt) raw->lockt[sat-1][0]=0.0;
+        else if (tt<1.0||10.0<tt) raw->lockt[sat-1][0]=0.0;
         else raw->lockt[sat-1][0]+=tt;
         
         for (j=1;j<NFREQ+NEXOBS;j++) {
@@ -397,7 +398,7 @@ static int decode_trkmeas(raw_t *raw)
         if (lock2==0||lock2<raw->lockt[sat-1][0]) raw->lockt[sat-1][1]=1.0;
         raw->lockt[sat-1][0]=lock2;
         
-#if 1 /* for debug */
+#if 0 /* for debug */
         trace(2,"[%2d] qi=%d sys=%d prn=%3d frq=%2d flag=%02X ?=%02X %02X "
               "%02X %02X %02X %02X %02X lock=%3d %3d ts=%10.3f snr=%4.1f "
               "dop=%9.3f adr=%13.3f %6.3f\n",U1(p),qi,U1(p+4),prn,frq,flag,
@@ -409,6 +410,119 @@ static int decode_trkmeas(raw_t *raw)
         
         /* check phase lock */
         if (!(flag&0x20)) continue;
+        
+        raw->obs.data[n].time=time;
+        raw->obs.data[n].sat=sat;
+        raw->obs.data[n].P[0]=tau*CLIGHT;
+        raw->obs.data[n].L[0]=-adr;
+        raw->obs.data[n].D[0]=(float)dop;
+        raw->obs.data[n].SNR[0]=(unsigned char)(snr*4.0);
+        raw->obs.data[n].code[0]=sys==SYS_CMP?CODE_L1I:CODE_L1C;
+        raw->obs.data[n].LLI[0]=raw->lockt[sat-1][1]>0.0?1:0;
+        raw->lockt[sat-1][1]=0.0;
+        
+        for (j=1;j<NFREQ+NEXOBS;j++) {
+            raw->obs.data[n].L[j]=raw->obs.data[n].P[j]=0.0;
+            raw->obs.data[n].D[j]=0.0;
+            raw->obs.data[n].SNR[j]=raw->obs.data[n].LLI[j]=0;
+            raw->obs.data[n].code[j]=CODE_NONE;
+        }
+        n++;
+    }
+    if (n<=0) return 0;
+    raw->time=time;
+    raw->obs.n=n;
+    return 1;
+}
+/* decode ubx-trkd5: trace measurement data ----------------------------------*/
+static int decode_trkd5(raw_t *raw)
+{
+    static double adrs[MAXSAT]={0};
+    gtime_t time;
+    double ts,tr=-1.0,t,tau,adr,dop,snr,utc_gpst;
+    int i,j,n=0,type,off,len,sys,prn,sat,qi,frq,flag,week;
+    unsigned char *p=raw->buff+6;
+    
+    trace(4,"decode_trkd5: len=%d\n",raw->len);
+    
+    if (raw->outtype) {
+        sprintf(raw->msgtype,"UBX TRK-D5    (%4d):",raw->len);
+    }
+    if (!raw->time.time) return 0;
+    
+    utc_gpst=timediff(gpst2utc(raw->time),raw->time);
+    
+    switch ((type=U1(p))) {
+        case 3 : off=86; len=56; break;
+        case 6 : off=86; len=64; break; /* u-blox 7 */
+        default: off=78; len=56; break;
+    }
+    for (i=0,p=raw->buff+off;p-raw->buff<raw->len-2;i++,p+=len) {
+        if (U1(p+41)<4) continue;
+        t=I8(p)*P2_32/1000.0;
+        if (ubx_sys(U1(p+56))==SYS_GLO) t-=10800.0+utc_gpst;
+        if (t>tr) tr=t;
+    }
+    if (tr<0.0) return 0;
+    
+    tr=ROUND((tr+0.08)/0.1)*0.1;
+    
+    /* adjust week handover */
+    t=time2gpst(raw->time,&week);
+    if      (tr<t-302400.0) week--;
+    else if (tr>t+302400.0) week++;
+    time=gpst2time(week,tr);
+    
+    trace(4,"time=%s\n",time_str(time,0));
+    
+    for (i=0,p=raw->buff+off;p-raw->buff<raw->len-2;i++,p+=len) {
+        
+        /* quality indicator */
+        qi =U1(p+41)&7;
+        if (qi<4||7<qi) continue;
+        
+        if (type==6) {
+            if (!(sys=ubx_sys(U1(p+56)))) {
+                trace(2,"ubx trkd5: system error\n");
+                continue;
+            }
+            prn=U1(p+57)+(sys==SYS_QZS?192:0);
+            frq=U1(p+59)-7;
+        }
+        else {
+            prn=U1(p+34);
+            sys=prn<MINPRNSBS?SYS_GPS:SYS_SBS;
+        }
+        if (!(sat=satno(sys,prn))) {
+            trace(2,"ubx trkd5 sat number error: sys=%2d prn=%2d\n",sys,prn);
+            continue;
+        }
+        /* transmission time */
+        ts=I8(p)*P2_32/1000.0;
+        if (sys==SYS_GLO) ts-=10800.0+utc_gpst; /* glot -> gpst */
+        
+        /* signal travel time */
+        tau=tr-ts;
+        if      (tau<-302400.0) tau+=604800.0;
+        else if (tau> 302400.0) tau-=604800.0;
+        
+        flag=U1(p+54);   /* tracking status */
+        adr=qi<6?0.0:I8(p+8)*P2_32+(flag&0x01?0.5:0.0);
+        dop=I4(p+16)*P2_10/4.0;
+        snr=U2(p+32)/256.0;
+        
+        if (snr<=10.0) raw->lockt[sat-1][1]=1.0;
+        
+#if 0 /* for debug */
+        trace(2,"[%2d] qi=%d sys=%d prn=%3d frq=%2d flag=%02X ts=%1.3f "
+              "snr=%4.1f dop=%9.3f adr=%13.3f %6.3f\n",U1(p+35),qi,U1(p+56),
+              prn,frq,flag,ts,snr,dop,adr,
+              adrs[sat-1]==0.0||dop==0.0?0.0:(adr-adrs[sat-1])-dop);
+#endif
+        adrs[sat-1]=adr;
+        
+        /* check phase lock */
+        if (!(flag&0x08)) continue;
         
         raw->obs.data[n].time=time;
         raw->obs.data[n].sat=sat;
@@ -525,7 +639,7 @@ static int decode_gnav(raw_t *raw, int sat, int frq)
 {
     geph_t geph={0};
     int i,j,k,m,prn;
-    unsigned char *p=raw->buff+6+13,buff[64];
+    unsigned char *p=raw->buff+6+13,buff[64],*fid;
     
     satsys(sat,&prn);
     
@@ -536,10 +650,21 @@ static int decode_gnav(raw_t *raw, int sat, int frq)
     for (i=k=0;i<4;i++,p+=4) for (j=0;j<4;j++) {
         buff[k++]=p[3-j];
     }
+    /* test hamming of glonass string */
+    if (!test_glostr(buff)) {
+        trace(2,"ubx trksfrbx glo string hamming error: sat=%2d\n",sat);
+        return -1;
+    }
     m=getbitu(buff,1,4);
     if (m<1||15<m) {
         trace(2,"ubx trksfrbx glo string no error: sat=%2d\n",sat);
         return -1;
+    }
+    /* flush frame buffer if frame-id changed */
+    fid=raw->subfrm[sat-1]+150;
+    if (fid[0]!=buff[12]||fid[1]!=buff[13]) {
+        for (i=0;i<4;i++) memset(raw->subfrm[sat-1]+i*10,0,10);
+        memcpy(fid,buff+12,2); /* save frame-id */
     }
     memcpy(raw->subfrm[sat-1]+(m-1)*10,buff,10);
     
@@ -628,6 +753,7 @@ static int decode_ubx(raw_t *raw)
         case ID_NAVSOL  : return decode_navsol  (raw);
         case ID_NAVTIME : return decode_navtime (raw);
         case ID_TRKMEAS : return decode_trkmeas (raw);
+        case ID_TRKD5   : return decode_trkd5   (raw);
         case ID_TRKSFRBX: return decode_trksfrbx(raw);
     }
     if (raw->outtype) {

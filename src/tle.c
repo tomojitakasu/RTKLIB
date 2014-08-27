@@ -13,6 +13,7 @@
 * version : $Revision:$ $Date:$
 * history : 2012/11/01 1.0  new
 *           2013/01/25 1.1  fix bug on binary search
+*           2014/08/26 1.2  fix bug on tle_pos() to get tle by satid or desig
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -474,7 +475,7 @@ extern int tle_name_read(const char *file, tle_t *tle)
                 !strcmp(tle->data[i].desig,desig)) break;
         }
         if (i>=tle->n) {
-            trace(2,"no tle data: satno=%s desig=%s\n",satno,desig);
+            trace(3,"no tle data: satno=%s desig=%s\n",satno,desig);
             continue;
         }
         strncpy(tle->data[i].name,name,31);
@@ -522,10 +523,10 @@ extern int tle_pos(gtime_t time, const char *name, const char *satno,
             if (!strcmp(tle->data[i].satno,satno)||
                 !strcmp(tle->data[i].desig,desig)) break;
         }
-        if (i>=tle->n) stat=1;
+        if (i<tle->n) stat=0;
     }
     if (stat) {
-        trace(2,"no tle data: name=%s satno=%s desig=%s\n",name,satno,desig);
+        trace(3,"no tle data: name=%s satno=%s desig=%s\n",name,satno,desig);
         return 0;
     }
     tutc=gpst2utc(time);

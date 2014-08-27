@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * notvatel.c : NovAtel OEM6/OEM5/OEM4/OEM3 receiver functions
 *
-*          Copyright (C) 2007-2013 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2007-2014 by T.TAKASU, All rights reserved.
 *
 * reference :
 *     [1] NovAtel, OM-20000094 Rev6 OEMV Family Firmware Reference Manual, 2008
@@ -41,6 +41,8 @@
 *                           galclockb,galionob
 *                           fix bug on decoding rawwaasframeb for qzss-saif
 *           2014/05/24 1.16 support beidou
+*           2014/07/01 1.17 fix problem on decoding of bdsephemerisb
+*                           fix bug on beidou tracking codes
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -241,8 +243,8 @@ static int decode_trackstat(unsigned int stat, int *sys, int *code, int *track,
     else if (*sys==SYS_CMP) {
         switch (sigtype) {
             case  0: freq=0; *code=CODE_L1I; break; /* B1 with D1 (OEM6) */
-            case  1: freq=1; *code=CODE_L1I; break; /* B2 with D1 (OEM6) */
-            case  4: freq=0; *code=CODE_L7I; break; /* B1 with D2 (OEM6) */
+            case  1: freq=1; *code=CODE_L7I; break; /* B2 with D1 (OEM6) */
+            case  4: freq=0; *code=CODE_L1I; break; /* B1 with D2 (OEM6) */
             case  5: freq=1; *code=CODE_L7I; break; /* B2 with D2 (OEM6) */
             default: freq=-1; break;
         }
@@ -735,8 +737,8 @@ static int decode_galephemerisb(raw_t *raw)
     dvs_e1b   =U1(p)&1; p+=1;
     dvs_e5a   =U1(p)&1; p+=1;
     dvs_e5b   =U1(p)&1; p+=1;
-    eph.sva   =U1(p);   p+=1+1;
-    eph.iode  =U4(p);   p+=4;
+    eph.sva   =U1(p);   p+=1+1; /* SISA */
+    eph.iode  =U4(p);   p+=4;   /* IODNav */
     eph.toes  =U4(p);   p+=4;
     sqrtA     =R8(p);   p+=8;
     eph.deln  =R8(p);   p+=8;
@@ -923,7 +925,7 @@ static int decode_galfnavrawpageb(raw_t *raw)
     trace(3,"%s E%2d FNAV     (%2d) ",time_str(raw->time,0),satid,page);
     traceb(3,buff,27);
     
-    return 9;
+    return 0;
 }
 /* decode galinavrawwordb ----------------------------------------------------*/
 static int decode_galinavrawwordb(raw_t *raw)
@@ -962,7 +964,7 @@ static int decode_galinavrawwordb(raw_t *raw)
     trace(3,"%s E%2d INAV-%s (%2d) ",time_str(time,0),satid,sig,type);
     traceb(3,buff,16);
     
-    return 9;
+    return 0;
 }
 /* decode rawcnavframeb ------------------------------------------------------*/
 static int decode_rawcnavframeb(raw_t *raw)
@@ -987,7 +989,7 @@ static int decode_rawcnavframeb(raw_t *raw)
     trace(3,"%s PRN=%3d FRMID=%2d ",time_str(raw->time,0),prn,frmid);
     traceb(3,buff,38);
     
-    return 9;
+    return 0;
 }
 /* decode bdsephemerisb ------------------------------------------------------*/
 static int decode_bdsephemerisb(raw_t *raw)
@@ -1000,7 +1002,7 @@ static int decode_bdsephemerisb(raw_t *raw)
     
     trace(3,"decode_bdsephemerisb: len=%d\n",raw->len);
     
-    if (raw->len<OEM4HLEN+200) {
+    if (raw->len<OEM4HLEN+196) {
         trace(2,"oem4 bdsephemrisb length error: len=%d\n",raw->len);
         return -1;
     }
@@ -1031,7 +1033,7 @@ static int decode_bdsephemerisb(raw_t *raw)
     eph.crc   =R8(p);   p+=8;
     eph.crs   =R8(p);   p+=8;
     eph.cic   =R8(p);   p+=8;
-    eph.cis   =R8(p);   p+=8;
+    eph.cis   =R8(p);
     eph.A     =sqrtA*sqrtA;
     eph.sva   =uraindex(ura);
     
@@ -1043,8 +1045,8 @@ static int decode_bdsephemerisb(raw_t *raw)
         trace(2,"oemv bdsephemeris satellite error: prn=%d\n",prn);
         return -1;
     }
-    eph.toe=bdt2time(eph.week,eph.toes); /* bdt -> gpst */
-    eph.toc=bdt2time(eph.week,toc);      /* bdt -> gpst */
+    eph.toe=bdt2gpst(bdt2time(eph.week,eph.toes)); /* bdt -> gpst */
+    eph.toc=bdt2gpst(bdt2time(eph.week,toc));      /* bdt -> gpst */
     eph.ttr=raw->time;
     
     if (!strstr(raw->opt,"-EPHALL")) {
