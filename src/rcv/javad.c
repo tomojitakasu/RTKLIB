@@ -22,10 +22,11 @@
 *           2012/10/18 1.3  change receiver options and rinex obs code
 *           2013/01/24 1.4  change compass factor for short pseudorange
 *                           add raw option -NOET
-*           2013/02/23 1.6 fix memory access violation problem on arm
-*           2013/05/08 1.7 fix bug on week number of galileo ephemeris
-*           2014/05/23 1.8 support beidou
-*           2014/06/23 1.9 support [lD] for glonass raw navigation data
+*           2013/02/23 1.6  fix memory access violation problem on arm
+*           2013/05/08 1.7  fix bug on week number of galileo ephemeris
+*           2014/05/23 1.8  support beidou
+*           2014/06/23 1.9  support [lD] for glonass raw navigation data
+*           2014/08/26 1.10 fix bug on decoding iode in glonass ephemeris [NE]
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -594,7 +595,7 @@ static int decode_NE(raw_t *raw)
         return 0;
     }
     if (raw->time.time==0) return 0;
-    geph.iode=(tb/900)&0x3F;
+    geph.iode=(tb/900)&0x7F;
     geph.toe=utc2gpst(adjday(raw->time,tb-10800.0));
     geph.tof=utc2gpst(adjday(raw->time,tk-10800.0));
     

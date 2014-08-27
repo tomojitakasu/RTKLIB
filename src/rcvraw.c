@@ -22,6 +22,8 @@
 *           2014/01/31 1.5  fix bug on decode fit interval
 *           2014/06/22 1.6  add api decode_glostr()
 *           2014/06/22 1.7  add api decode_bds_d1(), decode_bds_d2()
+*           2014/08/14 1.8  add test_glostr()
+*                           add support input format rt17
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 #include <stdint.h>
@@ -276,14 +278,57 @@ extern int decode_bds_d2(const unsigned char *buff, eph_t *eph)
     eph->toc=bdt2gpst(bdt2time(eph->week,toc_bds));   /* bdt -> gpst */
     return 1;
 }
+/* test hamming code of glonass ephemeris string -------------------------------
+* test hamming code of glonass ephemeris string (ref [2] 4.7)
+* args   : unsigned char *buff I glonass navigation data string bits in frame
+*                                with hamming
+*                                  buff[ 0]: string bit 85-78
+*                                  buff[ 1]: string bit 77-70
+*                                  ...
+*                                  buff[10]: string bit  5- 1 (0 padded)
+* return : status (1:ok,0:error)
+*-----------------------------------------------------------------------------*/
+extern int test_glostr(const unsigned char *buff)
+{
+    static const unsigned char xor_8bit[256]={ /* xor of 8 bits */
+        0,1,1,0,1,0,0,1,1,0,0,1,0,1,1,0,1,0,0,1,0,1,1,0,0,1,1,0,1,0,0,1,
+        1,0,0,1,0,1,1,0,0,1,1,0,1,0,0,1,0,1,1,0,1,0,0,1,1,0,0,1,0,1,1,0,
+        1,0,0,1,0,1,1,0,0,1,1,0,1,0,0,1,0,1,1,0,1,0,0,1,1,0,0,1,0,1,1,0,
+        0,1,1,0,1,0,0,1,1,0,0,1,0,1,1,0,1,0,0,1,0,1,1,0,0,1,1,0,1,0,0,1,
+        1,0,0,1,0,1,1,0,0,1,1,0,1,0,0,1,0,1,1,0,1,0,0,1,1,0,0,1,0,1,1,0,
+        0,1,1,0,1,0,0,1,1,0,0,1,0,1,1,0,1,0,0,1,0,1,1,0,0,1,1,0,1,0,0,1,
+        0,1,1,0,1,0,0,1,1,0,0,1,0,1,1,0,1,0,0,1,0,1,1,0,0,1,1,0,1,0,0,1,
+        1,0,0,1,0,1,1,0,0,1,1,0,1,0,0,1,0,1,1,0,1,0,0,1,1,0,0,1,0,1,1,0
+    };
+    static const unsigned char mask_hamming[][12]={ /* mask of hamming codes */
+        {0x55,0x55,0x5A,0xAA,0xAA,0xAA,0xB5,0x55,0x6A,0xD8,0x08},
+        {0x66,0x66,0x6C,0xCC,0xCC,0xCC,0xD9,0x99,0xB3,0x68,0x10},
+        {0x87,0x87,0x8F,0x0F,0x0F,0x0F,0x1E,0x1E,0x3C,0x70,0x20},
+        {0x07,0xF8,0x0F,0xF0,0x0F,0xF0,0x1F,0xE0,0x3F,0x80,0x40},
+        {0xF8,0x00,0x0F,0xFF,0xF0,0x00,0x1F,0xFF,0xC0,0x00,0x80},
+        {0x00,0x00,0x0F,0xFF,0xFF,0xFF,0xE0,0x00,0x00,0x01,0x00},
+        {0xFF,0xFF,0xF0,0x00,0x00,0x00,0x00,0x00,0x00,0x02,0x00},
+        {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xF8}
+    };
+    unsigned char cs;
+    int i,j,n=0;
+    
+    for (i=0;i<8;i++) {
+        for (j=0,cs=0;j<11;j++) {
+            cs^=xor_8bit[buff[j]&mask_hamming[i][j]];
+        }
+        if (cs) n++;
+    }
+    return n==0||(n==2&&cs);
+}
 /* decode glonass ephemeris strings --------------------------------------------
 * decode glonass ephemeris string (ref [2])
 * args   : unsigned char *buff I glonass navigation data string bits in frames
 *                                (without hamming and time mark)
-*                                  buff[ 0- 9]: frame 1 (77 bits)
-*                                  buff[10-19]: frame 2
-*                                  buff[20-29]: frame 3
-*                                  buff[30-39]: frame 4
+*                                  buff[ 0- 9]: string #1 (77 bits)
+*                                  buff[10-19]: string #2
+*                                  buff[20-29]: string #3
+*                                  buff[30-39]: string #4
 *          geph_t *geph  IO     glonass ephemeris message
 * return : status (1:ok,0:error)
 * notes  : geph->tof should be set to frame time witin 1/2 day before calling
@@ -338,7 +383,7 @@ extern int decode_glostr(const unsigned char *buff, geph_t *geph)
     M           =getbitu(buff,i, 2);
     
     if (frn1!=1||frn2!=2||frn3!=3||frn4!=4) {
-        trace(2,"decode_glostr error: frn=%d %d %d %d %d\n",frn1,frn2,frn3,frn4);
+        trace(3,"decode_glostr error: frn=%d %d %d %d %d\n",frn1,frn2,frn3,frn4);
         return 0;
     }
     if (!(geph->sat=satno(SYS_GLO,slot))) {
@@ -638,6 +683,9 @@ extern int init_raw(raw_t *raw)
     raw->tod=-1;
     for (i=0;i<MAXRAWLEN;i++) raw->buff[i]=0;
     raw->opt[0]='\0';
+    raw->receive_time=0.0;
+    raw->plen=raw->pbyte=raw->page=raw->reply=0;
+    raw->week=0;
     
     raw->obs.data =NULL;
     raw->obuf.data=NULL;
@@ -721,6 +769,7 @@ extern int input_raw(raw_t *raw, int format, unsigned char data)
         case STRFMT_JAVAD: return input_javad(raw,data);
         case STRFMT_NVS  : return input_nvs  (raw,data);
         case STRFMT_BINEX: return input_bnx  (raw,data);
+        case STRFMT_RT17 : return input_rt17 (raw,data);
         case STRFMT_LEXR : return input_lexr (raw,data);
     }
     return 0;
@@ -747,6 +796,7 @@ extern int input_rawf(raw_t *raw, int format, FILE *fp)
         case STRFMT_JAVAD: return input_javadf(raw,fp);
         case STRFMT_NVS  : return input_nvsf  (raw,fp);
         case STRFMT_BINEX: return input_bnxf  (raw,fp);
+        case STRFMT_RT17 : return input_rt17f (raw,fp);
         case STRFMT_LEXR : return input_lexrf (raw,fp);
     }
     return -2;

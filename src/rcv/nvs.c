@@ -2,6 +2,7 @@
 * nvs.c : NVS receiver dependent functions
 *
 *    Copyright (C) 2012-2013 by M.BAVARO and T.TAKASU, All rights reserved.
+*    Copyright (C) 2014 by T.TAKASU, All rights reserved.
 *
 *     [1] Description of BINR messages which is used by RC program for RINEX
 *         files accumulation, NVS
@@ -14,6 +15,7 @@
 *           2013/04/24 1.3  fix bug on cycle-slip detection
 *                           add range check of gps ephemeris week
 *           2013/09/01 1.4  add check error of week, time jump, obs data range
+*           2014/08/26 1.10 fix bug on iode in glonass ephemeris
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -279,7 +281,7 @@ static int decode_gloephem(int sat, raw_t *raw)
     }
     if (raw->time.time==0) return 0;
     
-    geph.iode=(tb/900)&0x3F;
+    geph.iode=(tb/900)&0x7F;
     geph.toe=utc2gpst(adjday(raw->time,tb-10800.0));
     geph.tof=utc2gpst(adjday(raw->time,tk-10800.0));
 #if 0
