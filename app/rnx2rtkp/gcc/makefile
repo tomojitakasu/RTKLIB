@@ -23,7 +23,7 @@ LDLIBS  = -lm -lrt
 
 all        : rnx2rtkp
 rnx2rtkp   : rnx2rtkp.o rtkcmn.o rinex.o rtkpos.o postpos.o solution.o
-rnx2rtkp   : lambda.o geoid.o sbas.o preceph.o pntpos.o ephemeris.o options.o
+rnx2rtkp   : lambda.o geoid.o geoid12a.o sbas.o preceph.o pntpos.o ephemeris.o options.o
 rnx2rtkp   : ppp.o ppp_ar.o rtcm.o rtcm2.o rtcm3.o rtcm3e.o ionex.o qzslex.o
 
 rnx2rtkp.o : ../rnx2rtkp.c
@@ -42,6 +42,8 @@ lambda.o   : $(SRC)/lambda.c
 	$(CC) -c $(CFLAGS) $(SRC)/lambda.c
 geoid.o    : $(SRC)/geoid.c
 	$(CC) -c $(CFLAGS) $(SRC)/geoid.c
+geoid12a.o : $(SRC)/geoid12a.c
+	$(CC) -c $(CFLAGS) $(SRC)/geoid12a.c
 sbas.o     : $(SRC)/sbas.c
 	$(CC) -c $(CFLAGS) $(SRC)/sbas.c
 preceph.o  : $(SRC)/preceph.c
@@ -77,6 +79,7 @@ postpos.o  : $(SRC)/rtklib.h
 solution.o : $(SRC)/rtklib.h
 lambda.o   : $(SRC)/rtklib.h
 geoid.o    : $(SRC)/rtklib.h
+geoid12a.o : $(SRC)/rtklib.h
 sbas.o     : $(SRC)/rtklib.h
 preceph.o  : $(SRC)/rtklib.h
 pntpos.o   : $(SRC)/rtklib.h

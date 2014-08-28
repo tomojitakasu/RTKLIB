@@ -413,6 +413,16 @@ extern "C" {
 #define GEOID_EGM2008_M10 3             /* geoid model: EGM2008 1.0x1.0" */
 #define GEOID_GSI2000_M15 4             /* geoid model: GSI geoid 2000 1.0x1.5" */
 #define GEOID_RAF09       5             /* geoid model: IGN RAF09 for France 1.5"x2" */
+#define GEOID_G99SSS	  6		/* geoid model: US NGS G99SSS   */
+#define GEOID_GEOID99	  7		/* geoid model: US NGS GEOID99  */
+#define GEOID_GEOID03	  8		/* geoid model: US NGS GEOID03  */
+#define GEOID_GEOID06     9		/* geoid model: US NGS GEOID06  */
+#define GEOID_GEOID09	 10		/* geoid model: US NGS GEOID09  */
+#define GEOID_GEOID12A	 11		/* geoid model: US NGS GEOID12A */
+#define GEOID_USGG2003	 12		/* geoid model: US NGS USGG2003 */
+#define GEOID_USGG2009	 13		/* geoid model: US NGS USGG2009 */
+#define GEOID_USGG2012	 14		/* geoid model: US NGS USGG2012 */
+#define GEOID_XXUSG	 15		/* geoid model: US NGS XXUSG    */
 
 #define COMMENTH    "%"                 /* comment line indicator for solution */
 #define MSG_DISCONN "$_DISCONNECT\r\n"  /* disconnect message */
@@ -1417,6 +1427,9 @@ extern void tidedisp(gtime_t tutc, const double *rr, int opt, const erp_t *erp,
 extern int opengeoid(int model, const char *file);
 extern void closegeoid(void);
 extern double geoidh(const double *pos);
+extern void closegeoid12a(void);
+extern double geoidh_geoid12a(double Latitude, double Longitude);
+extern int opengeoid12a(int Geoid, const char *Directory);
 
 /* datum transformation ------------------------------------------------------*/
 extern int loaddatump(const char *file);

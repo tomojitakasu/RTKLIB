@@ -12,6 +12,7 @@
 *           2009/09/04 1.1  replace geoid data by global model
 *           2009/12/05 1.2  added api:
 *                               opengeoid(),closegeoid()
+*           2014/08/17 1.3  added geoid12a and others (D.COOK)
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -187,6 +188,16 @@ static double geoidh_gsi(const double *pos)
 *                               GEOID_EGM2008_M25: EGM2008 2.5x2.5"
 *                               GEOID_EGM2008_M10: EGM2008 1.0x1.0"
 *                               GEOID_GSI2000_M15: GSI geoid 2000 1.0x1.5"
+*                               GEOID_G99SSS     : US NGS G99SSS
+*                               GEOID_GEOID99    : US NGS GEOID99
+*                               GEOID_GEOID03    : US NGS GEOID03
+*                               GEOID_GEOID06    : US NGS GEOID06
+*                               GEOID_GEOID09    : US NGS GEOID09
+*                               GEOID_GEOID12A   : US NGS GEOID12A
+*                               GEOID_USGG2003   : US NGS USGG2003
+*                               GEOID_USGG2009   : US NGS USGG2009
+*                               GEOID_USGG2012   : US NGS USGG2012
+*                               GEOID_XXUSG      : US NGS XXUSG
 *          char   *file     I   geoid model file path
 * return : status (1:ok,0:error)
 * notes  : the following geoid models can be used
@@ -201,21 +212,49 @@ extern int opengeoid(int model, const char *file)
     trace(3,"opengeoid: model=%d file=%s\n",model,file);
     
     closegeoid();
-    if (model==GEOID_EMBEDDED) {
-        return 1;
+
+    switch (model)
+    {
+    case GEOID_EMBEDDED:
+	return (1);
+
+    case GEOID_EGM96_M150:
+    case GEOID_EGM2008_M25:
+    case GEOID_EGM2008_M10:
+    case GEOID_GSI2000_M15:
+	if (!(fp_geoid = fopen(file,"rb")))
+	{
+	    trace(2, "geoid model file open error: model=%d file=%s\n", model, file);
+	    return (0);
+	}
+	break;
+
+    case GEOID_G99SSS:
+    case GEOID_GEOID99:
+    case GEOID_GEOID03:
+    case GEOID_GEOID06:
+    case GEOID_GEOID09:
+    case GEOID_GEOID12A:
+    case GEOID_USGG2003:
+    case GEOID_USGG2009:
+    case GEOID_USGG2012:
+    case GEOID_XXUSG:
+	if (!opengeoid12a(model, file))
+	{
+	    trace(2, "geoid model file open error: model=%d file=%s\n", model, file);
+	    return (0);
+	}
+	break;
+
+    default:
+	trace(2, "invalid geoid model: model=%d file=%s\n", model, file);
+	return (0);
     }
-    if (model!=GEOID_EGM96_M150 &&model!=GEOID_EGM2008_M25&&
-        model!=GEOID_EGM2008_M10&&model!=GEOID_GSI2000_M15) {
-        trace(2,"invalid geoid model: model=%d file=%s\n",model,file);
-        return 0;
-    }
-    if (!(fp_geoid=fopen(file,"rb"))) {
-        trace(2,"geoid model file open error: model=%d file=%s\n",model,file);
-        return 0;
-    }
+
     model_geoid=model;
     return 1;
 }
+
 /* close geoid model file ------------------------------------------------------
 * close geoid model file
 * args   : none
@@ -225,10 +264,29 @@ extern void closegeoid(void)
 {
     trace(3,"closegoid:\n");
     
-    if (fp_geoid) fclose(fp_geoid);
-    fp_geoid=NULL;
+    switch (model_geoid)
+    {
+    case GEOID_G99SSS:
+    case GEOID_GEOID99:
+    case GEOID_GEOID03:
+    case GEOID_GEOID06:
+    case GEOID_GEOID09:
+    case GEOID_GEOID12A:
+    case GEOID_USGG2003:
+    case GEOID_USGG2009:
+    case GEOID_USGG2012:
+    case GEOID_XXUSG:
+	closegeoid12a();
+	break;
+
+    default:
+	if (fp_geoid) fclose(fp_geoid);
+	fp_geoid=NULL;
+    }
+
     model_geoid=GEOID_EMBEDDED;
 }
+
 /* geoid height ----------------------------------------------------------------
 * get geoid height from geoid model
 * args   : double *pos      I   geodetic position {lat,lon} (rad)
@@ -247,20 +305,50 @@ extern double geoidh(const double *pos)
         trace(2,"out of range for geoid model: lat=%.3f lon=%.3f\n",posd[0],posd[1]);
         return 0.0;
     }
-    switch (model_geoid) {
-        case GEOID_EMBEDDED   : h=geoidh_emb  (posd); break;
-        case GEOID_EGM96_M150 : h=geoidh_egm96(posd); break;
-        case GEOID_EGM2008_M25: h=geoidh_egm08(posd,model_geoid); break;
-        case GEOID_EGM2008_M10: h=geoidh_egm08(posd,model_geoid); break;
-        case GEOID_GSI2000_M15: h=geoidh_gsi  (posd); break;
-        default: return 0.0;
+
+    switch (model_geoid)
+    {
+    case GEOID_EMBEDDED:
+	h = geoidh_emb(posd);
+	break;
+
+    case GEOID_EGM96_M150:
+	h = geoidh_egm96(posd);
+	break;
+
+    case GEOID_EGM2008_M10:
+    case GEOID_EGM2008_M25:
+	h = geoidh_egm08(posd, model_geoid);
+	break;
+
+    case GEOID_GSI2000_M15:
+	h = geoidh_gsi(posd);
+	break;
+
+    case GEOID_G99SSS:
+    case GEOID_GEOID99:
+    case GEOID_GEOID03:
+    case GEOID_GEOID06:
+    case GEOID_GEOID09:
+    case GEOID_GEOID12A:
+    case GEOID_USGG2003:
+    case GEOID_USGG2009:
+    case GEOID_USGG2012:
+    case GEOID_XXUSG:
+	h = geoidh_geoid12a(posd[0], posd[1]);
+	break;
+
+    default:
+	return (0.0);
     }
+
     if (fabs(h)>200.0) {
         trace(2,"invalid geoid model: lat=%.3f lon=%.3f h=%.3f\n",posd[0],posd[1],h);
         return 0.0;
     }
     return h;
 }
+
 /*------------------------------------------------------------------------------
 * embedded geoid model
 * notes  : geoid heights are derived from EGM96 (1 x 1 deg grid)
