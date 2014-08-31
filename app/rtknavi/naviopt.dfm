@@ -805,7 +805,8 @@ object OptDialog: TOptDialog
           'EGM96-BE (15")'
           'EGM2008-SE (2.5")'
           'EGM2008-SE (1")'
-          'GSI2000 (1x1.5")')
+          'GSI2000 (1x1.5")'
+          'IGN RAF09 (1.5"x2")')
       end
       object OutputHead: TComboBox
         Left = 221

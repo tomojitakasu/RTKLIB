@@ -44,7 +44,7 @@ static char snrmask_[NFREQ][1024];
 #define TFTOPT  "0:tow,1:hms"
 #define DFTOPT  "0:deg,1:dms"
 #define HGTOPT  "0:ellipsoidal,1:geodetic"
-#define GEOOPT  "0:internal,1:egm96,2:egm08_2.5,3:egm08_1,4:gsi2000"
+#define GEOOPT  "0:internal,1:egm96,2:egm08_2.5,3:egm08_1,4:gsi2000,5:raf09"
 #define STAOPT  "0:all,1:single"
 #define STSOPT  "0:off,1:state,2:residual"
 #define ARMOPT  "0:off,1:continuous,2:instantaneous,3:fix-and-hold"
