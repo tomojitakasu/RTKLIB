@@ -317,20 +317,35 @@ static void decodefile(rtksvr_t *svr, int index)
     nav_t nav={0};
     char file[1024];
     int nb;
-    
+	char *p;
+
     tracet(4,"decodefile: index=%d\n",index);
     
-    rtksvrlock(svr);
-    
-    /* check file path completed */
-    if ((nb=svr->nb[index])<=2||
-        svr->buff[index][nb-2]!='\r'||svr->buff[index][nb-1]!='\n') {
-        rtksvrunlock(svr);
-        return;
-    }
-    strncpy(file,(char *)svr->buff[index],nb-2); file[nb-2]='\0';
-    svr->nb[index]=0;
-    
+	rtksvrlock(svr);
+
+	if ( (svr->stream[index].type == STR_FILE) && (svr->format[index]==STRFMT_SP3) && (svr->stream[index].state == 1) ) {
+		 /*workaround for passing precise ephemeris as file*/
+		strncpy(file,svr->stream[index].path,MAXSTRPATH);
+		if (p = strrchr(file, ':')) {
+				if (*p-- == ':') {  /*before '::'*/
+				   *p = 0;
+				   svr->stream[index].state = 0; /*force close */
+				}else{
+				   rtksvrunlock(svr);
+					return;
+				}
+			}
+   }else{  /* normal behavior */
+   /* check file path completed */
+		if ( (nb=svr->nb[index])<=2||
+			svr->buff[index][nb-2]!='\r'||svr->buff[index][nb-1]!='\n') {
+			rtksvrunlock(svr);
+			return;
+		}
+		strncpy(file,(char *)svr->buff[index],nb-2); file[nb-2]='\0';
+		svr->nb[index]=0;
+	}
+
     rtksvrunlock(svr);
     
     if (svr->format[index]==STRFMT_SP3) { /* precise ephemeris */
