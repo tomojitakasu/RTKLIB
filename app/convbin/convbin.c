@@ -138,7 +138,7 @@ static const char *help[]={
 "     *.stq         SkyTraq S1315F",
 "     *.jps         Javad",
 "     *.bnx,*binex  BINEX",
-"     *.rt17        Trimble RT17",
+"     *.r17         Trimble RT17",
 "     *.obs,*.*o    RINEX OBS"
 };
 /* print help ----------------------------------------------------------------*/
@@ -450,6 +450,7 @@ static int cmdopts(int argc, char **argv, rnxopt_t *opt, char **ifile,
         else if (!strcmp(p,".bnx"  ))  format=STRFMT_BINEX;
         else if (!strcmp(p,".binex"))  format=STRFMT_BINEX;
         else if (!strcmp(p,".rt17" ))  format=STRFMT_RT17;
+        else if (!strcmp(p,".r17"  ))  format=STRFMT_RT17;
         else if (!strcmp(p,".obs"  ))  format=STRFMT_RINEX;
         else if (!strcmp(p+3,"o"   ))  format=STRFMT_RINEX;
         else if (!strcmp(p+3,"O"   ))  format=STRFMT_RINEX;
