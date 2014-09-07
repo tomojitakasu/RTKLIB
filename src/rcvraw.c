@@ -24,6 +24,7 @@
 *           2014/06/22 1.7  add api decode_bds_d1(), decode_bds_d2()
 *           2014/08/14 1.8  add test_glostr()
 *                           add support input format rt17
+*           2014/08/31 1.9  suppress warning
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 #include <stdint.h>
@@ -170,7 +171,7 @@ extern int decode_bds_d2(const unsigned char *buff, eph_t *eph)
     double toc_bds,sqrtA;
     unsigned int f1p4,cucp5,ep6,cicp7,i0p8,OMGdp9,omgp10;
     unsigned int sow1,sow3,sow4,sow5,sow6,sow7,sow8,sow9,sow10;
-    int i,toe_bds,f1p3,cucp4,ep5,cicp6,i0p7,OMGdp8,omgp9;
+    int i,f1p3,cucp4,ep5,cicp6,i0p7,OMGdp8,omgp9;
     int pgn1,pgn3,pgn4,pgn5,pgn6,pgn7,pgn8,pgn9,pgn10;
     
     trace(3,"decode_bds_d2:\n");

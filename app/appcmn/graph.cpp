@@ -363,6 +363,24 @@ void TGraph::DrawMark(double x, double y, int mark, TColor color, int size,
 	if (ToPoint(x,y,p)) DrawMark(p,mark,color,size,rot);
 }
 //---------------------------------------------------------------------------
+void TGraph::DrawMark(TPoint p, int mark, TColor color, TColor bgcolor,
+	int size, int rot)
+{
+    TPoint p1;
+    p1=p; p1.x--; DrawMark(p1,mark,bgcolor,size,rot); // draw with hemming
+    p1=p; p1.x++; DrawMark(p1,mark,bgcolor,size,rot);
+    p1=p; p1.y--; DrawMark(p1,mark,bgcolor,size,rot);
+    p1=p; p1.y++; DrawMark(p1,mark,bgcolor,size,rot);
+    DrawMark(p,mark,color,size,rot);
+}
+//---------------------------------------------------------------------------
+void TGraph::DrawMark(double x, double y, int mark, TColor color,
+	TColor bgcolor, int size, int rot)
+{
+	TPoint p;
+	if (ToPoint(x,y,p)) DrawMark(p,mark,color,bgcolor,size,rot);
+}
+//---------------------------------------------------------------------------
 void TGraph::DrawMarks(const double *x, const double *y, const TColor *color,
 					   int n, int mark, int size, int rot)
 {
@@ -399,8 +417,8 @@ void TGraph::DrawText(TPoint p, AnsiString str, TColor color, int ha, int va,
 	ps.x=ha==0?(-off.cx+1)/2:(ha==1?3:-off.cx-3);
 	ps.y=va==0?(off.cy+1)/2:(va==1?off.cy+1:-2);
 	RotPoint(&ps,1,p,rot,&pr);
-	c->Font->Color=color;
 	c->Brush->Style=bsClear;
+	c->Font->Color=color;
 	c->TextOut(pr.x,pr.y,u_str);
 }
 //---------------------------------------------------------------------------
@@ -410,6 +428,25 @@ void TGraph::DrawText(double x, double y, AnsiString str, TColor color,
 	TPoint p;
 	ToPoint(x,y,p);
 	DrawText(p,str,color,ha,va,rot);
+}
+//---------------------------------------------------------------------------
+void TGraph::DrawText(TPoint p, AnsiString str, TColor color, TColor bgcolor,
+	int ha, int va, int rot)
+{
+    TPoint p1;
+    p1=p; p1.x--; DrawText(p1,str,bgcolor,ha,va,rot); // draw with hemming
+    p1=p; p1.x++; DrawText(p1,str,bgcolor,ha,va,rot);
+    p1=p; p1.y--; DrawText(p1,str,bgcolor,ha,va,rot);
+    p1=p; p1.y++; DrawText(p1,str,bgcolor,ha,va,rot);
+    DrawText(p,str,color,ha,va,rot);
+}
+//---------------------------------------------------------------------------
+void TGraph::DrawText(double x, double y, AnsiString str, TColor color,
+	TColor bgcolor, int ha, int va, int rot)
+{
+	TPoint p;
+	ToPoint(x,y,p);
+	DrawText(p,str,color,bgcolor,ha,va,rot);
 }
 //---------------------------------------------------------------------------
 void TGraph::DrawCircle(TPoint p, TColor color, int rx, int ry, int style)
@@ -522,6 +559,29 @@ void TGraph::DrawPoly(double *x, double *y, int n, TColor color, int style)
 	delete [] p;
 }
 //---------------------------------------------------------------------------
+void TGraph::DrawPatch(TPoint *p, int n, TColor color1, TColor color2,
+	int style)
+{
+	TCanvas *c=Parent->Canvas;
+	TPenStyle ps[]={psSolid,psDot,psDash,psDashDot,psDashDotDot};
+	c->Pen->Color=color1;
+	c->Pen->Style=ps[style];
+	c->Brush->Style=bsSolid;
+	c->Brush->Color=color2;
+	c->Polygon(p,n);
+}
+//---------------------------------------------------------------------------
+void TGraph::DrawPatch(double *x, double *y, int n, TColor color1,
+	TColor color2, int style)
+{
+	TPoint *p=new TPoint[n];
+	for (int i=0;i<n;i++) {
+		ToPoint(x[i],y[i],p[i]);
+	}
+	DrawPatch(p,n,color1,color2,style);
+	delete [] p;
+}
+//---------------------------------------------------------------------------
 void TGraph::DrawSkyPlot(TPoint p, TColor color1, TColor color2, int size)
 {
 	TCanvas *c=Parent->Canvas;
@@ -556,5 +616,43 @@ void TGraph::DrawSkyPlot(double x, double y, TColor color1, TColor color2,
 	TPoint p;
 	ToPoint(x,y,p);
 	DrawSkyPlot(p,color1,color2,size/XScale);
+}
+//---------------------------------------------------------------------------
+void TGraph::DrawSkyPlot(TPoint p, TColor color1, TColor color2,
+	TColor bgcolor, int size)
+{
+	TCanvas *c=Parent->Canvas;
+	c->Pen->Color=color1; c->Brush->Style=bsClear;
+	AnsiString s,dir[]={"N","E","S","W"};
+	TPoint ps;
+	int n,r=size/2;
+	
+	for (int el=0;el<90;el+=15) {
+		int ys=r-r*el/90;
+		c->Pen->Style=el==0?psSolid:psDot;
+		c->Ellipse(p.x-ys,p.y-ys,p.x+ys,p.y+ys);
+		if (el<=0) continue;
+		ps.x=p.x; ps.y=p.y-ys;
+		s.sprintf("%d",el);
+		DrawText(ps,s,color2,bgcolor,1,0,0);
+	}
+	c->Pen->Style=psDot; c->Font->Color=color2;
+	for (int az=0,i=0;az<360;az+=30) {
+		ps.x=p.x+(int)( r*sin(az*D2R)+0.5);
+		ps.y=p.y+(int)(-r*cos(az*D2R)+0.5);
+		c->MoveTo(p.x,p.y); c->LineTo(ps.x,ps.y);
+		ps.x+= 3*sin(az*D2R);
+		ps.y+=-3*cos(az*D2R);
+		s.sprintf("%d",az); if (!(az%90)) s=dir[i++];
+		DrawText(ps,s,color2,bgcolor,0,1,-az);
+	}
+}
+//---------------------------------------------------------------------------
+void TGraph::DrawSkyPlot(double x, double y, TColor color1, TColor color2,
+	TColor bgcolor, double size)
+{
+	TPoint p;
+	ToPoint(x,y,p);
+	DrawSkyPlot(p,color1,color2,bgcolor,size/XScale);
 }
 //---------------------------------------------------------------------------

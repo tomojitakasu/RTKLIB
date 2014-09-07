@@ -14,6 +14,7 @@
 *                           modified to get initial week number
 *                           modified obs types for raw obs data
 *                           function added to output message type
+*           2014/09/07 1.1  fix problem on week number without input time
 *-----------------------------------------------------------------------------*/
 
 /*
@@ -1953,8 +1954,8 @@ static int get_week(raw_t *raw, double receive_time)
 #if 0
         time2gpst(timeget(), &week);
 #else
-        /* add to get week number (by TTAKA 2014/08/26) */
-        time2gpst(raw->time, &week);
+        /* add to get week number (by TTAKA 2014/08/26, 2014/09/07) */
+        time2gpst(raw->time.time?raw->time:utc2gpst(timeget()), &week);
 #endif
         raw->week = week;
         
