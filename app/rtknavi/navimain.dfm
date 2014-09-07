@@ -3,13 +3,13 @@ object MainForm: TMainForm
   Top = 0
   BorderIcons = [biMinimize]
   Caption = 'RTKNAVI'
-  ClientHeight = 246
-  ClientWidth = 372
+  ClientHeight = 258
+  ClientWidth = 560
   Color = clBtnFace
-  Constraints.MaxHeight = 768
-  Constraints.MaxWidth = 1024
+  Constraints.MaxHeight = 800
+  Constraints.MaxWidth = 1200
   Constraints.MinHeight = 284
-  Constraints.MinWidth = 388
+  Constraints.MinWidth = 190
   Font.Charset = ANSI_CHARSET
   Font.Color = clBlack
   Font.Height = -11
@@ -24,12 +24,13 @@ object MainForm: TMainForm
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 372
+    Width = 560
     Height = 25
     Align = alTop
     BevelInner = bvRaised
     BevelOuter = bvLowered
     TabOrder = 0
+    ExplicitWidth = 551
     object LabelTime: TLabel
       Left = 4
       Top = 5
@@ -45,37 +46,15 @@ object MainForm: TMainForm
       Font.Style = []
       ParentFont = False
     end
-    object Panel11: TPanel
-      Left = 145
-      Top = 3
-      Width = 34
-      Height = 19
-      TabOrder = 0
-      object BtnTimeSys: TSpeedButton
-        Left = 0
-        Top = 0
-        Width = 34
-        Height = 19
-        Caption = 'GPST'
-        Flat = True
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ParentFont = False
-        Spacing = 1
-        OnClick = BtnTimeSysClick
-      end
-    end
     object Panel12: TPanel
-      Left = 181
+      Left = 369
       Top = 2
       Width = 149
       Height = 21
       Align = alRight
       BevelOuter = bvNone
       TabOrder = 1
+      ExplicitLeft = 360
       object Image1: TImage
         Left = 68
         Top = 3
@@ -318,14 +297,38 @@ object MainForm: TMainForm
         end
       end
     end
+    object Panel11: TPanel
+      Left = 145
+      Top = 3
+      Width = 34
+      Height = 19
+      TabOrder = 0
+      object BtnTimeSys: TSpeedButton
+        Left = 0
+        Top = 0
+        Width = 34
+        Height = 19
+        Caption = 'GPST'
+        Flat = True
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlack
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+        Spacing = 1
+        OnClick = BtnTimeSysClick
+      end
+    end
     object Panel13: TPanel
-      Left = 330
+      Left = 518
       Top = 2
       Width = 40
       Height = 21
       Align = alRight
       BevelOuter = bvNone
       TabOrder = 2
+      ExplicitLeft = 509
       object Panel131: TPanel
         Left = 1
         Top = 1
@@ -386,131 +389,53 @@ object MainForm: TMainForm
   end
   object Panel2: TPanel
     Left = 0
-    Top = 25
-    Width = 372
-    Height = 174
+    Top = 42
+    Width = 560
+    Height = 169
     Align = alClient
     BevelOuter = bvNone
     Color = clWhite
     ParentBackground = False
     TabOrder = 1
-    object Splitter: TSplitter
-      Left = 180
+    ExplicitWidth = 614
+    object Splitter1: TSplitter
+      Left = 182
       Top = 0
-      Width = 1
-      Height = 174
-    end
-    object Panel22: TPanel
-      Left = 181
-      Top = 0
-      Width = 191
-      Height = 174
-      Align = alClient
-      AutoSize = True
-      BevelOuter = bvNone
-      Color = clWhite
-      Constraints.MinWidth = 191
-      TabOrder = 1
-      OnResize = Panel22Resize
-      object Plot: TImage
-        Left = 0
-        Top = 0
-        Width = 1024
-        Height = 768
-        Visible = False
-      end
-      object Disp: TImage
-        Left = 0
-        Top = 0
-        Width = 1024
-        Height = 768
-      end
-      object BtnFreqType: TSpeedButton
-        Left = 153
-        Top = 0
-        Width = 17
-        Height = 16
-        Flat = True
-        Glyph.Data = {
-          DE000000424DDE00000000000000360000002800000007000000070000000100
-          180000000000A800000000000000000000000000000000000000FFFFFFFFFFFF
-          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFF
-          FFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFF00
-          0000FFFFFFFFFFFF000000000000000000FFFFFFFFFFFF000000FFFFFF000000
-          000000000000000000000000FFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFF
-          FFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
-          0000}
-        OnClick = BtnFreqTypeClick
-      end
-      object BtnPlotType: TSpeedButton
-        Left = 171
-        Top = 0
-        Width = 17
-        Height = 16
-        Flat = True
-        Glyph.Data = {
-          DE000000424DDE00000000000000360000002800000007000000070000000100
-          180000000000A800000000000000000000000000000000000000FFFFFFFFFFFF
-          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFF
-          FFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFF00
-          0000FFFFFFFFFFFF000000000000000000FFFFFFFFFFFF000000FFFFFF000000
-          000000000000000000000000FFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFF
-          FFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
-          0000}
-        OnClick = BtnPlotTypeClick
-      end
-      object BtnSolType2: TSpeedButton
-        Left = 135
-        Top = 0
-        Width = 17
-        Height = 16
-        Flat = True
-        Glyph.Data = {
-          DE000000424DDE00000000000000360000002800000007000000070000000100
-          180000000000A800000000000000000000000000000000000000FFFFFFFFFFFF
-          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFF
-          FFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFF00
-          0000FFFFFFFFFFFF000000000000000000FFFFFFFFFFFF000000FFFFFF000000
-          000000000000000000000000FFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFF
-          FFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
-          0000}
-        OnClick = BtnSolTypeClick
-      end
-      object IndQ: TPanel
-        Left = 2
-        Top = 3
-        Width = 10
-        Height = 10
-        BevelInner = bvRaised
-        BevelOuter = bvLowered
-        Color = clWhite
-        ParentBackground = False
-        TabOrder = 0
-        Visible = False
-      end
+      Width = 2
+      Height = 169
+      Beveled = True
+      Color = clGray
+      ParentColor = False
+      ExplicitLeft = 185
+      ExplicitHeight = 174
     end
     object Panel21: TPanel
       Left = 0
       Top = 0
-      Width = 180
-      Height = 174
+      Width = 182
+      Height = 169
       Align = alLeft
       BevelOuter = bvNone
-      Color = clWhite
-      Constraints.MaxWidth = 360
-      Constraints.MinWidth = 180
+      Color = clWindow
+      Constraints.MinHeight = 169
+      Constraints.MinWidth = 182
+      ParentBackground = False
       TabOrder = 0
       OnResize = Panel21Resize
       object Panel211: TPanel
         Left = 0
         Top = 15
-        Width = 180
-        Height = 143
+        Width = 182
+        Height = 138
         Align = alClient
+        AutoSize = True
         BevelInner = bvRaised
         BevelOuter = bvLowered
         Color = clWhite
+        ParentBackground = False
         TabOrder = 0
+        OnResize = Panel211Resize
+        ExplicitWidth = 185
         object LabelNSat: TLabel
           Left = 1
           Top = 112
@@ -663,15 +588,16 @@ object MainForm: TMainForm
       end
       object Panel213: TPanel
         Left = 0
-        Top = 158
-        Width = 180
+        Top = 153
+        Width = 182
         Height = 16
         Align = alBottom
         TabOrder = 1
+        ExplicitWidth = 185
         object ScbSol: TScrollBar
           Left = 1
           Top = 1
-          Width = 161
+          Width = 163
           Height = 14
           Margins.Left = 2
           Margins.Top = 2
@@ -688,9 +614,10 @@ object MainForm: TMainForm
           ShowHint = False
           TabOrder = 0
           OnChange = ScbSolChange
+          ExplicitWidth = 166
         end
         object BtnSave: TButton
-          Left = 162
+          Left = 164
           Top = 1
           Width = 17
           Height = 14
@@ -704,34 +631,108 @@ object MainForm: TMainForm
           ParentFont = False
           TabOrder = 1
           OnClick = BtnSaveClick
+          ExplicitLeft = 167
         end
       end
       object Panel212: TPanel
         Left = 0
         Top = 0
-        Width = 180
+        Width = 182
         Height = 15
         Align = alTop
         BevelOuter = bvNone
         TabOrder = 2
+        ExplicitWidth = 185
         object Plabel0: TLabel
-          Left = 5
+          Left = 20
           Top = 1
           Width = 153
           Height = 13
           AutoSize = False
+          BiDiMode = bdLeftToRight
           Caption = 'Lat/Lon/Height'
           Font.Charset = ANSI_CHARSET
           Font.Color = clGray
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
+          ParentBiDiMode = False
           ParentFont = False
         end
         object BtnSolType: TSpeedButton
-          Left = 159
+          Left = 160
+          Top = -1
+          Width = 15
+          Height = 16
+          AllowAllUp = True
+          Flat = True
+          Glyph.Data = {
+            DE000000424DDE00000000000000360000002800000007000000070000000100
+            180000000000A800000000000000000000000000000000000000FFFFFFFFFFFF
+            FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFF
+            FFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFF00
+            0000FFFFFFFFFFFF000000000000000000FFFFFFFFFFFF000000FFFFFF000000
+            000000000000000000000000FFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFF
+            FFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
+            0000}
+          Spacing = 0
+          OnClick = BtnSolTypeClick
+        end
+      end
+    end
+    object Panel22: TPanel
+      Left = 184
+      Top = 0
+      Width = 376
+      Height = 169
+      Align = alClient
+      BevelOuter = bvNone
+      TabOrder = 1
+      ExplicitLeft = 187
+      ExplicitWidth = 364
+      object Splitter2: TSplitter
+        Left = 187
+        Top = 0
+        Width = 2
+        Height = 169
+        Beveled = True
+        Color = clGray
+        ParentColor = False
+        ExplicitLeft = 180
+        ExplicitHeight = 174
+      end
+      object Panel221: TPanel
+        Left = 0
+        Top = 0
+        Width = 187
+        Height = 169
+        Align = alLeft
+        BevelOuter = bvNone
+        Color = clWhite
+        Constraints.MaxHeight = 768
+        Constraints.MaxWidth = 1024
+        Constraints.MinHeight = 157
+        Constraints.MinWidth = 187
+        TabOrder = 0
+        Visible = False
+        OnResize = Panel221Resize
+        object Disp1: TImage
+          Left = 0
           Top = 0
-          Width = 17
+          Width = 1024
+          Height = 768
+        end
+        object Plot1: TImage
+          Left = 0
+          Top = 0
+          Width = 1024
+          Height = 768
+          Visible = False
+        end
+        object BtnFreqType1: TSpeedButton
+          Left = 142
+          Top = -1
+          Width = 15
           Height = 16
           Flat = True
           Glyph.Data = {
@@ -743,28 +744,115 @@ object MainForm: TMainForm
             000000000000000000000000FFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFF
             FFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
             0000}
-          OnClick = BtnSolTypeClick
+          OnClick = BtnFreqType1Click
+        end
+        object BtnPlotType1: TSpeedButton
+          Left = 160
+          Top = -1
+          Width = 15
+          Height = 16
+          AllowAllUp = True
+          Flat = True
+          Glyph.Data = {
+            DE000000424DDE00000000000000360000002800000007000000070000000100
+            180000000000A800000000000000000000000000000000000000FFFFFFFFFFFF
+            FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFF
+            FFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFF00
+            0000FFFFFFFFFFFF000000000000000000FFFFFFFFFFFF000000FFFFFF000000
+            000000000000000000000000FFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFF
+            FFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
+            0000}
+          Spacing = 0
+          OnClick = BtnPlotType1Click
+        end
+      end
+      object Panel222: TPanel
+        Left = 189
+        Top = 0
+        Width = 187
+        Height = 169
+        Align = alClient
+        BevelOuter = bvNone
+        Color = clWhite
+        Constraints.MaxHeight = 768
+        Constraints.MaxWidth = 1024
+        Constraints.MinHeight = 157
+        Constraints.MinWidth = 187
+        TabOrder = 1
+        OnResize = Panel222Resize
+        ExplicitLeft = 182
+        ExplicitWidth = 182
+        object Disp2: TImage
+          Left = 0
+          Top = 0
+          Width = 1024
+          Height = 768
+        end
+        object Plot2: TImage
+          Left = 0
+          Top = 0
+          Width = 1024
+          Height = 768
+          Visible = False
+        end
+        object BtnFreqType2: TSpeedButton
+          Left = 142
+          Top = -1
+          Width = 15
+          Height = 16
+          Flat = True
+          Glyph.Data = {
+            DE000000424DDE00000000000000360000002800000007000000070000000100
+            180000000000A800000000000000000000000000000000000000FFFFFFFFFFFF
+            FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFF
+            FFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFF00
+            0000FFFFFFFFFFFF000000000000000000FFFFFFFFFFFF000000FFFFFF000000
+            000000000000000000000000FFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFF
+            FFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
+            0000}
+          OnClick = BtnFreqType2Click
+        end
+        object BtnPlotType2: TSpeedButton
+          Left = 160
+          Top = -1
+          Width = 15
+          Height = 16
+          AllowAllUp = True
+          Flat = True
+          Glyph.Data = {
+            DE000000424DDE00000000000000360000002800000007000000070000000100
+            180000000000A800000000000000000000000000000000000000FFFFFFFFFFFF
+            FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFF
+            FFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFF00
+            0000FFFFFFFFFFFF000000000000000000FFFFFFFFFFFF000000FFFFFF000000
+            000000000000000000000000FFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFF
+            FFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
+            0000}
+          Spacing = 0
+          OnClick = BtnPlotType2Click
         end
       end
     end
   end
   object Panel3: TPanel
     Left = 0
-    Top = 199
-    Width = 372
+    Top = 211
+    Width = 560
     Height = 24
     Align = alBottom
     BevelInner = bvRaised
     BevelOuter = bvLowered
     TabOrder = 2
+    ExplicitWidth = 551
     object Panel33: TPanel
-      Left = 335
+      Left = 523
       Top = 2
       Width = 35
       Height = 20
       Align = alRight
       BevelOuter = bvNone
       TabOrder = 0
+      ExplicitLeft = 514
       object BtnTaskTray: TSpeedButton
         Left = 0
         Top = 0
@@ -864,15 +952,19 @@ object MainForm: TMainForm
     object Panel32: TPanel
       Left = 22
       Top = 2
-      Width = 313
+      Width = 501
       Height = 20
+      Hint = 'messages'
       Align = alClient
       BevelOuter = bvNone
+      ParentShowHint = False
+      ShowHint = True
       TabOrder = 2
+      ExplicitWidth = 492
       object Message: TLabel
         Left = 0
         Top = 3
-        Width = 313
+        Width = 501
         Height = 17
         Align = alBottom
         Alignment = taCenter
@@ -883,19 +975,23 @@ object MainForm: TMainForm
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
+        ParentShowHint = False
+        ShowHint = False
         ExplicitTop = 2
+        ExplicitWidth = 313
       end
     end
   end
   object Panel4: TPanel
     Left = 0
-    Top = 223
-    Width = 372
+    Top = 235
+    Width = 560
     Height = 23
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 3
     OnResize = Panel4Resize
+    ExplicitWidth = 551
     object BtnExit: TButton
       Left = 297
       Top = 0
@@ -967,6 +1063,120 @@ object MainForm: TMainForm
       OnClick = BtnStopClick
     end
   end
+  object Panel5: TPanel
+    Left = 0
+    Top = 25
+    Width = 560
+    Height = 17
+    Align = alTop
+    BevelInner = bvRaised
+    BevelOuter = bvNone
+    Color = clWhite
+    ParentBackground = False
+    TabOrder = 4
+    Visible = False
+    OnResize = Panel5Resize
+    ExplicitWidth = 551
+    object SolS: TLabel
+      Left = 32
+      Top = 1
+      Width = 44
+      Height = 13
+      Alignment = taCenter
+      AutoSize = False
+      Caption = '----'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+    end
+    object SolQ: TLabel
+      Left = 78
+      Top = 1
+      Width = 38
+      Height = 13
+      Caption = 'Solution'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+    end
+    object BtnSolType2: TSpeedButton
+      Left = 530
+      Top = -1
+      Width = 15
+      Height = 16
+      AllowAllUp = True
+      Flat = True
+      Glyph.Data = {
+        DE000000424DDE00000000000000360000002800000007000000070000000100
+        180000000000A800000000000000000000000000000000000000FFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFF00
+        0000FFFFFFFFFFFF000000000000000000FFFFFFFFFFFF000000FFFFFF000000
+        000000000000000000000000FFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
+        0000}
+      Spacing = 0
+      OnClick = BtnSolTypeClick
+    end
+    object IndQ: TPanel
+      Left = 20
+      Top = 3
+      Width = 10
+      Height = 10
+      BevelInner = bvRaised
+      BevelOuter = bvLowered
+      Color = clWhite
+      ParentBackground = False
+      TabOrder = 0
+    end
+  end
+  object Pane6: TPanel
+    Left = 1
+    Top = 24
+    Width = 16
+    Height = 16
+    BevelOuter = bvNone
+    Color = clWhite
+    ParentBackground = False
+    TabOrder = 5
+    OnResize = Panel21Resize
+    object BtnPanel: TSpeedButton
+      Left = 0
+      Top = 0
+      Width = 16
+      Height = 16
+      AllowAllUp = True
+      Flat = True
+      Glyph.Data = {
+        3E020000424D3E0200000000000036000000280000000D0000000D0000000100
+        1800000000000802000000000000000000000000000000000000FFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FF00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFF00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFFFFFFFFFF
+        FFFFFF000000FFFFFF000000FFFFFF000000FFFFFF000000FFFFFFFFFFFFFFFF
+        FF00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFF00FFFFFFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFF000000FFFFFFFFFFFFFFFFFF00FFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFFFFFFFFFF
+        FFFFFF000000FFFFFF000000FFFFFF000000FFFFFF000000FFFFFFFFFFFFFFFF
+        FF00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFF00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FF00}
+      Spacing = 0
+      OnClick = BtnPanelClick
+    end
+  end
   object Timer: TTimer
     Interval = 40
     OnTimer = TimerTimer
@@ -1031,7 +1241,7 @@ object MainForm: TMainForm
     Left = 274
     Top = 91
     Bitmap = {
-      494C010102000400400010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010102000400800010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

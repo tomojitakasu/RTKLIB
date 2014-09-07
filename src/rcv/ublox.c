@@ -32,6 +32,7 @@
 *           2014/08/11 1.12 fix bug on unable to read UBX-RXMRAW
 *                           fix problem on decoding glo ephemeris in TRKSFBX
 *                           support message TRK-TRKD5
+*           2014/08/31 1.13 suppress warning
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -125,7 +126,7 @@ static int decode_rxmraw(raw_t *raw)
     double tow,tt,tadj=0.0,toff=0.0,tn;
     int i,j,prn,sat,n=0,nsat,week;
     unsigned char *p=raw->buff+6;
-    char *q,tstr[32];
+    char *q;
     
     trace(4,"decode_rxmraw: len=%d\n",raw->len);
     
@@ -212,7 +213,6 @@ static int save_subfrm(int sat, raw_t *raw)
 static int decode_ephem(int sat, raw_t *raw)
 {
     eph_t eph={0};
-    int id1,id2,id3;
     
     trace(4,"decode_ephem: sat=%2d\n",sat);
     
@@ -282,7 +282,6 @@ static int decode_rxmsfrb(raw_t *raw)
 /* decode ubx-nav-sol: navigation solution -----------------------------------*/
 static int decode_navsol(raw_t *raw)
 {
-    gtime_t time0={0};
     int itow,ftow,week;
     unsigned char *p=raw->buff+6;
     
@@ -294,7 +293,7 @@ static int decode_navsol(raw_t *raw)
     itow=U4(p);
     ftow=I4(p+4);
     week=U2(p+8);
-    if (U1(p+11)&0x0C==0x0C) {
+    if ((U1(p+11)&0x0C)==0x0C) {
         raw->time=gpst2time(week,itow*1E-3+ftow*1E-9);
     }
     return 0;
@@ -302,7 +301,6 @@ static int decode_navsol(raw_t *raw)
 /* decode ubx-nav-timegps: gps time solution ---------------------------------*/
 static int decode_navtime(raw_t *raw)
 {
-    gtime_t time0={0};
     int itow,ftow,week;
     unsigned char *p=raw->buff+6;
     
@@ -314,7 +312,7 @@ static int decode_navtime(raw_t *raw)
     itow=U4(p);
     ftow=I4(p+4);
     week=U2(p+8);
-    if (U1(p+11)&0x03==0x03) {
+    if ((U1(p+11)&0x03)==0x03) {
         raw->time=gpst2time(week,itow*1E-3+ftow*1E-9);
     }
     return 0;

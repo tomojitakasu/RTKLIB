@@ -24,6 +24,7 @@
 *           2010/07/29 1.8  rtklib ver.2.4.0
 *           2011/05/27 1.9  rtklib ver.2.4.1
 *           2013/03/28 1.10 rtklib ver.2.4.2
+*           2014/09/01 1.11 rtklib ver.2.4.3
 *-----------------------------------------------------------------------------*/
 #ifndef RTKLIB_H
 #define RTKLIB_H
@@ -46,9 +47,9 @@ extern "C" {
 
 /* constants -----------------------------------------------------------------*/
 
-#define VER_RTKLIB  "2.4.2"             /* library version */
+#define VER_RTKLIB  "2.4.3"             /* library version */
 
-#define PATCH_LEVEL "p9"                /* patch level */
+#define PATCH_LEVEL "b1"                /* patch level */
 
 #define COPYRIGHT_RTKLIB \
             "Copyright (C) 2007-2014 by T.Takasu\nAll rights reserved."
@@ -568,6 +569,8 @@ typedef struct {        /* precise ephemeris type */
     float  std[MAXSAT][4]; /* satellite position/clock std (m|s) */
     double vel[MAXSAT][4]; /* satellite velocity/clk-rate (m/s|s/s) */
     float  vst[MAXSAT][4]; /* satellite velocity/clk-rate std (m/s|s/s) */
+    float  cov[MAXSAT][3]; /* satellite position covariance (m^2) */
+    float  vco[MAXSAT][3]; /* satellite velocity covariance (m^2) */
 } peph_t;
 
 typedef struct {        /* precise clock type */
