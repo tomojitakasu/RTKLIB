@@ -5,7 +5,8 @@ object Plot: TPlot
   ClientHeight = 485
   ClientWidth = 629
   Color = clBtnFace
-  Constraints.MinHeight = 100
+  Constraints.MinHeight = 150
+  Constraints.MinWidth = 100
   Font.Charset = ANSI_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -851,7 +852,7 @@ object Plot: TPlot
         Top = 0
         Width = 19
         Height = 21
-        Hint = 'Map Image'
+        Hint = 'Map/Sky Image'
         AllowAllUp = True
         GroupIndex = 15
         Flat = True
@@ -1001,6 +1002,48 @@ object Plot: TPlot
         ShowHint = True
         Spacing = 1
         OnClick = BtnGMClick
+      end
+      object BtnShowSkyplot: TSpeedButton
+        Left = 310
+        Top = 0
+        Width = 19
+        Height = 21
+        Hint = 'Show Skyplot'
+        AllowAllUp = True
+        GroupIndex = 16
+        Down = True
+        Flat = True
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBtnText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        Glyph.Data = {
+          3E020000424D3E0200000000000036000000280000000D0000000D0000000100
+          1800000000000802000000000000000000000000000000000000FFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FF00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000000000000000FFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFF00FFFFFFFFFFFFFFFFFF000000000000FFFFFF808080FF
+          FFFF000000000000FFFFFFFFFFFFFFFFFF00FFFFFFFFFFFF000000FFFFFFFFFF
+          FFFFFFFF808080FFFFFFFFFFFFFFFFFF000000FFFFFFFFFFFF00FFFFFFFFFFFF
+          000000FFFFFFFFFFFF000000000000000000FFFFFFFFFFFF000000FFFFFFFFFF
+          FF00FFFFFF000000FFFFFFFFFFFF000000FFFFFF808080FFFFFF000000FFFFFF
+          FFFFFF000000FFFFFF00FFFFFF00000080808080808000000080808000000080
+          8080000000808080808080000000FFFFFF00FFFFFF000000FFFFFFFFFFFF0000
+          00FFFFFF808080FFFFFF000000FFFFFFFFFFFF000000FFFFFF00FFFFFFFFFFFF
+          000000FFFFFFFFFFFF000000000000000000FFFFFFFFFFFF000000FFFFFFFFFF
+          FF00FFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFF808080FFFFFFFFFFFFFFFFFF
+          000000FFFFFFFFFFFF00FFFFFFFFFFFFFFFFFF000000000000FFFFFF808080FF
+          FFFF000000000000FFFFFFFFFFFFFFFFFF00FFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FF000000000000000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FF00}
+        ParentFont = False
+        ParentShowHint = False
+        ShowHint = True
+        Spacing = 1
+        Visible = False
+        OnClick = BtnShowSkyplotClick
       end
       object DopType: TComboBox
         Left = 157
@@ -1358,6 +1401,10 @@ object Plot: TPlot
         Caption = 'Open Map &Path...'
         OnClick = MenuOpenMapPathClick
       end
+      object MenuOpenSkyImage: TMenuItem
+        Caption = 'Open Sky Image...'
+        OnClick = MenuOpenSkyImageClick
+      end
       object N4: TMenuItem
         Caption = '-'
       end
@@ -1454,6 +1501,10 @@ object Plot: TPlot
       object MenuMapImg: TMenuItem
         Caption = '&Map Image...'
         OnClick = MenuMapImgClick
+      end
+      object MenuSkyImg: TMenuItem
+        Caption = '&Sky Image...'
+        OnClick = MenuSkyImgClick
       end
       object MenuWaypnt: TMenuItem
         Caption = '&Waypoints...'
@@ -1566,8 +1617,12 @@ object Plot: TPlot
       object N12: TMenuItem
         Caption = '-'
       end
+      object MenuShowSkyplot: TMenuItem
+        Caption = 'Show Sky&plot'
+        OnClick = MenuShowSkyplotClick
+      end
       object MenuShowMap: TMenuItem
-        Caption = 'Show Map &Image'
+        Caption = 'Show Map/Sky &Image'
         OnClick = MenuShowMapClick
       end
       object MenuShowPoint: TMenuItem
@@ -1643,9 +1698,7 @@ object Plot: TPlot
   object SaveImageDialog: TSavePictureDialog
     DefaultExt = 'jpg'
     FileName = 'output.jpg'
-    Filter = 
-      'JPEG  (*.jpg)|*.jpg|GIF (*.gif)|*.gif|PNG (*.png)|*.png|TIFF (*.' +
-      'tif)|*.tif|Windows Bitmap (*.bmp)|*.bmp'
+    Filter = 'JPEG  (*.jpg)|*.jpg|Windows Bitmap (*.bmp)|*.bmp'
     Title = 'Save Image'
     Left = 337
     Top = 220

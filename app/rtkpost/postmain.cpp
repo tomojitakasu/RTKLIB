@@ -1324,6 +1324,7 @@ void __fastcall TMainForm::SaveOpt(void)
     WriteList(ini,"hist","inputfile5",     InputFile5->Items);
     WriteList(ini,"hist","outputfile",     OutputFile->Items);
     
+    ini->WriteInteger("opt","panelmode",   PanelMode   );
     ini->WriteInteger("opt","posmode",     PosMode     );
     ini->WriteInteger("opt","freq",        Freq        );
     ini->WriteInteger("opt","solution",    Solution    );

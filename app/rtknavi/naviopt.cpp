@@ -509,6 +509,7 @@ void __fastcall TOptDialog::GetOpt(void)
 	ProxyAddrE   ->Text     =ProxyAddr;
 	MoniPortE    ->Text     =s.sprintf("%d",MoniPort);
 	SolBuffSizeE ->Text     =s.sprintf("%d",SolBuffSize);
+	PanelStackE  ->ItemIndex=PanelStack;
 	
 	FontLabel->Font->Assign(PosFont);
 	FontLabel->Caption=FontLabel->Font->Name+s.sprintf(" %dpt",FontLabel->Font->Size);
@@ -627,6 +628,7 @@ void __fastcall TOptDialog::SetOpt(void)
 	PrcOpt.sbassatsel=SbasSatE    ->Text.ToInt();
 	ProxyAddr        =ProxyAddrE  ->Text;
 	MoniPort         =MoniPortE   ->Text.ToInt();
+	PanelStack       =PanelStackE ->ItemIndex;
 	PosFont->Assign(FontLabel->Font);
 	UpdateEnable();
 }
