@@ -14,14 +14,12 @@
 *                           modified to get initial week number
 *                           modified obs types for raw obs data
 *                           function added to output message type
+*           2014/09/06 1.1  Remove prehistorical revision history
+*                           Remove dead code
+*                           Fix len vs. plen typo
+*                           Check week/time valid flag in GSOF 16 message
+*                           Set time when reading GSOF messages, where possible.
 *-----------------------------------------------------------------------------*/
-
-/*
-|   Version: $Revision:$ $Date:$
-|   History: 2014/06/29 1.0  new (D.COOK)
-|            2014/07/31 1.1  GPS week number work (D.COOK)
-|            2014/08/08 1.2  More GPS week number work (D.COOK)
-*/
 
 /*
 | Description:
@@ -265,8 +263,8 @@
 
 #define STX           2    /* Start of packet character */
 #define ETX           3    /* End of packet character */
-#define RETSVDATA     0x55 /* Satellite information reports */
 #define GENOUT        0x40 /* General Serial Output Format (GSOF) */
+#define RETSVDATA     0x55 /* Satellite information reports */
 #define RAWDATA       0x57 /* Position or real-time survey data report */
 #define BIG_ENDIAN    1    /* Big-endian platform or data stream */
 #define LITTLE_ENDIAN 2    /* Little-endian platform or data stream */
@@ -340,7 +338,7 @@ static float read_r4(unsigned char *p, int endian);
 static double read_r8(unsigned char *p, int endian);
 static unsigned short read_u2(unsigned char *p, int endian);
 static unsigned int read_u4(unsigned char *p, int endian);
-static void set_week(raw_t *raw, int week);
+static void set_week(raw_t *raw, int week, double receive_time);
 static int sync_packet(raw_t *raw, unsigned char data);
 static void unwrap_rawdata(raw_t *raw, unsigned int *rif);
 static void unwrap_genout(raw_t *raw);
@@ -467,10 +465,12 @@ extern int input_rt17(raw_t *raw, unsigned char data)
         clear_packet_buffer(raw);
         return(0);
     }
+
     /* added to output message type (by TTAKA 2014/08/26) */
     if (raw->outtype) {
-        sprintf(raw->msgtype,"RT17 0x%02X (%4d)",raw->pbuff[2],raw->len);
+        sprintf(raw->msgtype,"RT17 0x%02X (%4d)",raw->pbuff[2],raw->plen);
     }
+
     /*
     | If this is a SVDATA packet, then process it immediately.
     */
@@ -1114,11 +1114,12 @@ static int decode_gps_ephemeris(raw_t *raw, int e)
 */
 static void decode_gsof_1(raw_t *raw, unsigned char *p, int endian)
 {
+
     if (p[1] < 7)
        trace( 2, "RT17: GSOF Position Time message "
                  "record length %d < 7 bytes. Record discarded.\n", p[1] );
     else
-        set_week(raw, I2(p+6, endian));
+	set_week(raw, I2(p+6, endian), (double) I4(p+2, endian));
 }
  
 /*
@@ -1152,11 +1153,11 @@ static void decode_gsof_1(raw_t *raw, unsigned char *p, int endian)
 */
 static void decode_gsof_16(raw_t *raw, unsigned char *p, int endian)
 {
-    if (p[1] < 7)
+    if (p[1] < 10)
         trace( 2, "RT17: GSOF Current Time message "
-                  "record length %d < 7 bytes. Record discarded.\n", p[1] );
-    else
-        set_week(raw, I2(p+6, endian));
+                  "record length %d < 10 bytes. Record discarded.\n", p[1] );
+    else if (U1(p+10) & 1) /* If week and milliseconds of week are valid */
+	set_week(raw, I2(p+6, endian), (double) I4(p+2, endian));
 }
 
 /*
@@ -1194,7 +1195,7 @@ static void decode_gsof_26(raw_t *raw, unsigned char *p, int endian)
        trace( 2, "RT17: GSOF Position Time UTC message "
                  "record length %d < 7 bytes. Record discarded.\n", p[1] );
     else
-        set_week(raw, I2(p+6, endian));
+	set_week(raw, I2(p+6, endian), (double) I4(p+2, endian));
 }
 
 /*
@@ -1232,7 +1233,7 @@ static void decode_gsof_41(raw_t *raw, unsigned char *p, int endian)
         trace( 2, "RT17: GSOF Base Position and Quality Indicator message "
                    "record length %d < 7 bytes. Record discarded.\n", p[1] );
     else 
-        set_week(raw, I2(p+6, endian));
+	set_week(raw, I2(p+6, endian), (double) I4(p+2, endian));
 }
 
 /*
@@ -1535,7 +1536,7 @@ static int decode_type_17(raw_t *raw, unsigned int rif, int e)
     */
     week = get_week(raw, receive_time);
  
-   /*
+    /*
     | Turn the receive time in milliseconds since the start of the current GPS week
     | into time in seconds and fractional seconds.
     */   
@@ -1760,17 +1761,10 @@ static int decode_type_17(raw_t *raw, unsigned int rif, int e)
             }
         }
 
-#if 0
-        /*
-        | WARNING: The codes I have chosen here may be incorrect!
-        */
-        l1_code = (flags2 & 1) ? CODE_L1P : CODE_L1C;
-        l2_code = (flags2 & 4) ? ((flags2 & 2) ? CODE_L2P : CODE_L2Y) : CODE_L2C;
-#else
-        /* modified according to ref [2] (by TTAKA 2014/08/26) */
+	/* modified according to ref [2] (by TTAKA 2014/08/26) */
         l1_code = (flags2 & 1) ? ((flags2 & 4) ? CODE_L1W : CODE_L1P) : CODE_L1C;
         l2_code = (flags2 & 4) ? CODE_L2W : ((flags2 & 2) ? CODE_L2P : CODE_L2C);
-#endif
+
         
         if (l1_pseudorange != 0.0)
         {
@@ -1870,11 +1864,11 @@ static int decode_type_29(raw_t *raw, int endian)
 {
     unsigned char *p = raw->buff;
 
-    if (*p < 3)
-       trace( 2, "RT17: Enhanced Position record block #1 length %d < 3 bytes. "
+    if (*p < 7)
+       trace( 2, "RT17: Enhanced Position record block #1 length %d < 7 bytes. "
                  "Record discarded.\n", *p );
     else
-        set_week(raw, I2(p+1, endian));
+        set_week(raw, I2(p+1, endian), (double) I4(p+3, endian));
 
     return (0);
 }
@@ -1924,6 +1918,9 @@ static int get_week(raw_t *raw, double receive_time)
 
             raw->week++;
         }
+
+	if (receive_time != 0.0)
+	    raw->receive_time = receive_time;
     }
     else if (!(raw->flag & M_WEEK_SCAN))
     {
@@ -1950,21 +1947,21 @@ static int get_week(raw_t *raw, double receive_time)
 
     if (week == 0)
     {
-#if 0
-        time2gpst(timeget(), &week);
-#else
-        /* add to get week number (by TTAKA 2014/08/26) */
-        time2gpst(raw->time, &week);
-#endif
-        raw->week = week;
+	if ((raw->time.time == 0) && (raw->time.sec == 0.0))
+	    raw->time = timeget();
+	
+	/* add to get week number (by TTAKA 2014/08/26) */
+	time2gpst(raw->time, &week);
+
+        if (receive_time != 0.0)
+	    raw->time = gpst2time(week, receive_time * 0.001);
+
+	raw->week = week;
         
         trace( 2, "RT17: Initial GPS WEEK number unknown; "
                   "WEEK number %d assumed.\n", week );
     }
  
-    if (receive_time)
-        raw->receive_time = receive_time;
-
     return (week);
 }
 
@@ -2235,8 +2232,9 @@ static unsigned int read_u4(unsigned char *p, int endian)
 |
 | Formal Parameters: 
 |
-|   Raw  = Pointer to raw structure [Input]
-|   Week = GPS week number          [Input]
+|   Raw         = Pointer to raw structure [Input]
+|   Week        = GPS week number          [Input]
+|   Receve_time = Receiver time of week    [Input]
 |
 | Implicit Inputs:
 |
@@ -2255,7 +2253,7 @@ static unsigned int read_u4(unsigned char *p, int endian)
 |
 |   The -WEEK=n initial week option overrides us.
 |
-*/static void set_week(raw_t *raw, int week)
+*/static void set_week(raw_t *raw, int week, double receive_time)
 {
     if (!(raw->flag & M_WEEK_OPTION))
     {
@@ -2274,7 +2272,14 @@ static unsigned int read_u4(unsigned char *p, int endian)
 
         raw->week = week;
     }
+
+    /*
+    | Also update the time if we can.
+    */
+    if (week && (receive_time != 0.0))
+	raw->time = gpst2time(week, receive_time * 0.001);
 }
+
 /*
 | Function: sync_packet
 | Purpose:  Synchronize the raw data stream to the start of a series of RT17 packets 
