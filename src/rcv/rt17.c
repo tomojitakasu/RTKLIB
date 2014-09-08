@@ -1049,11 +1049,32 @@ static int decode_gps_ephemeris(raw_t *raw, int e)
     eph.cus *= SC2RAD;
  
     /*
-    | WARNING: The information needed to compute a proper fit number does not
-    |          appear to be present in the GPS ephermeris packet. This is a
-    |          punt to make generated RINEX files appear reasonable.
+    | Select the correct curve fit interval as per ICD-GPS-200 sections
+    | 20.3.3.4.3.1 and 20.3.4.4 using IODC, fit flag and Table 20-XII.
     */
-    eph.fit   = (flags & 1024)?0:4; /* Subframe 2, word 10, bit 17,  */
+    if (flags & 1024)  /* Subframe 2, word 10, bit 17 (fit flag) */
+    {
+	if ((eph.iodc >= 240) && (eph.iodc <= 247))
+	    eph.fit = 8;
+	else if (((eph.iodc >= 248) && (eph.iodc <= 255)) || (eph.iodc == 496))
+	    eph.fit = 14;
+	else if ((eph.iodc >= 497) && (eph.iodc <= 503))
+	    eph.fit = 26;
+	else if ((eph.iodc >= 504) && (eph.iodc <= 510))
+	    eph.fit = 50;
+	else if ((eph.iodc == 511) || ((eph.iodc >= 752) && (eph.iodc <= 756)))
+	    eph.fit = 74;
+	else if ((eph.iodc >= 757) && (eph.iodc <= 763))
+	    eph.fit = 98;
+	else if (((eph.iodc >= 764) && (eph.iodc <= 767)) || ((eph.iodc >= 1008) && (eph.iodc <= 1010)))
+	    eph.fit = 122;
+	else if ((eph.iodc >= 1011) && (eph.iodc <= 1020))
+	    eph.fit = 146;
+	else
+	    eph.fit = 6;
+    }
+    else
+	eph.fit = 4;
 
     eph.flag  = (flags & 1);        /* Subframe 1, word 4, bit 1, Data flag for L2 P-code */
     eph.code  = (flags >> 1) & 3;   /* Subframe 1, word 3, bits 11?12, Codes on L2 channel */
