@@ -70,6 +70,8 @@ extern int init_rtcm(rtcm_t *rtcm)
     int i,j;
     
     trace(3,"init_rtcm:\n");
+
+    memset(rtcm, 0, sizeof(rtcm_t));
     
     rtcm->staid=rtcm->stah=rtcm->seqno=rtcm->outtype=0;
     rtcm->time=rtcm->time_s=time0;

@@ -664,6 +664,8 @@ extern int init_raw(raw_t *raw)
     int i,j,sys;
     
     trace(3,"init_raw:\n");
+
+    memset(raw, 0, sizeof(raw_t));
     
     raw->time=raw->tobs=time0;
     raw->ephsat=0;

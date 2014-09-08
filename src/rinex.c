@@ -1579,7 +1579,9 @@ extern int init_rnxctr(rnxctr_t *rnx)
     int i,j;
     
     trace(3,"init_rnxctr:\n");
-    
+
+    memset(rnx, 0, sizeof(rnxctr_t));
+
     rnx->obs.data=NULL;
     rnx->nav.eph =NULL;
     rnx->nav.geph=NULL;
