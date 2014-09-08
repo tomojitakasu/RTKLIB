@@ -191,6 +191,8 @@ static strfile_t *gen_strfile(int format, const char *opt, gtime_t time)
     trace(3,"init_strfile:\n");
     
     if (!(str=(strfile_t *)malloc(sizeof(strfile_t)))) return NULL;
+
+    memset(str, 0, sizeof(strfile_t));
     
     if (format==STRFMT_RTCM2||format==STRFMT_RTCM3) {
         if (!init_rtcm(&str->rtcm)) {
