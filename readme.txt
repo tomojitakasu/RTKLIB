@@ -12,4 +12,6 @@ UPDATE HISTORY
 
 2014/09/07  2.4.3 b1  add 3-panel and veritical-panel modes for RTKNAVI
                       add sky image overlay to skyplot for RTKPLOT
+                      fix invalid identification of obs type "C2" (#113)
+                      fix invalid format of saved image by RTKPLOT (#114)
 
