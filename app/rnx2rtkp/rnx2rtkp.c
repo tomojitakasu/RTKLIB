@@ -46,6 +46,7 @@ static const char *help[]={
 " -ts ds ts start day/time (ds=y/m/d ts=h:m:s) [obs start time]",
 " -te de te end day/time   (de=y/m/d te=h:m:s) [obs end time]",
 " -ti tint  time interval (sec) [all]",
+" -tu tunit unit time interval (sec) [86400]",
 " -p mode   mode (0:single,1:dgps,2:kinematic,3:static,4:moving-base,",
 "                 5:fixed,6:ppp-kinematic,7:ppp-static) [2]",
 " -m mask   elevation mask angle (deg) [15]",
@@ -61,6 +62,8 @@ static const char *help[]={
 " -g        output latitude/longitude in the form of ddd mm ss.ss' [ddd.ddd]",
 " -t        output time in the form of yyyy/mm/dd hh:mm:ss.ss [sssss.ss]",
 " -u        output time in utc [gpst]",
+" -rid      ids of rovers (space separated)",
+" -bid      ids of base stations (space separated)",
 " -d col    number of decimals in time [3]",
 " -s sep    field separator [' ']",
 " -r x y z  reference (base) receiver ecef pos (m) [average of single pos]",
@@ -93,9 +96,10 @@ int main(int argc, char **argv)
     solopt_t solopt=solopt_default;
     filopt_t filopt={""};
     gtime_t ts={0},te={0};
-    double tint=0.0,es[]={2000,1,1,0,0,0},ee[]={2000,12,31,23,59,59},pos[3];
+    double tint=0.0,tunit=0.0,es[]={2000,1,1,0,0,0},ee[]={2000,12,31,23,59,59},pos[3];
     int i,j,n,ret;
     char *infile[MAXFILE],*outfile="";
+    char *roverids="",*baseids="";
     
     prcopt.mode  =PMODE_KINEMA;
     prcopt.navsys=SYS_GPS|SYS_GLO;
@@ -115,6 +119,8 @@ int main(int argc, char **argv)
     }
     for (i=1,n=0;i<argc;i++) {
         if      (!strcmp(argv[i],"-o")&&i+1<argc) outfile=argv[++i];
+        else if      (!strcmp(argv[i],"-rid")&&i+1<argc) roverids=argv[++i];
+        else if      (!strcmp(argv[i],"-bid")&&i+1<argc) baseids=argv[++i];
         else if (!strcmp(argv[i],"-ts")&&i+2<argc) {
             sscanf(argv[++i],"%lf/%lf/%lf",es,es+1,es+2);
             sscanf(argv[++i],"%lf:%lf:%lf",es+3,es+4,es+5);
@@ -126,6 +132,7 @@ int main(int argc, char **argv)
             te=epoch2time(ee);
         }
         else if (!strcmp(argv[i],"-ti")&&i+1<argc) tint=atof(argv[++i]);
+        else if (!strcmp(argv[i],"-tu")&&i+1<argc) tunit=atof(argv[++i]);
         else if (!strcmp(argv[i],"-k")&&i+1<argc) {++i; continue;}
         else if (!strcmp(argv[i],"-p")&&i+1<argc) prcopt.mode=atoi(argv[++i]);
         else if (!strcmp(argv[i],"-f")&&i+1<argc) prcopt.nf=atoi(argv[++i]);
@@ -162,7 +169,7 @@ int main(int argc, char **argv)
         showmsg("error : no input file");
         return -2;
     }
-    ret=postpos(ts,te,tint,0.0,&prcopt,&solopt,&filopt,infile,n,outfile,"","");
+    ret=postpos(ts,te,tint,tunit,&prcopt,&solopt,&filopt,infile,n,outfile,roverids,baseids);
     
     if (!ret) fprintf(stderr,"%40s\r","");
     return ret;
