@@ -783,6 +783,7 @@ int __fastcall TMainForm::GetOption(prcopt_t &prcopt, solopt_t &solopt,
     prcopt.sateph   =SatEphem;
     prcopt.modear   =AmbRes;
     prcopt.glomodear=GloAmbRes;
+    prcopt.bdsmodear=BdsAmbRes;
     prcopt.maxout   =OutCntResetAmb;
     prcopt.minfix   =FixCntHoldAmb;
     prcopt.minlock  =LockCntFixAmb;
@@ -1150,6 +1151,7 @@ void __fastcall TMainForm::LoadOpt(void)
     
     AmbRes             =ini->ReadInteger("opt","ambres",         1);
     GloAmbRes          =ini->ReadInteger("opt","gloambres",      1);
+    BdsAmbRes          =ini->ReadInteger("opt","bdsambres",      1);
     ValidThresAR       =ini->ReadFloat  ("opt","validthresar", 3.0);
     ThresAR2           =ini->ReadFloat  ("opt","thresar2",  0.9999);
     ThresAR3           =ini->ReadFloat  ("opt","thresar3",    0.25);
@@ -1351,6 +1353,7 @@ void __fastcall TMainForm::SaveOpt(void)
     
     ini->WriteInteger("opt","ambres",      AmbRes      );
     ini->WriteInteger("opt","gloambres",   GloAmbRes   );
+    ini->WriteInteger("opt","bdsambres",   BdsAmbRes   );
     ini->WriteFloat  ("opt","validthresar",ValidThresAR);
     ini->WriteFloat  ("opt","thresar2",    ThresAR2    );
     ini->WriteFloat  ("opt","thresar3",    ThresAR3    );

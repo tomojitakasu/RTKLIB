@@ -2001,6 +2001,7 @@ void __fastcall TMainForm::LoadOpt(void)
     PrcOpt.tidecorr =ini->ReadInteger("prcopt", "tidecorr",        0);
     PrcOpt.modear   =ini->ReadInteger("prcopt", "modear",          1);
     PrcOpt.glomodear=ini->ReadInteger("prcopt", "glomodear",       0);
+    PrcOpt.bdsmodear=ini->ReadInteger("prcopt", "bdsmodear",       0);
     PrcOpt.maxout   =ini->ReadInteger("prcopt", "maxout",          5);
     PrcOpt.minlock  =ini->ReadInteger("prcopt", "minlock",         0);
     PrcOpt.minfix   =ini->ReadInteger("prcopt", "minfix",         10);
@@ -2203,6 +2204,7 @@ void __fastcall TMainForm::SaveOpt(void)
     ini->WriteInteger("prcopt", "tidecorr",   PrcOpt.tidecorr    );
     ini->WriteInteger("prcopt", "modear",     PrcOpt.modear      );
     ini->WriteInteger("prcopt", "glomodear",  PrcOpt.glomodear   );
+    ini->WriteInteger("prcopt", "bdsmodear",  PrcOpt.bdsmodear   );
     ini->WriteInteger("prcopt", "maxout",     PrcOpt.maxout      );
     ini->WriteInteger("prcopt", "minlock",    PrcOpt.minlock     );
     ini->WriteInteger("prcopt", "minfix",     PrcOpt.minfix      );

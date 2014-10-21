@@ -313,6 +313,7 @@ object OptDialog: TOptDialog
         Height = 19
         Caption = 'BeiDou'
         TabOrder = 14
+        OnClick = NavSys6Click
       end
       object ElMask: TComboBox
         Left = 221
@@ -396,9 +397,9 @@ object OptDialog: TOptDialog
       object Label25: TLabel
         Left = 24
         Top = 7
-        Width = 161
+        Width = 184
         Height = 13
-        Caption = 'Integer Ambiguity Res (GPS/GLO)'
+        Caption = 'Integer Ambiguity Res (GPS/GLO/BDS)'
       end
       object Label24: TLabel
         Left = 24
@@ -459,7 +460,7 @@ object OptDialog: TOptDialog
       object AmbRes: TComboBox
         Left = 221
         Top = 4
-        Width = 69
+        Width = 47
         Height = 21
         Style = csDropDownList
         ItemIndex = 0
@@ -537,9 +538,9 @@ object OptDialog: TOptDialog
         Text = '1'
       end
       object GloAmbRes: TComboBox
-        Left = 291
+        Left = 269
         Top = 4
-        Width = 68
+        Width = 45
         Height = 21
         Style = csDropDownList
         ItemIndex = 0
@@ -624,6 +625,20 @@ object OptDialog: TOptDialog
         Style = csDropDownList
         ItemIndex = 0
         TabOrder = 8
+        Text = 'OFF'
+        OnChange = AmbResChange
+        Items.Strings = (
+          'OFF'
+          'ON')
+      end
+      object BdsAmbRes: TComboBox
+        Left = 315
+        Top = 4
+        Width = 45
+        Height = 21
+        Style = csDropDownList
+        ItemIndex = 0
+        TabOrder = 19
         Text = 'OFF'
         OnChange = AmbResChange
         Items.Strings = (
