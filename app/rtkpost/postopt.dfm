@@ -347,6 +347,7 @@ object OptDialog: TOptDialog
         Height = 17
         Caption = 'BeiDou'
         TabOrder = 21
+        OnClick = NavSys6Click
       end
       object ElMask: TComboBox
         Left = 221
@@ -431,9 +432,9 @@ object OptDialog: TOptDialog
       object Label25: TLabel
         Left = 24
         Top = 7
-        Width = 161
+        Width = 184
         Height = 13
-        Caption = 'Integer Ambiguity Res (GPS/GLO)'
+        Caption = 'Integer Ambiguity Res (GPS/GLO/BDS)'
       end
       object LabelRatio: TLabel
         Left = 24
@@ -494,7 +495,7 @@ object OptDialog: TOptDialog
       object AmbRes: TComboBox
         Left = 221
         Top = 4
-        Width = 69
+        Width = 49
         Height = 21
         Style = csDropDownList
         ItemIndex = 0
@@ -513,7 +514,7 @@ object OptDialog: TOptDialog
         Top = 29
         Width = 138
         Height = 21
-        TabOrder = 2
+        TabOrder = 3
         Text = '3.0'
       end
       object LockCntFixAmb: TEdit
@@ -521,7 +522,7 @@ object OptDialog: TOptDialog
         Top = 73
         Width = 69
         Height = 21
-        TabOrder = 4
+        TabOrder = 5
         Text = '5'
       end
       object OutCntResetAmb: TEdit
@@ -529,7 +530,7 @@ object OptDialog: TOptDialog
         Top = 122
         Width = 69
         Height = 21
-        TabOrder = 6
+        TabOrder = 7
         Text = '5'
       end
       object ElMaskAR: TEdit
@@ -537,7 +538,7 @@ object OptDialog: TOptDialog
         Top = 73
         Width = 68
         Height = 21
-        TabOrder = 3
+        TabOrder = 4
         Text = '0'
       end
       object SlipThres: TEdit
@@ -545,7 +546,7 @@ object OptDialog: TOptDialog
         Top = 122
         Width = 68
         Height = 21
-        TabOrder = 7
+        TabOrder = 8
         Text = '0.05'
       end
       object MaxAgeDiff: TEdit
@@ -553,7 +554,7 @@ object OptDialog: TOptDialog
         Top = 144
         Width = 69
         Height = 21
-        TabOrder = 8
+        TabOrder = 9
         Text = '30'
       end
       object RejectThres: TEdit
@@ -561,7 +562,7 @@ object OptDialog: TOptDialog
         Top = 166
         Width = 68
         Height = 21
-        TabOrder = 10
+        TabOrder = 11
         Text = '30'
       end
       object NumIter: TEdit
@@ -569,7 +570,7 @@ object OptDialog: TOptDialog
         Top = 188
         Width = 138
         Height = 21
-        TabOrder = 11
+        TabOrder = 12
         Text = '1'
       end
       object BaselineLen: TEdit
@@ -577,7 +578,7 @@ object OptDialog: TOptDialog
         Top = 210
         Width = 69
         Height = 21
-        TabOrder = 13
+        TabOrder = 14
         Text = '0.0'
       end
       object BaselineSig: TEdit
@@ -585,7 +586,7 @@ object OptDialog: TOptDialog
         Top = 210
         Width = 68
         Height = 21
-        TabOrder = 14
+        TabOrder = 15
         Text = '0.001'
       end
       object BaselineConst: TCheckBox
@@ -594,13 +595,13 @@ object OptDialog: TOptDialog
         Width = 179
         Height = 17
         Caption = 'Baseline Length Constraint (m)'
-        TabOrder = 12
+        TabOrder = 13
         OnClick = BaselineConstClick
       end
       object GloAmbRes: TComboBox
-        Left = 291
+        Left = 271
         Top = 4
-        Width = 68
+        Width = 43
         Height = 21
         Style = csDropDownList
         ItemIndex = 0
@@ -617,7 +618,7 @@ object OptDialog: TOptDialog
         Top = 95
         Width = 69
         Height = 21
-        TabOrder = 15
+        TabOrder = 16
         Text = '10'
       end
       object ElMaskHold: TEdit
@@ -625,7 +626,7 @@ object OptDialog: TOptDialog
         Top = 95
         Width = 68
         Height = 21
-        TabOrder = 5
+        TabOrder = 6
         Text = '0'
       end
       object RejectGdop: TEdit
@@ -633,7 +634,7 @@ object OptDialog: TOptDialog
         Top = 166
         Width = 69
         Height = 21
-        TabOrder = 9
+        TabOrder = 10
         Text = '30'
       end
       object ThresAR2: TEdit
@@ -641,7 +642,7 @@ object OptDialog: TOptDialog
         Top = 51
         Width = 69
         Height = 21
-        TabOrder = 16
+        TabOrder = 17
         Text = '0.99995'
       end
       object ThresAR3: TEdit
@@ -649,7 +650,7 @@ object OptDialog: TOptDialog
         Top = 51
         Width = 68
         Height = 21
-        TabOrder = 17
+        TabOrder = 18
         Text = '0.20'
       end
       object SyncSol: TComboBox
@@ -660,13 +661,27 @@ object OptDialog: TOptDialog
         Style = csDropDownList
         Enabled = False
         ItemIndex = 1
-        TabOrder = 18
+        TabOrder = 19
         Text = 'ON'
         OnChange = AmbResChange
         Items.Strings = (
           'OFF'
           'ON'
           'Auto Calibration')
+      end
+      object BdsAmbRes: TComboBox
+        Left = 315
+        Top = 4
+        Width = 43
+        Height = 21
+        Style = csDropDownList
+        ItemIndex = 0
+        TabOrder = 2
+        Text = 'OFF'
+        OnChange = AmbResChange
+        Items.Strings = (
+          'OFF'
+          'ON')
       end
     end
     object TabSheet3: TTabSheet
@@ -1415,6 +1430,10 @@ object OptDialog: TOptDialog
     object TabSheet7: TTabSheet
       Caption = '&Files'
       ImageIndex = 6
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label1: TLabel
         Left = 6
         Top = 199

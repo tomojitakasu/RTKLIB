@@ -14,4 +14,14 @@ UPDATE HISTORY
                       add sky image overlay to skyplot for RTKPLOT
                       fix invalid identification of obs type "C2" (#113)
                       fix invalid format of saved image by RTKPLOT (#114)
-
+2014/10/21  2.4.3 b2  add pos2-bdsarmode for beidou amb-res option
+                      add beidou amb-res option for rtknavi and rtkpost
+                      support stdin/stdout if -in/-out omitted in str2str
+                      strtok() -> strtok_r() in expath() for thread-safe
+                      fix problem on week rollover in rtcm 2 type 14
+                      fix problem on reading "C2" in rinex 2.12
+                      fix bug on clock error variance in peph2pos()
+                      fix bug on P0(a[3]) computation in tide_oload()
+                      fix bug on m2 computation in tide_pole()
+                      fix bug on receiver option -GL*,-RL*,-JL* for javad
+                      fix bug on receiver option -GL*,-RL*,-EL* for novatel

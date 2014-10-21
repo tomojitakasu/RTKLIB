@@ -14,6 +14,7 @@
 *                                pos1-snrmask1,2,3
 *           2013/03/11  1.3  add pos1-posopt1,2,3,4,5,pos2-syncsol
 *                                misc-rnxopt1,2,pos1-snrmask_r,_b,_L1,_L2,_L5
+*           2014/10/21  1.4  add pos2-bdsarmode
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -76,6 +77,7 @@ opt_t sysopts[]={
     
     {"pos2-armode",     3,  (void *)&prcopt_.modear,     ARMOPT },
     {"pos2-gloarmode",  3,  (void *)&prcopt_.glomodear,  GAROPT },
+    {"pos2-bdsarmode",  3,  (void *)&prcopt_.bdsmodear,  SWTOPT },
     {"pos2-arthres",    1,  (void *)&prcopt_.thresar[0], ""     },
     {"pos2-arlockcnt",  0,  (void *)&prcopt_.minlock,    ""     },
     {"pos2-arelmask",   1,  (void *)&elmaskar_,          "deg"  },

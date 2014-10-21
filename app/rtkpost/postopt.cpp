@@ -375,6 +375,7 @@ void __fastcall TOptDialog::GetOpt(void)
 	
 	AmbRes		 ->ItemIndex	=MainForm->AmbRes;
 	GloAmbRes	 ->ItemIndex	=MainForm->GloAmbRes;
+	BdsAmbRes	 ->ItemIndex	=MainForm->BdsAmbRes;
 	ValidThresAR ->Text			=s.sprintf("%.3g",MainForm->ValidThresAR);
 	ThresAR2     ->Text			=s.sprintf("%.8g",MainForm->ThresAR2);
 	ThresAR3     ->Text			=s.sprintf("%.3g",MainForm->ThresAR3);
@@ -491,6 +492,7 @@ void __fastcall TOptDialog::SetOpt(void)
 	
 	MainForm->AmbRes	  	=AmbRes		->ItemIndex;
 	MainForm->GloAmbRes	  	=GloAmbRes	->ItemIndex;
+	MainForm->BdsAmbRes	  	=BdsAmbRes	->ItemIndex;
 	MainForm->ValidThresAR	=str2dbl(ValidThresAR->Text);
 	MainForm->ThresAR2		=str2dbl(ThresAR2->Text);
 	MainForm->ThresAR3		=str2dbl(ThresAR3->Text);
@@ -620,6 +622,7 @@ void __fastcall TOptDialog::LoadOpt(AnsiString file)
 	
 	AmbRes		 ->ItemIndex	=prcopt.modear;
 	GloAmbRes	 ->ItemIndex	=prcopt.glomodear;
+	BdsAmbRes	 ->ItemIndex	=prcopt.bdsmodear;
 	ValidThresAR ->Text			=s.sprintf("%.3g",prcopt.thresar[0]);
 	ThresAR2	 ->Text			=s.sprintf("%.9g",prcopt.thresar[1]);
 	ThresAR3	 ->Text			=s.sprintf("%.3g",prcopt.thresar[2]);
@@ -757,6 +760,7 @@ void __fastcall TOptDialog::SaveOpt(AnsiString file)
 	
 	prcopt.modear	=AmbRes		->ItemIndex;
 	prcopt.glomodear=GloAmbRes	->ItemIndex;
+	prcopt.bdsmodear=BdsAmbRes	->ItemIndex;
 	prcopt.thresar[0]=str2dbl(ValidThresAR->Text);
 	prcopt.thresar[1]=str2dbl(ThresAR2->Text);
 	prcopt.thresar[2]=str2dbl(ThresAR3->Text);
@@ -857,6 +861,7 @@ void __fastcall TOptDialog::UpdateEnable(void)
 	
 	AmbRes         ->Enabled=ar;
 	GloAmbRes      ->Enabled=ar&&AmbRes->ItemIndex>0&&NavSys2->Checked;
+	BdsAmbRes      ->Enabled=ar&&AmbRes->ItemIndex>0&&NavSys6->Checked;
 	ValidThresAR   ->Enabled=ar&&AmbRes->ItemIndex>=1&&AmbRes->ItemIndex<4;
 	ThresAR2	   ->Enabled=ar&&AmbRes->ItemIndex>=4;
 	ThresAR3	   ->Enabled=ar&&AmbRes->ItemIndex>=4;
@@ -1025,4 +1030,10 @@ void __fastcall TOptDialog::BtnMaskClick(TObject *Sender)
 	SnrMask=MaskOptDialog->Mask;
 }
 //---------------------------------------------------------------------------
+void __fastcall TOptDialog::NavSys6Click(TObject *Sender)
+{
+	UpdateEnable();
+}
+//---------------------------------------------------------------------------
+
 

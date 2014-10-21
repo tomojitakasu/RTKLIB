@@ -221,6 +221,7 @@ __published:
 	TComboBox *SyncSol;
 	TLabel *Label43;
 	TComboBox *PanelStackE;
+	TComboBox *BdsAmbRes;
 	void __fastcall BtnOkClick(TObject *Sender);
 	void __fastcall RovAntPcvClick(TObject *Sender);
 	void __fastcall FormShow(TObject *Sender);
@@ -260,6 +261,7 @@ __published:
 	void __fastcall BtnTLESatFileClick(TObject *Sender);
 	void __fastcall BtnTLEFileClick(TObject *Sender);
 	void __fastcall BtnSnrMaskClick(TObject *Sender);
+	void __fastcall NavSys6Click(TObject *Sender);
 private:
 	void __fastcall GetOpt(void);
 	void __fastcall SetOpt(void);
