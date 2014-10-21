@@ -12,6 +12,7 @@
 *           2012/12/25 1.3  fix bug on cyclic navigation data output
 *                           suppress warnings
 *           2013/05/08 1.4  fix bug on 1 s offset for javad -> rtcm conversion
+*           2014/10/16 1.5  support input from stdout
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -489,7 +490,7 @@ extern int strsvrstart(strsvr_t *svr, int *opts, int *strs, char **paths,
     for (i=0;i<svr->nstr;i++) {
         strcpy(file1,paths[0]); if ((p=strstr(file1,"::"))) *p='\0';
         strcpy(file2,paths[i]); if ((p=strstr(file2,"::"))) *p='\0';
-        if (i>0&&!strcmp(file1,file2)) {
+        if (i>0&&*file1&&!strcmp(file1,file2)) {
             sprintf(svr->stream[i].msg,"output path error: %s",file2);
             for (i--;i>=0;i--) strclose(svr->stream+i);
             return 0;

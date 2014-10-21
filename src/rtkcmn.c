@@ -100,6 +100,8 @@
 *           2014/05/29 1.27 fix bug on obs2code() to search obs code table
 *           2014/08/26 1.28 fix problem on output of uncompress() for tar file
 *                           add function to swap trace file with keywords
+*           2014/10/21 1.29 strtok() -> strtok_r() in expath() for thread-safe
+*                           add bdsmodear in procopt_default
 *-----------------------------------------------------------------------------*/
 #define _POSIX_C_SOURCE 199309
 #include <stdarg.h>
@@ -160,7 +162,8 @@ const double lam_carr[]={       /* carrier wave length (m) */
 const prcopt_t prcopt_default={ /* defaults processing options */
     PMODE_SINGLE,0,2,SYS_GPS,   /* mode,soltype,nf,navsys */
     15.0*D2R,{{0,0}},           /* elmin,snrmask */
-    0,1,1,5,0,10,               /* sateph,modear,glomodear,maxout,minlock,minfix */
+    0,1,1,1,                    /* sateph,modear,glomodear,bdsmodear */
+    5,0,10,                     /* glomodear,maxout,minlock,minfix */
     0,0,0,0,                    /* estion,esttrop,dynamics,tidecorr */
     1,0,0,0,0,                  /* niter,codesmooth,intpref,sbascorr,sbassatsel */
     0,0,                        /* rovpos,refpos */
@@ -2923,7 +2926,7 @@ extern int expath(const char *path, char *paths[], int nmax)
     struct dirent *d;
     DIR *dp;
     const char *file=path;
-    char dir[1024]="",s1[1024],s2[1024],*p,*q;
+    char dir[1024]="",s1[1024],s2[1024],*p,*q,*r;
     
     trace(3,"expath  : path=%s nmax=%d\n",path,nmax);
     
@@ -2937,7 +2940,8 @@ extern int expath(const char *path, char *paths[], int nmax)
         sprintf(s2,"^%s$",file);
         for (p=s1;*p;p++) *p=(char)tolower((int)*p);
         for (p=s2;*p;p++) *p=(char)tolower((int)*p);
-        for (p=s1,q=strtok(s2,"*");q;q=strtok(NULL,"*")) {
+        
+        for (p=s1,q=strtok_r(s2,"*",&r);q;q=strtok_r(NULL,"*",&r)) {
             if ((p=strstr(p,q))) p+=strlen(q); else break;
         }
         if (p&&n<nmax) sprintf(paths[n++],"%s%s",dir,d->d_name);

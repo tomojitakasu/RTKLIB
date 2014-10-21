@@ -43,6 +43,7 @@
 *           2014/05/24 1.16 support beidou
 *           2014/07/01 1.17 fix problem on decoding of bdsephemerisb
 *                           fix bug on beidou tracking codes
+*           2014/10/20 1.11 fix bug on receiver option -GL*,-RL*,-EL*
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -268,17 +269,17 @@ static int checkpri(const char *opt, int sys, int code, int freq)
     int nex=NEXOBS; /* number of extended obs data */
     
     if (sys==SYS_GPS) {
-        if (strstr(opt,"-GL1P")) return code==CODE_L1P?0:-1;
-        if (strstr(opt,"-GL2X")) return code==CODE_L2X?1:-1;
+        if (strstr(opt,"-GL1P")&&freq==0) return code==CODE_L1P?0:-1;
+        if (strstr(opt,"-GL2X")&&freq==1) return code==CODE_L2X?1:-1;
         if (code==CODE_L1P) return nex<1?-1:NFREQ;
         if (code==CODE_L2X) return nex<2?-1:NFREQ+1;
     }
     else if (sys==SYS_GLO) {
-        if (strstr(opt,"-RL2C")) return code==CODE_L2C?1:-1;
+        if (strstr(opt,"-RL2C")&&freq==1) return code==CODE_L2C?1:-1;
         if (code==CODE_L2C) return nex<1?-1:NFREQ;
     }
     else if (sys==SYS_GAL) {
-        if (strstr(opt,"-EL1B")) return code==CODE_L1B?0:-1;
+        if (strstr(opt,"-EL1B")&&freq==0) return code==CODE_L1B?0:-1;
         if (code==CODE_L1B) return nex<1?-1:NFREQ;
         if (code==CODE_L7Q) return nex<2?-1:NFREQ+1;
         if (code==CODE_L8Q) return nex<3?-1:NFREQ+2;

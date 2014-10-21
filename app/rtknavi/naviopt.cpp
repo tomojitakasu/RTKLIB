@@ -413,6 +413,7 @@ void __fastcall TOptDialog::GetOpt(void)
 	SatEphem	 ->ItemIndex=PrcOpt.sateph;
 	AmbRes		 ->ItemIndex=PrcOpt.modear;
 	GloAmbRes	 ->ItemIndex=PrcOpt.glomodear;
+	BdsAmbRes	 ->ItemIndex=PrcOpt.bdsmodear;
 	ValidThresAR ->Text     =s.sprintf("%.1f",PrcOpt.thresar[0]);
 	OutCntResetAmb->Text    =s.sprintf("%d",  PrcOpt.maxout);
 	LockCntFixAmb->Text     =s.sprintf("%d",  PrcOpt.minlock);
@@ -532,6 +533,7 @@ void __fastcall TOptDialog::SetOpt(void)
 	PrcOpt.sateph    =SatEphem    ->ItemIndex;
 	PrcOpt.modear    =AmbRes      ->ItemIndex;
 	PrcOpt.glomodear =GloAmbRes   ->ItemIndex;
+	PrcOpt.bdsmodear =BdsAmbRes   ->ItemIndex;
 	PrcOpt.thresar[0]=str2dbl(ValidThresAR->Text);
 	PrcOpt.maxout    =OutCntResetAmb->Text.ToInt();
 	PrcOpt.minlock   =LockCntFixAmb->Text.ToInt();
@@ -710,6 +712,7 @@ void __fastcall TOptDialog::LoadOpt(AnsiString file)
 	
 	AmbRes		 ->ItemIndex	=prcopt.modear;
 	GloAmbRes	 ->ItemIndex	=prcopt.glomodear;
+	BdsAmbRes	 ->ItemIndex	=prcopt.bdsmodear;
 	ValidThresAR ->Text			=s.sprintf("%.1f",prcopt.thresar[0]);
 	OutCntResetAmb->Text		=s.sprintf("%d"  ,prcopt.maxout   );
 	FixCntHoldAmb->Text			=s.sprintf("%d"  ,prcopt.minfix   );
@@ -872,6 +875,7 @@ void __fastcall TOptDialog::SaveOpt(AnsiString file)
 	
 	prcopt.modear	=AmbRes		->ItemIndex;
 	prcopt.glomodear=GloAmbRes	->ItemIndex;
+	prcopt.bdsmodear=BdsAmbRes	->ItemIndex;
 	prcopt.thresar[0]=str2dbl(ValidThresAR->Text);
 	prcopt.maxout	=str2dbl(OutCntResetAmb->Text);
 	prcopt.minfix	=str2dbl(FixCntHoldAmb->Text);
@@ -964,6 +968,7 @@ void __fastcall TOptDialog::UpdateEnable(void)
 	
 	AmbRes         ->Enabled=ar;
 	GloAmbRes      ->Enabled=ar&&AmbRes->ItemIndex>0&&NavSys2->Checked;
+	BdsAmbRes      ->Enabled=ar&&AmbRes->ItemIndex>0&&NavSys6->Checked;
 	ValidThresAR   ->Enabled=ar&&AmbRes->ItemIndex>=1&&AmbRes->ItemIndex<4;
 	ThresAR2       ->Enabled=ar&&AmbRes->ItemIndex>=4;
 	ThresAR3       ->Enabled=ar&&AmbRes->ItemIndex>=4;
@@ -1098,6 +1103,12 @@ void __fastcall TOptDialog::ReadAntList(void)
 	RefAnt->Items=list;
 	
 	free(pcvs.pcv);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TOptDialog::NavSys6Click(TObject *Sender)
+{
+	UpdateEnable();
 }
 //---------------------------------------------------------------------------
 

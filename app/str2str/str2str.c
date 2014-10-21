@@ -14,6 +14,7 @@
 *           2014/02/21  1.5  ignore SIG_HUP
 *           2014/08/10  1.5  fix bug on showing message
 *           2014/08/26  1.6  support input format gw10, binex and rt17
+*           2014/10/14  1.7  use stdin or stdout if option -in or -out omitted
 *-----------------------------------------------------------------------------*/
 #include <signal.h>
 #include <unistd.h>
@@ -28,12 +29,12 @@ static const char rcsid[]="$Id:$";
 
 /* global variables ----------------------------------------------------------*/
 static strsvr_t strsvr;                /* stream server */
-static volatile int intrflg=0;                  /* interrupt flag */
+static volatile int intrflg=0;         /* interrupt flag */
 
 /* help text -----------------------------------------------------------------*/
 static const char *help[]={
 "",
-" usage: str2str -in stream -out stream [-out stream...] [options]",
+" usage: str2str [-in stream] [-out stream [-out stream...]] [options]",
 "",
 " Input data from a stream and divide and output them to multiple streams",
 " The input stream can be serial, tcp client, tcp server, ntrip client, or",
@@ -43,7 +44,8 @@ static const char *help[]={
 " if run foreground or send signal SIGINT for background process.",
 " if both of the input stream and the output stream follow #format, the",
 " format of input messages are converted to output. To specify the output",
-" messages, use -msg option.",
+" messages, use -msg option. If the option -in or -out omitted, stdin for",
+" input or stdout for output is used.",
 " Command options are as follows.",
 "",
 " -in  stream[#format] input  stream path and format",
@@ -183,8 +185,8 @@ int main(int argc, char **argv)
     char *local="",*proxy="",*msg="1004,1019",*opt="",buff[256],*p;
     char strmsg[MAXSTRMSG]="";
     int i,n=0,dispint=5000,trlevel=0,opts[]={10000,10000,2000,32768,10,0,30};
-    int types[MAXSTR]={0},stat[MAXSTR]={0},byte[MAXSTR]={0},bps[MAXSTR]={0};
-    int fmts[MAXSTR],sta=0;
+    int types[MAXSTR]={STR_FILE,STR_FILE},stat[MAXSTR]={0},byte[MAXSTR]={0};
+    int bps[MAXSTR]={0},fmts[MAXSTR]={0},sta=0;
     
     for (i=0;i<MAXSTR;i++) paths[i]=s[i];
     
@@ -216,16 +218,10 @@ int main(int argc, char **argv)
         else if (!strcmp(argv[i],"-t"  )&&i+1<argc) trlevel=atoi(argv[++i]);
         else if (*argv[i]=='-') printhelp();
     }
-    if (!*paths[0]) {
-        fprintf(stderr,"specify input stream\n");
-        return -1;
-    }
-    if (n<=0) {
-        fprintf(stderr,"specify output stream(s)\n");
-        return -1;
-    }
+    if (n<=0) n=1; /* stdout */
+    
     for (i=0;i<n;i++) {
-        if (fmts[i+1]<0) continue;
+        if (fmts[i+1]<=0) continue;
         if (fmts[i+1]!=STRFMT_RTCM3) {
             fprintf(stderr,"unsupported output format\n");
             return -1;
