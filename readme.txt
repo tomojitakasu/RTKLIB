@@ -25,3 +25,5 @@ UPDATE HISTORY
                       fix bug on m2 computation in tide_pole()
                       fix bug on receiver option -GL*,-RL*,-JL* for javad
                       fix bug on receiver option -GL*,-RL*,-EL* for novatel
+2014/10/24  2.4.3 b3  fix bug on beidou amb-res with pos2-bdsarmode=0
+                      fix bug on return of var_uraeph() if ura<0||15<ura

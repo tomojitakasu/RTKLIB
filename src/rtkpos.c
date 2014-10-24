@@ -31,6 +31,7 @@
 *                           add output of gal-gps and bds-gps time offset
 *           2014/05/28 1.14 fix bug on memory exception with many sys and freq
 *           2014/08/26 1.15 add functino to swap sol-stat file with keywords
+*           2014/10/21 1.16 fix bug on beidou amb-res with pos2-bdsarmode=0
 *-----------------------------------------------------------------------------*/
 #include <stdarg.h>
 #include "rtklib.h"
@@ -1246,6 +1247,7 @@ static int ddmat(rtk_t *rtk, double *D)
     for (m=0;m<4;m++) { /* m=0:gps/qzs/sbs,1:glo,2:gal,3:bds */
         
         if (m==1&&rtk->opt.glomodear==0) continue;
+        if (m==3&&rtk->opt.bdsmodear==0) continue;
         
         for (f=0,k=na;f<nf;f++,k+=MAXSAT) {
             
