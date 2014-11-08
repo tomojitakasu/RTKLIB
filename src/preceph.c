@@ -36,6 +36,8 @@
 *           2014/04/03 1.11 accept extenstion including sp3,eph,SP3,EPH
 *           2014/05/23 1.12 add function to read sp3 velocity records
 *                           change api: satantoff()
+*           2014/08/31 1.13 add member cov and vco in peph_t sturct
+*           2014/10/13 1.14 fix bug on clock error variance in peph2pos()
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -136,11 +138,17 @@ static void readsp3b(FILE *fp, char type, int *sats, int ns, double *bfact,
         peph.time =time;
         peph.index=index;
         
-        for (i=0;i<MAXSAT;i++) for (j=0;j<4;j++) {
-            peph.pos[i][j]=0.0;
-            peph.std[i][j]=0.0f;
-            peph.vel[i][j]=0.0;
-            peph.vst[i][j]=0.0f;
+        for (i=0;i<MAXSAT;i++) {
+            for (j=0;j<4;j++) {
+                peph.pos[i][j]=0.0;
+                peph.std[i][j]=0.0f;
+                peph.vel[i][j]=0.0;
+                peph.vst[i][j]=0.0f;
+            }
+            for (j=0;j<3;j++) {
+                peph.cov[i][j]=0.0f;
+                peph.vco[i][j]=0.0f;
+            }
         }
         for (i=pred_o=pred_c=v=0;i<n&&fgets(buff,sizeof(buff),fp);i++) {
             
@@ -510,7 +518,7 @@ static int pephclk(gtime_t time, int sat, const nav_t *nav, double *dts,
     else if (c[0]!=0.0&&c[1]!=0.0) {
         dts[0]=(c[1]*t[0]-c[0]*t[1])/(t[0]-t[1]);
         i=t[0]<-t[1]?0:1;
-        std=nav->pclk[index+i].std[sat-1][0]+EXTERR_CLK*fabs(t[i]);
+        std=nav->pclk[index+i].std[sat-1][0]*CLIGHT+EXTERR_CLK*fabs(t[i]);
     }
     else {
         trace(3,"prec clock outage %s sat=%2d\n",time_str(time,0),sat);

@@ -414,6 +414,140 @@ void __fastcall TPlot::ReadMapData(AnsiString file)
     MapAreaDialog->UpdateField();
     UpdatePlot();
 }
+// resample image pixel -----------------------------------------------------
+#define ResPixelNN(img1,x,y,b1,img2,i,j,b2) {\
+    int ix=(int)((x)+0.5),iy=(int)((y)+0.5);\
+    BYTE *p=(img1)+ix*3+iy*(b1),*q=(img2)+(i)*3+(j)*(b2);\
+    q[0]=p[0]; q[1]=p[1]; q[2]=p[2];\
+}
+#define ResPixelBL(img1,x,y,b1,img2,i,j,b2) {\
+    int ix=(int)(x),iy=(int)(y);\
+    double dx1=(x)-ix,dy1=(y)-iy,dx2=1.0-dx1,dy2=1.0-dy1;\
+    double a1=dx2*dy2,a2=dx2*dy1,a3=dx1*dy2,a4=dx1*dy1;\
+    BYTE *p1=(img1)+ix*3+iy*(b1),*p2=p1+(b1),*q=(img2)+(i)*3+(j)*(b2);\
+    q[0]=(BYTE)(a1*p1[0]+a2*p2[0]+a3*p1[3]+a4*p2[3]);\
+    q[1]=(BYTE)(a1*p1[1]+a2*p2[1]+a3*p1[4]+a4*p2[4]);\
+    q[2]=(BYTE)(a1*p1[2]+a2*p2[2]+a3*p1[5]+a4*p2[5]);\
+}
+// update sky image ---------------------------------------------------------
+void __fastcall TPlot::UpdateSky(void)
+{
+    BITMAP bm1,bm2;
+    double x,y,xp,yp,siny,cosy,r,dr,dist;
+    int i,j,k,w1,h1,b1,w2,h2,b2;
+    
+    if (!GetObject(SkyImageI->Handle,sizeof(bm1),&bm1)||
+        !GetObject(SkyImageR->Handle,sizeof(bm2),&bm2)||
+        bm1.bmBitsPixel!=24) return;
+    w1=bm1.bmWidth; h1=bm1.bmHeight; b1=bm1.bmWidthBytes;
+    w2=bm2.bmWidth; h2=bm2.bmHeight; b2=bm2.bmWidthBytes;
+    
+    if (w1<=0||h1<=0||b1<w1*3||w2<=0||h2<=0||b2<w2*3) return;
+    
+    memset(bm2.bmBits,224,b2*h2); // fill bitmap by silver
+    
+    siny=sin(SkyFov[2]*D2R);
+    cosy=cos(SkyFov[2]*D2R);
+    
+    for (j=0;j<h2;j++) for (i=0;i<w2;i++) {
+        xp=(w2/2.0-i)/SkyScaleR;
+        yp=(j-h2/2.0)/SkyScaleR;
+        r=sqrt(SQR(xp)+SQR(yp));
+        if (SkyDestCorr&&r<1.0&&r>0.0) {
+            k=(int)(r*9.0); dr=r*9.0-k;
+            dist=k>8?SkyDest[9]:(1.0-dr)*SkyDest[k]+dr*SkyDest[k+1];
+            xp*=dist/r;
+            yp*=dist/r;
+        }
+        else if (r<1.0||!SkyElMask) {
+            xp*=SkyScale;
+            yp*=SkyScale;
+        }
+        else continue;
+        x=SkyCent[0]+cosy*xp-siny*yp; if (SkyFlip) x=w1-x;
+        y=SkyCent[1]+siny*xp+cosy*yp;
+        if (x<0.0||x>=w1-1||y<0.0||y>=h1-1) continue;
+        if (!SkyRes) {
+            ResPixelNN((BYTE *)bm1.bmBits,x,y,b1,(BYTE *)bm2.bmBits,i,j,b2)
+        }
+        else {
+            ResPixelBL((BYTE *)bm1.bmBits,x,y,b1,(BYTE *)bm2.bmBits,i,j,b2)
+        }
+    }
+    UpdatePlot();
+}
+// read sky tag data --------------------------------------------------------
+void __fastcall TPlot::ReadSkyTag(AnsiString file)
+{
+    FILE *fp;
+    char buff[1024],*p;
+    
+    trace(3,"ReadSkyTag\n");
+    
+    if (!(fp=fopen(file.c_str(),"r"))) return;
+    
+    while (fgets(buff,sizeof(buff),fp)) {
+        if (buff[0]=='\0'||buff[0]=='%'||buff[0]=='#') continue;
+        if (!(p=strchr(buff,'='))) continue;
+        *p='\0';
+        if      (strstr(buff,"centx"   )==buff) sscanf(p+1,"%lf",SkyCent    );
+        else if (strstr(buff,"centy"   )==buff) sscanf(p+1,"%lf",SkyCent+1  );
+        else if (strstr(buff,"scale"   )==buff) sscanf(p+1,"%lf",&SkyScale  );
+        else if (strstr(buff,"roll"    )==buff) sscanf(p+1,"%lf",SkyFov     );
+        else if (strstr(buff,"pitch"   )==buff) sscanf(p+1,"%lf",SkyFov+1   );
+        else if (strstr(buff,"yaw"     )==buff) sscanf(p+1,"%lf",SkyFov+2   );
+        else if (strstr(buff,"destcorr")==buff) sscanf(p+1,"%d",&SkyDestCorr);
+        else if (strstr(buff,"elmask"  )==buff) sscanf(p+1,"%d",&SkyElMask  );
+        else if (strstr(buff,"resample")==buff) sscanf(p+1,"%d",&SkyRes     );
+        else if (strstr(buff,"flip"    )==buff) sscanf(p+1,"%d",&SkyFlip    );
+        else if (strstr(buff,"dest"    )==buff) {
+            sscanf(p+1,"%lf %lf %lf %lf %lf %lf %lf %lf %lf",SkyDest+1,
+                SkyDest+2,SkyDest+3,SkyDest+4,SkyDest+5,SkyDest+6,SkyDest+7,
+                SkyDest+8,SkyDest+9);
+        }
+    }
+    fclose(fp);
+}
+// read sky image data ------------------------------------------------------
+void __fastcall TPlot::ReadSkyData(AnsiString file)
+{
+    TJPEGImage *image=new TJPEGImage;
+    AnsiString s;
+    int i,w,h;
+    
+    trace(3,"ReadSkyData\n");
+    
+    try {
+        image->LoadFromFile(file);
+    }
+    catch (Exception &exception) {
+        ShowMsg(s.sprintf("sky image file read error: %s",file));
+        ShowLegend(NULL);
+        return;
+    }
+    SkyImageI->Assign(image);
+    SkyImageR->Assign(image);
+    w=MAX(SkyImageI->Width,SkyImageI->Height);
+    h=MIN(SkyImageI->Width,SkyImageI->Height);
+    SkyImageR->SetSize(w,w);
+    SkyImageFile=file;
+    SkySize[0]=SkyImageI->Width;
+    SkySize[1]=SkyImageI->Height;
+    SkyCent[0]=SkySize[0]/2.0;
+    SkyCent[1]=SkySize[1]/2.0;
+    SkyFov[0]=SkyFov[1]=SkyFov[2]=0.0;
+    SkyScale=SkyScaleR=h/2.0;
+    SkyDestCorr=SkyRes=SkyFlip=0;
+    SkyElMask=1;
+    for (i=0;i<10;i++) SkyDest[i]=0.0;
+    delete image;
+    
+    ReadSkyTag(file+".tag");
+    
+    BtnShowMap->Down=true;
+    
+    UpdateSky();
+}
 // read map tag data --------------------------------------------------------
 void __fastcall TPlot::ReadMapTag(AnsiString file)
 {

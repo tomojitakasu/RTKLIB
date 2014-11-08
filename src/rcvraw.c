@@ -11,6 +11,8 @@
 *         navigation radiosignal in bands L1,L2 (version 5.1), 2008
 *     [3] BeiDou satellite navigation system signal in space interface control
 *         document open service signal (version 2.0), December 2013
+*     [4] Quasi-Zenith Satellite System Navigation Service Interface
+*         Specification for QZSS (IS-QZSS) V.1.5, March 27, 2014
 *
 * version : $Revision: 1.1 $ $Date: 2008/07/17 21:48:06 $
 * history : 2009/04/10 1.0  new
@@ -24,6 +26,8 @@
 *           2014/06/22 1.7  add api decode_bds_d1(), decode_bds_d2()
 *           2014/08/14 1.8  add test_glostr()
 *                           add support input format rt17
+*           2014/08/31 1.9  suppress warning
+*           2014/11/07 1.10 support qzss navigation subframes
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 #include <stdint.h>
@@ -170,7 +174,7 @@ extern int decode_bds_d2(const unsigned char *buff, eph_t *eph)
     double toc_bds,sqrtA;
     unsigned int f1p4,cucp5,ep6,cicp7,i0p8,OMGdp9,omgp10;
     unsigned int sow1,sow3,sow4,sow5,sow6,sow7,sow8,sow9,sow10;
-    int i,toe_bds,f1p3,cucp4,ep5,cicp6,i0p7,OMGdp8,omgp9;
+    int i,f1p3,cucp4,ep5,cicp6,i0p7,OMGdp8,omgp9;
     int pgn1,pgn3,pgn4,pgn5,pgn6,pgn7,pgn8,pgn9,pgn10;
     
     trace(3,"decode_bds_d2:\n");
@@ -404,11 +408,11 @@ extern int decode_glostr(const unsigned char *buff, geph_t *geph)
     geph->toe=utc2gpst(gpst2time(week,tow+toe)); /* utc->gpst */
     return 1;
 }
-/* decode gps navigation data subframe 1 -------------------------------------*/
+/* decode gps/qzss navigation data subframe 1 --------------------------------*/
 static int decode_subfrm1(const unsigned char *buff, eph_t *eph)
 {
     double tow,toc;
-    int i=48,week,iodc0,iodc1;
+    int i=48,week,iodc0,iodc1,tgd;
     
     trace(4,"decode_subfrm1:\n");
     trace(5,"decode_subfrm1: buff="); traceb(5,buff,30);
@@ -420,13 +424,14 @@ static int decode_subfrm1(const unsigned char *buff, eph_t *eph)
     eph->svh   =getbitu(buff,i, 6);       i+= 6;
     iodc0      =getbitu(buff,i, 2);       i+= 2;
     eph->flag  =getbitu(buff,i, 1);       i+= 1+87;
-    eph->tgd[0]=getbits(buff,i, 8)*P2_31; i+= 8;
+    tgd        =getbits(buff,i, 8);       i+= 8;
     iodc1      =getbitu(buff,i, 8);       i+= 8;
     toc        =getbitu(buff,i,16)*16.0;  i+=16;
     eph->f2    =getbits(buff,i, 8)*P2_55; i+= 8;
     eph->f1    =getbits(buff,i,16)*P2_43; i+=16;
     eph->f0    =getbits(buff,i,22)*P2_31;
     
+    eph->tgd[0]=tgd==-128?0.0:tgd*P2_31; /* ref [4] */
     eph->iodc=(iodc0<<8)+iodc1;
     eph->week=adjgpsweek(week); /* week of tow */
     eph->ttr=gpst2time(eph->week,tow);
@@ -434,7 +439,7 @@ static int decode_subfrm1(const unsigned char *buff, eph_t *eph)
     
     return 1;
 }
-/* decode gps navigation data subframe 2 -------------------------------------*/
+/* decode gps/qzss navigation data subframe 2 --------------------------------*/
 static int decode_subfrm2(const unsigned char *buff, eph_t *eph)
 {
     double sqrtA;
@@ -458,7 +463,7 @@ static int decode_subfrm2(const unsigned char *buff, eph_t *eph)
     
     return 2;
 }
-/* decode gps navigation data subframe 3 -------------------------------------*/
+/* decode gps/qzss navigation data subframe 3 --------------------------------*/
 static int decode_subfrm3(const unsigned char *buff, eph_t *eph)
 {
     double tow,toc;
@@ -491,16 +496,16 @@ static int decode_subfrm3(const unsigned char *buff, eph_t *eph)
     
     return 3;
 }
-/* decode gps almanac --------------------------------------------------------*/
-static void decode_almanac(const unsigned char *buff, alm_t *alm)
+/* decode gps/qzss almanac ---------------------------------------------------*/
+static void decode_almanac(const unsigned char *buff, int sat, alm_t *alm)
 {
     gtime_t toa;
     double deltai,sqrtA,tt;
-    int i=50,f0,sat=getbitu(buff,50,6);
+    int i=50,f0;
     
     trace(4,"decode_almanac: sat=%2d\n",sat);
     
-    if (!alm||sat<1||32<sat||alm[sat-1].week==0) return;
+    if (!alm||alm[sat-1].week==0) return;
     
     alm[sat-1].sat =sat;
     alm[sat-1].e   =getbits(buff,i,16)*P2_21;        i+=16;
@@ -525,18 +530,16 @@ static void decode_almanac(const unsigned char *buff, alm_t *alm)
     alm[sat-1].toa=gpst2time(alm[sat-1].week,alm[sat-1].toas);
 }
 /* decode gps navigation data subframe 4 -------------------------------------*/
-static int decode_subfrm4(const unsigned char *buff, alm_t *alm, double *ion,
-                          double *utc, int *leaps)
+static void decode_gps_subfrm4(const unsigned char *buff, alm_t *alm,
+                               double *ion, double *utc, int *leaps)
 {
     int i,sat,svid=getbitu(buff,50,6);
-    
-    trace(4,"decode_subfrm4: svid=%d\n",svid);
-    trace(5,"decode_subfrm4: buff="); traceb(5,buff,30);
     
     if (25<=svid&&svid<=32) { /* page 2,3,4,5,7,8,9,10 */
         
         /* decode almanac */
-        decode_almanac(buff,alm);
+        sat=getbitu(buff,50,6);
+        if (1<=sat&&sat<=32) decode_almanac(buff,sat,alm);
     }
     else if (svid==63) { /* page 25 */
         
@@ -577,21 +580,18 @@ static int decode_subfrm4(const unsigned char *buff, alm_t *alm, double *ion,
             *leaps=getbits(buff,i,8);
         }
     }
-    return 4;
 }
 /* decode gps navigation data subframe 5 -------------------------------------*/
-static int decode_subfrm5(const unsigned char *buff, alm_t *alm)
+static void decode_gps_subfrm5(const unsigned char *buff, alm_t *alm)
 {
     double toas;
     int i,sat,week,svid=getbitu(buff,50,6);
     
-    trace(4,"decode_subfrm5: svid=%d\n",svid);
-    trace(5,"decode_subfrm5: buff="); traceb(5,buff,30);
-    
     if (1<=svid&&svid<=24) { /* page 1-24 */
         
         /* decode almanac */
-        decode_almanac(buff,alm);
+        sat=getbitu(buff,50,6);
+        if (1<=sat&&sat<=32) decode_almanac(buff,sat,alm);
     }
     else if (svid==51) { /* page 25 */
         
@@ -612,9 +612,92 @@ static int decode_subfrm5(const unsigned char *buff, alm_t *alm)
             }
         }
     }
+}
+/* decode qzss navigation data subframe 4/5 ----------------------------------*/
+static void decode_qzs_subfrm45(const unsigned char *buff, alm_t *alm,
+                                double *ion, double *utc, int *leaps)
+{
+    int i,j,sat,toas,week,svid=getbitu(buff,50,6);
+    
+    if (1<=svid&&svid<=5) { /* qzss almanac */
+        
+        if (!(sat=satno(SYS_QZS,192+svid))) return;
+        decode_almanac(buff,sat,alm);
+    }
+    else if (svid==51) { /* qzss health */
+        
+        if (alm) {
+            i=56;
+            toas=getbitu(buff,i,8)*4096; i+=8;
+            week=getbitu(buff,i,8);      i+=8;
+            week=adjgpsweek(week);
+            
+            for (j=0;j<5;j++) {
+                if (!(sat=satno(SYS_QZS,193+j))) continue;
+                alm[sat-1].toas=toas;
+                alm[sat-1].week=week;
+                alm[sat-1].toa=gpst2time(week,toas);
+                alm[sat-1].svh=getbitu(buff,i,6); i+=6;
+            }
+        }
+    }
+    else if (svid==56) { /* ion/utc parameters */
+        
+        if (ion) {
+            i=56;
+            ion[0]=getbits(buff,i, 8)*P2_30;     i+= 8;
+            ion[1]=getbits(buff,i, 8)*P2_27;     i+= 8;
+            ion[2]=getbits(buff,i, 8)*P2_24;     i+= 8;
+            ion[3]=getbits(buff,i, 8)*P2_24;     i+= 8;
+            ion[4]=getbits(buff,i, 8)*pow(2,11); i+= 8;
+            ion[5]=getbits(buff,i, 8)*pow(2,14); i+= 8;
+            ion[6]=getbits(buff,i, 8)*pow(2,16); i+= 8;
+            ion[7]=getbits(buff,i, 8)*pow(2,16);
+        }
+        if (utc) {
+            i=120;
+            utc[1]=getbits(buff,i,24)*P2_50;     i+=24;
+            utc[0]=getbits(buff,i,32)*P2_30;     i+=32;
+            utc[2]=getbits(buff,i, 8)*pow(2,12); i+= 8;
+            utc[3]=getbitu(buff,i, 8);
+        }
+    }
+}
+/* decode gps/qzss navigation data subframe 4 --------------------------------*/
+static int decode_subfrm4(const unsigned char *buff, alm_t *alm, double *ion,
+                          double *utc, int *leaps)
+{
+    int dataid=getbitu(buff,48,2);
+    
+    trace(4,"decode_subfrm4: dataid=%d\n",dataid);
+    trace(5,"decode_subfrm4: buff="); traceb(5,buff,30);
+    
+    if (dataid==1) { /* gps */
+        decode_gps_subfrm4(buff,alm,ion,utc,leaps);
+    }
+    else if (dataid==3) { /* qzss */
+        decode_qzs_subfrm45(buff,alm,ion,utc,leaps);
+    }
+    return 4;
+}
+/* decode gps/qzss navigation data subframe 5 --------------------------------*/
+static int decode_subfrm5(const unsigned char *buff, alm_t *alm, double *ion,
+                          double *utc, int *leaps)
+{
+    int dataid=getbitu(buff,48,2);
+    
+    trace(4,"decode_subfrm5: dataid=%d\n",dataid);
+    trace(5,"decode_subfrm5: buff="); traceb(5,buff,30);
+    
+    if (dataid==1) { /* gps */
+        decode_gps_subfrm5(buff,alm);
+    }
+    else if (dataid==3) { /* qzss */
+        decode_qzs_subfrm45(buff,alm,ion,utc,leaps);
+    }
     return 5;
 }
-/* decode gps navigation data frame --------------------------------------------
+/* decode gps/qzss navigation data frame ---------------------------------------
 * decode navigation data frame and extract ephemeris and ion/utc parameters
 * args   : unsigned char *buff I gps navigation data frame (without parity)
 *                                  buff[0-29]: 24 bits x 10 words
@@ -627,6 +710,8 @@ static int decode_subfrm5(const unsigned char *buff, alm_t *alm)
 * notes  : use cpu time to resolve modulo 1024 ambiguity of the week number
 *          see ref [1]
 *          utc[3] reference week for utc parameter is truncated in 8 bits
+*          ion and utc parameters by qzss indicate local iono and qzst-utc
+*          parameters.
 *-----------------------------------------------------------------------------*/
 extern int decode_frame(const unsigned char *buff, eph_t *eph, alm_t *alm,
                         double *ion, double *utc, int *leaps)
@@ -640,7 +725,7 @@ extern int decode_frame(const unsigned char *buff, eph_t *eph, alm_t *alm,
         case 2: return decode_subfrm2(buff,eph);
         case 3: return decode_subfrm3(buff,eph);
         case 4: return decode_subfrm4(buff,alm,ion,utc,leaps);
-        case 5: return decode_subfrm5(buff,alm);
+        case 5: return decode_subfrm5(buff,alm,ion,utc,leaps);
     }
     return 0;
 }
