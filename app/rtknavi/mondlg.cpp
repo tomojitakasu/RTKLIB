@@ -412,6 +412,7 @@ void __fastcall TMonitorDialog::ShowRtk(void)
 	if (rtk.opt.navsys&SYS_GAL) navsys=navsys+"Galileo ";
 	if (rtk.opt.navsys&SYS_QZS) navsys=navsys+"QZSS ";
 	if (rtk.opt.navsys&SYS_SBS) navsys=navsys+"SBAS ";
+	if (rtk.opt.navsys&SYS_CMP) navsys=navsys+"BeiDou ";
 	
 	Label->Caption="";
 	Tbl->RowCount=57;

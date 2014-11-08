@@ -24,6 +24,7 @@
 *           2010/07/29 1.8  rtklib ver.2.4.0
 *           2011/05/27 1.9  rtklib ver.2.4.1
 *           2013/03/28 1.10 rtklib ver.2.4.2
+*           2014/10/24 1.11 rtklib ver.2.4.3 beta
 *-----------------------------------------------------------------------------*/
 #ifndef RTKLIB_H
 #define RTKLIB_H
@@ -46,9 +47,9 @@ extern "C" {
 
 /* constants -----------------------------------------------------------------*/
 
-#define VER_RTKLIB  "2.4.2"             /* library version */
+#define VER_RTKLIB  "2.4.3"             /* library version */
 
-#define PATCH_LEVEL "p9"                /* patch level */
+#define PATCH_LEVEL "b4"                /* patch level */
 
 #define COPYRIGHT_RTKLIB \
             "Copyright (C) 2007-2014 by T.Takasu\nAll rights reserved."
@@ -568,6 +569,8 @@ typedef struct {        /* precise ephemeris type */
     float  std[MAXSAT][4]; /* satellite position/clock std (m|s) */
     double vel[MAXSAT][4]; /* satellite velocity/clk-rate (m/s|s/s) */
     float  vst[MAXSAT][4]; /* satellite velocity/clk-rate std (m/s|s/s) */
+    float  cov[MAXSAT][3]; /* satellite position covariance (m^2) */
+    float  vco[MAXSAT][3]; /* satellite velocity covariance (m^2) */
 } peph_t;
 
 typedef struct {        /* precise clock type */
@@ -963,6 +966,7 @@ typedef struct {        /* processing options type */
     int sateph;         /* satellite ephemeris/clock (EPHOPT_???) */
     int modear;         /* AR mode (0:off,1:continuous,2:instantaneous,3:fix and hold,4:ppp-ar) */
     int glomodear;      /* GLONASS AR mode (0:off,1:on,2:auto cal,3:ext cal) */
+    int bdsmodear;      /* BeiDou AR mode (0:off,1:on) */
     int maxout;         /* obs outage count to reset bias */
     int minlock;        /* min lock count to fix ambiguity */
     int minfix;         /* min fix count to hold ambiguity */

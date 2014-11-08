@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <BorlandProject>
 	<Transactions>
-    <Transaction>2012/05/13 18:34:08.000.532,D:\proj\rtklib\app\rtknavi\rtknavi.cbproj=D:\proj\rtklib\app\rtknavi_mkl\rtknavi_mkl.cbproj</Transaction>
+    <Transaction>2012/05/13 18:34:08.000.532,D:\proj\rtklib\app\rtknavi_mkl\rtknavi_mkl.cbproj=D:\proj\rtklib\app\rtknavi\rtknavi.cbproj</Transaction>
     <Transaction>2014/08/26 09:32:22.000.166,=D:\proj\RTKLIB\src\rcv\rt17.c</Transaction>
   </Transactions>
 </BorlandProject>

@@ -78,6 +78,8 @@
 *           2014/05/26 1.21 fix bug on reading gps "C2" in rinex 2.11 or 2.12
 *                           fix problem on type imcompatibility
 *                           support beidou
+*           2014/08/29 1.22 fix bug on reading gps "C2" in rinex 2.11 or 2.12
+*           2014/10/20 1.23 recognize "C2" in 2.12 as "C2W" instead of "C2D"
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -222,8 +224,11 @@ static void convcode(double ver, int sys, const char *str, char *type)
         else if (sys==SYS_QZS) sprintf(type,"%c1C",'C');
         else if (sys==SYS_SBS) sprintf(type,"%c1C",'C');
     }
-    else if (!strcmp(str,"C2")) { /* ver.2.11/12 GPS L2PY,GLO L2C/A */
-        if      (sys==SYS_GPS) sprintf(type,"%c2W",'C');
+    else if (!strcmp(str,"C2")) {
+        if (sys==SYS_GPS) {
+            if (ver>=2.12) sprintf(type,"%c2W",'C'); /* L2P(Y) */
+            else           sprintf(type,"%c2X",'C'); /* L2C */
+        }
         else if (sys==SYS_GLO) sprintf(type,"%c2C",'C');
         else if (sys==SYS_QZS) sprintf(type,"%c2X",'C');
         else if (sys==SYS_CMP) sprintf(type,"%c1X",'C'); /* ver.2.12 B1 */

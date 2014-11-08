@@ -238,10 +238,9 @@
 				<BuildOrder>49</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="mapdlg.cpp">
-				<BuildOrder>42</BuildOrder>
 				<Form>MapAreaDialog</Form>
 				<DependentOn>mapdlg.h</DependentOn>
-				<BuildOrder>12</BuildOrder>
+				<BuildOrder>56</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="plotcmn.cpp">
 				<BuildOrder>39</BuildOrder>
@@ -290,6 +289,11 @@
 				<Form>SatDialog</Form>
 				<DependentOn>satdlg.h</DependentOn>
 				<BuildOrder>27</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="skydlg.cpp">
+				<Form>SkyImgDialog</Form>
+				<DependentOn>skydlg.h</DependentOn>
+				<BuildOrder>57</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\..\src\ephemeris.c">
 				<BuildOrder>35</BuildOrder>
@@ -390,6 +394,7 @@
 			<CppCompile Include="..\..\src\tle.c">
 				<BuildOrder>48</BuildOrder>
 			</CppCompile>
+			<FormResources Include="skydlg.dfm"/>
 			<FormResources Include="satdlg.dfm"/>
 			<FormResources Include="..\appcmn\serioptdlg.dfm"/>
 			<FormResources Include="..\appcmn\refdlg.dfm"/>
@@ -404,15 +409,15 @@
 			<FormResources Include="..\appcmn\console.dfm"/>
 			<FormResources Include="..\appcmn\ftpoptdlg.dfm"/>
 			<FormResources Include="..\appcmn\fileoptdlg.dfm"/>
+			<FormResources Include="..\appcmn\vieweropt.dfm"/>
 			<FormResources Include="plotmain.dfm"/>
-			<FormResources Include="pntdlg.dfm"/>
 			<FormResources Include="plotopt.dfm"/>
+			<FormResources Include="pntdlg.dfm"/>
+			<FormResources Include="geview.dfm"/>
 			<FormResources Include="fileseldlg.dfm"/>
 			<FormResources Include="conndlg.dfm"/>
-			<FormResources Include="..\appcmn\vieweropt.dfm"/>
-			<FormResources Include="geview.dfm"/>
-			<FormResources Include="mapdlg.dfm"/>
 			<FormResources Include="gmview.dfm"/>
+			<FormResources Include="mapdlg.dfm"/>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>
 				<CfgParent>Base</CfgParent>

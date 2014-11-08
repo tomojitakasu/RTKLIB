@@ -50,6 +50,10 @@ public:
 	void DrawAxis(int label, int glabel);
 	void DrawMark(TPoint p, int mark, TColor color, int size, int rot);
 	void DrawMark(double x, double y, int mark, TColor color, int size, int rot);
+	void DrawMark(TPoint p, int mark, TColor color, TColor bgcolor, int size,
+		int rot);
+	void DrawMark(double x, double y, int mark, TColor color, TColor bgcolor,
+		int size, int rot);
 	void DrawMarks(const double *x, const double *y, const TColor *color, int n,
 				   int mark, int size, int rot);
 	void DrawCircle(TPoint p, TColor color, int rx, int ry, int style);
@@ -59,10 +63,19 @@ public:
 		int va, int rot);
 	void DrawText(TPoint p, AnsiString str, TColor color, int ha, int va,
 		int rot);
+	void DrawText(double x, double y, AnsiString str, TColor color, TColor bgcolor,
+		int ha, int va, int rot);
+	void DrawText(TPoint p, AnsiString str, TColor color, TColor bgcolor,
+		int ha, int va, int rot);
 	void DrawPoly(TPoint *p, int n, TColor color, int style);
 	void DrawPoly(double *x, double *y, int n, TColor color, int style);
 	void DrawPolyline(TPoint *p, int n);
+	void DrawPatch(TPoint *p, int n, TColor color1, TColor color2, int style);
+	void DrawPatch(double *x, double *y, int n, TColor color1, TColor color2, int style);
 	void DrawSkyPlot(TPoint p, TColor color1, TColor color2, int size);
 	void DrawSkyPlot(double x, double y, TColor color1, TColor color2, double size);
+	void DrawSkyPlot(TPoint p, TColor color1, TColor color2, TColor bgcolor, int size);
+	void DrawSkyPlot(double x, double y, TColor color1, TColor color2, TColor bgcolor,
+		double size);
 };
 #endif
