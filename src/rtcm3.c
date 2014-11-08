@@ -20,6 +20,7 @@
 *           2014/05/02 1.6  fix bug on dropping last field of ssr message
 *                           comply with rtcm 3.2 with amendment 1/2 (ref[15])
 *                           delete MT 1046 according to ref [15]
+*           2014/09/14 1.7  add receiver option -RT_INP
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -2007,6 +2008,10 @@ extern int decode_rtcm3(rtcm_t *rtcm)
     
     if (rtcm->outtype) {
         sprintf(rtcm->msgtype,"RTCM %4d (%4d):",type,rtcm->len);
+    }
+    /* real-time input option */
+    if (strstr(rtcm->opt,"-RT_INP")) {
+        rtcm->time=utc2gpst(timeget());
     }
     switch (type) {
         case 1001: ret=decode_type1001(rtcm); break; /* not supported */

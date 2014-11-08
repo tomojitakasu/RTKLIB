@@ -27,3 +27,10 @@ UPDATE HISTORY
                       fix bug on receiver option -GL*,-RL*,-EL* for novatel
 2014/10/24  2.4.3 b3  fix bug on beidou amb-res with pos2-bdsarmode=0
                       fix bug on return of var_uraeph() if ura<0||15<ura
+2014/11/08  2.4.3 b4  fix getconfig error (87) with bluetooth device
+                      fix bug on ar-degradation by unhealthy satellites
+                      support qzss navigation subframes by decode_frame()
+                      add receiver option -RT_INP for rtcm3
+                      support message RXM-RAWX and RXM-SFRBX for u-blox
+                      add option -a, -i and -o for str2str
+                      merge updates of src/rcv/rt17.c (pull-req #45)

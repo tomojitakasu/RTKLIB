@@ -12,6 +12,7 @@
 * version : $Revision:$ $Date:$
 * history : 2011/05/27 1.0 new
 *           2013/06/02 1.1 fix bug on unable compile
+*           2014/10/26 1.2 suppress warning on type-punning pointer
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -35,28 +36,22 @@ static const char rcsid[]="$Id:$";
 
 static unsigned short U2(unsigned char *p)
 {
-    unsigned char b[2];
-    b[0]=p[1]; b[1]=p[0];
-    return *(unsigned short *)b;
+    union {unsigned short u2; unsigned char b[2];} buff;
+    buff.b[0]=p[1]; buff.b[1]=p[0];
+    return buff.u2;
 }
 static unsigned int U4(unsigned char *p)
 {
-    unsigned char b[4];
-    b[0]=p[3]; b[1]=p[2]; b[2]=p[1]; b[3]=p[0];
-    return *(unsigned int *)b;
-}
-static float R4(unsigned char *p)
-{
-    unsigned char b[4];
-    b[0]=p[3]; b[1]=p[2]; b[2]=p[1]; b[3]=p[0];
-    return *(float *)b;
+    union {unsigned int u4; unsigned char b[4];} buff;
+    buff.b[0]=p[3]; buff.b[1]=p[2]; buff.b[2]=p[1]; buff.b[3]=p[0];
+    return buff.u4;
 }
 static double R8(unsigned char *p)
 {
-    unsigned char b[8];
-    b[0]=p[7]; b[1]=p[6]; b[2]=p[5]; b[3]=p[4];
-    b[4]=p[3]; b[5]=p[2]; b[6]=p[1]; b[7]=p[0];
-    return *(double *)b;
+    union {double r8; unsigned char b[8];} buff;
+    buff.b[0]=p[7]; buff.b[1]=p[6]; buff.b[2]=p[5]; buff.b[3]=p[4];
+    buff.b[4]=p[3]; buff.b[5]=p[2]; buff.b[6]=p[1]; buff.b[7]=p[0];
+    return buff.r8;
 }
 /* crc-32 parity (ref [2] 15) ------------------------------------------------*/
 static unsigned int crc32r(const unsigned char *buff, int len)

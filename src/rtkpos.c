@@ -32,6 +32,7 @@
 *           2014/05/28 1.14 fix bug on memory exception with many sys and freq
 *           2014/08/26 1.15 add functino to swap sol-stat file with keywords
 *           2014/10/21 1.16 fix bug on beidou amb-res with pos2-bdsarmode=0
+*           2014/11/08 1.17 fix bug on ar-degradation by unhealthy satellites
 *-----------------------------------------------------------------------------*/
 #include <stdarg.h>
 #include "rtklib.h"
@@ -1252,7 +1253,8 @@ static int ddmat(rtk_t *rtk, double *D)
         for (f=0,k=na;f<nf;f++,k+=MAXSAT) {
             
             for (i=k;i<k+MAXSAT;i++) {
-                if (rtk->x[i]==0.0||!test_sys(rtk->ssat[i-k].sys,m)) {
+                if (rtk->x[i]==0.0||!test_sys(rtk->ssat[i-k].sys,m)||
+                    !rtk->ssat[i-k].vsat[f]) {
                     continue;
                 }
                 if (rtk->ssat[i-k].lock[f]>0&&!(rtk->ssat[i-k].slip[f]&2)&&
@@ -1263,10 +1265,12 @@ static int ddmat(rtk_t *rtk, double *D)
                 else rtk->ssat[i-k].fix[f]=1;
             }
             for (j=k;j<k+MAXSAT;j++) {
-                if (i==j||rtk->x[j]==0.0||!test_sys(rtk->ssat[j-k].sys,m)) {
+                if (i==j||rtk->x[j]==0.0||!test_sys(rtk->ssat[j-k].sys,m)||
+                    !rtk->ssat[j-k].vsat[f]) {
                     continue;
                 }
                 if (rtk->ssat[j-k].lock[f]>0&&!(rtk->ssat[j-k].slip[f]&2)&&
+                    rtk->ssat[i-k].vsat[f]&&
                     rtk->ssat[j-k].azel[1]>=rtk->opt.elmaskar) {
                     D[i+(na+nb)*nx]= 1.0;
                     D[j+(na+nb)*nx]=-1.0;
