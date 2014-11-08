@@ -42,6 +42,7 @@
 *                           fix bug on malloc size in openftp()
 *           2014/06/21 1.14 add general hex message rcv command by !HEX ...
 *           2014/10/16 1.15 support stdin/stdou for input/output from/to file
+*           2014/11/08 1.16 fix getconfig error (87) with bluetooth device
 *-----------------------------------------------------------------------------*/
 #include <ctype.h>
 #include "rtklib.h"
@@ -312,7 +313,7 @@ static serial_t *openserial(const char *path, int mode, char *msg)
         free(serial);
         return NULL;
     }
-    if (!GetDefaultCommConfig(port,&cc,&siz)) {
+    if (!GetCommConfig(serial->dev,&cc,&siz)) {
         sprintf(msg,"getconfig error (%d)",(int)GetLastError());
         tracet(1,"openserial: %s\n",msg);
         CloseHandle(serial->dev);

@@ -1832,7 +1832,7 @@ void __fastcall TPlot::DrawRes(int level)
                 y[2][m]=p->el*R2D;
                 y[3][m]=p->snr*0.25;
                 if      (!(p->flag>>5))  q[m]=0; // invalid
-                else if ((p->flag&7)==1) q[m]=2; // float
+                else if ((p->flag&7)<=1) q[m]=2; // float
                 else if ((p->flag&7)<=3) q[m]=1; // fixed
                 else                     q[m]=6; // ppp
                 s[m++]=(p->flag>>3)&0x3;         // slip
