@@ -848,9 +848,20 @@ object OptDialog: TOptDialog
           'Internal'
           'EGM96-BE (15")'
           'EGM2008-SE (2.5")'
-          'EGM2008-SE (1.0")'
-          'GSI2000 (1x1.5")')
-      end
+          'EGM2008-SE (1")'
+          'GSI2000 (1x1.5")'
+          'IGN RAF09 (1.5"x2")'
+          'NGS G99SSS'
+          'NGS GEOID99'
+          'NGS GEOID03'
+          'NGS GEOID06'
+          'NGS GEOID09'
+          'NGS GEOID12A'
+          'NGS USGG2003'
+          'NGS USGG2009'
+          'NGS USGG2012'
+          'NGS XXUSG')
+       end
       object OutputHead: TComboBox
         Left = 221
         Top = 28

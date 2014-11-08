@@ -12,7 +12,7 @@ CFLAGS = -Wall -O3 -ansi -pedantic -Wno-unused-but-set-variable -I$(SRC) $(OPTIO
 LDLIBS  = -lm -lrt -lpthread
 
 all        : str2str
-str2str    : str2str.o stream.o rtkcmn.o solution.o sbas.o geoid.o
+str2str    : str2str.o stream.o rtkcmn.o solution.o sbas.o geoid.o geoid12a.o
 str2str    : rcvraw.o novatel.o ublox.o ss2.o crescent.o skytraq.o gw10.o javad.o
 str2str    : nvs.o binex.o rt17.o rtcm.o rtcm2.o rtcm3.o rtcm3e.o preceph.o streamsvr.o
 
@@ -30,6 +30,8 @@ sbas.o     : $(SRC)/sbas.c
 	$(CC) -c $(CFLAGS) $(SRC)/sbas.c
 geoid.o    : $(SRC)/geoid.c
 	$(CC) -c $(CFLAGS) $(SRC)/geoid.c
+geoid12a.o : $(SRC)/geoid12a.c
+	$(CC) -c $(CFLAGS) $(SRC)/geoid12a.c
 rcvraw.o   : $(SRC)/rcvraw.c
 	$(CC) -c $(CFLAGS) $(SRC)/rcvraw.c
 novatel.o  : $(SRC)/rcv/novatel.c
@@ -70,6 +72,7 @@ rtkcmn.o   : $(SRC)/rtklib.h
 solution.o : $(SRC)/rtklib.h
 sbas.o     : $(SRC)/rtklib.h
 geoid.o    : $(SRC)/rtklib.h
+geoid12a.o : $(SRC)/rtklib.h
 rcvraw.o   : $(SRC)/rtklib.h
 novatel.o  : $(SRC)/rtklib.h
 ublox.o    : $(SRC)/rtklib.h
