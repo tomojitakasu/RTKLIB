@@ -41,6 +41,8 @@
 *           2014/05/23 1.13 retry to connect after gethostbyname() error
 *                           fix bug on malloc size in openftp()
 *           2014/06/21 1.14 add general hex message rcv command by !HEX ...
+*           2014/10/16 1.15 support stdin/stdou for input/output from/to file
+*           2014/11/08 1.16 fix getconfig error (87) with bluetooth device
 *-----------------------------------------------------------------------------*/
 #include <ctype.h>
 #include "rtklib.h"
@@ -311,7 +313,7 @@ static serial_t *openserial(const char *path, int mode, char *msg)
         free(serial);
         return NULL;
     }
-    if (!GetDefaultCommConfig(port,&cc,&siz)) {
+    if (!GetCommConfig(serial->dev,&cc,&siz)) {
         sprintf(msg,"getconfig error (%d)",(int)GetLastError());
         tracet(1,"openserial: %s\n",msg);
         CloseHandle(serial->dev);
@@ -449,6 +451,11 @@ static int openfile_(file_t *file, gtime_t time, char *msg)
     file->tick=file->tick_f=tickget();
     file->fpos=0;
     
+    /* use stdin or stdout if file path is null */
+    if (!*file->path) {
+        file->fp=file->mode&STR_MODE_R?stdin:stdout;
+        return 1;
+    }
     /* replace keywords */
     reppath(file->path,file->openpath,time,"","");
     
@@ -617,6 +624,8 @@ static int statefile(file_t *file)
 /* read file -----------------------------------------------------------------*/
 static int readfile(file_t *file, unsigned char *buff, int nmax, char *msg)
 {
+    struct timeval tv={0};
+    fd_set rs;
     unsigned int nr=0,t,tick;
     size_t fpos;
     
@@ -624,6 +633,17 @@ static int readfile(file_t *file, unsigned char *buff, int nmax, char *msg)
     
     if (!file) return 0;
     
+    if (file->fp==stdin) {
+#ifndef WIN32
+        /* input from stdin */
+        FD_ZERO(&rs); FD_SET(0,&rs);
+        if (!select(1,&rs,NULL,NULL,&tv)) return 0;
+        if ((nr=read(0,buff,nmax))<0) return 0;
+        return nr;
+#else
+        return 0;
+#endif
+    }
     if (file->fp_tag) {
         if (file->repmode) { /* slave */
             t=(unsigned int)(tick_master+file->offset);

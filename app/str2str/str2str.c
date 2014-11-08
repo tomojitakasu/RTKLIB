@@ -14,6 +14,8 @@
 *           2014/02/21  1.5  ignore SIG_HUP
 *           2014/08/10  1.5  fix bug on showing message
 *           2014/08/26  1.6  support input format gw10, binex and rt17
+*           2014/10/14  1.7  use stdin or stdout if option -in or -out omitted
+*           2014/11/08  1.8  add option -a, -i and -o
 *-----------------------------------------------------------------------------*/
 #include <signal.h>
 #include <unistd.h>
@@ -28,12 +30,12 @@ static const char rcsid[]="$Id:$";
 
 /* global variables ----------------------------------------------------------*/
 static strsvr_t strsvr;                /* stream server */
-static volatile int intrflg=0;                  /* interrupt flag */
+static volatile int intrflg=0;         /* interrupt flag */
 
 /* help text -----------------------------------------------------------------*/
 static const char *help[]={
 "",
-" usage: str2str -in stream -out stream [-out stream...] [options]",
+" usage: str2str [-in stream] [-out stream [-out stream...]] [options]",
 "",
 " Input data from a stream and divide and output them to multiple streams",
 " The input stream can be serial, tcp client, tcp server, ntrip client, or",
@@ -43,7 +45,8 @@ static const char *help[]={
 " if run foreground or send signal SIGINT for background process.",
 " if both of the input stream and the output stream follow #format, the",
 " format of input messages are converted to output. To specify the output",
-" messages, use -msg option.",
+" messages, use -msg option. If the option -in or -out omitted, stdin for",
+" input or stdout for output is used.",
 " Command options are as follows.",
 "",
 " -in  stream[#format] input  stream path and format",
@@ -82,6 +85,9 @@ static const char *help[]={
 " -f  sec           file swap margin (s) [30]",
 " -c  file          receiver commands file [no]",
 " -p  lat lon hgt   station position (latitude/longitude/height) (deg,m)",
+" -a  antinfo       antenna info (separated by ,)",
+" -i  rcvinfo       receiver info (separated by ,)",
+" -o  e n u         antenna offst (e,n,u) (m)",
 " -l  local_dir     ftp/http local directory []",
 " -x  proxy_addr    http/ntrip proxy address [no]",
 " -t  level         trace level [0]",
@@ -178,13 +184,13 @@ int main(int argc, char **argv)
     static char cmd[MAXRCVCMD]="";
     const char ss[]={'E','-','W','C','C'};
     strconv_t *conv[MAXSTR]={NULL};
-    double pos[3],stapos[3]={0};
+    double pos[3],stapos[3]={0},off[3]={0};
     char *paths[MAXSTR],s[MAXSTR][MAXSTRPATH]={{0}},*cmdfile="";
     char *local="",*proxy="",*msg="1004,1019",*opt="",buff[256],*p;
-    char strmsg[MAXSTRMSG]="";
+    char strmsg[MAXSTRMSG]="",*antinfo="",*rcvinfo="",ant[3]={""},rcv[3]={""};
     int i,n=0,dispint=5000,trlevel=0,opts[]={10000,10000,2000,32768,10,0,30};
-    int types[MAXSTR]={0},stat[MAXSTR]={0},byte[MAXSTR]={0},bps[MAXSTR]={0};
-    int fmts[MAXSTR],sta=0;
+    int types[MAXSTR]={STR_FILE,STR_FILE},stat[MAXSTR]={0},byte[MAXSTR]={0};
+    int bps[MAXSTR]={0},fmts[MAXSTR]={0},sta=0;
     
     for (i=0;i<MAXSTR;i++) paths[i]=s[i];
     
@@ -202,6 +208,11 @@ int main(int argc, char **argv)
             pos[2]=atof(argv[++i]);
             pos2ecef(pos,stapos);
         }
+        else if (!strcmp(argv[i],"-o")&&i+3<argc) {
+            off[0]=atof(argv[++i]);
+            off[1]=atof(argv[++i]);
+            off[2]=atof(argv[++i]);
+        }
         else if (!strcmp(argv[i],"-msg")&&i+1<argc) msg=argv[++i];
         else if (!strcmp(argv[i],"-opt")&&i+1<argc) opt=argv[++i];
         else if (!strcmp(argv[i],"-sta")&&i+1<argc) sta=atoi(argv[++i]);
@@ -211,21 +222,17 @@ int main(int argc, char **argv)
         else if (!strcmp(argv[i],"-n"  )&&i+1<argc) opts[5]=atoi(argv[++i]);
         else if (!strcmp(argv[i],"-f"  )&&i+1<argc) opts[6]=atoi(argv[++i]);
         else if (!strcmp(argv[i],"-c"  )&&i+1<argc) cmdfile=argv[++i];
+        else if (!strcmp(argv[i],"-a"  )&&i+1<argc) antinfo=argv[++i];
+        else if (!strcmp(argv[i],"-i"  )&&i+1<argc) rcvinfo=argv[++i];
         else if (!strcmp(argv[i],"-l"  )&&i+1<argc) local=argv[++i];
         else if (!strcmp(argv[i],"-x"  )&&i+1<argc) proxy=argv[++i];
         else if (!strcmp(argv[i],"-t"  )&&i+1<argc) trlevel=atoi(argv[++i]);
         else if (*argv[i]=='-') printhelp();
     }
-    if (!*paths[0]) {
-        fprintf(stderr,"specify input stream\n");
-        return -1;
-    }
-    if (n<=0) {
-        fprintf(stderr,"specify output stream(s)\n");
-        return -1;
-    }
+    if (n<=0) n=1; /* stdout */
+    
     for (i=0;i<n;i++) {
-        if (fmts[i+1]<0) continue;
+        if (fmts[i+1]<=0) continue;
         if (fmts[i+1]!=STRFMT_RTCM3) {
             fprintf(stderr,"unsupported output format\n");
             return -1;
@@ -238,6 +245,18 @@ int main(int argc, char **argv)
             fprintf(stderr,"stream conversion error\n");
             return -1;
         }
+        strcpy(buff,antinfo);
+        for (p=strtok(buff,","),n=0;p&&n<3;p=strtok(NULL,",")) ant[n++]=p;
+        strcpy(conv[i]->out.sta.antdes,ant[0]);
+        strcpy(conv[i]->out.sta.antsno,ant[1]);
+        conv[i]->out.sta.antsetup=atoi(ant[2]);
+        strcpy(buff,rcvinfo);
+        for (p=strtok(buff,","),n=0;p&&n<3;p=strtok(NULL,",")) rcv[n++]=p;
+        strcpy(conv[i]->out.sta.rectype,rcv[0]);
+        strcpy(conv[i]->out.sta.recver ,rcv[1]);
+        strcpy(conv[i]->out.sta.recsno ,rcv[2]);
+        matcpy(conv[i]->out.sta.pos,pos,3,1);
+        matcpy(conv[i]->out.sta.del,off,3,1);
     }
     signal(SIGTERM,sigfunc);
     signal(SIGINT ,sigfunc);

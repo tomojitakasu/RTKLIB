@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * ephemeris.c : satellite ephemeris and clock functions
 *
-*          Copyright (C) 2010-2013 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2010-2014 by T.TAKASU, All rights reserved.
 *
 * references :
 *     [1] IS-GPS-200D, Navstar GPS Space Segment/Navigation User Interfaces,
@@ -48,6 +48,7 @@
 *           2013/09/01 1.7  support negative pseudorange
 *                           fix bug on variance in case of ura ssr = 63
 *           2013/11/11 1.8  change constant MAXAGESSR 70.0 -> 90.0
+*           2014/10/24 1.9  fix bug on return of var_uraeph() if ura<0||15<ura
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -89,7 +90,7 @@ static double var_uraeph(int ura)
         2.4,3.4,4.85,6.85,9.65,13.65,24.0,48.0,96.0,192.0,384.0,768.0,1536.0,
         3072.0,6144.0
     };
-    return ura<0||15<ura?6144.0:SQR(ura_value[ura]);
+    return ura<0||15<ura?SQR(6144.0):SQR(ura_value[ura]);
 }
 /* variance by ura ssr (ref [4]) ---------------------------------------------*/
 static double var_urassr(int ura)

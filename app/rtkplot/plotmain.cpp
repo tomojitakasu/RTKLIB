@@ -47,6 +47,7 @@
 #include "console.h"
 #include "pntdlg.h"
 #include "mapdlg.h"
+#include "skydlg.h"
 #include "geview.h"
 #include "gmview.h"
 #include "viewer.h"
@@ -107,6 +108,8 @@ __fastcall TPlot::TPlot(TComponent* Owner) : TForm(Owner)
     NavFiles   =new TStringList;
     Buff    =new Graphics::TBitmap;
     MapImage=new Graphics::TBitmap;
+    SkyImageI=new Graphics::TBitmap;
+    SkyImageR=new Graphics::TBitmap;
     GraphT =new TGraph(Disp);
     GraphT->Fit=0;
     
@@ -128,6 +131,13 @@ __fastcall TPlot::TPlot(TComponent* Owner) : TForm(Owner)
     MapScaleX=MapScaleY=0.1;
     MapScaleEq=0;
     MapLat=MapLon=0.0;
+    
+    SkySize[0]=SkySize[1]=SkyCent[0]=SkyCent[1]=0;
+    SkyScale=SkyScaleR=240.0;
+    SkyFov[0]=SkyFov[1]=SkyFov[2]=0.0;
+    SkyElMask=1;
+    SkyDestCorr=SkyRes=SkyFlip=0;
+    for (i=0;i<10;i++) SkyDest[i]=0.0;
     
     for (i=0;i<3;i++) TimeEna[i]=0;
     TimeLabel=AutoScale=ShowStats=0;
@@ -293,7 +303,12 @@ void __fastcall TPlot::DropFiles(TWMDropFiles msg)
     if (n==1&&(ext=strrchr(file,'.'))&&
         (!strcmp(ext,".jpg")||!strcmp(ext,".jpeg")||
          !strcmp(ext,".JPG")||!strcmp(ext,".JPEG"))) {
-        ReadMapData(files->Strings[0]);
+        if (PlotType==PLOT_TRK) {
+            ReadMapData(files->Strings[0]);
+        }
+        else if (PlotType==PLOT_SKY||PlotType==PLOT_MPS) {
+            ReadSkyData(files->Strings[0]);
+        }
     }
     else if (CheckObs((s=file))) {
         ReadObs(files);
@@ -329,6 +344,7 @@ void __fastcall TPlot::MenuOpenMapImageClick(TObject *Sender)
 {
     trace(3,"MenuOpenMapImage\n");
     
+    OpenMapDialog->Title="Open Map Image";
     OpenMapDialog->FileName=MapImageFile;
     if (!OpenMapDialog->Execute()) return;
     ReadMapData(OpenMapDialog->FileName);
@@ -340,6 +356,16 @@ void __fastcall TPlot::MenuOpenMapPathClick(TObject *Sender)
     
     if (!OpenMapPathDialog->Execute()) return;
     ReadMapPath(OpenMapPathDialog->FileName);
+}
+// callback on menu-open-sky-image ------------------------------------------
+void __fastcall TPlot::MenuOpenSkyImageClick(TObject *Sender)
+{
+    trace(3,"MenuOpenSkyImage\n");
+    
+    OpenMapDialog->Title="Open Sky Image";
+    OpenMapDialog->FileName=SkyImageFile;
+    if (!OpenMapDialog->Execute()) return;
+    ReadSkyData(OpenMapDialog->FileName);
 }
 // callback on menu-open-obs-data -------------------------------------------
 void __fastcall TPlot::MenuOpenObsClick(TObject *Sender)
@@ -402,8 +428,23 @@ void __fastcall TPlot::MenuFileSelClick(TObject *Sender)
 // callback on menu-save image ----------------------------------------------
 void __fastcall TPlot::MenuSaveImageClick(TObject *Sender)
 {
+    char file[1024],*ext;
+    
     if (!SaveImageDialog->Execute()) return;
-    Buff->SaveToFile(SaveImageDialog->FileName);
+    
+    strcpy(file,U2A(SaveImageDialog->FileName).c_str());
+    
+    if ((ext=strrchr(file,'.'))&&
+        (!strcmp(ext,".jpg")||!strcmp(ext,".jpeg")||
+         !strcmp(ext,".JPG")||!strcmp(ext,".JPEG"))) {
+        TJPEGImage *image=new TJPEGImage;
+        image->Assign(Buff);
+        image->SaveToFile(SaveImageDialog->FileName);
+        delete image;
+    }
+    else {
+        Buff->SaveToFile(SaveImageDialog->FileName);
+    }
 }
 // callback on menu-save-# of sats/dop --------------------------------------
 void __fastcall TPlot::MenuSaveDopClick(TObject *Sender)
@@ -578,6 +619,13 @@ void __fastcall TPlot::MenuMapImgClick(TObject *Sender)
     trace(3,"MenuMapImgClick\n");
     
     MapAreaDialog->Show();
+}
+// callback on menu-sky image -----------------------------------------------
+void __fastcall TPlot::MenuSkyImgClick(TObject *Sender)
+{
+    trace(3,"MenuSkyImgClick\n");
+    
+    SkyImgDialog->Show();
 }
 // callback on menu-solution-source -----------------------------------------
 void __fastcall TPlot::MenuSrcSolClick(TObject *Sender)
@@ -790,6 +838,14 @@ void __fastcall TPlot::MenuFitVertClick(TObject *Sender)
     FitRange(0);
     Refresh();
 }
+// callback on menu-show-skyplot --------------------------------------------
+void __fastcall TPlot::MenuShowSkyplotClick(TObject *Sender)
+{
+    trace(3,"MenuShowSkyplotClick\n");
+    
+    BtnShowSkyplot->Down=!BtnShowSkyplot->Down;
+    UpdatePlot();
+}
 // callback on menu-show-map-image ------------------------------------------
 void __fastcall TPlot::MenuShowMapClick(TObject *Sender)
 {
@@ -925,6 +981,15 @@ void __fastcall TPlot::BtnShowMapClick(TObject *Sender)
 {
     trace(3,"BtnShowMapClick\n");
     
+    UpdateEnable();
+    Refresh();
+}
+//---------------------------------------------------------------------------
+void __fastcall TPlot::BtnShowSkyplotClick(TObject *Sender)
+{
+    trace(3,"BtnShowSkyplotClick\n");
+    
+	UpdateEnable();
     Refresh();
 }
 // callback on button-plot-1-onoff ------------------------------------------
@@ -1995,7 +2060,10 @@ void __fastcall TPlot::UpdateEnable(void)
                                     PlotType==PLOT_DOP ||PlotType==PLOT_RES ||
                                     PlotType==PLOT_SNR);
     BtnFixVert     ->Enabled=data&&plot&&PlotType!=PLOT_TRK&&PlotType!=PLOT_NSAT;
-    BtnShowMap     ->Enabled=PlotType==PLOT_TRK&&MapImage->Height>0&&!BtnSol12->Down;
+    BtnShowSkyplot ->Visible=PlotType==PLOT_SKY||PlotType==PLOT_MPS;
+    BtnShowMap     ->Enabled=(PlotType==PLOT_TRK&&MapImage->Height>0&&!BtnSol12->Down)||
+                             (PlotType==PLOT_SKY&&SkyImageI->Height>0)||
+                             (PlotType==PLOT_MPS&&SkyImageI->Height>0);
     BtnShowPoint   ->Enabled=(PlotType==PLOT_TRK)&&!BtnSol12->Down;
     BtnAnimate     ->Enabled=data&&BtnShowTrack->Down;
     BtnGE          ->Enabled=SolData[0].n>0||SolData[1].n>0;
@@ -2008,6 +2076,7 @@ void __fastcall TPlot::UpdateEnable(void)
         BtnFixCent ->Enabled=false;
     }
     MenuMapImg     ->Enabled=MapImage->Height>0;
+    MenuSkyImg     ->Enabled=SkyImageI->Height>0;
     MenuSrcSol     ->Enabled=SolFiles[sel]->Count>0;
     MenuSrcObs     ->Enabled=ObsFiles->Count>0;
     MenuQcObs      ->Enabled=ObsFiles->Count>0;
@@ -2020,6 +2089,8 @@ void __fastcall TPlot::UpdateEnable(void)
     MenuFixHoriz   ->Enabled=BtnFixHoriz ->Enabled;
     MenuFixVert    ->Enabled=BtnFixVert  ->Enabled;
     MenuShowPoint  ->Enabled=BtnShowPoint->Enabled;
+    MenuShowMap    ->Enabled=BtnShowMap  ->Enabled;
+    MenuShowSkyplot->Enabled=BtnShowSkyplot->Visible;
     MenuGE         ->Enabled=BtnGE       ->Enabled;
     MenuGM         ->Enabled=BtnGM       ->Enabled;
     
@@ -2028,6 +2099,7 @@ void __fastcall TPlot::UpdateEnable(void)
     MenuFixHoriz   ->Checked=BtnFixHoriz ->Down;
     MenuFixVert    ->Checked=BtnFixVert  ->Down;
     MenuShowPoint  ->Checked=BtnShowPoint->Down;
+    MenuShowSkyplot->Checked=BtnShowSkyplot->Down;
     MenuShowMap    ->Checked=BtnShowMap  ->Down;
     
     MenuAnimStart  ->Enabled=!ConnectState&&BtnAnimate->Enabled&&!BtnAnimate->Down;

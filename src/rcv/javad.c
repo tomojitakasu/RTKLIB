@@ -27,6 +27,7 @@
 *           2014/05/23 1.8  support beidou
 *           2014/06/23 1.9  support [lD] for glonass raw navigation data
 *           2014/08/26 1.10 fix bug on decoding iode in glonass ephemeris [NE]
+*           2014/10/20 1.11 fix bug on receiver option -GL*,-RL*,-JL*
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -121,22 +122,22 @@ static int checkpri(const char *opt, int sys, int code, int freq)
     int nex=NEXOBS; /* number of extended obs data */
     
     if (sys==SYS_GPS) {
-        if (strstr(opt,"-GL1W")) return code==CODE_L1W?0:-1;
-        if (strstr(opt,"-GL1X")) return code==CODE_L1X?0:-1;
-        if (strstr(opt,"-GL2X")) return code==CODE_L2X?1:-1;
+        if (strstr(opt,"-GL1W")&&freq==0) return code==CODE_L1W?0:-1;
+        if (strstr(opt,"-GL1X")&&freq==0) return code==CODE_L1X?0:-1;
+        if (strstr(opt,"-GL2X")&&freq==1) return code==CODE_L2X?1:-1;
         if (code==CODE_L1W) return nex<1?-1:NFREQ;
         if (code==CODE_L2X) return nex<2?-1:NFREQ+1;
         if (code==CODE_L1X) return nex<3?-1:NFREQ+2;
     }
     else if (sys==SYS_GLO) {
-        if (strstr(opt,"-RL1C")) return code==CODE_L1C?0:-1;
-        if (strstr(opt,"-RL2C")) return code==CODE_L2C?1:-1;
+        if (strstr(opt,"-RL1C")&&freq==0) return code==CODE_L1C?0:-1;
+        if (strstr(opt,"-RL2C")&&freq==1) return code==CODE_L2C?1:-1;
         if (code==CODE_L1C) return nex<1?-1:NFREQ;
         if (code==CODE_L2C) return nex<2?-1:NFREQ+1;
     }
     else if (sys==SYS_QZS) {
-        if (strstr(opt,"-JL1Z")) return code==CODE_L1Z?0:-1;
-        if (strstr(opt,"-JL1X")) return code==CODE_L1X?0:-1;
+        if (strstr(opt,"-JL1Z")&&freq==0) return code==CODE_L1Z?0:-1;
+        if (strstr(opt,"-JL1X")&&freq==0) return code==CODE_L1X?0:-1;
         if (code==CODE_L1Z) return nex<1?-1:NFREQ;
         if (code==CODE_L1X) return nex<2?-1:NFREQ+1;
     }
