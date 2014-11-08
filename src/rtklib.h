@@ -49,7 +49,7 @@ extern "C" {
 
 #define VER_RTKLIB  "2.4.3"             /* library version */
 
-#define PATCH_LEVEL "b3"                /* patch level */
+#define PATCH_LEVEL "b4"                /* patch level */
 
 #define COPYRIGHT_RTKLIB \
             "Copyright (C) 2007-2014 by T.Takasu\nAll rights reserved."
