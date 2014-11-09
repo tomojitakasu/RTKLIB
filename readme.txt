@@ -34,3 +34,4 @@ UPDATE HISTORY
                       support message RXM-RAWX and RXM-SFRBX for u-blox
                       add option -a, -i and -o for str2str
                       merge updates of src/rcv/rt17.c (pull-req #45)
+2014/11/09  2.4.3 b5  support glonass, qzss and beidou for skytraq
