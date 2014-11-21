@@ -31,7 +31,7 @@ The features of RTKLIB are:
 (4) It supports several GNSS receivers' proprietary messages:
     
     NovAtel: OEM4/V/6,OEM3,OEMStar,Superstar II, Hemisphere: Eclipse,Crescent,
-    u-blox: LEA-4T/5T/6T, SkyTraq: S1315F, JAVAD GRIL/GREIS, Furuno
+    ComNav CNB, u-blox: LEA-4T/5T/6T, SkyTraq: S1315F, JAVAD GRIL/GREIS, Furuno
     GW-10-II/III and NVS NV08C BINR.
     
 (5) It supports external communication via:

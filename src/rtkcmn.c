@@ -3137,8 +3137,8 @@ extern double satwavelen(int sat, int frq, const nav_t *nav)
     }
     else if (sys==SYS_CMP) {
         if      (frq==0) return CLIGHT/FREQ1_CMP; /* B1 */
-        else if (frq==1) return CLIGHT/FREQ2_CMP; /* B3 */
-        else if (frq==2) return CLIGHT/FREQ3_CMP; /* B2 */
+        else if (frq==1) return CLIGHT/FREQ2_CMP; /* B2 */
+        else if (frq==2) return CLIGHT/FREQ3_CMP; /* B3 */
     }
     else {
         if      (frq==0) return CLIGHT/FREQ1; /* L1/E1 */

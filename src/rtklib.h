@@ -258,13 +258,13 @@ extern "C" {
 #define CODE_L1E    9                   /* obs code: L1-SAIF    (QZS) */
 #define CODE_L1A    10                  /* obs code: E1A        (GAL) */
 #define CODE_L1B    11                  /* obs code: E1B        (GAL) */
-#define CODE_L1X    12                  /* obs code: E1B+C,L1C(D+P) (GAL,QZS) */
+#define CODE_L1X    12                  /* obs code: E1B+C,L1C(D+P),B1I+Q (GAL,QZS,BDS) */
 #define CODE_L1Z    13                  /* obs code: E1A+B+C,L1SAIF (GAL,QZS) */
 #define CODE_L2C    14                  /* obs code: L2C/A,G1C/A (GPS,GLO) */
 #define CODE_L2D    15                  /* obs code: L2 L1C/A-(P2-P1) (GPS) */
 #define CODE_L2S    16                  /* obs code: L2C(M)     (GPS,QZS) */
 #define CODE_L2L    17                  /* obs code: L2C(L)     (GPS,QZS) */
-#define CODE_L2X    18                  /* obs code: L2C(M+L),B1I+Q (GPS,QZS,CMP) */
+#define CODE_L2X    18                  /* obs code: L2C(M+L) (GPS,QZS) */
 #define CODE_L2P    19                  /* obs code: L2P,G2P    (GPS,GLO) */
 #define CODE_L2W    20                  /* obs code: L2 Z-track (GPS) */
 #define CODE_L2Y    21                  /* obs code: L2Y        (GPS) */
@@ -392,15 +392,16 @@ extern "C" {
 #define STRFMT_RT17  12                 /* stream format: Trimble RT17 */
 #define STRFMT_LEXR  13                 /* stream format: Furuno LPY-10000 */
 #define STRFMT_SEPT  14                 /* stream format: Septentrio */
-#define STRFMT_RINEX 15                 /* stream format: RINEX */
-#define STRFMT_SP3   16                 /* stream format: SP3 */
-#define STRFMT_RNXCLK 17                /* stream format: RINEX CLK */
-#define STRFMT_SBAS  18                 /* stream format: SBAS messages */
-#define STRFMT_NMEA  19                 /* stream format: NMEA 0183 */
+#define STRFMT_CNB   15                 /* stream format: ComNav Binary */
+#define STRFMT_RINEX 16                 /* stream format: RINEX */
+#define STRFMT_SP3   17                 /* stream format: SP3 */
+#define STRFMT_RNXCLK 18                /* stream format: RINEX CLK */
+#define STRFMT_SBAS  19                 /* stream format: SBAS messages */
+#define STRFMT_NMEA  20                 /* stream format: NMEA 0183 */
 #ifndef EXTLEX
-#define MAXRCVFMT    12                 /* max number of receiver format */
+#define MAXRCVFMT    13                 /* max number of receiver format */
 #else
-#define MAXRCVFMT    13
+#define MAXRCVFMT    14
 #endif
 
 #define STR_MODE_R  0x1                 /* stream mode: read */

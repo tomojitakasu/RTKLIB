@@ -506,6 +506,12 @@ static void set_obstype(int format, rnxopt_t *opt)
         {CODE_L1C,CODE_L2X,CODE_L5Q},
         {CODE_L1C,CODE_L5I}
     };
+    /* supported codes by comnav */
+    const unsigned char codes_cnb[6][8]={
+        {CODE_L1C,CODE_L2P,CODE_L2D,CODE_L2C,CODE_L5Q},
+        {CODE_L1C,CODE_L2C,CODE_L2P},
+        {CODE_L1I,CODE_L6I,CODE_L7I}
+    };
     /* supported codes by hemisphere */
     const unsigned char codes_cres[6][8]={
         {CODE_L1C,CODE_L2P},
@@ -555,6 +561,7 @@ static void set_obstype(int format, rnxopt_t *opt)
             case STRFMT_RTCM3: codes=codes_rtcm3[i]; break;
             case STRFMT_OEM4 : codes=codes_oem4 [i]; break;
             case STRFMT_OEM3 : codes=codes_oem3 [i]; break;
+            case STRFMT_CNB  : codes=codes_cnb  [i]; break;
             case STRFMT_CRES : codes=codes_cres [i]; break;
             case STRFMT_JAVAD: codes=codes_javad[i]; break;
             case STRFMT_BINEX: codes=codes_rinex[i]; break;
