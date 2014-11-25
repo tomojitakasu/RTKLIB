@@ -1516,6 +1516,7 @@ extern int input_nvs   (raw_t *raw, unsigned char data);
 extern int input_bnx   (raw_t *raw, unsigned char data);
 extern int input_rt17  (raw_t *raw, unsigned char data);
 extern int input_lexr  (raw_t *raw, unsigned char data);
+extern int input_cnb   (raw_t *raw, unsigned char data);
 extern int input_oem4f (raw_t *raw, FILE *fp);
 extern int input_oem3f (raw_t *raw, FILE *fp);
 extern int input_ubxf  (raw_t *raw, FILE *fp);
@@ -1528,6 +1529,7 @@ extern int input_nvsf  (raw_t *raw, FILE *fp);
 extern int input_bnxf  (raw_t *raw, FILE *fp);
 extern int input_rt17f (raw_t *raw, FILE *fp);
 extern int input_lexrf (raw_t *raw, FILE *fp);
+extern int input_cnbf  (raw_t *raw, FILE *fp);
 
 extern int gen_ubx (const char *msg, unsigned char *buff);
 extern int gen_stq (const char *msg, unsigned char *buff);
