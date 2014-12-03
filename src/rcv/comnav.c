@@ -35,7 +35,6 @@ static unsigned short U2(unsigned char *p) {unsigned short u; memcpy(&u,p,2); re
 static unsigned int   U4(unsigned char *p) {unsigned int   u; memcpy(&u,p,4); return u;}
 static short          I2(unsigned char *p) {short          i; memcpy(&i,p,2); return i;}
 static int            I4(unsigned char *p) {int            i; memcpy(&i,p,4); return i;}
-static float          R4(unsigned char *p) {float          r; memcpy(&r,p,4); return r;}
 static double         R8(unsigned char *p) {double         r; memcpy(&r,p,8); return r;}
 
 /* extend sign ---------------------------------------------------------------*/
@@ -48,7 +47,7 @@ static int exsign(unsigned int v, int bits)
 static int obsindex(obs_t *obs, gtime_t time, int sat)
 {
     int i,j;
-    
+
     if (obs->n>=MAXOBS) return -1;
     for (i=0;i<obs->n;i++) {
         if (obs->data[i].sat==sat) return i;
@@ -88,7 +87,7 @@ static int decode_trackstat(unsigned int stat, int *sys, int *code, int *track,
                             int *plock, int *clock, int *parity, int *halfc)
 {
     int satsys,sigtype,freq=0;
-    
+
     *track  = stat&0x1F;
     *plock  = (stat>>10)&1;
     *parity = (stat>>11)&1;
@@ -96,7 +95,7 @@ static int decode_trackstat(unsigned int stat, int *sys, int *code, int *track,
     satsys  = (stat>>16)&7;
     sigtype = (stat>>21)&0x1F;
     *halfc  = (stat>>28)&1;
-    
+
     switch (satsys) {
         case 0: *sys = SYS_GPS; break;
         case 1: *sys = SYS_GLO; break;
@@ -150,7 +149,7 @@ static int decode_trackstat(unsigned int stat, int *sys, int *code, int *track,
 static int checkpri(const char *opt, int sys, int code, int freq)
 {
     int nex=NEXOBS; /* number of extended obs data */
-    
+
     if (sys==SYS_GPS) {
         if (strstr(opt,"-GL1P")&&freq==0) return code==CODE_L1P?0:-1;
         if (strstr(opt,"-GL2X")&&freq==1) return code==CODE_L2X?1:-1;
@@ -178,11 +177,11 @@ static int decode_rangecmpb(raw_t *raw)
     int track,plock,clock,parity,halfc,lli;
     char *msg;
     unsigned char *p = raw->buff + HLEN;
-    
+
     trace(3, "decode_rangecmpb: len=%d\n", raw->len);
-    
+
     nobs = U4(p);
-    
+
     if (raw->outtype) {
         msg = raw->msgtype + strlen(raw->msgtype);
         sprintf(msg, " nobs=%2d", nobs);
@@ -192,27 +191,27 @@ static int decode_rangecmpb(raw_t *raw)
         return -1;
     }
     for (i=0,p+=4; i<nobs; i++,p+=24) {
-        
+
         /* decode tracking status */
         if ((freq = decode_trackstat(U4(p),&sys,&code,&track,&plock,&clock,
                                    &parity,&halfc)) < 0) continue;
-        
+
         /* obs position */
         if ((pos = checkpri(raw->opt,sys,code,freq)) < 0) continue;
-        
+
         prn = U1(p+17);
         if      (sys == SYS_GLO) prn -= 37;
         else if (sys == SYS_CMP) prn -= 140;
-        
+
         if (!(sat = satno(sys, prn))) {
             trace(3, "comnav rangecmpb satellite number error: sys=%d,prn=%d\n", sys, prn);
             continue;
         }
         if (sys==SYS_GLO && !parity) continue; /* invalid if GLO parity unknown */
-        
+
         dop = exsign(U4(p+4)&0xFFFFFFF,28)/256.0;
         psr = (U4(p+7)>>4)/128.0 + U1(p+11)*2097152.0;
-        
+
         if ((wavelen=satwavelen(sat,freq,&raw->nav)) <= 0.0) {
             if (sys==SYS_GLO) wavelen = CLIGHT/(freq==0?FREQ1_GLO:FREQ2_GLO);
             else wavelen = lam_carr[freq];
@@ -220,9 +219,9 @@ static int decode_rangecmpb(raw_t *raw)
         adr = I4(p+12)/256.0;
         adr_rolls = (psr/wavelen+adr)/MAXVAL;
         adr = -adr + MAXVAL*floor(adr_rolls+(adr_rolls<=0?-0.5:0.5));
-        
+
         lockt = (U4(p+18)&0x1FFFFF)/32.0; /* lock time */
-        
+
         tt = timediff(raw->time, raw->tobs);
         if (raw->tobs.time != 0) {
             lli = (lockt<65535.968 && lockt-raw->lockt[sat-1][pos]+0.05<=tt) ||
@@ -234,11 +233,11 @@ static int decode_rangecmpb(raw_t *raw)
         if (!parity) lli |= 2;
         raw->lockt[sat-1][pos] = lockt;
         raw->halfc[sat-1][pos] = halfc;
-        
+
         snr = ((U2(p+20)&0x3FF)>>5) + 20.0;
         if (!clock) psr = 0.0;     /* code unlock */
         if (!plock) adr = dop = 0.0; /* phase unlock */
-        
+
         if (fabs(timediff(raw->obs.data[0].time,raw->time)) > 1E-9) {
             raw->obs.n = 0;
         }
@@ -269,9 +268,9 @@ static int decode_rawephemb(raw_t *raw)
     unsigned char *p = raw->buff + HLEN;
     eph_t eph = {0};
     int prn, sat;
-    
+
     trace(3, "decode_rawephemb: len=%d\n", raw->len);
-    
+
     if (raw->len < HLEN+102) {
         trace(2, "comnav rawephemb length error: len=%d\n", raw->len);
         return -1;
@@ -301,31 +300,26 @@ static int decode_rawephemb(raw_t *raw)
 static int decode_gpsbdsephemb(raw_t *raw)
 {
     eph_t eph = {0};
-    unsigned char *p = raw->buff + HLEN;
-    double sqrtA;
     char *msg;
-    int prn, data_size;
-    short ura;
-    unsigned char sate_id, sate_health, data_valid, iono_valid;
-    double toc;
-    bool is_gps;
-    
+    unsigned char *p = raw->buff + HLEN, sate_id, sate_health;
+    double sqrtA, toc;
+    int prn, week, is_gps = 0;
+
     trace(3, "decode_gpsbdsephemb: len=%d\n", raw->len);
-    
-    if (raw->len < HLEN+264) {
+
+    if (raw->len < HLEN+200) {
         trace(2, "comnav gpsephemb length error: len=%d\n", raw->len);
         return -1;
     }
-    
-    data_size   = U2(p);    p += 2;
-    data_valid  = U1(p);    p += 1;
+
+    /* skip 3 bytes */      p += 3;
     sate_health = U1(p);    p += 1;
     sate_id     = U1(p);    p += 1;
-    iono_valid  = U1(p);    p += 1;
+    /* skip 1 bytes */      p += 1;
     /* skip 4 bytes */      p += 4;
     eph.iodc    = I2(p);    p += 2; /* AODC */
     eph.sva     = I2(p);    p += 2;
-    eph.week    = U2(p);    p += 2;
+    week        = U2(p);    p += 2;
     eph.iode    = I4(p);    p += 4; /* AODE */
     /* skip 4 bytes */      p += 4;
     eph.toes    = R8(p);    p += 8;
@@ -350,36 +344,44 @@ static int decode_gpsbdsephemb(raw_t *raw)
     eph.cis     = R8(p);    p += 8;
     eph.tgd[0]  = R8(p);    p += 8; /* TGD1 for B1 (s) */
     eph.tgd[1]  = R8(p);    p += 8; /* TGD2 for B2 (s) */
-    
+
     eph.svh     = sate_health;
     eph.A       = sqrtA*sqrtA;
-    
+
     if (1 <= sate_id && sate_id <= 32) {            // GPS 1 ~ 32
-        is_gps = true;
+        is_gps = 1;
         prn = sate_id;
+        eph.week = adjgpsweek(week);
         eph.toe = gpst2time(eph.week, eph.toes);
         eph.toc = gpst2time(eph.week, toc);
     } else if (141 <= sate_id && sate_id <= 177) {  // BDS 141 ~ 177
-        is_gps = false;
+        is_gps = 0;
         prn = sate_id - 140;
+        eph.week = week;
         eph.toe = bdt2gpst(bdt2time(eph.week, eph.toes)); /* bdt -> gpst */
         eph.toc = bdt2gpst(bdt2time(eph.week, toc));      /* bdt -> gpst */
     }
-    
+
     if (!(eph.sat=satno((is_gps?SYS_GPS:SYS_CMP), prn))) {
         trace(2, "comnav gpsephemb satellite error: prn=%d\n", prn);
         return -1;
     }
-    
+
     if (raw->outtype) {
         msg = raw->msgtype + strlen(raw->msgtype);
         sprintf(msg, " prn=%3d iod=%3d toes=%6.0f", prn, eph.iode, eph.toes);
     }
-    
+
     eph.ttr = raw->time;
-    
+
     if (!strstr(raw->opt,"-EPHALL")) {
-        if (timediff(raw->nav.eph[eph.sat-1].toe,eph.toe)==0.0) return 0; /* unchanged */
+        if (is_gps) {
+            if (raw->nav.eph[eph.sat-1].iode == eph.iode)
+                return 0; /* unchanged */
+        } else {
+            if (timediff(raw->nav.eph[eph.sat-1].toe, eph.toe) == 0.0)
+                return 0; /* unchanged */
+        }
     }
     raw->nav.eph[eph.sat-1] = eph;
     raw->ephsat = eph.sat;
@@ -394,15 +396,15 @@ static int decode_gloephemerisb(raw_t *raw)
     char *msg;
     double tow, tof, toff;
     int prn, sat, week;
-    
+
     trace(3, "decode_gloephemerisb: len=%d\n", raw->len);
-    
+
     if (raw->len < HLEN+144) {
         trace(2, "comnav gloephemerisb length error: len=%d\n", raw->len);
         return -1;
     }
     prn         = U2(p) - 37;
-    
+
     if (raw->outtype) {
         msg = raw->msgtype + strlen(raw->msgtype);
         sprintf(msg, " prn=%3d", prn);
@@ -411,7 +413,7 @@ static int decode_gloephemerisb(raw_t *raw)
         trace(2, "comnav gloephemerisb prn error: prn=%d\n", prn);
         return -1;
     }
-    
+
     geph.frq    = U2(p+  2) + OFF_FRQNO;
     week        = U2(p+  6);
     tow         = floor(U4(p+8)/1000.0+0.5); /* rounded to integer sec */
@@ -436,12 +438,12 @@ static int decode_gloephemerisb(raw_t *raw)
     if      (tof<tow-43200.0) tof += 86400.0;
     else if (tof>tow+43200.0) tof -= 86400.0;
     geph.tof = gpst2time(week,tof);
-    
+
     if (!strstr(raw->opt, "-EPHALL")) {
         if (fabs(timediff(geph.toe,raw->nav.geph[prn-1].toe))<1.0&&
             geph.svh==raw->nav.geph[prn-1].svh) return 0; /* unchanged */
     }
-    
+
     geph.sat = sat;
     raw->nav.geph[prn-1] = geph;
     raw->ephsat = sat;
@@ -453,9 +455,9 @@ static int decode_comnav(raw_t *raw)
 {
     double tow;
     int msg,week,type=U2(raw->buff+4);
-    
+
     trace(3,"decode_comnav: type=%3d len=%d\n",type,raw->len);
-    
+
     /* check crc32 */
     if (crc32(raw->buff,raw->len)!=U4(raw->buff+raw->len)) {
         trace(2,"comnav crc error: type=%3d len=%d\n",type,raw->len);
@@ -465,13 +467,13 @@ static int decode_comnav(raw_t *raw)
     week=adjgpsweek(U2(raw->buff+14));
     tow =U4(raw->buff+16)*0.001;
     raw->time=gpst2time(week,tow);
-    
+
     if (raw->outtype) {
         sprintf(raw->msgtype,"ComNav %4d (%4d): msg=%d %s",type,raw->len,msg,
                 time_str(gpst2time(week,tow),2));
     }
     if (msg!=0) return 0; /* message type: 0=binary,1=ascii */
-    
+
     switch (type) {
         case ID_RANGECMP     : return decode_rangecmpb     (raw);
         case ID_RAWEPHEM     : return decode_rawephemb     (raw);
@@ -509,14 +511,14 @@ static int sync_comnav(unsigned char *buff, unsigned char data)
 extern int input_cnb(raw_t *raw, unsigned char data)
 {
     trace(5,"input_comnav: data=%02x\n",data);
-    
+
     /* synchronize frame */
     if (raw->nbyte==0) {
         if (sync_comnav(raw->buff,data)) raw->nbyte=3;
         return 0;
     }
     raw->buff[raw->nbyte++]=data;
-    
+
     if (raw->nbyte==10&&(raw->len=U2(raw->buff+8)+HLEN)>MAXRAWLEN-4) {
         trace(2,"comnav length error: len=%d\n",raw->len);
         raw->nbyte=0;
@@ -524,7 +526,7 @@ extern int input_cnb(raw_t *raw, unsigned char data)
     }
     if (raw->nbyte<10||raw->nbyte<raw->len+4) return 0;
     raw->nbyte=0;
-    
+
     /* decode comnav message */
     return decode_comnav(raw);
 }
@@ -539,9 +541,9 @@ extern int input_cnb(raw_t *raw, unsigned char data)
 extern int input_cnbf(raw_t *raw, FILE *fp)
 {
     int i,data;
-    
+
     trace(4,"input_comnavf:\n");
-    
+
     /* synchronize frame */
     if (raw->nbyte==0) {
         for (i=0;;i++) {
@@ -552,7 +554,7 @@ extern int input_cnbf(raw_t *raw, FILE *fp)
     }
     if (fread(raw->buff+3,7,1,fp)<1) return -2;
     raw->nbyte=10;
-    
+
     if ((raw->len=U2(raw->buff+8)+HLEN)>MAXRAWLEN-4) {
         trace(2,"comnav length error: len=%d\n",raw->len);
         raw->nbyte=0;
@@ -560,7 +562,7 @@ extern int input_cnbf(raw_t *raw, FILE *fp)
     }
     if (fread(raw->buff+10,raw->len-6,1,fp)<1) return -2;
     raw->nbyte=0;
-    
+
     /* decode comnav message */
     return decode_comnav(raw);
 }

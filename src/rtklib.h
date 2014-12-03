@@ -390,9 +390,9 @@ extern "C" {
 #define STRFMT_NVS   10                 /* stream format: NVS NVC08C */
 #define STRFMT_BINEX 11                 /* stream format: BINEX */
 #define STRFMT_RT17  12                 /* stream format: Trimble RT17 */
-#define STRFMT_LEXR  13                 /* stream format: Furuno LPY-10000 */
-#define STRFMT_SEPT  14                 /* stream format: Septentrio */
-#define STRFMT_CNB   15                 /* stream format: ComNav Binary */
+#define STRFMT_CNB   13                 /* stream format: ComNav Binary */
+#define STRFMT_LEXR  14                 /* stream format: Furuno LPY-10000 */
+#define STRFMT_SEPT  15                 /* stream format: Septentrio */
 #define STRFMT_RINEX 16                 /* stream format: RINEX */
 #define STRFMT_SP3   17                 /* stream format: SP3 */
 #define STRFMT_RNXCLK 18                /* stream format: RINEX CLK */
@@ -905,8 +905,8 @@ typedef struct {        /* RTCM control struct type */
     unsigned char lock[MAXSAT][NFREQ+NEXOBS]; /* lock time */
     unsigned char loss[MAXSAT][NFREQ+NEXOBS]; /* loss of lock count */
     gtime_t lltime[MAXSAT][NFREQ+NEXOBS]; /* last lock time */
-    int nbyte;          /* number of bytes in message buffer */ 
-    int nbit;           /* number of bits in word buffer */ 
+    int nbyte;          /* number of bytes in message buffer */
+    int nbit;           /* number of bits in word buffer */
     int len;            /* message length (bytes) */
     unsigned char buff[1200]; /* message buffer */
     unsigned int word;  /* word buffer for rtcm 2 */
@@ -1144,7 +1144,7 @@ typedef struct {        /* receiver raw data control type */
     double prCA[MAXSAT],dpCA[MAXSAT]; /* L1/CA pseudrange/doppler for javad */
     unsigned char halfc[MAXSAT][NFREQ+NEXOBS]; /* half-cycle add flag */
     char freqn[MAXOBS]; /* frequency number for javad */
-    int nbyte;          /* number of bytes in message buffer */ 
+    int nbyte;          /* number of bytes in message buffer */
     int len;            /* message length (bytes) */
     int iod;            /* issue of data */
     int tod;            /* time of day (ms) */
