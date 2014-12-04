@@ -238,8 +238,8 @@ extern "C" {
 #define OBSTYPE_SNR 0x08                /* observation type: SNR */
 #define OBSTYPE_ALL 0xFF                /* observation type: all */
 
-#define FREQTYPE_L1 0x01                /* frequency type: L1/E1 */
-#define FREQTYPE_L2 0x02                /* frequency type: L2/B1 */
+#define FREQTYPE_L1 0x01                /* frequency type: L1/E1/B1 */
+#define FREQTYPE_L2 0x02                /* frequency type: L2 */
 #define FREQTYPE_L5 0x04                /* frequency type: L5/E5a/L3 */
 #define FREQTYPE_L6 0x08                /* frequency type: E6/LEX/B3 */
 #define FREQTYPE_L7 0x10                /* frequency type: E5b/B2 */
