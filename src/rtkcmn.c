@@ -3663,20 +3663,20 @@ extern void csmooth(obs_t *obs, int ns)
         }
     }
 }
-/* uncompress file -------------------------------------------------------------
-* uncompress (uncompress/unzip/uncompact hatanaka-compression/tar) file
+/* decompress file -------------------------------------------------------------
+* decompress (decompress/unzip/uncompact hatanaka-compression/tar) file
 * args   : char   *file     I   input file
 *          char   *uncfile  O   uncompressed file
-* return : status (-1:error,0:not compressed file,1:uncompress completed)
-* note   : creates uncompressed file in tempolary directory
+* return : status (-1:error,0:not compressed file,1:decompress completed)
+* note   : creates decompressed file in temporary directory
 *          gzip and crx2rnx commands have to be installed in commands path
 *-----------------------------------------------------------------------------*/
-extern int uncompress(const char *file, char *uncfile)
+extern int decompress(const char *file, char *uncfile)
 {
     int stat=0;
     char *p,cmd[2048]="",tmpfile[1024]="",buff[1024],*fname,*dir="";
     
-    trace(3,"uncompress: file=%s\n",file);
+    trace(3,"decompress: file=%s\n",file);
     
     strcpy(tmpfile,file);
     if (!(p=strrchr(tmpfile,'.'))) return 0;
@@ -3736,7 +3736,7 @@ extern int uncompress(const char *file, char *uncfile)
         if (stat) remove(tmpfile);
         stat=1;
     }
-    trace(3,"uncompress: stat=%d\n",stat);
+    trace(3,"decompress: stat=%d\n",stat);
     return stat;
 }
 /* dummy application functions for shared library ----------------------------*/

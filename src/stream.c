@@ -1663,7 +1663,7 @@ static void *ftpthread(void *arg)
         (!strcmp(p,".z")||!strcmp(p,".gz")||!strcmp(p,".zip")||
          !strcmp(p,".Z")||!strcmp(p,".GZ")||!strcmp(p,".ZIP"))) {
         
-        if (uncompress(local,tmpfile)) {
+        if (decompress(local,tmpfile)) {
             remove(local);
             strcpy(local,tmpfile);
         }

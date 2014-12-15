@@ -1394,7 +1394,7 @@ static int readrnxfile(const char *file, gtime_t ts, gtime_t te, double tint,
     if (sta) init_sta(sta);
     
     /* uncompress file */
-    if ((cstat=uncompress(file,tmpfile))<0) {
+    if ((cstat=decompress(file,tmpfile))<0) {
         trace(2,"rinex file uncompact error: %s\n",file);
         return 0;
     }

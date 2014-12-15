@@ -1002,7 +1002,7 @@ void __fastcall TMainForm::ViewFile(AnsiString file)
     int cstat;
     
     if (file=="") return;
-    cstat=uncompress(file.c_str(),tmpfile);
+    cstat=decompress(file.c_str(),tmpfile);
     f=!cstat?file.c_str():tmpfile;
     
     viewer=new TTextViewer(Application);

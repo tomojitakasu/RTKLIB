@@ -1446,7 +1446,7 @@ extern int outrnxcnavh(FILE *fp, const rnxopt_t *opt, const nav_t *nav);
 extern int outrnxnavb (FILE *fp, const rnxopt_t *opt, const eph_t *eph);
 extern int outrnxgnavb(FILE *fp, const rnxopt_t *opt, const geph_t *geph);
 extern int outrnxhnavb(FILE *fp, const rnxopt_t *opt, const seph_t *seph);
-extern int uncompress(const char *file, char *uncfile);
+extern int decompress(const char *file, char *uncfile);
 extern int convrnx(int format, rnxopt_t *opt, const char *file, char **ofile);
 extern int  init_rnxctr (rnxctr_t *rnx);
 extern void free_rnxctr (rnxctr_t *rnx);
