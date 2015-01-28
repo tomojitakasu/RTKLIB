@@ -1121,7 +1121,7 @@ extern int gen_ubx(const char *msg, unsigned char *buff)
             case FI4 : setI4(q,j<narg?(int           )atoi(args[j]):0); q+=4; break;
             case FR4 : setR4(q,j<narg?(float         )atof(args[j]):0); q+=4; break;
             case FR8 : setR8(q,j<narg?(double)atof(args[j]):0); q+=8; break;
-            case FS32: sprintf((char *)q,"%-32.32s",j<narg?args[j]:""); q+=32; break;
+            case FS32: sprintf((char *)q,"%.31s\0",j<narg?args[j]:""); q+=32; break;
             default  : setU1(q,j<narg?(unsigned char )atoi(args[j]):0); q+=1; break;
         }
     }
