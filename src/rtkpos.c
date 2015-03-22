@@ -33,6 +33,7 @@
 *           2014/08/26 1.15 add functino to swap sol-stat file with keywords
 *           2014/10/21 1.16 fix bug on beidou amb-res with pos2-bdsarmode=0
 *           2014/11/08 1.17 fix bug on ar-degradation by unhealthy satellites
+*           2015/03/23 1.18 residuals referenced to reference satellite
 *-----------------------------------------------------------------------------*/
 #include <stdarg.h>
 #include "rtklib.h"
@@ -1024,7 +1025,7 @@ static int ddres(rtk_t *rtk, const nav_t *nav, double dt, const double *x,
 {
     prcopt_t *opt=&rtk->opt;
     double bl,dr[3],posu[3],posr[3],didxi=0.0,didxj=0.0,*im;
-    double *tropr,*tropu,*dtdxr,*dtdxu,*Ri,*Rj,s,lami,lamj,fi,fj,df,*Hi=NULL;
+    double *tropr,*tropu,*dtdxr,*dtdxu,*Ri,*Rj,lami,lamj,fi,fj,df,*Hi=NULL;
     int i,j,k,m,f,ff,nv=0,nb[NFREQ*4*2+2]={0},b=0,sysi,sysj,nf=NF(opt);
     
     trace(3,"ddres   : dt=%.1f nx=%d ns=%d\n",dt,rtk->nx,ns);
@@ -1163,6 +1164,7 @@ static int ddres(rtk_t *rtk, const nav_t *nav, double dt, const double *x,
             vflg[nv++]=(sat[i]<<16)|(sat[j]<<8)|((f<nf?0:1)<<4)|(f%nf);
             nb[b]++;
         }
+#if 0 /* residuals referenced to reference satellite (2.4.2 p11) */
         /* restore single-differenced residuals assuming sum equal zero */
         if (f<nf) {
             for (j=0,s=0.0;j<MAXSAT;j++) s+=rtk->ssat[j].resc[f];
@@ -1179,6 +1181,7 @@ static int ddres(rtk_t *rtk, const nav_t *nav, double dt, const double *x,
                     rtk->ssat[j].resp[f-nf]-=s;
             }
         }
+#endif
         b++;
     }
     /* end of system loop */

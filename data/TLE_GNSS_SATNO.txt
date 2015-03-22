@@ -3,6 +3,10 @@
 # 
 # satellite catalog number and international designator for GNSS
 #
+# TLE full catalog can be downloaded at Space-Track:
+#
+#     https://www.space-track.org
+#
 # history: 2012/11/27  1.0  new
 #          2012/12/15  1.1  add GSAT10/GAGAN (PRN128)
 #          2012/12/25  1.2  switch R08 satellite from 712 to 743
@@ -13,6 +17,7 @@
 #          2014/06/10  1.5  switch G06, decommission G09
 #          2014/08/04  1.6  switch G09,R18,R21
 #          2014/11/08  1.7  switch G03, decommission G08
+#          2015/03/20  1.8  add E18,E14 for Galileo FOC-1,2
 #
 G32  20959U  90103A  # GPS BIIA-10 (PRN 32)    
 G26  22014U  92039A  # GPS BIIA-14 (PRN 26)    
@@ -95,6 +100,9 @@ E12  37847U  11060B  # GALILEO-FM2 (GSAT0102)
 E19  38857U  12055A  # GALILEO-FM3 (GSAT0103)  
 E20  38858U  12055B  # GALILEO-FM4 (GSAT0104)  
 
+E18  40128U  14050A  # GALILEO-FOC1 (GSAT0201)
+E14  40129U  14050B  # GALILEO-FOC2 (GSAT0202)
+
 J01  37158U  10045A  # QZS-1 (QZSS/PRN 193/183) 
 
 #C00 26599U  00069A  # BEIDOU 1
@@ -143,11 +151,11 @@ E08  99908U
 E09  99909U
 E10  99910U
 E13  99913U
-E14  99914U
+#E14  99914U
 E15  99915U
 E16  99916U
 E17  99917U
-E18  99918U
+#E18  99918U
 E21  99921U
 E22  99922U
 E23  99923U

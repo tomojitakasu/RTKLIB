@@ -25,6 +25,8 @@
 *          Systems) Services - version 3, February 1, 2013
 *     [15] RTCM Standard 10403.2, Differential GNSS (Global Navigation Satellite
 *          Systems) Services - version 3, with amendment 1/2, november 7, 2013
+*     [16] Proposal of new RTCM SSR Messages (ssr_1_gal_qzss_sbas_dbs_v05)
+*          2014/04/17
 *
 * version : $Revision:$ $Date:$
 * history : 2009/04/10 1.0  new
@@ -39,6 +41,7 @@
 *           2012/05/14 1.6  separate rtcm2.c, rtcm3.c
 *                           add options to select used codes for msm
 *           2013/04/27 1.7  comply with rtcm 3.2 with amendment 1/2 (ref[15])
+*           2013/12/06 1.8  support SBAS/BeiDou SSR messages (ref[16])
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -209,16 +212,16 @@ extern int input_rtcm2(rtcm_t *rtcm, unsigned char data)
 *          -CLss    : select signal ss for BDS MSM (ss=2I,7I,...)
 *
 *          supported RTCM 3 messages
-*                  (ref [2][3][4][5][6][7][8][9][10][11][12][13][14])
+*                  (ref [2][3][4][5][6][7][8][9][10][11][12][13][14][15])
 *
-*            TYPE       GPS     GLOASS    GALILEO    QZSS     COMPASS    SBAS
+*            TYPE       GPS     GLOASS    GALILEO    QZSS     BEIDOU     SBAS
 *         ----------------------------------------------------------------------
 *          OBS C-L1  : 1001~     1009~       -         -         -         -
 *              F-L1  : 1002      1010        -         -         -         -
 *              C-L12 : 1003~     1011~       -         -         -         -
 *              F-L12 : 1004      1012        -         -         -         -
 *
-*          NAV       : 1019      1020      1045*     1044*       -         -
+*          NAV       : 1019      1020      1045*     1044*     1047*       -
 *                        -         -       1046*       -         -         -
 *
 *          MSM 1     : 1071~     1081~     1091~     1111*~    1121*~    1101*~
@@ -229,12 +232,12 @@ extern int input_rtcm2(rtcm_t *rtcm, unsigned char data)
 *              6     : 1076      1086      1096      1116*     1126*     1106*
 *              7     : 1077      1087      1097      1117*     1127*     1107*
 *
-*          SSR OBT   : 1057      1063      1240*     1246*       -         -
-*              CLK   : 1058      1064      1241*     1247*       -         -
-*              BIAS  : 1059      1065      1242*     1248*       -         -
-*              OBTCLK: 1060      1066      1243*     1249*       -         -
-*              URA   : 1061      1067      1244*     1250*       -         -
-*              HRCLK : 1062      1068      1245*     1251*       -         -
+*          SSR OBT   : 1057      1063      1240*     1246*     1258*       -
+*              CLK   : 1058      1064      1241*     1247*     1259*       -
+*              BIAS  : 1059      1065      1242*     1248*     1260*       -
+*              OBTCLK: 1060      1066      1243*     1249*     1261*       -
+*              URA   : 1061      1067      1244*     1250*     1262*       -
+*              HRCLK : 1062      1068      1245*     1251*     1263*       -
 *
 *          ANT INFO  : 1005 1006 1007 1008 1033
 *         ----------------------------------------------------------------------

@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * rtklib.h : rtklib constants, types and function prototypes
 *
-*          Copyright (C) 2007-2014 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2007-2015 by T.TAKASU, All rights reserved.
 *
 * options : -DENAGLO   enable GLONASS
 *           -DENAGAL   enable Galileo
@@ -48,10 +48,10 @@ extern "C" {
 
 #define VER_RTKLIB  "2.4.2"             /* library version */
 
-#define PATCH_LEVEL "p10"               /* patch level */
+#define PATCH_LEVEL "p11"               /* patch level */
 
 #define COPYRIGHT_RTKLIB \
-            "Copyright (C) 2007-2014 by T.Takasu\nAll rights reserved."
+            "Copyright (C) 2007-2015 by T.Takasu\nAll rights reserved."
 
 #define PI          3.1415926535897932  /* pi */
 #define D2R         (PI/180.0)          /* deg to rad */
@@ -196,11 +196,10 @@ extern "C" {
 #define MAXRCV      64                  /* max receiver number (1 to MAXRCV) */
 #define MAXOBSTYPE  64                  /* max number of obs type in RINEX */
 #define DTTOL       0.005               /* tolerance of time difference (s) */
-#if 0
-#define MAXDTOE     10800.0             /* max time difference to ephem Toe (s) for GPS */
-#else
-#define MAXDTOE     7200.0              /* max time difference to ephem Toe (s) for GPS */
-#endif
+#define MAXDTOE     7200.0              /* max time difference to GPS Toe (s) */
+#define MAXDTOE_QZS 7200.0              /* max time difference to QZSS Toe (s) */
+#define MAXDTOE_GAL 10800.0             /* max time difference to Galileo Toe (s) */
+#define MAXDTOE_CMP 21600.0             /* max time difference to BeiDou Toe (s) */
 #define MAXDTOE_GLO 1800.0              /* max time difference to GLONASS Toe (s) */
 #define MAXDTOE_SBS 360.0               /* max time difference to SBAS Toe (s) */
 #define MAXDTOE_S   86400.0             /* max time difference to ephem toe (s) for other */
@@ -209,7 +208,7 @@ extern "C" {
 #define INT_SWAP_TRAC 86400.0           /* swap interval of trace file (s) */
 #define INT_SWAP_STAT 86400.0           /* swap interval of solution status file (s) */
 
-#define MAXEXFILE   100                 /* max number of expanded files */
+#define MAXEXFILE   1024                /* max number of expanded files */
 #define MAXSBSAGEF  30.0                /* max age of SBAS fast correction (s) */
 #define MAXSBSAGEL  1800.0              /* max age of SBAS long term corr (s) */
 #define MAXSBSURA   8                   /* max URA of SBAS satellite */
@@ -228,6 +227,7 @@ extern "C" {
 #define MAXSOLBUF   256                 /* max number of solution buffer */
 #define MAXOBSBUF   128                 /* max number of observation data buffer */
 #define MAXNRPOS    16                  /* max number of reference positions */
+#define MAXLEAPS    64                  /* max number of leap seconds table */
 
 #define RNX2VER     2.10                /* RINEX ver.2 default output version */
 #define RNX3VER     3.00                /* RINEX ver.3 default output version */
@@ -545,6 +545,7 @@ typedef struct {        /* GPS/QZS/GAL broadcast ephemeris type */
                         /* GPS/QZS:tgd[0]=TGD */
                         /* GAL    :tgd[0]=BGD E5a/E1,tgd[1]=BGD E5b/E1 */
                         /* CMP    :tgd[0]=BGD1,tgd[1]=BGD2 */
+    double Adot,ndot;   /* Adot,ndot for CNAV */
 } eph_t;
 
 typedef struct {        /* GLONASS broadcast ephemeris type */
@@ -731,6 +732,7 @@ typedef struct {        /* SSR correction type */
     double udi[5];      /* SSR update interval (s) */
     int iod[5];         /* iod ssr {eph,clk,hrclk,ura,bias} */
     int iode;           /* issue of data */
+    int iodcrc;         /* issue of data crc for beidou/sbas */
     int ura;            /* URA indicator */
     int refd;           /* sat ref datum (0:ITRF,1:regional) */
     double deph [3];    /* delta orbit {radial,along,cross} (m) */
@@ -1313,6 +1315,7 @@ extern gtime_t timeget  (void);
 extern void    timeset  (gtime_t t);
 extern double  time2doy (gtime_t t);
 extern double  utc2gmst (gtime_t t, double ut1_utc);
+extern int read_leaps(const char *file);
 
 extern int adjgpsweek(int week);
 extern unsigned int tickget(void);

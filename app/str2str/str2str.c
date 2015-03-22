@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * str2str.c : console version of stream server
 *
-*          Copyright (C) 2007-2014 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2007-2015 by T.TAKASU, All rights reserved.
 *
 * version : $Revision: 1.1 $ $Date: 2008/07/17 21:54:53 $
 * history : 2009/06/17  1.0  new
@@ -16,6 +16,7 @@
 *           2014/08/26  1.6  support input format gw10, binex and rt17
 *           2014/10/14  1.7  use stdin or stdout if option -in or -out omitted
 *           2014/11/08  1.8  add option -a, -i and -o
+*           2015/03/23  1.9  fix bug on parsing of command line options
 *-----------------------------------------------------------------------------*/
 #include <signal.h>
 #include <unistd.h>
@@ -187,8 +188,9 @@ int main(int argc, char **argv)
     double pos[3],stapos[3]={0},off[3]={0};
     char *paths[MAXSTR],s[MAXSTR][MAXSTRPATH]={{0}},*cmdfile="";
     char *local="",*proxy="",*msg="1004,1019",*opt="",buff[256],*p;
-    char strmsg[MAXSTRMSG]="",*antinfo="",*rcvinfo="",ant[3]={""},rcv[3]={""};
-    int i,n=0,dispint=5000,trlevel=0,opts[]={10000,10000,2000,32768,10,0,30};
+    char strmsg[MAXSTRMSG]="",*antinfo="",*rcvinfo="";
+    char *ant[]={"","",""},*rcv[]={"","",""};
+    int i,j,n=0,dispint=5000,trlevel=0,opts[]={10000,10000,2000,32768,10,0,30};
     int types[MAXSTR]={STR_FILE,STR_FILE},stat[MAXSTR]={0},byte[MAXSTR]={0};
     int bps[MAXSTR]={0},fmts[MAXSTR]={0},sta=0;
     
@@ -246,12 +248,12 @@ int main(int argc, char **argv)
             return -1;
         }
         strcpy(buff,antinfo);
-        for (p=strtok(buff,","),n=0;p&&n<3;p=strtok(NULL,",")) ant[n++]=p;
+        for (p=strtok(buff,","),j=0;p&&j<3;p=strtok(NULL,",")) ant[j++]=p;
         strcpy(conv[i]->out.sta.antdes,ant[0]);
         strcpy(conv[i]->out.sta.antsno,ant[1]);
         conv[i]->out.sta.antsetup=atoi(ant[2]);
         strcpy(buff,rcvinfo);
-        for (p=strtok(buff,","),n=0;p&&n<3;p=strtok(NULL,",")) rcv[n++]=p;
+        for (p=strtok(buff,","),j=0;p&&j<3;p=strtok(NULL,",")) rcv[j++]=p;
         strcpy(conv[i]->out.sta.rectype,rcv[0]);
         strcpy(conv[i]->out.sta.recver ,rcv[1]);
         strcpy(conv[i]->out.sta.recsno ,rcv[2]);
