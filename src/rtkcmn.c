@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * rtkcmn.c : rtklib common functions
 *
-*          Copyright (C) 2007-2013 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2007-2015 by T.TAKASU, All rights reserved.
 *
 * options : -DLAPACK   use LAPACK/BLAS
 *           -DMKL      use Intel MKL
@@ -102,6 +102,9 @@
 *                           add function to swap trace file with keywords
 *           2014/10/21 1.29 strtok() -> strtok_r() in expath() for thread-safe
 *                           add bdsmodear in procopt_default
+*           2015/03/19 1.30 fix bug on interpolation of erp values in geterp()
+*                           add leap second insertion before 2015/07/01 00:00
+*                           add api read_leaps()
 *-----------------------------------------------------------------------------*/
 #define _POSIX_C_SOURCE 199309
 #include <stdarg.h>
@@ -126,7 +129,8 @@ const static double gpst0[]={1980,1, 6,0,0,0}; /* gps time reference */
 const static double gst0 []={1999,8,22,0,0,0}; /* galileo system time reference */
 const static double bdt0 []={2006,1, 1,0,0,0}; /* beidou time reference */
 
-const static double leaps[][7]={ /* leap seconds {y,m,d,h,m,s,utc-gpst,...} */
+static double leaps[MAXLEAPS+1][7]={ /* leap seconds (y,m,d,h,m,s,utc-gpst) */
+    {2015,7,1,0,0,0,-17},
     {2012,7,1,0,0,0,-16},
     {2009,1,1,0,0,0,-15},
     {2006,1,1,0,0,0,-14},
@@ -142,7 +146,8 @@ const static double leaps[][7]={ /* leap seconds {y,m,d,h,m,s,utc-gpst,...} */
     {1985,7,1,0,0,0, -4},
     {1983,7,1,0,0,0, -3},
     {1982,7,1,0,0,0, -2},
-    {1981,7,1,0,0,0, -1}
+    {1981,7,1,0,0,0, -1},
+    {0}
 };
 const double chisqr[100]={      /* chi-sqr(n) (alpha=0.001) */
     10.8,13.8,16.3,18.5,20.5,22.5,24.3,26.1,27.9,29.6,
@@ -1378,6 +1383,34 @@ extern void timeset(gtime_t t)
 {
     timeoffset_+=timediff(t,timeget());
 }
+/* read leap seconds table -----------------------------------------------------
+* read leap seconds table
+* args   : char    *file    I   leap seconds table file
+* return : status (1:ok,0:error)
+* notes  : (1) The records in the table file cosist of the following fields:
+*              year month day hour min sec UTC-GPST(s)
+*          (2) The date and time indicate the start UTC time for the UTC-GPST
+*          (3) The date and time should be descending order.
+*-----------------------------------------------------------------------------*/
+extern int read_leaps(const char *file)
+{
+    FILE *fp;
+    char buff[256],*p;
+    int i,n=0,ep[6],ls;
+    
+    if (!(fp=fopen(file,"r"))) return 0;
+    
+    while (fgets(buff,sizeof(buff),fp)&&n<MAXLEAPS) {
+        if ((p=strchr(buff,'#'))) *p='\0';
+        if (sscanf(buff,"%d %d %d %d %d %d %d",ep,ep+1,ep+2,ep+3,ep+4,ep+5,
+                   &ls)<7) continue;
+        for (i=0;i<6;i++) leaps[n][i]=ep[i];
+        leaps[n++][6]=ls;
+    }
+    for (i=0;i<7;i++) leaps[n][i]=0.0;
+    fclose(fp);
+    return 1;
+}
 /* gpstime to utc --------------------------------------------------------------
 * convert gpstime to utc considering leap seconds
 * args   : gtime_t t        I   time expressed in gpstime
@@ -1389,7 +1422,7 @@ extern gtime_t gpst2utc(gtime_t t)
     gtime_t tu;
     int i;
     
-    for (i=0;i<(int)sizeof(leaps)/(int)sizeof(*leaps);i++) {
+    for (i=0;leaps[i][0]>0;i++) {
         tu=timeadd(t,leaps[i][6]);
         if (timediff(tu,epoch2time(leaps[i]))>=0.0) return tu;
     }
@@ -1405,7 +1438,7 @@ extern gtime_t utc2gpst(gtime_t t)
 {
     int i;
     
-    for (i=0;i<(int)sizeof(leaps)/(int)sizeof(*leaps);i++) {
+    for (i=0;leaps[i][0]>0;i++) {
         if (timediff(t,epoch2time(leaps[i]))>=0.0) return timeadd(t,-leaps[i][6]);
     }
     return t;
@@ -2327,20 +2360,20 @@ extern int geterp(const erp_t *erp, gtime_t time, double *erpv)
         erpv[3]=erp->data[erp->n-1].lod;
         return 1;
     }
-    for (j=0,k=erp->n-1;j<=k;) {
+    for (j=0,k=erp->n-1;j<k-1;) {
         i=(j+k)/2;
-        if (mjd<erp->data[i].mjd) k=i-1; else j=i+1;
+        if (mjd<erp->data[i].mjd) k=i; else j=i;
     }
-    if (erp->data[i].mjd==mjd-erp->data[i+1].mjd) {
+    if (erp->data[j].mjd==erp->data[j+1].mjd) {
         a=0.5;
     }
     else {
-        a=(mjd-erp->data[i+1].mjd)/(erp->data[i].mjd-mjd-erp->data[i+1].mjd);
+        a=(mjd-erp->data[j].mjd)/(erp->data[j+1].mjd-erp->data[j].mjd);
     }
-    erpv[0]=(1.0-a)*erp->data[i].xp     +a*erp->data[i+1].xp;
-    erpv[1]=(1.0-a)*erp->data[i].yp     +a*erp->data[i+1].yp;
-    erpv[2]=(1.0-a)*erp->data[i].ut1_utc+a*erp->data[i+1].ut1_utc;
-    erpv[3]=(1.0-a)*erp->data[i].lod    +a*erp->data[i+1].lod;
+    erpv[0]=(1.0-a)*erp->data[j].xp     +a*erp->data[j+1].xp;
+    erpv[1]=(1.0-a)*erp->data[j].yp     +a*erp->data[j+1].yp;
+    erpv[2]=(1.0-a)*erp->data[j].ut1_utc+a*erp->data[j+1].ut1_utc;
+    erpv[3]=(1.0-a)*erp->data[j].lod    +a*erp->data[j+1].lod;
     return 1;
 }
 /* compare ephemeris ---------------------------------------------------------*/

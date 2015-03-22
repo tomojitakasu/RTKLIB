@@ -49,6 +49,8 @@
 *                           fix bug on variance in case of ura ssr = 63
 *           2013/11/11 1.8  change constant MAXAGESSR 70.0 -> 90.0
 *           2014/10/24 1.9  fix bug on return of var_uraeph() if ura<0||15<ura
+*           2014/12/07 1.10 modify MAXDTOE for qzss,gal and bds
+*                           test max number of iteration for Kepler
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -82,6 +84,8 @@ static const char rcsid[]="$Id:$";
 #define MAXAGESSR 90.0            /* max age of ssr orbit and clock (s) */
 #define MAXAGESSR_HRCLK 10.0      /* max age of ssr high-rate clock (s) */
 #define STD_BRDCCLK 30.0          /* error of broadcast clock (m) */
+
+#define MAX_ITER_KEPLER 30        /* max number of iteration of Kelpler */
 
 /* variance by ura ephemeris (ref [1] 20.3.3.3.1.1) --------------------------*/
 static double var_uraeph(int ura)
@@ -196,8 +200,12 @@ extern void eph2pos(gtime_t time, const eph_t *eph, double *rs, double *dts,
     }
     M=eph->M0+(sqrt(mu/(eph->A*eph->A*eph->A))+eph->deln)*tk;
     
-    for (n=0,E=M,Ek=0.0;fabs(E-Ek)>RTOL_KEPLER;n++) {
+    for (n=0,E=M,Ek=0.0;fabs(E-Ek)>RTOL_KEPLER&&n<MAX_ITER_KEPLER;n++) {
         Ek=E; E-=(E-eph->e*sin(E)-M)/(1.0-eph->e*cos(E));
+    }
+    if (n>=MAX_ITER_KEPLER) {
+        trace(2,"kepler iteration overflow sat=%2d\n",eph->sat);
+        return;
     }
     sinE=sin(E); cosE=cos(E);
     
@@ -381,7 +389,12 @@ static eph_t *seleph(gtime_t time, int sat, int iode, const nav_t *nav)
     
     trace(4,"seleph  : time=%s sat=%2d iode=%d\n",time_str(time,3),sat,iode);
     
-    tmax=MAXDTOE+1.0;
+    switch (satsys(sat,NULL)) {
+        case SYS_QZS: tmax=MAXDTOE_QZS+1.0; break;
+        case SYS_GAL: tmax=MAXDTOE_GAL+1.0; break;
+        case SYS_CMP: tmax=MAXDTOE_CMP+1.0; break;
+        default: tmax=MAXDTOE+1.0; break;
+    }
     tmin=tmax+1.0;
     
     for (i=0;i<nav->n;i++) {

@@ -25,6 +25,8 @@
 *           2012/02/01  1.12 support keyword expansion of rtcm ssr corrections
 *           2013/03/11  1.13 add function reading otl and erp data
 *           2014/06/29  1.14 fix problem on overflow of # of satellites
+*           2015/03/23  1.15 fix bug on ant type replacement by rinex header
+*                            fix bug on combined filter for moving-base mode
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -379,7 +381,7 @@ static void combres(FILE *fp, const prcopt_t *popt, const solopt_t *sopt)
 {
     gtime_t time={0};
     sol_t sols={{0}},sol={{0}};
-    double tt,Qf[9],Qb[9],Qs[9],rbs[3]={0},rb[3]={0};
+    double tt,Qf[9],Qb[9],Qs[9],rbs[3]={0},rb[3]={0},rr_f[3],rr_b[3],rr_s[3];
     int i,j,k,solstatic,pri[]={0,1,2,3,4,5,1,6};
     
     trace(3,"combres : isolf=%d isolb=%d\n",isolf,isolb);
@@ -428,8 +430,15 @@ static void combres(FILE *fp, const prcopt_t *popt, const solopt_t *sopt)
             Qb[5]=Qb[7]=solb[j].qr[4];
             Qb[2]=Qb[6]=solb[j].qr[5];
             
-            if (smoother(solf[i].rr,Qf,solb[j].rr,Qb,3,sols.rr,Qs)) continue;
-            
+            if (popt->mode==PMODE_MOVEB) {
+                for (k=0;k<3;k++) rr_f[k]=solf[i].rr[k]-rbf[k+i*3];
+                for (k=0;k<3;k++) rr_b[k]=solb[j].rr[k]-rbb[k+j*3];
+                if (smoother(rr_f,Qf,rr_b,Qb,3,rr_s,Qs)) continue;
+                for (k=0;k<3;k++) sols.rr[k]=rbs[k]+rr_s[k];
+            }
+            else {
+                if (smoother(solf[i].rr,Qf,solb[j].rr,Qb,3,sols.rr,Qs)) continue;
+            }
             sols.qr[0]=(float)Qs[0];
             sols.qr[1]=(float)Qs[4];
             sols.qr[2]=(float)Qs[8];
@@ -892,7 +901,7 @@ static int execses(gtime_t ts, gtime_t te, double ti, const prcopt_t *popt,
     if (!readobsnav(ts,te,ti,infile,index,n,&popt_,&obss,&navs,stas)) return 0;
     
     /* set antenna paramters */
-    if (popt_.sateph==EPHOPT_PREC||popt_.sateph==EPHOPT_SSRCOM) {
+    if (popt_.mode!=PMODE_SINGLE) {
         setpcv(obss.n>0?obss.data[0].time:timeget(),&popt_,&navs,&pcvss,&pcvsr,
                stas);
     }

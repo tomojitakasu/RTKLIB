@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * skytraq.c : skytraq receiver dependent functions
 *
-*          Copyright (C) 2009-2011 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2009-2014 by T.TAKASU, All rights reserved.
 *
 * reference :
 *     [1] Skytraq, Application Note AN0023 Binary Message of SkyTraq Venus 6 
@@ -13,6 +13,9 @@
 *     [4] Skytraq, Application Note AN0030 Binary Message of Raw Measurement
 *         Data Extension of SkyTraq Venus 8 GNSS Receiver, ver.1.4.29,
 *         April 3, 2014
+*     [5] Skytraq, Application Note AN0030 Binary Message of Raw Measurement
+*         Data Extension of SkyTraq Venus 8 GNSS Receiver, ver.1.4.31,
+*         August 12, 2014
 *
 * notes   :
 *     The byte order of S1315F raw message is big-endian inconsistent to [1].
@@ -24,21 +27,27 @@
 *                          fix problem with ARM compiler
 *           2011/07/01 1.3 suppress warning
 *           2013/03/10 1.5 change option -invcp to -INVCP
+*           2014/11/09 1.6 support glonass, qzss and beidou
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
 #define STQSYNC1    0xA0        /* skytraq binary sync code 1 */
 #define STQSYNC2    0xA1        /* skytraq binary sync code 2 */
 
-#define ID_STQTIME  0xDC        /* skytraq message id: measurement time info */
-#define ID_STQRAW   0xDD        /* skytraq message id: raw channel measurement */
-#define ID_STQSFRB  0xE0        /* skytraq message id: subframe buffer data */
-#define ID_STQGLOSTR 0xE1       /* skytraq message id: glonass string buffer */
+#define ID_STQTIME  0xDC        /* skytraq message id: measurement epoch */
+#define ID_STQRAW   0xDD        /* skytraq message id: raw measurement */
+#define ID_STQGPS   0xE0        /* skytraq message id: gps/qzs subframe */
+#define ID_STQGLO   0xE1        /* skytraq message id: glonass string */
+#define ID_STQGLOE  0x5C        /* skytraq message id: glonass ephemeris */
+#define ID_STQBDSD1 0xE2        /* skytraq message id: beidou d1 subframe */
+#define ID_STQBDSD2 0xE3        /* skytraq message id: beidou d2 subframe */
+
 #define ID_RESTART  0x01        /* skytraq message id: system restart */
 #define ID_CFGSERI  0x05        /* skytraq message id: configure serial port */
 #define ID_CFGFMT   0x09        /* skytraq message id: configure message format */
 #define ID_CFGRATE  0x12        /* skytraq message id: configure message rate */
 #define ID_CFGBIN   0x1E        /* skytraq message id: configure binary message */
+#define ID_GETGLOEPH 0x5B       /* skytraq message id: get glonass ephemeris */
 
 static const char rcsid[]="$Id:$";
 
@@ -89,7 +98,18 @@ static unsigned char checksum(unsigned char *buff, int len)
     }
     return cs;
 }
-/* decode skytraq measurement time info --------------------------------------*/
+/* 8-bit week -> full week ---------------------------------------------------*/
+static void adj_utcweek(gtime_t time, double *utc)
+{
+    int week;
+    
+    if (utc[3]>=256.0) return;
+    time2gpst(time,&week);
+    utc[3]+=week/256*256;
+    if      (utc[3]<week-128) utc[3]+=256.0;
+    else if (utc[3]>week+128) utc[3]-=256.0;
+}
+/* decode skytraq measurement epoch (0xDC) -----------------------------------*/
 static int decode_stqtime(raw_t *raw)
 {
     unsigned char *p=raw->buff+4;
@@ -104,11 +124,12 @@ static int decode_stqtime(raw_t *raw)
     raw->time=gpst2time(week,tow);
     return 0;
 }
-/* decode skytraq raw channel mesurement -------------------------------------*/
+/* decode skytraq raw measurement (0xDD) -------------------------------------*/
 static int decode_stqraw(raw_t *raw)
 {
-    int i,j,iod,prn,sys,sat,n=0,nsat;
     unsigned char *p=raw->buff+4,ind;
+    double pr1,cp1;
+    int i,j,iod,prn,sys,sat,n=0,nsat;
     
     trace(4,"decode_stqraw: len=%d\n",raw->len);
     
@@ -123,29 +144,17 @@ static int decode_stqraw(raw_t *raw)
         return -1;
     }
     for (i=0,p+=3;i<nsat&&i<MAXOBS;i++,p+=23) {
-        ind                    =U1(p+22);
-        prn                    =U1(p);
-#if 0
-        raw->obs.data[n].SNR[0]=(unsigned char)(U1(p+1)*4.0+0.5);
-#else
-        raw->obs.data[n].SNR[0]=(unsigned char)(U1(p+1)*8.0+0.5);
-#endif
-        raw->obs.data[n].P[0]  =(ind&0x1)?R8(p+ 2):0.0;
-        raw->obs.data[n].L[0]  =(ind&0x4)?R8(p+10):0.0;
-        raw->obs.data[n].D[0]  =(ind&0x2)?R4(p+18):0.0f;
-        raw->obs.data[n].LLI[0]=(ind&0x8)?1:0; /* slip */
-        raw->obs.data[n].code[0]=CODE_L1C;
+        prn=U1(p);
         
-        /* receiver dependent options */
-        if (strstr(raw->opt,"-INVCP")) {
-            raw->obs.data[n].L[0]=-raw->obs.data[n].L[0];
-        }
         if (MINPRNGPS<=prn&&prn<=MAXPRNGPS) {
             sys=SYS_GPS;
         }
         else if (MINPRNGLO<=prn-64&&prn-64<=MAXPRNGLO) {
             sys=SYS_GLO;
             prn-=64;
+        }
+        else if (MINPRNQZS<=prn&&prn<=MAXPRNQZS) {
+            sys=SYS_QZS;
         }
         else if (MINPRNCMP<=prn-200&&prn-200<=MAXPRNCMP) {
             sys=SYS_CMP;
@@ -159,10 +168,32 @@ static int decode_stqraw(raw_t *raw)
             trace(2,"stq raw satellite number error: sys=%d prn=%d\n",sys,prn);
             continue;
         }
+        ind=U1(p+22);
+        pr1=!(ind&1)?0.0:R8(p+ 2);
+        cp1=!(ind&4)?0.0:R8(p+10);
+        cp1-=floor((cp1+1E9)/2E9)*2E9; /* -10^9 < cp1 < 10^9 */
+        
+        raw->obs.data[n].P[0]=pr1;
+        raw->obs.data[n].L[0]=cp1;
+        raw->obs.data[n].D[0]=!(ind&2)?0.0:R4(p+18);
+        raw->obs.data[n].SNR[0]=U1(p+1)*4;
+        raw->obs.data[n].LLI[0]=0;
+        raw->obs.data[n].code[0]=sys==SYS_CMP?CODE_L1I:CODE_L1C;
+        
+        raw->lockt[sat-1][0]=ind&8?1:0; /* cycle slip */
+        
+        if (raw->obs.data[n].L[0]!=0.0) {
+            raw->obs.data[n].LLI[0]=(unsigned char)raw->lockt[sat-1][0];
+            raw->lockt[sat-1][0]=0;
+        }
+        /* receiver dependent options */
+        if (strstr(raw->opt,"-INVCP")) {
+            raw->obs.data[n].L[0]*=-1.0;
+        }
         raw->obs.data[n].time=raw->time;
         raw->obs.data[n].sat =sat;
         
-        for (j=1;j<NFREQ;j++) {
+        for (j=1;j<NFREQ+NEXOBS;j++) {
             raw->obs.data[n].L[j]=raw->obs.data[n].P[j]=0.0;
             raw->obs.data[n].D[j]=0.0;
             raw->obs.data[n].SNR[j]=raw->obs.data[n].LLI[j]=0;
@@ -210,7 +241,10 @@ static int decode_ephem(int sat, raw_t *raw)
         decode_frame(raw->subfrm[sat-1]+30,&eph,NULL,NULL,NULL,NULL)!=2||
         decode_frame(raw->subfrm[sat-1]+60,&eph,NULL,NULL,NULL,NULL)!=3) return 0;
     
-    if (eph.iode==raw->nav.eph[sat-1].iode) return 0; /* unchanged */
+    if (!strstr(raw->opt,"-EPHALL")) {
+        if (eph.iode==raw->nav.eph[sat-1].iode&&
+            eph.iodc==raw->nav.eph[sat-1].iodc) return 0; /* unchanged */
+    }
     eph.sat=sat;
     raw->nav.eph[sat-1]=eph;
     raw->ephsat=sat;
@@ -219,33 +253,54 @@ static int decode_ephem(int sat, raw_t *raw)
 /* decode almanac and ion/utc ------------------------------------------------*/
 static int decode_alm1(int sat, raw_t *raw)
 {
+    int sys=satsys(sat,NULL);
+    
     trace(4,"decode_alm1 : sat=%2d\n",sat);
-    decode_frame(raw->subfrm[sat-1]+90,NULL,raw->nav.alm,raw->nav.ion_gps,
-                 raw->nav.utc_gps,&raw->nav.leaps);
-    return 0;
+    
+    if (sys==SYS_GPS) {
+        decode_frame(raw->subfrm[sat-1]+90,NULL,raw->nav.alm,raw->nav.ion_gps,
+                     raw->nav.utc_gps,&raw->nav.leaps);
+        adj_utcweek(raw->time,raw->nav.utc_gps);
+    }
+    else if (sys==SYS_QZS) {
+        decode_frame(raw->subfrm[sat-1]+90,NULL,raw->nav.alm,raw->nav.ion_qzs,
+                     raw->nav.utc_qzs,&raw->nav.leaps);
+        adj_utcweek(raw->time,raw->nav.utc_qzs);
+    }
+    return 9;
 }
 /* decode almanac ------------------------------------------------------------*/
 static int decode_alm2(int sat, raw_t *raw)
 {
+    int sys=satsys(sat,NULL);
+    
     trace(4,"decode_alm2 : sat=%2d\n",sat);
-    decode_frame(raw->subfrm[sat-1]+120,NULL,raw->nav.alm,NULL,NULL,NULL);
-    return 0;
+    
+    if (sys==SYS_GPS) {
+        decode_frame(raw->subfrm[sat-1]+120,NULL,raw->nav.alm,NULL,NULL,NULL);
+    }
+    else if (sys==SYS_QZS) {
+        decode_frame(raw->subfrm[sat-1]+120,NULL,raw->nav.alm,raw->nav.ion_qzs,
+                     raw->nav.utc_qzs,&raw->nav.leaps);
+        adj_utcweek(raw->time,raw->nav.utc_qzs);
+    }
+    return  0;
 }
-/* decode skytraq subframe buffer --------------------------------------------*/
-static int decode_stqsfrb(raw_t *raw)
+/* decode gps/qzss subframe (0xE0) -------------------------------------------*/
+static int decode_stqgps(raw_t *raw)
 {
     int prn,sat,id;
     unsigned char *p=raw->buff+4;
     
-    trace(4,"decode_stqsfrb: len=%d\n",raw->len);
+    trace(4,"decode_stqgps: len=%d\n",raw->len);
     
     if (raw->len<40) {
-        trace(2,"stq subframe length error: len=%d\n",raw->len);
+        trace(2,"stq gps/qzss subframe length error: len=%d\n",raw->len);
         return -1;
     }
     prn=U1(p+1);
-    if (!(sat=satno(SYS_GPS,prn))) {
-        trace(2,"stq subframe satellite number error: prn=%d\n",prn);
+    if (!(sat=satno(MINPRNQZS<=prn&&prn<=MAXPRNQZS?SYS_QZS:SYS_GPS,prn))) {
+        trace(2,"stq gps/qzss subframe satellite number error: prn=%d\n",prn);
         return -1;
     }
     id=save_subfrm(sat,raw);
@@ -254,13 +309,14 @@ static int decode_stqsfrb(raw_t *raw)
     if (id==5) return decode_alm2 (sat,raw);
     return 0;
 }
-/* decode skytraq glonass string buffer --------------------------------------*/
-static int decode_stqglostr(raw_t *raw)
+/* decode glonass string (0xE1) ----------------------------------------------*/
+static int decode_stqglo(raw_t *raw)
 {
-    int i,prn,sat,strno;
+    geph_t geph={0};
+    int i,prn,sat,m;
     unsigned char *p=raw->buff+4;
     
-    trace(4,"decode_stqglostr: len=%d\n",raw->len);
+    trace(4,"decode_stqglo: len=%d\n",raw->len);
     
     if (raw->len<19) {
         trace(2,"stq glo string length error: len=%d\n",raw->len);
@@ -271,17 +327,117 @@ static int decode_stqglostr(raw_t *raw)
         trace(2,"stq glo string satellite number error: prn=%d\n",prn);
         return -1;
     }
-    strno=U1(p+2);
-    if (strno<1||4<strno) {
-        trace(2,"stq glo string number error: prn=%d strno=%d\n",prn,strno);
+    m=U1(p+2); /* string number */
+    if (m<1||4<m) {
+        trace(2,"stq glo string number error: prn=%d m=%d\n",prn,m);
         return -1;
     }
+    setbitu(raw->subfrm[sat-1]+(m-1)*10,1,4,m);
     for (i=0;i<9;i++) {
-        raw->subfrm[sat-1][strno*9-1-i]=p[3+i];
+        setbitu(raw->subfrm[sat-1]+(m-1)*10,5+i*8,8,p[3+i]);
     }
-    if (strno<5) return 0;
+    if (m!=4) return 0;
+    
+    /* decode glonass ephemeris strings */
+    geph.tof=raw->time;
+    if (!decode_glostr(raw->subfrm[sat-1],&geph)||geph.sat!=sat) return 0;
+    
+    /* freq channel number by stqgloe (0x5C) message */
+    geph.frq=raw->nav.geph[prn-1].frq;
+    
+    if (!strstr(raw->opt,"-EPHALL")) {
+        if (geph.iode==raw->nav.geph[prn-1].iode) return 0; /* unchanged */
+    }
+    raw->nav.geph[prn-1]=geph;
+    raw->ephsat=sat;
+    return 2;
+}
+/* decode glonass string (requested) (0x5C) ----------------------------------*/
+static int decode_stqgloe(raw_t *raw)
+{
+    int prn,sat;
+    unsigned char *p=raw->buff+4;
+    
+    trace(4,"decode_stqgloe: len=%d\n",raw->len);
+    
+    if (raw->len<50) {
+        trace(2,"stq glo string length error: len=%d\n",raw->len);
+        return -1;
+    }
+    prn=U1(p+1);
+    if (!(sat=satno(SYS_GLO,prn))) {
+        trace(2,"stq gloe string satellite number error: prn=%d\n",prn);
+        return -1;
+    }
+    /* only set frequency channel number */
+    raw->nav.geph[prn-1].frq=I1(p+2);
     
     return 0;
+}
+/* decode beidou subframe (0xE2,0xE3) ----------------------------------------*/
+static int decode_stqbds(raw_t *raw)
+{
+    eph_t eph={0};
+    unsigned int word;
+    int i,j=0,id,pgn,prn,sat;
+    unsigned char *p=raw->buff+4;
+    
+    trace(4,"decode_stqbds: len=%d\n",raw->len);
+    
+    if (raw->len<38) {
+        trace(2,"stq bds subframe length error: len=%d\n",raw->len);
+        return -1;
+    }
+    prn=U1(p+1)-200;
+    if (!(sat=satno(SYS_CMP,prn))) {
+        trace(2,"stq bds subframe satellite number error: prn=%d\n",prn);
+        return -1;
+    }
+    id=U1(p+2); /* subframe id */
+    if (id<1||5<id) {
+        trace(2,"stq bds subframe id error: prn=%2d\n",prn);
+        return -1;
+    }
+    if (prn>=5) { /* IGSO/MEO */
+        word=getbitu(p+3,j,26)<<4; j+=26;
+        setbitu(raw->subfrm[sat-1]+(id-1)*38,0,30,word);
+        
+        for (i=1;i<10;i++) {
+            word=getbitu(p+3,j,22)<<8; j+=22;
+            setbitu(raw->subfrm[sat-1]+(id-1)*38,i*30,30,word);
+        }
+        if (id!=3) return 0;
+        
+        /* decode beidou D1 ephemeris */
+        if (!decode_bds_d1(raw->subfrm[sat-1],&eph)) return 0;
+    }
+    else { /* GEO */
+        if (id!=1) return 0;
+        
+        pgn=getbitu(p+3,26+12,4); /* page number */
+        if (pgn<1||10<pgn) {
+            trace(2,"stq bds subframe page number error: prn=%2d\n",prn);
+            return -1;
+        }
+        word=getbitu(p+3,j,26)<<4; j+=26;
+        setbitu(raw->subfrm[sat-1]+(pgn-1)*38,0,30,word);
+        
+        for (i=1;i<10;i++) {
+            word=getbitu(p+3,j,22)<<8; j+=22;
+            setbitu(raw->subfrm[sat-1]+(pgn-1)*38,i*30,30,word);
+        }
+        if (pgn!=10) return 0;
+        
+        /* decode beidou D2 ephemeris */
+        if (!decode_bds_d2(raw->subfrm[sat-1],&eph)) return 0;
+    }
+    if (!strstr(raw->opt,"-EPHALL")) {
+        if (timediff(eph.toe,raw->nav.eph[sat-1].toe)==0.0) return 0; /* unchanged */
+    }
+    eph.sat=sat;
+    raw->nav.eph[sat-1]=eph;
+    raw->ephsat=sat;
+    return 2;
 }
 /* decode skytraq message ----------------------------------------------------*/
 static int decode_stq(raw_t *raw)
@@ -293,6 +449,7 @@ static int decode_stq(raw_t *raw)
     
     /* checksum */
     cs=checksum(raw->buff,raw->len);
+    
     if (cs!=*p||*(p+1)!=0x0D||*(p+2)!=0x0A) {
         trace(2,"stq checksum error: type=%02X cs=%02X tail=%02X%02X%02X\n",
               type,cs,*p,*(p+1),*(p+2));
@@ -302,10 +459,13 @@ static int decode_stq(raw_t *raw)
         sprintf(raw->msgtype,"SKYTRAQ 0x%02x (%4d):",type,raw->len);
     }
     switch (type) {
-        case ID_STQTIME  : return decode_stqtime  (raw);
-        case ID_STQRAW   : return decode_stqraw   (raw);
-        case ID_STQSFRB  : return decode_stqsfrb  (raw);
-        case ID_STQGLOSTR: return decode_stqglostr(raw);
+        case ID_STQTIME : return decode_stqtime(raw);
+        case ID_STQRAW  : return decode_stqraw (raw);
+        case ID_STQGPS  : return decode_stqgps (raw);
+        case ID_STQGLO  : return decode_stqglo (raw);
+        case ID_STQGLOE : return decode_stqgloe(raw);
+        case ID_STQBDSD1: return decode_stqbds (raw);
+        case ID_STQBDSD2: return decode_stqbds (raw);
     }
     return 0;
 }
@@ -395,9 +555,11 @@ extern int input_stqf(raw_t *raw, FILE *fp)
 *            "CFG-SERI [arg...]" configure serial port propperty
 *            "CFG-FMT  [arg...]" configure output message format
 *            "CFG-RATE [arg...]" configure binary measurement output rates
+*            "CFG-BIN  [arg...]" configure general binary
+*            "GET-GLOEPH [slot]" get glonass ephemeris for freq channel number
 *          unsigned char *buff O binary message
 * return : length of binary message (0: error)
-* note   : see reference [1][2] for details.
+* note   : see reference [1][2][3][4] for details.
 *-----------------------------------------------------------------------------*/
 extern int gen_stq(const char *msg, unsigned char *buff)
 {
@@ -454,6 +616,12 @@ extern int gen_stq(const char *msg, unsigned char *buff)
         }
         else *q++=0;
         for (i=2;i<8;i++) *q++=narg>i+1?(unsigned char)atoi(args[i]):0;
+    }
+    else if (!strcmp(args[0],"GET-GLOEPH")) {
+        *q++=0;
+        *q++=2;
+        *q++=ID_GETGLOEPH;
+        *q++=narg>=2?(unsigned char)atoi(args[1]):0;
     }
     else return 0;
     
