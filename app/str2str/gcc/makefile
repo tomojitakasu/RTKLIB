@@ -5,6 +5,10 @@ SRC    = ../../../src
 
 # for beagleboard
 #CTARGET= -mfpu=neon -mfloat-abi=softfp -ffast-math
+
+# for raspberry pi 2
+#CTARGET= -march=armv7-a -mfpu=neon-vfpv4 -mfloat-abi=hard
+
 CTARGET=
 
 OPTION = -DENAGLO -DENAGAL -DENAQZS -DENACMP -DTRACE -DNFREQ=3 -DNEXOBS=3
