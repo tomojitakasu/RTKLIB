@@ -961,8 +961,8 @@ void __fastcall TOptDialog::UpdateEnable(void)
 	Solution       ->Enabled=false;
 	DynamicModel   ->Enabled=rel;
 	TideCorr       ->Enabled=rel||ppp;
-	PosOpt1        ->Enabled=ppp;
-	PosOpt2        ->Enabled=ppp;
+	PosOpt1        ->Enabled=ar||ppp;
+	PosOpt2        ->Enabled=ar||ppp;
 	PosOpt3        ->Enabled=ppp;
 	PosOpt4        ->Enabled=ppp;
 	
