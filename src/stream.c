@@ -875,7 +875,7 @@ static int recv_nb(socket_t sock, unsigned char *buff, int n)
     
     FD_ZERO(&rs); FD_SET(sock,&rs);
     if (!select(sock+1,&rs,NULL,NULL,&tv)) return 0;
-    return recv(sock,(char *)buff,n,0);
+    return recv(sock,(char *)buff,n,MSG_NOSIGNAL);
 }
 /* non-block send ------------------------------------------------------------*/
 static int send_nb(socket_t sock, unsigned char *buff, int n)
@@ -885,7 +885,7 @@ static int send_nb(socket_t sock, unsigned char *buff, int n)
     
     FD_ZERO(&ws); FD_SET(sock,&ws);
     if (!select(sock+1,NULL,&ws,NULL,&tv)) return 0;
-    return send(sock,(char *)buff,n,0);
+    return send(sock,(char *)buff,n,MSG_NOSIGNAL);
 }
 /* generate tcp socket -------------------------------------------------------*/
 static int gentcp(tcp_t *tcp, int type, char *msg)
