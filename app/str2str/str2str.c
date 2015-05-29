@@ -257,7 +257,7 @@ int main(int argc, char **argv)
         strcpy(conv[i]->out.sta.rectype,rcv[0]);
         strcpy(conv[i]->out.sta.recver ,rcv[1]);
         strcpy(conv[i]->out.sta.recsno ,rcv[2]);
-        matcpy(conv[i]->out.sta.pos,pos,3,1);
+        matcpy(conv[i]->out.sta.pos,stapos,3,1);
         matcpy(conv[i]->out.sta.del,off,3,1);
     }
     signal(SIGTERM,sigfunc);
