@@ -41,6 +41,7 @@
 *                            fix bug on satellite id of $GAGSA
 *-----------------------------------------------------------------------------*/
 #include <ctype.h>
+#include <stdint.h> /* ubx edit */
 #include "rtklib.h"
 
 static const char rcsid[]="$Id: solution.c,v 1.1 2008/07/17 21:48:06 ttaka Exp $";
@@ -63,6 +64,23 @@ static const int solq_nmea[]={  /* nmea quality flags to rtklib sol quality */
     SOLQ_NONE ,SOLQ_SINGLE, SOLQ_DGPS, SOLQ_PPP , SOLQ_FIX,
     SOLQ_FLOAT,SOLQ_DR    , SOLQ_NONE, SOLQ_NONE, SOLQ_NONE
 };
+
+/* add 4byte data to the checksum buffer -------------------------------------*/ /* ubx edit */
+static void addtochk_buff_4B(unsigned char *buff_add,unsigned char *var_add)
+{
+    *buff_add=*var_add;
+    *(buff_add+1)=*(var_add+1);
+    *(buff_add+2)=*(var_add+2);
+    *(buff_add+3)=*(var_add+3);
+}
+
+/* add 2byte data to the checksum buffer -------------------------------------*/ /* ubx edit */
+static void addtochk_buff_2B(unsigned char *buff_add,unsigned char *var_add)
+{
+    *buff_add=*var_add;
+    *(buff_add+1)=*(var_add+1);
+}
+
 /* solution option to field separator ----------------------------------------*/
 static const char *opt2sep(const solopt_t *opt)
 {
@@ -1263,6 +1281,224 @@ extern int outnmea_gsv(unsigned char *buff, const sol_t *sol,
     }
     return p-(char *)buff;
 }
+
+/* output solution in the form of ubx-nav- messages */ /* ubx edit */
+extern int outubx(unsigned char *buff, const sol_t *sol, int *week, const ssat_t *ssat)
+{
+    char *p=(char *)buff;
+    double tow,pos[3],P[9],Q[9],azel[MAXSAT*2],dop[4]={0},enuv[3],vel=0.0,dir;
+    unsigned long int itow,h_acu,v_acu,v_3d,v_ground,acu;
+    signed long int lat,lon,hgt,h_msl,ftow,ecef_x,ecef_y,ecef_z,v_n,v_e,v_u,heading;
+    unsigned int pdop,length,i,n;
+    unsigned char chk_buff[58],ck_a=0x00,ck_b=0x00;
+    static double dirp=0.0;
+    
+    tow=time2gpst(sol->time,week);
+    if((((int)(tow*1000)+0.5)*100)-(int)(tow*100000)>0)
+    {
+        itow=(unsigned long int)(tow*1000.0);
+        ftow=(signed long int)((tow-itow/1000.0)*1000000000.0);  
+    }
+    else
+    {
+        itow=(unsigned long int)((tow*1000.0)+1);
+        ftow=(signed long int)((tow-itow/1000.0)*1000000000.0);
+    }
+    
+        
+    ecef2pos(sol->rr,pos);
+    lat=(signed long int)(pos[0]*R2D*10000000.0);
+    lon=(signed long int)(pos[1]*R2D*10000000.0);    
+    hgt=(signed long int)(pos[2]*1000.0);
+    h_msl=(signed long int)((pos[2]-geoidh(pos))*1000.0);
+    
+    soltocov(sol,P);
+    covenu(pos,P,Q);
+    h_acu=(unsigned long int)(((SQRT(Q[4])+SQRT(Q[0]))/2.0)*1000.0); /* mean of e & n standard devition instead of horizontal accuracy */ 
+    v_acu=(unsigned long int)(SQRT(Q[8])*1000.0);
+    
+    length=28;
+    chk_buff[0]=0xB5;    /* sync char */
+    chk_buff[1]=0x62;    /* sync char */    
+    chk_buff[2]=0x01;    /* class */
+    chk_buff[3]=0x02;    /* ID */
+    addtochk_buff_2B(chk_buff+4,(unsigned char *)&length);
+    addtochk_buff_4B(chk_buff+6,(unsigned char *)&itow);
+    addtochk_buff_4B(chk_buff+10,(unsigned char *)&lat);
+    addtochk_buff_4B(chk_buff+14,(unsigned char *)&lon);
+    addtochk_buff_4B(chk_buff+18,(unsigned char *)&hgt);
+    addtochk_buff_4B(chk_buff+22,(unsigned char *)&h_msl);
+    addtochk_buff_4B(chk_buff+26,(unsigned char *)&h_acu);
+    addtochk_buff_4B(chk_buff+30,(unsigned char *)&v_acu);    
+    
+    for(i=0;i<34;i++)
+        {
+            p+=sprintf(p,"%c",chk_buff[i]); /* posllh */
+        }
+    ck_a=ck_b=0x00;
+    for(i=2;i<34;i++)
+        {
+            ck_a+=chk_buff[i];
+            ck_b+=ck_a;
+        }
+    p+=sprintf(p,"%c%c",ck_a,ck_b);
+    
+    length=52;                  /* sol */
+    chk_buff[3]=0x06;    /* ID */
+    addtochk_buff_2B(chk_buff+4,(unsigned char *)&length);
+    addtochk_buff_4B(chk_buff+6,(unsigned char *)&itow);
+    addtochk_buff_4B(chk_buff+10,(unsigned char *)&ftow);
+    addtochk_buff_2B(chk_buff+14,(unsigned char *)week);
+    
+    if(sol->stat<=SOLQ_NONE)
+    {
+        *(chk_buff+16)=0x00;
+    }
+    else
+    {
+        *(chk_buff+16)=sol->ns<7?0x02:0x03; /* valid satellite # <7 given as 2D fix */
+    }
+    
+    if(sol->stat==SOLQ_FIX || sol->stat==SOLQ_FLOAT)  /* fix status flags */
+    {
+        *(chk_buff+17)=0x0F;
+    }
+    else
+    {
+        *(chk_buff+17)=0x0D;        /* DGPS sol not used */
+    }
+    
+    ecef_x=(signed long int)(sol->rr[0]*100);
+    ecef_y=(signed long int)(sol->rr[1]*100);
+    ecef_z=(signed long int)(sol->rr[2]*100);
+    acu=(unsigned long int)(((SQRT(Q[4])+SQRT(Q[0])+SQRT(Q[8]))/3.0)*100.0); /* mean of e & n & u standard devition instead of 3d accuracy */ 
+        
+    addtochk_buff_4B(chk_buff+18,(unsigned char *)&ecef_x);
+    addtochk_buff_4B(chk_buff+22,(unsigned char *)&ecef_y);
+    addtochk_buff_4B(chk_buff+26,(unsigned char *)&ecef_z);
+    addtochk_buff_4B(chk_buff+30,(unsigned char *)&acu);
+    /* skipped calculation of velocity estimates */
+    for(i=34;i<50;i++)
+        {
+            *(chk_buff+i)=0x00;
+        }
+    
+    for (i=n=0;i<MAXSAT;i++)
+    {
+        if (!ssat[i].vsat[0]) continue;
+        azel[  n*2]=ssat[i].azel[0];
+        azel[1+n*2]=ssat[i].azel[1];
+        n++;
+    }
+    dops(n,azel,0.0,dop);
+    pdop=(unsigned int)(dop[1]*100.0);
+    trace(2,"pdop-%u,n-%u********\n",pdop,n);
+    addtochk_buff_2B(chk_buff+50,(unsigned char *)&pdop);
+    *(chk_buff+52)=0x00;
+    *(chk_buff+53)=(unsigned char)(n);
+        for(i=54;i<58;i++)
+        {
+            *(chk_buff+i)=0x00;
+        }
+    
+        for(i=0;i<58;i++)
+        {
+            p+=sprintf(p,"%c",chk_buff[i]);
+        }
+    ck_a=ck_b=0x00;
+    for(i=2;i<58;i++)
+        {
+            ck_a+=chk_buff[i];
+            ck_b+=ck_a;
+        }
+    p+=sprintf(p,"%c%c",ck_a,ck_b);
+     /* end of sol */
+    
+    length=16;                  /* status message */
+    chk_buff[3]=0x03;    /* ID */
+    addtochk_buff_2B(chk_buff+4,(unsigned char *)&length);
+    addtochk_buff_4B(chk_buff+6,(unsigned char *)&itow);
+    
+        if(sol->stat<=SOLQ_NONE)
+    {
+        *(chk_buff+10)=0x00;
+    }
+    else
+    {
+        *(chk_buff+10)=sol->ns<7?0x02:0x03; /* valid satellite # <7 given as 2D fix */
+    }
+    
+        if(sol->stat==SOLQ_FIX || sol->stat==SOLQ_FLOAT)
+    {
+        *(chk_buff+11)=0x0F;
+    }
+    else
+    {
+        *(chk_buff+11)=0x0D;        /* DGPS sol not used */
+    }
+    for(i=12;i<22;i++)
+        {
+            *(chk_buff+i)=0x00;
+        }
+            for(i=0;i<22;i++)
+        {
+            p+=sprintf(p,"%c",chk_buff[i]);
+        }
+    ck_a=ck_b=0x00;
+    for(i=2;i<22;i++)
+        {
+            ck_a+=chk_buff[i];
+            ck_b+=ck_a;
+        }
+        p+=sprintf(p,"%c%c",ck_a,ck_b);
+        /* end of status message */
+    
+        length=36;                  /* velned message */
+    chk_buff[3]=0x12;    /* ID */
+    addtochk_buff_2B(chk_buff+4,(unsigned char *)&length);
+    addtochk_buff_4B(chk_buff+6,(unsigned char *)&itow);
+    ecef2enu(pos,sol->rr+3,enuv);   
+    vel=norm(enuv,3);
+    v_e=(signed long int)(enuv[0]*100.0);
+    v_n=(signed long int)(enuv[1]*100.0);
+    v_u=(signed long int)(enuv[2]*100.0);
+    v_3d=(unsigned long int)(vel*100.0);
+    v_ground=(unsigned long int)(norm(enuv,2));
+    
+        if (vel>=1.0)
+    {
+        dir=atan2(enuv[0],enuv[1])*R2D;
+        if (dir<0.0) dir+=360.0;
+        dirp=dir;
+    }
+    else dir=dirp;
+    heading=(signed long int)(dir*100000.0);
+    
+    addtochk_buff_4B(chk_buff+10,(unsigned char *)&v_n);
+    addtochk_buff_4B(chk_buff+14,(unsigned char *)&v_e);
+    addtochk_buff_4B(chk_buff+18,(unsigned char *)&v_u);
+    addtochk_buff_4B(chk_buff+22,(unsigned char *)&v_3d);
+    addtochk_buff_4B(chk_buff+26,(unsigned char *)&v_ground);
+    addtochk_buff_4B(chk_buff+30,(unsigned char *)&heading);
+        for(i=34;i<42;i++)
+        {
+            *(chk_buff+i)=0x00;
+        }
+            for(i=0;i<42;i++)
+        {
+            p+=sprintf(p,"%c",chk_buff[i]);
+        }
+    ck_a=ck_b=0x00;
+    for(i=2;i<42;i++)
+        {
+            ck_a+=chk_buff[i];
+            ck_b+=ck_a;
+        }
+        p+=sprintf(p,"%c%c",ck_a,ck_b); /* end of velned */
+
+    return p-(char *)buff;
+}
+
 /* output processing options ---------------------------------------------------
 * output processing options to buffer
 * args   : unsigned char *buff IO output buffer
@@ -1351,7 +1587,7 @@ extern int outsolheads(unsigned char *buff, const solopt_t *opt)
     
     trace(3,"outsolheads:\n");
     
-    if (opt->posf==SOLF_NMEA) return 0;
+    if (opt->posf==SOLF_NMEA || opt->posf==SOLF_UBX) return 0;  /* ubx edit */
     
     if (opt->outhead) {
         p+=sprintf(p,"%s (",COMMENTH);
@@ -1399,7 +1635,7 @@ extern int outsolheads(unsigned char *buff, const solopt_t *opt)
 * return : number of output bytes
 *-----------------------------------------------------------------------------*/
 extern int outsols(unsigned char *buff, const sol_t *sol, const double *rb,
-                   const solopt_t *opt)
+                   const solopt_t *opt, const ssat_t *ssat) /* ubx edit */
 {
     gtime_t time,ts={0};
     double gpst;
@@ -1432,12 +1668,14 @@ extern int outsols(unsigned char *buff, const sol_t *sol, const double *rb,
         }
         sprintf(s,"%4d%s%*.*f",week,sep,6+(timeu<=0?0:timeu+1),timeu,gpst);
     }
+
     switch (opt->posf) {
         case SOLF_LLH:  p+=outpos (p,s,sol,opt);   break;
         case SOLF_XYZ:  p+=outecef(p,s,sol,opt);   break;
         case SOLF_ENU:  p+=outenu(p,s,sol,rb,opt); break;
         case SOLF_NMEA: p+=outnmea_rmc(p,sol);
                         p+=outnmea_gga(p,sol); break;
+        case SOLF_UBX:  p+=outubx(p,sol,&week,ssat); break;   /* ubx edit */
     }
     return p-buff;
 }
@@ -1511,14 +1749,14 @@ extern void outsolhead(FILE *fp, const solopt_t *opt)
 * return : none
 *-----------------------------------------------------------------------------*/
 extern void outsol(FILE *fp, const sol_t *sol, const double *rb,
-                   const solopt_t *opt)
+                   const solopt_t *opt, const ssat_t *ssat) /* ubx edit */
 {
     unsigned char buff[MAXSOLMSG+1];
     int n;
     
     trace(3,"outsol  :\n");
     
-    if ((n=outsols(buff,sol,rb,opt))>0) {
+    if ((n=outsols(buff,sol,rb,opt,ssat))>0) {  /* ubx edit */
         fwrite(buff,n,1,fp);
     }
 }
