@@ -61,7 +61,7 @@ static void writesol(rtksvr_t *svr, int index)
     
     for (i=0;i<2;i++) {
         /* output solution */
-        n=outsols(buff,&svr->rtk.sol,svr->rtk.rb,svr->solopt+i,svr->rtk.ssat); /* ubx edit */
+        n=outsols(buff,&svr->rtk.sol,svr->rtk.rb,svr->solopt+i);
         strwrite(svr->stream+i+3,buff,n);
         
         /* save output buffer */
@@ -76,7 +76,7 @@ static void writesol(rtksvr_t *svr, int index)
     }
     /* output solution to monitor port */
     if (svr->moni) {
-        n=outsols(buff,&svr->rtk.sol,svr->rtk.rb,&solopt,svr->rtk.ssat);    /* ubx edit */
+        n=outsols(buff,&svr->rtk.sol,svr->rtk.rb,&solopt);
         strwrite(svr->moni,buff,n);
     }
     /* save solution buffer */

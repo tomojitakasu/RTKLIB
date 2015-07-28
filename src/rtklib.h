@@ -312,7 +312,6 @@ extern "C" {
 #define SOLF_ENU    2                   /* solution format: e/n/u-baseline */
 #define SOLF_NMEA   3                   /* solution format: NMEA-183 */
 #define SOLF_GSIF   4                   /* solution format: GSI-F1/2/3 */
-#define SOLF_UBX    5                   /* solution format: UBX-POSLLH/SOL/STATUS/VELNED */ /*ubx edit*/
 
 #define SOLQ_NONE   0                   /* solution status: no solution */
 #define SOLQ_FIX    1                   /* solution status: fix */
@@ -1565,13 +1564,13 @@ extern int inputsol(unsigned char data, gtime_t ts, gtime_t te, double tint,
 extern int outprcopts(unsigned char *buff, const prcopt_t *opt);
 extern int outsolheads(unsigned char *buff, const solopt_t *opt);
 extern int outsols  (unsigned char *buff, const sol_t *sol, const double *rb,
-                     const solopt_t *opt, const ssat_t *ssat); /* ubx edit */
+                     const solopt_t *opt);
 extern int outsolexs(unsigned char *buff, const sol_t *sol, const ssat_t *ssat,
                      const solopt_t *opt);
 extern void outprcopt(FILE *fp, const prcopt_t *opt);
 extern void outsolhead(FILE *fp, const solopt_t *opt);
 extern void outsol  (FILE *fp, const sol_t *sol, const double *rb,
-                     const solopt_t *opt, const ssat_t *ssat);  /* ubx edit */
+                     const solopt_t *opt);
 extern void outsolex(FILE *fp, const sol_t *sol, const ssat_t *ssat,
                      const solopt_t *opt);
 extern int outnmea_rmc(unsigned char *buff, const sol_t *sol);
@@ -1580,9 +1579,6 @@ extern int outnmea_gsa(unsigned char *buff, const sol_t *sol,
                        const ssat_t *ssat);
 extern int outnmea_gsv(unsigned char *buff, const sol_t *sol,
                        const ssat_t *ssat);
-/* ubx edit */
-extern int outubx(unsigned char *buff, const sol_t *sol, int *week, const ssat_t *ssat);
-/* ubx edit */
 
 /* google earth kml converter ------------------------------------------------*/
 extern int convkml(const char *infile, const char *outfile, gtime_t ts,

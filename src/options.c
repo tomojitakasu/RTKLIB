@@ -41,7 +41,7 @@ static char snrmask_[NFREQ][1024];
 #define EPHOPT  "0:brdc,1:precise,2:brdc+sbas,3:brdc+ssrapc,4:brdc+ssrcom"
 #define NAVOPT  "1:gps+2:sbas+4:glo+8:gal+16:qzs+32:comp"
 #define GAROPT  "0:off,1:on,2:autocal"
-#define SOLOPT  "0:llh,1:xyz,2:enu,3:nmea,5:ubx"    /* ubx edit */
+#define SOLOPT  "0:llh,1:xyz,2:enu,3:nmea"
 #define TSYOPT  "0:gpst,1:utc,2:jst"
 #define TFTOPT  "0:tow,1:hms"
 #define DFTOPT  "0:deg,1:dms"
