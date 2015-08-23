@@ -52,6 +52,9 @@
 #include <sys/stat.h>
 #include <sys/time.h>
 #define __USE_MISC
+#ifndef CRTSCTS
+#define CRTSCTS  020000000000
+#endif
 #include <errno.h>
 #include <termios.h>
 #include <sys/socket.h>
