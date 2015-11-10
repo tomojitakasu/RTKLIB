@@ -284,7 +284,7 @@ static serial_t *openserial(const char *path, int mode, char *msg)
 #endif
     tracet(3,"openserial: path=%s mode=%d\n",path,mode);
     
-    if (!(serial=(serial_t *)malloc(sizeof(serial_t)))) return NULL;
+    if (!(serial=(serial_t *)calloc(1, sizeof(serial_t)))) return NULL;
     
     if ((p=strchr(path,':'))) {
         strncpy(port,path,p-path); port[p-path]='\0';
@@ -338,7 +338,6 @@ static serial_t *openserial(const char *path, int mode, char *msg)
     
     /* create write thread */
     initlock(&serial->lock);
-    serial->state=serial->wp=serial->rp=serial->error=0;
     serial->buffsize=buffsize;
     if (!(serial->buff=(unsigned char *)malloc(buffsize))) {
         CloseHandle(serial->dev);
@@ -428,7 +427,10 @@ static int writeserial(serial_t *serial, unsigned char *buff, int n, char *msg)
 #ifdef WIN32
     if ((ns=writeseribuff(serial,buff,n))<n) serial->error=1;
 #else
-    if ((ns=write(serial->dev,buff,n))<0) return 0;
+    if ((ns=write(serial->dev,buff,n))<0) {
+        serial->error=1;
+        return 0;
+    }
 #endif
     tracet(5,"writeserial: exit dev=%d ns=%d\n",serial->dev,ns);
     return ns;
