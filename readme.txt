@@ -35,3 +35,6 @@ UPDATE HISTORY
                       add option -a, -i and -o for str2str
                       merge updates of src/rcv/rt17.c (pull-req #45)
 2014/11/09  2.4.3 b5  support glonass, qzss and beidou for skytraq
+2016/01/23  2.4.3 b6  merge 2.4.2 p11 bug fixes
+                      update ppp/ppp-ar features
+                      support septentrio
