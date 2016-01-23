@@ -19,19 +19,9 @@ __published:
 	TCppWebBrowser *WebBrowser;
 	TSpeedButton *BtnGENorm;
 	TSpeedButton *BtnGETilt;
-	TSpeedButton *BtnOpt1;
-	TSpeedButton *BtnOpt2;
-	TSpeedButton *BtnOpt3;
-	TSpeedButton *BtnOpt4;
-	TSpeedButton *BtnOpt6;
-	TSpeedButton *BtnOpt7;
-	TSpeedButton *BtnOpt8;
-	TSpeedButton *BtnOpt9;
 	TSpeedButton *BtnEnaAlt;
 	TSpeedButton *BtnHeading;
-	TSpeedButton *BtnOpt5;
 	TPanel *Panel3;
-	TPanel *Panel4;
 	TPanel *Panel5;
 	TButton *BtnClose;
 	TSpeedButton *BtnFixCent;
@@ -44,6 +34,17 @@ __published:
 	TSpeedButton *BtnRotL;
 	TSpeedButton *BtnRotR;
 	TPanel *Panel7;
+	TPanel *Panel8;
+	TSpeedButton *BtnOpt1;
+	TSpeedButton *BtnOpt4;
+	TSpeedButton *BtnOpt2;
+	TSpeedButton *BtnOpt3;
+	TSpeedButton *BtnOpt5;
+	TSpeedButton *BtnOpt6;
+	TSpeedButton *BtnOpt7;
+	TSpeedButton *BtnOpt8;
+	TSpeedButton *BtnOpt9;
+	TSpeedButton *BtnOpt;
 	void __fastcall BtnGENormClick(TObject *Sender);
 	void __fastcall BtnGETiltClick(TObject *Sender);
 	void __fastcall BtnOpt1Click(TObject *Sender);
@@ -70,6 +71,11 @@ __published:
           int X, int Y);
 	void __fastcall BtnRotRMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
           int X, int Y);
+	void __fastcall BtnExpandClick(TObject *Sender);
+	void __fastcall BtnExpandMouseLeave(TObject *Sender);
+	void __fastcall Panel2Gesture(TObject *Sender, const TGestureEventInfo &EventInfo,
+          bool &Handled);
+	void __fastcall BtnOptClick(TObject *Sender);
 
 
 private:

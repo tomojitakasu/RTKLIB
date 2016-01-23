@@ -38,6 +38,8 @@
 *                           change api: satantoff()
 *           2014/08/31 1.13 add member cov and vco in peph_t sturct
 *           2014/10/13 1.14 fix bug on clock error variance in peph2pos()
+*           2015/05/10 1.15 add api readfcb()
+*                           modify api readdcb()
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -318,12 +320,12 @@ extern int readsap(const char *file, gtime_t time, nav_t *nav)
     return 1;
 }
 /* read dcb parameters file --------------------------------------------------*/
-static int readdcbf(const char *file, nav_t *nav)
+static int readdcbf(const char *file, nav_t *nav, const sta_t *sta)
 {
     FILE *fp;
     double cbias;
-    int sat,type=0;
-    char buff[256];
+    char buff[256],str1[32],str2[32]="";
+    int i,j,sat,type=0;
     
     trace(3,"readdcbf: file=%s\n",file);
     
@@ -337,11 +339,22 @@ static int readdcbf(const char *file, nav_t *nav)
         else if (strstr(buff,"DIFFERENTIAL (P1-C1) CODE BIASES")) type=2;
         else if (strstr(buff,"DIFFERENTIAL (P2-C2) CODE BIASES")) type=3;
         
-        if (!type) continue;
+        if (!type||sscanf(buff,"%s %s",str1,str2)<1) continue;
         
-        if (!(sat=satid2no(buff))||(cbias=str2num(buff,26,9))==0.0) continue;
+        if ((cbias=str2num(buff,26,9))==0.0) continue;
         
-        nav->cbias[sat-1][type-1]=cbias*1E-9*CLIGHT; /* ns -> m */
+        if (sta&&(!strcmp(str1,"G")||!strcmp(str1,"R"))) { /* receiver dcb */
+            for (i=0;i<MAXRCV;i++) {
+                if (!strcmp(sta[i].name,str2)) break;
+            }
+            if (i<MAXRCV) {
+                j=!strcmp(str1,"G")?0:1;
+                nav->rbias[i][j][type-1]=cbias*1E-9*CLIGHT; /* ns -> m */
+            }
+        }
+        else if ((sat=satid2no(str1))) { /* satellite dcb */
+            nav->cbias[sat-1][type-1]=cbias*1E-9*CLIGHT; /* ns -> m */
+        }
     }
     fclose(fp);
     
@@ -351,10 +364,12 @@ static int readdcbf(const char *file, nav_t *nav)
 * read differential code bias (dcb) parameters
 * args   : char   *file       I   dcb parameters file (wild-card * expanded)
 *          nav_t  *nav        IO  navigation data
+*          sta_t  *sta        I   station info data to inport receiver dcb
+*                                 (NULL: no use)
 * return : status (1:ok,0:error)
 * notes  : currently only p1-c1 bias of code *.dcb file
 *-----------------------------------------------------------------------------*/
-extern int readdcb(const char *file, nav_t *nav)
+extern int readdcb(const char *file, nav_t *nav, const sta_t *sta)
 {
     int i,j,n;
     char *efiles[MAXEXFILE]={0};
@@ -373,10 +388,111 @@ extern int readdcb(const char *file, nav_t *nav)
     n=expath(file,efiles,MAXEXFILE);
     
     for (i=0;i<n;i++) {
-        readdcbf(efiles[i],nav);
+        readdcbf(efiles[i],nav,sta);
     }
     for (i=0;i<MAXEXFILE;i++) free(efiles[i]);
     
+    return 1;
+}
+/* add satellite fcb ---------------------------------------------------------*/
+static int addfcb(nav_t *nav, gtime_t ts, gtime_t te, int sat,
+                  const double *bias, const double *std)
+{
+    fcbd_t *nav_fcb;
+    int i,j;
+    
+    if (nav->nf>0&&fabs(timediff(ts,nav->fcb[nav->nf-1].ts))<=1e-3) {
+        for (i=0;i<3;i++) {
+            nav->fcb[nav->nf-1].bias[sat-1][i]=bias[i];
+            nav->fcb[nav->nf-1].std [sat-1][i]=std [i];
+        }
+        return 1;
+    }
+    if (nav->nf>=nav->nfmax) {
+        nav->nfmax=nav->nfmax<=0?2048:nav->nfmax*2;
+        if (!(nav_fcb=(fcbd_t *)realloc(nav->fcb,sizeof(fcbd_t)*nav->nfmax))) {
+            free(nav->fcb); nav->nf=nav->nfmax=0;
+            return 0;
+        }
+        nav->fcb=nav_fcb;
+    }
+    for (i=0;i<MAXSAT;i++) for (j=0;j<3;j++) {
+        nav->fcb[nav->nf].bias[i][j]=nav->fcb[nav->nf].std[i][j]=0.0;
+    }
+    for (i=0;i<3;i++) {
+        nav->fcb[nav->nf].bias[sat-1][i]=bias[i];
+        nav->fcb[nav->nf].std [sat-1][i]=std [i];
+    }
+    nav->fcb[nav->nf  ].ts=ts;
+    nav->fcb[nav->nf++].te=te;
+    return 1;
+}
+/* read satellite fcb file ---------------------------------------------------*/
+static int readfcbf(const char *file, nav_t *nav)
+{
+    FILE *fp;
+    gtime_t ts,te;
+    double ep1[6],ep2[6],bias[3]={0},std[3]={0};
+    char buff[1024],str[32],*p;
+    int sat;
+    
+    trace(3,"readfcbf: file=%s\n",file);
+    
+    if (!(fp=fopen(file,"r"))) {
+        trace(2,"fcb parameters file open error: %s\n",file);
+        return 0;
+    }
+    while (fgets(buff,sizeof(buff),fp)) {
+        if ((p=strchr(buff,'#'))) *p='\0';
+        if (sscanf(buff,"%lf/%lf/%lf %lf:%lf:%lf %lf/%lf/%lf %lf:%lf:%lf %s"
+                   "%lf %lf %lf %lf %lf %lf",ep1,ep1+1,ep1+2,ep1+3,ep1+4,ep1+5,
+                   ep2,ep2+1,ep2+2,ep2+3,ep2+4,ep2+5,str,bias,std,bias+1,std+1,
+                   bias+2,std+2)<17) continue;
+        if (!(sat=satid2no(str))) continue;
+        ts=epoch2time(ep1);
+        te=epoch2time(ep2);
+        if (!addfcb(nav,ts,te,sat,bias,std)) return 0;
+    }
+    fclose(fp);
+    return 1;
+}
+/* compare satellite fcb -----------------------------------------------------*/
+static int cmpfcb(const void *p1, const void *p2)
+{
+    fcbd_t *q1=(fcbd_t *)p1,*q2=(fcbd_t *)p2;
+    double tt=timediff(q1->ts,q2->ts);
+    return tt<-1E-3?-1:(tt>1E-3?1:0);
+}
+/* read satellite fcb data -----------------------------------------------------
+* read satellite fractional cycle bias (dcb) parameters
+* args   : char   *file       I   fcb parameters file (wild-card * expanded)
+*          nav_t  *nav        IO  navigation data
+* return : status (1:ok,0:error)
+* notes  : fcb data appended to navigation data
+*-----------------------------------------------------------------------------*/
+extern int readfcb(const char *file, nav_t *nav)
+{
+    char *efiles[MAXEXFILE]={0};
+    int i,n;
+    
+    trace(3,"readfcb : file=%s\n",file);
+    
+    for (i=0;i<MAXEXFILE;i++) {
+        if (!(efiles[i]=(char *)malloc(1024))) {
+            for (i--;i>=0;i--) free(efiles[i]);
+            return 0;
+        }
+    }
+    n=expath(file,efiles,MAXEXFILE);
+    
+    for (i=0;i<n;i++) {
+        readfcbf(efiles[i],nav);
+    }
+    for (i=0;i<MAXEXFILE;i++) free(efiles[i]);
+    
+    if (nav->nf>1) {
+        qsort(nav->fcb,nav->nf,sizeof(fcbd_t),cmpfcb);
+    }
     return 1;
 }
 /* polynomial interpolation by Neville's algorithm ---------------------------*/
@@ -405,7 +521,7 @@ static int pephpos(gtime_t time, int sat, const nav_t *nav, double *rs,
     if (nav->ne<NMAX+1||
         timediff(time,nav->peph[0].time)<-MAXDTE||
         timediff(time,nav->peph[nav->ne-1].time)>MAXDTE) {
-        trace(2,"no prec ephem %s sat=%2d\n",time_str(time,0),sat);
+        trace(3,"no prec ephem %s sat=%2d\n",time_str(time,0),sat);
         return 0;
     }
     /* binary search */
@@ -422,7 +538,7 @@ static int pephpos(gtime_t time, int sat, const nav_t *nav, double *rs,
     for (j=0;j<=NMAX;j++) {
         t[j]=timediff(nav->peph[i+j].time,time);
         if (norm(nav->peph[i+j].pos[sat-1],3)<=0.0) {
-            trace(2,"prec ephem outage %s sat=%2d\n",time_str(time,0),sat);
+            trace(3,"prec ephem outage %s sat=%2d\n",time_str(time,0),sat);
             return 0;
         }
     }

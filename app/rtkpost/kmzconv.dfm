@@ -4,7 +4,7 @@ object ConvDialog: TConvDialog
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Google Earth Converter'
-  ClientHeight = 261
+  ClientHeight = 268
   ClientWidth = 372
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -21,7 +21,7 @@ object ConvDialog: TConvDialog
     Left = 286
     Top = 239
     Width = 79
-    Height = 21
+    Height = 27
     Caption = '&Close'
     TabOrder = 1
     OnClick = BtnCloseClick
@@ -30,7 +30,7 @@ object ConvDialog: TConvDialog
     Left = 204
     Top = 239
     Width = 79
-    Height = 21
+    Height = 27
     Caption = 'Con&vert'
     TabOrder = 0
     OnClick = BtnConvertClick
@@ -274,10 +274,10 @@ object ConvDialog: TConvDialog
       OnChange = InputFileChange
     end
     object BtnInputFile: TButton
-      Left = 349
-      Top = 127
-      Width = 17
-      Height = 17
+      Left = 344
+      Top = 125
+      Width = 21
+      Height = 21
       Caption = '...'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -343,7 +343,7 @@ object ConvDialog: TConvDialog
     end
     object Compress: TCheckBox
       Left = 292
-      Top = 129
+      Top = 128
       Width = 45
       Height = 17
       Caption = '.kmz'
@@ -353,16 +353,16 @@ object ConvDialog: TConvDialog
     object GoogleEarthFile: TEdit
       Left = 8
       Top = 190
-      Width = 341
+      Width = 336
       Height = 21
       TabOrder = 25
       OnChange = GoogleEarthFileChange
     end
     object BtnGoogleEarthFile: TButton
-      Left = 349
-      Top = 190
-      Width = 17
-      Height = 20
+      Left = 344
+      Top = 189
+      Width = 21
+      Height = 21
       Caption = '...'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -378,7 +378,7 @@ object ConvDialog: TConvDialog
     Left = 7
     Top = 239
     Width = 79
-    Height = 21
+    Height = 27
     Caption = '&Google Earth'
     TabOrder = 3
     OnClick = BtnGoogleClick

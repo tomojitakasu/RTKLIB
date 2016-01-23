@@ -4,8 +4,8 @@ object AboutDialog: TAboutDialog
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'About'
-  ClientHeight = 93
-  ClientWidth = 275
+  ClientHeight = 101
+  ClientWidth = 299
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,9 +18,9 @@ object AboutDialog: TAboutDialog
   PixelsPerInch = 96
   TextHeight = 13
   object LabelVer: TLabel
-    Left = 68
-    Top = 32
-    Width = 203
+    Left = 69
+    Top = 31
+    Width = 224
     Height = 17
     Alignment = taCenter
     AutoSize = False
@@ -35,7 +35,7 @@ object AboutDialog: TAboutDialog
   object LabelAbout: TLabel
     Left = 68
     Top = 12
-    Width = 203
+    Width = 226
     Height = 19
     Alignment = taCenter
     AutoSize = False
@@ -50,7 +50,7 @@ object AboutDialog: TAboutDialog
   object LabelCopyright: TLabel
     Left = 70
     Top = 52
-    Width = 201
+    Width = 224
     Height = 27
     Alignment = taCenter
     AutoSize = False
@@ -6262,10 +6262,10 @@ object AboutDialog: TAboutDialog
     end
   end
   object BtnOk: TButton
-    Left = 238
-    Top = 70
-    Width = 35
-    Height = 21
+    Left = 257
+    Top = 72
+    Width = 41
+    Height = 28
     Caption = '&OK'
     ModalResult = 1
     TabOrder = 1

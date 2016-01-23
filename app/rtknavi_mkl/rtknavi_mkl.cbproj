@@ -286,6 +286,9 @@
 			<CppCompile Include="..\..\src\ppp_ar.c">
 				<BuildOrder>50</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="..\..\src\ppp_corr.c">
+				<BuildOrder>57</BuildOrder>
+			</CppCompile>
 			<CppCompile Include="..\..\src\preceph.c">
 				<BuildOrder>7</BuildOrder>
 				<BuildOrder>26</BuildOrder>
@@ -321,6 +324,9 @@
 			</CppCompile>
 			<CppCompile Include="..\..\src\rcv\rt17.c">
 				<BuildOrder>56</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\src\rcv\septentrio.c">
+				<BuildOrder>59</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\..\src\rcv\skytraq.c">
 				<BuildOrder>33</BuildOrder>
@@ -377,6 +383,9 @@
 				<BuildOrder>44</BuildOrder>
 				<BuildOrder>13</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="..\..\src\tides.c">
+				<BuildOrder>58</BuildOrder>
+			</CppCompile>
 			<CppCompile Include="..\..\src\tle.c">
 				<BuildOrder>53</BuildOrder>
 			</CppCompile>
@@ -393,10 +402,10 @@
 			<FormResources Include="..\appcmn\maskoptdlg.dfm"/>
 			<FormResources Include="..\appcmn\keydlg.dfm"/>
 			<FormResources Include="..\appcmn\ftpoptdlg.dfm"/>
-			<FormResources Include="..\rtknavi\naviopt.dfm"/>
-			<FormResources Include="..\rtknavi\navimain.dfm"/>
 			<FormResources Include="..\rtknavi\mondlg.dfm"/>
 			<FormResources Include="..\rtknavi\outstrdlg.dfm"/>
+			<FormResources Include="..\rtknavi\naviopt.dfm"/>
+			<FormResources Include="..\rtknavi\navimain.dfm"/>
 			<FormResources Include="..\rtknavi\rcvoptdlg.dfm"/>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>

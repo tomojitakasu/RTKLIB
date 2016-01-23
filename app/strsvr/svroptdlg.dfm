@@ -4,7 +4,7 @@ object SvrOptDialog: TSvrOptDialog
   BorderIcons = []
   BorderStyle = bsDialog
   Caption = 'Options'
-  ClientHeight = 276
+  ClientHeight = 281
   ClientWidth = 379
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -112,7 +112,7 @@ object SvrOptDialog: TSvrOptDialog
     Left = 179
     Top = 253
     Width = 95
-    Height = 23
+    Height = 27
     Caption = '&OK'
     ModalResult = 1
     TabOrder = 0
@@ -122,7 +122,7 @@ object SvrOptDialog: TSvrOptDialog
     Left = 274
     Top = 253
     Width = 95
-    Height = 23
+    Height = 27
     Caption = '&Cancel'
     ModalResult = 2
     TabOrder = 1
@@ -219,7 +219,7 @@ object SvrOptDialog: TSvrOptDialog
   object BtnPos: TButton
     Left = 354
     Top = 118
-    Width = 17
+    Width = 21
     Height = 21
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
@@ -250,7 +250,7 @@ object SvrOptDialog: TSvrOptDialog
   object BtnLocalDir: TButton
     Left = 353
     Top = 208
-    Width = 17
+    Width = 21
     Height = 21
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET

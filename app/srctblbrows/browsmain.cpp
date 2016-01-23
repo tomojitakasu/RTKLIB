@@ -106,7 +106,7 @@ void __fastcall TMainForm::FormShow(TObject *Sender)
     }
     if (argc>=2) url=argv[1];
 	
-	Caption=title.sprintf("%s ver.%s",PRGNAME,VER_RTKLIB);
+	Caption=title.sprintf("%s ver.%s %s",PRGNAME,VER_RTKLIB,PATCH_LEVEL);
 	
 	list=ini->ReadString("srctbl","addrlist","");
 	for (p=list.c_str();*p;) {

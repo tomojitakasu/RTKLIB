@@ -12,6 +12,7 @@
 *           2013/04/15 1.1 support 0x01-05 beidou-2/compass ephemeris
 *           2013/05/18 1.2 fix bug on decoding obsflags in message 0x7f-05
 *           2014/04/27 1.3 fix bug on decoding iode for message 0x01-02
+*           2015/12/05 1.4 fix bug on decoding tgd for message 0x01-05
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -641,7 +642,7 @@ static int decode_bnx_01_04(raw_t *raw, unsigned char *buff, int len)
 static double bds_tgd(int tgd)
 {
     tgd&=0x3FF;
-    return (tgd&0x200)?-1E10*((~tgd)&0x1FF):1E-10*(tgd&0x1FF);
+    return (tgd&0x200)?-1E-10*((~tgd)&0x1FF):1E-10*(tgd&0x1FF);
 }
 /* decode binex mesaage 0x01-05: decoded beidou-2/compass ephmemeris ---------*/
 static int decode_bnx_01_05(raw_t *raw, unsigned char *buff, int len)

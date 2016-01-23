@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * convbin.c : convert receiver binary log file to rinex obs/nav, sbas messages
 *
-*          Copyright (C) 2007-2014 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2007-2016 by T.TAKASU, All rights reserved.
 *
 * options : -DWIN32 use windows file path separator
 *
@@ -25,6 +25,8 @@
 *           2013/05/19 1.8 support auto format for file path with wild-card
 *           2014/02/08 1.9 add option -span -trace -mask
 *           2014/08/26 1.10 add Trimble RT17 support
+*           2014/12/26 1.11 add option -nomask
+*           2016/01/23 1.12 enable septentrio
 *-----------------------------------------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>
@@ -67,6 +69,7 @@ static const char *help[]={
 " BINEX                 : big-endian, regular CRC, forward record (0xE2)",
 "                         0x01-01,0x01-02,0x01-03,0x01-04,0x01-06,0x7f-05",
 " Trimble               : RT17",
+" Septentrio            : SBF",
 " RINEX                 : OBS, NAV, GNAV, HNAV, LNAV, QNAV",
 "",
 " Options [default]",
@@ -90,6 +93,7 @@ static const char *help[]={
 "                  nvs  = NVS NV08C BINR",
 "                  binex= BINEX",
 "                  rt17 = Trimble RT17",
+"                  sbf  = Septentrio SBF",
 "                  rinex= RINEX",
 "     -ro opt      receiver options",
 "     -f freq      number of frequencies [2]",
@@ -109,7 +113,8 @@ static const char *help[]={
 "     -ot          include time correction in rinex nav header [off]",
 "     -ol          include leap seconds in rinex nav header [off]",
 "     -scan        scan input file [off]",
-"     -mask [sig[,...]] signal mask(s) (sig={G|R|E|J|S|C}L{1C|1P|1W|...})",
+"     -mask   [sig[,...]] signal mask(s) (sig={G|R|E|J|S|C}L{1C|1P|1W|...})",
+"     -nomask [sig[,...]] signal no mask (same as above)",
 "     -x sat       exclude satellite",
 "     -y sys       exclude systems (G:GPS,R:GLONASS,E:Galileo,J:QZSS,S:SBAS,C:BeiDou)",
 "     -d dir       output directory [same as input file]",
@@ -139,6 +144,7 @@ static const char *help[]={
 "     *.jps         Javad",
 "     *.bnx,*binex  BINEX",
 "     *.rt17        Trimble RT17",
+"     *.sbf         Septentrio SBF",
 "     *.obs,*.*o    RINEX OBS"
 };
 /* print help ----------------------------------------------------------------*/
@@ -258,14 +264,35 @@ static int convbin(int format, rnxopt_t *opt, const char *ifile, char **file,
     fprintf(stderr,"\n");
     return 0;
 }
+/* set signal mask -----------------------------------------------------------*/
+static void setmask(const char *argv, rnxopt_t *opt, int mask)
+{
+    char buff[1024],*p;
+    int i,code;
+    
+    strcpy(buff,argv);
+    for (p=strtok(buff,",");p;p=strtok(NULL,",")) {
+        if (strlen(p)<4||p[1]!='L') continue;
+        if      (p[0]=='G') i=0;
+        else if (p[0]=='R') i=1;
+        else if (p[0]=='E') i=2;
+        else if (p[0]=='J') i=3;
+        else if (p[0]=='S') i=4;
+        else if (p[0]=='C') i=5;
+        else continue;
+        if ((code=obs2code(p+2,NULL))) {
+            opt->mask[i][code-1]=mask?'1':'0';
+        }
+    }
+}
 /* parse command line options ------------------------------------------------*/
 static int cmdopts(int argc, char **argv, rnxopt_t *opt, char **ifile,
                    char **ofile, char **dir, int *trace)
 {
     double eps[]={1980,1,1,0,0,0},epe[]={2037,12,31,0,0,0};
     double epr[]={2010,1,1,0,0,0},span=0.0;
-    int i,j,k,sat,code,nf=2,nc=2,format=-1;
-    char *p,*sys,*fmt="",*paths[1],path[1024],buff[1024];
+    int i,j,k,sat,nf=2,nc=2,format=-1;
+    char *p,*sys,*fmt="",*paths[1],path[1024];
     
     opt->rnxver=2.11;
     opt->obstype=OBSTYPE_PR|OBSTYPE_CP;
@@ -364,20 +391,10 @@ static int cmdopts(int argc, char **argv, rnxopt_t *opt, char **ifile,
         }
         else if (!strcmp(argv[i],"-mask")&&i+1<argc) {
             for (j=0;j<6;j++) for (k=0;k<64;k++) opt->mask[j][k]='0';
-            strcpy(buff,argv[++i]);
-            for (p=strtok(buff,",");p;p=strtok(NULL,",")) {
-                if (strlen(p)<4||p[1]!='L') continue;
-                if      (p[0]=='G') j=0;
-                else if (p[0]=='R') j=1;
-                else if (p[0]=='E') j=2;
-                else if (p[0]=='J') j=3;
-                else if (p[0]=='S') j=4;
-                else if (p[0]=='C') j=5;
-                else continue;
-                if ((code=obs2code(p+2,NULL))) {
-                    opt->mask[j][code-1]='1';
-                }
-            }
+            setmask(argv[++i],opt,1);
+        }
+        else if (!strcmp(argv[i],"-nomask")&&i+1<argc) {
+            setmask(argv[++i],opt,0);
         }
         else if (!strcmp(argv[i],"-x" )&&i+1<argc) {
             if ((sat=satid2no(argv[++i]))) opt->exsats[sat-1]=1;
@@ -434,6 +451,7 @@ static int cmdopts(int argc, char **argv, rnxopt_t *opt, char **ifile,
         else if (!strcmp(fmt,"nvs"  )) format=STRFMT_NVS;
         else if (!strcmp(fmt,"binex")) format=STRFMT_BINEX;
         else if (!strcmp(fmt,"rt17" )) format=STRFMT_RT17;
+        else if (!strcmp(fmt,"sbf"  )) format=STRFMT_SEPT;
         else if (!strcmp(fmt,"rinex")) format=STRFMT_RINEX;
     }
     else {
@@ -450,6 +468,7 @@ static int cmdopts(int argc, char **argv, rnxopt_t *opt, char **ifile,
         else if (!strcmp(p,".bnx"  ))  format=STRFMT_BINEX;
         else if (!strcmp(p,".binex"))  format=STRFMT_BINEX;
         else if (!strcmp(p,".rt17" ))  format=STRFMT_RT17;
+        else if (!strcmp(p,".sbf"  ))  format=STRFMT_SEPT;
         else if (!strcmp(p,".obs"  ))  format=STRFMT_RINEX;
         else if (!strcmp(p+3,"o"   ))  format=STRFMT_RINEX;
         else if (!strcmp(p+3,"O"   ))  format=STRFMT_RINEX;

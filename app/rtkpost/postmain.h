@@ -92,6 +92,9 @@ __published:
 	TSpeedButton *BtnOutputView2;
 	TSpeedButton *BtnOutputView1;
 	TLabel *LabelOutDir;
+	TComboBox *InputFile6;
+	TButton *BtnInputFile6;
+	TSpeedButton *BtnInputView6;
 	
 	void __fastcall FormCreate         (TObject *Sender);
 	void __fastcall FormShow           (TObject *Sender);
@@ -141,6 +144,8 @@ __published:
 	void __fastcall OutDirEnaClick(TObject *Sender);
 	void __fastcall BtnOutDirClick(TObject *Sender);
 	void __fastcall OutDirChange(TObject *Sender);
+	void __fastcall BtnInputFile6Click(TObject *Sender);
+	void __fastcall BtnInputView6Click(TObject *Sender);
 
 private:
 	void __fastcall DropFiles          (TWMDropFiles msg); // for files drop
@@ -176,7 +181,7 @@ public:
 	
 	// options
 	int PosMode,Freq,Solution,DynamicModel,IonoOpt,TropOpt,RcvBiasEst;
-	int NumIter,CodeSmooth,TideCorr;
+	int ARIter,NumIter,CodeSmooth,TideCorr;
 	int OutCntResetAmb,FixCntHoldAmb,LockCntFixAmb,RovPosType,RefPosType;
 	int SatEphem,NavSys;
 	int RovAntPcv,RefAntPcv,AmbRes,GloAmbRes,BdsAmbRes;
@@ -185,7 +190,7 @@ public:
 	int SolFormat,TimeFormat,LatLonFormat,IntpRefObs,NetRSCorr,SatClkCorr;
 	int SbasCorr,SbasCorr1,SbasCorr2,SbasCorr3,SbasCorr4,TimeDecimal;
 	int SolStatic,SbasSat,MapFunc;
-	int PosOpt[5];
+	int PosOpt[6];
 	double ElMask,MaxAgeDiff,RejectThres,RejectGdop;
 	double MeasErrR1,MeasErrR2,MeasErr2,MeasErr3,MeasErr4,MeasErr5;
 	double SatClkStab,RovAntE,RovAntN,RovAntU,RefAntE,RefAntN,RefAntU;
@@ -196,7 +201,7 @@ public:
 	snrmask_t SnrMask;
 	exterr_t ExtErr;
 	
-	AnsiString RnxOpts1,RnxOpts2;
+	AnsiString RnxOpts1,RnxOpts2,PPPOpts;
 	AnsiString FieldSep,RovAnt,RefAnt,AntPcvFile,StaPosFile,PrecEphFile;
 	AnsiString NetRSCorrFile1,NetRSCorrFile2,SatClkCorrFile,GoogleEarthFile;
 	AnsiString GeoidDataFile,IonoFile,DCBFile,EOPFile,BLQFile;

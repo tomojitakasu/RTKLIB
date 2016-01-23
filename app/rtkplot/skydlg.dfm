@@ -18,31 +18,31 @@ object SkyImgDialog: TSkyImgDialog
   PixelsPerInch = 96
   TextHeight = 13
   object BtnClose: TButton
-    Left = 281
-    Top = 181
-    Width = 83
-    Height = 23
+    Left = 289
+    Top = 180
+    Width = 78
+    Height = 25
     Caption = '&Close'
     TabOrder = 0
     OnClick = BtnCloseClick
   end
   object BtnSave: TButton
-    Left = 1
-    Top = 181
-    Width = 83
-    Height = 23
+    Left = -1
+    Top = 180
+    Width = 68
+    Height = 25
     Caption = '&Save Tag'
     ModalResult = 1
-    TabOrder = 1
+    TabOrder = 4
     OnClick = BtnSaveClick
   end
   object BtnUpdate: TButton
-    Left = 197
-    Top = 181
-    Width = 83
-    Height = 23
+    Left = 212
+    Top = 180
+    Width = 78
+    Height = 25
     Caption = '&Update'
-    TabOrder = 2
+    TabOrder = 1
     OnClick = BtnUpdateClick
   end
   object Panel1: TPanel
@@ -51,7 +51,7 @@ object SkyImgDialog: TSkyImgDialog
     Width = 366
     Height = 28
     BevelOuter = bvNone
-    TabOrder = 3
+    TabOrder = 2
     object Label1: TLabel
       Left = 10
       Top = 7
@@ -100,7 +100,7 @@ object SkyImgDialog: TSkyImgDialog
     Width = 365
     Height = 147
     BevelOuter = bvNone
-    TabOrder = 4
+    TabOrder = 3
     object Label6: TLabel
       Left = 11
       Top = 46
@@ -207,8 +207,8 @@ object SkyImgDialog: TSkyImgDialog
       Caption = '10'
     end
     object Label8: TLabel
-      Left = 114
-      Top = 128
+      Left = 105
+      Top = 129
       Width = 46
       Height = 13
       Caption = 'Resample'
@@ -267,7 +267,7 @@ object SkyImgDialog: TSkyImgDialog
     end
     object SkyElMask: TCheckBox
       Left = 10
-      Top = 126
+      Top = 127
       Width = 93
       Height = 17
       Caption = 'Elevation Mask'
@@ -428,7 +428,7 @@ object SkyImgDialog: TSkyImgDialog
       Text = '0.0'
     end
     object SkyRes: TComboBox
-      Left = 166
+      Left = 156
       Top = 125
       Width = 37
       Height = 21
@@ -449,21 +449,78 @@ object SkyImgDialog: TSkyImgDialog
       TabOrder = 21
       Text = '0.0'
     end
+    object SkyBinarize: TCheckBox
+      Left = 207
+      Top = 127
+      Width = 61
+      Height = 17
+      Caption = 'Binarize'
+      TabOrder = 24
+      OnMouseUp = SkyBinarizeMouseUp
+    end
+    object SkyBinThres2: TEdit
+      Left = 313
+      Top = 126
+      Width = 30
+      Height = 21
+      TabOrder = 27
+      Text = '0.00'
+    end
+    object SkyBinThres2UpDown: TUpDown
+      Left = 343
+      Top = 126
+      Width = 17
+      Height = 21
+      Min = -32000
+      Max = 32000
+      TabOrder = 28
+      Wrap = True
+      OnChangingEx = SkyBinThres2UpDownChangingEx
+    end
+    object SkyBinThres1: TEdit
+      Left = 266
+      Top = 126
+      Width = 30
+      Height = 21
+      TabOrder = 25
+      Text = '0.00'
+    end
+    object SkyBinThres1UpDown: TUpDown
+      Left = 296
+      Top = 126
+      Width = 17
+      Height = 21
+      Min = -32000
+      Max = 32000
+      TabOrder = 26
+      Wrap = True
+      OnChangingEx = SkyBinThres1UpDownChangingEx
+    end
   end
   object BtnLoad: TButton
-    Left = 84
-    Top = 181
-    Width = 83
-    Height = 23
+    Left = 66
+    Top = 180
+    Width = 68
+    Height = 25
     Caption = '&Load Tag...'
     ModalResult = 1
     TabOrder = 5
     OnClick = BtnLoadClick
   end
+  object BtnGenMask: TButton
+    Left = 139
+    Top = 180
+    Width = 68
+    Height = 25
+    Caption = '&Gen Mask'
+    ModalResult = 1
+    TabOrder = 6
+    OnClick = BtnGenMaskClick
+  end
   object OpenTagDialog: TOpenDialog
     Filter = 'Tag File (*.tag)|*.tag|All (*.*)|*.*'
     Title = 'Load Tag'
-    Left = 244
-    Top = 153
+    Left = 5
+    Top = 4
   end
 end

@@ -419,7 +419,7 @@ void __fastcall TMonitorDialog::ShowRtk(void)
 	
 	i=1;
 	Tbl->Cells[0][i  ]="RTKLIB Version";
-	Tbl->Cells[1][i++]=VER_RTKLIB;
+	Tbl->Cells[1][i++]=s.sprintf("%s %s",VER_RTKLIB,PATCH_LEVEL);
 	
 	Tbl->Cells[0][i  ]="RTK Server Thread";
 	Tbl->Cells[1][i++]=s.sprintf("%d",thread);
@@ -1830,22 +1830,19 @@ void __fastcall TMonitorDialog::SetRtcmSsr(void)
 	AnsiString s,label[]={
 		"SAT","Status","UDI(s)","UDHR(s)","IOD","URA","Datum","T0",
 		"D0-A(m)","D0-C(m)","D0-R(m)","D1-A(mm/s)","D1-C(mm/s)","D1-R(mm/s)",
-		"C0(m)","C1(mm/s)","C2(mm/s2)","C-HR(m)"
+		"C0(m)","C1(mm/s)","C2(mm/s2)","C-HR(m)","Code Bias(m)",
+		"Phase Bias(m)"
 	};
-	int i,width[]={25,30,30,30,30,25,15,115,50,50,50,50,50,50,50,50,50,50};
+	int i,width[]={
+		25,30,30,30,30,25,15,115,50,50,50,50,50,50,50,50,50,50,180,180
+	};
 	char *code;
 
-	Tbl->ColCount=18+MAXCODE;
+	Tbl->ColCount=20;
 	Tbl->RowCount=2;
-	for (i=0;i<18;i++) {
+	for (i=0;i<20;i++) {
 		Tbl->ColWidths[i]=width[i]*FontScale/96;
 		Tbl->Cells[i][0]=label[i];
-		Tbl->Cells[i][1]="";
-	}
-	for (i=18;i<Tbl->ColCount;i++) {
-		code=code2obs(i-17,NULL);
-		Tbl->ColWidths[i]=40*FontScale/96;
-		Tbl->Cells[i][0]=s.sprintf("BL%s(m)",code);
 		Tbl->Cells[i][1]="";
 	}
 }
@@ -1856,7 +1853,7 @@ void __fastcall TMonitorDialog::ShowRtcmSsr(void)
 	gtime_t time;
 	ssr_t ssr[MAXSAT];
 	int i,j,k,valid;
-	char tstr[64],id[32];
+	char tstr[64],id[32],buff[256]="",*p;
 
 	rtksvrlock(&rtksvr);
 	time=rtksvr.rtk.sol.time;
@@ -1894,9 +1891,18 @@ void __fastcall TMonitorDialog::ShowRtcmSsr(void)
 		Tbl->Cells[j++][i+1]=s.sprintf("%.3f",ssr[i].dclk[1]*1E3);
 		Tbl->Cells[j++][i+1]=s.sprintf("%.5f",ssr[i].dclk[2]*1E3);
 		Tbl->Cells[j++][i+1]=s.sprintf("%.3f",ssr[i].hrclk);
-		for (k=1;k<=MAXCODE;k++) {
-			Tbl->Cells[j++][i+1]=s.sprintf("%.2f",ssr[i].cbias[k]);
+		buff[0]='\0';
+		for (p=buff,k=0;k<MAXCODE;k++) {
+			if (ssr[i].cbias[k]==0.0) continue;
+			p+=sprintf(p,"%s:%.3f ",code2obs(k+1,NULL),ssr[i].cbias[k]);
 		}
+		Tbl->Cells[j++][i+1]=buff;
+		buff[0]='\0';
+		for (p=buff,k=0;k<MAXCODE;k++) {
+			if (ssr[i].pbias[k]==0.0) continue;
+			p+=sprintf(p,"%s:%.3f ",code2obs(k+1,NULL),ssr[i].pbias[k]);
+		}
+		Tbl->Cells[j++][i+1]=buff;
 	}
 }
 //---------------------------------------------------------------------------

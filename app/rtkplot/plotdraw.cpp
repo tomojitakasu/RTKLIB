@@ -9,6 +9,7 @@
 #include "geview.h"
 #include "gmview.h"
 
+#define COL_ELMASK  clRed
 #define ATAN2(x,y)  ((x)*(x)+(y)*(y)>1E-12?atan2(x,y):0.0)
 
 // update plot --------------------------------------------------------------
@@ -1139,7 +1140,9 @@ void __fastcall TPlot::DrawSky(int level)
             x[i]=r*sin(i*D2R)*(1.0-2.0*ElMaskData[i]/PI);
             y[i]=r*cos(i*D2R)*(1.0-2.0*ElMaskData[i]/PI);
         }
-        GraphS->DrawPoly(x,y,361,CColor[1],0);
+        Disp->Canvas->Pen->Width=2;
+        GraphS->DrawPoly(x,y,361,COL_ELMASK,0);
+        Disp->Canvas->Pen->Width=1;
         delete [] x;
         delete [] y;
     }

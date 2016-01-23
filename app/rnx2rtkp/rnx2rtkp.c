@@ -13,6 +13,8 @@
 *           2010/01/28  1.5 add option -k
 *           2010/08/12  1.6 add option -y implementation (2.4.0_p1)
 *           2014/01/27  1.7 fix bug on default output time format
+*           2015/05/15  1.8 -r or -l options for fixed or ppp-fixed mode
+*           2015/06/12  1.9 output patch level in header
 *-----------------------------------------------------------------------------*/
 #include <stdarg.h>
 #include "rtklib.h"
@@ -20,7 +22,7 @@
 static const char rcsid[]="$Id: rnx2rtkp.c,v 1.1 2008/07/17 21:55:16 ttaka Exp $";
 
 #define PROGNAME    "rnx2rtkp"          /* program name */
-#define MAXFILE     8                   /* max number of input files */
+#define MAXFILE     16                  /* max number of input files */
 
 /* help text -----------------------------------------------------------------*/
 static const char *help[]={
@@ -64,7 +66,9 @@ static const char *help[]={
 " -d col    number of decimals in time [3]",
 " -s sep    field separator [' ']",
 " -r x y z  reference (base) receiver ecef pos (m) [average of single pos]",
+"           rover receiver ecef pos (m) for fixed or ppp-fixed mode",
 " -l lat lon hgt reference (base) receiver latitude/longitude/height (deg/m)",
+"           rover latitude/longitude/height for fixed or ppp-fixed mode",
 " -y level  output soltion status (0:off,1:states,2:residuals) [0]",
 " -x level  debug trace level (0:off) [0]"
 };
@@ -102,7 +106,7 @@ int main(int argc, char **argv)
     prcopt.refpos=1;
     prcopt.glomodear=1;
     solopt.timef=0;
-    sprintf(solopt.prog ,"%s ver.%s",PROGNAME,VER_RTKLIB);
+    sprintf(solopt.prog ,"%s ver.%s %s",PROGNAME,VER_RTKLIB,PATCH_LEVEL);
     sprintf(filopt.trace,"%s.trace",PROGNAME);
     
     /* load options from configuration file */
@@ -144,14 +148,16 @@ int main(int argc, char **argv)
         else if (!strcmp(argv[i],"-n")) solopt.posf=SOLF_NMEA;
         else if (!strcmp(argv[i],"-g")) solopt.degf=1;
         else if (!strcmp(argv[i],"-r")&&i+3<argc) {
-            prcopt.refpos=0;
+            prcopt.refpos=prcopt.rovpos=0;
             for (j=0;j<3;j++) prcopt.rb[j]=atof(argv[++i]);
+            matcpy(prcopt.ru,prcopt.rb,3,1);
         }
         else if (!strcmp(argv[i],"-l")&&i+3<argc) {
-            prcopt.refpos=0;
+            prcopt.refpos=prcopt.rovpos=0;
             for (j=0;j<3;j++) pos[j]=atof(argv[++i]);
             for (j=0;j<2;j++) pos[j]*=D2R;
             pos2ecef(pos,prcopt.rb);
+            matcpy(prcopt.ru,prcopt.rb,3,1);
         }
         else if (!strcmp(argv[i],"-y")&&i+1<argc) solopt.sstat=atoi(argv[++i]);
         else if (!strcmp(argv[i],"-x")&&i+1<argc) solopt.trace=atoi(argv[++i]);

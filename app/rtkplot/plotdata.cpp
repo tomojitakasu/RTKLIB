@@ -9,6 +9,7 @@
 static char path_str[MAXNFILE][1024];
 
 #define MAX_SIMOBS	16384			// max genrated obs epochs
+#define MAX_SKYIMG_R 2048			// max size of resampled sky image
 
 #define THRES_SLIP  2.0             // threshold of cycle-slip
 
@@ -303,14 +304,15 @@ void __fastcall TPlot::ReadElMaskData(AnsiString file)
         
         if (az0<az1&&az1<=360.0&&0.0<=el1&&el1<=90.0) {
             
-            for (j=(int)az0;j<=(int)az1;j++) ElMaskData[j]=el0*D2R;
+            for (j=(int)az0;j<(int)az1;j++) ElMaskData[j]=el0*D2R;
+            ElMaskData[j]=el1*D2R;
         }
         az0=az1; el0=el1;
     }
     fclose(fp);
     UpdatePlot();
 }
-// generate visibility data ----------------------------------------------------
+// generate vsibility data ----------------------------------------------------
 void __fastcall TPlot::GenVisData(void)
 {
     gtime_t time,ts,te;
@@ -415,26 +417,45 @@ void __fastcall TPlot::ReadMapData(AnsiString file)
     UpdatePlot();
 }
 // resample image pixel -----------------------------------------------------
-#define ResPixelNN(img1,x,y,b1,img2,i,j,b2) {\
+#define ResPixelNN(img1,x,y,b1,pix) {\
     int ix=(int)((x)+0.5),iy=(int)((y)+0.5);\
-    BYTE *p=(img1)+ix*3+iy*(b1),*q=(img2)+(i)*3+(j)*(b2);\
-    q[0]=p[0]; q[1]=p[1]; q[2]=p[2];\
+    BYTE *p=(img1)+ix*3+iy*(b1);\
+    pix[0]=p[0]; pix[1]=p[1]; pix[2]=p[2];\
 }
-#define ResPixelBL(img1,x,y,b1,img2,i,j,b2) {\
+#define ResPixelBL(img1,x,y,b1,pix) {\
     int ix=(int)(x),iy=(int)(y);\
     double dx1=(x)-ix,dy1=(y)-iy,dx2=1.0-dx1,dy2=1.0-dy1;\
     double a1=dx2*dy2,a2=dx2*dy1,a3=dx1*dy2,a4=dx1*dy1;\
-    BYTE *p1=(img1)+ix*3+iy*(b1),*p2=p1+(b1),*q=(img2)+(i)*3+(j)*(b2);\
-    q[0]=(BYTE)(a1*p1[0]+a2*p2[0]+a3*p1[3]+a4*p2[3]);\
-    q[1]=(BYTE)(a1*p1[1]+a2*p2[1]+a3*p1[4]+a4*p2[4]);\
-    q[2]=(BYTE)(a1*p1[2]+a2*p2[2]+a3*p1[5]+a4*p2[5]);\
+    BYTE *p1=(img1)+ix*3+iy*(b1),*p2=p1+(b1);\
+    pix[0]=(BYTE)(a1*p1[0]+a2*p2[0]+a3*p1[3]+a4*p2[3]);\
+    pix[1]=(BYTE)(a1*p1[1]+a2*p2[1]+a3*p1[4]+a4*p2[4]);\
+    pix[2]=(BYTE)(a1*p1[2]+a2*p2[2]+a3*p1[5]+a4*p2[5]);\
+}
+// rotate coordintates roll-pitch-yaw ---------------------------------------
+static void RPY(const double *rpy, double *R)
+{
+    double sr=sin(-rpy[0]*D2R),cr=cos(-rpy[0]*D2R);
+    double sp=sin(-rpy[1]*D2R),cp=cos(-rpy[1]*D2R);
+    double sy=sin(-rpy[2]*D2R),cy=cos(-rpy[2]*D2R);
+    R[0]=cy*cr-sy*sp*sr; R[1]=-sy*cp; R[2]=cy*sr+sy*sp*cr;
+    R[3]=sy*cr+cy*sp*sr; R[4]=cy*cp;  R[5]=sy*sr-cy*sp*cr;
+    R[6]=-cp*sr;         R[7]=sp;     R[8]=cp*cr;
+}
+// RGB -> YCrCb (ITU-R BT.601) ----------------------------------------------
+static void YCrCb(const BYTE *pix, double *Y)
+{
+    //         R(0-255)     G(0-255)     B(0-255)
+    Y[0]=( 0.299*pix[0]+0.587*pix[1]+0.114*pix[2])/255; // Y  (0-1)
+    Y[1]=( 0.500*pix[0]-0.419*pix[1]+0.081*pix[2])/255; // Cr (-.5-.5)
+    Y[2]=(-0.169*pix[0]-0.331*pix[1]+0.500*pix[2])/255; // Cb (-.5-.5)
 }
 // update sky image ---------------------------------------------------------
 void __fastcall TPlot::UpdateSky(void)
 {
     BITMAP bm1,bm2;
-    double x,y,xp,yp,siny,cosy,r,dr,dist;
-    int i,j,k,w1,h1,b1,w2,h2,b2;
+    BYTE *pix;
+    double x,y,xp,yp,r,a,b,p[3],q[3],R[9]={0},dr,dist,Yz[3]={0},Y[3];
+    int i,j,k,w1,h1,b1,w2,h2,b2,wz,nz=0;
     
     if (!GetObject(SkyImageI->Handle,sizeof(bm1),&bm1)||
         !GetObject(SkyImageR->Handle,sizeof(bm2),&bm2)||
@@ -446,32 +467,86 @@ void __fastcall TPlot::UpdateSky(void)
     
     memset(bm2.bmBits,224,b2*h2); // fill bitmap by silver
     
-    siny=sin(SkyFov[2]*D2R);
-    cosy=cos(SkyFov[2]*D2R);
-    
+    if (norm(SkyFov,3)>1e-12) {
+        RPY(SkyFov,R);
+    }
+    if (SkyBinarize) { // average of zenith image
+        wz=h1/16; // sky area size
+        for (i=w1/2-wz;i<=w1/2+wz;i++) for (j=h1/2-wz;j<=h1/2+wz;j++) {
+            pix=(BYTE *)bm1.bmBits+i*3+j*b1;
+            YCrCb(pix,Y);
+            for (k=0;k<3;k++) Yz[k]+=Y[k];
+            nz++;
+        }
+        if (nz>0) {
+            for (k=0;k<3;k++) Yz[k]/=nz;
+        }
+    }
     for (j=0;j<h2;j++) for (i=0;i<w2;i++) {
         xp=(w2/2.0-i)/SkyScaleR;
         yp=(j-h2/2.0)/SkyScaleR;
         r=sqrt(SQR(xp)+SQR(yp));
-        if (SkyDestCorr&&r<1.0&&r>0.0) {
+        if (SkyElMask&&r>1.0) continue;
+        
+        // rotate coordinates roll-pitch-yaw
+        if (norm(SkyFov,3)>1e-12) {
+            if (r<1e-12) {
+                p[0]=p[1]=0.0;
+                p[2]=1.0;
+            }
+            else {
+                a=sin(r*PI/2.0);
+                p[0]=a*xp/r;
+                p[1]=a*yp/r;
+                p[2]=cos(r*PI/2.0);
+            }
+            q[0]=R[0]*p[0]+R[3]*p[1]+R[6]*p[2];
+            q[1]=R[1]*p[0]+R[4]*p[1]+R[7]*p[2];
+            q[2]=R[2]*p[0]+R[5]*p[1]+R[8]*p[2];
+            if (q[2]>=1.0) {
+                xp=yp=r=0.0;
+            }
+            else {
+                r=acos(q[2])/(PI/2.0);
+                a=sqrt(SQR(q[0])+SQR(q[1]));
+                xp=r*q[0]/a;
+                yp=r*q[1]/a;
+            }
+        }
+        // correct lense distortion
+        if (SkyDestCorr) {
+            if (r<=0.0||r>=1.0) continue;
             k=(int)(r*9.0); dr=r*9.0-k;
             dist=k>8?SkyDest[9]:(1.0-dr)*SkyDest[k]+dr*SkyDest[k+1];
             xp*=dist/r;
             yp*=dist/r;
         }
-        else if (r<1.0||!SkyElMask) {
+        else {
             xp*=SkyScale;
             yp*=SkyScale;
         }
-        else continue;
-        x=SkyCent[0]+cosy*xp-siny*yp; if (SkyFlip) x=w1-x;
-        y=SkyCent[1]+siny*xp+cosy*yp;
+        if (SkyFlip) xp=-xp;
+        x=SkyCent[0]+xp;
+        y=SkyCent[1]+yp;
         if (x<0.0||x>=w1-1||y<0.0||y>=h1-1) continue;
+        pix=(BYTE *)bm2.bmBits+i*3+j*b2;
         if (!SkyRes) {
-            ResPixelNN((BYTE *)bm1.bmBits,x,y,b1,(BYTE *)bm2.bmBits,i,j,b2)
+            ResPixelNN((BYTE *)bm1.bmBits,x,y,b1,pix)
         }
         else {
-            ResPixelBL((BYTE *)bm1.bmBits,x,y,b1,(BYTE *)bm2.bmBits,i,j,b2)
+            ResPixelBL((BYTE *)bm1.bmBits,x,y,b1,pix)
+        }
+        if (SkyBinarize) {
+            YCrCb(pix,Y);
+            for (k=1;k<3;k++) Y[k]-=Yz[k];
+            
+            // threshold by brightness and color-distance
+            if (Y[0]>SkyBinThres1&&norm(Y+1,2)<SkyBinThres2) {
+                pix[0]=pix[1]=pix[2]=255; // sky
+            }
+            else {
+                pix[0]=pix[1]=pix[2]=96; // others
+            }
         }
     }
     UpdatePlot();
@@ -505,6 +580,9 @@ void __fastcall TPlot::ReadSkyTag(AnsiString file)
                 SkyDest+2,SkyDest+3,SkyDest+4,SkyDest+5,SkyDest+6,SkyDest+7,
                 SkyDest+8,SkyDest+9);
         }
+        else if (strstr(buff,"binarize")==buff) sscanf(p+1,"%d",&SkyBinarize);
+        else if (strstr(buff,"binthr1")==buff) sscanf(p+1,"%lf",&SkyBinThres1);
+        else if (strstr(buff,"binthr2")==buff) sscanf(p+1,"%lf",&SkyBinThres2);
     }
     fclose(fp);
 }
@@ -513,7 +591,7 @@ void __fastcall TPlot::ReadSkyData(AnsiString file)
 {
     TJPEGImage *image=new TJPEGImage;
     AnsiString s;
-    int i,w,h;
+    int i,w,h,wr;
     
     trace(3,"ReadSkyData\n");
     
@@ -529,14 +607,16 @@ void __fastcall TPlot::ReadSkyData(AnsiString file)
     SkyImageR->Assign(image);
     w=MAX(SkyImageI->Width,SkyImageI->Height);
     h=MIN(SkyImageI->Width,SkyImageI->Height);
-    SkyImageR->SetSize(w,w);
+    wr=MIN(w,MAX_SKYIMG_R);
+    SkyImageR->SetSize(wr,wr);
     SkyImageFile=file;
     SkySize[0]=SkyImageI->Width;
     SkySize[1]=SkyImageI->Height;
     SkyCent[0]=SkySize[0]/2.0;
     SkyCent[1]=SkySize[1]/2.0;
     SkyFov[0]=SkyFov[1]=SkyFov[2]=0.0;
-    SkyScale=SkyScaleR=h/2.0;
+    SkyScale=h/2.0;
+    SkyScaleR=SkyScale*wr/w;
     SkyDestCorr=SkyRes=SkyFlip=0;
     SkyElMask=1;
     for (i=0;i<10;i++) SkyDest[i]=0.0;
@@ -737,6 +817,28 @@ void __fastcall TPlot::SaveSnrMp(AnsiString file)
             fprintf(fp,"%s %6s %8.1f %8.1f %9.2f %10.4f\n",tstr,sat,Az[j]*R2D,
                     El[j]*R2D,Obs.data[j].SNR[k]*0.25,!Mp[k]?0.0:Mp[k][j]);
         }
+    }
+    fclose(fp);
+}
+// save elev mask --------------------------------------------------------------
+void __fastcall TPlot::SaveElMask(AnsiString file)
+{
+    FILE *fp;
+    double el,el0=0.0;
+    int az;
+    
+    trace(3,"SaveElMask: file=%s\n",file.c_str());
+    
+    if (!(fp=fopen(file.c_str(),"w"))) return;
+    
+    fprintf(fp,"%% Elevation Mask\n");
+    fprintf(fp,"%% AZ(deg) EL(deg)\n");
+    
+    for (az=0;az<=360;az++) {
+        el=floor(ElMaskData[az]*R2D/0.1+0.5)*0.1;
+        if (el==el0) continue;
+        fprintf(fp,"%9.1f %6.1f\n",(double)az,el);
+        el0=el;
     }
     fclose(fp);
 }
@@ -1104,13 +1206,15 @@ void __fastcall TPlot::Clear(void)
     if (!ConnectState) {
         initsolbuf(SolData  ,0,0);
         initsolbuf(SolData+1,0,0);
-        Caption=Title!=""?Title:s.sprintf("%s ver.%s",PRGNAME,VER_RTKLIB);
+        Caption=Title!=""?Title:s.sprintf("%s ver.%s %s",PRGNAME,VER_RTKLIB,PATCH_LEVEL);
     }
     else {
         initsolbuf(SolData  ,1,RtBuffSize+1);
         initsolbuf(SolData+1,1,RtBuffSize+1);
     }
     GoogleEarthView->Clear();
+    
+    for (i=0;i<=360;i++) ElMaskData[i]=0.0;
     
     UpdateTime();
     UpdatePlot();

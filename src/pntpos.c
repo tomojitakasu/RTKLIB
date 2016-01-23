@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * pntpos.c : standard positioning
 *
-*          Copyright (C) 2007-2010 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2007-2015 by T.TAKASU, All rights reserved.
 *
 * version : $Revision:$ $Date:$
 * history : 2010/07/28 1.0  moved from rtkcmn.c
@@ -15,6 +15,7 @@
 *           2011/11/08 1.2  enable snr mask for single-mode (rtklib_2.4.1_p3)
 *           2012/12/25 1.3  add variable snr mask
 *           2014/05/26 1.4  support galileo and beidou
+*           2015/03/19 1.5  fix bug on ionosphere correction for GLO and BDS
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -201,9 +202,9 @@ static int rescode(int iter, const obsd_t *obs, int n, const double *rs,
                    double *v, double *H, double *var, double *azel, int *vsat,
                    double *resp, int *ns)
 {
-    double r,dion,dtrp,vmeas,vion,vtrp,rr[3],pos[3],dtr,e[3],P;
+    double r,dion,dtrp,vmeas,vion,vtrp,rr[3],pos[3],dtr,e[3],P,lam_L1;
     int i,j,nv=0,sys,mask[4]={0};
-	
+    
     trace(3,"resprng : n=%d\n",n);
     
     for (i=0;i<3;i++) rr[i]=x[i]; dtr=x[3];
@@ -236,6 +237,10 @@ static int rescode(int iter, const obsd_t *obs, int n, const double *rs,
         if (!ionocorr(obs[i].time,nav,obs[i].sat,pos,azel+i*2,
                       iter>0?opt->ionoopt:IONOOPT_BRDC,&dion,&vion)) continue;
         
+        /* GPS-L1 -> L1/B1 */
+        if ((lam_L1=nav->lam[obs[i].sat-1][0])>0.0) {
+            dion*=SQR(lam_L1/lam_carr[0]);
+        }
         /* tropospheric corrections */
         if (!tropcorr(obs[i].time,nav,pos,azel+i*2,
                       iter>0?opt->tropopt:TROPOPT_SAAS,&dtrp,&vtrp)) {

@@ -4,7 +4,7 @@ object InputStrDialog: TInputStrDialog
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Input Streams'
-  ClientHeight = 232
+  ClientHeight = 235
   ClientWidth = 397
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -118,7 +118,7 @@ object InputStrDialog: TInputStrDialog
     Left = 308
     Top = 206
     Width = 83
-    Height = 23
+    Height = 27
     Caption = '&Cancel'
     ModalResult = 2
     TabOrder = 0
@@ -127,7 +127,7 @@ object InputStrDialog: TInputStrDialog
     Left = 224
     Top = 206
     Width = 83
-    Height = 23
+    Height = 27
     Caption = '&OK'
     ModalResult = 1
     TabOrder = 1

@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * solution.c : solution functions
 *
-*          Copyright (C) 2007-2013 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2007-2015 by T.TAKASU, All rights reserved.
 *
 * reference :
 *     [1] National Marine Electronic Association and International Marine
@@ -37,6 +37,10 @@
 *           2012/02/05  1.10 fix bug on output nmea gpgsv
 *           2013/02/18  1.11 support nmea GLGSA,GAGSA,GLCSV,GACSV sentence
 *           2013/09/01  1.12 fix bug on presentation of nmea time tag
+*           2015/02/11  1.13 fix bug on checksum of $GLGSA and $GAGSA
+*                            fix bug on satellite id of $GAGSA
+*           2016/01/17  1.14 support reading NMEA GxZDA
+*                            ignore NMEA talker ID
 *-----------------------------------------------------------------------------*/
 #include <ctype.h>
 #include "rtklib.h"
@@ -119,7 +123,7 @@ static void covtosol(const double *P, sol_t *sol)
     sol->qr[4]=(float)P[5]; /* yz or nu */
     sol->qr[5]=(float)P[2]; /* zx or ue */
 }
-/* decode nmea gprmc: recommended minumum data for gps -----------------------*/
+/* decode nmea gxrmc: recommended minumum data for gps -----------------------*/
 static int decode_nmearmc(char **val, int n, sol_t *sol)
 {
     double tod=0.0,lat=0.0,lon=0.0,vel=0.0,dir=0.0,date=0.0,ang=0.0,ep[6];
@@ -167,9 +171,33 @@ static int decode_nmearmc(char **val, int n, sol_t *sol)
           time_str(sol->time,0),sol->rr[0],sol->rr[1],sol->rr[2],sol->stat,sol->ns,
           vel,dir,ang,mew,mode);
     
-    return 1;
+    return 2; /* update time */
 }
-/* decode nmea gpgga: fix information ----------------------------------------*/
+/* decode nmea gxzda: utc day,month,year and local time zone offset ----------*/
+static int decode_nmeazda(char **val, int n, sol_t *sol)
+{
+    double tod=0.0,ep[6]={0};
+    int i;
+    
+    trace(4,"decode_nmeazda: n=%d\n",n);
+    
+    for (i=0;i<n;i++) {
+        switch (i) {
+            case  0: tod  =atof(val[i]); break; /* time in utc (hhmmss) */
+            case  1: ep[2]=atof(val[i]); break; /* day (0-31) */
+            case  2: ep[1]=atof(val[i]); break; /* mon (1-12) */
+            case  3: ep[0]=atof(val[i]); break; /* year */
+        }
+    }
+    septime(tod,ep+3,ep+4,ep+5);
+    sol->time=utc2gpst(epoch2time(ep));
+    sol->ns=0;
+    
+    trace(5,"decode_nmeazda: %s\n",time_str(sol->time,0));
+    
+    return 2; /* update time */
+}
+/* decode nmea gxgga: fix information ----------------------------------------*/
 static int decode_nmeagga(char **val, int n, sol_t *sol)
 {
     gtime_t time;
@@ -227,6 +255,15 @@ static int decode_nmeagga(char **val, int n, sol_t *sol)
     
     return 1;
 }
+/* test nmea -----------------------------------------------------------------*/
+static int test_nmea(const char *buff)
+{
+    if (strlen(buff)<6||buff[0]!='$') return 0;
+    return !strncmp(buff+1,"GP",2)||!strncmp(buff+1,"GA",2)||
+           !strncmp(buff+1,"GL",2)||!strncmp(buff+1,"GN",2)||
+           !strncmp(buff+1,"GB",2)||!strncmp(buff+1,"BD",2)||
+           !strncmp(buff+1,"QZ",2);
+}
 /* decode nmea ---------------------------------------------------------------*/
 static int decode_nmea(char *buff, sol_t *sol)
 {
@@ -242,11 +279,13 @@ static int decode_nmea(char *buff, sol_t *sol)
         }
         else break;
     }
-    /* decode nmea sentence */
-    if (!strcmp(val[0],"$GPRMC")) {
+    if (!strcmp(val[0]+3,"RMC")) { /* $xxRMC */
         return decode_nmearmc(val+1,n-1,sol);
     }
-    else if (!strcmp(val[0],"$GPGGA")) {
+    else if (!strcmp(val[0]+3,"ZDA")) { /* $xxZDA */
+        return decode_nmeazda(val+1,n-1,sol);
+    }
+    else if (!strcmp(val[0]+3,"GGA")) { /* $xxGGA */
         return decode_nmeagga(val+1,n-1,sol);
     }
     return 0;
@@ -497,11 +536,8 @@ static int decode_sol(char *buff, const solopt_t *opt, sol_t *sol, double *rb)
         decode_refpos(p+1,opt,rb);
         return 0;
     }
-    if (!strncmp(buff,"$GP",3)) { /* decode nmea */
-        if (!decode_nmea(buff,sol)) return 0;
-        
-        /* for time update only */
-        if (opt->posf!=SOLF_NMEA&&!strncmp(buff,"$GPRMC",6)) return 2;
+    if (test_nmea(buff)) { /* decode nmea */
+        return decode_nmea(buff,sol);
     }
     else { /* decode position record */
         if (!decode_solpos(buff,opt,sol)) return 0;
@@ -601,8 +637,10 @@ extern int inputsol(unsigned char data, gtime_t ts, gtime_t te, double tint,
         return -1;
     }
     /* decode solution */
+    sol.time=solbuf->time;
     if ((stat=decode_sol((char *)solbuf->buff,opt,&sol,solbuf->rb))>0) {
-        solbuf->time=sol.time; /* update current time */
+        if (stat) solbuf->time=sol.time; /* update current time */
+        if (stat!=1) return 0;
     }
     if (stat!=1||!screent(sol.time,ts,te,tint)||(qflag&&sol.stat!=qflag)) {
         return 0;
@@ -1090,13 +1128,13 @@ extern int outnmea_gga(unsigned char *buff, const sol_t *sol)
     p+=sprintf(p,"*%02X%c%c",sum,0x0D,0x0A);
     return p-(char *)buff;
 }
-/* output solution in the form of nmea GSA sentence --------------------------*/
+/* output solution in the form of nmea GSA sentences -------------------------*/
 extern int outnmea_gsa(unsigned char *buff, const sol_t *sol,
                        const ssat_t *ssat)
 {
     double azel[MAXSAT*2],dop[4];
     int i,sat,sys,nsat,prn[MAXSAT];
-    char *p=(char *)buff,*q,sum;
+    char *p=(char *)buff,*q,*s,sum;
     
     trace(3,"outnmea_gsa:\n");
     
@@ -1116,6 +1154,7 @@ extern int outnmea_gsa(unsigned char *buff, const sol_t *sol,
         nsat++;
     }
     if (nsat>0) {
+        s=p;
         p+=sprintf(p,"$GPGSA,A,%d",sol->stat<=0?1:3);
         for (i=0;i<12;i++) {
             if (i<nsat) p+=sprintf(p,",%02d",prn[i]);
@@ -1123,7 +1162,7 @@ extern int outnmea_gsa(unsigned char *buff, const sol_t *sol,
         }
         dops(nsat,azel,0.0,dop);
         p+=sprintf(p,",%3.1f,%3.1f,%3.1f,1",dop[1],dop[2],dop[3]);
-        for (q=(char *)buff+1,sum=0;*q;q++) sum^=*q; /* check-sum */
+        for (q=s+1,sum=0;*q;q++) sum^=*q; /* check-sum */
         p+=sprintf(p,"*%02X%c%c",sum,0x0D,0x0A);
     }
     /* GLGSA: glonass */
@@ -1134,6 +1173,7 @@ extern int outnmea_gsa(unsigned char *buff, const sol_t *sol,
         nsat++;
     }
     if (nsat>0) {
+        s=p;
         p+=sprintf(p,"$GLGSA,A,%d",sol->stat<=0?1:3);
         for (i=0;i<12;i++) {
             if (i<nsat) p+=sprintf(p,",%02d",prn[i]+64);
@@ -1141,7 +1181,7 @@ extern int outnmea_gsa(unsigned char *buff, const sol_t *sol,
         }
         dops(nsat,azel,0.0,dop);
         p+=sprintf(p,",%3.1f,%3.1f,%3.1f,2",dop[1],dop[2],dop[3]);
-        for (q=(char *)buff+1,sum=0;*q;q++) sum^=*q; /* check-sum */
+        for (q=s+1,sum=0;*q;q++) sum^=*q; /* check-sum */
         p+=sprintf(p,"*%02X%c%c",sum,0x0D,0x0A);
     }
     /* GAGSA: galileo */
@@ -1152,14 +1192,15 @@ extern int outnmea_gsa(unsigned char *buff, const sol_t *sol,
         nsat++;
     }
     if (nsat>0) {
+        s=p;
         p+=sprintf(p,"$GAGSA,A,%d",sol->stat<=0?1:3);
         for (i=0;i<12;i++) {
-            if (i<nsat) p+=sprintf(p,",%02d",prn[i]+64);
+            if (i<nsat) p+=sprintf(p,",%02d",prn[i]);
             else        p+=sprintf(p,",");
         }
         dops(nsat,azel,0.0,dop);
         p+=sprintf(p,",%3.1f,%3.1f,%3.1f,3",dop[1],dop[2],dop[3]);
-        for (q=(char *)buff+1,sum=0;*q;q++) sum^=*q; /* check-sum */
+        for (q=s+1,sum=0;*q;q++) sum^=*q; /* check-sum */
         p+=sprintf(p,"*%02X%c%c",sum,0x0D,0x0A);
     }
     return p-(char *)buff;

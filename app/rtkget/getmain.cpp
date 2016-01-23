@@ -99,7 +99,7 @@ void __fastcall TMainForm::FormCreate(TObject *Sender)
     strcpy(p,".ini");
     IniFile=file;
     
-    Caption=str.sprintf("%s v.%s",PRGNAME,VER_RTKLIB);
+    Caption=str.sprintf("%s v.%s %s",PRGNAME,VER_RTKLIB,PATCH_LEVEL);
     
     strcpy(buff,GetCommandLine());
     
