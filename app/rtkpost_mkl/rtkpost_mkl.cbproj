@@ -243,6 +243,9 @@
 				<BuildOrder>33</BuildOrder>
 				<BuildOrder>11</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="..\..\src\ppp_corr.c">
+				<BuildOrder>37</BuildOrder>
+			</CppCompile>
 			<CppCompile Include="..\..\src\preceph.c">
 				<BuildOrder>5</BuildOrder>
 				<BuildOrder>17</BuildOrder>
@@ -284,6 +287,9 @@
 			<CppCompile Include="..\..\src\solution.c">
 				<BuildOrder>9</BuildOrder>
 				<BuildOrder>31</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\src\tides.c">
+				<BuildOrder>38</BuildOrder>
 			</CppCompile>
 			<FormResources Include="..\appcmn\viewer.dfm"/>
 			<FormResources Include="..\appcmn\timedlg.dfm"/>

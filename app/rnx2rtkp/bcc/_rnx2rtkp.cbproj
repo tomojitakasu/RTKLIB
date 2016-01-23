@@ -139,6 +139,9 @@
 			<CppCompile Include="..\..\..\src\ppp_ar.c">
 				<BuildOrder>18</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="..\..\..\src\ppp_corr.c">
+				<BuildOrder>21</BuildOrder>
+			</CppCompile>
 			<CppCompile Include="..\..\..\src\preceph.c">
 				<BuildOrder>9</BuildOrder>
 				<BuildOrder>2</BuildOrder>
@@ -178,6 +181,9 @@
 			<CppCompile Include="..\..\..\src\solution.c">
 				<BuildOrder>8</BuildOrder>
 				<BuildOrder>3</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\src\tides.c">
+				<BuildOrder>22</BuildOrder>
 			</CppCompile>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>

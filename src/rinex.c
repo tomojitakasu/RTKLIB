@@ -80,6 +80,7 @@
 *                           support beidou
 *           2014/08/29 1.22 fix bug on reading gps "C2" in rinex 2.11 or 2.12
 *           2014/10/20 1.23 recognize "C2" in 2.12 as "C2W" instead of "C2D"
+*           2014/12/07 1.24 add read rinex option -SYS=...
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -675,8 +676,8 @@ static int decode_obsepoch(FILE *fp, char *buff, double ver, gtime_t *time,
     return n;
 }
 /* decode obs data -----------------------------------------------------------*/
-static int decode_obsdata(FILE *fp, char *buff, double ver, sigind_t *index,
-                          obsd_t *obs)
+static int decode_obsdata(FILE *fp, char *buff, double ver, int mask,
+                          sigind_t *index, obsd_t *obs)
 {
     sigind_t *ind;
     double val[MAXOBSTYPE]={0};
@@ -692,6 +693,9 @@ static int decode_obsdata(FILE *fp, char *buff, double ver, sigind_t *index,
     }
     if (!obs->sat) {
         trace(4,"decode_obsdata: unsupported sat sat=%s\n",satid);
+        stat=0;
+    }
+    else if (!(satsys(obs->sat,NULL)&mask)) {
         stat=0;
     }
     /* read obs data fields */
@@ -813,6 +817,26 @@ static int addobsdata(obs_t *obs, const obsd_t *data)
     obs->data[obs->n++]=*data;
     return 1;
 }
+/* set system mask -----------------------------------------------------------*/
+static int set_sysmask(const char *opt)
+{
+    const char *p;
+    int mask=SYS_NONE;
+    
+    if (!(p=strstr(opt,"-SYS="))) return SYS_ALL;
+    
+    for (p+=5;*p&&*p!=' ';p++) {
+        switch (*p) {
+            case 'G': mask|=SYS_GPS; break;
+            case 'R': mask|=SYS_GLO; break;
+            case 'E': mask|=SYS_GAL; break;
+            case 'J': mask|=SYS_QZS; break;
+            case 'C': mask|=SYS_CMP; break;
+            case 'S': mask|=SYS_SBS; break;
+        }
+    }
+    return mask;
+}
 /* set signal index ----------------------------------------------------------*/
 static void set_index(double ver, int sys, const char *opt,
                       char tobs[MAXOBSTYPE][4], sigind_t *ind)
@@ -897,7 +921,10 @@ static int readrnxobsb(FILE *fp, const char *opt, double ver,
     gtime_t time={0};
     sigind_t index[6]={{0}};
     char buff[MAXRNXLEN];
-    int i=0,n=0,nsat=0,sats[MAXOBS]={0};
+    int i=0,n=0,nsat=0,sats[MAXOBS]={0},mask;
+    
+    /* set system mask */
+    mask=set_sysmask(opt);
     
     /* set signal index */
     set_index(ver,SYS_GPS,opt,tobs[0],index  );
@@ -922,7 +949,7 @@ static int readrnxobsb(FILE *fp, const char *opt, double ver,
             data[n].sat=(unsigned char)sats[i-1];
             
             /* decode obs data */
-            if (decode_obsdata(fp,buff,ver,index,data+n)&&n<MAXOBS) n++;
+            if (decode_obsdata(fp,buff,ver,mask,index,data+n)&&n<MAXOBS) n++;
         }
         if (++i>nsat) return n;
     }
@@ -986,7 +1013,7 @@ static int decode_eph(double ver, int sat, gtime_t toc, const double *data,
     sys=satsys(sat,NULL);
     
     if (!(sys&(SYS_GPS|SYS_GAL|SYS_QZS|SYS_CMP))) {
-        trace(2,"ephemeris error: invalid satellite sat=%2d\n",sat);
+        trace(3,"ephemeris error: invalid satellite sat=%2d\n",sat);
         return 0;
     }
     *eph=eph0;
@@ -1081,7 +1108,7 @@ static int decode_geph(double ver, int sat, gtime_t toc, double *data,
     trace(4,"decode_geph: ver=%.2f sat=%2d\n",ver,sat);
     
     if (satsys(sat,NULL)!=SYS_GLO) {
-        trace(2,"glonass ephemeris error: invalid satellite sat=%2d\n",sat);
+        trace(3,"glonass ephemeris error: invalid satellite sat=%2d\n",sat);
         return 0;
     }
     *geph=geph0;
@@ -1133,7 +1160,7 @@ static int decode_seph(double ver, int sat, gtime_t toc, double *data,
     trace(4,"decode_seph: ver=%.2f sat=%2d\n",ver,sat);
     
     if (satsys(sat,NULL)!=SYS_SBS) {
-        trace(2,"geo ephemeris error: invalid satellite sat=%2d\n",sat);
+        trace(3,"geo ephemeris error: invalid satellite sat=%2d\n",sat);
         return 0;
     }
     *seph=seph0;
@@ -1162,10 +1189,13 @@ static int readrnxnavb(FILE *fp, const char *opt, double ver, int sys,
 {
     gtime_t toc;
     double data[64];
-    int i=0,j,prn,sat=0,sp=3;
+    int i=0,j,prn,sat=0,sp=3,mask;
     char buff[MAXRNXLEN],id[8]="",*p;
     
     trace(4,"readrnxnavb: ver=%.2f sys=%d\n",ver,sys);
+    
+    /* set system mask */
+    mask=set_sysmask(opt);
     
     while (fgets(buff,MAXRNXLEN,fp)) {
         
@@ -1209,14 +1239,17 @@ static int readrnxnavb(FILE *fp, const char *opt, double ver, int sys,
             }
             /* decode ephemeris */
             if (sys==SYS_GLO&&i>=15) {
+                if (!(mask&sys)) return 0;
                 *type=1;
                 return decode_geph(ver,sat,toc,data,geph);
             }
             else if (sys==SYS_SBS&&i>=15) {
+                if (!(mask&sys)) return 0;
                 *type=2;
                 return decode_seph(ver,sat,toc,data,seph);
             }
             else if (i>=31) {
+                if (!(mask&sys)) return 0;
                 *type=0;
                 return decode_eph(ver,sat,toc,data,eph);
             }
@@ -1307,12 +1340,15 @@ static int readrnxclk(FILE *fp, const char *opt, int index, nav_t *nav)
     pclk_t *nav_pclk;
     gtime_t time;
     double data[2];
-    int i,j,sat;
+    int i,j,sat,mask;
     char buff[MAXRNXLEN],satid[8]="";
     
     trace(3,"readrnxclk: index=%d\n", index);
     
     if (!nav) return 0;
+    
+    /* set system mask */
+    mask=set_sysmask(opt);
     
     while (fgets(buff,sizeof(buff),fp)) {
         
@@ -1324,6 +1360,8 @@ static int readrnxclk(FILE *fp, const char *opt, int index, nav_t *nav)
         
         /* only read AS (satellite clock) record */
         if (strncmp(buff,"AS",2)||!(sat=satid2no(satid))) continue;
+        
+        if (!(satsys(sat,NULL)&mask)) continue;
         
         for (i=0,j=40;i<2;i++,j+=20) data[i]=str2num(buff,j,19);
         
@@ -1430,7 +1468,7 @@ static int readrnxfile(const char *file, gtime_t ts, gtime_t te, double tint,
 *          navigation data may be duplicated.
 *          call sortobs() or uniqnav() to sort data or delete duplicated eph.
 *
-*          rinex options (separated by spaces) :
+*          read rinex options (separated by spaces) :
 *
 *            -GLss[=shift]: select GPS signal ss (ss: RINEX 3 code, "1C","2W"...)
 *            -RLss[=shift]: select GLO signal ss
@@ -1439,7 +1477,10 @@ static int readrnxfile(const char *file, gtime_t ts, gtime_t te, double tint,
 *            -CLss[=shift]: select BDS signal ss
 *            -SLss[=shift]: select SBS signal ss
 *
-*            shift: carrier phase shift to be added (cycle)
+*                 shift: carrier phase shift to be added (cycle)
+*            
+*            -SYS=sys[,sys...]: select navi systems
+*                               (sys=G:GPS,R:GLO,E:GAL,J:QZS,C:BDS,S:SBS)
 *
 *-----------------------------------------------------------------------------*/
 extern int readrnxt(const char *file, int rcv, gtime_t ts, gtime_t te,
@@ -1553,7 +1594,7 @@ extern int readrnxc(const char *file, nav_t *nav)
     
     /* read rinex clock files */
     for (i=0;i<n;i++) {
-        if (readrnxfile(files[i],t,t,0.0,NULL,1,index++,&type,NULL,nav,NULL)) {
+        if (readrnxfile(files[i],t,t,0.0,"",1,index++,&type,NULL,nav,NULL)) {
             continue;
         }
         stat=0;

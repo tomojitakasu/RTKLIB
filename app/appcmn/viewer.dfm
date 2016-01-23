@@ -18,23 +18,26 @@ object TextViewer: TTextViewer
     Left = 0
     Top = 0
     Width = 624
-    Height = 23
+    Height = 29
     Align = alTop
     TabOrder = 0
     object Panel2: TPanel
-      Left = 434
+      Left = 413
       Top = 1
-      Width = 189
-      Height = 21
+      Width = 210
+      Height = 27
       Align = alRight
+      AutoSize = True
       BevelOuter = bvNone
       TabOrder = 0
+      ExplicitLeft = 408
       object BtnReload: TSpeedButton
         Left = 0
         Top = 0
-        Width = 19
-        Height = 21
+        Width = 27
+        Height = 27
         Hint = 'Reload'
+        Align = alRight
         Flat = True
         Glyph.Data = {
           DE000000424DDE0000000000000076000000280000000D0000000D0000000100
@@ -48,38 +51,40 @@ object TextViewer: TTextViewer
         OnClick = BtnReloadClick
       end
       object BtnClose: TButton
-        Left = 132
+        Left = 149
         Top = 0
-        Width = 56
-        Height = 21
-        Align = alCustom
+        Width = 61
+        Height = 27
+        Align = alRight
         Caption = '&Close'
         TabOrder = 0
         OnClick = BtnCloseClick
       end
       object BtnRead: TButton
-        Left = 20
+        Left = 27
         Top = 0
-        Width = 56
-        Height = 21
+        Width = 61
+        Height = 27
+        Align = alRight
         Caption = '&Read...'
         TabOrder = 1
         OnClick = BtnReadClick
       end
       object BtnOpt: TButton
-        Left = 76
+        Left = 88
         Top = 0
-        Width = 56
-        Height = 21
+        Width = 61
+        Height = 27
+        Align = alRight
         Caption = '&Option...'
         TabOrder = 2
         OnClick = BtnOptClick
       end
     end
     object FindStr: TEdit
-      Left = 14
-      Top = 1
-      Width = 107
+      Left = 2
+      Top = 3
+      Width = 119
       Height = 21
       TabOrder = 1
       OnKeyPress = FindStrKeyPress
@@ -87,8 +92,8 @@ object TextViewer: TTextViewer
     object BtnFind: TButton
       Left = 122
       Top = 1
-      Width = 31
-      Height = 21
+      Width = 46
+      Height = 27
       Caption = 'Find'
       TabOrder = 2
       OnClick = BtnFindClick
@@ -96,9 +101,9 @@ object TextViewer: TTextViewer
   end
   object Text: TRichEdit
     Left = 0
-    Top = 23
+    Top = 29
     Width = 624
-    Height = 392
+    Height = 386
     Align = alClient
     BevelInner = bvNone
     BevelOuter = bvNone
@@ -111,6 +116,8 @@ object TextViewer: TTextViewer
     ScrollBars = ssBoth
     TabOrder = 1
     WordWrap = False
+    ExplicitTop = 23
+    ExplicitHeight = 392
   end
   object OpenDialog: TOpenDialog
     Filter = 'Text File (*.txt)|*.txt|All (*.*)|*.*'

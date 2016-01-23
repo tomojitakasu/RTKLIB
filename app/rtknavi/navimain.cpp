@@ -129,7 +129,7 @@ __fastcall TMainForm::TMainForm(TComponent* Owner)
     strinit(&monistr);
     
     Caption=PRGNAME;
-    Caption=Caption+" ver."+VER_RTKLIB;
+    Caption=Caption+" ver."+VER_RTKLIB+" "+PATCH_LEVEL;
     DoubleBuffered=true;
     
     TLEData.n=TLEData.nmax=0;
@@ -1018,7 +1018,7 @@ void __fastcall TMainForm::SvrStart(void)
         opengeoid(SolOpt.geoid,GeoidDataFileF.c_str());
     }
     if (DCBFileF!="") {
-        readdcb(DCBFileF.c_str(),&rtksvr.nav);
+        readdcb(DCBFileF.c_str(),&rtksvr.nav,NULL);
     }
     for (i=0;i<2;i++) {
         solopt[i]=SolOpt;
@@ -1743,7 +1743,7 @@ void __fastcall TMainForm::OpenMoniPort(int port)
         
         if (stropen(&monistr,STR_TCPSVR,STR_MODE_RW,path)) {
             strsettimeout(&monistr,TimeoutTime,ReconTime);
-            if (i>0) Caption=s.sprintf("%s ver.%s (%d)",PRGNAME,VER_RTKLIB,i+1);
+            if (i>0) Caption=s.sprintf("%s ver.%s %s (%d)",PRGNAME,VER_RTKLIB,PATCH_LEVEL,i+1);
             OpenPort=MoniPort+i;
             return;
         }
@@ -1808,7 +1808,7 @@ void __fastcall TMainForm::SaveLog(void)
     opt=SolOpt;
     opt.posf=posf[SolType];
     if (SolOpt.outhead) {
-        fprintf(fp,"%% program   : %s ver.%s\n",PRGNAME,VER_RTKLIB);
+        fprintf(fp,"%% program   : %s ver.%s %s\n",PRGNAME,VER_RTKLIB,PATCH_LEVEL);
         if (PrcOpt.mode==PMODE_DGPS||PrcOpt.mode==PMODE_KINEMA||
             PrcOpt.mode==PMODE_STATIC) {
             ecef2pos(PrcOpt.rb,pos);
@@ -2008,6 +2008,7 @@ void __fastcall TMainForm::LoadOpt(void)
     PrcOpt.ionoopt  =ini->ReadInteger("prcopt", "ionoopt",IONOOPT_BRDC);
     PrcOpt.tropopt  =ini->ReadInteger("prcopt", "tropopt",TROPOPT_SAAS);
     PrcOpt.sateph   =ini->ReadInteger("prcopt", "ephopt",  EPHOPT_BRDC);
+    PrcOpt.armaxiter=ini->ReadInteger("prcopt", "ariter",          1);
     PrcOpt.niter    =ini->ReadInteger("prcopt", "niter",           1);
     PrcOpt.eratio[0]=ini->ReadFloat  ("prcopt", "eratio0",     100.0);
     PrcOpt.eratio[1]=ini->ReadFloat  ("prcopt", "eratio1",     100.0);
@@ -2036,6 +2037,7 @@ void __fastcall TMainForm::LoadOpt(void)
     PrcOpt.posopt[2]=ini->ReadInteger("prcopt", "posopt3",         0);
     PrcOpt.posopt[3]=ini->ReadInteger("prcopt", "posopt4",         0);
     PrcOpt.posopt[4]=ini->ReadInteger("prcopt", "posopt5",         0);
+    PrcOpt.posopt[5]=ini->ReadInteger("prcopt", "posopt6",         0);
     
     BaselineC       =ini->ReadInteger("prcopt", "baselinec",       0);
     Baseline[0]     =ini->ReadFloat  ("prcopt", "baseline1",     0.0);
@@ -2211,6 +2213,7 @@ void __fastcall TMainForm::SaveOpt(void)
     ini->WriteInteger("prcopt", "ionoopt",    PrcOpt.ionoopt     );
     ini->WriteInteger("prcopt", "tropopt",    PrcOpt.tropopt     );
     ini->WriteInteger("prcopt", "ephopt",     PrcOpt.sateph      );
+    ini->WriteInteger("prcopt", "ariter",     PrcOpt.armaxiter   );
     ini->WriteInteger("prcopt", "niter",      PrcOpt.niter       );
     ini->WriteFloat  ("prcopt", "eratio0",    PrcOpt.eratio[0]   );
     ini->WriteFloat  ("prcopt", "eratio1",    PrcOpt.eratio[1]   );
@@ -2239,6 +2242,7 @@ void __fastcall TMainForm::SaveOpt(void)
     ini->WriteInteger("prcopt", "posopt3",    PrcOpt.posopt[2]   );
     ini->WriteInteger("prcopt", "posopt4",    PrcOpt.posopt[3]   );
     ini->WriteInteger("prcopt", "posopt5",    PrcOpt.posopt[4]   );
+    ini->WriteInteger("prcopt", "posopt6",    PrcOpt.posopt[5]   );
     
     ini->WriteFloat  ("prcopt", "baselinec",  BaselineC          );
     ini->WriteFloat  ("prcopt", "baseline1",  Baseline[0]        );

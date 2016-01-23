@@ -3,7 +3,7 @@ object ConvOptDialog: TConvOptDialog
   Top = 0
   BorderStyle = bsDialog
   Caption = 'Options'
-  ClientHeight = 321
+  ClientHeight = 327
   ClientWidth = 421
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -17,15 +17,15 @@ object ConvOptDialog: TConvOptDialog
   PixelsPerInch = 96
   TextHeight = 13
   object Label3: TLabel
-    Left = 151
-    Top = 302
+    Left = 149
+    Top = 306
     Width = 31
     Height = 13
     Caption = 'Debug'
   end
   object Label8: TLabel
-    Left = 6
-    Top = 301
+    Left = 4
+    Top = 306
     Width = 32
     Height = 13
     Caption = 'Option'
@@ -52,10 +52,10 @@ object ConvOptDialog: TConvOptDialog
     Caption = 'Station ID'
   end
   object BtnOk: TButton
-    Left = 256
-    Top = 297
+    Left = 257
+    Top = 299
     Width = 81
-    Height = 23
+    Height = 27
     Caption = '&OK'
     ModalResult = 1
     TabOrder = 0
@@ -63,9 +63,9 @@ object ConvOptDialog: TConvOptDialog
   end
   object BtnCancel: TButton
     Left = 338
-    Top = 297
+    Top = 299
     Width = 81
-    Height = 23
+    Height = 27
     Cancel = True
     Caption = '&Cancel'
     ModalResult = 2
@@ -362,8 +362,8 @@ object ConvOptDialog: TConvOptDialog
     end
   end
   object TraceLevel: TComboBox
-    Left = 185
-    Top = 298
+    Left = 183
+    Top = 302
     Width = 63
     Height = 21
     Style = csDropDownList
@@ -379,8 +379,8 @@ object ConvOptDialog: TConvOptDialog
       'Level 5')
   end
   object RcvOption: TEdit
-    Left = 40
-    Top = 297
+    Left = 38
+    Top = 302
     Width = 103
     Height = 21
     TabOrder = 9
@@ -446,9 +446,9 @@ object ConvOptDialog: TConvOptDialog
     end
     object BtnMask: TButton
       Left = 223
-      Top = 9
-      Width = 48
-      Height = 23
+      Top = 8
+      Width = 49
+      Height = 27
       Caption = 'Mask...'
       TabOrder = 6
       OnClick = BtnMaskClick

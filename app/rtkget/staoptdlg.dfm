@@ -3,7 +3,7 @@ object StaListDialog: TStaListDialog
   Top = 0
   BorderStyle = bsDialog
   Caption = 'Stations'
-  ClientHeight = 302
+  ClientHeight = 300
   ClientWidth = 214
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -18,20 +18,19 @@ object StaListDialog: TStaListDialog
   TextHeight = 13
   object Panel1: TPanel
     Left = 0
-    Top = 279
+    Top = 273
     Width = 214
-    Height = 23
+    Height = 27
     Align = alBottom
     BevelInner = bvRaised
     BevelOuter = bvNone
     TabOrder = 0
-    ExplicitTop = 291
-    ExplicitWidth = 213
+    ExplicitTop = 277
     object BtnLoad: TButton
       Left = 1
       Top = 0
       Width = 53
-      Height = 23
+      Height = 27
       Caption = 'Load...'
       TabOrder = 1
       OnClick = BtnLoadClick
@@ -40,7 +39,7 @@ object StaListDialog: TStaListDialog
       Left = 54
       Top = 0
       Width = 53
-      Height = 23
+      Height = 27
       Caption = '&Save...'
       TabOrder = 2
       OnClick = BtnSaveClick
@@ -49,7 +48,7 @@ object StaListDialog: TStaListDialog
       Left = 107
       Top = 0
       Width = 52
-      Height = 23
+      Height = 27
       Caption = '&OK'
       ModalResult = 1
       TabOrder = 3
@@ -59,7 +58,7 @@ object StaListDialog: TStaListDialog
       Left = 159
       Top = 0
       Width = 53
-      Height = 23
+      Height = 27
       Caption = '&Cancel'
       ModalResult = 2
       TabOrder = 0
@@ -69,14 +68,13 @@ object StaListDialog: TStaListDialog
     Left = 0
     Top = 0
     Width = 214
-    Height = 279
+    Height = 273
     Align = alClient
     BevelInner = bvNone
     BevelOuter = bvNone
     ScrollBars = ssVertical
     TabOrder = 1
-    ExplicitWidth = 213
-    ExplicitHeight = 291
+    ExplicitHeight = 279
   end
   object OpenDialog: TOpenDialog
     Filter = 'Text File (*.txt)|*.txt|All (*.*)|*.*'

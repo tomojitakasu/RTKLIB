@@ -4,7 +4,7 @@ object LogStrDialog: TLogStrDialog
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Log Streams'
-  ClientHeight = 192
+  ClientHeight = 195
   ClientWidth = 386
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -72,7 +72,7 @@ object LogStrDialog: TLogStrDialog
     Left = 298
     Top = 167
     Width = 83
-    Height = 23
+    Height = 27
     Caption = '&Cancel'
     ModalResult = 2
     TabOrder = 0
@@ -81,7 +81,7 @@ object LogStrDialog: TLogStrDialog
     Left = 214
     Top = 167
     Width = 83
-    Height = 23
+    Height = 27
     Caption = '&OK'
     ModalResult = 1
     TabOrder = 1

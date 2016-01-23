@@ -424,6 +424,7 @@ void __fastcall TOptDialog::GetOpt(void)
 	RejectGdop   ->Text     =s.sprintf("%.1f",PrcOpt.maxgdop);
 	RejectThres  ->Text     =s.sprintf("%.1f",PrcOpt.maxinno);
 	SlipThres	 ->Text     =s.sprintf("%.3f",PrcOpt.thresslip);
+	ARIter		 ->Text     =s.sprintf("%d",  PrcOpt.armaxiter);
 	NumIter		 ->Text     =s.sprintf("%d",  PrcOpt.niter);
 	SyncSol		 ->ItemIndex=PrcOpt.syncsol;
 	ExSatsE		 ->Text     =ExSats;
@@ -544,6 +545,7 @@ void __fastcall TOptDialog::SetOpt(void)
 	PrcOpt.maxgdop   =str2dbl(RejectGdop ->Text);
 	PrcOpt.maxinno   =str2dbl(RejectThres->Text);
 	PrcOpt.thresslip =str2dbl(SlipThres  ->Text);
+	PrcOpt.armaxiter =ARIter      ->Text.ToInt();
 	PrcOpt.niter     =NumIter     ->Text.ToInt();
 	PrcOpt.syncsol   =SyncSol     ->ItemIndex;
 	ExSats			 =ExSatsE	  ->Text;
@@ -559,6 +561,7 @@ void __fastcall TOptDialog::SetOpt(void)
 	PrcOpt.posopt[2] =PosOpt3   ->Checked;
 	PrcOpt.posopt[3] =PosOpt4   ->Checked;
 	PrcOpt.posopt[4] =PosOpt5   ->Checked;
+	PrcOpt.posopt[5] =PosOpt6   ->Checked;
 	
 	SolOpt.posf      =SolFormat   ->ItemIndex;
 	SolOpt.timef     =TimeFormat->ItemIndex==0?0:1;
@@ -709,6 +712,7 @@ void __fastcall TOptDialog::LoadOpt(AnsiString file)
 	PosOpt3		 ->Checked		=prcopt.posopt[2];
 	PosOpt4		 ->Checked		=prcopt.posopt[3];
 	PosOpt5		 ->Checked		=prcopt.posopt[4];
+	PosOpt6		 ->Checked		=prcopt.posopt[5];
 	
 	AmbRes		 ->ItemIndex	=prcopt.modear;
 	GloAmbRes	 ->ItemIndex	=prcopt.glomodear;
@@ -723,6 +727,7 @@ void __fastcall TOptDialog::LoadOpt(AnsiString file)
 	RejectGdop   ->Text			=s.sprintf("%.1f",prcopt.maxgdop  );
 	RejectThres  ->Text			=s.sprintf("%.1f",prcopt.maxinno  );
 	SlipThres	 ->Text			=s.sprintf("%.3f",prcopt.thresslip);
+	ARIter		 ->Text			=s.sprintf("%d",  prcopt.armaxiter);
 	NumIter		 ->Text			=s.sprintf("%d",  prcopt.niter    );
 	SyncSol		 ->ItemIndex	=prcopt.syncsol;
 	BaselineLen	 ->Text			=s.sprintf("%.3f",prcopt.baseline[0]);
@@ -872,6 +877,7 @@ void __fastcall TOptDialog::SaveOpt(AnsiString file)
 	prcopt.posopt[2]=PosOpt3->Checked;
 	prcopt.posopt[3]=PosOpt4->Checked;
 	prcopt.posopt[4]=PosOpt5->Checked;
+	prcopt.posopt[5]=PosOpt6->Checked;
 	
 	prcopt.modear	=AmbRes		->ItemIndex;
 	prcopt.glomodear=GloAmbRes	->ItemIndex;
@@ -886,6 +892,7 @@ void __fastcall TOptDialog::SaveOpt(AnsiString file)
 	prcopt.maxgdop	=str2dbl(RejectGdop ->Text);
 	prcopt.maxinno	=str2dbl(RejectThres->Text);
 	prcopt.thresslip=str2dbl(SlipThres	->Text);
+	prcopt.armaxiter=str2dbl(ARIter		->Text);
 	prcopt.niter	=str2dbl(NumIter	->Text);
 	prcopt.syncsol	=SyncSol->ItemIndex;
 	if (prcopt.mode==PMODE_MOVEB&&BaselineConst->Checked) {
@@ -944,7 +951,7 @@ void __fastcall TOptDialog::SaveOpt(AnsiString file)
 	strcpy(filopt.tempdir,LocalDir_Text.c_str());
 	
 	time2str(utc2gpst(timeget()),s,0);
-	sprintf(comment,"RTKNAVI options (%s, v.%s)",s,VER_RTKLIB);
+	sprintf(comment,"RTKNAVI options (%s, v.%s %s)",s,VER_RTKLIB,PATCH_LEVEL);
 	setsysopts(&prcopt,&solopt,&filopt);
 	if (!saveopts(file.c_str(),"w",comment,sysopts)||
 		!saveopts(file.c_str(),"a","",rcvopts)) return;
@@ -965,6 +972,7 @@ void __fastcall TOptDialog::UpdateEnable(void)
 	PosOpt2        ->Enabled=ppp;
 	PosOpt3        ->Enabled=ppp;
 	PosOpt4        ->Enabled=ppp;
+	PosOpt6        ->Enabled=ppp;
 	
 	AmbRes         ->Enabled=ar;
 	GloAmbRes      ->Enabled=ar&&AmbRes->ItemIndex>0&&NavSys2->Checked;
@@ -980,6 +988,7 @@ void __fastcall TOptDialog::UpdateEnable(void)
 	SlipThres      ->Enabled=ar||ppp;
 	MaxAgeDiff     ->Enabled=rel;
 	RejectThres    ->Enabled=rel||ppp;
+	ARIter         ->Enabled=ppp;
 	NumIter        ->Enabled=rel||ppp;
 	SyncSol        ->Enabled=rel||ppp;
 	BaselineConst  ->Enabled=PosMode->ItemIndex==PMODE_MOVEB;

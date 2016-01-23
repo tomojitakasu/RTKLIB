@@ -129,7 +129,7 @@ static int decode_stqraw(raw_t *raw)
 {
     unsigned char *p=raw->buff+4,ind;
     double pr1,cp1;
-    int i,j,iod,prn,sys,sat,n=0,nsat,slip;
+    int i,j,iod,prn,sys,sat,n=0,nsat;
     
     trace(4,"decode_stqraw: len=%d\n",raw->len);
     
@@ -342,7 +342,7 @@ static int decode_stqglo(raw_t *raw)
     geph.tof=raw->time;
     if (!decode_glostr(raw->subfrm[sat-1],&geph)||geph.sat!=sat) return 0;
     
-    /* freq channel number by stqgloe (0x90) message */
+    /* freq channel number by stqgloe (0x5C) message */
     geph.frq=raw->nav.geph[prn-1].frq;
     
     if (!strstr(raw->opt,"-EPHALL")) {

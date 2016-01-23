@@ -23,14 +23,14 @@ object GoogleMapView: TGoogleMapView
     Left = 0
     Top = 0
     Width = 504
-    Height = 22
+    Height = 25
     Align = alTop
     TabOrder = 0
     object BtnFixCent: TSpeedButton
       Left = 199
       Top = 0
-      Width = 19
-      Height = 21
+      Width = 23
+      Height = 23
       Hint = 'Fix Track Center'
       AllowAllUp = True
       GroupIndex = 1
@@ -61,10 +61,10 @@ object GoogleMapView: TGoogleMapView
       OnClick = BtnFixCentClick
     end
     object BtnExpand: TSpeedButton
-      Left = 315
+      Left = 317
       Top = 0
-      Width = 19
-      Height = 21
+      Width = 23
+      Height = 23
       Flat = True
       Glyph.Data = {
         3E020000424D3E0200000000000036000000280000000D0000000D0000000100
@@ -92,8 +92,8 @@ object GoogleMapView: TGoogleMapView
     object BtnShrink: TSpeedButton
       Left = 295
       Top = 0
-      Width = 19
-      Height = 21
+      Width = 23
+      Height = 23
       Flat = True
       Glyph.Data = {
         3E020000424D3E0200000000000036000000280000000D0000000D0000000100
@@ -122,41 +122,46 @@ object GoogleMapView: TGoogleMapView
       Left = 452
       Top = 1
       Width = 51
-      Height = 20
+      Height = 23
       Align = alRight
       BevelOuter = bvNone
       Caption = 'Panel5'
       TabOrder = 0
+      ExplicitHeight = 20
       object BtnClose: TButton
         Left = 0
         Top = 0
         Width = 51
-        Height = 20
+        Height = 23
         Align = alClient
         Caption = 'Close'
         TabOrder = 0
         OnClick = BtnCloseClick
+        ExplicitHeight = 20
       end
     end
   end
   object Panel2: TPanel
     Left = 0
-    Top = 22
+    Top = 25
     Width = 504
-    Height = 484
+    Height = 481
     Align = alClient
     Caption = 'Panel2'
     TabOrder = 1
+    ExplicitTop = 22
+    ExplicitHeight = 484
     object WebBrowser: TCppWebBrowser
       Left = 1
       Top = 1
       Width = 502
-      Height = 482
+      Height = 479
       Align = alClient
       TabOrder = 0
       ExplicitTop = 0
+      ExplicitHeight = 482
       ControlData = {
-        4C000000E2330000D13100000000000000000000000000000000000000000000
+        4C000000E2330000823100000000000000000000000000000000000000000000
         000000004C000000000000000000000001000000E0D057007335CF11AE690800
         2B2E12620B000000000000004C0000000114020000000000C000000000000046
         8000000000000000000000000000000000000000000000000000000000000000

@@ -3,413 +3,53 @@ object MainForm: TMainForm
   Top = 0
   BorderIcons = [biMinimize]
   Caption = 'RTKNAVI'
-  ClientHeight = 258
-  ClientWidth = 560
+  ClientHeight = 272
+  ClientWidth = 585
   Color = clBtnFace
   Constraints.MaxHeight = 800
   Constraints.MaxWidth = 1200
   Constraints.MinHeight = 284
-  Constraints.MinWidth = 190
+  Constraints.MinWidth = 220
   Font.Charset = ANSI_CHARSET
   Font.Color = clBlack
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  Scaled = False
   OnClose = FormClose
   OnCreate = FormCreate
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
-  object Panel1: TPanel
-    Left = 0
-    Top = 0
-    Width = 560
-    Height = 25
-    Align = alTop
-    BevelInner = bvRaised
-    BevelOuter = bvLowered
-    TabOrder = 0
-    object LabelTime: TLabel
-      Left = 4
-      Top = 5
-      Width = 143
-      Height = 15
-      Alignment = taCenter
-      AutoSize = False
-      Caption = '2000/01/01 00:00:00.0'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clGray
-      Font.Height = -12
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-    end
-    object Panel12: TPanel
-      Left = 369
-      Top = 2
-      Width = 149
-      Height = 21
-      Align = alRight
-      BevelOuter = bvNone
-      TabOrder = 1
-      object Image1: TImage
-        Left = 68
-        Top = 3
-        Width = 29
-        Height = 17
-        Picture.Data = {
-          07544269746D617056060000424D560600000000000036040000280000001D00
-          0000110000000100080000000000200200000000000000000000000100000000
-          000000000000000080000080000000808000800000008000800080800000C0C0
-          C000C0DCC000F0CAA6000020400000206000002080000020A0000020C0000020
-          E00000400000004020000040400000406000004080000040A0000040C0000040
-          E00000600000006020000060400000606000006080000060A0000060C0000060
-          E00000800000008020000080400000806000008080000080A0000080C0000080
-          E00000A0000000A0200000A0400000A0600000A0800000A0A00000A0C00000A0
-          E00000C0000000C0200000C0400000C0600000C0800000C0A00000C0C00000C0
-          E00000E0000000E0200000E0400000E0600000E0800000E0A00000E0C00000E0
-          E00040000000400020004000400040006000400080004000A0004000C0004000
-          E00040200000402020004020400040206000402080004020A0004020C0004020
-          E00040400000404020004040400040406000404080004040A0004040C0004040
-          E00040600000406020004060400040606000406080004060A0004060C0004060
-          E00040800000408020004080400040806000408080004080A0004080C0004080
-          E00040A0000040A0200040A0400040A0600040A0800040A0A00040A0C00040A0
-          E00040C0000040C0200040C0400040C0600040C0800040C0A00040C0C00040C0
-          E00040E0000040E0200040E0400040E0600040E0800040E0A00040E0C00040E0
-          E00080000000800020008000400080006000800080008000A0008000C0008000
-          E00080200000802020008020400080206000802080008020A0008020C0008020
-          E00080400000804020008040400080406000804080008040A0008040C0008040
-          E00080600000806020008060400080606000806080008060A0008060C0008060
-          E00080800000808020008080400080806000808080008080A0008080C0008080
-          E00080A0000080A0200080A0400080A0600080A0800080A0A00080A0C00080A0
-          E00080C0000080C0200080C0400080C0600080C0800080C0A00080C0C00080C0
-          E00080E0000080E0200080E0400080E0600080E0800080E0A00080E0C00080E0
-          E000C0000000C0002000C0004000C0006000C0008000C000A000C000C000C000
-          E000C0200000C0202000C0204000C0206000C0208000C020A000C020C000C020
-          E000C0400000C0402000C0404000C0406000C0408000C040A000C040C000C040
-          E000C0600000C0602000C0604000C0606000C0608000C060A000C060C000C060
-          E000C0800000C0802000C0804000C0806000C0808000C080A000C080C000C080
-          E000C0A00000C0A02000C0A04000C0A06000C0A08000C0A0A000C0A0C000C0A0
-          E000C0C00000C0C02000C0C04000C0C06000C0C08000C0C0A000F0FBFF00A4A0
-          A000808080000000FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFF
-          FF00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
-          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
-          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
-          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
-          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
-          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
-          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00A4FFFFFFFF00
-          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000A4FFFF00
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000A4FFFF00
-          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00A4FFFFFFFF00
-          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
-          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
-          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
-          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
-          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
-          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
-          0000}
-        Proportional = True
-        Stretch = True
-        Transparent = True
-      end
-      object Image2: TImage
-        Left = 42
-        Top = 3
-        Width = 29
-        Height = 17
-        Picture.Data = {
-          07544269746D617056060000424D560600000000000036040000280000001D00
-          0000110000000100080000000000200200000000000000000000000100000000
-          000000000000000080000080000000808000800000008000800080800000C0C0
-          C000C0DCC000F0CAA6000020400000206000002080000020A0000020C0000020
-          E00000400000004020000040400000406000004080000040A0000040C0000040
-          E00000600000006020000060400000606000006080000060A0000060C0000060
-          E00000800000008020000080400000806000008080000080A0000080C0000080
-          E00000A0000000A0200000A0400000A0600000A0800000A0A00000A0C00000A0
-          E00000C0000000C0200000C0400000C0600000C0800000C0A00000C0C00000C0
-          E00000E0000000E0200000E0400000E0600000E0800000E0A00000E0C00000E0
-          E00040000000400020004000400040006000400080004000A0004000C0004000
-          E00040200000402020004020400040206000402080004020A0004020C0004020
-          E00040400000404020004040400040406000404080004040A0004040C0004040
-          E00040600000406020004060400040606000406080004060A0004060C0004060
-          E00040800000408020004080400040806000408080004080A0004080C0004080
-          E00040A0000040A0200040A0400040A0600040A0800040A0A00040A0C00040A0
-          E00040C0000040C0200040C0400040C0600040C0800040C0A00040C0C00040C0
-          E00040E0000040E0200040E0400040E0600040E0800040E0A00040E0C00040E0
-          E00080000000800020008000400080006000800080008000A0008000C0008000
-          E00080200000802020008020400080206000802080008020A0008020C0008020
-          E00080400000804020008040400080406000804080008040A0008040C0008040
-          E00080600000806020008060400080606000806080008060A0008060C0008060
-          E00080800000808020008080400080806000808080008080A0008080C0008080
-          E00080A0000080A0200080A0400080A0600080A0800080A0A00080A0C00080A0
-          E00080C0000080C0200080C0400080C0600080C0800080C0A00080C0C00080C0
-          E00080E0000080E0200080E0400080E0600080E0800080E0A00080E0C00080E0
-          E000C0000000C0002000C0004000C0006000C0008000C000A000C000C000C000
-          E000C0200000C0202000C0204000C0206000C0208000C020A000C020C000C020
-          E000C0400000C0402000C0404000C0406000C0408000C040A000C040C000C040
-          E000C0600000C0602000C0604000C0606000C0608000C060A000C060C000C060
-          E000C0800000C0802000C0804000C0806000C0808000C080A000C080C000C080
-          E000C0A00000C0A02000C0A04000C0A06000C0A08000C0A0A000C0A0C000C0A0
-          E000C0C00000C0C02000C0C04000C0C06000C0C08000C0C0A000F0FBFF00A4A0
-          A000808080000000FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFF
-          FF00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
-          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
-          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
-          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
-          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
-          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
-          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00A4FFFFFFFF00
-          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000A4FFFF00
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000A4FFFF00
-          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00A4FFFFFFFF00
-          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
-          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
-          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
-          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
-          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
-          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
-          0000}
-        Proportional = True
-        Stretch = True
-        Transparent = True
-      end
-      object Str1: TPanel
-        Left = 27
-        Top = 5
-        Width = 9
-        Height = 12
-        BevelInner = bvRaised
-        BevelOuter = bvLowered
-        ParentBackground = False
-        TabOrder = 0
-      end
-      object Str2: TPanel
-        Left = 36
-        Top = 5
-        Width = 9
-        Height = 12
-        BevelInner = bvRaised
-        BevelOuter = bvLowered
-        ParentBackground = False
-        TabOrder = 1
-      end
-      object Str3: TPanel
-        Left = 45
-        Top = 5
-        Width = 9
-        Height = 12
-        BevelInner = bvRaised
-        BevelOuter = bvLowered
-        ParentBackground = False
-        TabOrder = 2
-      end
-      object Str4: TPanel
-        Left = 98
-        Top = 5
-        Width = 9
-        Height = 12
-        BevelInner = bvRaised
-        BevelOuter = bvLowered
-        ParentBackground = False
-        TabOrder = 3
-      end
-      object Str5: TPanel
-        Left = 107
-        Top = 5
-        Width = 9
-        Height = 12
-        BevelInner = bvRaised
-        BevelOuter = bvLowered
-        ParentBackground = False
-        TabOrder = 4
-      end
-      object Str6: TPanel
-        Left = 119
-        Top = 5
-        Width = 9
-        Height = 12
-        BevelInner = bvRaised
-        BevelOuter = bvLowered
-        ParentBackground = False
-        TabOrder = 5
-      end
-      object Str7: TPanel
-        Left = 128
-        Top = 5
-        Width = 9
-        Height = 12
-        BevelInner = bvRaised
-        BevelOuter = bvLowered
-        ParentBackground = False
-        TabOrder = 6
-      end
-      object Str8: TPanel
-        Left = 137
-        Top = 5
-        Width = 9
-        Height = 12
-        BevelInner = bvRaised
-        BevelOuter = bvLowered
-        ParentBackground = False
-        TabOrder = 7
-      end
-      object Svr: TPanel
-        Left = 71
-        Top = 5
-        Width = 9
-        Height = 12
-        BevelInner = bvRaised
-        BevelOuter = bvLowered
-        ParentBackground = False
-        TabOrder = 8
-      end
-      object Panel121: TPanel
-        Left = 1
-        Top = 1
-        Width = 19
-        Height = 19
-        BevelInner = bvRaised
-        BevelOuter = bvNone
-        TabOrder = 9
-        object BtnInputStr: TSpeedButton
-          Left = 0
-          Top = 0
-          Width = 19
-          Height = 19
-          Hint = 'Input Streams'
-          Caption = 'I'
-          Flat = True
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlack
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = []
-          ParentFont = False
-          ParentShowHint = False
-          ShowHint = True
-          OnClick = BtnInputStrClick
-        end
-      end
-    end
-    object Panel11: TPanel
-      Left = 145
-      Top = 3
-      Width = 34
-      Height = 19
-      TabOrder = 0
-      object BtnTimeSys: TSpeedButton
-        Left = 0
-        Top = 0
-        Width = 34
-        Height = 19
-        Caption = 'GPST'
-        Flat = True
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ParentFont = False
-        Spacing = 1
-        OnClick = BtnTimeSysClick
-      end
-    end
-    object Panel13: TPanel
-      Left = 518
-      Top = 2
-      Width = 40
-      Height = 21
-      Align = alRight
-      BevelOuter = bvNone
-      TabOrder = 2
-      object Panel131: TPanel
-        Left = 1
-        Top = 1
-        Width = 19
-        Height = 19
-        BevelInner = bvRaised
-        BevelOuter = bvNone
-        TabOrder = 0
-        object BtnOutputStr: TSpeedButton
-          Left = 0
-          Top = 0
-          Width = 19
-          Height = 19
-          Hint = 'Output Streams'
-          Caption = 'O'
-          Flat = True
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlack
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = []
-          ParentFont = False
-          ParentShowHint = False
-          ShowHint = True
-          Spacing = 1
-          OnClick = BtnOutputStrClick
-        end
-      end
-      object Panel132: TPanel
-        Left = 21
-        Top = 1
-        Width = 19
-        Height = 19
-        BevelInner = bvRaised
-        BevelOuter = bvNone
-        TabOrder = 1
-        object BtnLogStr: TSpeedButton
-          Left = 0
-          Top = 0
-          Width = 19
-          Height = 19
-          Hint = 'Log Streams'
-          Caption = 'L'
-          Flat = True
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlack
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = []
-          ParentFont = False
-          ParentShowHint = False
-          ShowHint = True
-          Spacing = 1
-          OnClick = BtnLogStrClick
-        end
-      end
-    end
-  end
   object Panel2: TPanel
     Left = 0
-    Top = 42
-    Width = 560
-    Height = 169
+    Top = 46
+    Width = 585
+    Height = 171
     Align = alClient
     BevelOuter = bvNone
     Color = clWhite
     ParentBackground = False
     TabOrder = 1
+    ExplicitTop = 42
+    ExplicitWidth = 567
+    ExplicitHeight = 175
     object Splitter1: TSplitter
       Left = 182
       Top = 0
       Width = 2
-      Height = 169
+      Height = 171
       Beveled = True
       Color = clGray
       ParentColor = False
-      ExplicitLeft = 185
-      ExplicitHeight = 174
+      ExplicitHeight = 175
     end
     object Panel21: TPanel
       Left = 0
       Top = 0
       Width = 182
-      Height = 169
+      Height = 171
       Align = alLeft
       BevelOuter = bvNone
       Color = clWindow
@@ -418,9 +58,10 @@ object MainForm: TMainForm
       ParentBackground = False
       TabOrder = 0
       OnResize = Panel21Resize
+      ExplicitHeight = 175
       object Panel211: TPanel
         Left = 0
-        Top = 15
+        Top = 17
         Width = 182
         Height = 138
         Align = alClient
@@ -431,6 +72,8 @@ object MainForm: TMainForm
         ParentBackground = False
         TabOrder = 0
         OnResize = Panel211Resize
+        ExplicitTop = 15
+        ExplicitHeight = 144
         object LabelNSat: TLabel
           Left = 1
           Top = 112
@@ -583,15 +226,16 @@ object MainForm: TMainForm
       end
       object Panel213: TPanel
         Left = 0
-        Top = 153
+        Top = 155
         Width = 182
         Height = 16
         Align = alBottom
         TabOrder = 1
+        ExplicitTop = 159
         object ScbSol: TScrollBar
           Left = 1
           Top = 1
-          Width = 163
+          Width = 155
           Height = 14
           Margins.Left = 2
           Margins.Top = 2
@@ -608,11 +252,12 @@ object MainForm: TMainForm
           ShowHint = False
           TabOrder = 0
           OnChange = ScbSolChange
+          ExplicitWidth = 163
         end
         object BtnSave: TButton
-          Left = 164
+          Left = 156
           Top = 1
-          Width = 17
+          Width = 25
           Height = 14
           Align = alRight
           Caption = '...'
@@ -624,20 +269,21 @@ object MainForm: TMainForm
           ParentFont = False
           TabOrder = 1
           OnClick = BtnSaveClick
+          ExplicitLeft = 164
         end
       end
       object Panel212: TPanel
         Left = 0
         Top = 0
         Width = 182
-        Height = 15
+        Height = 17
         Align = alTop
         BevelOuter = bvNone
         TabOrder = 2
         object Plabel0: TLabel
-          Left = 20
-          Top = 1
-          Width = 153
+          Left = 30
+          Top = 2
+          Width = 143
           Height = 13
           AutoSize = False
           BiDiMode = bdLeftToRight
@@ -651,10 +297,10 @@ object MainForm: TMainForm
           ParentFont = False
         end
         object BtnSolType: TSpeedButton
-          Left = 160
-          Top = -1
-          Width = 15
-          Height = 16
+          Left = 156
+          Top = 0
+          Width = 25
+          Height = 17
           AllowAllUp = True
           Flat = True
           Glyph.Data = {
@@ -674,16 +320,19 @@ object MainForm: TMainForm
     object Panel22: TPanel
       Left = 184
       Top = 0
-      Width = 376
-      Height = 169
+      Width = 401
+      Height = 171
       Align = alClient
+      AutoSize = True
       BevelOuter = bvNone
       TabOrder = 1
+      ExplicitWidth = 383
+      ExplicitHeight = 175
       object Splitter2: TSplitter
         Left = 187
         Top = 0
         Width = 2
-        Height = 169
+        Height = 171
         Beveled = True
         Color = clGray
         ParentColor = False
@@ -694,7 +343,7 @@ object MainForm: TMainForm
         Left = 0
         Top = 0
         Width = 187
-        Height = 169
+        Height = 171
         Align = alLeft
         BevelOuter = bvNone
         Color = clWhite
@@ -705,6 +354,7 @@ object MainForm: TMainForm
         TabOrder = 0
         Visible = False
         OnResize = Panel221Resize
+        ExplicitHeight = 175
         object Disp1: TImage
           Left = 0
           Top = 0
@@ -720,9 +370,9 @@ object MainForm: TMainForm
         end
         object BtnFreqType1: TSpeedButton
           Left = 142
-          Top = -1
-          Width = 15
-          Height = 16
+          Top = 0
+          Width = 25
+          Height = 17
           Flat = True
           Glyph.Data = {
             DE000000424DDE00000000000000360000002800000007000000070000000100
@@ -737,9 +387,9 @@ object MainForm: TMainForm
         end
         object BtnPlotType1: TSpeedButton
           Left = 160
-          Top = -1
-          Width = 15
-          Height = 16
+          Top = 0
+          Width = 25
+          Height = 17
           AllowAllUp = True
           Flat = True
           Glyph.Data = {
@@ -758,8 +408,8 @@ object MainForm: TMainForm
       object Panel222: TPanel
         Left = 189
         Top = 0
-        Width = 187
-        Height = 169
+        Width = 212
+        Height = 171
         Align = alClient
         BevelOuter = bvNone
         Color = clWhite
@@ -769,6 +419,8 @@ object MainForm: TMainForm
         Constraints.MinWidth = 187
         TabOrder = 1
         OnResize = Panel222Resize
+        ExplicitWidth = 194
+        ExplicitHeight = 175
         object Disp2: TImage
           Left = 0
           Top = 0
@@ -784,9 +436,9 @@ object MainForm: TMainForm
         end
         object BtnFreqType2: TSpeedButton
           Left = 142
-          Top = -1
-          Width = 15
-          Height = 16
+          Top = 0
+          Width = 25
+          Height = 17
           Flat = True
           Glyph.Data = {
             DE000000424DDE00000000000000360000002800000007000000070000000100
@@ -801,9 +453,9 @@ object MainForm: TMainForm
         end
         object BtnPlotType2: TSpeedButton
           Left = 160
-          Top = -1
-          Width = 15
-          Height = 16
+          Top = 0
+          Width = 25
+          Height = 17
           AllowAllUp = True
           Flat = True
           Glyph.Data = {
@@ -823,26 +475,28 @@ object MainForm: TMainForm
   end
   object Panel3: TPanel
     Left = 0
-    Top = 211
-    Width = 560
-    Height = 24
+    Top = 217
+    Width = 585
+    Height = 28
     Align = alBottom
     BevelInner = bvRaised
     BevelOuter = bvLowered
     TabOrder = 2
+    ExplicitWidth = 567
     object Panel33: TPanel
-      Left = 523
+      Left = 541
       Top = 2
-      Width = 35
-      Height = 20
+      Width = 42
+      Height = 24
       Align = alRight
       BevelOuter = bvNone
       TabOrder = 0
+      ExplicitLeft = 523
       object BtnTaskTray: TSpeedButton
         Left = 0
         Top = 0
-        Width = 18
-        Height = 19
+        Width = 22
+        Height = 23
         Hint = 'Hide'
         Flat = True
         Glyph.Data = {
@@ -870,10 +524,10 @@ object MainForm: TMainForm
         OnClick = BtnTaskTrayClick
       end
       object BtnAbout: TSpeedButton
-        Left = 18
+        Left = 23
         Top = 0
-        Width = 15
-        Height = 19
+        Width = 18
+        Height = 23
         Hint = 'About'
         Caption = '?'
         Flat = True
@@ -891,16 +545,16 @@ object MainForm: TMainForm
     object Panel31: TPanel
       Left = 2
       Top = 2
-      Width = 20
-      Height = 20
+      Width = 23
+      Height = 24
       Align = alLeft
       BevelOuter = bvNone
       TabOrder = 1
       object BtnMonitor: TSpeedButton
-        Left = 0
+        Left = 1
         Top = 0
-        Width = 18
-        Height = 19
+        Width = 22
+        Height = 23
         Hint = 'RTK Monitor'
         Flat = True
         Font.Charset = DEFAULT_CHARSET
@@ -935,21 +589,22 @@ object MainForm: TMainForm
       end
     end
     object Panel32: TPanel
-      Left = 22
+      Left = 25
       Top = 2
-      Width = 501
-      Height = 20
+      Width = 516
+      Height = 24
       Hint = 'messages'
       Align = alClient
       BevelOuter = bvNone
       ParentShowHint = False
       ShowHint = True
       TabOrder = 2
+      ExplicitWidth = 498
       object Message: TLabel
         Left = 0
         Top = 3
-        Width = 501
-        Height = 17
+        Width = 516
+        Height = 21
         Align = alBottom
         Alignment = taCenter
         AutoSize = False
@@ -961,25 +616,26 @@ object MainForm: TMainForm
         ParentFont = False
         ParentShowHint = False
         ShowHint = False
-        ExplicitTop = 2
-        ExplicitWidth = 313
+        ExplicitTop = 5
+        ExplicitWidth = 490
       end
     end
   end
   object Panel4: TPanel
     Left = 0
-    Top = 235
-    Width = 560
-    Height = 23
+    Top = 245
+    Width = 585
+    Height = 27
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 3
     OnResize = Panel4Resize
+    ExplicitWidth = 567
     object BtnExit: TButton
       Left = 297
       Top = 0
       Width = 73
-      Height = 23
+      Height = 27
       Caption = '&Exit'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
@@ -994,7 +650,7 @@ object MainForm: TMainForm
       Left = 223
       Top = 0
       Width = 73
-      Height = 23
+      Height = 27
       Caption = '&Options...'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
@@ -1009,16 +665,16 @@ object MainForm: TMainForm
       Left = 149
       Top = 0
       Width = 73
-      Height = 23
+      Height = 27
       Caption = '&Plot...'
       TabOrder = 2
       OnClick = BtnPlotClick
     end
     object BtnStart: TButton
-      Left = 1
-      Top = 0
+      Left = 0
+      Top = -1
       Width = 73
-      Height = 23
+      Height = 27
       Caption = '&Start'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
@@ -1033,7 +689,7 @@ object MainForm: TMainForm
       Left = 75
       Top = 0
       Width = 73
-      Height = 23
+      Height = 27
       Caption = 'S&top'
       Enabled = False
       Font.Charset = DEFAULT_CHARSET
@@ -1048,9 +704,9 @@ object MainForm: TMainForm
   end
   object Panel5: TPanel
     Left = 0
-    Top = 25
-    Width = 560
-    Height = 17
+    Top = 27
+    Width = 585
+    Height = 19
     Align = alTop
     BevelInner = bvRaised
     BevelOuter = bvNone
@@ -1059,9 +715,10 @@ object MainForm: TMainForm
     TabOrder = 4
     Visible = False
     OnResize = Panel5Resize
+    ExplicitWidth = 567
     object SolS: TLabel
-      Left = 32
-      Top = 1
+      Left = 40
+      Top = 2
       Width = 44
       Height = 13
       Alignment = taCenter
@@ -1075,8 +732,8 @@ object MainForm: TMainForm
       ParentFont = False
     end
     object SolQ: TLabel
-      Left = 78
-      Top = 1
+      Left = 86
+      Top = 2
       Width = 38
       Height = 13
       Caption = 'Solution'
@@ -1089,8 +746,8 @@ object MainForm: TMainForm
     end
     object BtnSolType2: TSpeedButton
       Left = 530
-      Top = -1
-      Width = 15
+      Top = 0
+      Width = 25
       Height = 16
       AllowAllUp = True
       Flat = True
@@ -1107,8 +764,8 @@ object MainForm: TMainForm
       OnClick = BtnSolTypeClick
     end
     object IndQ: TPanel
-      Left = 20
-      Top = 3
+      Left = 32
+      Top = 4
       Width = 10
       Height = 10
       BevelInner = bvRaised
@@ -1120,9 +777,10 @@ object MainForm: TMainForm
   end
   object Pane6: TPanel
     Left = 1
-    Top = 24
-    Width = 16
-    Height = 16
+    Top = 26
+    Width = 25
+    Height = 18
+    AutoSize = True
     BevelOuter = bvNone
     Color = clWhite
     ParentBackground = False
@@ -1131,8 +789,8 @@ object MainForm: TMainForm
     object BtnPanel: TSpeedButton
       Left = 0
       Top = 0
-      Width = 16
-      Height = 16
+      Width = 25
+      Height = 18
       AllowAllUp = True
       Flat = True
       Glyph.Data = {
@@ -1157,6 +815,387 @@ object MainForm: TMainForm
         FF00}
       Spacing = 0
       OnClick = BtnPanelClick
+    end
+  end
+  object Panel1: TPanel
+    Left = 0
+    Top = 0
+    Width = 585
+    Height = 27
+    Align = alTop
+    BevelInner = bvRaised
+    BevelOuter = bvLowered
+    TabOrder = 0
+    ExplicitWidth = 567
+    object LabelTime: TLabel
+      Left = 4
+      Top = 6
+      Width = 143
+      Height = 15
+      Alignment = taCenter
+      AutoSize = False
+      Caption = '2000/01/01 00:00:00.0'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clGray
+      Font.Height = -12
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+    end
+    object Panel11: TPanel
+      Left = 145
+      Top = 3
+      Width = 34
+      Height = 21
+      TabOrder = 2
+      object BtnTimeSys: TSpeedButton
+        Left = 0
+        Top = 0
+        Width = 34
+        Height = 19
+        Caption = 'GPST'
+        Flat = True
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlack
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+        Spacing = 1
+        OnClick = BtnTimeSysClick
+      end
+    end
+    object Panel12: TPanel
+      Left = 383
+      Top = 2
+      Width = 152
+      Height = 23
+      Align = alRight
+      BevelOuter = bvNone
+      TabOrder = 1
+      ExplicitLeft = 368
+      object Image1: TImage
+        Left = 71
+        Top = 4
+        Width = 29
+        Height = 17
+        Picture.Data = {
+          07544269746D617056060000424D560600000000000036040000280000001D00
+          0000110000000100080000000000200200000000000000000000000100000000
+          000000000000000080000080000000808000800000008000800080800000C0C0
+          C000C0DCC000F0CAA6000020400000206000002080000020A0000020C0000020
+          E00000400000004020000040400000406000004080000040A0000040C0000040
+          E00000600000006020000060400000606000006080000060A0000060C0000060
+          E00000800000008020000080400000806000008080000080A0000080C0000080
+          E00000A0000000A0200000A0400000A0600000A0800000A0A00000A0C00000A0
+          E00000C0000000C0200000C0400000C0600000C0800000C0A00000C0C00000C0
+          E00000E0000000E0200000E0400000E0600000E0800000E0A00000E0C00000E0
+          E00040000000400020004000400040006000400080004000A0004000C0004000
+          E00040200000402020004020400040206000402080004020A0004020C0004020
+          E00040400000404020004040400040406000404080004040A0004040C0004040
+          E00040600000406020004060400040606000406080004060A0004060C0004060
+          E00040800000408020004080400040806000408080004080A0004080C0004080
+          E00040A0000040A0200040A0400040A0600040A0800040A0A00040A0C00040A0
+          E00040C0000040C0200040C0400040C0600040C0800040C0A00040C0C00040C0
+          E00040E0000040E0200040E0400040E0600040E0800040E0A00040E0C00040E0
+          E00080000000800020008000400080006000800080008000A0008000C0008000
+          E00080200000802020008020400080206000802080008020A0008020C0008020
+          E00080400000804020008040400080406000804080008040A0008040C0008040
+          E00080600000806020008060400080606000806080008060A0008060C0008060
+          E00080800000808020008080400080806000808080008080A0008080C0008080
+          E00080A0000080A0200080A0400080A0600080A0800080A0A00080A0C00080A0
+          E00080C0000080C0200080C0400080C0600080C0800080C0A00080C0C00080C0
+          E00080E0000080E0200080E0400080E0600080E0800080E0A00080E0C00080E0
+          E000C0000000C0002000C0004000C0006000C0008000C000A000C000C000C000
+          E000C0200000C0202000C0204000C0206000C0208000C020A000C020C000C020
+          E000C0400000C0402000C0404000C0406000C0408000C040A000C040C000C040
+          E000C0600000C0602000C0604000C0606000C0608000C060A000C060C000C060
+          E000C0800000C0802000C0804000C0806000C0808000C080A000C080C000C080
+          E000C0A00000C0A02000C0A04000C0A06000C0A08000C0A0A000C0A0C000C0A0
+          E000C0C00000C0C02000C0C04000C0C06000C0C08000C0C0A000F0FBFF00A4A0
+          A000808080000000FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFF
+          FF00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
+          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
+          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
+          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
+          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
+          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
+          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00A4FFFFFFFF00
+          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000A4FFFF00
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000A4FFFF00
+          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00A4FFFFFFFF00
+          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
+          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
+          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
+          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
+          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
+          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
+          0000}
+        Proportional = True
+        Stretch = True
+        Transparent = True
+      end
+      object Image2: TImage
+        Left = 45
+        Top = 4
+        Width = 29
+        Height = 17
+        Picture.Data = {
+          07544269746D617056060000424D560600000000000036040000280000001D00
+          0000110000000100080000000000200200000000000000000000000100000000
+          000000000000000080000080000000808000800000008000800080800000C0C0
+          C000C0DCC000F0CAA6000020400000206000002080000020A0000020C0000020
+          E00000400000004020000040400000406000004080000040A0000040C0000040
+          E00000600000006020000060400000606000006080000060A0000060C0000060
+          E00000800000008020000080400000806000008080000080A0000080C0000080
+          E00000A0000000A0200000A0400000A0600000A0800000A0A00000A0C00000A0
+          E00000C0000000C0200000C0400000C0600000C0800000C0A00000C0C00000C0
+          E00000E0000000E0200000E0400000E0600000E0800000E0A00000E0C00000E0
+          E00040000000400020004000400040006000400080004000A0004000C0004000
+          E00040200000402020004020400040206000402080004020A0004020C0004020
+          E00040400000404020004040400040406000404080004040A0004040C0004040
+          E00040600000406020004060400040606000406080004060A0004060C0004060
+          E00040800000408020004080400040806000408080004080A0004080C0004080
+          E00040A0000040A0200040A0400040A0600040A0800040A0A00040A0C00040A0
+          E00040C0000040C0200040C0400040C0600040C0800040C0A00040C0C00040C0
+          E00040E0000040E0200040E0400040E0600040E0800040E0A00040E0C00040E0
+          E00080000000800020008000400080006000800080008000A0008000C0008000
+          E00080200000802020008020400080206000802080008020A0008020C0008020
+          E00080400000804020008040400080406000804080008040A0008040C0008040
+          E00080600000806020008060400080606000806080008060A0008060C0008060
+          E00080800000808020008080400080806000808080008080A0008080C0008080
+          E00080A0000080A0200080A0400080A0600080A0800080A0A00080A0C00080A0
+          E00080C0000080C0200080C0400080C0600080C0800080C0A00080C0C00080C0
+          E00080E0000080E0200080E0400080E0600080E0800080E0A00080E0C00080E0
+          E000C0000000C0002000C0004000C0006000C0008000C000A000C000C000C000
+          E000C0200000C0202000C0204000C0206000C0208000C020A000C020C000C020
+          E000C0400000C0402000C0404000C0406000C0408000C040A000C040C000C040
+          E000C0600000C0602000C0604000C0606000C0608000C060A000C060C000C060
+          E000C0800000C0802000C0804000C0806000C0808000C080A000C080C000C080
+          E000C0A00000C0A02000C0A04000C0A06000C0A08000C0A0A000C0A0C000C0A0
+          E000C0C00000C0C02000C0C04000C0C06000C0C08000C0C0A000F0FBFF00A4A0
+          A000808080000000FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFF
+          FF00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
+          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
+          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
+          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
+          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
+          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
+          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00A4FFFFFFFF00
+          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000A4FFFF00
+          0000000000000000000000000000000000000000000000000000000000000000
+          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000A4FFFF00
+          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00A4FFFFFFFF00
+          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
+          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
+          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
+          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
+          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
+          0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
+          0000}
+        Proportional = True
+        Stretch = True
+        Transparent = True
+      end
+      object Str1: TPanel
+        Left = 30
+        Top = 6
+        Width = 9
+        Height = 12
+        BevelInner = bvRaised
+        BevelOuter = bvLowered
+        ParentBackground = False
+        TabOrder = 0
+      end
+      object Str2: TPanel
+        Left = 39
+        Top = 6
+        Width = 9
+        Height = 12
+        BevelInner = bvRaised
+        BevelOuter = bvLowered
+        ParentBackground = False
+        TabOrder = 1
+      end
+      object Str3: TPanel
+        Left = 48
+        Top = 6
+        Width = 9
+        Height = 12
+        BevelInner = bvRaised
+        BevelOuter = bvLowered
+        ParentBackground = False
+        TabOrder = 2
+      end
+      object Str4: TPanel
+        Left = 101
+        Top = 6
+        Width = 9
+        Height = 12
+        BevelInner = bvRaised
+        BevelOuter = bvLowered
+        ParentBackground = False
+        TabOrder = 3
+      end
+      object Str5: TPanel
+        Left = 110
+        Top = 6
+        Width = 9
+        Height = 12
+        BevelInner = bvRaised
+        BevelOuter = bvLowered
+        ParentBackground = False
+        TabOrder = 4
+      end
+      object Str6: TPanel
+        Left = 122
+        Top = 6
+        Width = 9
+        Height = 12
+        BevelInner = bvRaised
+        BevelOuter = bvLowered
+        ParentBackground = False
+        TabOrder = 5
+      end
+      object Str7: TPanel
+        Left = 131
+        Top = 6
+        Width = 9
+        Height = 12
+        BevelInner = bvRaised
+        BevelOuter = bvLowered
+        ParentBackground = False
+        TabOrder = 6
+      end
+      object Str8: TPanel
+        Left = 140
+        Top = 6
+        Width = 9
+        Height = 12
+        BevelInner = bvRaised
+        BevelOuter = bvLowered
+        ParentBackground = False
+        TabOrder = 7
+      end
+      object Svr: TPanel
+        Left = 74
+        Top = 6
+        Width = 9
+        Height = 12
+        BevelInner = bvRaised
+        BevelOuter = bvLowered
+        ParentBackground = False
+        TabOrder = 8
+      end
+      object Panel121: TPanel
+        Left = 1
+        Top = 1
+        Width = 23
+        Height = 21
+        AutoSize = True
+        BevelInner = bvRaised
+        BevelOuter = bvNone
+        TabOrder = 9
+        object BtnInputStr: TSpeedButton
+          Left = 1
+          Top = 1
+          Width = 21
+          Height = 19
+          Hint = 'Input Streams'
+          Margins.Left = 2
+          Margins.Top = 2
+          Margins.Right = 2
+          Margins.Bottom = 2
+          Caption = 'I'
+          Flat = True
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+          ParentShowHint = False
+          ShowHint = True
+          OnClick = BtnInputStrClick
+        end
+      end
+    end
+    object Panel13: TPanel
+      Left = 535
+      Top = 2
+      Width = 48
+      Height = 23
+      Align = alRight
+      BevelOuter = bvNone
+      TabOrder = 0
+      ExplicitLeft = 519
+      object Panel131: TPanel
+        Left = 1
+        Top = 1
+        Width = 23
+        Height = 21
+        AutoSize = True
+        BevelInner = bvRaised
+        BevelOuter = bvNone
+        TabOrder = 0
+        object BtnOutputStr: TSpeedButton
+          Left = 1
+          Top = 1
+          Width = 21
+          Height = 19
+          Hint = 'Output Streams'
+          Margins.Left = 2
+          Margins.Top = 2
+          Margins.Right = 2
+          Margins.Bottom = 2
+          Caption = 'O'
+          Flat = True
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+          ParentShowHint = False
+          ShowHint = True
+          Spacing = 1
+          OnClick = BtnOutputStrClick
+        end
+      end
+      object Panel132: TPanel
+        Left = 25
+        Top = 1
+        Width = 23
+        Height = 21
+        AutoSize = True
+        BevelInner = bvRaised
+        BevelOuter = bvNone
+        TabOrder = 1
+        object BtnLogStr: TSpeedButton
+          Left = 1
+          Top = 1
+          Width = 21
+          Height = 19
+          Hint = 'Log Streams'
+          Margins.Left = 2
+          Margins.Top = 2
+          Margins.Right = 2
+          Margins.Bottom = 2
+          Caption = 'L'
+          Flat = True
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+          ParentShowHint = False
+          ShowHint = True
+          Spacing = 1
+          OnClick = BtnLogStrClick
+        end
+      end
     end
   end
   object Timer: TTimer
@@ -1223,7 +1262,7 @@ object MainForm: TMainForm
     Left = 274
     Top = 91
     Bitmap = {
-      494C010102000400840010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010102000400980010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

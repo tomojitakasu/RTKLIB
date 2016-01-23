@@ -4,8 +4,8 @@ object OptDialog: TOptDialog
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Options'
-  ClientHeight = 285
-  ClientWidth = 382
+  ClientHeight = 290
+  ClientWidth = 411
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -53,38 +53,38 @@ object OptDialog: TOptDialog
     Caption = 'a'
   end
   object BtnCancel: TButton
-    Left = 306
-    Top = 262
-    Width = 69
-    Height = 21
+    Left = 311
+    Top = 261
+    Width = 99
+    Height = 27
     Caption = '&Cancel'
     ModalResult = 2
     TabOrder = 1
   end
   object BtnOk: TButton
-    Left = 236
-    Top = 262
-    Width = 69
-    Height = 21
+    Left = 212
+    Top = 261
+    Width = 99
+    Height = 27
     Caption = '&OK'
     ModalResult = 1
     TabOrder = 0
     OnClick = BtnOkClick
   end
   object BtnSave: TButton
-    Left = 155
-    Top = 262
-    Width = 69
-    Height = 21
+    Left = 99
+    Top = 261
+    Width = 99
+    Height = 27
     Caption = '&Save...'
     TabOrder = 3
     OnClick = BtnSaveClick
   end
   object BtnLoad: TButton
-    Left = 85
-    Top = 262
-    Width = 69
-    Height = 21
+    Left = 0
+    Top = 261
+    Width = 99
+    Height = 27
     Caption = '&Load...'
     TabOrder = 2
     OnClick = BtnLoadClick
@@ -92,12 +92,13 @@ object OptDialog: TOptDialog
   object Misc: TPageControl
     Left = 0
     Top = 0
-    Width = 381
+    Width = 411
     Height = 262
     ActivePage = TabSheet1
     TabOrder = 4
     object TabSheet1: TTabSheet
       Caption = 'Setting&1'
+      ExplicitWidth = 410
       object Label3: TLabel
         Left = 24
         Top = 73
@@ -155,8 +156,8 @@ object OptDialog: TOptDialog
         Caption = 'Troposphere Correction'
       end
       object DynamicModel: TComboBox
-        Left = 221
-        Top = 70
+        Left = 262
+        Top = 71
         Width = 69
         Height = 21
         Style = csDropDownList
@@ -169,8 +170,8 @@ object OptDialog: TOptDialog
           'ON')
       end
       object IonoOpt: TComboBox
-        Left = 221
-        Top = 92
+        Left = 262
+        Top = 93
         Width = 138
         Height = 21
         Style = csDropDownList
@@ -184,14 +185,15 @@ object OptDialog: TOptDialog
           'Broadcast'
           'SBAS'
           'Iono-Free LC'
-          'Estimate STEC'
+          'Estimate TEC'
           'IONEX TEC'
           'QZSS Broardcast'
-          'QZSS LEX')
+          'QZSS LEX'
+          'Input TEC')
       end
       object TropOpt: TComboBox
-        Left = 221
-        Top = 114
+        Left = 262
+        Top = 115
         Width = 138
         Height = 21
         Style = csDropDownList
@@ -204,11 +206,12 @@ object OptDialog: TOptDialog
           'Saastamoinen'
           'SBAS'
           'Estimate ZTD'
-          'Estimate ZTD+Grad')
+          'Estimate ZTD+Grad'
+          'Input ZTD')
       end
       object PosMode: TComboBox
-        Left = 221
-        Top = 4
+        Left = 262
+        Top = 5
         Width = 138
         Height = 21
         Style = csDropDownList
@@ -229,22 +232,24 @@ object OptDialog: TOptDialog
           'PPP Fixed')
       end
       object Freq: TComboBox
-        Left = 221
-        Top = 26
+        Left = 262
+        Top = 27
         Width = 69
         Height = 21
         Style = csDropDownList
-        ItemIndex = 1
+        ItemIndex = 0
         TabOrder = 1
-        Text = 'L1+L2'
+        Text = 'L1'
         OnChange = FreqChange
         Items.Strings = (
           'L1'
-          'L1+L2')
+          'L1+L2'
+          'L1+L2+L5'
+          'L1+L5')
       end
       object Solution: TComboBox
-        Left = 291
-        Top = 26
+        Left = 332
+        Top = 27
         Width = 68
         Height = 21
         Style = csDropDownList
@@ -257,8 +262,8 @@ object OptDialog: TOptDialog
           'Combined')
       end
       object SatEphem: TComboBox
-        Left = 221
-        Top = 136
+        Left = 262
+        Top = 137
         Width = 138
         Height = 21
         Style = csDropDownList
@@ -278,9 +283,9 @@ object OptDialog: TOptDialog
       object ExSats: TEdit
         Left = 221
         Top = 186
-        Width = 138
+        Width = 179
         Height = 21
-        TabOrder = 15
+        TabOrder = 16
       end
       object NavSys1: TCheckBox
         Left = 24
@@ -290,7 +295,7 @@ object OptDialog: TOptDialog
         Caption = 'GPS'
         Checked = True
         State = cbChecked
-        TabOrder = 16
+        TabOrder = 17
       end
       object NavSys2: TCheckBox
         Left = 68
@@ -298,7 +303,7 @@ object OptDialog: TOptDialog
         Width = 71
         Height = 17
         Caption = 'GLO'
-        TabOrder = 17
+        TabOrder = 18
         OnClick = NavSys2Click
       end
       object NavSys3: TCheckBox
@@ -307,7 +312,7 @@ object OptDialog: TOptDialog
         Width = 61
         Height = 17
         Caption = 'Galileo'
-        TabOrder = 18
+        TabOrder = 19
       end
       object NavSys4: TCheckBox
         Left = 169
@@ -315,7 +320,7 @@ object OptDialog: TOptDialog
         Width = 61
         Height = 17
         Caption = 'QZSS'
-        TabOrder = 19
+        TabOrder = 20
       end
       object NavSys5: TCheckBox
         Left = 222
@@ -323,11 +328,11 @@ object OptDialog: TOptDialog
         Width = 61
         Height = 17
         Caption = 'SBAS'
-        TabOrder = 20
+        TabOrder = 21
       end
       object TideCorr: TComboBox
-        Left = 291
-        Top = 70
+        Left = 332
+        Top = 71
         Width = 68
         Height = 21
         Style = csDropDownList
@@ -346,12 +351,12 @@ object OptDialog: TOptDialog
         Width = 61
         Height = 17
         Caption = 'BeiDou'
-        TabOrder = 21
+        TabOrder = 22
         OnClick = NavSys6Click
       end
       object ElMask: TComboBox
-        Left = 221
-        Top = 48
+        Left = 262
+        Top = 49
         Width = 69
         Height = 21
         AutoComplete = False
@@ -385,15 +390,15 @@ object OptDialog: TOptDialog
         TabOrder = 10
       end
       object PosOpt3: TCheckBox
-        Left = 147
+        Left = 144
         Top = 161
         Width = 85
         Height = 17
-        Caption = 'PhWindup'
+        Caption = 'PhWU'
         TabOrder = 12
       end
       object PosOpt2: TCheckBox
-        Left = 84
+        Left = 83
         Top = 161
         Width = 57
         Height = 17
@@ -401,16 +406,16 @@ object OptDialog: TOptDialog
         TabOrder = 11
       end
       object PosOpt4: TCheckBox
-        Left = 216
+        Left = 194
         Top = 161
         Width = 85
         Height = 17
-        Caption = 'Reject Ecl'
+        Caption = 'Rej Ecl'
         TabOrder = 13
       end
       object BtnMask: TButton
-        Left = 290
-        Top = 47
+        Left = 331
+        Top = 48
         Width = 70
         Height = 23
         Caption = '...'
@@ -418,17 +423,26 @@ object OptDialog: TOptDialog
         OnClick = BtnMaskClick
       end
       object PosOpt5: TCheckBox
-        Left = 288
+        Left = 246
         Top = 161
         Width = 72
         Height = 17
         Caption = 'RAIM FDE'
         TabOrder = 14
       end
+      object PosOpt6: TCheckBox
+        Left = 314
+        Top = 161
+        Width = 72
+        Height = 17
+        Caption = 'DBCorr'
+        TabOrder = 15
+      end
     end
     object TabSheet2: TTabSheet
       Caption = 'Setting&2'
       ImageIndex = 1
+      ExplicitWidth = 426
       object Label25: TLabel
         Left = 24
         Top = 7
@@ -481,9 +495,9 @@ object OptDialog: TOptDialog
       object Label37: TLabel
         Left = 24
         Top = 191
-        Width = 122
+        Width = 155
         Height = 13
-        Caption = 'Number of Filter Iteration'
+        Caption = 'Max # of AR Iter/# of Filter Iter'
       end
       object LabelConf: TLabel
         Left = 24
@@ -493,8 +507,8 @@ object OptDialog: TOptDialog
         Caption = 'Min Confidence / Max FCB to Fix Amb'
       end
       object AmbRes: TComboBox
-        Left = 221
-        Top = 4
+        Left = 261
+        Top = 5
         Width = 49
         Height = 21
         Style = csDropDownList
@@ -510,83 +524,83 @@ object OptDialog: TOptDialog
           'PPP-AR')
       end
       object ValidThresAR: TEdit
-        Left = 221
-        Top = 29
+        Left = 261
+        Top = 30
         Width = 138
         Height = 21
         TabOrder = 3
         Text = '3.0'
       end
       object LockCntFixAmb: TEdit
-        Left = 221
-        Top = 73
+        Left = 261
+        Top = 74
         Width = 69
         Height = 21
         TabOrder = 5
         Text = '5'
       end
       object OutCntResetAmb: TEdit
-        Left = 221
-        Top = 122
+        Left = 261
+        Top = 123
         Width = 69
         Height = 21
         TabOrder = 7
         Text = '5'
       end
       object ElMaskAR: TEdit
-        Left = 291
-        Top = 73
+        Left = 331
+        Top = 74
         Width = 68
         Height = 21
         TabOrder = 4
         Text = '0'
       end
       object SlipThres: TEdit
-        Left = 291
-        Top = 122
+        Left = 331
+        Top = 123
         Width = 68
         Height = 21
         TabOrder = 8
         Text = '0.05'
       end
       object MaxAgeDiff: TEdit
-        Left = 221
-        Top = 144
+        Left = 261
+        Top = 145
         Width = 69
         Height = 21
         TabOrder = 9
         Text = '30'
       end
       object RejectThres: TEdit
-        Left = 291
-        Top = 166
+        Left = 331
+        Top = 167
         Width = 68
         Height = 21
         TabOrder = 11
         Text = '30'
       end
       object NumIter: TEdit
-        Left = 221
-        Top = 188
-        Width = 138
+        Left = 331
+        Top = 189
+        Width = 68
         Height = 21
-        TabOrder = 12
+        TabOrder = 13
         Text = '1'
       end
       object BaselineLen: TEdit
-        Left = 221
-        Top = 210
+        Left = 261
+        Top = 211
         Width = 69
         Height = 21
-        TabOrder = 14
+        TabOrder = 15
         Text = '0.0'
       end
       object BaselineSig: TEdit
-        Left = 291
-        Top = 210
+        Left = 331
+        Top = 211
         Width = 68
         Height = 21
-        TabOrder = 15
+        TabOrder = 16
         Text = '0.001'
       end
       object BaselineConst: TCheckBox
@@ -595,12 +609,12 @@ object OptDialog: TOptDialog
         Width = 179
         Height = 17
         Caption = 'Baseline Length Constraint (m)'
-        TabOrder = 13
+        TabOrder = 14
         OnClick = BaselineConstClick
       end
       object GloAmbRes: TComboBox
-        Left = 271
-        Top = 4
+        Left = 311
+        Top = 5
         Width = 43
         Height = 21
         Style = csDropDownList
@@ -614,54 +628,54 @@ object OptDialog: TOptDialog
           'Auto Calibration')
       end
       object FixCntHoldAmb: TEdit
-        Left = 221
-        Top = 95
+        Left = 261
+        Top = 96
         Width = 69
         Height = 21
-        TabOrder = 16
+        TabOrder = 17
         Text = '10'
       end
       object ElMaskHold: TEdit
-        Left = 291
-        Top = 95
+        Left = 331
+        Top = 96
         Width = 68
         Height = 21
         TabOrder = 6
         Text = '0'
       end
       object RejectGdop: TEdit
-        Left = 221
-        Top = 166
-        Width = 69
+        Left = 260
+        Top = 167
+        Width = 70
         Height = 21
         TabOrder = 10
         Text = '30'
       end
       object ThresAR2: TEdit
-        Left = 221
-        Top = 51
+        Left = 261
+        Top = 52
         Width = 69
         Height = 21
-        TabOrder = 17
+        TabOrder = 18
         Text = '0.99995'
       end
       object ThresAR3: TEdit
-        Left = 291
-        Top = 51
+        Left = 331
+        Top = 52
         Width = 68
         Height = 21
-        TabOrder = 18
+        TabOrder = 19
         Text = '0.20'
       end
       object SyncSol: TComboBox
-        Left = 291
-        Top = 144
+        Left = 331
+        Top = 145
         Width = 68
         Height = 21
         Style = csDropDownList
         Enabled = False
         ItemIndex = 1
-        TabOrder = 19
+        TabOrder = 20
         Text = 'ON'
         OnChange = AmbResChange
         Items.Strings = (
@@ -670,8 +684,8 @@ object OptDialog: TOptDialog
           'Auto Calibration')
       end
       object BdsAmbRes: TComboBox
-        Left = 315
-        Top = 4
+        Left = 355
+        Top = 5
         Width = 43
         Height = 21
         Style = csDropDownList
@@ -683,10 +697,19 @@ object OptDialog: TOptDialog
           'OFF'
           'ON')
       end
+      object ARIter: TEdit
+        Left = 260
+        Top = 189
+        Width = 70
+        Height = 21
+        TabOrder = 12
+        Text = '1'
+      end
     end
     object TabSheet3: TTabSheet
       Caption = 'O&utput'
       ImageIndex = 2
+      ExplicitWidth = 426
       object LabelSolFormat: TLabel
         Left = 24
         Top = 9
@@ -759,7 +782,7 @@ object OptDialog: TOptDialog
         Caption = 'Solution for Static Mode'
       end
       object SolFormat: TComboBox
-        Left = 221
+        Left = 260
         Top = 4
         Width = 138
         Height = 21
@@ -775,7 +798,7 @@ object OptDialog: TOptDialog
           'NMEA0183')
       end
       object TimeFormat: TComboBox
-        Left = 221
+        Left = 260
         Top = 50
         Width = 105
         Height = 21
@@ -790,7 +813,7 @@ object OptDialog: TOptDialog
           'hh:mm:ss JST')
       end
       object LatLonFormat: TComboBox
-        Left = 221
+        Left = 260
         Top = 72
         Width = 138
         Height = 21
@@ -803,14 +826,14 @@ object OptDialog: TOptDialog
           'ddd mm ss.sss')
       end
       object FieldSep: TEdit
-        Left = 221
+        Left = 260
         Top = 94
         Width = 138
         Height = 21
         TabOrder = 5
       end
       object OutputDatum: TComboBox
-        Left = 221
+        Left = 260
         Top = 116
         Width = 69
         Height = 21
@@ -822,7 +845,7 @@ object OptDialog: TOptDialog
           'WGS84')
       end
       object OutputHeight: TComboBox
-        Left = 291
+        Left = 330
         Top = 116
         Width = 68
         Height = 21
@@ -836,7 +859,7 @@ object OptDialog: TOptDialog
           'Geodetic')
       end
       object OutputGeoid: TComboBox
-        Left = 221
+        Left = 260
         Top = 138
         Width = 138
         Height = 21
@@ -852,7 +875,7 @@ object OptDialog: TOptDialog
           'GSI2000 (1x1.5")')
       end
       object OutputHead: TComboBox
-        Left = 221
+        Left = 260
         Top = 28
         Width = 69
         Height = 21
@@ -865,7 +888,7 @@ object OptDialog: TOptDialog
           'ON')
       end
       object OutputOpt: TComboBox
-        Left = 291
+        Left = 330
         Top = 28
         Width = 68
         Height = 21
@@ -878,7 +901,7 @@ object OptDialog: TOptDialog
           'ON')
       end
       object DebugTrace: TComboBox
-        Left = 291
+        Left = 330
         Top = 208
         Width = 68
         Height = 21
@@ -895,7 +918,7 @@ object OptDialog: TOptDialog
           'Level5')
       end
       object DebugStatus: TComboBox
-        Left = 221
+        Left = 260
         Top = 208
         Width = 69
         Height = 21
@@ -909,7 +932,7 @@ object OptDialog: TOptDialog
           'Residuals')
       end
       object TimeDecimal: TEdit
-        Left = 329
+        Left = 368
         Top = 50
         Width = 30
         Height = 21
@@ -917,7 +940,7 @@ object OptDialog: TOptDialog
         Text = '3'
       end
       object NmeaIntv1: TEdit
-        Left = 221
+        Left = 260
         Top = 184
         Width = 69
         Height = 21
@@ -926,7 +949,7 @@ object OptDialog: TOptDialog
         Text = '0'
       end
       object NmeaIntv2: TEdit
-        Left = 291
+        Left = 330
         Top = 184
         Width = 68
         Height = 21
@@ -935,7 +958,7 @@ object OptDialog: TOptDialog
         Text = '0'
       end
       object SolStatic: TComboBox
-        Left = 221
+        Left = 260
         Top = 160
         Width = 138
         Height = 21
@@ -949,12 +972,8 @@ object OptDialog: TOptDialog
       end
     end
     object TabSheet4: TTabSheet
-      Caption = 'S&tats'
+      Caption = 'S&tatistics'
       ImageIndex = 3
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Label29: TLabel
         Left = 34
         Top = 213
@@ -965,7 +984,7 @@ object OptDialog: TOptDialog
       object GroupBox3: TGroupBox
         Left = 2
         Top = 0
-        Width = 369
+        Width = 397
         Height = 105
         Caption = 'Measurement Errors (1-sigma)'
         TabOrder = 0
@@ -998,7 +1017,7 @@ object OptDialog: TOptDialog
           Caption = 'Doppler Frequency (Hz)'
         end
         object MeasErrR1: TEdit
-          Left = 228
+          Left = 278
           Top = 14
           Width = 56
           Height = 21
@@ -1006,7 +1025,7 @@ object OptDialog: TOptDialog
           Text = '100.0'
         end
         object MeasErr2: TEdit
-          Left = 228
+          Left = 278
           Top = 36
           Width = 56
           Height = 21
@@ -1014,7 +1033,7 @@ object OptDialog: TOptDialog
           Text = '0.003'
         end
         object MeasErr3: TEdit
-          Left = 284
+          Left = 334
           Top = 36
           Width = 57
           Height = 21
@@ -1022,7 +1041,7 @@ object OptDialog: TOptDialog
           Text = '0.003'
         end
         object MeasErr4: TEdit
-          Left = 228
+          Left = 278
           Top = 58
           Width = 113
           Height = 21
@@ -1030,7 +1049,7 @@ object OptDialog: TOptDialog
           Text = '0.000'
         end
         object MeasErr5: TEdit
-          Left = 228
+          Left = 278
           Top = 80
           Width = 113
           Height = 21
@@ -1038,7 +1057,7 @@ object OptDialog: TOptDialog
           Text = '0.100'
         end
         object MeasErrR2: TEdit
-          Left = 284
+          Left = 334
           Top = 14
           Width = 57
           Height = 21
@@ -1049,7 +1068,7 @@ object OptDialog: TOptDialog
       object GroupBox4: TGroupBox
         Left = 2
         Top = 104
-        Width = 369
+        Width = 397
         Height = 105
         Caption = 'Process Noises (1-sigma/sqrt(s))'
         TabOrder = 1
@@ -1082,7 +1101,7 @@ object OptDialog: TOptDialog
           Caption = 'Receiver Accel Horiz/Vertical (m/s2)'
         end
         object PrNoise1: TEdit
-          Left = 228
+          Left = 278
           Top = 36
           Width = 113
           Height = 21
@@ -1090,7 +1109,7 @@ object OptDialog: TOptDialog
           Text = '1.0E-04'
         end
         object PrNoise2: TEdit
-          Left = 228
+          Left = 278
           Top = 58
           Width = 113
           Height = 21
@@ -1098,7 +1117,7 @@ object OptDialog: TOptDialog
           Text = '1.0E-03'
         end
         object PrNoise3: TEdit
-          Left = 228
+          Left = 278
           Top = 80
           Width = 113
           Height = 21
@@ -1106,7 +1125,7 @@ object OptDialog: TOptDialog
           Text = '1.0E-04'
         end
         object PrNoise4: TEdit
-          Left = 228
+          Left = 278
           Top = 14
           Width = 57
           Height = 21
@@ -1114,7 +1133,7 @@ object OptDialog: TOptDialog
           Text = '1.0E-04'
         end
         object PrNoise5: TEdit
-          Left = 284
+          Left = 334
           Top = 14
           Width = 57
           Height = 21
@@ -1123,8 +1142,8 @@ object OptDialog: TOptDialog
         end
       end
       object SatClkStab: TEdit
-        Left = 230
-        Top = 210
+        Left = 280
+        Top = 211
         Width = 113
         Height = 21
         TabOrder = 2
@@ -1134,6 +1153,7 @@ object OptDialog: TOptDialog
     object TabSheet5: TTabSheet
       Caption = '&Positions'
       ImageIndex = 4
+      ExplicitWidth = 426
       object Label4: TLabel
         Left = 12
         Top = 12
@@ -1148,10 +1168,10 @@ object OptDialog: TOptDialog
         Caption = 'Station Position File'
       end
       object BtnStaPosView: TSpeedButton
-        Left = 336
+        Left = 355
         Top = 210
-        Width = 17
-        Height = 17
+        Width = 21
+        Height = 21
         Flat = True
         Glyph.Data = {
           3E020000424D3E0200000000000036000000280000000D0000000D0000000100
@@ -1175,137 +1195,22 @@ object OptDialog: TOptDialog
           FF00}
         OnClick = BtnStaPosViewClick
       end
-      object GroupRovAnt: TGroupBox
-        Left = 2
-        Top = 0
-        Width = 369
-        Height = 97
-        Caption = 'Rover'
-        TabOrder = 0
-        object LabelRovAntD: TLabel
-          Left = 210
-          Top = 58
-          Width = 76
-          Height = 13
-          Caption = 'Delta-E/N/U (m)'
-        end
-        object RovAntE: TEdit
-          Left = 208
-          Top = 74
-          Width = 51
-          Height = 21
-          TabOrder = 7
-          Text = '0'
-        end
-        object RovAntN: TEdit
-          Left = 260
-          Top = 74
-          Width = 51
-          Height = 21
-          TabOrder = 8
-          Text = '0'
-        end
-        object RovAntU: TEdit
-          Left = 312
-          Top = 74
-          Width = 51
-          Height = 21
-          TabOrder = 9
-          Text = '0'
-        end
-        object RovPos1: TEdit
-          Left = 6
-          Top = 36
-          Width = 117
-          Height = 21
-          TabOrder = 1
-          Text = '0'
-        end
-        object RovPos2: TEdit
-          Left = 124
-          Top = 36
-          Width = 119
-          Height = 21
-          TabOrder = 2
-          Text = '0'
-        end
-        object RovPos3: TEdit
-          Left = 244
-          Top = 36
-          Width = 119
-          Height = 21
-          TabOrder = 3
-          Text = '0'
-        end
-        object BtnRovPos: TButton
-          Left = 345
-          Top = 16
-          Width = 17
-          Height = 18
-          Caption = '...'
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -9
-          Font.Name = 'Tahoma'
-          Font.Style = []
-          ParentFont = False
-          TabOrder = 4
-          OnClick = BtnRovPosClick
-        end
-        object RovAntPcv: TCheckBox
-          Left = 6
-          Top = 58
-          Width = 161
-          Height = 17
-          Caption = 'Antenna Type (*: Auto)'
-          TabOrder = 5
-          OnClick = RovAntPcvClick
-        end
-        object RovAnt: TComboBox
-          Left = 6
-          Top = 74
-          Width = 201
-          Height = 21
-          DropDownCount = 16
-          TabOrder = 6
-          OnClick = RovAntClick
-        end
-        object RovPosType: TComboBox
-          Left = 6
-          Top = 14
-          Width = 137
-          Height = 21
-          Style = csDropDownList
-          Enabled = False
-          ItemIndex = 0
-          TabOrder = 0
-          Text = 'Lat/Lon/Height (deg/m)'
-          OnChange = RovPosTypeChange
-          Items.Strings = (
-            'Lat/Lon/Height (deg/m)'
-            'Lat/Lon/Height (dms/m)'
-            'X/Y/Z-ECEF (m)'
-            'Average of Single Pos'
-            'Get from Position File'
-            'RINEX Header Position')
-        end
-      end
       object GroupRefAnt: TGroupBox
-        Left = 2
-        Top = 96
-        Width = 369
+        Left = 1
+        Top = 95
+        Width = 397
         Height = 99
         Caption = 'Base Station'
         TabOrder = 1
         object LabelRefAntD: TLabel
-          Left = 210
-          Top = 58
+          Left = 240
+          Top = 60
           Width = 76
           Height = 13
           Caption = 'Delta-E/N/U (m)'
         end
         object RefAntE: TEdit
-          Left = 208
+          Left = 238
           Top = 74
           Width = 51
           Height = 21
@@ -1313,7 +1218,7 @@ object OptDialog: TOptDialog
           Text = '0'
         end
         object RefAntN: TEdit
-          Left = 260
+          Left = 290
           Top = 74
           Width = 51
           Height = 21
@@ -1321,7 +1226,7 @@ object OptDialog: TOptDialog
           Text = '0'
         end
         object RefAntU: TEdit
-          Left = 312
+          Left = 342
           Top = 74
           Width = 51
           Height = 21
@@ -1331,32 +1236,32 @@ object OptDialog: TOptDialog
         object RefPos1: TEdit
           Left = 6
           Top = 36
-          Width = 117
+          Width = 136
           Height = 21
           TabOrder = 1
           Text = '0'
         end
         object RefPos2: TEdit
-          Left = 124
+          Left = 144
           Top = 36
-          Width = 119
+          Width = 129
           Height = 21
           TabOrder = 2
           Text = '0'
         end
         object RefPos3: TEdit
-          Left = 244
+          Left = 264
           Top = 36
-          Width = 119
+          Width = 129
           Height = 21
           TabOrder = 3
           Text = '0'
         end
         object BtnRefPos: TButton
-          Left = 345
-          Top = 16
-          Width = 17
-          Height = 18
+          Left = 372
+          Top = 14
+          Width = 21
+          Height = 21
           Caption = '...'
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -1379,7 +1284,7 @@ object OptDialog: TOptDialog
         object RefAnt: TComboBox
           Left = 6
           Top = 74
-          Width = 201
+          Width = 230
           Height = 21
           DropDownCount = 16
           TabOrder = 6
@@ -1407,15 +1312,15 @@ object OptDialog: TOptDialog
       object StaPosFile: TEdit
         Left = 2
         Top = 210
-        Width = 333
+        Width = 352
         Height = 21
         TabOrder = 2
       end
       object BtnStaPosFile: TButton
-        Left = 353
-        Top = 210
-        Width = 17
-        Height = 18
+        Left = 378
+        Top = 209
+        Width = 21
+        Height = 21
         Caption = '...'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -1426,14 +1331,125 @@ object OptDialog: TOptDialog
         TabOrder = 3
         OnClick = BtnStaPosFileClick
       end
+      object GroupRovAnt: TGroupBox
+        Left = 2
+        Top = 0
+        Width = 397
+        Height = 99
+        Caption = 'Rover'
+        TabOrder = 0
+        object LabelRovAntD: TLabel
+          Left = 239
+          Top = 60
+          Width = 76
+          Height = 13
+          Caption = 'Delta-E/N/U (m)'
+        end
+        object RovAntE: TEdit
+          Left = 238
+          Top = 74
+          Width = 51
+          Height = 21
+          TabOrder = 7
+          Text = '0'
+        end
+        object RovAntN: TEdit
+          Left = 290
+          Top = 74
+          Width = 51
+          Height = 21
+          TabOrder = 8
+          Text = '0'
+        end
+        object RovAntU: TEdit
+          Left = 342
+          Top = 74
+          Width = 51
+          Height = 21
+          TabOrder = 9
+          Text = '0'
+        end
+        object RovPos1: TEdit
+          Left = 6
+          Top = 36
+          Width = 136
+          Height = 21
+          TabOrder = 1
+          Text = '0'
+        end
+        object RovPos2: TEdit
+          Left = 144
+          Top = 36
+          Width = 129
+          Height = 21
+          TabOrder = 2
+          Text = '0'
+        end
+        object RovPos3: TEdit
+          Left = 264
+          Top = 36
+          Width = 129
+          Height = 21
+          TabOrder = 3
+          Text = '0'
+        end
+        object BtnRovPos: TButton
+          Left = 372
+          Top = 13
+          Width = 21
+          Height = 21
+          Caption = '...'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -9
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 4
+          OnClick = BtnRovPosClick
+        end
+        object RovAntPcv: TCheckBox
+          Left = 6
+          Top = 58
+          Width = 161
+          Height = 17
+          Caption = 'Antenna Type (*: Auto)'
+          TabOrder = 5
+          OnClick = RovAntPcvClick
+        end
+        object RovAnt: TComboBox
+          Left = 6
+          Top = 74
+          Width = 230
+          Height = 21
+          DropDownCount = 16
+          TabOrder = 6
+          OnClick = RovAntClick
+        end
+        object RovPosType: TComboBox
+          Left = 6
+          Top = 14
+          Width = 137
+          Height = 21
+          Style = csDropDownList
+          Enabled = False
+          ItemIndex = 0
+          TabOrder = 0
+          Text = 'Lat/Lon/Height (deg/m)'
+          OnChange = RovPosTypeChange
+          Items.Strings = (
+            'Lat/Lon/Height (deg/m)'
+            'Lat/Lon/Height (dms/m)'
+            'X/Y/Z-ECEF (m)'
+            'Average of Single Pos'
+            'Get from Position File'
+            'RINEX Header Position')
+        end
+      end
     end
     object TabSheet7: TTabSheet
       Caption = '&Files'
       ImageIndex = 6
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Label1: TLabel
         Left = 6
         Top = 199
@@ -1442,9 +1458,9 @@ object OptDialog: TOptDialog
         Caption = 'Ionosphere Data File'
       end
       object BtnAntPcvView: TSpeedButton
-        Left = 355
-        Top = 0
-        Width = 17
+        Left = 381
+        Top = -1
+        Width = 21
         Height = 15
         Flat = True
         Glyph.Data = {
@@ -1477,9 +1493,9 @@ object OptDialog: TOptDialog
         Caption = 'Satellite/Receiver Antenna PCV File ANTEX/NGS PCV'
       end
       object BtnSatPcvView: TSpeedButton
-        Left = 336
-        Top = 0
-        Width = 17
+        Left = 355
+        Top = -1
+        Width = 21
         Height = 15
         Flat = True
         Glyph.Data = {
@@ -1519,9 +1535,9 @@ object OptDialog: TOptDialog
         Caption = 'DCB Data File'
       end
       object BtnDCBView: TSpeedButton
-        Left = 355
-        Top = 94
-        Width = 17
+        Left = 381
+        Top = 93
+        Width = 21
         Height = 15
         Flat = True
         Glyph.Data = {
@@ -1554,9 +1570,9 @@ object OptDialog: TOptDialog
         Caption = 'OTL BLQ File'
       end
       object BtnBLQFileView: TSpeedButton
-        Left = 355
-        Top = 164
-        Width = 17
+        Left = 381
+        Top = 163
+        Width = 21
         Height = 15
         Flat = True
         Glyph.Data = {
@@ -1582,9 +1598,9 @@ object OptDialog: TOptDialog
         OnClick = BtnBLQFileViewClick
       end
       object BtnEOPView: TSpeedButton
-        Left = 355
-        Top = 129
-        Width = 17
+        Left = 381
+        Top = 128
+        Width = 21
         Height = 15
         Flat = True
         Glyph.Data = {
@@ -1619,15 +1635,15 @@ object OptDialog: TOptDialog
       object AntPcvFile: TEdit
         Left = 2
         Top = 38
-        Width = 353
+        Width = 378
         Height = 21
         TabOrder = 0
       end
       object BtnAntPcvFile: TButton
-        Left = 355
-        Top = 39
-        Width = 17
-        Height = 19
+        Left = 381
+        Top = 37
+        Width = 21
+        Height = 21
         Caption = '...'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -1639,10 +1655,10 @@ object OptDialog: TOptDialog
         OnClick = BtnAntPcvFileClick
       end
       object BtnIonoFile: TButton
-        Left = 355
-        Top = 214
-        Width = 17
-        Height = 19
+        Left = 381
+        Top = 212
+        Width = 21
+        Height = 21
         Caption = '...'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -1656,22 +1672,22 @@ object OptDialog: TOptDialog
       object IonoFile: TEdit
         Left = 2
         Top = 213
-        Width = 353
+        Width = 378
         Height = 21
         TabOrder = 4
       end
       object SatPcvFile: TEdit
         Left = 2
         Top = 16
-        Width = 353
+        Width = 378
         Height = 21
         TabOrder = 6
       end
       object BtnSatPcvFile: TButton
-        Left = 355
-        Top = 17
-        Width = 17
-        Height = 19
+        Left = 381
+        Top = 15
+        Width = 21
+        Height = 21
         Caption = '...'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -1685,15 +1701,15 @@ object OptDialog: TOptDialog
       object GeoidDataFile: TEdit
         Left = 2
         Top = 73
-        Width = 353
+        Width = 378
         Height = 21
         TabOrder = 2
       end
       object BtnGeoidDataFile: TButton
-        Left = 355
-        Top = 74
-        Width = 17
-        Height = 19
+        Left = 381
+        Top = 72
+        Width = 21
+        Height = 21
         Caption = '...'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -1707,15 +1723,15 @@ object OptDialog: TOptDialog
       object DCBFile: TEdit
         Left = 2
         Top = 108
-        Width = 353
+        Width = 378
         Height = 21
         TabOrder = 8
       end
       object BtnDCBFile: TButton
-        Left = 355
-        Top = 109
-        Width = 17
-        Height = 19
+        Left = 381
+        Top = 107
+        Width = 21
+        Height = 21
         Caption = '...'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -1729,15 +1745,15 @@ object OptDialog: TOptDialog
       object BLQFile: TEdit
         Left = 2
         Top = 178
-        Width = 353
+        Width = 378
         Height = 21
         TabOrder = 10
       end
       object BtnBLQFile: TButton
-        Left = 355
-        Top = 179
-        Width = 17
-        Height = 19
+        Left = 381
+        Top = 177
+        Width = 21
+        Height = 21
         Caption = '...'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -1751,15 +1767,15 @@ object OptDialog: TOptDialog
       object EOPFile: TEdit
         Left = 2
         Top = 143
-        Width = 353
+        Width = 378
         Height = 21
         TabOrder = 12
       end
       object BtnEOPFile: TButton
-        Left = 355
-        Top = 144
-        Width = 17
-        Height = 19
+        Left = 381
+        Top = 142
+        Width = 21
+        Height = 21
         Caption = '...'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -1774,8 +1790,9 @@ object OptDialog: TOptDialog
     object TabSheet6: TTabSheet
       Caption = '&Misc'
       ImageIndex = 6
+      ExplicitWidth = 426
       object Label19: TLabel
-        Left = 169
+        Left = 184
         Top = 136
         Width = 34
         Height = 13
@@ -1811,8 +1828,8 @@ object OptDialog: TOptDialog
         Enabled = False
       end
       object Label44: TLabel
-        Left = 255
-        Top = 136
+        Left = 297
+        Top = 137
         Width = 65
         Height = 13
         Caption = 'Base Stations'
@@ -1838,10 +1855,17 @@ object OptDialog: TOptDialog
         Height = 13
         Caption = 'RINEX Opt (Base)'
       end
+      object Label23: TLabel
+        Left = 38
+        Top = 119
+        Width = 58
+        Height = 13
+        Caption = 'PPP Options'
+      end
       object RovList: TMemo
         Left = 143
         Top = 150
-        Width = 101
+        Width = 127
         Height = 84
         Lines.Strings = (
           'rover')
@@ -1849,9 +1873,9 @@ object OptDialog: TOptDialog
         TabOrder = 0
       end
       object BaseList: TMemo
-        Left = 245
-        Top = 149
-        Width = 101
+        Left = 273
+        Top = 150
+        Width = 127
         Height = 84
         Lines.Strings = (
           'base')
@@ -1859,7 +1883,7 @@ object OptDialog: TOptDialog
         TabOrder = 1
       end
       object IntpRefObs: TComboBox
-        Left = 232
+        Left = 287
         Top = 4
         Width = 113
         Height = 21
@@ -1873,7 +1897,7 @@ object OptDialog: TOptDialog
           'ON')
       end
       object SbasSat: TEdit
-        Left = 232
+        Left = 287
         Top = 48
         Width = 113
         Height = 21
@@ -1881,7 +1905,7 @@ object OptDialog: TOptDialog
         Text = '0'
       end
       object ComboBox1: TComboBox
-        Left = 232
+        Left = 287
         Top = 26
         Width = 113
         Height = 21
@@ -1944,26 +1968,33 @@ object OptDialog: TOptDialog
         end
       end
       object RnxOpts1: TEdit
-        Left = 141
+        Left = 142
         Top = 70
-        Width = 204
+        Width = 258
         Height = 21
         TabOrder = 6
       end
       object RnxOpts2: TEdit
-        Left = 141
+        Left = 142
         Top = 92
-        Width = 204
+        Width = 258
         Height = 21
         TabOrder = 7
+      end
+      object PPPOpts: TEdit
+        Left = 142
+        Top = 115
+        Width = 258
+        Height = 21
+        TabOrder = 8
       end
     end
   end
   object BtnExtOpt: TButton
-    Left = 4
-    Top = 262
+    Left = 0
+    Top = 261
     Width = 69
-    Height = 21
+    Height = 27
     Caption = 'Ext Opt...'
     Enabled = False
     TabOrder = 5
@@ -1978,14 +2009,14 @@ object OptDialog: TOptDialog
       '(*.blq)|*.blq|Ionosphere Data File (*.*i,*stec)|*.*i;*.stec'
     Options = [ofHideReadOnly, ofNoChangeDir, ofEnableSizing]
     Title = 'Load File'
-    Left = 314
-    Top = 234
+    Left = 264
+    Top = 230
   end
   object SaveDialog: TSaveDialog
     Filter = 'All (*.*)|*.*|Options File (*.conf)|*.conf'
     Options = [ofHideReadOnly, ofNoChangeDir, ofEnableSizing]
     Title = 'Save File'
-    Left = 343
-    Top = 234
+    Left = 175
+    Top = 230
   end
 end

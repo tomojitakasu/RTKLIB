@@ -44,7 +44,7 @@ void __fastcall TSkyImgDialog::BtnSaveClick(TObject *Sender)
 		if (ConfDialog->ShowModal()!=mrOk) return;
 	}
 	if (!(fp=fopen(file.c_str(),"w"))) return;
-	fprintf(fp,"%% sky image tag file: rtkplot %s\n\n",VER_RTKLIB);
+	fprintf(fp,"%% sky image tag file: rtkplot %s %s\n\n",VER_RTKLIB,PATCH_LEVEL);
 	fprintf(fp,"centx   = %.6g\n",Plot->SkyCent[0]);
 	fprintf(fp,"centy   = %.6g\n",Plot->SkyCent[1]);
 	fprintf(fp,"scale   = %.6g\n",Plot->SkyScale  );
@@ -59,6 +59,9 @@ void __fastcall TSkyImgDialog::BtnSaveClick(TObject *Sender)
 		Plot->SkyDest[5],Plot->SkyDest[6],Plot->SkyDest[7],Plot->SkyDest[8],
 		Plot->SkyDest[9]);
 	fprintf(fp,"elmask  = %d\n"  ,Plot->SkyElMask );
+	fprintf(fp,"binarize= %d\n"  ,Plot->SkyBinarize);
+	fprintf(fp,"binthr1 = %.2f\n",Plot->SkyBinThres1);
+	fprintf(fp,"binthr2 = %.2f\n",Plot->SkyBinThres2);
 	fclose(fp);
 }
 //---------------------------------------------------------------------------
@@ -97,6 +100,9 @@ void __fastcall TSkyImgDialog::UpdateField(void)
 	SkyDestCorr->Checked=Plot->SkyDestCorr;
 	SkyRes->ItemIndex=Plot->SkyRes;
 	SkyFlip->Checked=Plot->SkyFlip;
+	SkyBinarize->Checked=Plot->SkyBinarize;
+	SkyBinThres1->Text=s.sprintf("%.2f",Plot->SkyBinThres1);
+	SkyBinThres2->Text=s.sprintf("%.2f",Plot->SkyBinThres2);
 }
 //---------------------------------------------------------------------------
 void __fastcall TSkyImgDialog::UpdateSky(void)
@@ -120,6 +126,9 @@ void __fastcall TSkyImgDialog::UpdateSky(void)
 	Plot->SkyDestCorr=SkyDestCorr->Checked;
 	Plot->SkyRes=SkyRes->ItemIndex;
 	Plot->SkyFlip=SkyFlip->Checked;
+	Plot->SkyBinarize=SkyBinarize->Checked;
+	Plot->SkyBinThres1=str2dbl(SkyBinThres1->Text);
+	Plot->SkyBinThres2=str2dbl(SkyBinThres2->Text);
 	Plot->UpdateSky();
 }
 //---------------------------------------------------------------------------
@@ -134,6 +143,11 @@ void __fastcall TSkyImgDialog::UpdateEnable(void)
 	SkyDest7->Enabled=SkyDestCorr->Checked;
 	SkyDest8->Enabled=SkyDestCorr->Checked;
 	SkyDest9->Enabled=SkyDestCorr->Checked;
+	SkyBinThres1->Enabled=SkyBinarize->Checked;
+	SkyBinThres2->Enabled=SkyBinarize->Checked;
+	SkyBinThres1UpDown->Enabled=SkyBinarize->Checked;
+	SkyBinThres2UpDown->Enabled=SkyBinarize->Checked;
+	BtnGenMask->Enabled=SkyBinarize->Checked;
 }
 //---------------------------------------------------------------------------
 void __fastcall TSkyImgDialog::SkyFov2UpDownChangingEx(TObject *Sender, bool &AllowChange,
@@ -237,6 +251,71 @@ void __fastcall TSkyImgDialog::BtnLoadClick(TObject *Sender)
     Plot->ReadSkyTag(OpenTagDialog->FileName);
     UpdateField();
 	Plot->UpdateSky();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TSkyImgDialog::BtnGenMaskClick(TObject *Sender)
+{
+    BITMAP bm;
+    BYTE *img,*pix;
+    double r,ca,sa,el,el0;
+    int x,y,w,h,b,az,n;
+    
+    if (!GetObject(Plot->SkyImageR->Handle,sizeof(bm),&bm)) return;
+    w=bm.bmWidth; h=bm.bmHeight; b=bm.bmWidthBytes;
+    if (w<=0||h<=0||b<w*3) return;
+    img=(BYTE *)bm.bmBits;
+    
+    for (az=0;az<=360;az++) {
+        ca=cos(az*D2R);
+        sa=sin(az*D2R);
+        for (el=90.0,n=0,el0=0.0;el>=0.0;el-=0.1) {
+            r=(1.0-el/90.0)*Plot->SkyScaleR;
+            x=(int)floor(w/2.0+sa*r+0.5);
+            y=(int)floor(h/2.0+ca*r+0.5);
+            if (x<0||x>=w||y<0||y>=h) continue;
+            pix=img+x*3+y*b;
+            if (pix[0]<255&&pix[1]<255&&pix[2]<255) {
+                if (++n==1) el0=el;
+                if (n>=5) break;
+            }
+            else n=0;
+        }
+        Plot->ElMaskData[az]=el0==90.0?0.0:el0*D2R;
+    }
+	Plot->UpdateSky();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TSkyImgDialog::SkyBinThres1UpDownChangingEx(TObject *Sender, bool &AllowChange,
+          short NewValue, TUpDownDirection Direction)
+{
+	AnsiString s;
+	double thres=str2dbl(SkyBinThres1->Text);
+	if (Direction==updUp) thres+=0.01; else thres-=0.01;
+	if (thres<=0.0) thres=0.0; else if (thres>1.0) thres=1.0;
+	SkyBinThres1->Text=s.sprintf("%.2f",thres);
+	UpdateSky();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TSkyImgDialog::SkyBinThres2UpDownChangingEx(TObject *Sender, bool &AllowChange,
+          short NewValue, TUpDownDirection Direction)
+{
+	AnsiString s;
+	double thres=str2dbl(SkyBinThres2->Text);
+	if (Direction==updUp) thres+=0.01; else thres-=0.01;
+	if (thres<=0.0) thres=0.0; else if (thres>1.0) thres=1.0;
+	SkyBinThres2->Text=s.sprintf("%.2f",thres);
+	UpdateSky();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TSkyImgDialog::SkyBinarizeMouseUp(TObject *Sender, TMouseButton Button,
+          TShiftState Shift, int X, int Y)
+{
+	UpdateSky();
+	UpdateEnable();
 }
 //---------------------------------------------------------------------------
 

@@ -13,6 +13,7 @@
 *                           suppress warnings
 *           2013/05/08 1.4  fix bug on 1 s offset for javad -> rtcm conversion
 *           2014/10/16 1.5  support input from stdout
+*           2015/12/05 1.6  support rtcm 3 mt 63 beidou ephemeris
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -29,7 +30,8 @@ static int is_obsmsg(int msg)
 /* test navigataion data message ---------------------------------------------*/
 static int is_navmsg(int msg)
 {
-    return msg==1019||msg==1020||msg==1044||msg==1045||msg==1046;
+    return msg==1019||msg==1020||msg==1044||msg==1045||msg==1046||
+           msg==1047||msg==63;
 }
 /* test station info message -------------------------------------------------*/
 static int is_stamsg(int msg)

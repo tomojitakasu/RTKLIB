@@ -3,7 +3,7 @@ object Plot: TPlot
   Top = 0
   Caption = 'RTKPLOT'
   ClientHeight = 485
-  ClientWidth = 629
+  ClientWidth = 664
   Color = clBtnFace
   Constraints.MinHeight = 150
   Constraints.MinWidth = 100
@@ -15,6 +15,7 @@ object Plot: TPlot
   KeyPreview = True
   Menu = hh
   OldCreateOrder = False
+  Scaled = False
   OnActivate = FormActivate
   OnClose = FormClose
   OnCreate = FormCreate
@@ -26,31 +27,33 @@ object Plot: TPlot
   TextHeight = 13
   object Disp: TPaintBox
     Left = 0
-    Top = 21
-    Width = 629
-    Height = 446
+    Top = 25
+    Width = 664
+    Height = 442
     Align = alClient
     Color = clGray
     ParentColor = False
+    Touch.InteractiveGestures = [igZoom, igPressAndTap]
+    OnGesture = DispGesture
     OnMouseDown = DispMouseDown
     OnMouseLeave = DispMouseLeave
     OnMouseMove = DispMouseMove
     OnMouseUp = DispMouseUp
     OnPaint = DispPaint
-    ExplicitLeft = 2
-    ExplicitTop = 17
-    ExplicitWidth = 632
+    ExplicitLeft = 1
+    ExplicitTop = 24
+    ExplicitWidth = 657
   end
   object Panel2: TPanel
     Left = 0
     Top = 467
-    Width = 629
+    Width = 664
     Height = 18
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 0
     object Panel22: TPanel
-      Left = 469
+      Left = 504
       Top = 0
       Width = 160
       Height = 18
@@ -82,7 +85,7 @@ object Plot: TPlot
     object Panel21: TPanel
       Left = 0
       Top = 0
-      Width = 469
+      Width = 504
       Height = 18
       Align = alClient
       AutoSize = True
@@ -187,16 +190,20 @@ object Plot: TPlot
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 629
-    Height = 21
+    Width = 664
+    Height = 25
+    Margins.Left = 1
+    Margins.Top = 1
+    Margins.Right = 1
+    Margins.Bottom = 1
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 1
     object Panel11: TPanel
-      Left = 428
+      Left = 460
       Top = 0
-      Width = 201
-      Height = 21
+      Width = 204
+      Height = 25
       Align = alRight
       BevelOuter = bvNone
       TabOrder = 0
@@ -204,8 +211,8 @@ object Plot: TPlot
       object BtnReload: TSpeedButton
         Left = 160
         Top = 0
-        Width = 19
-        Height = 21
+        Width = 21
+        Height = 24
         Hint = 'Reload'
         AllowAllUp = True
         Flat = True
@@ -239,8 +246,8 @@ object Plot: TPlot
       object BtnClear: TSpeedButton
         Left = 140
         Top = 0
-        Width = 19
-        Height = 21
+        Width = 21
+        Height = 24
         Hint = 'Clear'
         AllowAllUp = True
         Flat = True
@@ -272,8 +279,8 @@ object Plot: TPlot
       object BtnOptions: TSpeedButton
         Left = 180
         Top = 0
-        Width = 19
-        Height = 21
+        Width = 21
+        Height = 24
         Hint = 'Options'
         Flat = True
         Glyph.Data = {
@@ -305,7 +312,7 @@ object Plot: TPlot
         Left = 162
         Top = 6
         Width = 8
-        Height = 10
+        Height = 12
         BevelInner = bvRaised
         BevelOuter = bvLowered
         Color = clWhite
@@ -316,7 +323,7 @@ object Plot: TPlot
         Left = 170
         Top = 6
         Width = 8
-        Height = 10
+        Height = 12
         BevelInner = bvRaised
         BevelOuter = bvLowered
         Color = clWhite
@@ -327,17 +334,23 @@ object Plot: TPlot
     object Panel10: TPanel
       Left = 0
       Top = 0
-      Width = 412
-      Height = 21
+      Width = 518
+      Height = 25
+      Margins.Left = 1
+      Margins.Top = 1
+      Margins.Right = 1
+      Margins.Bottom = 1
       Align = alLeft
+      AutoSize = True
       BevelOuter = bvNone
       TabOrder = 1
       object BtnSol1: TSpeedButton
-        Left = 22
-        Top = 1
-        Width = 19
-        Height = 19
+        Left = 23
+        Top = 0
+        Width = 23
+        Height = 25
         Hint = 'Data 1'
+        Align = alLeft
         AllowAllUp = True
         GroupIndex = 2
         Flat = True
@@ -374,11 +387,12 @@ object Plot: TPlot
         OnDblClick = BtnSol1DblClick
       end
       object BtnSol12: TSpeedButton
-        Left = 62
-        Top = 1
-        Width = 19
-        Height = 19
+        Left = 69
+        Top = 0
+        Width = 23
+        Height = 25
         Hint = 'Data 1-2'
+        Align = alLeft
         AllowAllUp = True
         GroupIndex = 4
         Flat = True
@@ -414,11 +428,12 @@ object Plot: TPlot
         OnClick = BtnSol12Click
       end
       object BtnSol2: TSpeedButton
-        Left = 42
-        Top = 1
-        Width = 19
-        Height = 19
+        Left = 46
+        Top = 0
+        Width = 23
+        Height = 25
         Hint = 'Data 2'
+        Align = alLeft
         AllowAllUp = True
         GroupIndex = 3
         Flat = True
@@ -454,45 +469,13 @@ object Plot: TPlot
         OnClick = BtnSol2Click
         OnDblClick = BtnSol2DblClick
       end
-      object BtnCenterOri: TSpeedButton
-        Left = 216
-        Top = 0
-        Width = 19
-        Height = 21
-        Hint = 'Center Origin'
-        AllowAllUp = True
-        Flat = True
-        Glyph.Data = {
-          3E020000424D3E0200000000000036000000280000000D0000000D0000000100
-          1800000000000802000000000000000000000000000000000000FFFFFFC0C0C0
-          C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0FFFF
-          FF00C0C0C0FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF808080FFFFFFFFFFFFFFFFFF
-          FFFFFFFFFFFFC0C0C000C0C0C0FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF808080FF
-          FFFFFFFFFFFFFFFFFFFFFFFFFFFFC0C0C000C0C0C0FFFFFFFFFFFFFFFFFFFFFF
-          FFFFFFFF808080FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFC0C0C000C0C0C0FFFFFF
-          FFFFFFFFFFFFFFFFFFFFFFFF808080FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFC0C0
-          C000C0C0C0FFFFFFFFFFFFFFFFFFFFFFFF000000000000000000FFFFFFFFFFFF
-          FFFFFFFFFFFFC0C0C000C0C0C080808080808080808080808000000000000000
-          0000808080808080808080808080C0C0C000C0C0C0FFFFFFFFFFFFFFFFFFFFFF
-          FF000000000000000000FFFFFFFFFFFFFFFFFFFFFFFFC0C0C000C0C0C0FFFFFF
-          FFFFFFFFFFFFFFFFFFFFFFFF808080FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFC0C0
-          C000C0C0C0FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF808080FFFFFFFFFFFFFFFFFF
-          FFFFFFFFFFFFC0C0C000C0C0C0FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF808080FF
-          FFFFFFFFFFFFFFFFFFFFFFFFFFFFC0C0C000C0C0C0FFFFFFFFFFFFFFFFFFFFFF
-          FFFFFFFF808080FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFC0C0C000FFFFFFC0C0C0
-          C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0FFFF
-          FF00}
-        ParentShowHint = False
-        ShowHint = True
-        Spacing = 1
-        OnClick = BtnCenterOriClick
-      end
       object BtnFixHoriz: TSpeedButton
-        Left = 310
+        Left = 403
         Top = 0
-        Width = 19
-        Height = 21
+        Width = 23
+        Height = 25
         Hint = 'Fix Track Horizotal'
+        Align = alLeft
         AllowAllUp = True
         GroupIndex = 9
         Flat = True
@@ -520,13 +503,15 @@ object Plot: TPlot
         ShowHint = True
         Spacing = 1
         OnClick = BtnFixHorizClick
+        ExplicitLeft = 289
       end
       object BtnConnect: TSpeedButton
-        Left = 2
-        Top = 1
-        Width = 19
-        Height = 19
+        Left = 0
+        Top = 0
+        Width = 23
+        Height = 25
         Hint = 'Connect/Disconnect'
+        Align = alLeft
         AllowAllUp = True
         GroupIndex = 1
         Flat = True
@@ -610,11 +595,12 @@ object Plot: TPlot
         OnClick = BtnConnectClick
       end
       object BtnFitHoriz: TSpeedButton
-        Left = 250
+        Left = 265
         Top = 0
-        Width = 19
-        Height = 21
+        Width = 23
+        Height = 25
         Hint = 'Fit Horizontal'
+        Align = alLeft
         AllowAllUp = True
         Flat = True
         Glyph.Data = {
@@ -641,13 +627,15 @@ object Plot: TPlot
         ShowHint = True
         Spacing = 1
         OnClick = BtnFitHorizClick
+        ExplicitLeft = 266
       end
       object BtnFitVert: TSpeedButton
-        Left = 270
+        Left = 288
         Top = 0
-        Width = 19
-        Height = 21
+        Width = 23
+        Height = 25
         Hint = 'Fit Vertical'
+        Align = alLeft
         AllowAllUp = True
         Flat = True
         Glyph.Data = {
@@ -674,13 +662,15 @@ object Plot: TPlot
         ShowHint = True
         Spacing = 1
         OnClick = BtnFitVertClick
+        ExplicitLeft = 281
       end
       object BtnShowTrack: TSpeedButton
-        Left = 290
+        Left = 311
         Top = 0
-        Width = 19
-        Height = 21
+        Width = 23
+        Height = 25
         Hint = 'Show Track Point'
+        Align = alLeft
         AllowAllUp = True
         GroupIndex = 8
         Flat = True
@@ -730,13 +720,15 @@ object Plot: TPlot
         ShowHint = True
         Spacing = 1
         OnClick = BtnShowTrackClick
+        ExplicitLeft = 303
       end
       object BtnFixVert: TSpeedButton
-        Left = 330
+        Left = 426
         Top = 0
-        Width = 19
-        Height = 21
+        Width = 23
+        Height = 25
         Hint = 'Fix Track Vertical'
+        Align = alLeft
         AllowAllUp = True
         GroupIndex = 10
         Flat = True
@@ -764,61 +756,15 @@ object Plot: TPlot
         ShowHint = True
         Spacing = 1
         OnClick = BtnFixVertClick
-      end
-      object BtnOn3: TSpeedButton
-        Left = 145
-        Top = 14
-        Width = 11
-        Height = 7
-        Hint = 'Plot3'
-        AllowAllUp = True
-        GroupIndex = 13
-        Down = True
-        Flat = True
-        Margin = 0
-        ParentShowHint = False
-        ShowHint = True
-        Spacing = 1
-        OnClick = BtnOn3Click
-      end
-      object BtnOn2: TSpeedButton
-        Left = 145
-        Top = 7
-        Width = 11
-        Height = 7
-        Hint = 'Plot2'
-        AllowAllUp = True
-        GroupIndex = 12
-        Down = True
-        Flat = True
-        Margin = 0
-        ParentShowHint = False
-        ShowHint = True
-        Spacing = 1
-        OnClick = BtnOn2Click
-      end
-      object BtnOn1: TSpeedButton
-        Left = 145
-        Top = 0
-        Width = 11
-        Height = 7
-        Hint = 'Plot1'
-        AllowAllUp = True
-        GroupIndex = 11
-        Down = True
-        Flat = True
-        Margin = 0
-        ParentShowHint = False
-        ShowHint = True
-        Spacing = 1
-        OnClick = BtnOn1Click
+        ExplicitLeft = 335
       end
       object BtnShowPoint: TSpeedButton
-        Left = 350
+        Left = 449
         Top = 0
-        Width = 19
-        Height = 21
+        Width = 23
+        Height = 25
         Hint = 'Show Map Path/Waypoints'
+        Align = alLeft
         AllowAllUp = True
         GroupIndex = 14
         Flat = True
@@ -846,13 +792,16 @@ object Plot: TPlot
         ShowHint = True
         Spacing = 1
         OnClick = BtnShowPointClick
+        ExplicitLeft = 397
+        ExplicitTop = 1
       end
       object BtnShowMap: TSpeedButton
-        Left = 330
+        Left = 357
         Top = 0
-        Width = 19
-        Height = 21
+        Width = 23
+        Height = 25
         Hint = 'Map/Sky Image'
+        Align = alLeft
         AllowAllUp = True
         GroupIndex = 15
         Flat = True
@@ -886,31 +835,15 @@ object Plot: TPlot
         ShowHint = True
         Spacing = 1
         OnClick = BtnShowMapClick
-      end
-      object BtnRangeList: TSpeedButton
-        Left = 235
-        Top = 0
-        Width = 13
-        Height = 21
-        Flat = True
-        Glyph.Data = {
-          DE000000424DDE00000000000000360000002800000007000000070000000100
-          180000000000A800000000000000000000000000000000000000FFFFFFFFFFFF
-          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFF
-          FFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFF00
-          0000FFFFFFFFFFFF000000000000000000FFFFFFFFFFFF000000FFFFFF000000
-          000000000000000000000000FFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFF
-          FFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
-          0000}
-        Spacing = 1
-        OnClick = BtnRangeListClick
+        ExplicitLeft = 353
       end
       object BtnGE: TSpeedButton
-        Left = 370
+        Left = 472
         Top = 0
-        Width = 19
-        Height = 21
+        Width = 23
+        Height = 25
         Hint = 'Google Earth View'
+        Align = alLeft
         Flat = True
         Glyph.Data = {
           3E020000424D3E0200000000000036000000280000000D0000000D0000000100
@@ -936,13 +869,15 @@ object Plot: TPlot
         ShowHint = True
         Spacing = 1
         OnClick = BtnGEClick
+        ExplicitLeft = 473
       end
       object BtnFixCent: TSpeedButton
-        Left = 310
+        Left = 380
         Top = 0
-        Width = 19
-        Height = 21
+        Width = 23
+        Height = 25
         Hint = 'Fix Track Center'
+        Align = alLeft
         AllowAllUp = True
         GroupIndex = 9
         Flat = True
@@ -970,13 +905,16 @@ object Plot: TPlot
         ShowHint = True
         Spacing = 1
         OnClick = BtnFixCentClick
+        ExplicitLeft = 330
+        ExplicitTop = 1
       end
       object BtnGM: TSpeedButton
-        Left = 390
+        Left = 495
         Top = 0
-        Width = 19
-        Height = 21
+        Width = 23
+        Height = 25
         Hint = 'Google Map View'
+        Align = alLeft
         Flat = True
         Glyph.Data = {
           3E020000424D3E0200000000000036000000280000000D0000000D0000000100
@@ -1002,13 +940,15 @@ object Plot: TPlot
         ShowHint = True
         Spacing = 1
         OnClick = BtnGMClick
+        ExplicitLeft = 496
       end
       object BtnShowSkyplot: TSpeedButton
-        Left = 310
+        Left = 334
         Top = 0
-        Width = 19
-        Height = 21
+        Width = 23
+        Height = 25
         Hint = 'Show Skyplot'
+        Align = alLeft
         AllowAllUp = True
         GroupIndex = 16
         Down = True
@@ -1044,179 +984,353 @@ object Plot: TPlot
         Spacing = 1
         Visible = False
         OnClick = BtnShowSkyplotClick
+        ExplicitLeft = 330
       end
-      object DopType: TComboBox
-        Left = 157
-        Top = 0
-        Width = 45
-        Height = 21
-        Hint = 'Dop Type'
-        Style = csDropDownList
-        DropDownCount = 20
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ItemIndex = 0
-        ParentFont = False
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 0
-        Text = 'ALL'
-        Visible = False
-        OnChange = DopTypeChange
-        Items.Strings = (
-          'ALL'
-          'NSAT'
-          'GDOP'
-          'PDOP'
-          'HDOP'
-          'VDOP')
-      end
-      object ObsType: TComboBox
-        Left = 157
-        Top = 0
-        Width = 45
-        Height = 21
-        Hint = 'Obs Type'
-        Style = csDropDownList
-        DropDownCount = 32
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ParentFont = False
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 1
-        Visible = False
-        OnChange = ObsTypeChange
-      end
-      object PlotTypeS: TComboBox
-        Left = 83
-        Top = 0
+      object Panel101: TPanel
+        AlignWithMargins = True
+        Left = 93
+        Top = 1
         Width = 61
-        Height = 21
-        Style = csDropDownList
-        DropDownCount = 16
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ParentFont = False
-        TabOrder = 2
-        OnChange = PlotTypeSChange
+        Height = 23
+        Margins.Left = 1
+        Margins.Top = 1
+        Margins.Right = 1
+        Margins.Bottom = 1
+        Align = alLeft
+        BevelOuter = bvNone
+        FullRepaint = False
+        TabOrder = 0
+        object PlotTypeS: TComboBox
+          Left = 0
+          Top = 0
+          Width = 61
+          Height = 21
+          Align = alClient
+          Style = csDropDownList
+          DropDownCount = 16
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 0
+          OnChange = PlotTypeSChange
+        end
       end
-      object QFlag: TComboBox
-        Left = 157
-        Top = 0
+      object Panel102: TPanel
+        AlignWithMargins = True
+        Left = 156
+        Top = 1
+        Width = 12
+        Height = 21
+        Margins.Left = 1
+        Margins.Top = 1
+        Margins.Right = 1
+        Align = alLeft
+        BevelOuter = bvNone
+        TabOrder = 1
+        object BtnOn1: TSpeedButton
+          Left = 0
+          Top = 0
+          Width = 12
+          Height = 7
+          Hint = 'Plot1'
+          Align = alTop
+          AllowAllUp = True
+          GroupIndex = 11
+          Down = True
+          Flat = True
+          Margin = 0
+          ParentShowHint = False
+          ShowHint = True
+          Spacing = 1
+          OnClick = BtnOn1Click
+          ExplicitTop = -2
+          ExplicitWidth = 19
+        end
+        object BtnOn2: TSpeedButton
+          Left = 0
+          Top = 7
+          Width = 12
+          Height = 7
+          Hint = 'Plot2'
+          Align = alTop
+          AllowAllUp = True
+          GroupIndex = 12
+          Down = True
+          Flat = True
+          Margin = 0
+          ParentShowHint = False
+          ShowHint = True
+          Spacing = 1
+          OnClick = BtnOn2Click
+          ExplicitLeft = 145
+          ExplicitWidth = 11
+        end
+        object BtnOn3: TSpeedButton
+          Left = 0
+          Top = 14
+          Width = 12
+          Height = 7
+          Hint = 'Plot3'
+          Align = alClient
+          AllowAllUp = True
+          GroupIndex = 13
+          Down = True
+          Flat = True
+          Margin = 0
+          ParentShowHint = False
+          ShowHint = True
+          Spacing = 1
+          OnClick = BtnOn3Click
+          ExplicitLeft = 145
+          ExplicitWidth = 11
+        end
+      end
+      object Panel103: TPanel
+        AlignWithMargins = True
+        Left = 170
+        Top = 1
         Width = 48
-        Height = 21
-        Hint = 'Quality Flag'
-        Style = csDropDownList
-        DropDownCount = 20
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ItemIndex = 0
-        ParentFont = False
+        Height = 23
+        Margins.Left = 1
+        Margins.Top = 1
+        Margins.Right = 1
+        Margins.Bottom = 1
+        Align = alLeft
+        BevelOuter = bvNone
+        TabOrder = 2
+        object DopType: TComboBox
+          Left = 0
+          Top = 0
+          Width = 48
+          Height = 21
+          Hint = 'Dop Type'
+          Align = alClient
+          Style = csDropDownList
+          DropDownCount = 20
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ItemIndex = 0
+          ParentFont = False
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 0
+          Text = 'ALL'
+          Visible = False
+          OnChange = DopTypeChange
+          Items.Strings = (
+            'ALL'
+            'NSAT'
+            'GDOP'
+            'PDOP'
+            'HDOP'
+            'VDOP')
+        end
+        object FrqType: TComboBox
+          Left = 0
+          Top = 0
+          Width = 48
+          Height = 21
+          Hint = 'Freq Type'
+          Align = alClient
+          Style = csDropDownList
+          DropDownCount = 32
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ItemIndex = 0
+          ParentFont = False
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 1
+          Text = 'L1'
+          Visible = False
+          OnChange = ObsTypeChange
+          Items.Strings = (
+            'L1'
+            'L2')
+        end
+        object ObsType: TComboBox
+          Left = 0
+          Top = 0
+          Width = 48
+          Height = 21
+          Hint = 'Obs Type'
+          Align = alClient
+          Style = csDropDownList
+          DropDownCount = 32
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 2
+          Visible = False
+          OnChange = ObsTypeChange
+        end
+        object ObsType2: TComboBox
+          Left = 0
+          Top = 0
+          Width = 48
+          Height = 21
+          Hint = 'Freq Type'
+          Align = alClient
+          Style = csDropDownList
+          DropDownCount = 32
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ItemIndex = 0
+          ParentFont = False
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 3
+          Text = 'L1'
+          Visible = False
+          OnChange = ObsTypeChange
+          Items.Strings = (
+            'L1'
+            'L2')
+        end
+        object QFlag: TComboBox
+          Left = 0
+          Top = 0
+          Width = 48
+          Height = 21
+          Hint = 'Quality Flag'
+          Align = alClient
+          Style = csDropDownList
+          DropDownCount = 20
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ItemIndex = 0
+          ParentFont = False
+          TabOrder = 4
+          Text = 'ALL'
+          OnChange = QFlagChange
+          Items.Strings = (
+            'ALL'
+            'Q=1'
+            'Q=2'
+            'Q=3'
+            'Q=4'
+            'Q=5'
+            'Q=6')
+        end
+      end
+      object Panel104: TPanel
+        AlignWithMargins = True
+        Left = 220
+        Top = 1
+        Width = 44
+        Height = 23
+        Margins.Left = 1
+        Margins.Top = 1
+        Margins.Right = 1
+        Margins.Bottom = 1
+        Align = alLeft
+        BevelOuter = bvNone
         TabOrder = 3
-        Text = 'ALL'
-        OnChange = QFlagChange
-        Items.Strings = (
-          'ALL'
-          'Q=1'
-          'Q=2'
-          'Q=3'
-          'Q=4'
-          'Q=5'
-          'Q=6')
-      end
-      object SatList: TComboBox
-        Left = 203
-        Top = 0
-        Width = 45
-        Height = 21
-        Hint = 'Satllite List'
-        Style = csDropDownList
-        DropDownCount = 64
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ItemIndex = 0
-        ParentFont = False
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 4
-        Text = 'ALL'
-        Visible = False
-        OnChange = SatListChange
-        Items.Strings = (
-          'ALL')
-      end
-      object FrqType: TComboBox
-        Left = 157
-        Top = 0
-        Width = 45
-        Height = 21
-        Hint = 'Freq Type'
-        Style = csDropDownList
-        DropDownCount = 32
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ItemIndex = 0
-        ParentFont = False
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 5
-        Text = 'L1'
-        Visible = False
-        OnChange = ObsTypeChange
-        Items.Strings = (
-          'L1'
-          'L2')
-      end
-      object ObsType2: TComboBox
-        Left = 157
-        Top = 0
-        Width = 45
-        Height = 21
-        Hint = 'Freq Type'
-        Style = csDropDownList
-        DropDownCount = 32
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ItemIndex = 0
-        ParentFont = False
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 6
-        Text = 'L1'
-        Visible = False
-        OnChange = ObsTypeChange
-        Items.Strings = (
-          'L1'
-          'L2')
+        object BtnCenterOri: TSpeedButton
+          Left = 0
+          Top = 0
+          Width = 23
+          Height = 23
+          Hint = 'Center Origin'
+          Align = alLeft
+          AllowAllUp = True
+          Flat = True
+          Glyph.Data = {
+            3E020000424D3E0200000000000036000000280000000D0000000D0000000100
+            1800000000000802000000000000000000000000000000000000FFFFFFC0C0C0
+            C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0FFFF
+            FF00C0C0C0FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF808080FFFFFFFFFFFFFFFFFF
+            FFFFFFFFFFFFC0C0C000C0C0C0FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF808080FF
+            FFFFFFFFFFFFFFFFFFFFFFFFFFFFC0C0C000C0C0C0FFFFFFFFFFFFFFFFFFFFFF
+            FFFFFFFF808080FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFC0C0C000C0C0C0FFFFFF
+            FFFFFFFFFFFFFFFFFFFFFFFF808080FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFC0C0
+            C000C0C0C0FFFFFFFFFFFFFFFFFFFFFFFF000000000000000000FFFFFFFFFFFF
+            FFFFFFFFFFFFC0C0C000C0C0C080808080808080808080808000000000000000
+            0000808080808080808080808080C0C0C000C0C0C0FFFFFFFFFFFFFFFFFFFFFF
+            FF000000000000000000FFFFFFFFFFFFFFFFFFFFFFFFC0C0C000C0C0C0FFFFFF
+            FFFFFFFFFFFFFFFFFFFFFFFF808080FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFC0C0
+            C000C0C0C0FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF808080FFFFFFFFFFFFFFFFFF
+            FFFFFFFFFFFFC0C0C000C0C0C0FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF808080FF
+            FFFFFFFFFFFFFFFFFFFFFFFFFFFFC0C0C000C0C0C0FFFFFFFFFFFFFFFFFFFFFF
+            FFFFFFFF808080FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFC0C0C000FFFFFFC0C0C0
+            C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0FFFF
+            FF00}
+          ParentShowHint = False
+          ShowHint = True
+          Spacing = 0
+          OnClick = BtnCenterOriClick
+        end
+        object BtnRangeList: TSpeedButton
+          Left = 23
+          Top = 0
+          Width = 15
+          Height = 23
+          Align = alLeft
+          Flat = True
+          Glyph.Data = {
+            DE000000424DDE00000000000000360000002800000007000000070000000100
+            180000000000A800000000000000000000000000000000000000FFFFFFFFFFFF
+            FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFF
+            FFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFF00
+            0000FFFFFFFFFFFF000000000000000000FFFFFFFFFFFF000000FFFFFF000000
+            000000000000000000000000FFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFF
+            FFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
+            0000}
+          Spacing = 0
+          OnClick = BtnRangeListClick
+        end
+        object SatList: TComboBox
+          Left = 38
+          Top = 0
+          Width = 6
+          Height = 21
+          Hint = 'Satllite List'
+          Align = alClient
+          Style = csDropDownList
+          DropDownCount = 64
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ItemIndex = 0
+          ParentFont = False
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 0
+          Text = 'ALL'
+          Visible = False
+          OnChange = SatListChange
+          Items.Strings = (
+            'ALL')
+        end
       end
     end
     object Panel12: TPanel
-      Left = 412
+      Left = 518
       Top = 0
-      Width = 136
-      Height = 21
+      Width = 140
+      Height = 25
       Margins.Left = 1
       Margins.Top = 1
       Margins.Right = 1
@@ -1225,10 +1339,10 @@ object Plot: TPlot
       BevelOuter = bvNone
       TabOrder = 2
       object BtnAnimate: TSpeedButton
-        Left = 0
+        Left = 2
         Top = 0
-        Width = 19
-        Height = 21
+        Width = 21
+        Height = 24
         Hint = 'Animation'
         AllowAllUp = True
         GroupIndex = 11
@@ -1307,10 +1421,10 @@ object Plot: TPlot
         OnClick = BtnAnimateClick
       end
       object TimeScroll: TScrollBar
-        Left = 22
+        Left = 25
         Top = 4
-        Width = 108
-        Height = 14
+        Width = 107
+        Height = 16
         Hint = 'Time Scroll'
         Margins.Left = 2
         Margins.Top = 2
@@ -1335,8 +1449,8 @@ object Plot: TPlot
     end
   end
   object RangeList: TListBox
-    Left = 215
-    Top = 20
+    Left = 222
+    Top = 25
     Width = 44
     Height = 253
     AutoComplete = False
@@ -1452,6 +1566,10 @@ object Plot: TPlot
       object MenuSaveSnrMp: TMenuItem
         Caption = 'Save AZ/EL/SNR/MP...'
         OnClick = MenuSaveSnrMpClick
+      end
+      object MenuSaveElMask: TMenuItem
+        Caption = 'Save Elev Mask...'
+        OnClick = MenuSaveElMaskClick
       end
       object N5: TMenuItem
         Caption = '-'
@@ -1640,6 +1758,31 @@ object Plot: TPlot
         Caption = 'Animation &Stop'
         Enabled = False
         OnClick = MenuAnimStopClick
+      end
+    end
+    object Windows1: TMenuItem
+      Caption = '&Windows'
+      object MenuOverlap: TMenuItem
+        Caption = 'Overlapped'
+      end
+      object MenuMax: TMenuItem
+        Caption = 'Plot Maximized'
+        OnClick = MenuMaxClick
+      end
+      object N17: TMenuItem
+        Caption = '-'
+      end
+      object MenuPlotGE: TMenuItem
+        Caption = 'Plot - GE View Horizontal'
+        OnClick = MenuPlotGEClick
+      end
+      object MenuPlotGM: TMenuItem
+        Caption = 'Plot - GM View Horizontal'
+        OnClick = MenuPlotGMClick
+      end
+      object MenuPlotGEGM: TMenuItem
+        Caption = 'Plot - GE/GM Views Horizontal'
+        OnClick = MenuPlotGEGMClick
       end
     end
     object MenuHelp: TMenuItem

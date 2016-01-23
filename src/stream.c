@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * stream.c : stream input/output functions
 *
-*          Copyright (C) 2008-2014 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2008-2016 by T.TAKASU, All rights reserved.
 *
 * options : -DWIN32    use WIN32 API
 *           -DSVR_REUSEADDR reuse tcp server address
@@ -43,6 +43,9 @@
 *           2014/06/21 1.14 add general hex message rcv command by !HEX ...
 *           2014/10/16 1.15 support stdin/stdou for input/output from/to file
 *           2014/11/08 1.16 fix getconfig error (87) with bluetooth device
+*           2015/01/12 1.15 add rcv command to change bitrate by !BRATE
+*           2016/01/16 1.16 add constant CRTSCTS for non-CRTSCTS-defined env.
+*                           fix serial status for non-windows systems
 *-----------------------------------------------------------------------------*/
 #include <ctype.h>
 #include "rtklib.h"
@@ -52,6 +55,9 @@
 #include <sys/stat.h>
 #include <sys/time.h>
 #define __USE_MISC
+#ifndef CRTSCTS
+#define CRTSCTS  020000000000
+#endif
 #include <errno.h>
 #include <termios.h>
 #include <sys/socket.h>
@@ -284,7 +290,7 @@ static serial_t *openserial(const char *path, int mode, char *msg)
 #endif
     tracet(3,"openserial: path=%s mode=%d\n",path,mode);
     
-    if (!(serial=(serial_t *)malloc(sizeof(serial_t)))) return NULL;
+    if (!(serial=(serial_t *)calloc(1,sizeof(serial_t)))) return NULL;
     
     if ((p=strchr(path,':'))) {
         strncpy(port,path,p-path); port[p-path]='\0';
@@ -428,7 +434,10 @@ static int writeserial(serial_t *serial, unsigned char *buff, int n, char *msg)
 #ifdef WIN32
     if ((ns=writeseribuff(serial,buff,n))<n) serial->error=1;
 #else
-    if ((ns=write(serial->dev,buff,n))<0) return 0;
+    if (write(serial->dev,buff,n)<0) {
+        serial->error=1;
+        ns=0;
+    }
 #endif
     tracet(5,"writeserial: exit dev=%d ns=%d\n",serial->dev,ns);
     return ns;
@@ -2185,6 +2194,26 @@ static int gen_hex(const char *msg, unsigned char *buff)
     }
     return (int)(q-buff);
 }
+/* set bitrate ---------------------------------------------------------------*/
+static int set_brate(stream_t *str, int brate)
+{
+    char path[1024],buff[1024]="",*p,*q;
+    int mode=str->mode;
+    
+    if (str->type!=STR_SERIAL) return 0;
+    
+    strcpy(path,str->path);
+    
+    if (!(p=strchr(path,':'))) {
+        sprintf(path+strlen(path),":%d",brate);
+    }
+    else {
+        if ((q=strchr(p+1,':'))) strcpy(buff,q);
+        sprintf(p,":%d%s",brate,buff);
+    }
+    strclose(str);
+    return stropen(str,str->type,mode,path);
+}
 /* send receiver command -------------------------------------------------------
 * send receiver commands to stream
 * args   : stream_t *stream I   stream
@@ -2196,7 +2225,7 @@ extern void strsendcmd(stream_t *str, const char *cmd)
     unsigned char buff[1024];
     const char *p=cmd,*q;
     char msg[1024],cmdend[]="\r\n";
-    int n,m,ms;
+    int n,m,ms,brate;
     
     tracet(3,"strsendcmd: cmd=%s\n",cmd);
     
@@ -2213,6 +2242,11 @@ extern void strsendcmd(stream_t *str, const char *cmd)
                 if (sscanf(msg+5,"%d",&ms)<1) ms=100;
                 if (ms>3000) ms=3000; /* max 3 s */
                 sleepms(ms);
+            }
+            else if (!strncmp(msg+1,"BRATE",5)) { /* set bitrate */
+                if (sscanf(msg+6,"%d",&brate)<1) brate=9600;
+                set_brate(str,brate);
+                sleepms(500);
             }
             else if (!strncmp(msg+1,"UBX",3)) { /* ublox */
                 if ((m=gen_ubx(msg+4,buff))>0) strwrite(str,buff,m);

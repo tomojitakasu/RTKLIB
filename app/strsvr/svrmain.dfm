@@ -4,7 +4,7 @@ object MainForm: TMainForm
   BorderIcons = []
   BorderStyle = bsSingle
   Caption = 'STRSVR'
-  ClientHeight = 212
+  ClientHeight = 215
   ClientWidth = 384
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -15,7 +15,6 @@ object MainForm: TMainForm
   OldCreateOrder = False
   OnClose = FormClose
   OnCreate = FormCreate
-  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object Panel3: TPanel
@@ -296,7 +295,7 @@ object MainForm: TMainForm
       object BtnInput: TButton
         Left = 182
         Top = 20
-        Width = 19
+        Width = 21
         Height = 21
         Caption = '...'
         Font.Charset = DEFAULT_CHARSET
@@ -311,7 +310,7 @@ object MainForm: TMainForm
       object BtnOutput1: TButton
         Left = 182
         Top = 54
-        Width = 19
+        Width = 21
         Height = 21
         Caption = '...'
         Font.Charset = DEFAULT_CHARSET
@@ -326,7 +325,7 @@ object MainForm: TMainForm
       object BtnOutput2: TButton
         Left = 182
         Top = 77
-        Width = 19
+        Width = 21
         Height = 21
         Caption = '...'
         Font.Charset = DEFAULT_CHARSET
@@ -405,7 +404,7 @@ object MainForm: TMainForm
       object BtnOutput3: TButton
         Left = 182
         Top = 100
-        Width = 19
+        Width = 21
         Height = 21
         Caption = '...'
         Font.Charset = DEFAULT_CHARSET
@@ -428,9 +427,9 @@ object MainForm: TMainForm
         TabOrder = 10
       end
       object BtnCmd: TButton
-        Left = 202
+        Left = 204
         Top = 20
-        Width = 19
+        Width = 21
         Height = 21
         Caption = '...'
         Font.Charset = DEFAULT_CHARSET
@@ -443,9 +442,9 @@ object MainForm: TMainForm
         OnClick = BtnCmdClick
       end
       object BtnConv1: TButton
-        Left = 202
+        Left = 204
         Top = 54
-        Width = 19
+        Width = 21
         Height = 21
         Caption = '...'
         Enabled = False
@@ -459,9 +458,9 @@ object MainForm: TMainForm
         OnClick = BtnConv1Click
       end
       object BtnConv2: TButton
-        Left = 202
+        Left = 204
         Top = 77
-        Width = 19
+        Width = 21
         Height = 21
         Caption = '...'
         Enabled = False
@@ -475,9 +474,9 @@ object MainForm: TMainForm
         OnClick = BtnConv2Click
       end
       object BtnConv3: TButton
-        Left = 202
+        Left = 204
         Top = 100
-        Width = 19
+        Width = 21
         Height = 21
         Caption = '...'
         Enabled = False
@@ -666,7 +665,7 @@ object MainForm: TMainForm
     Left = 1
     Top = 188
     Width = 91
-    Height = 23
+    Height = 27
     Caption = '&Start'
     TabOrder = 0
     OnClick = BtnStartClick
@@ -675,7 +674,7 @@ object MainForm: TMainForm
     Left = 92
     Top = 188
     Width = 91
-    Height = 23
+    Height = 27
     Caption = 'S&top'
     Enabled = False
     TabOrder = 1
@@ -685,7 +684,7 @@ object MainForm: TMainForm
     Left = 201
     Top = 188
     Width = 91
-    Height = 23
+    Height = 27
     Caption = '&Options...'
     TabOrder = 2
     OnClick = BtnOptClick
@@ -694,7 +693,7 @@ object MainForm: TMainForm
     Left = 292
     Top = 188
     Width = 91
-    Height = 23
+    Height = 27
     Caption = 'E&xit'
     TabOrder = 3
     OnClick = BtnExitClick
@@ -794,7 +793,7 @@ object MainForm: TMainForm
     Left = 258
     Top = 152
     Bitmap = {
-      494C010103000400300010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010103000400340010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       000000000000000000000000000000000000C0C0C000C0C0C000C0C0C000C0C0
       C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0
