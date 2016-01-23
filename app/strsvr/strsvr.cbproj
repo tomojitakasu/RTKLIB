@@ -240,6 +240,9 @@
 			<CppCompile Include="..\..\src\rcv\rt17.c">
 				<BuildOrder>36</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="..\..\src\rcv\septentrio.c">
+				<BuildOrder>37</BuildOrder>
+			</CppCompile>
 			<CppCompile Include="..\..\src\rcv\skytraq.c">
 				<BuildOrder>33</BuildOrder>
 			</CppCompile>

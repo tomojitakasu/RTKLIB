@@ -28,11 +28,13 @@ __fastcall TOptDialog::TOptDialog(TComponent* Owner)
     int freq[]={1,2,5,6,7,8};
     int nglo=MAXPRNGLO,ngal=MAXPRNGAL,nqzs=MAXPRNQZS,ncmp=MAXPRNCMP;
     
+#if 0
     Freq->Items->Clear();
     for (int i=0;i<NFREQ;i++) {
         label=label+(i>0?"+":"L")+s.sprintf("%d",freq[i]);
         Freq->Items->Add(label);
     }
+#endif
     if (nglo<=0) NavSys2->Enabled=false;
     if (ngal<=0) NavSys3->Enabled=false;
     if (nqzs<=0) NavSys4->Enabled=false;
@@ -350,7 +352,7 @@ void __fastcall TOptDialog::GetOpt(void)
 	TEdit *editr[]={RefPos1,RefPos2,RefPos3};
 	AnsiString s;
 	PosMode		 ->ItemIndex	=MainForm->PosMode;
-	Freq		 ->ItemIndex	=MainForm->Freq>NFREQ-1?NFREQ-1:MainForm->Freq;
+	Freq		 ->ItemIndex	=MainForm->Freq;
 	Solution	 ->ItemIndex	=MainForm->Solution;
 	ElMask		 ->Text			=s.sprintf("%.0f",MainForm->ElMask);
 	SnrMask						=MainForm->SnrMask;
@@ -371,6 +373,7 @@ void __fastcall TOptDialog::GetOpt(void)
 	PosOpt3	     ->Checked		=MainForm->PosOpt[2];
 	PosOpt4	     ->Checked		=MainForm->PosOpt[3];
 	PosOpt5	     ->Checked		=MainForm->PosOpt[4];
+	PosOpt6	     ->Checked		=MainForm->PosOpt[5];
 //	MapFunc	     ->ItemIndex	=MainForm->MapFunc;
 	
 	AmbRes		 ->ItemIndex	=MainForm->AmbRes;
@@ -388,6 +391,7 @@ void __fastcall TOptDialog::GetOpt(void)
 	RejectGdop   ->Text			=s.sprintf("%.1f",MainForm->RejectGdop);
 	RejectThres  ->Text			=s.sprintf("%.1f",MainForm->RejectThres);
 	SlipThres	 ->Text			=s.sprintf("%.3f",MainForm->SlipThres);
+	ARIter		 ->Text			=s.sprintf("%d",  MainForm->ARIter);
 	NumIter		 ->Text			=s.sprintf("%d",  MainForm->NumIter);
 	BaselineLen	 ->Text			=s.sprintf("%.3f",MainForm->BaseLine[0]);
 	BaselineSig	 ->Text			=s.sprintf("%.3f",MainForm->BaseLine[1]);
@@ -434,6 +438,7 @@ void __fastcall TOptDialog::GetOpt(void)
 	
 	RnxOpts1	 ->Text			=MainForm->RnxOpts1;
 	RnxOpts2	 ->Text			=MainForm->RnxOpts2;
+	PPPOpts		 ->Text			=MainForm->PPPOpts;
 	
 	IntpRefObs	 ->ItemIndex	=MainForm->IntpRefObs;
 	SbasSat		 ->Text			=s.sprintf("%d",MainForm->SbasSat);
@@ -488,6 +493,7 @@ void __fastcall TOptDialog::SetOpt(void)
 	MainForm->PosOpt[2]	  	=PosOpt3	->Checked;
 	MainForm->PosOpt[3]	  	=PosOpt4	->Checked;
 	MainForm->PosOpt[4]	  	=PosOpt5	->Checked;
+	MainForm->PosOpt[5]	  	=PosOpt6	->Checked;
 //	MainForm->MapFunc		=MapFunc	->ItemIndex;
 	
 	MainForm->AmbRes	  	=AmbRes		->ItemIndex;
@@ -506,6 +512,7 @@ void __fastcall TOptDialog::SetOpt(void)
 	MainForm->RejectGdop 	=str2dbl(RejectGdop ->Text);
 	MainForm->RejectThres 	=str2dbl(RejectThres->Text);
 	MainForm->SlipThres   	=str2dbl(SlipThres  ->Text);
+	MainForm->ARIter	  	=ARIter		  ->Text.ToInt();
 	MainForm->NumIter	  	=NumIter	  ->Text.ToInt();
 	MainForm->BaseLine[0]  	=str2dbl(BaselineLen->Text);
 	MainForm->BaseLine[1]  	=str2dbl(BaselineSig->Text);
@@ -551,6 +558,7 @@ void __fastcall TOptDialog::SetOpt(void)
 	
 	MainForm->RnxOpts1	  =RnxOpts1		->Text;
 	MainForm->RnxOpts2	  =RnxOpts2		->Text;
+	MainForm->PPPOpts	  =PPPOpts		->Text;
 	
 	MainForm->IntpRefObs  =IntpRefObs	->ItemIndex;
 	MainForm->SbasSat     =SbasSat		->Text.ToInt();
@@ -618,6 +626,7 @@ void __fastcall TOptDialog::LoadOpt(AnsiString file)
 	PosOpt3	     ->Checked		=prcopt.posopt[2];
 	PosOpt4	     ->Checked		=prcopt.posopt[3];
 	PosOpt5	     ->Checked		=prcopt.posopt[4];
+	PosOpt6	     ->Checked		=prcopt.posopt[5];
 //	MapFunc	     ->ItemIndex	=prcopt.mapfunc;
 	
 	AmbRes		 ->ItemIndex	=prcopt.modear;
@@ -635,6 +644,7 @@ void __fastcall TOptDialog::LoadOpt(AnsiString file)
 	RejectGdop   ->Text			=s.sprintf("%.1f",prcopt.maxgdop  );
 	RejectThres  ->Text			=s.sprintf("%.1f",prcopt.maxinno  );
 	SlipThres	 ->Text			=s.sprintf("%.3f",prcopt.thresslip);
+	ARIter		 ->Text			=s.sprintf("%d",  prcopt.armaxiter);
 	NumIter		 ->Text			=s.sprintf("%d",  prcopt.niter    );
 	BaselineLen	 ->Text			=s.sprintf("%.3f",prcopt.baseline[0]);
 	BaselineSig	 ->Text			=s.sprintf("%.3f",prcopt.baseline[1]);
@@ -682,6 +692,7 @@ void __fastcall TOptDialog::LoadOpt(AnsiString file)
 	
 	RnxOpts1	 ->Text			=prcopt.rnxopt[0];
 	RnxOpts2	 ->Text			=prcopt.rnxopt[1];
+	PPPOpts		 ->Text			=prcopt.pppopt;
 	
 	IntpRefObs	 ->ItemIndex	=prcopt.intpref;
 	SbasSat		 ->Text			=s.sprintf("%d",prcopt.sbassatsel);
@@ -719,6 +730,7 @@ void __fastcall TOptDialog::SaveOpt(AnsiString file)
 	AnsiString IonoFile_Text=IonoFile->Text;
 	AnsiString RnxOpts1_Text=RnxOpts1->Text;
 	AnsiString RnxOpts2_Text=RnxOpts2->Text;
+	AnsiString PPPOpts_Text=PPPOpts->Text;
 	TEdit *editu[]={RovPos1,RovPos2,RovPos3};
 	TEdit *editr[]={RefPos1,RefPos2,RefPos3};
 	char buff[1024],*p,id[32],comment[256],s[64];
@@ -756,6 +768,7 @@ void __fastcall TOptDialog::SaveOpt(AnsiString file)
 	prcopt.posopt[2]=PosOpt3	->Checked;
 	prcopt.posopt[3]=PosOpt4	->Checked;
 	prcopt.posopt[4]=PosOpt5	->Checked;
+	prcopt.posopt[5]=PosOpt6	->Checked;
 //	prcopt.mapfunc	=MapFunc	->ItemIndex;
 	
 	prcopt.modear	=AmbRes		->ItemIndex;
@@ -773,6 +786,7 @@ void __fastcall TOptDialog::SaveOpt(AnsiString file)
 	prcopt.maxgdop	=str2dbl(RejectGdop ->Text);
 	prcopt.maxinno	=str2dbl(RejectThres->Text);
 	prcopt.thresslip=str2dbl(SlipThres	->Text);
+	prcopt.armaxiter=str2dbl(ARIter		->Text);
 	prcopt.niter	=str2dbl(NumIter	->Text);
 	if (prcopt.mode==PMODE_MOVEB&&BaselineConst->Checked) {
 		prcopt.baseline[0]=str2dbl(BaselineLen->Text);
@@ -826,6 +840,7 @@ void __fastcall TOptDialog::SaveOpt(AnsiString file)
 	
 	strcpy(prcopt.rnxopt[0],RnxOpts1_Text.c_str());
 	strcpy(prcopt.rnxopt[1],RnxOpts2_Text.c_str());
+	strcpy(prcopt.pppopt,PPPOpts_Text.c_str());
 	
 	strcpy(filopt.satantp,SatPcvFile_Text.c_str());
 	strcpy(filopt.rcvantp,AntPcvFile_Text.c_str());
@@ -837,7 +852,7 @@ void __fastcall TOptDialog::SaveOpt(AnsiString file)
 	strcpy(filopt.iono,   IonoFile_Text.c_str());
 	
 	time2str(utc2gpst(timeget()),s,0);
-	sprintf(comment,"rtkpost options (%s, v.%s)",s,VER_RTKLIB);
+	sprintf(comment,"rtkpost options (%s, v.%s %s)",s,VER_RTKLIB,PATCH_LEVEL);
 	setsysopts(&prcopt,&solopt,&filopt);
 	if (!saveopts(file.c_str(),"w",comment,sysopts)) return;
 }
@@ -849,7 +864,7 @@ void __fastcall TOptDialog::UpdateEnable(void)
 	int ppp=PosMode->ItemIndex>=PMODE_PPP_KINEMA;
 	int ar=rtk||ppp;
 	
-	Freq           ->Enabled=rel;
+	Freq           ->Enabled=rel||ppp;
 	Solution       ->Enabled=rel||ppp;
 	DynamicModel   ->Enabled=rel;
 	TideCorr       ->Enabled=rel||ppp;
@@ -858,6 +873,7 @@ void __fastcall TOptDialog::UpdateEnable(void)
 	PosOpt2        ->Enabled=ppp;
 	PosOpt3        ->Enabled=ppp;
 	PosOpt4        ->Enabled=ppp;
+	PosOpt6        ->Enabled=ppp;
 	
 	AmbRes         ->Enabled=ar;
 	GloAmbRes      ->Enabled=ar&&AmbRes->ItemIndex>0&&NavSys2->Checked;
@@ -873,6 +889,7 @@ void __fastcall TOptDialog::UpdateEnable(void)
 	SlipThres      ->Enabled=rtk||ppp;
 	MaxAgeDiff     ->Enabled=rel;
 	RejectThres    ->Enabled=rel||ppp;
+	ARIter         ->Enabled=ppp;
 	NumIter        ->Enabled=rel||ppp;
 	BaselineConst  ->Enabled=PosMode->ItemIndex==PMODE_MOVEB;
 	BaselineLen    ->Enabled=BaselineConst->Checked&&PosMode->ItemIndex==PMODE_MOVEB;

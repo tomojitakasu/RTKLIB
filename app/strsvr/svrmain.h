@@ -102,8 +102,6 @@ __published:
 	void __fastcall Timer2Timer(TObject *Sender);
 	void __fastcall BtnTaskIconClick(TObject *Sender);
 	void __fastcall MenuExpandClick(TObject *Sender);
-	void __fastcall TrayIconMouseDown(TObject *Sender, TMouseButton Button,
-          TShiftState Shift, int X, int Y);
 	void __fastcall TrayIconDblClick(TObject *Sender);
 	void __fastcall MenuStartClick(TObject *Sender);
 	void __fastcall MenuStopClick(TObject *Sender);
@@ -112,7 +110,6 @@ __published:
 	void __fastcall BtnConv1Click(TObject *Sender);
 	void __fastcall BtnConv2Click(TObject *Sender);
 	void __fastcall BtnConv3Click(TObject *Sender);
-	void __fastcall FormShow(TObject *Sender);
 	void __fastcall EnaOut1Click(TObject *Sender);
 	void __fastcall EnaOut2Click(TObject *Sender);
 	void __fastcall EnaOut3Click(TObject *Sender);

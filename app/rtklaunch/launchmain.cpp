@@ -41,7 +41,7 @@ __fastcall TMainForm::TMainForm(TComponent* Owner)
     IniFile=file;
     Mkl=0;
     
-    Caption="RTKLIB v." VER_RTKLIB;
+    Caption="RTKLIB v." VER_RTKLIB " " PATCH_LEVEL;
     TrayIcon->Hint=Caption;
     Constraints->MinWidth=(Width-ClientWidth)+BTN_SIZE;
     Constraints->MaxWidth=(Width-ClientWidth)+BTN_SIZE*BTN_COUNT;

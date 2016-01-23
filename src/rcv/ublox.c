@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * ublox.c : ublox receiver dependent functions
 *
-*          Copyright (C) 2007-2014 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2007-2016 by T.TAKASU, All rights reserved.
 *          Copyright (C) 2014 by T.SUZUKI, All rights reserved.
 *
 * reference :
@@ -36,6 +36,8 @@
 *                           support message TRK-TRKD5
 *           2014/08/31 1.13 suppress warning
 *           2014/11/04 1.14 support message RXM-RAWX and RXM-SFRBX
+*           2015/03/20 1.15 omit time adjustment for RXM-RAWX
+*           2016/01/22 1.16 add time-tag in raw-message-type
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -211,25 +213,25 @@ static int decode_rxmraw(raw_t *raw)
 static int decode_rxmrawx(raw_t *raw)
 {
     gtime_t time;
-    double tow0,tow,cp1,pr1;
-    int i,j,sys,prn,sat,fcn,n=0,nsat,week,tstat,lockt,halfc;
-    unsigned char *p=raw->buff+6,*q;
+    double tow,cp1,pr1;
+    int i,j,sys,prn,sat,n=0,nsat,week,tstat,lockt,halfc;
+    unsigned char *p=raw->buff+6;
     
     trace(4,"decode_rxmrawx: len=%d\n",raw->len);
     
-    if (raw->outtype) {
-        sprintf(raw->msgtype,"UBX RXM-RAWX  (%4d): nsat=%d",raw->len,U1(p+11));
-    }
     nsat=U1(p+11);
     if (raw->len<24+32*nsat) {
         trace(2,"ubx rxmrawx length error: len=%d nsat=%d\n",raw->len,nsat);
         return -1;
     }
-    tow0=R8(p);
+    tow=R8(p);
     week=U2(p+8);
-    tow=ROUND(tow0/0.1)*0.1; /* round by 100 ms */
     time=gpst2time(week,tow);
     
+    if (raw->outtype) {
+        sprintf(raw->msgtype,"UBX RXM-RAWX  (%4d): time=%s nsat=%d",raw->len,
+                time_str(time,2),U1(p+11));
+    }
     for (i=0,p+=16;i<nsat&&i<MAXOBS;i++,p+=32) {
         
         if (!(sys=ubx_sys(U1(p+20)))) {
@@ -242,7 +244,7 @@ static int decode_rxmrawx(raw_t *raw)
             continue;
         }
         tstat=U1(p+30); /* tracking status */
-        pr1=tstat&1?R8(p)+(tow-tow0)*CLIGHT:0.0;
+        pr1=tstat&1?R8(p  ):0.0;
         cp1=tstat&2?R8(p+8):0.0;
         if (cp1==-0.5) cp1=0.0; /* invalid phase */
         raw->obs.data[n].sat=sat;

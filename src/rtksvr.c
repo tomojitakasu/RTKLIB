@@ -25,6 +25,9 @@
 *                            fix problem on ephemeris with inverted toe
 *                            add api rtksvrfree()
 *           2014/06/28  1.9  fix probram on ephemeris update of beidou
+*           2015/04/29  1.10 fix probram on ssr orbit/clock inconsistency
+*           2015/07/31  1.11 add phase bias (fcb) correction
+*           2015/12/05  1.12 support opt->pppopt=-DIS_FCB
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -54,14 +57,24 @@ static void saveoutbuf(rtksvr_t *svr, unsigned char *buff, int n, int index)
 static void writesol(rtksvr_t *svr, int index)
 {
     solopt_t solopt=solopt_default;
-    unsigned char buff[1024];
+    unsigned char buff[MAXSOLMSG+1];
     int i,n;
     
     tracet(4,"writesol: index=%d\n",index);
     
     for (i=0;i<2;i++) {
-        /* output solution */
-        n=outsols(buff,&svr->rtk.sol,svr->rtk.rb,svr->solopt+i);
+        
+        if (svr->solopt[i].posf==SOLF_STAT) {
+            
+            /* output solution status */
+            rtksvrlock(svr);
+            n=rtkoutstat(&svr->rtk,(char *)buff);
+            rtksvrunlock(svr);
+        }
+        else {
+            /* output solution */
+            n=outsols(buff,&svr->rtk.sol,svr->rtk.rb,svr->solopt+i);
+        }
         strwrite(svr->stream+i+3,buff,n);
         
         /* save output buffer */
@@ -227,6 +240,11 @@ static void updatesvr(rtksvr_t *svr, int ret, obs_t *obs, nav_t *nav, int sat,
     else if (ret==10) { /* ssr message */
         for (i=0;i<MAXSAT;i++) {
             if (!svr->rtcm[index].ssr[i].update) continue;
+            
+            /* check consistency between iods of orbit and clock */
+            if (svr->rtcm[index].ssr[i].iod[0]!=
+                svr->rtcm[index].ssr[i].iod[1]) continue;
+            
             svr->rtcm[index].ssr[i].update=0;
             
             iode=svr->rtcm[index].ssr[i].iode;
@@ -371,6 +389,21 @@ static void decodefile(rtksvr_t *svr, int index)
         rtksvrunlock(svr);
     }
 }
+/* carrier-phase bias (fcb) correction ---------------------------------------*/
+static void corr_phase_bias(obsd_t *obs, int n, const nav_t *nav)
+{
+    double lam;
+    int i,j,code;
+    
+    for (i=0;i<n;i++) for (j=0;j<NFREQ;j++) {
+        
+        if (!(code=obs[i].code[j])) continue;
+        if ((lam=nav->lam[obs[i].sat-1][j])==0.0) continue;
+        
+        /* correct phase bias (cyc) */
+        obs[i].L[j]-=nav->ssr[obs[i].sat-1].pbias[code-1]/lam;
+    }
+}
 /* rtk server thread ---------------------------------------------------------*/
 #ifdef WIN32
 static DWORD WINAPI rtksvrthread(void *arg)
@@ -430,6 +463,10 @@ static void *rtksvrthread(void *arg)
             }
             for (j=0;j<svr->obs[1][0].n&&obs.n<MAXOBS*2;j++) {
                 obs.data[obs.n++]=svr->obs[1][0].data[j];
+            }
+            /* carrier phase bias correction */
+            if (!strstr(svr->rtk.opt.pppopt,"-DIS_FCB")) {
+                corr_phase_bias(obs.data,obs.n,&svr->nav);
             }
             /* rtk positioning */
             rtksvrlock(svr);

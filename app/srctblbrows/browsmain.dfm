@@ -29,7 +29,7 @@ object MainForm: TMainForm
       Left = 3
       Top = 1
       Width = 21
-      Height = 20
+      Height = 21
       Flat = True
       Glyph.Data = {
         DE000000424DDE0000000000000076000000280000000D0000000D0000000100
@@ -46,7 +46,7 @@ object MainForm: TMainForm
       Left = 209
       Top = 1
       Width = 21
-      Height = 20
+      Height = 21
       Flat = True
       Glyph.Data = {
         DE000000424DDE0000000000000076000000280000000D0000000D0000000100
@@ -114,9 +114,9 @@ object MainForm: TMainForm
       OnClick = BtnMapClick
     end
     object Address: TComboBox
-      Left = 22
+      Left = 25
       Top = 1
-      Width = 187
+      Width = 184
       Height = 21
       DropDownCount = 40
       TabOrder = 0

@@ -87,7 +87,7 @@ void __fastcall TMainWindow::FormCreate(TObject *Sender)
 {
     AnsiString s;
     
-    Caption=s.sprintf("%s ver.%s",PRGNAME,VER_RTKLIB);
+    Caption=s.sprintf("%s ver.%s %s",PRGNAME,VER_RTKLIB,PATCH_LEVEL);
     
     ::DragAcceptFiles(Handle,true);
 }
@@ -775,7 +775,7 @@ void __fastcall TMainWindow::ConvertFile(void)
     }
     GetTime(&rnxopt.ts,&rnxopt.te,&rnxopt.tint,&rnxopt.tunit);
     strncpy(rnxopt.staid,RnxCode.c_str(),31);
-    sprintf(rnxopt.prog,"%s %s",PRGNAME,VER_RTKLIB);
+    sprintf(rnxopt.prog,"%s %s %s",PRGNAME,VER_RTKLIB,PATCH_LEVEL);
     strncpy(rnxopt.runby,RunBy.c_str(),31);
     strncpy(rnxopt.marker,Marker.c_str(),63);
     strncpy(rnxopt.markerno,MarkerNo.c_str(),31);

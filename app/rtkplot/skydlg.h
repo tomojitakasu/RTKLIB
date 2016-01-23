@@ -68,6 +68,12 @@ __published:
 	TEdit *SkyDest9;
 	TLabel *Label19;
 	TLabel *Label20;
+	TButton *BtnGenMask;
+	TCheckBox *SkyBinarize;
+	TEdit *SkyBinThres1;
+	TUpDown *SkyBinThres1UpDown;
+	TEdit *SkyBinThres2;
+	TUpDown *SkyBinThres2UpDown;
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall BtnCloseClick(TObject *Sender);
 	void __fastcall BtnUpdateClick(TObject *Sender);
@@ -92,6 +98,13 @@ __published:
           int X, int Y);
 	void __fastcall SkyResChange(TObject *Sender);
 	void __fastcall BtnLoadClick(TObject *Sender);
+	void __fastcall BtnGenMaskClick(TObject *Sender);
+	void __fastcall SkyBinThres1UpDownChangingEx(TObject *Sender, bool &AllowChange,
+          short NewValue, TUpDownDirection Direction);
+	void __fastcall SkyBinThres2UpDownChangingEx(TObject *Sender, bool &AllowChange,
+          short NewValue, TUpDownDirection Direction);
+	void __fastcall SkyBinarizeMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
+          int X, int Y);
 private:
 	void __fastcall UpdateSky(void);
 	void __fastcall UpdateEnable(void);

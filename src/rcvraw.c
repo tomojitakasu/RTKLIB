@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * rcvraw.c : receiver raw data functions
 *
-*          Copyright (C) 2009-2014 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2009-2016 by T.TAKASU, All rights reserved.
 *          Copyright (C) 2014 by T.SUZUKI, All rights reserved.
 *
 * references :
@@ -28,6 +28,7 @@
 *                           add support input format rt17
 *           2014/08/31 1.9  suppress warning
 *           2014/11/07 1.10 support qzss navigation subframes
+*           2016/01/23 1.11 enable septentrio
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 #include <stdint.h>
@@ -855,6 +856,7 @@ extern int input_raw(raw_t *raw, int format, unsigned char data)
         case STRFMT_NVS  : return input_nvs  (raw,data);
         case STRFMT_BINEX: return input_bnx  (raw,data);
         case STRFMT_RT17 : return input_rt17 (raw,data);
+        case STRFMT_SEPT : return input_sbf  (raw,data);
         case STRFMT_LEXR : return input_lexr (raw,data);
     }
     return 0;
@@ -882,6 +884,7 @@ extern int input_rawf(raw_t *raw, int format, FILE *fp)
         case STRFMT_NVS  : return input_nvsf  (raw,fp);
         case STRFMT_BINEX: return input_bnxf  (raw,fp);
         case STRFMT_RT17 : return input_rt17f (raw,fp);
+        case STRFMT_SEPT : return input_sbff  (raw,fp);
         case STRFMT_LEXR : return input_lexrf (raw,fp);
     }
     return -2;

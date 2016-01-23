@@ -803,8 +803,8 @@ object MainForm: TMainForm
   object BtnTray: TPanel
     Left = 0
     Top = 0
-    Width = 8
-    Height = 8
+    Width = 12
+    Height = 12
     Hint = 'Task Tray'
     BevelInner = bvRaised
     BevelOuter = bvLowered

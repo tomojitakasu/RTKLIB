@@ -85,7 +85,7 @@ void __fastcall TMainForm::FormCreate(TObject *Sender)
     
     strsvrinit(&strsvr,3);
     
-    Caption=s.sprintf("%s ver.%s",PRGNAME,VER_RTKLIB);
+    Caption=s.sprintf("%s ver.%s %s",PRGNAME,VER_RTKLIB,PATCH_LEVEL);
     
     strcpy(buff,GetCommandLine());
     
@@ -121,11 +121,7 @@ void __fastcall TMainForm::FormCreate(TObject *Sender)
         SvrStart();
     }
 }
-// callback on form show ----------------------------------------------------
-void __fastcall TMainForm::FormShow(TObject *Sender)
-{
-}
-// callback on form close ---------------------------------------------------
+// callback on form show ----------------------------------------------------// callback on form close ---------------------------------------------------
 void __fastcall TMainForm::FormClose(TObject *Sender, TCloseAction &Action)
 {
     SaveOpt();
@@ -319,12 +315,7 @@ void __fastcall TMainForm::TrayIconDblClick(TObject *Sender)
     Visible=true;
     TrayIcon->Visible=false;
 }
-// callback on task-tray-icon click -----------------------------------------
-void __fastcall TMainForm::TrayIconMouseDown(TObject *Sender,
-      TMouseButton Button, TShiftState Shift, int X, int Y)
-{
-}
-// callback on menu-expand --------------------------------------------------
+// callback on task-tray-icon click -----------------------------------------// callback on menu-expand --------------------------------------------------
 void __fastcall TMainForm::MenuExpandClick(TObject *Sender)
 {
     Visible=true;

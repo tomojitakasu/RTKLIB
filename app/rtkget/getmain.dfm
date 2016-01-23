@@ -4,7 +4,7 @@ object MainForm: TMainForm
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'RTKGET'
-  ClientHeight = 319
+  ClientHeight = 324
   ClientWidth = 444
   Color = clBtnFace
   DoubleBuffered = True
@@ -203,9 +203,9 @@ object MainForm: TMainForm
       end
     end
     object BtnDir: TButton
-      Left = 424
+      Left = 420
       Top = 201
-      Width = 17
+      Width = 21
       Height = 21
       Caption = '...'
       Font.Charset = DEFAULT_CHARSET
@@ -366,7 +366,7 @@ object MainForm: TMainForm
       OnClick = BtnAllClick
     end
     object Dir: TComboBox
-      Left = 122
+      Left = 118
       Top = 201
       Width = 302
       Height = 21
@@ -377,17 +377,18 @@ object MainForm: TMainForm
   end
   object Panel3: TPanel
     Left = 0
-    Top = 295
+    Top = 297
     Width = 444
-    Height = 24
+    Height = 27
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
+    ExplicitTop = 301
     object BtnOpts: TButton
       Left = 145
       Top = 0
       Width = 73
-      Height = 23
+      Height = 27
       Caption = '&Options...'
       TabOrder = 2
       OnClick = BtnOptsClick
@@ -396,7 +397,7 @@ object MainForm: TMainForm
       Left = 73
       Top = 0
       Width = 71
-      Height = 23
+      Height = 27
       Caption = '&Log...'
       TabOrder = 1
       OnClick = BtnLogClick
@@ -405,7 +406,7 @@ object MainForm: TMainForm
       Left = 294
       Top = 0
       Width = 74
-      Height = 23
+      Height = 27
       Caption = '&Download'
       TabOrder = 4
       OnClick = BtnDownloadClick
@@ -414,7 +415,7 @@ object MainForm: TMainForm
       Left = 369
       Top = 0
       Width = 74
-      Height = 23
+      Height = 27
       Caption = '&Exit'
       TabOrder = 5
       OnClick = BtnExitClick
@@ -423,7 +424,7 @@ object MainForm: TMainForm
       Left = 1
       Top = 0
       Width = 71
-      Height = 23
+      Height = 27
       Caption = '&Files...'
       TabOrder = 0
       OnClick = BtnFileClick
@@ -432,7 +433,7 @@ object MainForm: TMainForm
       Left = 219
       Top = 0
       Width = 74
-      Height = 23
+      Height = 27
       Caption = '&Test...'
       TabOrder = 3
       OnClick = BtnTestClick
@@ -440,7 +441,7 @@ object MainForm: TMainForm
   end
   object Msg1: TPanel
     Left = 0
-    Top = 223
+    Top = 225
     Width = 444
     Height = 24
     Align = alBottom
@@ -457,6 +458,7 @@ object MainForm: TMainForm
     ParentShowHint = False
     ShowHint = True
     TabOrder = 2
+    ExplicitTop = 223
     object MsgLabel1: TLabel
       Left = 2
       Top = 2
@@ -471,7 +473,7 @@ object MainForm: TMainForm
   end
   object Msg3: TPanel
     Left = 0
-    Top = 271
+    Top = 273
     Width = 444
     Height = 24
     Align = alBottom
@@ -487,6 +489,7 @@ object MainForm: TMainForm
     ParentDoubleBuffered = False
     ParentFont = False
     TabOrder = 3
+    ExplicitTop = 271
     object MsgLabel3: TLabel
       Left = 2
       Top = 2
@@ -538,7 +541,7 @@ object MainForm: TMainForm
   end
   object Msg2: TPanel
     Left = 0
-    Top = 247
+    Top = 249
     Width = 444
     Height = 24
     Align = alBottom
@@ -555,6 +558,7 @@ object MainForm: TMainForm
     ParentShowHint = False
     ShowHint = True
     TabOrder = 4
+    ExplicitTop = 247
     object Image1: TImage
       Left = 425
       Top = 6

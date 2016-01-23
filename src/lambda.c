@@ -12,6 +12,7 @@
 *
 * version : $Revision: 1.1 $ $Date: 2008/07/17 21:48:06 $
 * history : 2007/01/13 1.0 new
+*           2015/05/31 1.1 add api lambda_reduction(), lambda_search()
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -168,7 +169,7 @@ extern int lambda(int n, int m, const double *a, const double *Q, double *F,
     double *L,*D,*Z,*z,*E;
     
     if (n<=0||m<=0) return -1;
-    L=zeros(n,n); D=mat(n,1); Z=eye(n); z=mat(n,1),E=mat(n,m);
+    L=zeros(n,n); D=mat(n,1); Z=eye(n); z=mat(n,1); E=mat(n,m);
     
     /* LD factorization */
     if (!(info=LD(n,Q,L,D))) {
@@ -184,5 +185,66 @@ extern int lambda(int n, int m, const double *a, const double *Q, double *F,
         }
     }
     free(L); free(D); free(Z); free(z); free(E);
+    return info;
+}
+/* lambda reduction ------------------------------------------------------------
+* reduction by lambda (ref [1]) for integer least square
+* args   : int    n      I  number of float parameters
+*          double *Q     I  covariance matrix of float parameters (n x n)
+*          double *Z     O  lambda reduction matrix (n x n)
+* return : status (0:ok,other:error)
+*-----------------------------------------------------------------------------*/
+extern int lambda_reduction(int n, const double *Q, double *Z)
+{
+    double *L,*D;
+    int i,j,info;
+    
+    if (n<=0) return -1;
+    
+    L=zeros(n,n); D=mat(n,1);
+    
+    for (i=0;i<n;i++) for (j=0;j<n;j++) {
+        Z[i+j*n]=i==j?1.0:0.0;
+    }
+    /* LD factorization */
+    if ((info=LD(n,Q,L,D))) {
+        free(L); free(D);
+        return info;
+    }
+    /* lambda reduction */
+    reduction(n,L,D,Z);
+     
+    free(L); free(D);
+    return 0;
+}
+/* mlambda search --------------------------------------------------------------
+* search by  mlambda (ref [2]) for integer least square
+* args   : int    n      I  number of float parameters
+*          int    m      I  number of fixed solutions
+*          double *a     I  float parameters (n x 1)
+*          double *Q     I  covariance matrix of float parameters (n x n)
+*          double *F     O  fixed solutions (n x m)
+*          double *s     O  sum of squared residulas of fixed solutions (1 x m)
+* return : status (0:ok,other:error)
+*-----------------------------------------------------------------------------*/
+extern int lambda_search(int n, int m, const double *a, const double *Q,
+                         double *F, double *s)
+{
+    double *L,*D;
+    int info;
+    
+    if (n<=0||m<=0) return -1;
+    
+    L=zeros(n,n); D=mat(n,1);
+    
+    /* LD factorization */
+    if ((info=LD(n,Q,L,D))) {
+        free(L); free(D);
+        return info;
+    }
+    /* mlambda search */
+    info=search(n,m,L,D,a,F,s);
+    
+    free(L); free(D);
     return info;
 }

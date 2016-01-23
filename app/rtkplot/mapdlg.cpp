@@ -43,7 +43,7 @@ void __fastcall TMapAreaDialog::BtnSaveClick(TObject *Sender)
 		if (ConfDialog->ShowModal()!=mrOk) return;
 	}
 	if (!(fp=fopen(file.c_str(),"w"))) return;
-	fprintf(fp,"%% map image tag file: rtkplot %s\n\n",VER_RTKLIB);
+	fprintf(fp,"%% map image tag file: rtkplot %s %s\n\n",VER_RTKLIB,PATCH_LEVEL);
 	fprintf(fp,"scalex  = %.6g\n",Plot->MapScaleX );
 	fprintf(fp,"scaley  = %.6g\n",Plot->MapScaleEq?Plot->MapScaleX:Plot->MapScaleY);
 	fprintf(fp,"scaleeq = %d\n"  ,Plot->MapScaleEq);

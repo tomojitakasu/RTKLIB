@@ -232,6 +232,18 @@ __published:
 	TMenuItem *MenuSkyImg;
 	TSpeedButton *BtnShowSkyplot;
 	TMenuItem *MenuShowSkyplot;
+	TMenuItem *Windows1;
+	TMenuItem *MenuOverlap;
+	TMenuItem *MenuMax;
+	TMenuItem *MenuPlotGE;
+	TMenuItem *MenuPlotGM;
+	TMenuItem *MenuPlotGEGM;
+	TMenuItem *N17;
+	TPanel *Panel101;
+	TPanel *Panel102;
+	TPanel *Panel103;
+	TPanel *Panel104;
+	TMenuItem *MenuSaveElMask;
 	
 	void __fastcall FormCreate			(TObject *Sender);
 	void __fastcall FormShow			(TObject *Sender);
@@ -337,6 +349,13 @@ __published:
 	void __fastcall MenuSkyImgClick(TObject *Sender);
 	void __fastcall MenuShowSkyplotClick(TObject *Sender);
 	void __fastcall BtnShowSkyplotClick(TObject *Sender);
+	void __fastcall MenuPlotGEClick(TObject *Sender);
+	void __fastcall MenuPlotGMClick(TObject *Sender);
+	void __fastcall MenuPlotGEGMClick(TObject *Sender);
+	void __fastcall MenuMaxClick(TObject *Sender);
+	void __fastcall DispGesture(TObject *Sender, const TGestureEventInfo &EventInfo,
+          bool &Handled);
+	void __fastcall MenuSaveElMaskClick(TObject *Sender);
 
 
 protected:
@@ -346,7 +365,6 @@ private:
 	Graphics::TBitmap *Buff;
     Graphics::TBitmap *MapImage;
     Graphics::TBitmap *SkyImageI;
-    Graphics::TBitmap *SkyImageR;
     TGraph *GraphT;
     TGraph *GraphG[3];
     TGraph *GraphR;
@@ -365,7 +383,7 @@ private:
     obs_t Obs;
     nav_t Nav;
     sta_t Sta;
-    double *Az,*El,*Mp[NFREQ+NEXOBS],ElMaskData[361];
+    double *Az,*El,*Mp[NFREQ+NEXOBS];
     
     gtime_t OEpoch;
     int FormWidth,FormHeight;
@@ -394,6 +412,7 @@ private:
     void __fastcall GenVisData   (void);
     void __fastcall SaveDop      (AnsiString file);
     void __fastcall SaveSnrMp    (AnsiString file);
+    void __fastcall SaveElMask   (AnsiString file);
     void __fastcall Connect      (void);
     void __fastcall Disconnect   (void);
     void __fastcall ConnectPath  (const char *path, int ch);
@@ -505,6 +524,7 @@ private:
     END_MESSAGE_MAP(TForm);
     
 public:
+    Graphics::TBitmap *SkyImageR;
     AnsiString IniFile;
     AnsiString MapImageFile;
     AnsiString SkyImageFile;
@@ -524,6 +544,7 @@ public:
     AnsiString RtFieldSep;
     int RtTimeOutTime;
     int RtReConnTime;
+    double ElMaskData[361];
     
     // time options 
     int TimeEna[3];
@@ -537,8 +558,9 @@ public:
     double MapLat,MapLon;
     
     // sky image options 
-    int SkySize[2],SkyDestCorr,SkyElMask,SkyRes,SkyFlip;
+    int SkySize[2],SkyDestCorr,SkyElMask,SkyRes,SkyFlip,SkyBinarize;
     double SkyCent[2],SkyScale,SkyScaleR,SkyFov[3],SkyDest[10];
+    double SkyBinThres1,SkyBinThres2;
     
     // plot options 
     int TimeLabel;

@@ -278,6 +278,9 @@
 			<CppCompile Include="..\..\src\ppp_ar.c">
 				<BuildOrder>50</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="..\..\src\ppp_corr.c">
+				<BuildOrder>58</BuildOrder>
+			</CppCompile>
 			<CppCompile Include="..\..\src\preceph.c">
 				<BuildOrder>7</BuildOrder>
 				<BuildOrder>26</BuildOrder>
@@ -375,6 +378,9 @@
 				<BuildOrder>44</BuildOrder>
 				<BuildOrder>13</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="..\..\src\tides.c">
+				<BuildOrder>57</BuildOrder>
+			</CppCompile>
 			<CppCompile Include="..\..\src\tle.c">
 				<BuildOrder>51</BuildOrder>
 			</CppCompile>
@@ -391,10 +397,10 @@
 			<FormResources Include="..\appcmn\maskoptdlg.dfm"/>
 			<FormResources Include="..\appcmn\keydlg.dfm"/>
 			<FormResources Include="..\appcmn\ftpoptdlg.dfm"/>
-			<FormResources Include="naviopt.dfm"/>
-			<FormResources Include="navimain.dfm"/>
 			<FormResources Include="mondlg.dfm"/>
 			<FormResources Include="outstrdlg.dfm"/>
+			<FormResources Include="naviopt.dfm"/>
+			<FormResources Include="navimain.dfm"/>
 			<FormResources Include="rcvoptdlg.dfm"/>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>

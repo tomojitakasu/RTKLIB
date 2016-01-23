@@ -25,6 +25,16 @@
 *           2012/02/01  1.12 support keyword expansion of rtcm ssr corrections
 *           2013/03/11  1.13 add function reading otl and erp data
 *           2014/06/29  1.14 fix problem on overflow of # of satellites
+*           2015/03/23  1.15 fix bug on ant type replacement by rinex header
+*                            fix bug on combined filter for moving-base mode
+*           2015/04/29  1.16 fix bug on reading rtcm ssr corrections
+*                            add function to read satellite fcb
+*                            add function to read stec and troposphere file
+*                            add keyword replacement in dcb, erp and ionos file
+*           2015/11/13  1.17 add support of L5 antenna phase center paramters
+*                            add *.stec and *.trp file for ppp correction
+*           2015/11/26  1.18 support opt->freqopt(disable L2)
+*           2016/01/12  1.19 add carrier-phase bias correction by ssr
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -182,11 +192,46 @@ static int nextobsb(const obs_t *obs, int *i, int rcv)
     }
     return n;
 }
+/* update rtcm ssr correction ------------------------------------------------*/
+static void update_rtcm_ssr(gtime_t time)
+{
+    char path[1024];
+    int i;
+    
+    /* open or swap rtcm file */
+    reppath(rtcm_file,path,time,"","");
+    
+    if (strcmp(path,rtcm_path)) {
+        strcpy(rtcm_path,path);
+        
+        if (fp_rtcm) fclose(fp_rtcm);
+        fp_rtcm=fopen(path,"rb");
+        if (fp_rtcm) {
+            rtcm.time=time;
+            input_rtcm3f(&rtcm,fp_rtcm);
+            trace(2,"rtcm file open: %s\n",path);
+        }
+    }
+    if (!fp_rtcm) return;
+    
+    /* read rtcm file until current time */
+    while (timediff(rtcm.time,time)<1E-3) {
+        if (input_rtcm3f(&rtcm,fp_rtcm)<-1) break;
+        
+        /* update ssr corrections */
+        for (i=0;i<MAXSAT;i++) {
+            if (!rtcm.ssr[i].update||
+                rtcm.ssr[i].iod[0]!=rtcm.ssr[i].iod[1]||
+                timediff(time,rtcm.ssr[i].t0[0])<-1E-3) continue;
+            navs.ssr[i]=rtcm.ssr[i];
+            rtcm.ssr[i].update=0;
+        }
+    }
+}
 /* input obs data, navigation messages and sbas correction -------------------*/
 static int inputobs(obsd_t *obs, int solq, const prcopt_t *popt)
 {
     gtime_t time={0};
-    char path[1024];
     int i,nu,nr,n=0;
     
     trace(3,"infunc  : revs=%d iobsu=%d iobsr=%d isbs=%d\n",revs,iobsu,iobsr,isbs);
@@ -229,29 +274,9 @@ static int inputobs(obsd_t *obs, int solq, const prcopt_t *popt)
             }
             ilex++;
         }
-        /* update rtcm corrections */
+        /* update rtcm ssr corrections */
         if (*rtcm_file) {
-            
-            /* open or swap rtcm file */
-            reppath(rtcm_file,path,obs[0].time,"","");
-            
-            if (strcmp(path,rtcm_path)) {
-                strcpy(rtcm_path,path);
-                
-                if (fp_rtcm) fclose(fp_rtcm);
-                fp_rtcm=fopen(path,"rb");
-                if (fp_rtcm) {
-                    rtcm.time=obs[0].time;
-                    input_rtcm3f(&rtcm,fp_rtcm);
-                    trace(2,"rtcm file open: %s\n",path);
-                }
-            }
-            if (fp_rtcm) {
-                while (timediff(rtcm.time,obs[0].time)<0.0) {
-                    if (input_rtcm3f(&rtcm,fp_rtcm)<-1) break;
-                }
-                for (i=0;i<MAXSAT;i++) navs.ssr[i]=rtcm.ssr[i];
-            }
+            update_rtcm_ssr(obs[0].time);
         }
     }
     else { /* input backward data */
@@ -289,6 +314,38 @@ static int inputobs(obsd_t *obs, int solq, const prcopt_t *popt)
     }
     return n;
 }
+/* carrier-phase bias correction by fcb --------------------------------------*/
+static void corr_phase_bias_fcb(obsd_t *obs, int n, const nav_t *nav)
+{
+    int i,j,k;
+    
+    for (i=0;i<nav->nf;i++) {
+        if (timediff(nav->fcb[i].te,obs[0].time)<-1E-3) continue;
+        if (timediff(nav->fcb[i].ts,obs[0].time)> 1E-3) break;
+        for (j=0;j<n;j++) {
+            for (k=0;k<NFREQ;k++) {
+                if (obs[j].L[k]==0.0) continue;
+                obs[j].L[k]-=nav->fcb[i].bias[obs[j].sat-1][k];
+            }
+        }
+        return;
+    }
+}
+/* carrier-phase bias correction by ssr --------------------------------------*/
+static void corr_phase_bias_ssr(obsd_t *obs, int n, const nav_t *nav)
+{
+    double lam;
+    int i,j,code;
+    
+    for (i=0;i<n;i++) for (j=0;j<NFREQ;j++) {
+        
+        if (!(code=obs[i].code[j])) continue;
+        if ((lam=nav->lam[obs[i].sat-1][j])==0.0) continue;
+        
+        /* correct phase bias (cyc) */
+        obs[i].L[j]-=nav->ssr[obs[i].sat-1].pbias[code-1]/lam;
+    }
+}
 /* process positioning -------------------------------------------------------*/
 static void procpos(FILE *fp, const prcopt_t *popt, const solopt_t *sopt,
                     int mode)
@@ -317,6 +374,19 @@ static void procpos(FILE *fp, const prcopt_t *popt, const solopt_t *sopt,
         }
         if (n<=0) continue;
         
+        /* carrier-phase bias correction */
+        if (navs.nf>0) {
+            corr_phase_bias_fcb(obs,n,&navs);
+        }
+        else if (!strstr(popt->pppopt,"-DIS_FCB")) {
+            corr_phase_bias_ssr(obs,n,&navs);
+        }
+        /* disable L2 */
+#if 0
+        if (popt->freqopt==1) {
+            for (i=0;i<n;i++) obs[i].L[1]=obs[i].P[1]=0.0;
+        }
+#endif
         if (!rtkpos(&rtk,obs,n,&navs)) continue;
         
         if (mode==0) { /* forward/backward */
@@ -379,7 +449,7 @@ static void combres(FILE *fp, const prcopt_t *popt, const solopt_t *sopt)
 {
     gtime_t time={0};
     sol_t sols={{0}},sol={{0}};
-    double tt,Qf[9],Qb[9],Qs[9],rbs[3]={0},rb[3]={0};
+    double tt,Qf[9],Qb[9],Qs[9],rbs[3]={0},rb[3]={0},rr_f[3],rr_b[3],rr_s[3];
     int i,j,k,solstatic,pri[]={0,1,2,3,4,5,1,6};
     
     trace(3,"combres : isolf=%d isolb=%d\n",isolf,isolb);
@@ -428,8 +498,15 @@ static void combres(FILE *fp, const prcopt_t *popt, const solopt_t *sopt)
             Qb[5]=Qb[7]=solb[j].qr[4];
             Qb[2]=Qb[6]=solb[j].qr[5];
             
-            if (smoother(solf[i].rr,Qf,solb[j].rr,Qb,3,sols.rr,Qs)) continue;
-            
+            if (popt->mode==PMODE_MOVEB) {
+                for (k=0;k<3;k++) rr_f[k]=solf[i].rr[k]-rbf[k+i*3];
+                for (k=0;k<3;k++) rr_b[k]=solb[j].rr[k]-rbb[k+j*3];
+                if (smoother(rr_f,Qf,rr_b,Qb,3,rr_s,Qs)) continue;
+                for (k=0;k<3;k++) sols.rr[k]=rbs[k]+rr_s[k];
+            }
+            else {
+                if (smoother(solf[i].rr,Qf,solb[j].rr,Qb,3,sols.rr,Qs)) continue;
+            }
             sols.qr[0]=(float)Qs[0];
             sols.qr[1]=(float)Qs[4];
             sols.qr[2]=(float)Qs[8];
@@ -461,10 +538,11 @@ static void readpreceph(char **infile, int n, const prcopt_t *prcopt,
     int i;
     char *ext;
     
-    trace(3,"readpreceph: n=%d\n",n);
+    trace(2,"readpreceph: n=%d\n",n);
     
     nav->ne=nav->nemax=0;
     nav->nc=nav->ncmax=0;
+    nav->nf=nav->nfmax=0;
     sbs->n =sbs->nmax =0;
     lex->n =lex->nmax =0;
     
@@ -477,6 +555,24 @@ static void readpreceph(char **infile, int n, const prcopt_t *prcopt,
     for (i=0;i<n;i++) {
         if (strstr(infile[i],"%r")||strstr(infile[i],"%b")) continue;
         readrnxc(infile[i],nav);
+    }
+    /* read satellite fcb files */
+    for (i=0;i<n;i++) {
+        if (strstr(infile[i],"%r")||strstr(infile[i],"%b")) continue;
+        if ((ext=strrchr(infile[i],'.'))&&
+            (!strcmp(ext,".fcb")||!strcmp(ext,".FCB"))) {
+            readfcb(infile[i],nav);
+        }
+    }
+    /* read solution status files for ppp correction */
+    for (i=0;i<n;i++) {
+        if (strstr(infile[i],"%r")||strstr(infile[i],"%b")) continue;
+        if ((ext=strrchr(infile[i],'.'))&&
+            (!strcmp(ext,".stat")||!strcmp(ext,".STAT")||
+             !strcmp(ext,".stec")||!strcmp(ext,".STEC")||
+             !strcmp(ext,".trp" )||!strcmp(ext,".TRP" ))) {
+            pppcorr_read(&nav->pppcorr,infile[i]);
+        }
     }
     /* read sbas message files */
     for (i=0;i<n;i++) {
@@ -518,6 +614,7 @@ static void freepreceph(nav_t *nav, sbs_t *sbs, lex_t *lex)
     
     free(nav->peph); nav->peph=NULL; nav->ne=nav->nemax=0;
     free(nav->pclk); nav->pclk=NULL; nav->nc=nav->ncmax=0;
+    free(nav->fcb ); nav->fcb =NULL; nav->nf=nav->nfmax=0;
     free(nav->seph); nav->seph=NULL; nav->ns=nav->nsmax=0;
     free(sbs->msgs); sbs->msgs=NULL; sbs->n =sbs->nmax =0;
     free(lex->msgs); lex->msgs=NULL; lex->n =lex->nmax =0;
@@ -526,10 +623,6 @@ static void freepreceph(nav_t *nav, sbs_t *sbs, lex_t *lex)
         free(nav->tec[i].rms );
     }
     free(nav->tec ); nav->tec =NULL; nav->nt=nav->ntmax=0;
-    
-#ifdef EXTSTEC
-    stec_free(nav);
-#endif
     
     if (fp_rtcm) fclose(fp_rtcm);
     free_rtcm(&rtcm);
@@ -717,7 +810,7 @@ static int antpos(prcopt_t *opt, int rcvno, const obs_t *obs, const nav_t *nav,
 static int openses(const prcopt_t *popt, const solopt_t *sopt,
                    const filopt_t *fopt, nav_t *nav, pcvs_t *pcvs, pcvs_t *pcvr)
 {
-    char *ext;
+    int i;
     
     trace(3,"openses :\n");
     
@@ -733,21 +826,6 @@ static int openses(const prcopt_t *popt, const solopt_t *sopt,
         trace(1,"rec antenna pcv read error: %s\n",fopt->rcvantp);
         return 0;
     }
-    /* read dcb parameters */
-    if (*fopt->dcb) {
-        readdcb(fopt->dcb,nav);
-    }
-    /* read ionosphere data file */
-    if (*fopt->iono&&(ext=strrchr(fopt->iono,'.'))) {
-        if (strlen(ext)==4&&(ext[3]=='i'||ext[3]=='I')) {
-            readtec(fopt->iono,nav,0);
-        }
-#ifdef EXTSTEC
-        else if (!strcmp(ext,".stec")||!strcmp(ext,".STEC")) {
-            stec_read(fopt->iono,nav);
-        }
-#endif
-    }
     /* open geoid data */
     if (sopt->geoid>0&&*fopt->geoid) {
         if (!opengeoid(sopt->geoid,fopt->geoid)) {
@@ -755,12 +833,16 @@ static int openses(const prcopt_t *popt, const solopt_t *sopt,
             trace(2,"no geoid data %s\n",fopt->geoid);
         }
     }
-    /* read erp data */
-    if (*fopt->eop) {
-        if (!readerp(fopt->eop,&nav->erp)) {
-            showmsg("error : no erp data %s",fopt->eop);
-            trace(2,"no erp data %s\n",fopt->eop);
-        }
+    /* use satellite L2 offset if L5 offset does not exists */
+    for (i=0;i<pcvs->n;i++) {
+        if (norm(pcvs->pcv[i].off[2],3)>0.0) continue;
+        matcpy(pcvs->pcv[i].off[2],pcvs->pcv[i].off[1], 3,1);
+        matcpy(pcvs->pcv[i].var[2],pcvs->pcv[i].var[1],19,1);
+    }
+    for (i=0;i<pcvr->n;i++) {
+        if (norm(pcvr->pcv[i].off[2],3)>0.0) continue;
+        matcpy(pcvr->pcv[i].off[2],pcvr->pcv[i].off[1], 3,1);
+        matcpy(pcvr->pcv[i].var[2],pcvr->pcv[i].var[1],19,1);
     }
     return 1;
 }
@@ -871,7 +953,7 @@ static int execses(gtime_t ts, gtime_t te, double ti, const prcopt_t *popt,
 {
     FILE *fp;
     prcopt_t popt_=*popt;
-    char tracefile[1024],statfile[1024];
+    char tracefile[1024],statfile[1024],path[1024],*ext;
     
     trace(3,"execses : n=%d outfile=%s\n",n,outfile);
     
@@ -888,11 +970,32 @@ static int execses(gtime_t ts, gtime_t te, double ti, const prcopt_t *popt,
         traceopen(tracefile);
         tracelevel(sopt->trace);
     }
+    /* read ionosphere data file */
+    if (*fopt->iono&&(ext=strrchr(fopt->iono,'.'))) {
+        if (strlen(ext)==4&&(ext[3]=='i'||ext[3]=='I')) {
+            reppath(fopt->iono,path,ts,"","");
+            readtec(path,&navs,1);
+        }
+    }
+    /* read erp data */
+    if (*fopt->eop) {
+        free(navs.erp.data); navs.erp.data=NULL; navs.erp.n=navs.erp.nmax=0;
+        reppath(fopt->eop,path,ts,"","");
+        if (!readerp(path,&navs.erp)) {
+            showmsg("error : no erp data %s",path);
+            trace(2,"no erp data %s\n",path);
+        }
+    }
     /* read obs and nav data */
     if (!readobsnav(ts,te,ti,infile,index,n,&popt_,&obss,&navs,stas)) return 0;
     
+    /* read dcb parameters */
+    if (*fopt->dcb) {
+        reppath(fopt->dcb,path,ts,"","");
+        readdcb(path,&navs,stas);
+    }
     /* set antenna paramters */
-    if (popt_.sateph==EPHOPT_PREC||popt_.sateph==EPHOPT_SSRCOM) {
+    if (popt_.mode!=PMODE_SINGLE) {
         setpcv(obss.n>0?obss.data[0].time:timeget(),&popt_,&navs,&pcvss,&pcvsr,
                stas);
     }
@@ -1105,6 +1208,7 @@ static int execses_b(gtime_t ts, gtime_t te, double ti, const prcopt_t *popt,
 *              .lex,.LEX            : qzss lex message log files
 *              .rtcm3,.RTCM3        : ssr message log files (rtcm3)
 *              .*i,.*I              : tec grid files (ionex)
+*              .fcb,.FCB            : satellite fcb
 *              others               : rinex obs, nav, gnav, hnav, qnav or clock
 *
 *          inputs files can include wild-cards (*). if an file includes

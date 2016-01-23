@@ -4,7 +4,7 @@ object OutputStrDialog: TOutputStrDialog
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Output Streams'
-  ClientHeight = 152
+  ClientHeight = 155
   ClientWidth = 386
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -79,7 +79,7 @@ object OutputStrDialog: TOutputStrDialog
     Left = 296
     Top = 127
     Width = 83
-    Height = 23
+    Height = 27
     Caption = '&Cancel'
     ModalResult = 2
     TabOrder = 0
@@ -88,7 +88,7 @@ object OutputStrDialog: TOutputStrDialog
     Left = 212
     Top = 127
     Width = 83
-    Height = 23
+    Height = 27
     Caption = '&OK'
     ModalResult = 1
     TabOrder = 1
