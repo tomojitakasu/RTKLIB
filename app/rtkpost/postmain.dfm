@@ -1,11 +1,10 @@
 object MainForm: TMainForm
   Left = 0
   Top = 0
-  AutoSize = True
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'RTKPOST'
-  ClientHeight = 335
+  ClientHeight = 336
   ClientWidth = 466
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -798,13 +797,11 @@ object MainForm: TMainForm
     Left = 0
     Top = 307
     Width = 466
-    Height = 28
+    Height = 29
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitTop = 305
-    ExplicitWidth = 444
-    ExplicitHeight = 25
+    ExplicitHeight = 30
     object BtnPlot: TButton
       Left = 1
       Top = 2
