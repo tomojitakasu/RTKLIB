@@ -24,7 +24,7 @@
 *           2010/07/29 1.8  rtklib ver.2.4.0
 *           2011/05/27 1.9  rtklib ver.2.4.1
 *           2013/03/28 1.10 rtklib ver.2.4.2
-*           2016/01/23 1.11 rtklib ver.2.4.3
+*           2016/01/26 1.11 rtklib ver.2.4.3
 *-----------------------------------------------------------------------------*/
 #ifndef RTKLIB_H
 #define RTKLIB_H
@@ -49,7 +49,7 @@ extern "C" {
 
 #define VER_RTKLIB  "2.4.3"             /* library version */
 
-#define PATCH_LEVEL "b6"                /* patch level */
+#define PATCH_LEVEL "b7"                /* patch level */
 
 #define COPYRIGHT_RTKLIB \
             "Copyright (C) 2007-2016 by T.Takasu\nAll rights reserved."

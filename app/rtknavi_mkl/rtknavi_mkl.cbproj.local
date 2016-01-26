@@ -5,6 +5,6 @@
     <Transaction>2014/08/26 09:32:22.000.166,=D:\proj\RTKLIB\src\rcv\rt17.c</Transaction>
     <Transaction>2015/05/25 15:33:32.000.190,=D:\proj\RTKLIB\src\tides.c</Transaction>
     <Transaction>2015/05/25 15:33:32.000.188,=D:\proj\RTKLIB\src\ppp_corr.c</Transaction>
-    <Transaction>2016/01/23 12:03:43.114,=D:\proj\RTKLIB\src\rcv\septentrio.c</Transaction>
+    <Transaction>2016/01/23 12:03:43.000.114,=D:\proj\RTKLIB\src\rcv\septentrio.c</Transaction>
   </Transactions>
 </BorlandProject>

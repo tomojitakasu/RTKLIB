@@ -18,6 +18,8 @@
 *           2014/11/08  1.8  add option -a, -i and -o
 *           2015/03/23  1.9  fix bug on parsing of command line options
 *           2016/01/23  1.10 enable septentrio
+*           2016/01/26  1.11 fix bug on station position by -p option (#126)
+*                            add option -px
 *-----------------------------------------------------------------------------*/
 #include <signal.h>
 #include <unistd.h>
@@ -88,9 +90,10 @@ static const char *help[]={
 " -f  sec           file swap margin (s) [30]",
 " -c  file          receiver commands file [no]",
 " -p  lat lon hgt   station position (latitude/longitude/height) (deg,m)",
+" -px x y z         station position (x/y/z-ecef) (m)",
 " -a  antinfo       antenna info (separated by ,)",
 " -i  rcvinfo       receiver info (separated by ,)",
-" -o  e n u         antenna offst (e,n,u) (m)",
+" -o  e n u         antenna offset (e,n,u) (m)",
 " -l  local_dir     ftp/http local directory []",
 " -x  proxy_addr    http/ntrip proxy address [no]",
 " -t  level         trace level [0]",
@@ -188,7 +191,7 @@ int main(int argc, char **argv)
     static char cmd[MAXRCVCMD]="";
     const char ss[]={'E','-','W','C','C'};
     strconv_t *conv[MAXSTR]={NULL};
-    double pos[3],stapos[3]={0},off[3]={0};
+    double pos[3],stapos[3]={0},stadel[3]={0};
     char *paths[MAXSTR],s[MAXSTR][MAXSTRPATH]={{0}},*cmdfile="";
     char *local="",*proxy="",*msg="1004,1019",*opt="",buff[256],*p;
     char strmsg[MAXSTRMSG]="",*antinfo="",*rcvinfo="";
@@ -213,10 +216,15 @@ int main(int argc, char **argv)
             pos[2]=atof(argv[++i]);
             pos2ecef(pos,stapos);
         }
+        else if (!strcmp(argv[i],"-px")&&i+3<argc) {
+            stapos[0]=atof(argv[++i]);
+            stapos[1]=atof(argv[++i]);
+            stapos[2]=atof(argv[++i]);
+        }
         else if (!strcmp(argv[i],"-o")&&i+3<argc) {
-            off[0]=atof(argv[++i]);
-            off[1]=atof(argv[++i]);
-            off[2]=atof(argv[++i]);
+            stadel[0]=atof(argv[++i]);
+            stadel[1]=atof(argv[++i]);
+            stadel[2]=atof(argv[++i]);
         }
         else if (!strcmp(argv[i],"-msg")&&i+1<argc) msg=argv[++i];
         else if (!strcmp(argv[i],"-opt")&&i+1<argc) opt=argv[++i];
@@ -260,8 +268,8 @@ int main(int argc, char **argv)
         strcpy(conv[i]->out.sta.rectype,rcv[0]);
         strcpy(conv[i]->out.sta.recver ,rcv[1]);
         strcpy(conv[i]->out.sta.recsno ,rcv[2]);
-        matcpy(conv[i]->out.sta.pos,pos,3,1);
-        matcpy(conv[i]->out.sta.del,off,3,1);
+        matcpy(conv[i]->out.sta.pos,stapos,3,1);
+        matcpy(conv[i]->out.sta.del,stadel,3,1);
     }
     signal(SIGTERM,sigfunc);
     signal(SIGINT ,sigfunc);
