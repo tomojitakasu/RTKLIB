@@ -28,6 +28,7 @@
 *           2014/06/23 1.9  support [lD] for glonass raw navigation data
 *           2014/08/26 1.10 fix bug on decoding iode in glonass ephemeris [NE]
 *           2014/10/20 1.11 fix bug on receiver option -GL*,-RL*,-JL*
+*           2016/01/26 1.12 fix problem on bus-error on ARM CPU (#129)
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -49,8 +50,12 @@ static int            I4(unsigned char *p) {int            i; memcpy(&i,p,4); re
 
 static float R4(unsigned char *p)
 {
+    float value;
+    unsigned char *q=(unsigned char *)&value;
+    int i;
     if (U4(p)==0x7FC00000) return 0.0f; /* quiet nan */
-    return *(float*)p;
+    for (i=0;i<4;i++) *q++=*p++;
+    return value;
 }
 static double R8(unsigned char *p)
 {

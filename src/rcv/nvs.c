@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * nvs.c : NVS receiver dependent functions
 *
-*    Copyright (C) 2012-2013 by M.BAVARO and T.TAKASU, All rights reserved.
+*    Copyright (C) 2012-2016 by M.BAVARO and T.TAKASU, All rights reserved.
 *    Copyright (C) 2014 by T.TAKASU, All rights reserved.
 *
 *     [1] Description of BINR messages which is used by RC program for RINEX
@@ -15,7 +15,8 @@
 *           2013/04/24 1.3  fix bug on cycle-slip detection
 *                           add range check of gps ephemeris week
 *           2013/09/01 1.4  add check error of week, time jump, obs data range
-*           2014/08/26 1.10 fix bug on iode in glonass ephemeris
+*           2014/08/26 1.5  fix bug on iode in glonass ephemeris
+*           2016/01/26 1.6  fix bug on unrecognized meas data (#130)
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -112,11 +113,10 @@ static int decode_xf5raw(raw_t *raw)
         toff=(tn-floor(tn+0.5))*tadj;
         time=timeadd(time,-toff);
     }
-    /* check time tag jump */
+    /* check time tag jump and output warning */
     if (raw->time.time&&fabs(timediff(time,raw->time))>86400.0) {
         time2str(time,tstr,3);
-        trace(2,"nvs xf5raw time tag jump error: time=%s\n",tstr);
-        return 0;
+        trace(2,"nvs xf5raw time tag jump warning: time=%s\n",tstr);
     }
     if (fabs(timediff(time,raw->time))<=1e-3) {
         time2str(time,tstr,3);

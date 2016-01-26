@@ -18,7 +18,7 @@
 *
 * version : $Revision:$ $Date:$
 * history : 2015/05/10 1.0  separated from ppp.c
-*           2015/06/11 1.1  fix bug on computing days in tide_oload()
+*           2015/06/11 1.1  fix bug on computing days in tide_oload() (#128)
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
