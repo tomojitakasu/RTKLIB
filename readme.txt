@@ -38,3 +38,5 @@ UPDATE HISTORY
 2016/01/23  2.4.3 b6  merge 2.4.2 p11 bug fixes
                       update ppp/ppp-ar features
                       support septentrio
+2016/01/26  2.4.3 b7  fix bugs #126,#127,#128,#129,#130,#131
+2016/01/28  2.4.3 b8  support galileo navigation data in u-blox UBX-SFRBX

@@ -2407,7 +2407,7 @@ extern int geterp(const erp_t *erp, gtime_t time, double *erpv)
 {
     const double ep[]={2000,1,1,12,0,0};
     double mjd,day,a;
-    int i=0,j,k;
+    int i,j,k;
     
     trace(4,"geterp:\n");
     
