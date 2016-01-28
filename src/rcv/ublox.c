@@ -11,6 +11,8 @@
 *         Protocol Specification V5, Dec 20, 2013
 *     [3] ublox-AG, UBX-13003221-R07, u-blox M8 Receiver Description including
 *         Protocol Specification V15.00-17.00, Nov 3, 2014
+*     [4] ublox-AG, UBX-13003221-R09, u-blox 8 /u-blox M8 Receiver Description
+*         including Protocol Specification V15.00-18.00, January, 2016
 *
 * version : $Revision: 1.2 $ $Date: 2008/07/14 00:05:05 $
 * history : 2007/10/08 1.0  new
@@ -38,6 +40,7 @@
 *           2014/11/04 1.14 support message RXM-RAWX and RXM-SFRBX
 *           2015/03/20 1.15 omit time adjustment for RXM-RAWX
 *           2016/01/22 1.16 add time-tag in raw-message-type
+*           2016/01/26 1.17 support galileo navigation data in RXM-SFRBX
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -254,7 +257,8 @@ static int decode_rxmrawx(raw_t *raw)
         raw->obs.data[n].D[0]=R4(p+16);
         raw->obs.data[n].SNR[0]=U1(p+26)*4;
         raw->obs.data[n].LLI[0]=0;
-        raw->obs.data[n].code[0]=sys==SYS_CMP?CODE_L1I:CODE_L1C;
+        raw->obs.data[n].code[0]=
+            sys==SYS_CMP?CODE_L1I:(sys==SYS_GAL?CODE_L1X:CODE_L1C);
         
         lockt=U2(p+24);    /* lock time count (ms) */
         halfc=tstat&8?1:0; /* half cycle subtracted from phase */
@@ -686,8 +690,66 @@ static int decode_nav(raw_t *raw, int sat, int off)
 /* decode galileo navigation data --------------------------------------------*/
 static int decode_enav(raw_t *raw, int sat, int off)
 {
-    trace(2,"ubx rawsfrbx galileo nav not supported sat=%d\n",sat);
-    return 0;
+    eph_t eph={0};
+    unsigned char *p=raw->buff+6+off,buff[32],crc_buff[25]={0};
+    int i,j,k,part1,page1,part2,page2,type;
+    
+    if (raw->len<44+off) {
+        trace(2,"ubx rawsfrbx length error: sat=%d len=%d\n",sat,raw->len);
+        return -1;
+    }
+    for (i=k=0;i<8;i++,p+=4) for (j=0;j<4;j++) {
+        buff[k++]=p[3-j];
+    }
+    part1=getbitu(buff   ,0,1);
+    page1=getbitu(buff   ,1,1);
+    part2=getbitu(buff+16,0,1);
+    page2=getbitu(buff+16,1,1);
+    
+    /* skip alert page */
+    if (page1==1||page2==1) return 0;
+    
+    /* test even-odd parts */
+    if (part1!=0||part2!=1) {
+        trace(2,"ubx rawsfrbx gal page even/odd error: sat=%2d\n",sat);
+        return -1;
+    }
+    /* test crc (4(pad) + 114 + 82 bits) */
+    for (i=0,j=  4;i<15;i++,j+=8) setbitu(crc_buff,j,8,getbitu(buff   ,i*8,8));
+    for (i=0,j=118;i<11;i++,j+=8) setbitu(crc_buff,j,8,getbitu(buff+16,i*8,8));
+    if (crc24q(crc_buff,25)!=getbitu(buff+16,82,24)) {
+        trace(2,"ubx rawsfrbx gal page crc error: sat=%2d\n",sat);
+        return -1;
+    }
+    type=getbitu(buff,2,6); /* word type */
+    
+    /* skip word except for ephemeris, iono, utc parameters */
+    if (type>6) return 0;
+    
+    /* save page data (112 + 16 bits) to frame buffer */
+    k=type*16;
+    for (i=0,j=2;i<14;i++,j+=8) raw->subfrm[sat-1][k++]=getbitu(buff   ,j,8);
+    for (i=0,j=2;i< 2;i++,j+=8) raw->subfrm[sat-1][k++]=getbitu(buff+16,j,8);
+    
+    /* decode galileo inav ephemeris */
+    if (!decode_gal_inav(raw->subfrm[sat-1],&eph)) {
+        
+        return 0; /* incomplete ephemeris */
+    }
+    /* test svid consistency */
+    if (eph.sat!=sat) {
+        trace(2,"ubx rawsfrbx gal svid error: sat=%2d %2d\n",sat,eph.sat);
+        return -1;
+    }
+    if (!strstr(raw->opt,"-EPHALL")) {
+        if (eph.iode==raw->nav.eph[sat-1].iode&& /* unchanged */
+            timediff(eph.toe,raw->nav.eph[sat-1].toe)==0.0&&
+            timediff(eph.toc,raw->nav.eph[sat-1].toc)==0.0) return 0;
+    }
+    eph.sat=sat;
+    raw->nav.eph[sat-1]=eph;
+    raw->ephsat=sat;
+    return 2;
 }
 /* decode beidou navigation data ---------------------------------------------*/
 static int decode_cnav(raw_t *raw, int sat, int off)

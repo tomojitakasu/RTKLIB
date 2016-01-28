@@ -71,16 +71,16 @@ object LogStrDialog: TLogStrDialog
   object BtnCancel: TButton
     Left = 298
     Top = 167
-    Width = 83
+    Width = 85
     Height = 27
     Caption = '&Cancel'
     ModalResult = 2
     TabOrder = 0
   end
   object BtnOk: TButton
-    Left = 214
+    Left = 212
     Top = 167
-    Width = 83
+    Width = 85
     Height = 27
     Caption = '&OK'
     ModalResult = 1
@@ -123,9 +123,9 @@ object LogStrDialog: TLogStrDialog
   end
   object BtnStr1: TButton
     Left = 241
-    Top = 18
-    Width = 19
-    Height = 20
+    Top = 17
+    Width = 21
+    Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -138,9 +138,9 @@ object LogStrDialog: TLogStrDialog
   end
   object BtnStr2: TButton
     Left = 241
-    Top = 40
-    Width = 19
-    Height = 20
+    Top = 39
+    Width = 21
+    Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -166,10 +166,10 @@ object LogStrDialog: TLogStrDialog
     TabOrder = 10
   end
   object BtnFile1: TButton
-    Left = 364
-    Top = 99
-    Width = 17
-    Height = 20
+    Left = 363
+    Top = 97
+    Width = 21
+    Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -181,10 +181,10 @@ object LogStrDialog: TLogStrDialog
     OnClick = BtnFile1Click
   end
   object BtnFile2: TButton
-    Left = 364
-    Top = 121
-    Width = 17
-    Height = 20
+    Left = 363
+    Top = 119
+    Width = 21
+    Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -249,9 +249,9 @@ object LogStrDialog: TLogStrDialog
   end
   object BtnStr3: TButton
     Left = 241
-    Top = 62
-    Width = 19
-    Height = 20
+    Top = 61
+    Width = 21
+    Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -270,10 +270,10 @@ object LogStrDialog: TLogStrDialog
     TabOrder = 16
   end
   object BtnFile3: TButton
-    Left = 364
-    Top = 143
-    Width = 17
-    Height = 20
+    Left = 363
+    Top = 141
+    Width = 21
+    Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText

@@ -27,7 +27,8 @@
 *           2015/07/31 1.13 accept 4:stat for outstr1-format or outstr2-format
 *                           add reading satellite dcb
 *           2015/12/14 1.14 add option -sta for station name (#339)
-*           2016/12/25 1.15 fix bug on -sta option (#339)
+*           2015/12/25 1.15 fix bug on -sta option (#339)
+*           2015/01/26 1.16 support septentrio
 *-----------------------------------------------------------------------------*/
 #include <signal.h>
 #include "rtklib.h"
@@ -139,7 +140,7 @@ static const char *pathopts[]={         /* path options help */
 #define FLGOPT  "0:off,1:std+2:age/ratio/ns"
 #define ISTOPT  "0:off,1:serial,2:file,3:tcpsvr,4:tcpcli,7:ntripcli,8:ftp,9:http"
 #define OSTOPT  "0:off,1:serial,2:file,3:tcpsvr,4:tcpcli,6:ntripsvr"
-#define FMTOPT  "0:rtcm2,1:rtcm3,2:oem4,3:oem3,4:ubx,5:ss2,6:hemis,7:skytraq,8:gw10,9:javad,10:nvs,11:binex,12:rt17,16:sp3"
+#define FMTOPT  "0:rtcm2,1:rtcm3,2:oem4,3:oem3,4:ubx,5:ss2,6:hemis,7:skytraq,8:gw10,9:javad,10:nvs,11:binex,12:rt17,13:sbf,16:sp3"
 #define NMEOPT  "0:off,1:latlon,2:single"
 #define SOLOPT  "0:llh,1:xyz,2:enu,3:nmea,4:stat"
 #define MSGOPT  "0:all,1:rover,2:base,3:corr"

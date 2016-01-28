@@ -117,16 +117,16 @@ object InputStrDialog: TInputStrDialog
   object BtnCancel: TButton
     Left = 308
     Top = 206
-    Width = 83
+    Width = 85
     Height = 27
     Caption = '&Cancel'
     ModalResult = 2
     TabOrder = 0
   end
   object BtnOk: TButton
-    Left = 224
+    Left = 222
     Top = 206
-    Width = 83
+    Width = 85
     Height = 27
     Caption = '&OK'
     ModalResult = 1
@@ -151,10 +151,10 @@ object InputStrDialog: TInputStrDialog
       'File')
   end
   object BtnStr1: TButton
-    Left = 236
-    Top = 18
-    Width = 19
-    Height = 20
+    Left = 235
+    Top = 17
+    Width = 21
+    Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -183,10 +183,10 @@ object InputStrDialog: TInputStrDialog
       'File')
   end
   object BtnStr2: TButton
-    Left = 236
-    Top = 40
-    Width = 19
-    Height = 20
+    Left = 235
+    Top = 39
+    Width = 21
+    Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -216,10 +216,10 @@ object InputStrDialog: TInputStrDialog
     TabOrder = 12
   end
   object BtnCmd1: TButton
-    Left = 256
-    Top = 18
-    Width = 19
-    Height = 20
+    Left = 255
+    Top = 17
+    Width = 21
+    Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -231,10 +231,10 @@ object InputStrDialog: TInputStrDialog
     OnClick = BtnCmd1Click
   end
   object BtnCmd2: TButton
-    Left = 256
-    Top = 40
-    Width = 19
-    Height = 20
+    Left = 255
+    Top = 39
+    Width = 21
+    Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -268,10 +268,10 @@ object InputStrDialog: TInputStrDialog
     Text = '0'
   end
   object BtnFile1: TButton
-    Left = 374
-    Top = 139
-    Width = 17
-    Height = 20
+    Left = 373
+    Top = 137
+    Width = 21
+    Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -283,10 +283,10 @@ object InputStrDialog: TInputStrDialog
     OnClick = BtnFile1Click
   end
   object BtnFile2: TButton
-    Left = 374
-    Top = 161
-    Width = 17
-    Height = 20
+    Left = 373
+    Top = 159
+    Width = 21
+    Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -347,10 +347,10 @@ object InputStrDialog: TInputStrDialog
     Text = '0.000000000'
   end
   object BtnPos: TButton
-    Left = 374
-    Top = 101
-    Width = 17
-    Height = 20
+    Left = 373
+    Top = 99
+    Width = 21
+    Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -369,10 +369,10 @@ object InputStrDialog: TInputStrDialog
     TabOrder = 31
   end
   object BtnFile3: TButton
-    Left = 374
-    Top = 183
-    Width = 17
-    Height = 20
+    Left = 373
+    Top = 181
+    Width = 21
+    Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -412,10 +412,10 @@ object InputStrDialog: TInputStrDialog
       'HTTP')
   end
   object BtnStr3: TButton
-    Left = 236
-    Top = 62
-    Width = 19
-    Height = 20
+    Left = 235
+    Top = 61
+    Width = 21
+    Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -436,10 +436,10 @@ object InputStrDialog: TInputStrDialog
     TabOrder = 18
   end
   object BtnCmd3: TButton
-    Left = 256
-    Top = 62
-    Width = 19
-    Height = 20
+    Left = 255
+    Top = 61
+    Width = 21
+    Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -451,10 +451,10 @@ object InputStrDialog: TInputStrDialog
     OnClick = BtnCmd3Click
   end
   object BtnRcvOpt1: TButton
-    Left = 374
-    Top = 18
-    Width = 17
-    Height = 20
+    Left = 373
+    Top = 17
+    Width = 21
+    Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -466,10 +466,10 @@ object InputStrDialog: TInputStrDialog
     OnClick = BtnRcvOpt1Click
   end
   object BtnRcvOpt2: TButton
-    Left = 374
-    Top = 40
-    Width = 17
-    Height = 20
+    Left = 373
+    Top = 39
+    Width = 21
+    Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -481,10 +481,10 @@ object InputStrDialog: TInputStrDialog
     OnClick = BtnRcvOpt2Click
   end
   object BtnRcvOpt3: TButton
-    Left = 374
-    Top = 62
-    Width = 17
-    Height = 20
+    Left = 373
+    Top = 61
+    Width = 21
+    Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText

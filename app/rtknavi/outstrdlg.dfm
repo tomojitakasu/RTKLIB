@@ -76,18 +76,18 @@ object OutputStrDialog: TOutputStrDialog
     Caption = 'H'
   end
   object BtnCancel: TButton
-    Left = 296
+    Left = 298
     Top = 127
-    Width = 83
+    Width = 85
     Height = 27
     Caption = '&Cancel'
     ModalResult = 2
     TabOrder = 0
   end
   object BtnOk: TButton
-    Left = 212
+    Left = 213
     Top = 127
-    Width = 83
+    Width = 85
     Height = 27
     Caption = '&OK'
     ModalResult = 1
@@ -113,9 +113,9 @@ object OutputStrDialog: TOutputStrDialog
   end
   object BtnStr1: TButton
     Left = 241
-    Top = 18
-    Width = 19
-    Height = 20
+    Top = 17
+    Width = 21
+    Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -128,9 +128,9 @@ object OutputStrDialog: TOutputStrDialog
   end
   object BtnStr2: TButton
     Left = 241
-    Top = 40
-    Width = 19
-    Height = 20
+    Top = 39
+    Width = 21
+    Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -196,10 +196,10 @@ object OutputStrDialog: TOutputStrDialog
     TabOrder = 10
   end
   object BtnFile1: TButton
-    Left = 362
-    Top = 81
-    Width = 17
-    Height = 20
+    Left = 361
+    Top = 79
+    Width = 21
+    Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -218,10 +218,10 @@ object OutputStrDialog: TOutputStrDialog
     TabOrder = 12
   end
   object BtnFile2: TButton
-    Left = 362
-    Top = 103
-    Width = 17
-    Height = 20
+    Left = 361
+    Top = 101
+    Width = 21
+    Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
