@@ -49,7 +49,7 @@ extern "C" {
 
 #define VER_RTKLIB  "2.4.3"             /* library version */
 
-#define PATCH_LEVEL "b7"                /* patch level */
+#define PATCH_LEVEL "b8"                /* patch level */
 
 #define COPYRIGHT_RTKLIB \
             "Copyright (C) 2007-2016 by T.Takasu\nAll rights reserved."
@@ -1510,6 +1510,7 @@ extern int test_glostr(const unsigned char *buff);
 extern int decode_glostr(const unsigned char *buff, geph_t *geph);
 extern int decode_bds_d1(const unsigned char *buff, eph_t *eph);
 extern int decode_bds_d2(const unsigned char *buff, eph_t *eph);
+extern int decode_gal_inav(const unsigned char *buff, eph_t *eph);
 
 extern int init_raw   (raw_t *raw);
 extern void free_raw  (raw_t *raw);
