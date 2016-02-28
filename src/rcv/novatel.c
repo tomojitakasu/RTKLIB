@@ -1282,7 +1282,7 @@ static int decode_oem4(raw_t *raw)
     trace(3,"decode_oem4: type=%3d len=%d\n",type,raw->len);
     
     /* check crc32 */
-    if (crc32(raw->buff,raw->len)!=U4(raw->buff+raw->len)) {
+    if (rtk_crc32(raw->buff,raw->len)!=U4(raw->buff+raw->len)) {
         trace(2,"oem4 crc error: type=%3d len=%d\n",type,raw->len);
         return -1;
     }
