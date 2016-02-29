@@ -2,10 +2,11 @@
 #ifndef mondlgH
 #define mondlgH
 //---------------------------------------------------------------------------
-#include "rtklib.h"
 #include <QStringList>
 #include <QDialog>
 #include <QTimer>
+
+#include "rtklib.h"
 
 #include "ui_mondlg.h"
 

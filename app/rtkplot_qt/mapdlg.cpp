@@ -1,12 +1,12 @@
 //---------------------------------------------------------------------------
+#include <QShowEvent>
+#include <QMessageBox>
+
 #include <stdio.h>
 #include "rtklib.h"
 
 #include "plotmain.h"
 #include "mapdlg.h"
-
-#include <QShowEvent>
-#include <QMessageBox>
 
 extern Plot *plot;
 

@@ -12,16 +12,6 @@
 // version : $Revision:$ $Date:$
 // history : 2012/12/28  1.0 new
 //---------------------------------------------------------------------------
-
-#include "rtklib.h"
-#include "keydlg.h"
-#include "aboutdlg.h"
-#include "getmain.h"
-#include "getoptdlg.h"
-#include "staoptdlg.h"
-#include "viewer.h"
-
-//---------------------------------------------------------------------------
 #include <QShowEvent>
 #include <QDesktopServices>
 #include <QCloseEvent>
@@ -35,6 +25,15 @@
 #include <QtConcurrent/QtConcurrentRun>
 #include <QFuture>
 #include <QThread>
+
+//---------------------------------------------------------------------------
+#include "rtklib.h"
+#include "keydlg.h"
+#include "aboutdlg.h"
+#include "getmain.h"
+#include "getoptdlg.h"
+#include "staoptdlg.h"
+#include "viewer.h"
 
 #define PRGNAME     "RTKGET"  // program name
 

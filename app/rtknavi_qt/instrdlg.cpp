@@ -1,5 +1,10 @@
 //---------------------------------------------------------------------------
 
+#include <QComboBox>
+#include <QFileInfo>
+#include <QShowEvent>
+#include <QFileDialog>
+
 #include "rtklib.h"
 #include "refdlg.h"
 #include "navimain.h"
@@ -9,11 +14,6 @@
 #include "fileoptdlg.h"
 #include "ftpoptdlg.h"
 #include "rcvoptdlg.h"
-
-#include <QComboBox>
-#include <QFileInfo>
-#include <QShowEvent>
-#include <QFileDialog>
 
 #include "instrdlg.h"
 

@@ -21,7 +21,13 @@ INCLUDEPATH += ../../src/ ../appcmn_qt
 QMAKE_CXXFLAGS += -pg
 QMAKE_LFLAGS += -pg
 
-LIBS += -lpng ../../src/libRTKLib.a
+linux{
+    LIBS += -lpng ../../src/libRTKLib.a
+}
+win32 {
+    debug:LIBS += ../../src/debug/libRTKLib.a -lWs2_32 -lwinmm
+    else:LIBS += ../../src/release/libRTKLib.a -lWs2_32 -lwinmm
+}
 
 SOURCES += \ 
     extopt.cpp \

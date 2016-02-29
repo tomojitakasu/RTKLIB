@@ -1,13 +1,13 @@
 //---------------------------------------------------------------------------
+#include <QShowEvent>
+#include <QMessageBox>
+#include <QFileDialog>
+
 #include <stdio.h>
 #include "rtklib.h"
 
 #include "plotmain.h"
 #include "skydlg.h"
-
-#include <QShowEvent>
-#include <QMessageBox>
-#include <QFileDialog>
 
 extern Plot *plot;
 

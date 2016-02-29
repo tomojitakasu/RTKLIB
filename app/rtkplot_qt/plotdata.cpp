@@ -1,16 +1,16 @@
 //---------------------------------------------------------------------------
 // plotdata : rtkplot data functions
 //---------------------------------------------------------------------------
-#include "rtklib.h"
-#include "plotmain.h"
-#include "mapdlg.h"
-#include "geview.h"
-
 #include <QString>
 #include <QStringList>
 #include <QFile>
 #include <QImage>
 #include <QColor>
+
+#include "rtklib.h"
+#include "plotmain.h"
+#include "mapdlg.h"
+#include "geview.h"
 
 static char path_str[MAXNFILE][1024];
 
@@ -1128,7 +1128,7 @@ void Plot::UpdateMp(void)
 // set connect path ---------------------------------------------------------
 void Plot::ConnectPath(const QString &path, int ch)
 {
-    trace(3,"ConnectPath: path=%s ch=%d\n",path,ch);
+    trace(3,"ConnectPath: path=%s ch=%d\n",qPrintable(path),ch);
     
     RtStream[ch]=STR_NONE;
     

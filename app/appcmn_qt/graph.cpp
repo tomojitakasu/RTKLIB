@@ -1,13 +1,13 @@
 //---------------------------------------------------------------------------
 // graph.cpp: graph plot subfunctions
 //---------------------------------------------------------------------------
-#include <math.h>
-#include "rtklib.h"
-#include "graph.h"
-
 #include <QPainter>
 #include <QBrush>
 #include <QPen>
+
+#include <math.h>
+#include "rtklib.h"
+#include "graph.h"
 
 #define MINSIZE		10			// min width/height
 #define MINSCALE	2E-5		// min scale factor (pixel/unit)

@@ -2,15 +2,15 @@
 // geview.c: google earth view
 //---------------------------------------------------------------------------
 
-#include "rtklib.h"
-#include "geview.h"
-#include "plotmain.h"
-
 #include <QTimer>
 #include <QStringList>
 #include <QWebView>
 #include <QWebFrame>
 #include <QWebElement>
+
+#include "rtklib.h"
+#include "geview.h"
+#include "plotmain.h"
 
 #define RTKPLOT_GE_FILE "rtkplot_ge.htm"
 

@@ -10,11 +10,12 @@ TARGET = RTKLib
 TEMPLATE = lib
 CONFIG += staticlib
 
-DEFINES += _RTLDLL NO_STRICT TRACE ENAGLO ENAQZS ENAGAL ENACMP NFREQ=3 NEXOBS=3 ENALEX
+#DEFINES += _RTLDLL NO_STRICT TRACE ENAGLO ENAQZS ENAGAL ENACMP NFREQ=3 NEXOBS=3 ENALEX
+include(../RTKLib.pri)
 
 QMAKE_CFLAGS += -Wall -ansi -pedantic -Wno-unused-but-set-variable  -DTRACE -g 
-QMAKE_LFLAGS +=-Wl,--version-script=libRTKLib.lds
-LIBS  += -lm -lrt -lpthread
+#QMAKE_LFLAGS +=-Wl,--version-script=libRTKLib.lds
+#LIBS  += -lm -lrt -lpthread
 
 
 SOURCES += rtkcmn.c \

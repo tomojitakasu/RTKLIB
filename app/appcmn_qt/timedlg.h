@@ -2,9 +2,9 @@
 #ifndef timedlgH
 #define timedlgH
 //---------------------------------------------------------------------------
-#include "rtklib.h"
-
 #include <QDialog>
+
+#include "rtklib.h"
 
 #include "ui_timedlg.h"
 

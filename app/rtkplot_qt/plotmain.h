@@ -2,14 +2,14 @@
 #ifndef plotmainH
 #define plotmainH
 //---------------------------------------------------------------------------
+#include <QTimer>
+#include <QMainWindow>
+
 #include "graph.h"
 #include "console.h"
 #include "rtklib.h"
 
 #include "ui_plotmain.h"
-
-#include <QTimer>
-#include <QMainWindow>
 
 #define MAXNFILE    256                 // max number of solution files
 #define MAXSTRBUFF  1024                // max length of stream buffer

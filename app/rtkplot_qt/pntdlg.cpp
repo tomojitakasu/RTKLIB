@@ -1,13 +1,13 @@
 //---------------------------------------------------------------------------
 
+#include <QShowEvent>
+#include <QFileDialog>
+#include <QFile>
+
 #include "rtklib.h"
 #include "refdlg.h"
 #include "pntdlg.h"
 #include "plotmain.h"
-
-#include <QShowEvent>
-#include <QFileDialog>
-#include <QFile>
 
 extern Plot *plot;
 

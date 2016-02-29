@@ -1,4 +1,7 @@
 //---------------------------------------------------------------------------
+#include <QDialog>
+#include <QShowEvent>
+#include <QFileDialog>
 
 #include "rtklib.h"
 #include "serioptdlg.h"
@@ -8,9 +11,6 @@
 #include "logstrdlg.h"
 #include "keydlg.h"
 
-#include <QDialog>
-#include <QShowEvent>
-#include <QFileDialog>
 //---------------------------------------------------------------------------
 LogStrDialog::LogStrDialog(QWidget* parent)
     : QDialog(parent)

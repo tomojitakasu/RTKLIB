@@ -1,12 +1,11 @@
 //---------------------------------------------------------------------------
 
-#include "rtklib.h"
-#include "plotmain.h"
-//#include "timedlg.h"
-#include "tspandlg.h"
-
 #include <QShowEvent>
 #include <QDateTime>
+
+#include "rtklib.h"
+#include "plotmain.h"
+#include "tspandlg.h"
 //---------------------------------------------------------------------------
 SpanDialog::SpanDialog(QWidget* parent)
     : QDialog(parent)

@@ -12,7 +12,13 @@ include(../../RTKLib.pri)
 
 INCLUDEPATH += ../../src/ ../appcmn_qt
 
-LIBS += ../../src/libRTKLib.a
+linux{
+    LIBS += -lpng ../../src/libRTKLib.a
+}
+win32 {
+    debug:LIBS += ../../src/debug/libRTKLib.a -lWs2_32 -lwinmm
+    else:LIBS += ../../src/release/libRTKLib.a -lWs2_32 -lwinmm
+}
 
 TARGET = rtkget_qt
 TEMPLATE = app

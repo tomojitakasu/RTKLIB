@@ -13,15 +13,15 @@
 // history : 2013/01/10  1.1 new
 //---------------------------------------------------------------------------
 
-#include "rtklib.h"
-#include "launchmain.h"
-
 #include <QSettings>
 #include <QFileInfo>
 #include <QShowEvent>
 #include <QCloseEvent>
 #include <QCommandLineParser>
 #include <QProcess>
+
+#include "rtklib.h"
+#include "launchmain.h"
 
 //---------------------------------------------------------------------------
 
@@ -128,49 +128,49 @@ void MainForm::closeEvent(QCloseEvent *event )
 //---------------------------------------------------------------------------
 void MainForm::BtnPlotClick()
 {
-    QString cmd1="rtkplot",cmd2="../../../bin/rtkplot_qt",opts="";
+    QString cmd1="rtkplot_qt",cmd2="../../../bin/rtkplot_qt",opts="";
     
     if (!ExecCmd(cmd1+opts)) ExecCmd(cmd2+opts);
 }
 //---------------------------------------------------------------------------
 void MainForm::BtnConvClick()
 {
-    QString cmd1="rtkconv",cmd2="../../../bin/rtkconv_qt",opts="";
+    QString cmd1="rtkconv_qt",cmd2="../../../bin/rtkconv_qt",opts="";
     
     if (!ExecCmd(cmd1+opts)) ExecCmd(cmd2+opts);
 }
 //---------------------------------------------------------------------------
 void MainForm::BtnStrClick()
 {
-    QString cmd1="strsvr",cmd2="../../../bin/strsvr_qt",opts="";
+    QString cmd1="strsvr_qt",cmd2="../../../bin/strsvr_qt",opts="";
     
     if (!ExecCmd(cmd1+opts)) ExecCmd(cmd2+opts);
 }
 //---------------------------------------------------------------------------
 void MainForm::BtnPostClick()
 {
-    QString cmd1="rtkpost",cmd2="../../../bin/rtkpost_qt",opts="";
+    QString cmd1="rtkpost_qt",cmd2="../../../bin/rtkpost_qt",opts="";
     
     if (!ExecCmd(cmd1+opts)) ExecCmd(cmd2+opts);
 }
 //---------------------------------------------------------------------------
 void MainForm::BtnNtripClick()
 {
-    QString cmd1="srctblbrows",cmd2="../../../bin/srctblbrows_qt",opts="";
+    QString cmd1="srctblbrows_qt",cmd2="../../../bin/srctblbrows_qt",opts="";
     
     if (!ExecCmd(cmd1+opts)) ExecCmd(cmd2+opts);
 }
 //---------------------------------------------------------------------------
 void MainForm::BtnNaviClick()
 {
-    QString cmd1="rtknavi",cmd2="../../../bin/rtknavi_qt",opts="";
+    QString cmd1="rtknavi_qt",cmd2="../../../bin/rtknavi_qt",opts="";
     
     if (!ExecCmd(cmd1+opts)) ExecCmd(cmd2+opts);
 }
 //---------------------------------------------------------------------------
 void MainForm::BtnGetClick()
 {
-    QString cmd1="rtkget",cmd2="../../../bin/rtkget_qt",opts="";
+    QString cmd1="rtkget_qt",cmd2="../../../bin/rtkget_qt",opts="";
     
     if (!ExecCmd(cmd1+opts)) ExecCmd(cmd2+opts);
 }
