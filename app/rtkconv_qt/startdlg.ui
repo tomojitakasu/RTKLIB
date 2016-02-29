@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>StartDialog</class>
+ <widget class="QWidget" name="StartDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>224</width>
+    <height>83</height>
+   </rect>
+  </property>
+  <property name="toolTip">
+   <string></string>
+  </property>
+  <property name="windowTitle">
+   <string>Start Time</string>
+  </property>
+  <widget class="QPushButton" name="BtnOk">
+   <property name="geometry">
+    <rect>
+     <x>34</x>
+     <y>58</y>
+     <width>79</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>&amp;OK</string>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="flat">
+    <bool>false</bool>
+   </property>
+   <property name="toolTip">
+    <string></string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="BtnCancel">
+   <property name="geometry">
+    <rect>
+     <x>116</x>
+     <y>58</y>
+     <width>79</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>&amp;Cancel</string>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="flat">
+    <bool>false</bool>
+   </property>
+   <property name="toolTip">
+    <string></string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="Panel1">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>224</width>
+     <height>55</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string></string>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="alignment">
+    <enum>Qt::AlignCenter</enum>
+   </property>
+   <property name="layoutDirection">
+    <enum>Qt::LeftToRight</enum>
+   </property>
+   <property name="toolTip">
+    <string></string>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::NoFrame</enum>
+   </property>
+   <widget class="QLabel" name="Label2">
+    <property name="geometry">
+     <rect>
+      <x>184</x>
+      <y>30</y>
+      <width>25</width>
+      <height>13</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>GPST</string>
+    </property>
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="toolTip">
+     <string></string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="Label1">
+    <property name="geometry">
+     <rect>
+      <x>18</x>
+      <y>8</y>
+      <width>188</width>
+      <height>13</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Input Approx. Log Start Time for RTCM</string>
+    </property>
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="toolTip">
+     <string></string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="TimeY1">
+    <property name="geometry">
+     <rect>
+      <x>16</x>
+      <y>28</y>
+      <width>65</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>2000/01/01</string>
+    </property>
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="toolTip">
+     <string></string>
+    </property>
+   </widget>
+   <widget class="QFrame" name="TimeY1UD">
+    <property name="geometry">
+     <rect>
+      <x>82</x>
+      <y>27</y>
+      <width>17</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="TimeH1">
+    <property name="geometry">
+     <rect>
+      <x>106</x>
+      <y>28</y>
+      <width>55</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>00:00:00</string>
+    </property>
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="toolTip">
+     <string></string>
+    </property>
+   </widget>
+   <widget class="QFrame" name="TimeH1UD">
+    <property name="geometry">
+     <rect>
+      <x>162</x>
+      <y>27</y>
+      <width>17</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+</ui>
