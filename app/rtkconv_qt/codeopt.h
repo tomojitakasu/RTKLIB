@@ -2,10 +2,8 @@
 #ifndef codeoptH
 #define codeoptH
 //---------------------------------------------------------------------------
-#include <System.Classes.hpp>
-#include <Vcl.Controls.hpp>
-#include <Vcl.StdCtrls.hpp>
-#include <Vcl.Forms.hpp>
+#include <QDialog>
+
 //---------------------------------------------------------------------------
 class TCodeOptDialog : public TForm
 {

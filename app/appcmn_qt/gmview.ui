@@ -10,158 +10,136 @@
     <height>662</height>
    </rect>
   </property>
-  <property name="toolTip">
-   <string></string>
-  </property>
   <property name="windowTitle">
    <string>Google Map View</string>
   </property>
-  <widget class="QLabel" name="Panel1">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>1030</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string></string>
-   </property>
-   <property name="enabled">
-    <bool>true</bool>
-   </property>
-   <property name="alignment">
-    <enum>Qt::AlignCenter</enum>
-   </property>
-   <property name="layoutDirection">
-    <enum>Qt::LeftToRight</enum>
-   </property>
-   <property name="toolTip">
-    <string></string>
-   </property>
-   <property name="frameShape">
-    <enum>QFrame::Panel</enum>
-   </property>
-   <property name="frameShadow">
-    <enum>QFrame::Raised</enum>
-   </property>
-   <widget class="QPushButton" name="BtnHome">
-    <property name="geometry">
-     <rect>
-      <x>1</x>
-      <y>0</y>
-      <width>23</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string></string>
-    </property>
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
-    <property name="toolTip">
-     <string></string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="Panel5">
-    <property name="geometry">
-     <rect>
-      <x>978</x>
-      <y>1</y>
-      <width>51</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Panel5</string>
-    </property>
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <property name="alignment">
-     <enum>Qt::AlignCenter</enum>
-    </property>
-    <property name="layoutDirection">
-     <enum>Qt::LeftToRight</enum>
-    </property>
-    <property name="toolTip">
-     <string></string>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::NoFrame</enum>
-    </property>
-    <widget class="QPushButton" name="BtnClose">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>0</y>
-       <width>51</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Close</string>
-     </property>
+  <property name="toolTip">
+   <string/>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QWidget" name="Panel1" native="true">
      <property name="enabled">
       <bool>true</bool>
      </property>
-     <property name="flat">
-      <bool>false</bool>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
      <property name="toolTip">
-      <string></string>
+      <string/>
+     </property>
+     <property name="layoutDirection">
+      <enum>Qt::LeftToRight</enum>
+     </property>
+     <property name="text" stdset="0">
+      <string/>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QPushButton" name="BtnHome">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="../srctblbrows_qt/srctblbrows_qt.qrc">
+          <normaloff>:/buttons/home.bmp</normaloff>:/buttons/home.bmp</iconset>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QWidget" name="Panel5" native="true">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="layoutDirection">
+         <enum>Qt::LeftToRight</enum>
+        </property>
+        <property name="text" stdset="0">
+         <string>Panel5</string>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QPushButton" name="BtnClose">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="toolTip">
+            <string/>
+           </property>
+           <property name="text">
+            <string>Close</string>
+           </property>
+           <property name="flat">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="Panel2" native="true">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="layoutDirection">
+      <enum>Qt::LeftToRight</enum>
+     </property>
+     <property name="text" stdset="0">
+      <string>Panel2</string>
      </property>
     </widget>
-   </widget>
-  </widget>
-  <widget class="QLabel" name="Panel2">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>22</y>
-     <width>1030</width>
-     <height>640</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Panel2</string>
-   </property>
-   <property name="enabled">
-    <bool>true</bool>
-   </property>
-   <property name="alignment">
-    <enum>Qt::AlignCenter</enum>
-   </property>
-   <property name="layoutDirection">
-    <enum>Qt::LeftToRight</enum>
-   </property>
-   <property name="toolTip">
-    <string></string>
-   </property>
-   <property name="frameShape">
-    <enum>QFrame::Panel</enum>
-   </property>
-   <property name="frameShadow">
-    <enum>QFrame::Raised</enum>
-   </property>
-   <widget class="QFrame" name="WebBrowser">
-    <property name="geometry">
-     <rect>
-      <x>1</x>
-      <y>1</y>
-      <width>1028</width>
-      <height>638</height>
-     </rect>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::StyledPanel</enum>
-    </property>
-   </widget>
-  </widget>
+   </item>
+  </layout>
  </widget>
+ <resources>
+  <include location="../srctblbrows_qt/srctblbrows_qt.qrc"/>
+ </resources>
+ <connections/>
 </ui>

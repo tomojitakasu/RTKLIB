@@ -2,42 +2,35 @@
 #ifndef gmviewH
 #define gmviewH
 //---------------------------------------------------------------------------
-#include <System.Classes.hpp>
-#include <Vcl.Controls.hpp>
-#include <Vcl.StdCtrls.hpp>
-#include <Vcl.Forms.hpp>
-#include "SHDocVw_OCX.h"
-#include <Vcl.ExtCtrls.hpp>
-#include <Vcl.OleCtrls.hpp>
-#include <Vcl.Buttons.hpp>
+#include <QDialog>
+
+#include "ui_gmview.h"
+
+class QWebView;
+
 //---------------------------------------------------------------------------
-class TGoogleMapView : public TForm
+class GoogleMapView : public QDialog, private Ui::GoogleMapView
 {
-__published:
-	TPanel *Panel1;
-	TPanel *Panel2;
-	TCppWebBrowser *WebBrowser;
-	TPanel *Panel5;
-	TButton *BtnClose;
-	TSpeedButton *BtnHome;
-	void __fastcall BtnCloseClick(TObject *Sender);
-	void __fastcall FormCreate(TObject *Sender);
-	void __fastcall BtnHomeClick(TObject *Sender);
+    Q_OBJECT
+public slots:
+    void BtnCloseClick();
+    void BtnHomeClick();
+    void FormCreate();
 
 
 private:
-    void __fastcall ExecFunc(AnsiString func);
+    void ExecFunc(const QString &func);
+    QWebView *WebBrowser;
 
 public:
-	__fastcall TGoogleMapView(TComponent* Owner);
-    void __fastcall ShowHome(void);
-    int  __fastcall GetState(void);
-    void __fastcall ClearMark(void);
-    void __fastcall AddMark(double lat, double lon, AnsiString title, AnsiString msg);
-    void __fastcall PosMark(double lat, double lon, AnsiString title);
-    void __fastcall HighlightMark(AnsiString title);
+    GoogleMapView(QWidget *parent=NULL);
+
+    void ShowHome(void);
+    int  GetState(void);
+    void ClearMark(void);
+    void AddMark(double lat, double lon, const QString &title, const QString &msg);
+    void PosMark(double lat, double lon, const QString &title);
+    void HighlightMark(const QString &title);
 };
-//---------------------------------------------------------------------------
-extern PACKAGE TGoogleMapView *GoogleMapView;
 //---------------------------------------------------------------------------
 #endif

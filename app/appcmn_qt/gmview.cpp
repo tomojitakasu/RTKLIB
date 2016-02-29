@@ -1,123 +1,103 @@
 //---------------------------------------------------------------------------
 // gmview.c: google map view
 //---------------------------------------------------------------------------
-#include <vcl.h>
-#pragma hdrstop
-#include <mshtml.h>
+#include <QWebView>
+#include <QWebElement>
+#include <QWebFrame>
+#include <QTimer>
+
 #include "rtklib.h"
 #include "gmview.h"
 
-#define RTKLIB_GM_FILE L"rtklib_gmap.htm"
+
+#define RTKLIB_GM_FILE "rtklib_gmap.htm"
 
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
-#pragma link "SHDocVw_OCX"
-#pragma resource "*.dfm"
+GoogleMapView::GoogleMapView(QWidget *parent)
+    : QDialog(parent)
+{
+    setupUi(this);
 
-TGoogleMapView *GoogleMapView;
-//---------------------------------------------------------------------------
-__fastcall TGoogleMapView::TGoogleMapView(TComponent* Owner)
-    : TForm(Owner)
-{
+    connect(BtnClose,SIGNAL(clicked(bool)),this,SLOT(BtnCloseClick()));
+    connect(BtnHome,SIGNAL(clicked(bool)),this,SLOT(BtnHomeClick()));
+
+    QTimer::singleShot(0,this,SLOT(FormCreate()));
 }
 //---------------------------------------------------------------------------
-void __fastcall TGoogleMapView::FormCreate(TObject *Sender)
+void GoogleMapView::FormCreate()
 {
-    UnicodeString url,exe,dir=L".";
-    wchar_t *p,*q;
-    
-    exe=Application->ExeName; // exe directory
-    p=exe.c_str();
-    if ((q=wcsrchr(p,L'\\'))) {
-        dir=exe.SubString(1,q-p);
-    }
-    url=L"file://"+dir+L"\\"+RTKLIB_GM_FILE;
-    
-    WebBrowser->Navigate(url.c_str());
+    QString url,dir=".";
+
+    dir=qApp->applicationDirPath(); // exe directory
+    url="file://"+dir+"/"+RTKLIB_GM_FILE;
+
+    WebBrowser->load(QUrl(url));
+    WebBrowser->show();
 }
 //---------------------------------------------------------------------------
-int __fastcall TGoogleMapView::GetState(void)
+int GoogleMapView::GetState(void)
 {
-	IHTMLDocument3 *doc=NULL;
-	IHTMLElement *ele1=NULL;
-	VARIANT var;
-	int state;
-	
-	if (!WebBrowser->Document) return 0;
-	WebBrowser->Document->QueryInterface(IID_IHTMLDocument3,(void **)&doc);
-	if (!doc) return 0;
-	doc->getElementById(L"state",&ele1);
-	doc->Release();
-	if (!ele1) return 0;
-	
-	VariantInit(&var);
-	if (ele1->getAttribute(L"value",0,&var)!=S_OK) {
-		VariantClear(&var);
-		return 0;
-	}
-	swscanf(var.bstrVal,L"%d",&state);
-	VariantClear(&var);
-	return state;
+    QWebElement ele;
+    int state;
+
+    if (!WebBrowser->page()) return 0;
+    if (!WebBrowser->page()->mainFrame()) return 0;
+
+    QWebFrame *frame=WebBrowser->page()->mainFrame();
+
+    ele=frame->findFirstElement("state");
+
+    if (ele.isNull()) return 0;
+    if (!ele.hasAttribute("value)")) return 0;
+
+    state=ele.attribute("value").toInt();
+
+    return state;
 }
 //---------------------------------------------------------------------------
-void __fastcall TGoogleMapView::BtnCloseClick(TObject *Sender)
+void GoogleMapView::BtnCloseClick()
 {
-    Close();
+    close();
 }
 //---------------------------------------------------------------------------
-void __fastcall TGoogleMapView::BtnHomeClick(TObject *Sender)
+void GoogleMapView::BtnHomeClick()
 {
 	ShowHome();
 }
 //---------------------------------------------------------------------------
-void __fastcall TGoogleMapView::ShowHome(void)
+void GoogleMapView::ShowHome(void)
 {
     ExecFunc("ShowHome()");
 }
 //---------------------------------------------------------------------------
-void __fastcall TGoogleMapView::ClearMark(void)
+void GoogleMapView::ClearMark(void)
 {
     ExecFunc("ClearMark()");
 }
 //---------------------------------------------------------------------------
-void __fastcall TGoogleMapView::AddMark(double lat, double lon,
-    AnsiString title, AnsiString msg)
+void GoogleMapView::AddMark(double lat, double lon,
+    const QString &title, const QString &msg)
 {
-    AnsiString f;
-    ExecFunc(f.sprintf("AddMark(%.7f,%.7f,\"%s\",\"%s\")",lat,lon,title,msg));
+    ExecFunc(QString("AddMark(%1,%2,\"%3\",\"%4\")").arg(lat,0,'f',9).arg(lon,0,'f',9).arg(title).arg(msg));
 }
 //---------------------------------------------------------------------------
-void __fastcall TGoogleMapView::PosMark(double lat, double lon,
-    AnsiString title)
+void GoogleMapView::PosMark(double lat, double lon,
+    const QString &title)
 {
-    AnsiString f;
-    ExecFunc(f.sprintf("PosMark(%.7f,%.7f,\"%s\")",lat,lon,title));
+    ExecFunc(QString("PosMark(%1,%2,\"%3\")").arg(lat,0,'f',9).arg(lon,0,'f',9).arg(title));
 }
 //---------------------------------------------------------------------------
-void __fastcall TGoogleMapView::HighlightMark(AnsiString title)
+void GoogleMapView::HighlightMark(const QString &title)
 {
-    AnsiString f;
-    ExecFunc(f.sprintf("HighlightMark(\"%s\")",title));
+    ExecFunc(QString("HighlightMark(\"%1\")").arg(title));
 }
 //---------------------------------------------------------------------------
-void __fastcall TGoogleMapView::ExecFunc(AnsiString func)
+void GoogleMapView::ExecFunc(const QString &func)
 {
-    IHTMLWindow2 *win;
-    IHTMLDocument2 *doc=NULL;
-    VARIANT var;
-    HRESULT hr;
-    wchar_t func_w[1024]={0};
-    
-    if (!WebBrowser->Document) return;
-    WebBrowser->Document->QueryInterface(IID_IHTMLDocument2,(void **)&doc);
-    if (!doc) return;
-    hr=doc->get_parentWindow(&win);
-    doc->Release();
-    if (hr!=S_OK) return;
-    
-    VariantInit(&var);
-    ::MultiByteToWideChar(CP_UTF8,0,func.c_str(),-1,func_w,512); 
-    hr=win->execScript(func_w,L"javascript",&var);
-    VariantClear(&var);
-}
+    if (!WebBrowser->page()) return;
+    if (!WebBrowser->page()->mainFrame()) return;
+
+    QWebFrame *frame=WebBrowser->page()->mainFrame();
+
+    frame->evaluateJavaScript(func);}
 //---------------------------------------------------------------------------
