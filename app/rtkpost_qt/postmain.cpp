@@ -33,17 +33,6 @@
 #include <string.h>
 #include <stdarg.h>
 
-#include "rtklib.h"
-#include "postmain.h"
-#include "postopt.h"
-#include "kmzconv.h"
-#include "refdlg.h"
-#include "timedlg.h"
-#include "confdlg.h"
-#include "keydlg.h"
-#include "aboutdlg.h"
-#include "viewer.h"
-
 #include <QShowEvent>
 #include <QCloseEvent>
 #include <QCommandLineParser>
@@ -56,6 +45,17 @@
 #include <QProcess>
 #include <QtGlobal>
 #include <QMimeData>
+
+#include "rtklib.h"
+#include "postmain.h"
+#include "postopt.h"
+#include "kmzconv.h"
+#include "refdlg.h"
+#include "timedlg.h"
+#include "confdlg.h"
+#include "keydlg.h"
+#include "aboutdlg.h"
+#include "viewer.h"
 
 #define PRGNAME     "RTKPOST"
 #define MAXHIST     20

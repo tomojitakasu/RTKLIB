@@ -66,15 +66,25 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QLabel" name="LabelTime">
+       <widget class="QPushButton" name="BtnPanel">
         <property name="enabled">
          <bool>true</bool>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
         </property>
         <property name="toolTip">
          <string/>
         </property>
-        <property name="text">
-         <string>2000/01/01 00:00:00.0</string>
+        <property name="icon">
+         <iconset resource="../rtkpost_qt/rtkpost_qt.qrc">
+          <normaloff>:/buttons/sqr.bmp</normaloff>:/buttons/sqr.bmp</iconset>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -91,6 +101,19 @@
         </property>
         <property name="flat">
          <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="LabelTime">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>2000/01/01 00:00:00.0</string>
         </property>
        </widget>
       </item>
@@ -246,7 +269,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap resource="rtknavi_qt.qrc">:/buttons/rarrow.bmp</pixmap>
+            <pixmap resource="../rtkpost_qt/rtkpost_qt.qrc">:/buttons/rarrow.bmp</pixmap>
            </property>
           </widget>
          </item>
@@ -290,7 +313,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap resource="rtknavi_qt.qrc">:/buttons/rarrow.bmp</pixmap>
+            <pixmap resource="../rtkpost_qt/rtkpost_qt.qrc">:/buttons/rarrow.bmp</pixmap>
            </property>
           </widget>
          </item>
@@ -529,7 +552,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="rtknavi_qt.qrc">
+         <iconset resource="../rtkpost_qt/rtkpost_qt.qrc">
           <normaloff>:/buttons/down.bmp</normaloff>:/buttons/down.bmp</iconset>
         </property>
         <property name="flat">
@@ -631,29 +654,6 @@
              <property name="bottomMargin">
               <number>0</number>
              </property>
-             <item>
-              <widget class="QPushButton" name="BtnSolType">
-               <property name="enabled">
-                <bool>true</bool>
-               </property>
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="toolTip">
-                <string/>
-               </property>
-               <property name="icon">
-                <iconset resource="rtknavi_qt.qrc">
-                 <normaloff>:/buttons/sqr.bmp</normaloff>:/buttons/sqr.bmp</iconset>
-               </property>
-               <property name="flat">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
              <item>
               <widget class="QLabel" name="Plabel0">
                <property name="enabled">
@@ -1251,7 +1251,7 @@
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QPushButton" name="BtnPanel">
+           <widget class="QPushButton" name="BtnSolType">
             <property name="enabled">
              <bool>true</bool>
             </property>
@@ -1259,7 +1259,7 @@
              <string/>
             </property>
             <property name="icon">
-             <iconset resource="rtknavi_qt.qrc">
+             <iconset resource="../rtkpost_qt/rtkpost_qt.qrc">
               <normaloff>:/buttons/down.bmp</normaloff>:/buttons/down.bmp</iconset>
             </property>
             <property name="flat">
@@ -1418,7 +1418,7 @@
                  <string/>
                 </property>
                 <property name="icon">
-                 <iconset resource="rtknavi_qt.qrc">
+                 <iconset resource="../rtkpost_qt/rtkpost_qt.qrc">
                   <normaloff>:/buttons/down.bmp</normaloff>:/buttons/down.bmp</iconset>
                 </property>
                 <property name="flat">
@@ -1457,7 +1457,7 @@
                  <string/>
                 </property>
                 <property name="icon">
-                 <iconset resource="rtknavi_qt.qrc">
+                 <iconset resource="../rtkpost_qt/rtkpost_qt.qrc">
                   <normaloff>:/buttons/down.bmp</normaloff>:/buttons/down.bmp</iconset>
                 </property>
                 <property name="flat">
@@ -1518,7 +1518,7 @@
                  <string/>
                 </property>
                 <property name="icon">
-                 <iconset resource="rtknavi_qt.qrc">
+                 <iconset resource="../rtkpost_qt/rtkpost_qt.qrc">
                   <normaloff>:/buttons/down.bmp</normaloff>:/buttons/down.bmp</iconset>
                 </property>
                 <property name="flat">
@@ -1541,7 +1541,7 @@
                  <string/>
                 </property>
                 <property name="icon">
-                 <iconset resource="rtknavi_qt.qrc">
+                 <iconset resource="../rtkpost_qt/rtkpost_qt.qrc">
                   <normaloff>:/buttons/down.bmp</normaloff>:/buttons/down.bmp</iconset>
                 </property>
                 <property name="flat">
@@ -1602,7 +1602,7 @@
          <string>RTK Monitor</string>
         </property>
         <property name="icon">
-         <iconset resource="rtknavi_qt.qrc">
+         <iconset resource="../rtkpost_qt/rtkpost_qt.qrc">
           <normaloff>:/buttons/sqr.bmp</normaloff>:/buttons/sqr.bmp</iconset>
         </property>
         <property name="flat">
@@ -1671,7 +1671,7 @@
             <string>Hide</string>
            </property>
            <property name="icon">
-            <iconset resource="rtknavi_qt.qrc">
+            <iconset resource="../rtkpost_qt/rtkpost_qt.qrc">
              <normaloff>:/buttons/ttray.bmp</normaloff>:/buttons/ttray.bmp</iconset>
            </property>
            <property name="flat">
@@ -1689,43 +1689,6 @@
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
-           </property>
-           <property name="palette">
-            <palette>
-             <active>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>128</red>
-                 <green>128</green>
-                 <blue>128</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </active>
-             <inactive>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>128</red>
-                 <green>128</green>
-                 <blue>128</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </inactive>
-             <disabled>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>128</red>
-                 <green>128</green>
-                 <blue>128</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </disabled>
-            </palette>
            </property>
            <property name="toolTip">
             <string>About</string>
@@ -1854,7 +1817,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="rtknavi_qt.qrc"/>
+  <include location="../rtkpost_qt/rtkpost_qt.qrc"/>
  </resources>
  <connections/>
 </ui>

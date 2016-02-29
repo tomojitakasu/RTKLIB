@@ -2,13 +2,13 @@
 // ported to Qt by Jens Reimann
 #include <stdio.h>
 
-#include "rtklib.h"
-#include "viewer.h"
-#include "vieweropt.h"
-
 #include <QShowEvent>
 #include <QFileDialog>
 #include <QPalette>
+
+#include "rtklib.h"
+#include "viewer.h"
+#include "vieweropt.h"
 
 QColor TextViewer::Color1=Qt::black,TextViewer::Color2=Qt::black;
 QFont TextViewer::FontD;

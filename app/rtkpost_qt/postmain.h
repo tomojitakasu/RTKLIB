@@ -2,13 +2,12 @@
 #ifndef postmainH
 #define postmainH
 //---------------------------------------------------------------------------
+#include <QString>
+#include <QDialog>
 
 #include "rtklib.h"
 
 #include "ui_postmain.h"
-
-#include <QString>
-#include <QDialog>
 
 class QShowEvent;
 class QCloseEvent;

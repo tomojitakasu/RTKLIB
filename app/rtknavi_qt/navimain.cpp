@@ -22,18 +22,6 @@
 #include <stdio.h>
 #include <math.h>
 
-#include "rtklib.h"
-#include "instrdlg.h"
-#include "outstrdlg.h"
-#include "logstrdlg.h"
-#include "mondlg.h"
-#include "tcpoptdlg.h"
-#include "aboutdlg.h"
-#include "viewer.h"
-#include "naviopt.h"
-#include "ui_navimain.h"
-#include "navimain.h"
-
 #include <QMessageBox>
 #include <QMainWindow>
 #include <QTimer>
@@ -52,6 +40,18 @@
 #ifdef QT5
 #include <QCommandLineParser>
 #endif
+
+#include "rtklib.h"
+#include "instrdlg.h"
+#include "outstrdlg.h"
+#include "logstrdlg.h"
+#include "mondlg.h"
+#include "tcpoptdlg.h"
+#include "aboutdlg.h"
+#include "viewer.h"
+#include "naviopt.h"
+#include "ui_navimain.h"
+#include "navimain.h"
 
 MainWindow *mainForm;
 
@@ -145,7 +145,7 @@ MainWindow::MainWindow(QWidget *parent)
     
     setWindowTitle(QString(tr("%1 ver. %2")).arg(PRGNAME).arg(VER_RTKLIB));
     setWindowIcon(QIcon(":/icons/rtknavi_Icon.ico"));
-    
+
     TLEData.n=TLEData.nmax=0;
     TLEData.data=NULL;
     
@@ -158,7 +158,7 @@ MainWindow::MainWindow(QWidget *parent)
     monitor=new MonitorDialog(this);
     systemTray= new QSystemTrayIcon(this);
 
-    systemTray->setIcon(QIcon(":/icons/rtknavi_Icon.ico"));
+    SetTrayIcon(1);
 
     trayMenu=new QMenu();
 }
@@ -209,6 +209,7 @@ void  MainWindow::showEvent(QShowEvent *event)
     connect(BtnPlotType2,SIGNAL(clicked(bool)),this,SLOT(BtnPlotType2Click()));
     connect(BtnSave,SIGNAL(clicked(bool)),this,SLOT(BtnSaveClick()));
     connect(BtnSolType,SIGNAL(clicked(bool)),this,SLOT(BtnSolTypeClick()));
+    connect(BtnSolType2,SIGNAL(clicked(bool)),this,SLOT(BtnSolTypeClick()));
     connect(BtnTaskTray,SIGNAL(clicked(bool)),this,SLOT(BtnTaskTrayClick()));
     connect(BtnTimeSys,SIGNAL(clicked(bool)),this,SLOT(BtnTimeSysClick()));
     connect(ScbSol,SIGNAL(valueChanged(int)),this,SLOT(ScbSolChange()));
@@ -223,7 +224,6 @@ void  MainWindow::showEvent(QShowEvent *event)
     IniFile=QFileInfo(file).absoluteFilePath()+".ini";
     
     InitSolBuff();
-    SetTrayIcon(1);
     strinitcom();
 
 #ifdef QT5
@@ -335,7 +335,7 @@ void  MainWindow::BtnPlotClick()
         QMessageBox::critical(this,tr("Error"),tr("monitor port not open"));
         return;
     }
-    cmd=QString("rtkplot -p tcpcli://localhost:%1 -t \"%2 %3\"").arg(OpenPort)
+    cmd=QString("rtkplot_qt -p tcpcli://localhost:%1 -t \"%2 %3\"").arg(OpenPort)
                 .arg(windowTitle()).arg(": RTKPLOT");
     if (!ExecCmd(cmd,1)) {
         QMessageBox::critical(this,tr("Error"),tr("error: rtkplot execution"));
@@ -1043,7 +1043,7 @@ void  MainWindow::SvrStart(void)
     ScbSol      ->setEnabled(false);
     BtnStop     ->setEnabled(true);
     MenuStopAction    ->setEnabled(true);
-    Svr->setStyleSheet("QLabel {background-color: rgb(255,128,0);");
+    Svr->setStyleSheet("QLabel {background-color: rgb(255,128,0);}");
     SetTrayIcon(0);
 }
 // strop rtk server ---------------------------------------------------------
@@ -1277,7 +1277,7 @@ void  MainWindow::UpdatePos(void)
         s[3]=QString("%1%2 %3' %4\"").arg(fabs(dms1[0]),0,'f',0).arg(CHARDEG).arg(dms1[1],2,'f',0,'0').arg(dms1[2],7,'f',4,'0');
         s[4]=QString("%1%2 %3' %4\"").arg(fabs(dms2[0]),0,'f',0).arg(CHARDEG).arg(dms2[1],2,'f',0,'0').arg(dms2[2],7,'f',4,'0');
         s[5]=QString("%1 m").arg(pos[2],0,'f',3);
-        s[6]=QString(tr("N:%1 E:2 U:3 m")).arg(SQRT(Qe[4]),6,'f',3).arg(SQRT(Qe[0]),6,'f',3).arg(SQRT(Qe[8]),6,'f',3);
+        s[6]=QString(tr("N:%1 E:%2 U:%3 m")).arg(SQRT(Qe[4]),6,'f',3).arg(SQRT(Qe[0]),6,'f',3).arg(SQRT(Qe[8]),6,'f',3);
     }
     else if (SolType==1) {
         if (norm(rr,3)>0.0) {
@@ -1289,7 +1289,7 @@ void  MainWindow::UpdatePos(void)
         s[3]=QString("%1 %2").arg(fabs(pos[0])*R2D,0,'f',8).arg(CHARDEG);
         s[4]=QString("%1 %2").arg(fabs(pos[1])*R2D,0,'f',8).arg(CHARDEG);
         s[5]=QString("%1").arg(pos[2],0,'f',3);
-        s[6]=QString(tr("N:%1 E:2 U:3 m")).arg(SQRT(Qe[4]),6,'f',3).arg(SQRT(Qe[0]),6,'f',3).arg(SQRT(Qe[8]),6,'f',3);
+        s[6]=QString(tr("N:%1 E:%2 U:%3 m")).arg(SQRT(Qe[4]),6,'f',3).arg(SQRT(Qe[0]),6,'f',3).arg(SQRT(Qe[8]),6,'f',3);
     }
     else if (SolType==2) {
         s[0]="X:"; s[1]="Y:"; s[2]="Z:";
@@ -1306,7 +1306,7 @@ void  MainWindow::UpdatePos(void)
         s[3]=QString("%1 m").arg(enu[0],0,'f',3);
         s[4]=QString("%1 m").arg(enu[1],0,'f',3);
         s[5]=QString("%1 m").arg(enu[2],0,'f',3);
-        s[6]=QString(tr("N:%1 E:2 U:3 m")).arg(SQRT(Qe[4]),6,'f',3).arg(SQRT(Qe[0]),6,'f',3).arg(SQRT(Qe[8]),6,'f',3);
+        s[6]=QString(tr("N:%1 E:%2 U:%3 m")).arg(SQRT(Qe[4]),6,'f',3).arg(SQRT(Qe[0]),6,'f',3).arg(SQRT(Qe[8]),6,'f',3);
     }
     else {
         if (len>0.0) {
@@ -1674,7 +1674,7 @@ void  MainWindow::DrawBL(QPainter *c, int w, int h)
     c->drawEllipse(pp.x()-d2/2+2,pp.y()-d2/2+2,d2-1,d2-1);
     c->setBrush(Qt::white);
     digit=len<10.0?3:(len<100.0?2:(len<1000.0?1:0));
-    DrawText(c,p.x(),p.y() ,QString("%.*f m").arg(len,0,'f',digit),Qt::gray,1);
+    DrawText(c,p.x(),p.y() ,QString("%1 m").arg(len,0,'f',digit),Qt::gray,1);
     DrawText(c,3,  h-15,QString("Y: %1%2").arg(yaw*R2D,0,'f',1).arg(CHARDEG),Qt::gray,0);
     DrawText(c,w-3,h-15,QString("P: %1%2").arg(pitch*R2D,0,'f',1).arg(CHARDEG),Qt::gray,2);
 }
@@ -1951,8 +1951,8 @@ void  MainWindow::SaveNav(nav_t *nav)
 // set tray icon ------------------------------------------------------------
 void  MainWindow::SetTrayIcon(int index)
 {
-    QPixmap pix(":/buttons/navi.png","png");
-    systemTray->setIcon(pix.copy(index*16,0,16,16));
+    QPixmap pix(":/buttons/navi.bmp");
+    systemTray->setIcon(QIcon(pix.copy(index*16,0,16,16)));
 }
 // load option from ini file ------------------------------------------------
 void  MainWindow::LoadOpt(void)

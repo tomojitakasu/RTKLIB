@@ -2,9 +2,9 @@
 #ifndef maskoptdlgH
 #define maskoptdlgH
 //---------------------------------------------------------------------------
-#include "rtklib.h"
-
 #include <QDialog>
+
+#include "rtklib.h"
 
 #include "ui_maskoptdlg.h"
 

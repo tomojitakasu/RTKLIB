@@ -1,4 +1,10 @@
 //---------------------------------------------------------------------------
+#include <QFileDialog>
+#include <QLineEdit>
+#include <QPoint>
+#include <QFontDialog>
+#include <QFont>
+#include <QShowEvent>
 
 #include "rtklib.h"
 #include "naviopt.h"
@@ -6,13 +12,6 @@
 #include "refdlg.h"
 #include "navimain.h"
 #include "maskoptdlg.h"
-
-#include <QFileDialog>
-#include <QLineEdit>
-#include <QPoint>
-#include <QFontDialog>
-#include <QFont>
-#include <QShowEvent>
 
 //---------------------------------------------------------------------------
 #define MAXSTR      1024                /* max length of a string */

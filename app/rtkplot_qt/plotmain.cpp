@@ -29,22 +29,6 @@
 //           2012/11/21  1.5 rtklib 2.4.2
 //---------------------------------------------------------------------------
 
-#include "rtklib.h"
-#include "plotmain.h"
-#include "plotopt.h"
-#include "refdlg.h"
-#include "tspandlg.h"
-#include "satdlg.h"
-#include "aboutdlg.h"
-#include "conndlg.h"
-#include "console.h"
-#include "pntdlg.h"
-#include "mapdlg.h"
-#include "skydlg.h"
-#include "geview.h"
-#include "gmview.h"
-#include "viewer.h"
-
 #include <QShowEvent>
 #include <QCloseEvent>
 #include <QResizeEvent>
@@ -64,6 +48,21 @@
 #include <QFont>
 #include <QMimeData>
 
+#include "rtklib.h"
+#include "plotmain.h"
+#include "plotopt.h"
+#include "refdlg.h"
+#include "tspandlg.h"
+#include "satdlg.h"
+#include "aboutdlg.h"
+#include "conndlg.h"
+#include "console.h"
+#include "pntdlg.h"
+#include "mapdlg.h"
+#include "skydlg.h"
+#include "geview.h"
+#include "gmview.h"
+#include "viewer.h"
 
 #define YLIM_AGE    10.0            // ylimit of age of differential
 #define YLIM_RATIO  20.0            // ylimit of raito factor

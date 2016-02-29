@@ -1,13 +1,14 @@
 //---------------------------------------------------------------------------
 // plotcmn.c: rtkplot common functions
 //---------------------------------------------------------------------------
-#include "rtklib.h"
-#include "plotmain.h"
-
 #include <QString>
 #include <QProcess>
 #include <QColor>
 #include <QStringList>
+
+#include "plotmain.h"
+
+#include "rtklib.h"
 
 QString color2String(const QColor &c){
     return QString("rgb(%1,%2,%3)").arg(c.red()).arg(c.green()).arg(c.blue());

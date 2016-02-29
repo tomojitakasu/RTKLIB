@@ -1,8 +1,8 @@
 //---------------------------------------------------------------------------
 // ported to Qt by Jens Reimann
 
-#include "rtklib.h"
 #include "aboutdlg.h"
+#include "rtklib.h"
 
 //---------------------------------------------------------------------------
 AboutDialog::AboutDialog(QWidget* parent)

@@ -1,8 +1,9 @@
 //---------------------------------------------------------------------------
 // plotinfo.c: rtkplot info functions
 //---------------------------------------------------------------------------
-#include "rtklib.h"
 #include "plotmain.h"
+
+#include "rtklib.h"
 
 #define ATAN2(x,y)  ((x)*(x)+(y)*(y)>1E-12?atan2(x,y):0.0)
 

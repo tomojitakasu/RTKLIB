@@ -1,12 +1,12 @@
 //---------------------------------------------------------------------------
 // gmview.c: google map view
 //---------------------------------------------------------------------------
-#include "rtklib.h"
-#include "gmview.h"
-
 #include <QWebView>
 #include <QWebFrame>
 #include <QWebElement>
+
+#include "rtklib.h"
+#include "gmview.h"
 
 #define RTKLIB_GM_FILE "rtkplot_gm.htm"
 

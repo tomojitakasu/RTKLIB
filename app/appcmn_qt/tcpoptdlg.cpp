@@ -3,13 +3,13 @@
 
 #include <stdio.h>
 
-#include "rtklib.h"
-#include "tcpoptdlg.h"
-
 #include <QShowEvent>
 #include <QProcess>
 #include <QIntValidator>
 #include <QUrl>
+
+#include "rtklib.h"
+#include "tcpoptdlg.h"
 
 //---------------------------------------------------------------------------
 

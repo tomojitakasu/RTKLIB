@@ -1,4 +1,5 @@
 //---------------------------------------------------------------------------
+#include <QShowEvent>
 
 #include "rtklib.h"
 #include "serioptdlg.h"
@@ -6,8 +7,6 @@
 #include "tcpoptdlg.h"
 #include "cmdoptdlg.h"
 #include "conndlg.h"
-
-#include <QShowEvent>
 
 //---------------------------------------------------------------------------
 

@@ -2,9 +2,10 @@
 
 #ifndef keydlgH
 #define keydlgH
-#include "ui_keydlg.h"
 
 #include <QDialog>
+
+#include "ui_keydlg.h"
 
 //---------------------------------------------------------------------------
 class KeyDialog : public QDialog, private Ui::KeyDialog

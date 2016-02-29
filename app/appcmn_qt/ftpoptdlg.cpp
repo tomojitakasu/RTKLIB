@@ -3,13 +3,13 @@
 
 #include <stdio.h>
 
-#include "rtklib.h"
-#include "ftpoptdlg.h"
-#include "keydlg.h"
-
 #include <QShowEvent>
 #include <QUrl>
 #include <QIntValidator>
+
+#include "rtklib.h"
+#include "ftpoptdlg.h"
+#include "keydlg.h"
 
 //---------------------------------------------------------------------------
  FtpOptDialog::FtpOptDialog(QWidget* parent)
