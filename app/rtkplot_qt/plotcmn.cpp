@@ -27,7 +27,7 @@ const QString PTypes[]={
 void Plot::ShowMsg(const QString &msg)
 {
     Message1->setText(msg);
-    Panel21->repaint();
+//    Panel21->repaint();
 }
 // execute command ----------------------------------------------------------
 int Plot::ExecCmd(const QString &cmd)
@@ -73,7 +73,7 @@ void Plot::ShowLegend(QString msgs[])
     
     for (i=0;i<7;i++) {
         if (!msgs||msgs[i]==NULL) {
-            ql[i]->setText(" ");
+            ql[i]->setText("");
         }
         else {
             ql[i]->setText(msgs[i]);
@@ -134,9 +134,10 @@ TIMEPOS * Plot::SolToPos(solbuf_t *sol, int index, int qflag, int type)
         if (type==1&&index>sol->n-2) index=sol->n-2;
         if (type==2&&index>sol->n-3) index=sol->n-3;
     }
+
+    tint=TimeEna[2]?TimeInt:0.0;
+
     for (i=index<0?0:index;(data=getsol(sol,i))!=NULL;i++) {
-        
-        tint=TimeEna[2]?TimeInt:0.0;
         
         if (index<0&&!screent(data->time,ts,ts,tint)) continue;
         if (qflag&&data->stat!=qflag) continue;
@@ -445,13 +446,13 @@ QString Plot::LatLonStr(const double *pos, int ndec)
     double dms1[3],dms2[3];
     
     if (LatLonFmt==0) {
-        s=QString("%1" CHARDEG " %2" CHARDEG).arg(pos[0]*R2D,ndec+4,'f',ndec)
+        s=QStringLiteral("%1" CHARDEG " %2" CHARDEG).arg(pos[0]*R2D,ndec+4,'f',ndec)
                   .arg(pos[1]*R2D,ndec+5,'f',ndec);
     }
     else {
         deg2dms(pos[0]*R2D,dms1);
         deg2dms(pos[1]*R2D,dms2);
-        s=QString("%1" CHARDEG "%2' %3\" %4" CHARDEG "%5\"")
+        s=QStringLiteral("%1" CHARDEG "%2' %3\" %4" CHARDEG "%5\"")
                   .arg(dms1[0],3,'f',0).arg(dms1[1],2,'f',0,QChar('0')).arg(dms1[2],ndec-2,'f',ndec-5).arg(dms2[0],4,'f',0).arg(dms2[1],2,'f',0,QChar('0'))
                   .arg(dms2[2],ndec-2,'f',ndec-5,QChar('0'));
     }

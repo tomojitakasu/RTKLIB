@@ -80,7 +80,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="rtkplot_qt.qrc">
+         <iconset resource="../rtknavi_qt/rtknavi_qt.qrc">
           <normaloff>:/buttons/trackc.bmp</normaloff>:/buttons/trackc.bmp</iconset>
         </property>
         <property name="checkable">
@@ -103,7 +103,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="rtkplot_qt.qrc">
+         <iconset resource="../rtknavi_qt/rtknavi_qt.qrc">
           <normaloff>:/buttons/shrink.bmp</normaloff>:/buttons/shrink.bmp</iconset>
         </property>
         <property name="flat">
@@ -123,7 +123,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="rtkplot_qt.qrc">
+         <iconset resource="../rtknavi_qt/rtknavi_qt.qrc">
           <normaloff>:/buttons/expand.bmp</normaloff>:/buttons/expand.bmp</iconset>
         </property>
         <property name="flat">
@@ -167,7 +167,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="Panel2">
+    <widget class="QWidget" name="Panel2" native="true">
      <property name="enabled">
       <bool>true</bool>
      </property>
@@ -177,24 +177,15 @@
      <property name="layoutDirection">
       <enum>Qt::LeftToRight</enum>
      </property>
-     <property name="frameShape">
-      <enum>QFrame::Panel</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Raised</enum>
-     </property>
-     <property name="text">
-      <string>Panel2</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
+     <property name="text" stdset="0">
+      <string/>
      </property>
     </widget>
    </item>
   </layout>
  </widget>
  <resources>
-  <include location="rtkplot_qt.qrc"/>
+  <include location="../rtknavi_qt/rtknavi_qt.qrc"/>
  </resources>
  <connections/>
 </ui>

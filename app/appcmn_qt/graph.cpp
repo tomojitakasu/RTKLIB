@@ -161,7 +161,7 @@ double Graph::AutoTickTime(double scale)
 QString Graph::NumText(double x, double dx)
 {
 	int n=(int)(0.9-log10(dx));
-    return QString("%.*f").arg(x,n<0?0:n);
+    return QString("%1").arg(x,n<0?0:n);
 }
 //---------------------------------------------------------------------------
 QString Graph::TimeText(double x, double dx)
@@ -304,7 +304,7 @@ void Graph::DrawMark(QPainter &c,const QPoint &p, int mark, const QColor &color,
 	// rot  = rotation angle (deg)
 	
 	// if the same mark already drawn, skip it
-    if (p.x()==p_.x()&&p.y()==p_.y()&&mark==mark_&&color==color_&&size==size_&&
+    if (p==p_&&mark==mark_&&color==color_&&size==size_&&
 		rot==rot_) {
 		return;
 	}
@@ -326,25 +326,25 @@ void Graph::DrawMark(QPainter &c,const QPoint &p, int mark, const QColor &color,
 	switch (mark) {
 		case 0: // dot
             brush.setStyle(Qt::SolidPattern);
-            c.setBrush(color);
+            c.setBrush(brush);
 
             c.drawEllipse(x1,y1,w1,h1);
 			return;
 		case 1: // circle
             brush.setStyle(Qt::NoBrush);
-            c.setBrush(color);
+            c.setBrush(brush);
 
             c.drawEllipse(x1,y1,w1,h1);
 			return;
 		case 2: // rectangle
             brush.setStyle(Qt::NoBrush);
-            c.setBrush(color);
+            c.setBrush(brush);
 
             c.drawRect(x1,y1,w1,h1);
 			return;
 		case 3: // cross
             brush.setStyle(Qt::NoBrush);
-            c.setBrush(color);
+            c.setBrush(brush);
 
             c.drawLine(x1,y1,x1+w1,y1+h1);
             c.drawLine(x1,y1+h1,x1+w1,y1);
@@ -355,7 +355,7 @@ void Graph::DrawMark(QPainter &c,const QPoint &p, int mark, const QColor &color,
 			break;
 		case 5: // plus
             brush.setStyle(Qt::NoBrush);
-            c.setBrush(color);
+            c.setBrush(brush);
 
             c.drawLine(x1,p.y(),x1+w1,p.y());
             c.drawLine(p.x(),y1+h1,p.x(),y1);
@@ -387,7 +387,7 @@ void Graph::DrawMark(QPainter &c,const QPoint &p, int mark, const QColor &color,
 			return;
 	}
     brush.setStyle(Qt::NoBrush);
-    c.setBrush(color);
+    c.setBrush(brush);
 
     RoQPoint(ps,n,p,rot,pr);
 
@@ -418,13 +418,13 @@ void Graph::DrawMark(QPainter &c,double x, double y, int mark, const QColor &col
     if (ToPoint(x,y,p)) DrawMark(c,p,mark,color,bgcolor,size,rot);
 }
 //---------------------------------------------------------------------------
-void Graph::DrawMarks(QPainter &c,const double *x, const double *y, QColor *color,
+void Graph::DrawMarks(QPainter &c,const double *x, const double *y, QColor **color,
 					   int n, int mark, int size, int rot)
 {
     QPoint p,pp;
 	for (int i=0;i<n;i++) {
-        if (!ToPoint(x[i],y[i],p)||(pp.x()==p.x()&&pp.y()==p.y())) continue;
-        DrawMark(c,p,mark,color[i],size,rot);
+        if (!ToPoint(x[i],y[i],p)||(pp==p)) continue;
+        DrawMark(c,p,mark,*color[i],size,rot);
 		pp=p;
 	}
 }
@@ -555,7 +555,7 @@ void Graph::DrawCircles(QPainter &c,int label)
     DrawBox(c);
 }
 //---------------------------------------------------------------------------
-int Graph::OnAxis(QPoint &p)
+int Graph::OnAxis(const QPoint &p)
 {
 	// area code :  5  4  6
 	//              1  0  2
@@ -588,10 +588,14 @@ int Graph::ClipPoint(QPoint *p0, int area, QPoint *p1)
 //---------------------------------------------------------------------------
 void Graph::DrawPolyline(QPainter &c,QPoint *p, int n)
 {
-	// avoid overflow of points
-	for (int i=0;i<n-1;i+=30000,p+=30000) {
+#if 1
+    c.drawPolyline(p,n);
+#else
+    // avoid overflow of points
+    for (int i=0;i<n-1;i+=30000,p+=30000) {
         c.drawPolyline(p,n-i>30000?30000:n-i);
 	}
+#endif
 }
 //---------------------------------------------------------------------------
 void Graph::DrawPoly(QPainter &c,QPoint *p, int n, const QColor &color, int style)
@@ -624,7 +628,7 @@ void Graph::DrawPoly(QPainter &c,double *x, double *y, int n, const QColor &colo
 
 	for (int i=0;i<n;i++) {
 		ToPoint(x[i],y[i],p[m]);
-        if (m==0||p[m-1].x()!=p[m].x()||p[m-1].y()!=p[m].y()) m++;
+        if (m==0||p[m-1]!=p[m]) m++;
 	}
 
     DrawPoly(c,p,m,color,style);

@@ -115,7 +115,7 @@ void  GoogleEarthView::Timer1Timer()
 
     if (ele1.isNull()||ele2.isNull()) return;
     
-    if (!ele1.hasAttribute("value)")||
+    if (!ele1.hasAttribute("value")||
          ele2.hasAttribute("value")) return;
 
     QStringList tokens=ele2.attribute("value").split(',');

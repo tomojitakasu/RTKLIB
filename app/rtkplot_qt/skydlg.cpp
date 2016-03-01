@@ -67,8 +67,8 @@ void  SkyImgDialog::BtnSaveClick()
         .arg(plot->SkyDest[9],0,'g',6);
     data+=QString("elmask  = %1\n").arg(plot->SkyElMask);
     data+=QString("binarize= %1\n").arg(plot->SkyBinarize);
-    data+=QString("binthr1 = %.2f\n").arg(plot->SkyBinThres1,0,'f',2);
-    data+=QString("binthr2 = %.2f\n").arg(plot->SkyBinThres2,0,'f',2);
+    data+=QString("binthr1 = %1\n").arg(plot->SkyBinThres1,0,'f',2);
+    data+=QString("binthr2 = %1f\n").arg(plot->SkyBinThres2,0,'f',2);
     fp.write(data.toLatin1());
 }
 //---------------------------------------------------------------------------

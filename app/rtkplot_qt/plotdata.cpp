@@ -936,6 +936,11 @@ void Plot::Disconnect(void)
     if (windowTitle().indexOf(tr("CONNECT"))) {
         setWindowTitle(QString(tr("DISCONNECT%1")).arg(windowTitle().mid(7)));
     }
+
+    StrStatus1->setStyleSheet(QStringLiteral("QLabel {color: gray;}"));
+    StrStatus2->setStyleSheet(QStringLiteral("QLabel {color: gray;}"));
+    ConnectMsg->setText("");
+
     UpdateTime();
     UpdatePlot();
 }

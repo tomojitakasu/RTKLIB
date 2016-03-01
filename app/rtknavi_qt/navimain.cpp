@@ -60,7 +60,7 @@ MainWindow *mainForm;
 #define PRGNAME     "RTKNAVI"           // program name
 #define TRACEFILE   "rtknavi_%Y%m%d%h%M.trace" // debug trace file
 #define STATFILE    "rtknavi_%Y%m%d%h%M.stat"  // solution status file
-#define CHARDEG     0x00B0              // character code of degree
+#define CHARDEG     "\302\260"              // character code of degree
 #define SATSIZE     20                  // satellite circle size in skyplot
 #define MINSNR      10                  // minimum snr
 #define MAXSNR      60                  // maximum snr

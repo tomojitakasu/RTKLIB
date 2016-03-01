@@ -1371,9 +1371,14 @@ void Plot::mouseMoveEvent(QMouseEvent *event)
 {
     double dx,dy,dxs,dys;
     
-    if (event->x()==Xn&&event->y()==Yn) return;
+    if ((abs(event->x()-Xn)<1)&&(abs(event->y()-Yn)<1)) return;
     
     trace(4,"DispMouseMove: X=%d Y=%d\n",event->x(),event->y());
+
+    if (Drag==0) {
+        UpdatePoint(event->x(),event->y());
+        return;
+    }
     
     Xn=event->x(); Yn=event->y();
     dx=(X0-event->x())*Xs;
@@ -1381,10 +1386,7 @@ void Plot::mouseMoveEvent(QMouseEvent *event)
     dxs=pow(2.0,(X0-event->x())/100.0);
     dys=pow(2.0,(event->y()-Y0)/100.0);
     
-    if (Drag==0) {
-        UpdatePoint(event->x(),event->y());
-    }
-    else if (PlotType==PLOT_TRK) {
+    if (PlotType==PLOT_TRK) {
         MouseMoveTrk(event->x(),event->y(),dx,dy,dxs,dys);
     }
     else if (PlotType<=PLOT_NSAT||PlotType==PLOT_RES||PlotType==PLOT_SNR) {
@@ -1409,7 +1411,7 @@ void Plot::leaveEvent(QEvent*)
     trace(3,"DispMouseLeave\n");
     
     Xn=Yn=-1;
-    Panel22->setVisible(false);
+    Message2->setVisible(false);
     Message2->setText("");
 }
 // callback on mouse-down event on track-plot -------------------------------
@@ -1766,7 +1768,7 @@ void Plot::keyPressEvent(QKeyEvent* event)
 // callback on interval-timer -----------------------------------------------
 void Plot::TimerTimer()
 {
-    QColor color[]={Qt::red,Qt::gray,QColor(0x00,0xAA,0xFF),Qt::green,QColor(0x00,0xff,0x00)};
+    const QColor color[]={Qt::red,Qt::gray,QColor(0x00,0xAA,0xFF),Qt::green,QColor(0x00,0xff,0x00)};
     QLabel *strstatus[]={StrStatus1,StrStatus2};
     Console *console[]={Console1,Console2};
     QString connectmsg="",s;
@@ -1780,11 +1782,6 @@ void Plot::TimerTimer()
     
     trace(4,"TimeTimer\n");
     
-    if (!ConnectState) {
-        StrStatus1->setStyleSheet("QLabel {color: gray;}");
-        StrStatus2->setStyleSheet("QLabel {color: gray;}");
-        ConnectMsg->setText("");
-    }
     if (ConnectState) { // real-time input mode
         for (i=0;i<2;i++) {
             opt.posf =RtFormat[i];
@@ -1794,9 +1791,9 @@ void Plot::TimerTimer()
             strcpy(opt.sep,qPrintable(RtFieldSep));
             strsum(Stream+i,&inb,&inr,NULL,NULL);
             stat=strstat(Stream+i,msg);
-            strstatus[i]->setStyleSheet(QString("QLabel {color %1;}").arg(color2String(color[stat<3?stat+1:3])));
+            strstatus[i]->setStyleSheet(QStringLiteral("QLabel {color %1;}").arg(color2String(color[stat<3?stat+1:3])));
             if (*msg&&strcmp(msg,"localhost")) {
-                connectmsg+=QString("(%1) %2 ").arg(i+1).arg(msg);
+                connectmsg+=QStringLiteral("(%1) %2 ").arg(i+1).arg(msg);
             }
             while ((n=strread(Stream+i,buff,sizeof(buff)))>0) {
                 
@@ -1822,7 +1819,7 @@ void Plot::TimerTimer()
                 console[i]->AddMsg(buff,n);
             }
             if (nmsg[i]>0) {
-                strstatus[i]->setStyleSheet(QString("QLabel {color %1;}").arg(color2String(color[4])));
+                strstatus[i]->setStyleSheet(QStringLiteral("QLabel {color %1;}").arg(color2String(color[4])));
                 SolIndex[i]=SolData[i].n-1;
             }
         }

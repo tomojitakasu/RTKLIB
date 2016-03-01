@@ -32,7 +32,7 @@ public:
 
         int IsInArea(QPoint &p);
         int ToPoint(double x, double y, QPoint &p);
-        int OnAxis(QPoint &p);
+        int OnAxis(const QPoint &p);
         QString NumText(double x, double dx);
         QString TimeText(double x, double dx);
         void ToPos(const QPoint &p, double &x, double &y);
@@ -54,7 +54,7 @@ public:
         void DrawMark(QPainter &c,double x, double y, int mark, const QColor &color, int size, int rot);
         void DrawMark(QPainter &c,const QPoint &p, int mark, const QColor &color, const QColor &bgcolor, int size,int rot);
         void DrawMark(QPainter &c,double x, double y, int mark, const QColor &color, const QColor &bgcolor,int size, int rot);
-        void DrawMarks(QPainter &c,const double *x, const double *y,QColor *color, int n,
+        void DrawMarks(QPainter &c,const double *x, const double *y,QColor **color, int n,
 				   int mark, int size, int rot);
         void DrawCircle(QPainter &c,const QPoint &p, const QColor &color, int rx, int ry, int style);
         void DrawCircle(QPainter &c,double x, double y, const QColor &color, double rx, double ry, int style);

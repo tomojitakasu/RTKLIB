@@ -82,7 +82,8 @@ void Console::AddMsg(unsigned char *msg, int n)
     ConBuff[ConBuff.count()-1]=buff;
     textEdit->setText("");
 
-    foreach (QString str,ConBuff)
+    QString str;
+    foreach (str,ConBuff)
         textEdit->setText(str);
 }
 //---------------------------------------------------------------------------

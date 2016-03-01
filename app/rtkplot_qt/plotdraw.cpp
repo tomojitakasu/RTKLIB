@@ -36,19 +36,21 @@ void Plot::Refresh(void)
 // draw plot ----------------------------------------------------------------
 void Plot::UpdateDisp(void)
 {
-    Buff=QPixmap(Disp->size()*0.99);
-    if (Buff.isNull()) return;
-
-    QPainter c(&Buff);
-    c.setFont(Disp->font());
     int level=Drag?0:1;
     
     trace(3,"UpdateDisp\n");
     
     if (Flush) {
+        Buff=QPixmap(Disp->size()*0.99);
+        if (Buff.isNull()) return;
+        Buff.fill(CColor[0]);
+
+        QPainter c(&Buff);
+
+        c.setFont(Disp->font());
         c.setPen(CColor[0]);
         c.setBrush(CColor[0]);
-        Buff.fill(CColor[0]);
+
         switch (PlotType) {
             case  PLOT_TRK : DrawTrk (c,level);   break;
             case  PLOT_SOLP: DrawSol (c,level,0); break;
@@ -316,7 +318,7 @@ void Plot::DrawTrkPath(QPainter &c,int level)
 // draw track-points on track-plot ------------------------------------------
 void Plot::DrawTrkPnt(QPainter &c,const TIMEPOS *pos, int level, int style)
 {
-    QColor *color;
+    QColor **color;
     int i;
     
     trace(3,"DrawTrkPnt: level=%d style=%d\n",level,style);
@@ -330,12 +332,12 @@ void Plot::DrawTrkPnt(QPainter &c,const TIMEPOS *pos, int level, int style)
         GraphT->DrawPoly(c,pos->x,pos->y,pos->n,CColor[3],style);
     }
     if (level&&PlotStyle<2) {
-        color=new QColor [pos->n];
+        color=new QColor* [pos->n];
         if (BtnShowMap->isChecked()) {
-            for (i=0;i<pos->n;i++) color[i]=CColor[0];
+            for (i=0;i<pos->n;i++) color[i]=&CColor[0];
             GraphT->DrawMarks(c,pos->x,pos->y,color,pos->n,0,MarkSize+2,0);
         }
-        for (i=0;i<pos->n;i++) color[i]=MColor[style][pos->q[i]];
+        for (i=0;i<pos->n;i++) color[i]=&MColor[style][pos->q[i]];
         GraphT->DrawMarks(c,pos->x,pos->y,color,pos->n,0,MarkSize,0);
         delete [] color;
     }
@@ -648,8 +650,8 @@ void Plot::DrawSolPnt(QPainter &c,const TIMEPOS *pos, int level, int style)
             }
         }
         if (level&&PlotStyle<2) {
-            QColor *color=new QColor[pos->n];
-            for (j=0;j<pos->n;j++) color[j]=MColor[style][pos->q[j]];
+            QColor **color=new QColor*[pos->n];
+            for (j=0;j<pos->n;j++) color[j]=&MColor[style][pos->q[j]];
             GraphG[i]->DrawMarks(c,x,y,color,pos->n,0,MarkSize,0);
             delete [] color;
         }

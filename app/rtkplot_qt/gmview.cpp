@@ -23,6 +23,10 @@ GoogleMapView::GoogleMapView(QWidget *parent)
     connect(&Timer1,SIGNAL(timeout()),this,SLOT(Timer1Timer()));
 
     WebBrowser = new QWebView(Panel2);
+    QHBoxLayout *layout=new QHBoxLayout();
+    layout->addWidget(WebBrowser);
+    Panel2->setLayout(layout);
+
 
 	State=0;
 	Lat=Lon=0.0;
@@ -134,10 +138,10 @@ int GoogleMapView::GetState(void)
 
     QWebFrame *frame=WebBrowser->page()->mainFrame();
 
-    ele=frame->findFirstElement("state");
+    ele=frame->findFirstElement("#state");
 
     if (ele.isNull()) return 0;
-    if (!ele.hasAttribute("value)")) return 0;
+    if (!ele.hasAttribute("value")) return 0;
 
     state=ele.attribute("value").toInt();
 

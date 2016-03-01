@@ -398,7 +398,7 @@ void Plot::UpdatePoint(int x, int y)
         TimeStr(time,0,1,tstr);
         msg=tstr;
     }
-    Panel22->setVisible(true);
+    Message2->setVisible(true);
     Message2->setText(msg);
 }
 //---------------------------------------------------------------------------
