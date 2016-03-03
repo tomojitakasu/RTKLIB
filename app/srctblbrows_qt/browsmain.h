@@ -3,6 +3,7 @@
 #define browsmainH
 //---------------------------------------------------------------------------
 #include <QMainWindow>
+#include<QFutureWatcher>
 
 #include "ui_browsmain.h"
 
@@ -23,7 +24,6 @@ protected:
 
 public slots:
     void BtnUpdateClick();
-    void TypeChange();
     void BtnListClick();
     void AddressChange();
     void AddressKeyPress(QString);
@@ -37,15 +37,13 @@ public slots:
     void MenuViewNetClick();
     void MenuViewSrcClick();
     void MenuAboutClick();
-    void TypeStrClick();
-    void TypeCasClick();
-    void TypeNetClick();
-    void TypeSrcClick();
     void BtnMapClick();
     void TimerTimer();
     void Table0SelectCell(int ACol, int ARow);
     void BtnStaClick();
     void StaMaskClick();
+    void UpdateCaster();
+    void UpdateTable();
 
 private:
     QString AddrList,AddrCaster,SrcTable,IniFile;
@@ -53,9 +51,11 @@ private:
     GoogleMapView *googleMapView;
     StaListDialog *staListDialog;
     QTimer *Timer;
+    QFutureWatcher<char*> TableWatcher;
+    QFutureWatcher<char*> CasterWatcher;
 
-    void UpdateCaster(void);
-    void UpdateTable(void);
+    void GetCaster(void);
+    void GetTable(void);
     void UpdateMap(void);
     void UpdateEnable(void);
     void ShowTable(void);

@@ -5,6 +5,7 @@
 #include <QWebElement>
 #include <QWebFrame>
 #include <QTimer>
+#include <QDebug>
 
 #include "rtklib.h"
 #include "gmview.h"
@@ -17,6 +18,11 @@ GoogleMapView::GoogleMapView(QWidget *parent)
     : QDialog(parent)
 {
     setupUi(this);
+
+    WebBrowser=new QWebView(this);
+    QHBoxLayout *layout=new QHBoxLayout();
+    layout->addWidget(WebBrowser);
+    Panel2->setLayout(layout);
 
     connect(BtnClose,SIGNAL(clicked(bool)),this,SLOT(BtnCloseClick()));
     connect(BtnHome,SIGNAL(clicked(bool)),this,SLOT(BtnHomeClick()));
@@ -48,7 +54,7 @@ int GoogleMapView::GetState(void)
     ele=frame->findFirstElement("state");
 
     if (ele.isNull()) return 0;
-    if (!ele.hasAttribute("value)")) return 0;
+    if (!ele.hasAttribute("value")) return 0;
 
     state=ele.attribute("value").toInt();
 
@@ -78,6 +84,7 @@ void GoogleMapView::ClearMark(void)
 void GoogleMapView::AddMark(double lat, double lon,
     const QString &title, const QString &msg)
 {
+    qWarning()<<lat<<lon;
     ExecFunc(QString("AddMark(%1,%2,\"%3\",\"%4\")").arg(lat,0,'f',9).arg(lon,0,'f',9).arg(title).arg(msg));
 }
 //---------------------------------------------------------------------------

@@ -1,4 +1,5 @@
 //---------------------------------------------------------------------------
+// Ported to Qt by Jens Reimann
 
 #include <QCloseEvent>
 #include <QShowEvent>
@@ -6,6 +7,8 @@
 #include <QFileDialog>
 #include <QTimer>
 #include <QCommandLineParser>
+#include <QtConcurrent/QtConcurrent>
+#include <QFutureWatcher>
 
 #include "rtklib.h"
 #include "aboutdlg.h"
@@ -27,17 +30,20 @@ static char buff[MAXSRCTBL];				// source table buffer
 MainForm *mainForm;
 
 /* get source table -------------------------------------------------------*/
-static char *getsrctbl(const char *path)
+static char *getsrctbl(const QString &addr)
 {
 	static int lock=0;
 	stream_t str;
 	char *p=buff,msg[MAXSTRMSG];
 	int ns,stat,len=strlen(ENDSRCTBL);
 	unsigned int tick=tickget();
+    char * path=new char(addr.length());
+    strcpy(path,qPrintable(addr));
 	
 	if (lock) return NULL; else lock=1;
 	
-	strinit(&str);
+    strinit(&str);
+
 	if (!stropen(&str,STR_NTRIPCLI,STR_MODE_R,path)) {
 		lock=0; 
         mainForm->ShowMsg(QT_TR_NOOP("stream open error"));
@@ -67,11 +73,11 @@ MainForm::MainForm(QWidget *parent)
     : QMainWindow(parent)
 {
     setupUi(this);
-    setMenuBar(MainMenu);
+    FiltFmt->setVisible(false);
     mainForm=this;
 
-    QCoreApplication::setApplicationName(PRGNAME);
-    QCoreApplication::setApplicationVersion("1.0");
+//    QCoreApplication::setApplicationName(PRGNAME);
+//    QCoreApplication::setApplicationVersion("1.0");
 
     setWindowIcon(QIcon(":/icons/srctblbrows_Icon"));
 
@@ -81,13 +87,15 @@ MainForm::MainForm(QWidget *parent)
     
     googleMapView = new GoogleMapView(this);
     staListDialog = new StaListDialog(this);
+    Timer = new QTimer();
 
-    connect(Address,SIGNAL(editTextChanged(QString)),this,SLOT(AddressChange()));
+    TypeCas->setDefaultAction(MenuViewCas);
+    TypeNet->setDefaultAction(MenuViewNet);
+    TypeSrc->setDefaultAction(MenuViewSrc);
+    TypeStr->setDefaultAction(MenuViewStr);
+
+    connect(Address,SIGNAL(currentTextChanged(QString)),this,SLOT(AddressChange()));
     connect(BtnUpdate,SIGNAL(clicked(bool)),this,SLOT(BtnUpdateClick()));
-    connect(TypeCas,SIGNAL(clicked(bool)),this,SLOT(TypeCasClick()));
-    connect(TypeStr,SIGNAL(clicked(bool)),this,SLOT(TypeStrClick()));
-    connect(TypeNet,SIGNAL(clicked(bool)),this,SLOT(TypeNetClick()));
-    connect(TypeSrc,SIGNAL(clicked(bool)),this,SLOT(TypeSrcClick()));
     connect(BtnMap,SIGNAL(clicked(bool)),this,SLOT(BtnMapClick()));
     connect(BtnList,SIGNAL(clicked(bool)),this,SLOT(BtnListClick()));
     connect(BtnSta,SIGNAL(clicked(bool)),this,SLOT(BtnStaClick()));
@@ -108,12 +116,11 @@ MainForm::MainForm(QWidget *parent)
     Table0->setSortingEnabled(true);
     Table1->setSortingEnabled(true);
     Table2->setSortingEnabled(true);
-    void TypeChange();
-    void AddressKeyPress(char &Key);
+
+    statusbar->addWidget(Panel2);
 
     strinitcom();
 
-    Timer=new QTimer;
     Timer->setInterval(100);
 }
 //---------------------------------------------------------------------------
@@ -128,7 +135,6 @@ void MainForm::showEvent(QShowEvent *event)
     QString list,url="";
     QStringList colw,stas;
     int i;
-	
 	
     QCommandLineParser parser;
     parser.setApplicationDescription(PRGNAME);
@@ -153,7 +159,7 @@ void MainForm::showEvent(QShowEvent *event)
 
     if (url!="") {
         Address->setCurrentText(url);
-        UpdateTable();
+        GetTable();
     }
 	else {
         Address->setCurrentText(setting.value("srctbl/address","").toString());
@@ -262,35 +268,43 @@ void MainForm::MenuQuitClick()
 //---------------------------------------------------------------------------
 void MainForm::MenuUpdateCasterClick()
 {
-	UpdateCaster();
+    GetCaster();
 }
 //---------------------------------------------------------------------------
 void MainForm::MenuUpdateTableClick()
 {
-	UpdateTable();
+    GetTable();
 }
 //---------------------------------------------------------------------------
 void MainForm::MenuViewStrClick()
 {
-    TypeStr->setChecked(true);
-	ShowTable();
+    MenuViewCas->setChecked(false);
+    MenuViewNet->setChecked(false);
+    MenuViewSrc->setChecked(false);
+    ShowTable();
 }
 //---------------------------------------------------------------------------
 void MainForm::MenuViewCasClick()
 {
-    TypeCas->setChecked(true);
+    MenuViewStr->setChecked(false);
+    MenuViewNet->setChecked(false);
+    MenuViewSrc->setChecked(false);
 	ShowTable();
 }
 //---------------------------------------------------------------------------
 void MainForm::MenuViewNetClick()
 {
-    TypeNet->setChecked(true);
+    MenuViewStr->setChecked(false);
+    MenuViewCas->setChecked(false);
+    MenuViewSrc->setChecked(false);
 	ShowTable();
 }
 //---------------------------------------------------------------------------
 void MainForm::MenuViewSrcClick()
 {
-    TypeSrc->setChecked(true);
+    MenuViewStr->setChecked(false);
+    MenuViewCas->setChecked(false);
+    MenuViewNet->setChecked(false);
 	ShowTable();
 }
 //---------------------------------------------------------------------------
@@ -307,7 +321,7 @@ void MainForm::MenuAboutClick()
 void MainForm::BtnMapClick()
 {
     Timer->start();
-    googleMapView->exec();
+    googleMapView->show();
 }
 //---------------------------------------------------------------------------
 void MainForm::Table0SelectCell(int ACol, int ARow)
@@ -323,47 +337,23 @@ void MainForm::Table0SelectCell(int ACol, int ARow)
 //---------------------------------------------------------------------------
 void MainForm::BtnListClick()
 {
-	UpdateCaster();
+    GetCaster();
 }
 //---------------------------------------------------------------------------
 void MainForm::BtnUpdateClick()
 {
-	UpdateTable();
-}
-//---------------------------------------------------------------------------
-void MainForm::TypeStrClick()
-{
-	ShowTable();
-}
-//---------------------------------------------------------------------------
-void MainForm::TypeCasClick()
-{
-	ShowTable();
-}
-//---------------------------------------------------------------------------
-void MainForm::TypeNetClick()
-{
-	ShowTable();
-}
-//---------------------------------------------------------------------------
-void MainForm::TypeSrcClick()
-{
-	ShowTable();
+    GetTable();
 }
 //---------------------------------------------------------------------------
 void MainForm::AddressKeyPress(QString)
 {
-    UpdateTable(); //FIXME
+    GetTable(); //FIXME
 }
 //---------------------------------------------------------------------------
 void MainForm::AddressChange()
 {
-	ShowTable();
-}
-//---------------------------------------------------------------------------
-void MainForm::TypeChange()
-{
-	ShowTable();
+    GetTable(); //FIXME
+//	ShowTable();
 }
 //---------------------------------------------------------------------------
 void MainForm::TimerTimer()
@@ -373,20 +363,36 @@ void MainForm::TimerTimer()
     Timer->stop();
 }
 //---------------------------------------------------------------------------
-void MainForm::UpdateCaster(void)
+void MainForm::GetCaster(void)
 {
+    if (CasterWatcher.isRunning()) return;
     QString Address_Text=Address->currentText();
+    QString addr=NTRIP_HOME;
+
+    if (Address_Text!="") addr=Address_Text;
+
+    BtnList->setEnabled(false);
+    MenuUpdateCaster->setEnabled(false);
+
+    QFuture<char*> tblFuture= QtConcurrent::run(getsrctbl,addr);
+    connect(&CasterWatcher,SIGNAL(finished()),this,SLOT(UpdateCaster()));
+    CasterWatcher.setFuture(tblFuture);
+}
+//---------------------------------------------------------------------------
+void MainForm::UpdateCaster()
+{
     QString text,item[3];
-    char buff[MAXLINE],*p,*q,*r,*srctbl,addr[1024];
-	int i,n;
-    strcpy(addr,NTRIP_HOME);
+    char buff[MAXLINE],*p,*q,*r,*srctbl;
+    int i,n;
 
-    if (Address_Text!="") strcpy(addr,qPrintable(Address_Text));
+    BtnList->setEnabled(true);
+    MenuUpdateCaster->setEnabled(true);
 
-	if (!(srctbl=getsrctbl(addr))) return;
-	
+    if (!(srctbl=CasterWatcher.result()))  return;
+
     text=Address->currentText(); Address->clear(); Address->setCurrentText(text);
     Address->addItem("");
+
 	for (p=srctbl;*p;p=q+1) {
 		if (!(q=strchr(p,'\n'))) break;
 		n=q-p<MAXLINE-1?q-p:MAXLINE-1;
@@ -399,16 +405,33 @@ void MainForm::UpdateCaster(void)
 	ShowMsg("update caster list");
 }
 //---------------------------------------------------------------------------
+void MainForm::GetTable(void)
+{
+    if (TableWatcher.isRunning()) return;
+
+    QString Address_Text=Address->currentText();
+    QString addr=NTRIP_HOME;
+
+    if (Address_Text!="") addr=Address_Text;
+
+    BtnUpdate->setEnabled(false);
+    Address->setEnabled(false);
+    MenuUpdateTable->setEnabled(false);
+
+    QFuture<char*> tblFuture= QtConcurrent::run(getsrctbl,addr);
+    connect(&TableWatcher,SIGNAL(finished()),this,SLOT(UpdateTable()));
+    TableWatcher.setFuture(tblFuture);
+}
+//---------------------------------------------------------------------------
 void MainForm::UpdateTable(void)
 {
-    QString Address_Text=Address->currentText();
     char *srctbl;
-    char addr[1024];
-    strcpy(addr,NTRIP_HOME);
 
-    if (Address_Text!="") strcpy(addr,qPrintable(Address_Text));
+    BtnUpdate->setEnabled(true);
+    Address->setEnabled(true);
+    MenuUpdateTable->setEnabled(true);
 
-	if ((srctbl=getsrctbl(addr))) {
+    if ((srctbl=TableWatcher.result())) {
 		SrcTable=srctbl;
         AddrCaster=Address->currentText();
 	}
@@ -417,13 +440,14 @@ void MainForm::UpdateTable(void)
 //---------------------------------------------------------------------------
 void MainForm::ShowTable(void)
 {
-    const QString ti1[]={tr("Mountpoint"),tr("ID"),tr("Format"),tr("Format-Details"),tr("Carrier"),tr("Nav-System"),
+    const QString ti[3][18]={{tr("Mountpoint"),tr("ID"),tr("Format"),tr("Format-Details"),tr("Carrier"),tr("Nav-System"),
         tr("Network"),tr("Country"),tr("Latitude"),tr("Longitude"),tr("NMEA"),tr("Solution"),
-        tr("Generator"),"Compr-Encrp","Authentication","Fee","Bitrate"};
-    const QString ti2[]={tr("Host"),tr("Port"),tr("ID"),tr("Operator"),tr("NMEA"),tr("Country"),tr("Latitude"),tr("Longitude"),
-        tr("Fallback_Host"),tr("Fallback_Port")};
-    const QString ti3[]={tr("ID"),tr("Operator"),tr("Authentication"),tr("Fee"),tr("Web-Net"),tr("Web-Str"),tr("Web-Reg")};
-    const QString *ti[]={ti1,ti2,ti3};
+        tr("Generator"),"Compr-Encrp","Authentication","Fee","Bitrate"},
+        {tr("Host"),tr("Port"),tr("ID"),tr("Operator"),tr("NMEA"),tr("Country"),tr("Latitude"),tr("Longitude"),
+        tr("Fallback_Host"),tr("Fallback_Port"),"","","","","","",""},
+        {tr("ID"),tr("Operator"),tr("Authentication"),tr("Fee"),tr("Web-Net"),tr("Web-Str"),tr("Web-Reg"),"","","","",
+        "","","","","",""}};
+
 
     QTableWidget *table[]={Table0,Table1,Table2};
     QAction *action[]={MenuViewStr,MenuViewCas,MenuViewNet,MenuViewSrc};
@@ -433,7 +457,7 @@ void MainForm::ShowTable(void)
     Table3->setVisible(false);
     for (i=0;i<3;i++) table[i]->setVisible(false);
 	
-    type=TypeStr->isChecked()?0:(TypeCas->isChecked()?1:(TypeNet->isChecked()?2:3));
+    type=MenuViewStr->isChecked()?0:(MenuViewCas->isChecked()?1:(MenuViewNet->isChecked()?2:3));
     for (i=0;i<4;i++) action[i]->setChecked(i==type);
 	
 	if (type==3) {
@@ -442,10 +466,11 @@ void MainForm::ShowTable(void)
 	}
 	else {
         table[type]->setVisible(true);
-        table[type]->setRowCount(2);
+        table[type]->setRowCount(1);
+        table[type]->setColumnCount(18);
 		for (i=0;i<18;i++) {
-            table[type]->item(0,i)->setText(ti[type][i]);
-            table[type]->item(1,i)->setText("");
+            table[type]->setHorizontalHeaderItem(i, new QTableWidgetItem(ti[type][i]));
+            table[type]->setItem(0,i, new QTableWidgetItem(""));
 		}
 	}
     if (AddrCaster!=Address->currentText()) return;
@@ -463,8 +488,8 @@ void MainForm::ShowTable(void)
 		}
 	}
 	if (ns<=0) return;
-    table[type]->setRowCount(ns+1);
-    j=1;
+    table[type]->setRowCount(ns);
+    j=0;
     foreach (QString line, lines) {
         n=line.length()<MAXLINE-1?line.length():MAXLINE-1;
         buff=line.left(n);
@@ -475,7 +500,7 @@ void MainForm::ShowTable(void)
 		}
         QStringList tokens=buff.split(";");
         for (int i=0;i<18&&i<tokens.size();i++) {
-            table[type]->item(j,i-1)->setText(tokens.at(i));
+            table[type]->setItem(j,i-1, new QTableWidgetItem(tokens.at(i)));
 		}
 		j++;
 	}
@@ -492,6 +517,7 @@ void MainForm::UpdateMap(void)
 {
     QString title,msg,LatText,LonText;
 	double lat,lon;
+    bool okay;
 	
     if (Address->currentText()=="") {
         googleMapView->setWindowTitle(tr("NTRIP STR Map"));
@@ -501,12 +527,12 @@ void MainForm::UpdateMap(void)
 	}
     googleMapView->ClearMark();
 	
-    for (int i=1;i<Table0->rowCount();i++) {
+    for (int i=0;i<Table0->rowCount();i++) {
         if (Table0->item(i,8)->text()=="") continue;
         LatText=Table0->item(i,8)->text();
-        LonText=Table0->item(i,8)->text();
-        lat=LatText.toDouble();
-        lon=LonText.toDouble();
+        LonText=Table0->item(i,9)->text();
+        lat=LatText.toDouble(&okay); if (!okay) continue;
+        lon=LonText.toDouble(&okay); if (!okay) continue;
         title=Table0->item(i,0)->text();
         msg="<b>"+Table0->item(i,0)->text()+"</b>: "+
             Table0->item(i,1)->text()+" ("+Table0->item(i,7)->text()+"), POS: "+
