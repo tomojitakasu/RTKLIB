@@ -26,6 +26,7 @@
 *                           - fixed lost lock indicator
 *                           - fixed sbas decoding
 *                           - cleanups
+*           2016/03/03  1.5 - fixed TOW in SBAS messages
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -1008,7 +1009,7 @@ static int decode_sbasnav(raw_t *raw){
     week       = U2(puiTmp +   6);
     eph.sva    = U2(puiTmp +  12);
     eph.t0     = gpst2time(week, U4(puiTmp +  14));
-    eph.tof    = adjweek(eph.t0,U4(puiTmp +  2)*1000);
+    eph.tof    = adjweek(eph.t0,U4(puiTmp +  2)/1000);
     eph.pos[0] = R8(puiTmp +  18);
     eph.pos[1] = R8(puiTmp +  26);
     eph.pos[2] = R8(puiTmp +  34);
@@ -1307,7 +1308,7 @@ static int decode_georaw(raw_t *raw){
     }
 
     raw->sbsmsg.prn=prn;
-    raw->sbsmsg.tow=U4(p+2);
+    raw->sbsmsg.tow=U4(p+2)/1000;
     raw->sbsmsg.week=U2(p+6);
     raw->time=gpst2time(raw->sbsmsg.week,raw->sbsmsg.tow);
 
@@ -1473,7 +1474,7 @@ static int decode_glorawcanav(raw_t *raw){
     if (m!=4) return 0;
 
     /* decode glonass ephemeris strings */
-    geph.tof=gpst2time(U2(p+6),U4(p+2)*1000);
+    geph.tof=gpst2time(U2(p+6),U4(p+2)/1000);
     if (!decode_glostr(raw->subfrm[sat-1],&geph)||geph.sat!=sat) return 0;
     geph.frq=U1(p+12)-7;
 
@@ -1683,7 +1684,7 @@ static int decode_sbsfast(raw_t *raw)
     sat=satno(SYS_SBS,prn);
     if (sat == 0) return -1;
 
-    tow=U4(p+2);
+    tow=U4(p+2)/1000;
     week=U2(p+6);
     week=adjgpsweek(week);
 
@@ -1848,7 +1849,7 @@ static int decode_sbsionodelay(raw_t *raw)
 
     if (band>MAXBAND||raw->nav.sbsion[band].iodi!=U1(p+10)) return 0;
 
-    tow=U4(p+2);
+    tow=U4(p+2)/1000;
     week=U2(p+6);
     week=adjgpsweek(week);
 
@@ -1945,7 +1946,7 @@ static int decode_sbslongcorrh(raw_t* raw)
     if (prn < 120) return -1;
     if (prn > 139) return -1;
 
-    tow=U4(p+2);
+    tow=U4(p+2)/1000;
     week=U2(p+6);
     week=adjgpsweek(week);
 

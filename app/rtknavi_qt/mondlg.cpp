@@ -181,7 +181,9 @@ void MonitorDialog::ClearTable(void)
 		case 26: SetLexEph();   break;
 		case 27: SetLexIon();   break;
 		case 28: SetIonCorr();  break;
-		default: console=1;     break;
+        default: console=1;
+                 Console->setColumnWidth(0,Console->width());
+                 break;
 	}
     Console ->setVisible(true);
     BtnPause->setVisible(console!=0);
@@ -1106,7 +1108,7 @@ void MonitorDialog::ShowGnav(void)
 	
     Label->setText("");
 	
-	for (i=0,n=1;i<NSATGLO;i++) {
+    for (i=0,n=0;i<NSATGLO;i++) {
 		valid=geph[i].toe.time!=0&&!geph[i].svh&&
 			  fabs(timediff(time,geph[i].toe))<=MAXDTOE_GLO;
         if (SelSat->currentIndex()==1&&!valid) continue;
@@ -1451,7 +1453,7 @@ void MonitorDialog::ShowSbsMsg(void)
 	rtksvrunlock(&rtksvr); // unlock
 	
 
-    Console->setRowCount(n<=0?2:n+1);
+    Console->setRowCount(n<=0?0:n);
     Label->setText("");
     Console->setHorizontalHeaderLabels(header);
 
@@ -1550,13 +1552,14 @@ void MonitorDialog::ShowSbsIono(void)
 	int i,j,k,n=0;
 	
 	rtksvrlock(&rtksvr); // lock
-	for (i=0;i<=MAXBAND;i++) sbsion[i]=rtksvr.nav.sbsion[i];
+    for (i=0;i<=MAXBAND;i++) {sbsion[i]=rtksvr.nav.sbsion[i];n+=sbsion[i].nigp;};
 	rtksvrunlock(&rtksvr); // unlock
 	
-    Console->setRowCount(MAXBAND+1);
+    Console->setRowCount(n);
     Console->setHorizontalHeaderLabels(header);
 
     Label->setText("");
+    n=0;
     for (i=0;i<MAXBAND;i++) {
 		ion=sbsion+i;
 		for (j=0;j<ion->nigp;j++) {

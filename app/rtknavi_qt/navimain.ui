@@ -80,7 +80,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtkpost_qt/rtkpost_qt.qrc">
+         <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
           <normaloff>:/buttons/sqr.bmp</normaloff>:/buttons/sqr.bmp</iconset>
         </property>
         <property name="flat">
@@ -269,7 +269,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap resource="../rtkpost_qt/rtkpost_qt.qrc">:/buttons/rarrow.bmp</pixmap>
+            <pixmap resource="../rtklaunch_qt/rtklaunch_qt.qrc">:/buttons/rarrow.bmp</pixmap>
            </property>
           </widget>
          </item>
@@ -313,7 +313,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap resource="../rtkpost_qt/rtkpost_qt.qrc">:/buttons/rarrow.bmp</pixmap>
+            <pixmap resource="../rtklaunch_qt/rtklaunch_qt.qrc">:/buttons/rarrow.bmp</pixmap>
            </property>
           </widget>
          </item>
@@ -552,7 +552,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtkpost_qt/rtkpost_qt.qrc">
+         <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
           <normaloff>:/buttons/down.bmp</normaloff>:/buttons/down.bmp</iconset>
         </property>
         <property name="flat">
@@ -1259,7 +1259,7 @@
              <string/>
             </property>
             <property name="icon">
-             <iconset resource="../rtkpost_qt/rtkpost_qt.qrc">
+             <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
               <normaloff>:/buttons/down.bmp</normaloff>:/buttons/down.bmp</iconset>
             </property>
             <property name="flat">
@@ -1359,12 +1359,6 @@
          <property name="enabled">
           <bool>true</bool>
          </property>
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
          <property name="toolTip">
           <string/>
          </property>
@@ -1418,7 +1412,7 @@
                  <string/>
                 </property>
                 <property name="icon">
-                 <iconset resource="../rtkpost_qt/rtkpost_qt.qrc">
+                 <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
                   <normaloff>:/buttons/down.bmp</normaloff>:/buttons/down.bmp</iconset>
                 </property>
                 <property name="flat">
@@ -1432,7 +1426,7 @@
                  <bool>true</bool>
                 </property>
                 <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                 <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
@@ -1457,7 +1451,7 @@
                  <string/>
                 </property>
                 <property name="icon">
-                 <iconset resource="../rtkpost_qt/rtkpost_qt.qrc">
+                 <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
                   <normaloff>:/buttons/down.bmp</normaloff>:/buttons/down.bmp</iconset>
                 </property>
                 <property name="flat">
@@ -1498,6 +1492,12 @@
                 <property name="enabled">
                  <bool>true</bool>
                 </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="toolTip">
                  <string/>
                 </property>
@@ -1518,7 +1518,7 @@
                  <string/>
                 </property>
                 <property name="icon">
-                 <iconset resource="../rtkpost_qt/rtkpost_qt.qrc">
+                 <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
                   <normaloff>:/buttons/down.bmp</normaloff>:/buttons/down.bmp</iconset>
                 </property>
                 <property name="flat">
@@ -1541,7 +1541,7 @@
                  <string/>
                 </property>
                 <property name="icon">
-                 <iconset resource="../rtkpost_qt/rtkpost_qt.qrc">
+                 <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
                   <normaloff>:/buttons/down.bmp</normaloff>:/buttons/down.bmp</iconset>
                 </property>
                 <property name="flat">
@@ -1602,7 +1602,7 @@
          <string>RTK Monitor</string>
         </property>
         <property name="icon">
-         <iconset resource="../rtkpost_qt/rtkpost_qt.qrc">
+         <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
           <normaloff>:/buttons/sqr.bmp</normaloff>:/buttons/sqr.bmp</iconset>
         </property>
         <property name="flat">
@@ -1671,7 +1671,7 @@
             <string>Hide</string>
            </property>
            <property name="icon">
-            <iconset resource="../rtkpost_qt/rtkpost_qt.qrc">
+            <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
              <normaloff>:/buttons/ttray.bmp</normaloff>:/buttons/ttray.bmp</iconset>
            </property>
            <property name="flat">
@@ -1817,7 +1817,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../rtkpost_qt/rtkpost_qt.qrc"/>
+  <include location="../rtklaunch_qt/rtklaunch_qt.qrc"/>
  </resources>
  <connections/>
 </ui>

@@ -149,7 +149,7 @@ MainForm::MainForm(QWidget *parent)
     connect(BtnToKML,SIGNAL(clicked(bool)),this,SLOT(BtnToKMLClick()));
     connect(BtnOption,SIGNAL(clicked(bool)),this,SLOT(BtnOptionClick()));
     connect(BtnExec,SIGNAL(clicked(bool)),this,SLOT(BtnExecClick()));
-    connect(BtnExit,SIGNAL(clicked(bool)),this,SLOT(BtnExecClick()));
+    connect(BtnExit,SIGNAL(clicked(bool)),this,SLOT(BtnExitClick()));
     connect(BtnAbout,SIGNAL(clicked(bool)),this,SLOT(BtnAboutClick()));
     connect(BtnTime1,SIGNAL(clicked(bool)),this,SLOT(BtnTime1Click()));
     connect(BtnTime2,SIGNAL(clicked(bool)),this,SLOT(BtnTime2Click()));

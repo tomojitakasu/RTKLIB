@@ -1370,7 +1370,7 @@ void  MainWindow::DrawPlot(QLabel *plot, int type, int freq)
     font.setPixelSize(8);
     c->setFont(font);
 
-    QString fstr[]={"","L1 ","L2 ","L5 ","L6 ","L7 ","L8 ",""};
+    QString fstr[]={"","L1 ","L2 ","L5 ","L6 ","L7 ","L8 ","","","",""};
     int w=buffer.size().width()-2,h=buffer.height()-2;
     int i,j,x,sat[2][MAXSAT],ns[2],snr[2][MAXSAT][NFREQ],vsat[2][MAXSAT];
     int *snr0[MAXSAT],*snr1[MAXSAT];
@@ -1603,7 +1603,7 @@ void  MainWindow::DrawSat(QPainter *c, int w, int h, int x0, int y0,
 void  MainWindow::DrawBL(QPainter *c, int w, int h)
 {
     QColor color[]={QColor(0xc0,0xc0,0xc0),Qt::green,QColor(0x00,0xAA,0xFF),QColor(0xff,0x00,0xff),Qt::blue,Qt::red,QColor(0x80,0x80,0x00)};
-    QString s,label[]={tr("N"),tr("E"),tr("S"),tr("W")};
+    QString label[]={tr("N"),tr("E"),tr("S"),tr("W")};
     QPoint p(w/2,h/2),p1,p2,pp;
     double r=MIN(w*0.95,h*0.95)/2;
     double *rr=SolRov+PSol*3,*rb=SolRef+PSol*3;
@@ -1667,11 +1667,11 @@ void  MainWindow::DrawBL(QPainter *c, int w, int h)
     c->drawLine(p,pp);
     if (pitch>=0.0) {
         c->setBrush(Qt::white);
-        c->drawEllipse(pp.x()-d2/2,pp.y()-d2/2,d2+1,d2+1);
+        c->drawEllipse(pp.x()-d2/2,pp.y()-d2/2,d2,d2);
         DrawArrow(c,p.x()+sya,p.y()-cya,d3,(int)(yaw*R2D),Qt::gray);
     }
     c->setBrush(col);
-    c->drawEllipse(pp.x()-d2/2+2,pp.y()-d2/2+2,d2-1,d2-1);
+    c->drawEllipse(pp.x()-d2/2+2,pp.y()-d2/2+2,d2-4,d2-4);
     c->setBrush(Qt::white);
     digit=len<10.0?3:(len<100.0?2:(len<1000.0?1:0));
     DrawText(c,p.x(),p.y() ,QString("%1 m").arg(len,0,'f',digit),Qt::gray,1);
