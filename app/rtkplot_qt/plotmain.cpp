@@ -39,6 +39,7 @@
 #include <QPaintEvent>
 #include <QDebug>
 #include <QToolBar>
+#include <QScreen>
 
 #include <QFileInfo>
 #include <QCommandLineParser>
@@ -79,7 +80,6 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
 
     plot=this;
 
-    setCentralWidget(Disp);
     setWindowIcon(QIcon(":/icons/rtk2.bmp"));
 
     setlocale(LC_NUMERIC,"C"); // use point as decimal separator in formated output
@@ -97,15 +97,7 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
 
     IniFile=QFileInfo(file).absoluteFilePath()+".ini";
 
-    setMenuBar(mainMenu);
-
-    toolBar=new QToolBar(this);
     toolBar->addWidget(Panel1);
-    addToolBar(toolBar);
-
-    statusBar=new QStatusBar(this);
-    statusBar->addWidget(Panel2);
-    setStatusBar(statusBar);
 
     FormWidth=FormHeight=0;
     Drag=0; Xn=Yn=-1; NObs=0;
@@ -174,7 +166,8 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
     TimeStart=TimeEnd=epoch2time(ep);
     Console1=new Console(this);
     Console2=new Console(this);
-    RangeList->setVisible(false);
+    RangeList->setParent(0);
+    RangeList->setWindowFlags(Qt::Window|Qt::WindowStaysOnTopHint|Qt::X11BypassWindowManagerHint|Qt::FramelessWindowHint);
     
     for (i=0;i<361;i++) ElMaskData[i]=0.0;
     
@@ -207,30 +200,30 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
     aboutDialog = new AboutDialog(this);
     pntDialog = new PntDialog(this);
 
-    connect(BtnAnimate,SIGNAL(clicked(bool)),this,SLOT(BtnAnimateClick()));
-    connect(BtnCenterOri,SIGNAL(clicked(bool)),this,SLOT(BtnCenterOriClick()));
-    connect(BtnClear,SIGNAL(clicked(bool)),this,SLOT(BtnClearClick()));
-    connect(BtnConnect,SIGNAL(clicked(bool)),this,SLOT(BtnConnectClick()));
-    connect(BtnFitHoriz,SIGNAL(clicked(bool)),this,SLOT(BtnFitHorizClick()));
-    connect(BtnFitVert,SIGNAL(clicked(bool)),this,SLOT(BtnFitVertClick()));
-    connect(BtnFixCent,SIGNAL(clicked(bool)),this,SLOT(BtnFixCentClick()));
-    connect(BtnFixHoriz,SIGNAL(clicked(bool)),this,SLOT(BtnFixHorizClick()));
-    connect(BtnFixVert,SIGNAL(clicked(bool)),this,SLOT(BtnFixVertClick()));
-    connect(BtnGE,SIGNAL(clicked(bool)),this,SLOT(BtnGEClick()));
-    connect(BtnGM,SIGNAL(clicked(bool)),this,SLOT(BtnGMClick()));
+    BtnConnect->setDefaultAction(MenuConnect);
+    BtnReload->setDefaultAction(MenuReload);
+    BtnClear->setDefaultAction(MenuClear);
+    BtnOptions->setDefaultAction(MenuOptions);
+    BtnGE->setDefaultAction(MenuGE);
+    BtnGM->setDefaultAction(MenuGM);
+    BtnCenterOri->setDefaultAction(MenuCenterOri);
+    BtnFitHoriz->setDefaultAction(MenuFitHoriz);
+    BtnFitVert->setDefaultAction(MenuFitVert);
+    BtnShowTrack->setDefaultAction(MenuShowTrack);
+    BtnFixCent->setDefaultAction(MenuFixCent);
+    BtnFixHoriz->setDefaultAction(MenuFixHoriz);
+    BtnFixVert->setDefaultAction(MenuFixVert);
+    BtnShowMap->setDefaultAction(MenuShowMap);
+    BtnShowPoint->setDefaultAction(MenuShowPoint);
+
     connect(BtnOn1,SIGNAL(clicked(bool)),this,SLOT(BtnOn1Click()));
     connect(BtnOn2,SIGNAL(clicked(bool)),this,SLOT(BtnOn2Click()));
     connect(BtnOn3,SIGNAL(clicked(bool)),this,SLOT(BtnOn3Click()));
-    connect(BtnOptions,SIGNAL(clicked(bool)),this,SLOT(BtnOptionsClick()));
-    connect(BtnRangeList,SIGNAL(clicked(bool)),this,SLOT(BtnRangeListClick()));
-    connect(BtnReload,SIGNAL(clicked(bool)),this,SLOT(BtnReloadClick()));
-    connect(BtnShowMap,SIGNAL(clicked(bool)),this,SLOT(BtnShowMapClick()));
-    connect(BtnShowPoint,SIGNAL(clicked(bool)),this,SLOT(BtnShowPointClick()));
-    connect(BtnShowSkyplot,SIGNAL(clicked(bool)),this,SLOT(BtnShowSkyplotClick()));
-    connect(BtnShowTrack,SIGNAL(clicked(bool)),this,SLOT(BtnShowMapClick()));
     connect(BtnSol1,SIGNAL(clicked(bool)),this,SLOT(BtnSol1Click()));//FIXME Double Click
     connect(BtnSol2,SIGNAL(clicked(bool)),this,SLOT(BtnSol2Click()));
     connect(BtnSol12,SIGNAL(clicked(bool)),this,SLOT(BtnSol12Click()));
+    connect(BtnRangeList,SIGNAL(clicked(bool)),this,SLOT(BtnRangeListClick()));
+    connect(BtnAnimate,SIGNAL(clicked(bool)),this,SLOT(BtnAnimateClick()));
     connect(MenuAbout,SIGNAL(triggered(bool)),this,SLOT(MenuAboutClick()));
     connect(MenuAnimStart,SIGNAL(triggered(bool)),this,SLOT(MenuAnimStartClick()));
     connect(MenuAnimStop,SIGNAL(triggered(bool)),this,SLOT(MenuAnimStopClick()));
@@ -293,9 +286,12 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
 
     setMouseTracking(true);
     Disp->setMouseTracking(true);
-
 }
-
+// destructor ---------------------------------------------------------------
+Plot::~Plot()
+{
+    delete RangeList;
+}
 // callback on form-show ----------------------------------------------------
 void Plot::showEvent (QShowEvent *event)
 {
@@ -326,13 +322,13 @@ void Plot::showEvent (QShowEvent *event)
             QCoreApplication::translate("main", "path"));
     parser.addOption(pathOption);
 
-    QCommandLineOption path1Option(QStringList() << "1" << "path",
-            QCoreApplication::translate("main", "open <path>."),
+    QCommandLineOption path1Option(QStringList() << "1",
+            QCoreApplication::translate("main", "open <path> as solution 1."),
             QCoreApplication::translate("main", "path"));
     parser.addOption(path1Option);
 
-    QCommandLineOption path2Option(QStringList() << "2" << "path",
-            QCoreApplication::translate("main", "open <path>."),
+    QCommandLineOption path2Option(QStringList() << "2",
+            QCoreApplication::translate("main", "open <path> as solution 2."),
             QCoreApplication::translate("main", "path"));
     parser.addOption(path2Option);
 
@@ -370,6 +366,7 @@ void Plot::showEvent (QShowEvent *event)
     UpdateSatMask();
     UpdateOrigin();
     UpdateEnable();
+    UpdateSize();
     
     if (path1!=""||path2!="") {
         ConnectPath(path1,0);
@@ -393,12 +390,12 @@ void Plot::showEvent (QShowEvent *event)
     UpdatePlot();
 }
 // callback on form-close ---------------------------------------------------
-void Plot::closeEvent(QCloseEvent *event)
+void Plot::closeEvent(QCloseEvent *)
 {
-    if (event->spontaneous()) return;
-
     trace(3,"FormClose\n");
     
+    RangeList->setVisible(false);
+
     SaveOpt();
     
     if (Trace>0) traceclose();
@@ -896,7 +893,7 @@ void Plot::MenuStatusBarClick()
 {
     trace(3,"MenuStatusBarClick\n");
     
-    statusBar->setVisible(MenuStatusBar->isChecked());
+    statusbar->setVisible(MenuStatusBar->isChecked());
     UpdateSize();
     Refresh();
 }
@@ -976,7 +973,6 @@ void Plot::MenuShowSkyplotClick()
 {
     trace(3,"MenuShowSkyplotClick\n");
     
-    BtnShowSkyplot->setChecked(!BtnShowSkyplot->isChecked());
     UpdatePlot();
 }
 // callback on menu-show-map-image ------------------------------------------
@@ -984,7 +980,6 @@ void Plot::MenuShowMapClick()
 {
     trace(3,"MenuShowMapClick\n");
     
-    BtnShowMap->setChecked(!BtnShowMap->isChecked());
     UpdatePlot();
 }
 // callback on menu-show-track-points ---------------------------------------
@@ -992,10 +987,9 @@ void Plot::MenuShowTrackClick()
 {
     trace(3,"MenuShowTrackClick\n");
     
-    BtnShowTrack->setChecked(!BtnShowTrack->isChecked());
-    if (!BtnShowTrack->isChecked()) {
-        BtnFixHoriz->setChecked(false);
-        BtnFixVert ->setChecked(false);
+    if (!MenuShowTrack->isChecked()) {
+        MenuFixHoriz->setChecked(false);
+        MenuFixVert ->setChecked(false);
     }
     UpdatePlot();
 }
@@ -1004,7 +998,6 @@ void Plot::MenuFixCentClick()
 {
     trace(3,"MenuFixCentClick\n");
     
-    BtnFixCent->setChecked(!BtnFixCent->isChecked());
     UpdatePlot();
 }
 // callback on menu-fix-horizontal ------------------------------------------
@@ -1012,7 +1005,6 @@ void Plot::MenuFixHorizClick()
 {
     trace(3,"MenuFixHorizClick\n");
     
-    BtnFixHoriz->setChecked(!BtnFixHoriz->isChecked());
     Xcent=0.0;
     UpdatePlot();
 }
@@ -1021,16 +1013,13 @@ void Plot::MenuFixVertClick()
 {
     trace(3,"MenuFixVertClick\n");
     
-    BtnFixVert->setChecked(!BtnFixVert->isChecked());
     UpdatePlot();
 }
 // callback on menu-show-waypoints ------------------------------------------
 void Plot::MenuShowPointClick()
 {
     trace(3,"MenuShowPointClick\n");
-    
-    BtnShowPoint->setChecked(!BtnShowPoint->isChecked());
-    
+
 #if 0
     if (BtnShowPoint->isChecked()) UpdatePntsGE();
 #endif
@@ -1040,15 +1029,11 @@ void Plot::MenuShowPointClick()
 void Plot::MenuAnimStartClick()
 {
     trace(3,"MenuAnimStartClick\n");
-    
-    BtnAnimate->setChecked(true);
 }
 // callback on menu-animation-stop ------------------------------------------
 void Plot::MenuAnimStopClick()
 {
     trace(3,"MenuAnimStopClick\n");
-    
-    BtnAnimate->setChecked(false);
 }
 // callback on menu-about ---------------------------------------------------
 void Plot::MenuAboutClick()
@@ -1109,22 +1094,7 @@ void Plot::BtnSol2DblClick()
     
     MenuOpenSol2Click();
 }
-// callback on button-show-map-image ----------------------------------------
-void Plot::BtnShowMapClick()
-{
-    trace(3,"BtnShowMapClick\n");
-    
-    UpdateEnable();
-    Refresh();
-}
-//---------------------------------------------------------------------------
-void Plot::BtnShowSkyplotClick()
-{
-    trace(3,"BtnShowSkyplotClick\n");
-    
-	UpdateEnable();
-    Refresh();
-}
+
 // callback on button-plot-1-onoff ------------------------------------------
 void Plot::BtnOn1Click()
 {
@@ -1154,6 +1124,11 @@ void Plot::BtnRangeListClick()
 {
     trace(3,"BtnRangeListClick\n");
     
+    QPoint pos=BtnRangeList->mapToGlobal(BtnRangeList->pos());
+    pos.rx()-=BtnRangeList->width();
+    pos.ry()+=BtnRangeList->height();
+
+    RangeList->move(pos);
     RangeList->setVisible(!RangeList->isVisible());
 }
 // callback on button-range-list --------------------------------------------
@@ -1176,109 +1151,13 @@ void Plot::RangeListClick()
     SetRange(0,YRange);
     UpdatePlot();
 }
-// callback on button-center-origin -----------------------------------------
-void Plot::BtnCenterOriClick()
-{
-    trace(3,"BtnCenterOriClick\n");
-    
-    RangeList->setVisible(false);
-    MenuCenterOriClick();
-}
-// callback on button-fit-horzontal------------------------------------------
-void Plot::BtnFitHorizClick()
-{
-    trace(3,"BtnFitHorizClick\n");
-    
-    MenuFitHorizClick();
-}
-// callback on button-fit-vertical ------------------------------------------
-void Plot::BtnFitVertClick()
-{
-    trace(3,"BtnFitVertClick\n");
-    
-    MenuFitVertClick();
-}
-// callback on button show-track-points -------------------------------------
-void Plot::BtnShowTrackClick()
-{
-    trace(3,"BtnShowTrackClick\n");
-    
-    if (!BtnShowTrack->isChecked()) {
-        BtnFixHoriz->setChecked(false);
-        BtnFixVert ->setChecked(false);
-    }
-    UpdatePlot();
-}
-// callback on button-fix-horizontal ----------------------------------------
-void Plot::BtnFixHorizClick()
-{
-    trace(3,"BtnFixHorizClick\n");
-    
-    Xcent=0.0;
-    UpdatePlot();
-}
-// callback on button-fix-vertical ------------------------------------------
-void Plot::BtnFixVertClick()
-{
-    trace(3,"BtnFixVertClick\n");
-    
-    UpdatePlot();
-}
-// callback on button-fix-center --------------------------------------------
-void Plot::BtnFixCentClick()
-{
-    trace(3,"BtnFixCentClick\n");
-    
-    UpdatePlot();
-}
-// callback on button-show-waypoints ----------------------------------------
-void Plot::BtnShowPointClick()
-{
-    trace(3,"BtnShowPointClick\n");
-    
-    UpdatePlot();
-}
-// callback on button-options -----------------------------------------------
-void Plot::BtnOptionsClick()
-{
-    trace(3,"BtnOptionsClick\n");
-    
-    MenuOptionsClick();
-}
-// callback on button-ge-view -----------------------------------------------
-void Plot::BtnGEClick()
-{
-    trace(3,"BtnGEClick\n");
-    
-    MenuGEClick();
-}
-// callback on button-gm-view -----------------------------------------------
-void Plot::BtnGMClick()
-{
-    trace(3,"BtnGMClick\n");
-    
-    MenuGMClick();
-}
+
 // callback on button-animation ---------------------------------------------
 void Plot::BtnAnimateClick()
 {
     trace(3,"BtnAnimateClick\n");
     
     UpdateEnable();
-}
-// callback on button-clear -------------------------------------------------
-void Plot::BtnClearClick()
-{
-    trace(3,"BtnClearClick\n");
-    
-    MenuClearClick();
-}
-// callback on button-reload ------------------------------------------------
-void Plot::BtnReloadClick()
-{
-    trace(3,"BtnReloadClick\n");
-    
-    MenuReloadClick();
 }
 // callback on plot-type selection change -----------------------------------
 void Plot::PlotTypeSChange()
@@ -1452,7 +1331,7 @@ void Plot::MouseDownSol(int X, int Y)
     else {
         if ((data=getsol(SolData+sel,SolIndex[sel]))) time=data->time;
     }
-    if (time.time&&!BtnFixHoriz->isChecked()) {
+    if (time.time&&!MenuFixHoriz->isChecked()) {
         
         x=TimePos(time);
         
@@ -1500,7 +1379,7 @@ void Plot::MouseDownObs(int X, int Y)
     
     trace(3,"MouseDownObs: X=%d Y=%d\n",X,Y);
     
-    if (0<=ObsIndex&&ObsIndex<NObs&&!BtnFixHoriz->isChecked()) {
+    if (0<=ObsIndex&&ObsIndex<NObs&&!MenuFixHoriz->isChecked()) {
         
         x=TimePos(Obs.data[IndexObs[ObsIndex]].time);
         
@@ -1532,13 +1411,13 @@ void Plot::MouseMoveTrk(int X, int Y, double dx, double dy,
     
     Q_UNUSED(dxs);
 
-    if (Drag==1&&!BtnFixHoriz->isChecked()) {
+    if (Drag==1&&!MenuFixHoriz->isChecked()) {
         GraphT->SetCent(Xc+dx,Yc+dy);
     }
     else if (Drag>1) {
         GraphT->SetScale(Xs*dys,Ys*dys);
     }
-    BtnCenterOri->setChecked(false);
+    MenuCenterOri->setChecked(false);
     Refresh();
 }
 // callback on mouse-move event on solution-plot ----------------------------
@@ -1554,16 +1433,16 @@ void Plot::MouseMoveSol(int X, int Y, double dx, double dy,
     if (Drag<=4) {
         for (i=0;i<3;i++) {
             GraphG[i]->GetCent(x,y);
-            if (!BtnFixHoriz->isChecked()) {
+            if (!MenuFixHoriz->isChecked()) {
                 x=Xc+dx;
             }
-            if (!BtnFixVert->isChecked()||!BtnFixVert->isEnabled()) {
+            if (!MenuFixVert->isChecked()||!MenuFixVert->isEnabled()) {
                 y=i==Drag-1?Yc+dy:y;
             }
             GraphG[i]->SetCent(x,y);
             SetCentX(x);
         }
-        if (BtnFixHoriz->isChecked()) {
+        if (MenuFixHoriz->isChecked()) {
             GraphG[0]->GetPos(p1,p2);
             Xcent=Xcent0+2.0*(X-X0)/(p2.x()-p1.x());
             if (Xcent> 1.0) Xcent= 1.0;
@@ -1572,7 +1451,7 @@ void Plot::MouseMoveSol(int X, int Y, double dx, double dy,
     }
     else if (Drag<=7) {
         GraphG[Drag-5]->GetCent(x,y);
-        if (!BtnFixVert->isChecked()||!BtnFixVert->isEnabled()) {
+        if (!MenuFixVert->isChecked()||!MenuFixVert->isEnabled()) {
             y=Yc+dy;
         }
         GraphG[Drag-5]->SetCent(x,y);
@@ -1604,7 +1483,7 @@ void Plot::MouseMoveSol(int X, int Y, double dx, double dy,
         }
         UpdateTime();
     }
-    BtnCenterOri->setChecked(false);
+    MenuCenterOri->setChecked(false);
     Refresh();
 }
 // callback on mouse-move events on observataion-data-plot ------------------
@@ -1621,12 +1500,12 @@ void Plot::MouseMoveObs(int X, int Y, double dx, double dy,
     
     if (Drag<=4) {
         GraphR->GetCent(x,y);
-        if (!BtnFixHoriz->isChecked()) x=Xc+dx;
-        if (!BtnFixVert ->isChecked()) y=Yc+dy;
+        if (!MenuFixHoriz->isChecked()) x=Xc+dx;
+        if (!MenuFixVert ->isChecked()) y=Yc+dy;
         GraphR->SetCent(x,y);
         SetCentX(x);
         
-        if (BtnFixHoriz->isChecked()) {
+        if (MenuFixHoriz->isChecked()) {
             GraphR->GetPos(p1,p2);
             Xcent=Xcent0+2.0*(X-X0)/(p2.x()-p1.x());
             if (Xcent> 1.0) Xcent= 1.0;
@@ -1646,7 +1525,7 @@ void Plot::MouseMoveObs(int X, int Y, double dx, double dy,
         ObsIndex=i<NObs?i:NObs-1;
         UpdateTime();
     }
-    BtnCenterOri->setChecked(false);
+    MenuCenterOri->setChecked(false);
     Refresh();
 }
 // callback on mouse-wheel events -------------------------------------------
@@ -1718,10 +1597,10 @@ void Plot::keyPressEvent(QKeyEvent* event)
     if (PlotType==PLOT_TRK) {
         GraphT->GetCent(xc,yc);
         GraphT->GetScale(xs,ys);
-        if (key== 1) {if (!BtnFixHoriz->isChecked()) yc+=fact*ys;}
-        if (key== 2) {if (!BtnFixHoriz->isChecked()) yc-=fact*ys;}
-        if (key== 3) {if (!BtnFixHoriz->isChecked()) xc-=fact*xs;}
-        if (key== 4) {if (!BtnFixHoriz->isChecked()) xc+=fact*xs;}
+        if (key== 1) {if (!MenuFixHoriz->isChecked()) yc+=fact*ys;}
+        if (key== 2) {if (!MenuFixHoriz->isChecked()) yc-=fact*ys;}
+        if (key== 3) {if (!MenuFixHoriz->isChecked()) xc-=fact*xs;}
+        if (key== 4) {if (!MenuFixHoriz->isChecked()) xc+=fact*xs;}
         if (key==11) {xs/=sfact; ys/=sfact;}
         if (key==12) {xs*=sfact; ys*=sfact;}
         GraphT->SetCent(xc,yc);
@@ -1734,10 +1613,10 @@ void Plot::keyPressEvent(QKeyEvent* event)
         GraphG[0]->GetScale(xs,ys1);
         GraphG[1]->GetScale(xs,ys2);
         GraphG[2]->GetScale(xs,ys3);
-        if (key== 1) {if (!BtnFixVert ->isChecked()) yc1+=fact*ys1; yc2+=fact*ys2; yc3+=fact*ys3;}
-        if (key== 2) {if (!BtnFixVert ->isChecked()) yc1-=fact*ys1; yc2-=fact*ys2; yc3-=fact*ys3;}
-        if (key== 3) {if (!BtnFixHoriz->isChecked()) xc-=fact*xs;}
-        if (key== 4) {if (!BtnFixHoriz->isChecked()) xc+=fact*xs;}
+        if (key== 1) {if (!MenuFixVert ->isChecked()) yc1+=fact*ys1; yc2+=fact*ys2; yc3+=fact*ys3;}
+        if (key== 2) {if (!MenuFixVert ->isChecked()) yc1-=fact*ys1; yc2-=fact*ys2; yc3-=fact*ys3;}
+        if (key== 3) {if (!MenuFixHoriz->isChecked()) xc-=fact*xs;}
+        if (key== 4) {if (!MenuFixHoriz->isChecked()) xc+=fact*xs;}
         if (key==11) {ys1/=sfact; ys2/=sfact; ys3/=sfact;}
         if (key==12) {ys1*=sfact; ys2*=sfact; ys3*=sfact;}
         if (key==13) xs*=sfact;
@@ -1752,10 +1631,10 @@ void Plot::keyPressEvent(QKeyEvent* event)
     else if (PlotType==PLOT_OBS||PlotType==PLOT_DOP||PlotType==PLOT_SNR) {
         GraphR->GetCent(xc,yc);
         GraphR->GetScale(xs,ys);
-        if (key== 1) {if (!BtnFixVert ->isChecked()) yc+=fact*ys;}
-        if (key== 2) {if (!BtnFixVert ->isChecked()) yc-=fact*ys;}
-        if (key== 3) {if (!BtnFixHoriz->isChecked()) xc-=fact*xs;}
-        if (key== 4) {if (!BtnFixHoriz->isChecked()) xc+=fact*xs;}
+        if (key== 1) {if (!MenuFixVert ->isChecked()) yc+=fact*ys;}
+        if (key== 2) {if (!MenuFixVert ->isChecked()) yc-=fact*ys;}
+        if (key== 3) {if (!MenuFixHoriz->isChecked()) xc-=fact*xs;}
+        if (key== 4) {if (!MenuFixHoriz->isChecked()) xc+=fact*xs;}
         if (key==11) ys/=sfact;
         if (key==12) xs*=sfact;
         if (key==13) xs*=sfact;
@@ -1811,8 +1690,8 @@ void Plot::TimerTimer()
                         time2gpst(SolData[i].time,&Week);
                         UpdateOrigin();
                         ecef2pos(SolData[i].data[0].rr,pos);
-                        googleEarthView->SetView(pos[0]*R2D,pos[1]*R2D,0.0,0.0);
-                        googleMapView->SetView(pos[0]*R2D,pos[1]*R2D,13);
+//                        googleEarthView->SetView(pos[0]*R2D,pos[1]*R2D,0.0,0.0);
+//                        googleMapView->SetView(pos[0]*R2D,pos[1]*R2D,13);
                     }
                     nmsg[i]++;
                 }
@@ -1906,9 +1785,9 @@ void Plot::UpdateSize(void)
     trace(3,"UpdateSize\n");
     
     tmargin=5;                                     // top margin
-    bmargin=(int)(Disp->font().pixelSize()*1.5)+3; // bottom
+    bmargin=(int)(Disp->font().pointSize()*1.5)+3; // bottom
     rmargin=8;                                     // right
-    lmargin=Disp->font().pixelSize()*3+15;         // left
+    lmargin=Disp->font().pointSize()*3+15;         // left
     
     GraphT->resize();
     GraphS->resize();
@@ -2144,17 +2023,18 @@ void Plot::UpdateEnable(void)
     trace(3,"UpdateEnable\n");
     
     Panel1         ->setVisible(MenuToolBar  ->isChecked());
-    Panel2         ->setVisible(MenuStatusBar->isChecked());
+    Panel21        ->setVisible(MenuStatusBar->isChecked());
     
-    BtnConnect     ->setChecked(ConnectState);
+    MenuConnect     ->setChecked(ConnectState);
     BtnSol2        ->setEnabled(PlotType<=PLOT_NSAT||PlotType==PLOT_RES);
     BtnSol12       ->setVisible(!ConnectState&&PlotType<=PLOT_SOLA&&SolData[0].n>0&&SolData[1].n>0);
     
     QFlag          ->setVisible(PlotType<=PLOT_NSAT);
-    ObsType        ->setVisible(PlotType==PLOT_OBS||PlotType<=PLOT_SKY);
-    ObsType2       ->setVisible(PlotType==PLOT_SNR||PlotType==PLOT_SNRE||PlotType==PLOT_MPS);
     ObsType        ->setEnabled(!SimObs);
     ObsType2       ->setEnabled(!SimObs);
+    ObsType        ->setVisible(PlotType==PLOT_OBS||PlotType<=PLOT_SKY);
+    ObsType2       ->setVisible(PlotType==PLOT_SNR||PlotType==PLOT_SNRE||PlotType==PLOT_MPS);
+
     FrqType        ->setVisible(PlotType==PLOT_RES);
     DopType        ->setVisible(PlotType==PLOT_DOP);
     SatList        ->setVisible(PlotType>=PLOT_OBS||PlotType==PLOT_RES);
@@ -2166,85 +2046,49 @@ void Plot::UpdateEnable(void)
     BtnOn2         ->setEnabled(plot||PlotType==PLOT_SNR||PlotType==PLOT_RES||PlotType==PLOT_SNRE);
     BtnOn3         ->setEnabled(plot||PlotType==PLOT_SNR||PlotType==PLOT_RES);
     
-    BtnCenterOri   ->setVisible(PlotType<=PLOT_RES);
-    BtnCenterOri   ->setEnabled(plot||PlotType==PLOT_TRK);
-    BtnRangeList   ->setVisible(BtnCenterOri->isVisible());
-    BtnRangeList   ->setEnabled(BtnCenterOri->isEnabled());
+    MenuCenterOri   ->setVisible(PlotType<=PLOT_RES);
+    MenuCenterOri   ->setEnabled(plot||PlotType==PLOT_TRK);
+    BtnRangeList   ->setVisible(MenuCenterOri->isVisible());
+    BtnRangeList   ->setEnabled(MenuCenterOri->isEnabled());
     
-    BtnShowTrack   ->setEnabled(data);
-    BtnFitHoriz    ->setEnabled(data&&PlotType!=PLOT_SKY&&PlotType!=PLOT_SNRE&&PlotType!=PLOT_TRK);
-    BtnFitVert     ->setEnabled(data&&PlotType<=PLOT_SOLA);
+    MenuShowTrack   ->setEnabled(data);
+    MenuFitHoriz    ->setEnabled(data&&PlotType!=PLOT_SKY&&PlotType!=PLOT_SNRE&&PlotType!=PLOT_TRK);
+    MenuFitVert     ->setEnabled(data&&PlotType<=PLOT_SOLA);
     
-    BtnFixCent     ->setEnabled(data&&PlotType==PLOT_TRK);
-    BtnFixHoriz    ->setEnabled(data&&(PlotType==PLOT_SOLP||PlotType==PLOT_SOLV||
+    MenuFixCent     ->setEnabled(data&&PlotType==PLOT_TRK);
+    MenuFixHoriz    ->setEnabled(data&&(PlotType==PLOT_SOLP||PlotType==PLOT_SOLV||
                                     PlotType==PLOT_SOLA||PlotType==PLOT_OBS ||
                                     PlotType==PLOT_DOP ||PlotType==PLOT_RES ||
                                     PlotType==PLOT_SNR));
-    BtnFixVert     ->setEnabled(data&&plot&&PlotType!=PLOT_TRK&&PlotType!=PLOT_NSAT);
-    BtnShowPoint   ->setEnabled((PlotType==PLOT_TRK)&&!BtnSol12->isChecked());
+    MenuFixVert     ->setEnabled(data&&plot&&PlotType!=PLOT_TRK&&PlotType!=PLOT_NSAT);
+    MenuShowPoint   ->setEnabled((PlotType==PLOT_TRK)&&!BtnSol12->isChecked());
     
-    BtnShowSkyplot ->setVisible(PlotType==PLOT_SKY||PlotType==PLOT_MPS);
-    BtnShowMap     ->setVisible((PlotType==PLOT_TRK&&MapImage.height()>0&&!BtnSol12->isChecked())||
+    MenuShowSkyplot ->setVisible(PlotType==PLOT_SKY||PlotType==PLOT_MPS);
+    MenuShowMap     ->setVisible((PlotType==PLOT_TRK&&MapImage.height()>0&&!BtnSol12->isChecked())||
                              (PlotType==PLOT_SKY&&SkyImageI.height()>0)||
                              (PlotType==PLOT_MPS&&SkyImageI.height()>0));
-    BtnAnimate     ->setVisible(data&&BtnShowTrack->isChecked());
-    TimeScroll     ->setVisible(data&&BtnShowTrack->isChecked());
-    BtnGE          ->setEnabled(SolData[0].n>0||SolData[1].n>0);
-    BtnGM          ->setEnabled(SolData[0].n>0||SolData[1].n>0);
+    BtnAnimate     ->setVisible(data&&MenuShowTrack->isChecked());
+    TimeScroll     ->setVisible(data&&MenuShowTrack->isChecked());
+    MenuGE          ->setEnabled(SolData[0].n>0||SolData[1].n>0);
+    MenuGM          ->setEnabled(SolData[0].n>0||SolData[1].n>0);
     
-    if (!BtnShowTrack->isChecked()) {
-        BtnFixHoriz->setEnabled(false);
-        BtnFixVert ->setEnabled(false);
-        BtnFixCent ->setEnabled(false);
+    if (!MenuShowTrack->isChecked()) {
+        MenuFixHoriz->setEnabled(false);
+        MenuFixVert ->setEnabled(false);
+        MenuFixCent ->setEnabled(false);
         BtnAnimate ->setChecked(false);
     }
-#if 0
-    BtnCenterOri   ->Left=270;
-    BtnRangeList   ->Left=290;
-    BtnShowTrack   ->Left=310;
-    BtnFitHoriz    ->Left=330;
-    BtnFitVert     ->Left=350;
-    BtnFixCent     ->Left=370;
-    BtnFixHoriz    ->Left=390;
-    BtnFixVert     ->Left=410;
-    BtnShowSkyplot ->Left=430;
-    BtnShowMap     ->Left=450;
-    BtnShowPoint   ->Left=470;
-    BtnAnimate     ->Left=490;
-    TimeScroll     ->Left=510;
-    BtnGE          ->Left=530;
-    BtnGM          ->Left=550;
-#endif
     MenuMapImg     ->setEnabled(MapImage.height()>0);
     MenuSkyImg     ->setEnabled(SkyImageI.height()>0);
     MenuSrcSol     ->setEnabled(SolFiles[sel].count()>0);
     MenuSrcObs     ->setEnabled(ObsFiles.count()>0);
     MenuQcObs      ->setEnabled(ObsFiles.count()>0);
     
-    MenuShowTrack  ->setEnabled(BtnShowTrack->isEnabled());
-    MenuFitHoriz   ->setEnabled(BtnFitHoriz ->isEnabled());
-    MenuFitVert    ->setEnabled(BtnFitVert  ->isEnabled());
-    MenuCenterOri  ->setEnabled(BtnCenterOri->isEnabled());
-    MenuFixCent    ->setEnabled(BtnFixCent  ->isEnabled());
-    MenuFixHoriz   ->setEnabled(BtnFixHoriz ->isEnabled());
-    MenuFixVert    ->setEnabled(BtnFixVert  ->isEnabled());
-    MenuShowPoint  ->setEnabled(BtnShowPoint->isEnabled());
-    MenuShowMap    ->setEnabled(BtnShowMap  ->isEnabled());
-    MenuShowSkyplot->setEnabled(BtnShowSkyplot->isVisible());
-    MenuGE         ->setEnabled(BtnGE       ->isEnabled());
-    MenuGM         ->setEnabled(BtnGM       ->isEnabled());
-    
-    MenuShowTrack  ->setChecked(BtnShowTrack->isChecked());
-    MenuFixCent    ->setChecked(BtnFixCent  ->isChecked());
-    MenuFixHoriz   ->setChecked(BtnFixHoriz ->isChecked());
-    MenuFixVert    ->setChecked(BtnFixVert  ->isChecked());
-    MenuShowPoint  ->setChecked(BtnShowPoint->isChecked());
-    MenuShowSkyplot->setChecked(BtnShowSkyplot->isChecked());
-    MenuShowMap    ->setChecked(BtnShowMap  ->isChecked());
+    MenuShowSkyplot->setEnabled(MenuShowSkyplot->isVisible());
     
     MenuAnimStart  ->setEnabled(!ConnectState&&BtnAnimate->isEnabled()&&!BtnAnimate->isChecked());
     MenuAnimStop   ->setEnabled(!ConnectState&&BtnAnimate->isEnabled()&& BtnAnimate->isChecked());
-    TimeScroll     ->setEnabled(data&&BtnShowTrack->isChecked());
+    TimeScroll     ->setEnabled(data&&MenuShowTrack->isChecked());
     
     MenuOpenSol1   ->setEnabled(!ConnectState);
     MenuOpenSol2   ->setEnabled(!ConnectState);
@@ -2256,7 +2100,7 @@ void Plot::UpdateEnable(void)
     MenuOpenElevMask->setEnabled(!ConnectState);
     MenuReload     ->setEnabled(!ConnectState);
     
-    BtnReload      ->setVisible(!ConnectState);
+    MenuReload     ->setVisible(!ConnectState);
     StrStatus1     ->setVisible( ConnectState);
     StrStatus2     ->setVisible( ConnectState);
     Panel12        ->setVisible(!ConnectState);
@@ -2400,7 +2244,6 @@ void Plot::FitRange(int all)
     
     trace(3,"FitRange: all=%d\n",all);
     
-    BtnFixHoriz->setChecked(false);
     MenuFixHoriz->setChecked(false);
     
     if (BtnSol1->isChecked()) {
@@ -2575,7 +2418,7 @@ void Plot::LoadOpt(void)
     TLESatFile=settings.value ("plot/tlesatfile","").toString();
         
     Font.setFamily(settings.value ("plot/fontname","Tahoma").toString());
-    Font.setPixelSize(settings.value("plot/fontsize",8).toInt());
+    Font.setPointSize(settings.value("plot/fontsize",8).toInt());
     
     RnxOpts   =settings.value ("plot/rnxopts","").toString();
     
@@ -2611,7 +2454,7 @@ void Plot::LoadOpt(void)
     TextViewer::Color1=settings.value("viewer/color1",QColor(Qt::black)).value<QColor>();
     TextViewer::Color2=settings.value("viewer/color2",QColor(Qt::white)).value<QColor>();
     TextViewer::FontD.setFamily(settings.value ("viewer/fontname","Courier New").toString());
-    TextViewer::FontD.setPixelSize(settings.value("viewer/fontsize",9).toInt());
+    TextViewer::FontD.setPointSize(settings.value("viewer/fontsize",9).toInt());
     
 //    fileSelDialog->Dir=settings.value("solbrows/dir","").toString();
     
@@ -2703,7 +2546,7 @@ void Plot::SaveOpt(void)
     settings.setValue ("plot/tlesatfile",   TLESatFile    );
     
     settings.setValue ("plot/fontname",     Font.family()    );
-    settings.setValue("plot/fontsize",     Font.pixelSize()    );
+    settings.setValue("plot/fontsize",     Font.pointSize()    );
     
     settings.setValue ("plot/rnxopts",      RnxOpts       );
     
@@ -2734,7 +2577,7 @@ void Plot::SaveOpt(void)
     settings.setValue("viewer/color1",TextViewer::Color1  );
     settings.setValue("viewer/color2",TextViewer::Color2  );
     settings.setValue("viewer/fontname",TextViewer::FontD.family());
-    settings.setValue("viewer/fontsize",TextViewer::FontD.pixelSize());
+    settings.setValue("viewer/fontsize",TextViewer::FontD.pointSize());
     
 //    settings.setValue ("solbrows/dir",FileSelDialog->Dir);
     
@@ -2743,19 +2586,15 @@ void Plot::SaveOpt(void)
 
 void Plot::MenuPlotGEClick()
 {
-#if 0
-	Top=rect.Top;
-	Left=rect.Left;
-	Width=rect.Width()/2;
-	Height=rect.Height();
-    GoogleEarthView->Top=Top;
-    GoogleEarthView->Left=Width;
-    GoogleEarthView->Width=Width;
-    GoogleEarthView->Height=Height;
-#else
-    googleEarthView->move(pos());
-    googleEarthView->resize(width(),height());
-#endif
+    QScreen *scr=QApplication::screens().at(0);
+    QRect rect = scr->availableGeometry();
+    QSize thisDecoration=this->frameSize()-this->size();
+    this->move(rect.x(),rect.y());
+    this->resize(rect.width()/2-thisDecoration.width(),rect.height()-thisDecoration.height());
+
+    QSize GEDecoration=googleEarthView->frameSize()-googleEarthView->size();
+    googleEarthView->move(rect.x()+rect.width()/2,rect.y());
+    googleEarthView->resize(rect.width()/2-GEDecoration.width(),rect.height()-GEDecoration.height());
     googleMapView->setVisible(false);
     googleEarthView->setVisible(true);
 }
@@ -2763,8 +2602,15 @@ void Plot::MenuPlotGEClick()
 
 void Plot::MenuPlotGMClick()
 {
-    googleMapView->move(pos());
-    googleMapView->resize(width(),height());
+    QScreen *scr=QApplication::screens().at(0);
+    QRect rect = scr->availableGeometry();
+    QSize thisDecoration=this->frameSize()-this->size();
+    this->move(rect.x(),rect.y());
+    this->resize(rect.width()/2-thisDecoration.width(),rect.height()-thisDecoration.height());
+
+    QSize GMDecoration=googleMapView->frameSize()-googleMapView->size();
+    googleMapView->move(rect.x()+rect.width()/2,rect.y());
+    googleMapView->resize(rect.width()/2-GMDecoration.width(),rect.height()-GMDecoration.height());
     googleEarthView->setVisible(false);;
     googleMapView->setVisible(true);
 }
@@ -2772,10 +2618,18 @@ void Plot::MenuPlotGMClick()
 
 void Plot::MenuPlotGEGMClick()
 {
-    googleEarthView->move(pos());
-    googleEarthView->resize(width()/2,height()/2);
-    googleMapView->move(pos().x(),pos().y()+height()/2);
-    googleMapView->resize(width()/2,height()/2);
+    QScreen *scr=QApplication::screens().at(0);
+    QRect rect = scr->availableGeometry();
+    QSize thisDecoration=this->frameSize()-this->size();
+    this->move(rect.x(),rect.y());
+    this->resize(rect.width()/2-thisDecoration.width(),rect.height()-thisDecoration.height());
+
+    QSize GMDecoration=googleMapView->frameSize()-googleMapView->size();
+    QSize GEDecoration=googleEarthView->frameSize()-googleEarthView->size();
+    googleEarthView->move(rect.x()+rect.width()/2,rect.y());
+    googleEarthView->resize(rect.width()/2-GEDecoration.width(),rect.height()/2-GEDecoration.height());
+    googleMapView->move(rect.x()+rect.width()/2,rect.y()+rect.height()/2);
+    googleMapView->resize(rect.width()/2-GMDecoration.width(),rect.height()/2-GMDecoration.height());
     googleEarthView->setVisible(true);
     googleMapView->setVisible(true);
 }

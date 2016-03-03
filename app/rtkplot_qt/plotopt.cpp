@@ -11,6 +11,7 @@
 #include <QFontDialog>
 #include <QFileDialog>
 #include <QPoint>
+#include <QDebug>
 
 QString color2String(const QColor &c);
 
@@ -75,23 +76,24 @@ void PlotOptDialog::showEvent(QShowEvent *event)
     for (i=0;i<8;i++) {
         if (marks[i]==plot->MarkSize) MarkSize->setCurrentIndex(i);
     }
-    for (int i=0;i<6;i++)
+    for (int i=0;i<8;i++)
         for (int j=0;j<2;j++)
             MColor[j][i]=plot->MColor[j][i];
     for (int i=0;i<4;i++)
         CColor[i]=plot->CColor[i];
 
-    MColor1 ->setStyleSheet(QString("QPushButton {background-color: %1;}").arg(color2String(plot->MColor[0][1])));
-    MColor2 ->setStyleSheet(QString("QPushButton {background-color: %1;}").arg(color2String(plot->MColor[0][2])));
-    MColor3 ->setStyleSheet(QString("QPushButton {background-color: %1;}").arg(color2String(plot->MColor[0][3])));
-    MColor4 ->setStyleSheet(QString("QPushButton {background-color: %1;}").arg(color2String(plot->MColor[0][4])));
-    MColor5 ->setStyleSheet(QString("QPushButton {background-color: %1;}").arg(color2String(plot->MColor[0][5])));
-    MColor6 ->setStyleSheet(QString("QPushButton {background-color: %1;}").arg(color2String(plot->MColor[0][6])));
-    MColor7 ->setStyleSheet(QString("QPushButton {background-color: %1;}").arg(color2String(plot->MColor[1][1])));
-    MColor8 ->setStyleSheet(QString("QPushButton {background-color: %1;}").arg(color2String(plot->MColor[1][2])));
-    MColor9 ->setStyleSheet(QString("QPushButton {background-color: %1;}").arg(color2String(plot->MColor[1][3])));
-    MColor10->setStyleSheet(QString("QPushButton {background-color: %1;}").arg(color2String(plot->MColor[1][4])));
-    MColor11->setStyleSheet(QString("QPushButton {background-color: %1;}").arg(color2String(plot->MColor[1][5])));
+    MColor1 ->setStyleSheet(QString("background-color: %1;").arg(color2String(plot->MColor[0][1])));
+    MColor2 ->setStyleSheet(QString("background-color: %1;").arg(color2String(plot->MColor[0][2])));
+    MColor3 ->setStyleSheet(QString("background-color: %1;").arg(color2String(plot->MColor[0][3])));
+    MColor4 ->setStyleSheet(QString("background-color: %1;").arg(color2String(plot->MColor[0][4])));
+    MColor5 ->setStyleSheet(QString("background-color: %1;").arg(color2String(plot->MColor[0][5])));
+    MColor6 ->setStyleSheet(QString("background-color: %1;").arg(color2String(plot->MColor[0][6])));
+    MColor7 ->setStyleSheet(QString("background-color: %1;").arg(color2String(plot->MColor[1][1])));
+    MColor8 ->setStyleSheet(QString("background-color: %1;").arg(color2String(plot->MColor[1][2])));
+    MColor9 ->setStyleSheet(QString("background-color: %1;").arg(color2String(plot->MColor[1][3])));
+    MColor10->setStyleSheet(QString("background-color: %1;").arg(color2String(plot->MColor[1][4])));
+    MColor11->setStyleSheet(QString("background-color: %1;").arg(color2String(plot->MColor[1][5])));
+    MColor12->setStyleSheet(QString("background-color: %1;").arg(color2String(plot->MColor[1][6])));
     Color1 ->setStyleSheet(QString("QLabel {background-color: %1;}").arg(color2String(plot->CColor[0])));
     Color2 ->setStyleSheet(QString("QLabel {background-color: %1;}").arg(color2String(plot->CColor[1])));
     Color3 ->setStyleSheet(QString("QLabel {background-color: %1;}").arg(color2String(plot->CColor[2])));
@@ -148,7 +150,7 @@ void PlotOptDialog::BtnOKClick()
     plot->ShowCompass=ShowCompass->currentIndex();
     plot->PlotStyle  =PlotStyle  ->currentIndex();
     plot->MarkSize=marks[MarkSize->currentIndex()];
-    for (int i=0;i<6;i++)
+    for (int i=0;i<8;i++)
         for (int j=0;j<2;j++)
             plot->MColor[j][i]=MColor[j][i];
     for (int i=0;i<4;i++)
@@ -187,30 +189,30 @@ void PlotOptDialog::BtnOKClick()
 //---------------------------------------------------------------------------
 void PlotOptDialog::MColorClick()
 {
-    QPushButton *button=dynamic_cast<QPushButton *>(QObject::sender());
+    QToolButton *button=dynamic_cast<QToolButton *>(QObject::sender());
     if (!button) return;
 
     QColorDialog dialog(this);
-    QColor &current=MColor[0][1];
+    QColor *current=&MColor[0][1];
 
-    if (button==MColor1) current=MColor[0][1];
-    if (button==MColor2) current=MColor[0][2];
-    if (button==MColor3) current=MColor[0][3];
-    if (button==MColor4) current=MColor[0][4];
-    if (button==MColor5) current=MColor[0][5];
-    if (button==MColor6) current=MColor[0][6];
-    if (button==MColor7) current=MColor[1][1];
-    if (button==MColor8) current=MColor[1][2];
-    if (button==MColor9) current=MColor[1][3];
-    if (button==MColor10) current=MColor[1][4];
-    if (button==MColor11) current=MColor[1][5];
-    if (button==MColor12) current=MColor[1][6];
-    dialog.setCurrentColor(current);
+    if (button==MColor1)  current=&MColor[0][1];
+    if (button==MColor2)  current=&MColor[0][2];
+    if (button==MColor3)  current=&MColor[0][3];
+    if (button==MColor4)  current=&MColor[0][4];
+    if (button==MColor5)  current=&MColor[0][5];
+    if (button==MColor6)  current=&MColor[0][6];
+    if (button==MColor7)  current=&MColor[1][1];
+    if (button==MColor8)  current=&MColor[1][2];
+    if (button==MColor9)  current=&MColor[1][3];
+    if (button==MColor10) current=&MColor[1][4];
+    if (button==MColor11) current=&MColor[1][5];
+    if (button==MColor12) current=&MColor[1][6];
+    dialog.setCurrentColor(*current);
 
     dialog.exec();
     if (dialog.result()!=QDialog::Accepted) return;
-    button->setStyleSheet(QString("QPushButton {background-color: %1;}").arg(color2String(dialog.currentColor())));
-    current=dialog.currentColor();
+    button->setStyleSheet(QString("background-color: %1").arg(color2String(dialog.currentColor())));
+    *current=dialog.currentColor();
 }
 //---------------------------------------------------------------------------
 void PlotOptDialog::BtnColor1Click()
@@ -310,9 +312,8 @@ void PlotOptDialog::OriginChange()
 //---------------------------------------------------------------------------
 void PlotOptDialog::UpdateFont(void)
 {
-    QString s;
     FontLabel->setFont(FontOpt);
-    FontLabel->setText(FontOpt.family()+QString::number(FontOpt.pixelSize())+" pt");
+    FontLabel->setText(FontOpt.family()+" "+QString::number(FontOpt.pointSize())+" pt");
 }
 //---------------------------------------------------------------------------
 void PlotOptDialog::UpdateEnable(void)

@@ -5,6 +5,7 @@
 #include <QProcess>
 #include <QColor>
 #include <QStringList>
+#include <QDebug>
 
 #include "plotmain.h"
 
@@ -27,6 +28,8 @@ const QString PTypes[]={
 void Plot::ShowMsg(const QString &msg)
 {
     Message1->setText(msg);
+    Message1->adjustSize();
+    Panel21->updateGeometry();
 //    Panel21->repaint();
 }
 // execute command ----------------------------------------------------------
@@ -74,12 +77,15 @@ void Plot::ShowLegend(QString msgs[])
     for (i=0;i<7;i++) {
         if (!msgs||msgs[i]==NULL) {
             ql[i]->setText("");
+            ql[i]->adjustSize();
         }
         else {
             ql[i]->setText(msgs[i]);
+            ql[i]->adjustSize();
             ql[i]->setStyleSheet(QString("QLabel {color: %1;}").arg(color2String(MColor[sel][i+1])));
         }
     }
+    Panel21->updateGeometry();
 }
 // get current cursor position ----------------------------------------------
 int Plot::GetCurrentPos(double *rr)

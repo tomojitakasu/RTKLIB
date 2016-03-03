@@ -166,27 +166,11 @@ public slots:
         void  BtnSol12Click		();
         void  BtnSol1DblClick		();
         void  BtnSol2DblClick		();
-        void  BtnShowMapClick		();
         void  BtnOn1Click			();
         void  BtnOn2Click			();
         void  BtnOn3Click			();
         void  BtnRangeListClick	();
-        void  BtnCenterOriClick	();
-        void  BtnFitHorizClick	();
-        void  BtnFitVertClick		();
-        void  BtnShowTrackClick	();
-        void  BtnFixHorizClick	();
-        void  BtnFixVertClick		();
-        void  BtnShowPointClick	();
         void  BtnAnimateClick		();
-        void  BtnClearClick		();
-        void  BtnReloadClick		();
-
-        void  BtnGEClick();
-        void  BtnOptionsClick();
-        void  BtnFixCentClick();
-        void  BtnGMClick();
-        void  BtnShowSkyplotClick();
 
         void  PlotTypeSChange		();
         void  QFlagChange			();
@@ -386,8 +370,6 @@ public:
     QString RnxOpts;
     tle_t TLEData;
     QFont Font;
-    QToolBar *toolBar;
-    QStatusBar *statusBar;
 
     // connection settings
     int RtStream[2];
@@ -481,6 +463,7 @@ public:
     void  Refresh_GMView(void);
 
     Plot(QWidget* parent=NULL);
+    ~Plot();
 };
 
 //---------------------------------------------------------------------------

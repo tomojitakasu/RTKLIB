@@ -223,7 +223,7 @@ void Plot::UpdateInfoSol(void)
         
         TimeStr(ts,0,0,s1);
         TimeStr(te,0,1,s2);
-        msg+=QString("%1-%2 : N=%3").arg(s1).arg(s2+(TimeLabel?5:0)).arg(n);
+        msg+=QString("%1-%2 : N=%3").arg(s1).arg(s2.mid(TimeLabel?5:0)).arg(n);
         
         if (bl[0]+100.0<bl[1]) {
             msg+=QString(" B=%1-%2km").arg(bl[0]/1E3,0,'f',1).arg(bl[1]/1E3,0,'f',1);
@@ -235,7 +235,7 @@ void Plot::UpdateInfoSol(void)
         
         for (i=1;i<=6;i++) {
             if (nq[i]<=0) continue;
-            msgs[i-1]=QString("%1:%2(%3%%) ").arg(i).arg(nq[i]).arg((double)nq[i]/n*100.0,0,'f',1);
+            msgs[i-1]=QString("%1:%2(%3%) ").arg(i).arg(nq[i]).arg((double)nq[i]/n*100.0,0,'f',1);
         }
     }
     ShowMsg(msg);

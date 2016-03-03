@@ -367,7 +367,7 @@ void Plot::DrawTrkStat(QPainter &c,const TIMEPOS *pos, const QString &header, in
     QString s[6];
     QPoint p1,p2;
     double *d,ave[4],std[4],rms[4];
-    int i,n=0,fonth=(int)(Disp->font().pixelSize()*1.5);
+    int i,n=0,fonth=(int)(Disp->font().pointSize()*1.5);
     
     trace(3,"DrawTrkStat: p=%d\n",p);
     
@@ -664,7 +664,7 @@ void Plot::DrawSolStat(QPainter &c,const TIMEPOS *pos, const QString &unit, int 
     QPushButton *btn[]={BtnOn1,BtnOn2,BtnOn3};
     QPoint p1,p2;
     double ave,std,rms,*y,opos[3];
-    int i,j=0,k=0,fonth=(int)(Disp->font().pixelSize()*1.5);
+    int i,j=0,k=0,fonth=(int)(Disp->font().pointSize()*1.5);
     QString label,s;
     
     trace(3,"DrawSolStat: p=%d\n",p);
@@ -834,7 +834,7 @@ void Plot::DrawObs(QPainter &c,int level)
         label=id;
         GraphR->DrawText(c,p,label,CColor[2],2,0,0);
     }
-    p1.setX(Disp->font().pixelSize());
+    p1.setX(Disp->font().pointSize());
     p1.setY((p1.y()+p2.y())/2);
     GraphR->DrawText(c,p1,tr("SATELLITE NO"),CColor[2],0,0,90);
     
@@ -1037,7 +1037,7 @@ void Plot::DrawSky(QPainter &c,int level)
     double p[MAXSAT][2]={{0}},gfp[MAXSAT]={0},p0[MAXSAT][2]={{0}};
     double x,y,xp,yp,xs,ys,dt,dx,dy,xl[2],yl[2],r,gf;
     int i,j,ind=ObsIndex;
-    int hh=(int)(Disp->font().pixelSize()*1.5),slip;
+    int hh=(int)(Disp->font().pointSize()*1.5),slip;
     const char *code=ObsType->currentIndex()?qPrintable(ObsTypeText)+1:"";
     char id[16];
     
@@ -1156,8 +1156,8 @@ void Plot::DrawSky(QPainter &c,int level)
             y=r*cos(Az[i])*(1.0-2.0*El[i]/PI);
             
             satno2id(obs->sat,id);
-            GraphS->DrawMark(c,x,y,0,col,Disp->font().pixelSize()*2+5,0);
-            GraphS->DrawMark(c,x,y,1,col==Qt::black?MColor[0][0]:CColor[2],Disp->font().pixelSize()*2+5,0);
+            GraphS->DrawMark(c,x,y,0,col,Disp->font().pointSize()*2+5,0);
+            GraphS->DrawMark(c,x,y,1,col==Qt::black?MColor[0][0]:CColor[2],Disp->font().pointSize()*2+5,0);
             GraphS->DrawText(c,x,y,s=id,CColor[0],0,0,0);
         }
     }
@@ -1249,7 +1249,7 @@ void Plot::DrawDop(QPainter &c,int level)
     }
     GraphR->DrawAxis(c,1,1);
     GraphR->GetPos(p1,p2);
-    p1.setX(Disp->font().pixelSize());
+    p1.setX(Disp->font().pointSize());
     p1.setY((p1.y()+p2.y())/2);
     if (doptype==0) {
         label=QString("# OF SATELLITES / DOP (EL>=%1%2)").arg(ElMask,0,'f',0).arg(CHARDEG);
@@ -1359,7 +1359,7 @@ void Plot::DrawDopStat(QPainter &c,double *dop, int *ns, int n)
     QPoint p1,p2,p3,p4;
     double ave[4]={0};
     int i,j,m=0;
-    int ndop[4]={0},nsat[MAXOBS]={0},fonth=(int)(Disp->font().pixelSize()*1.5);
+    int ndop[4]={0},nsat[MAXOBS]={0},fonth=(int)(Disp->font().pointSize()*1.5);
     
     trace(3,"DrawDopStat: n=%d\n",n);
     
@@ -1556,7 +1556,7 @@ void Plot::DrawSnrE(QPainter &c,int level)
     double *x[2],*y[2],xl[2]={-0.001,90.0},yl[2][2]={{10.0,65.0},{-10.0,10.0}};
     double xp[2][MAXSAT],yp[2][MAXSAT],ave=0.0,rms=0.0;
     const char *code=qPrintable(ObsTypeText.mid(1));
-    int i,j,k,n[2],np[2]={0},sat,ind=ObsIndex,hh=(int)(Disp->font().pixelSize()*1.5);
+    int i,j,k,n[2],np[2]={0},sat,ind=ObsIndex,hh=(int)(Disp->font().pointSize()*1.5);
     int nrms=0;
     
     trace(3,"DrawSnrE: level=%d\n",level);
@@ -1573,7 +1573,7 @@ void Plot::DrawSnrE(QPainter &c,int level)
         GraphE[i]->DrawAxis(c,1,1);
         
         GraphE[i]->GetPos(p1,p2);
-        p1.setX(Disp->font().pixelSize());
+        p1.setX(Disp->font().pointSize());
         p1.setY((p1.y()+p2.y())/2);
         GraphE[i]->DrawText(c,p1,label[i],CColor[2],0,0,90);
         if (i==j) {
@@ -1755,8 +1755,8 @@ void Plot::DrawMpS(QPainter &c,int level)
             y=r*cos(Az[i])*(1.0-2.0*El[i]/PI);
             
             satno2id(obs->sat,id);
-            GraphS->DrawMark(c,x,y,0,col,Disp->font().pixelSize()*2+5,0);
-            GraphS->DrawMark(c,x,y,1,CColor[2],Disp->font().pixelSize()*2+5,0);
+            GraphS->DrawMark(c,x,y,0,col,Disp->font().pointSize()*2+5,0);
+            GraphS->DrawMark(c,x,y,1,CColor[2],Disp->font().pointSize()*2+5,0);
             GraphS->DrawText(c,x,y,s=id,CColor[0],0,0,0);
         }
     }
