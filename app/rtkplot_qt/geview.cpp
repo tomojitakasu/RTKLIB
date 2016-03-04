@@ -91,12 +91,12 @@ extern Plot *plot;
 //---------------------------------------------------------------------------
 void  GoogleEarthView::FormCreate()
 {
-    QString url,dir=".";
+    QString dir=".";
     
     dir=qApp->applicationDirPath(); // exe directory
-    url="file://"+dir+"/"+RTKPLOT_GE_FILE;
-    
-    WebBrowser->load(QUrl(url));
+    dir=dir+"/"+RTKPLOT_GE_FILE;
+
+    WebBrowser->load(QUrl::fromLocalFile(dir));
     WebBrowser->show();
 }
 //---------------------------------------------------------------------------
