@@ -54,7 +54,7 @@ void Console::BtnDownClick()
 //---------------------------------------------------------------------------
 void Console::AddMsg(unsigned char *msg, int n)
 {
-    char buff[MAXLEN+16],*p=buff,c;
+    char buff[MAXLEN+16],*p=buff;
     int mode=BtnAsc->isChecked();
 
     if (n<=0) return;

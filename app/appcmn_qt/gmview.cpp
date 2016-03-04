@@ -105,5 +105,6 @@ void GoogleMapView::ExecFunc(const QString &func)
 
     QWebFrame *frame=WebBrowser->page()->mainFrame();
 
-    frame->evaluateJavaScript(func);}
+    frame->evaluateJavaScript(func);
+}
 //---------------------------------------------------------------------------

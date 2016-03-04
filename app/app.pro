@@ -5,4 +5,5 @@ SUBDIRS= rtknavi_qt \
          rtkplot_qt \
          rtkpost_qt \
          rtklaunch_qt \
-         srctblbrows_qt
+         srctblbrows_qt \
+	 strsvr_qt

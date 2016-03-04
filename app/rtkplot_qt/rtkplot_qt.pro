@@ -37,6 +37,7 @@ win32 {
 }
 
 PRE_TARGETDEPS = $${RTKLIB}
+
 SOURCES += \
     ../appcmn_qt/aboutdlg.cpp \
     conndlg.cpp \

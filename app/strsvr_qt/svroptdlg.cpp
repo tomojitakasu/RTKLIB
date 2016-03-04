@@ -1,147 +1,175 @@
 //---------------------------------------------------------------------------
-#include <vcl.h>
-#include <FileCtrl.hpp>
-#pragma hdrstop
+#include <QShowEvent>
+#include <QIntValidator>
+#include <QDoubleValidator>
+#include <QFileDialog>
 
 #include "rtklib.h"
 #include "refdlg.h"
 #include "svroptdlg.h"
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
-#pragma resource "*.dfm"
-TSvrOptDialog *SvrOptDialog;
 //---------------------------------------------------------------------------
-static double str2dbl(AnsiString str)
+SvrOptDialog::SvrOptDialog(QWidget *parent)
+    : QDialog(parent)
 {
-	double val=0.0;
-	sscanf(str.c_str(),"%lf",&val);
-	return val;
+    setupUi(this);
+
+    connect(BtnOk,SIGNAL(clicked(bool)),this,SLOT(BtnOkClick()));
+    connect(BtnCancel,SIGNAL(clicked(bool)),this,SLOT(reject()));
+    connect(BtnPos,SIGNAL(clicked(bool)),this,SLOT(BtnPosClick()));
+    connect(NmeaReqT,SIGNAL(clicked(bool)),this,SLOT(NmeaReqTClick()));
+    connect(BtnLocalDir,SIGNAL(clicked(bool)),this,SLOT(BtnLocalDirClick()));
+    connect(StaInfoSel,SIGNAL(clicked(bool)),this,SLOT(StaInfoSelClick()));
+
+    // set validators to positive integer values
+    SvrBuffSize->setValidator(new QIntValidator(0,0xffffffff));
+    AvePeriodRate->setValidator(new QIntValidator(0,0xffffffff));
+    SvrCycle->setValidator(new QIntValidator(0,0xffffffff));
+    DataTimeout->setValidator(new QIntValidator(0,0xffffffff));
+    ConnectInterval->setValidator(new QIntValidator(0,0xffffffff));
+    NmeaCycle->setValidator(new QIntValidator(0,0xffffffff));
+    StationId->setValidator(new QIntValidator(0,0xffffffff));
+
+    AntPos1->setValidator(new QDoubleValidator(-90,90,8));
+    AntPos2->setValidator(new QDoubleValidator(-180,180,8));
+    AntPos3->setValidator(new QDoubleValidator(0,8000,3));
+
+    AntOff1->setValidator(new QDoubleValidator());
+    AntOff2->setValidator(new QDoubleValidator());
+    AntOff3->setValidator(new QDoubleValidator());
 }
 //---------------------------------------------------------------------------
-__fastcall TSvrOptDialog::TSvrOptDialog(TComponent* Owner)
-	: TForm(Owner)
+void SvrOptDialog::showEvent(QShowEvent* event)
 {
-}
-//---------------------------------------------------------------------------
-void __fastcall TSvrOptDialog::FormShow(TObject *Sender)
-{
+    if (event->spontaneous()) return;
+
 	double pos[3];
-	AnsiString s;
-	DataTimeout->Text=s.sprintf("%d",SvrOpt[0]);
-	ConnectInterval->Text=s.sprintf("%d",SvrOpt[1]);
-	AvePeriodRate->Text=s.sprintf("%d",SvrOpt[2]);
-	SvrBuffSize->Text=s.sprintf("%d",SvrOpt[3]);
-	SvrCycle->Text=s.sprintf("%d",SvrOpt[4]);
-	NmeaCycle->Text=s.sprintf("%d",SvrOpt[5]);
-	FileSwapMarginE->Text=s.sprintf("%d",FileSwapMargin);
+    QString s;
+    DataTimeout->setText(QString::number(SvrOpt[0]));
+    ConnectInterval->setText(QString::number(SvrOpt[1]));
+    AvePeriodRate->setText(QString::number(SvrOpt[2]));
+    SvrBuffSize->setText(QString::number(SvrOpt[3]));
+    SvrCycle->setText(QString::number(SvrOpt[4]));
+    NmeaCycle->setText(QString::number(SvrOpt[5]));
+    FileSwapMarginE->setText(QString::number(FileSwapMargin));
 	if (norm(AntPos,3)>0.0) {
 		ecef2pos(AntPos,pos);
-		AntPos1->Text=s.sprintf("%.8f",pos[0]*R2D);
-		AntPos2->Text=s.sprintf("%.8f",pos[1]*R2D);
-		AntPos3->Text=s.sprintf("%.3f",pos[2]);
+        AntPos1->setText(QString::number(pos[0]*R2D,'f',8));
+        AntPos2->setText(QString::number(pos[1]*R2D,'f',8));
+        AntPos3->setText(QString::number(pos[2],'f',3));
 	}
 	else {
-		AntPos1->Text="0.00000000";
-		AntPos2->Text="0.00000000";
-		AntPos3->Text="0.000";
+        AntPos1->setText("0.00000000");
+        AntPos2->setText("0.00000000");
+        AntPos3->setText("0.000");
 	}
-	TraceLevelS->ItemIndex=TraceLevel;
-	NmeaReqT->Checked=NmeaReq;
-	LocalDir->Text=LocalDirectory;
-	ProxyAddr->Text=ProxyAddress;
-	StationId->Text=s.sprintf("%d",StaId);
-	StaInfoSel->Checked=StaSel;
-	AntInfo->Text=AntType;
-	RcvInfo->Text=RcvType;
-	AntOff1->Text=s.sprintf("%.4f",AntOff[0]);
-	AntOff2->Text=s.sprintf("%.4f",AntOff[1]);
-	AntOff3->Text=s.sprintf("%.4f",AntOff[2]);
+    TraceLevelS->setCurrentIndex(TraceLevel);
+    NmeaReqT->setChecked(NmeaReq);
+    LocalDir->setText(LocalDirectory);
+    ProxyAddr->setText(ProxyAddress);
+    StationId->setText(QString::number(StaId));
+    StaInfoSel->setChecked(StaSel);
+    AntInfo->setText(AntType);
+    RcvInfo->setText(RcvType);
+    AntOff1->setText(QString::number(AntOff[0],'f',4));
+    AntOff2->setText(QString::number(AntOff[1],'f',4));
+    AntOff3->setText(QString::number(AntOff[2],'f',4));
 	
 	UpdateEnable();
 }
 //---------------------------------------------------------------------------
-void __fastcall TSvrOptDialog::BtnOkClick(TObject *Sender)
+void SvrOptDialog::BtnOkClick()
 {
 	double pos[3];
-	SvrOpt[0]=DataTimeout->Text.ToInt();
-	SvrOpt[1]=ConnectInterval->Text.ToInt();
-	SvrOpt[2]=AvePeriodRate->Text.ToInt();
-	SvrOpt[3]=SvrBuffSize->Text.ToInt();
-	SvrOpt[4]=SvrCycle->Text.ToInt();
-	SvrOpt[5]=NmeaCycle->Text.ToInt();
-	FileSwapMargin=FileSwapMarginE->Text.ToInt();
-	pos[0]=str2dbl(AntPos1->Text)*D2R;
-	pos[1]=str2dbl(AntPos2->Text)*D2R;
-	pos[2]=str2dbl(AntPos3->Text);
+    SvrOpt[0]=DataTimeout->text().toInt();
+    SvrOpt[1]=ConnectInterval->text().toInt();
+    SvrOpt[2]=AvePeriodRate->text().toInt();
+    SvrOpt[3]=SvrBuffSize->text().toInt();
+    SvrOpt[4]=SvrCycle->text().toInt();
+    SvrOpt[5]=NmeaCycle->text().toInt();
+    FileSwapMargin=FileSwapMarginE->text().toInt();
+    pos[0]=AntPos1->text().toDouble()*D2R;
+    pos[1]=AntPos2->text().toDouble()*D2R;
+    pos[2]=AntPos3->text().toDouble();
 	if (norm(pos,3)>0.0) {
 		pos2ecef(pos,AntPos);
 	}
 	else {
 		for (int i=0;i<3;i++) AntPos[i]=0.0;
 	}
-	TraceLevel=TraceLevelS->ItemIndex;
-	NmeaReq=NmeaReqT->Checked;
-	LocalDirectory=LocalDir->Text;
-	ProxyAddress=ProxyAddr->Text;
-	StaId=(int)str2dbl(StationId->Text);
-	StaSel=StaInfoSel->Checked;
-	AntType=AntInfo->Text;
-	RcvType=RcvInfo->Text;
-	AntOff[0]=str2dbl(AntOff1->Text);
-	AntOff[1]=str2dbl(AntOff2->Text);
-	AntOff[2]=str2dbl(AntOff3->Text);
+    TraceLevel=TraceLevelS->currentIndex();
+    NmeaReq=NmeaReqT->isChecked();
+    LocalDirectory=LocalDir->text();
+    ProxyAddress=ProxyAddr->text();
+    StaId=StationId->text().toInt();
+    StaSel=StaInfoSel->isChecked();
+    AntType=AntInfo->text();
+    RcvType=RcvInfo->text();
+    AntOff[0]=AntOff1->text().toDouble();
+    AntOff[1]=AntOff2->text().toDouble();
+    AntOff[2]=AntOff3->text().toDouble();
+
+    accept();
 }
 //---------------------------------------------------------------------------
-void __fastcall TSvrOptDialog::BtnPosClick(TObject *Sender)
+void SvrOptDialog::BtnPosClick()
 {
-	AnsiString s;
-	RefDialog->RovPos[0]=str2dbl(AntPos1->Text);
-	RefDialog->RovPos[1]=str2dbl(AntPos2->Text);
-	RefDialog->RovPos[2]=str2dbl(AntPos3->Text);
-	RefDialog->BtnLoad->Enabled=true;
-	RefDialog->StaPosFile=StaPosFile;
-	if (RefDialog->ShowModal()!=mrOk) return;
-	AntPos1->Text=s.sprintf("%.8f",RefDialog->Pos[0]);
-	AntPos2->Text=s.sprintf("%.8f",RefDialog->Pos[1]);
-	AntPos3->Text=s.sprintf("%.3f",RefDialog->Pos[2]);
-	StaPosFile=RefDialog->StaPosFile;
+    QString s;
+
+    RefDialog *refDialog=new RefDialog(this);
+
+    refDialog->RovPos[0]=AntPos1->text().toDouble();
+    refDialog->RovPos[1]=AntPos2->text().toDouble();
+    refDialog->RovPos[2]=AntPos3->text().toDouble();
+//    refDialog->BtnLoad->setEnabled(true);//FIXME
+    refDialog->StaPosFile=StaPosFile;
+
+    refDialog->exec();
+
+    if (refDialog->result()!=QDialog::Accepted) return;
+
+    AntPos1->setText(QString::number(refDialog->Pos[0],'f',8));
+    AntPos2->setText(QString::number(refDialog->Pos[1],'f',8));
+    AntPos3->setText(QString::number(refDialog->Pos[2],'f',3));
+    StaPosFile=refDialog->StaPosFile;
+
+    delete refDialog;
 }
 //---------------------------------------------------------------------------
-void __fastcall TSvrOptDialog::BtnLocalDirClick(TObject *Sender)
+void SvrOptDialog::BtnLocalDirClick()
 {
 #ifdef TCPP
-    AnsiString dir=LocalDir->Text;
+    QString dir=LocalDir->Text;
     if (!SelectDirectory("Local Directory","",dir)) return;
     LocalDir->Text=dir;
 #else
-    UnicodeString dir=LocalDir->Text;
-    TSelectDirExtOpts opt=TSelectDirExtOpts()<<sdNewUI<<sdNewFolder;
-    if (!SelectDirectory(L"Local Directory",L"",dir,opt)) return;
-    LocalDir->Text=dir;
+    QString dir=LocalDir->text();
+    dir=QFileDialog::getExistingDirectory(this,tr("Local Directory"),dir);
+    LocalDir->setText(dir);
 #endif
 }
 //---------------------------------------------------------------------------
-void __fastcall TSvrOptDialog::UpdateEnable(void)
+void SvrOptDialog::UpdateEnable(void)
 {
-	NmeaCycle->Enabled=NmeaReqT->Checked;
-	StationId->Enabled=StaInfoSel->Checked;
-	AntPos1->Enabled=StaInfoSel->Checked||NmeaReqT->Checked;
-	AntPos2->Enabled=StaInfoSel->Checked||NmeaReqT->Checked;
-	AntPos3->Enabled=StaInfoSel->Checked||NmeaReqT->Checked;
-	BtnPos ->Enabled=StaInfoSel->Checked||NmeaReqT->Checked;
-	AntOff1->Enabled=StaInfoSel->Checked;
-	AntOff2->Enabled=StaInfoSel->Checked;
-	AntOff3->Enabled=StaInfoSel->Checked;
-	AntInfo->Enabled=StaInfoSel->Checked;
-	RcvInfo->Enabled=StaInfoSel->Checked;
+    NmeaCycle->setEnabled(NmeaReqT->isChecked());
+    StationId->setEnabled(StaInfoSel->isChecked());
+    AntPos1->setEnabled(StaInfoSel->isChecked()||NmeaReqT->isChecked());
+    AntPos2->setEnabled(StaInfoSel->isChecked()||NmeaReqT->isChecked());
+    AntPos3->setEnabled(StaInfoSel->isChecked()||NmeaReqT->isChecked());
+    BtnPos ->setEnabled(StaInfoSel->isChecked()||NmeaReqT->isChecked());
+    AntOff1->setEnabled(StaInfoSel->isChecked());
+    AntOff2->setEnabled(StaInfoSel->isChecked());
+    AntOff3->setEnabled(StaInfoSel->isChecked());
+    AntInfo->setEnabled(StaInfoSel->isChecked());
+    RcvInfo->setEnabled(StaInfoSel->isChecked());
 }
 //---------------------------------------------------------------------------
-void __fastcall TSvrOptDialog::NmeaReqTClick(TObject *Sender)
+void SvrOptDialog::NmeaReqTClick()
 {
 	UpdateEnable();
 }
 //---------------------------------------------------------------------------
-void __fastcall TSvrOptDialog::StaInfoSelClick(TObject *Sender)
+void SvrOptDialog::StaInfoSelClick()
 {
 	UpdateEnable();
 }

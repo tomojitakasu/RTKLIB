@@ -1,62 +1,62 @@
 //---------------------------------------------------------------------------
-#include <vcl.h>
-#pragma hdrstop
+#include <QShowEvent>
 
 #include "rtklib.h"
 #include "convdlg.h"
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
-#pragma resource "*.dfm"
-TConvDialog *ConvDialog;
 //---------------------------------------------------------------------------
-static double str2dbl(AnsiString str)
+ConvDialog::ConvDialog(QWidget *parent)
+    : QDialog(parent)
 {
-	double val=0.0;
-	sscanf(str.c_str(),"%lf",&val);
-	return val;
-}
-//---------------------------------------------------------------------------
-__fastcall TConvDialog::TConvDialog(TComponent* Owner)
-	: TForm(Owner)
-{
+    setupUi(this);
+
 	int i;
 	for (i=0;i<=MAXRCVFMT;i++) {
-		InFormat->Items->Add(formatstrs[i]);
+        InFormat->addItem(formatstrs[i]);
 	}
-	InFormat->ItemIndex=0;
+    InFormat->setCurrentIndex(0);
+
+    connect(BtnOk,SIGNAL(clicked(bool)),this,SLOT(BtnOkClick()));
+    connect(BtnCancel,SIGNAL(clicked(bool)),this,SLOT(reject()));
+    connect(Conversion,SIGNAL(),this,SLOT(ConversionClick()));
+
 }
 //---------------------------------------------------------------------------
-void __fastcall TConvDialog::FormShow(TObject *Sender)
+void ConvDialog::showEvent(QShowEvent *event)
 {
-	AnsiString s;
-	Conversion->Checked=ConvEna;
-	InFormat ->ItemIndex=ConvInp;
-	OutFormat->ItemIndex=ConvOut;
-	OutMsgs->Text=ConvMsg;
-	Options->Text=ConvOpt;
+    if (event->spontaneous()) return;
+
+    Conversion->setChecked(ConvEna);
+    InFormat ->setCurrentIndex(ConvInp);
+    OutFormat->setCurrentIndex(ConvOut);
+    OutMsgs->setText(ConvMsg);
+    Options->setText(ConvOpt);
+
 	UpdateEnable();
 }
 //---------------------------------------------------------------------------
-void __fastcall TConvDialog::BtnOkClick(TObject *Sender)
+void ConvDialog::BtnOkClick()
 {
-	ConvEna=Conversion->Checked;
-	ConvInp=InFormat->ItemIndex;
-	ConvOut=OutFormat->ItemIndex;
-	ConvMsg=OutMsgs->Text;
-	ConvOpt=Options->Text;
+    ConvEna=Conversion->isChecked();
+    ConvInp=InFormat->currentIndex();
+    ConvOut=OutFormat->currentIndex();
+    ConvMsg=OutMsgs->text();
+    ConvOpt=Options->text();
+
+    accept();
 }
 //---------------------------------------------------------------------------
-void __fastcall TConvDialog::ConversionClick(TObject *Sender)
+void ConvDialog::ConversionClick()
 {
 	UpdateEnable();
 }
 //---------------------------------------------------------------------------
-void __fastcall TConvDialog::UpdateEnable(void)
+void ConvDialog::UpdateEnable(void)
 {
-	InFormat ->Enabled=Conversion->Checked;
-	OutFormat->Enabled=Conversion->Checked;
-	OutMsgs  ->Enabled=Conversion->Checked;
-	Options  ->Enabled=Conversion->Checked;
+    InFormat ->setEnabled(Conversion->isChecked());
+    OutFormat->setEnabled(Conversion->isChecked());
+    OutMsgs  ->setEnabled(Conversion->isChecked());
+    Options  ->setEnabled(Conversion->isChecked());
 }
 //---------------------------------------------------------------------------
 

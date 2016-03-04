@@ -69,7 +69,7 @@ void FileOptDialog::showEvent(QShowEvent *event)
         }
         TimeStart->setText(QString::number(start));
 
-        FilePath->setText(token.at(0));
+        FilePath->setText(tokens.at(0));
 	}
 	else {
         QStringList tokens=Path.split("::");
@@ -88,7 +88,7 @@ void FileOptDialog::showEvent(QShowEvent *event)
             SwapIntv->setCurrentIndex(TimeSpeed->count());
         }
 
-        FilePath->setText(token.at(0));
+        FilePath->setText(tokens.at(0));
 	}
 	UpdateEnable();
 }
