@@ -5,6 +5,7 @@
 #include <QShowEvent>
 #include <QFileDialog>
 #include <QPalette>
+#include <QDebug>
 
 #include "rtklib.h"
 #include "viewer.h"
@@ -91,23 +92,24 @@ void TextViewer::BtnFindClick()
     Text->find(FindStr->text());
 }
 //---------------------------------------------------------------------------
-void TextViewer::Read(QString file)
+void TextViewer::Read(const QString &path)
 {
+    char file[256],*p[]={file};
+    if (expath(qPrintable(path),p,1)<1) return;
+
     QFile f(file);
 
-    f.open(QIODevice::ReadOnly);
+    if (!f.open(QIODevice::ReadOnly)) return;
     Text->setPlainText("");
 
-    while (f.canReadLine())
-    {
-        Text->appendPlainText(f.readLine());
-    }
-    TextStr=Text->toPlainText();
+    TextStr=f.readAll();
+    Text->appendPlainText(TextStr);
+
     setWindowTitle(file);
 	File=file;
 }
 //---------------------------------------------------------------------------
-void TextViewer::Save(QString file)
+void TextViewer::Save(const QString &file)
 {
     QFile f(file);
 

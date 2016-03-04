@@ -19,6 +19,7 @@ public slots:
 
 protected:
     void showEvent(QShowEvent*);
+    QString color2String(const QColor &c);
 
 public:
     ViewerOptDialog(QWidget* parent);

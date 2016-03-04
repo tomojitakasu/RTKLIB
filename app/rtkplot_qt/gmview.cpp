@@ -4,6 +4,7 @@
 #include <QWebView>
 #include <QWebFrame>
 #include <QWebElement>
+#include <QDebug>
 
 #include "rtklib.h"
 #include "gmview.h"
@@ -37,12 +38,12 @@ GoogleMapView::GoogleMapView(QWidget *parent)
 //---------------------------------------------------------------------------
 void GoogleMapView::FormCreate()
 {
-    QString url,dir=".";
+    QString dir=".";
 
     dir=qApp->applicationDirPath(); // exe directory
-    url="file://"+dir+"/"+RTKLIB_GM_FILE;
+    dir=dir+"/"+RTKLIB_GM_FILE;
 
-    WebBrowser->load(QUrl(url));
+    WebBrowser->load(QUrl::fromLocalFile(dir));
     WebBrowser->show();
 
     Timer1.start(300);

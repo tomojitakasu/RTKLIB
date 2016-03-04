@@ -36,5 +36,4 @@ FORMS    += \
 RESOURCES += \
     rtklaunch_qt.qrc
 
-DISTFILES += \
-    .install.bat.swp
+RC_FILE = rtklaunch_qt.rc
