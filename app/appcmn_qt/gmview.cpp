@@ -84,7 +84,6 @@ void GoogleMapView::ClearMark(void)
 void GoogleMapView::AddMark(double lat, double lon,
     const QString &title, const QString &msg)
 {
-    qWarning()<<lat<<lon;
     ExecFunc(QString("AddMark(%1,%2,\"%3\",\"%4\")").arg(lat,0,'f',9).arg(lon,0,'f',9).arg(title).arg(msg));
 }
 //---------------------------------------------------------------------------

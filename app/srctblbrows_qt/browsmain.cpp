@@ -9,6 +9,7 @@
 #include <QCommandLineParser>
 #include <QtConcurrent/QtConcurrent>
 #include <QFutureWatcher>
+#include <QMetaObject>
 
 #include "rtklib.h"
 #include "aboutdlg.h"
@@ -20,24 +21,23 @@
 #define PRGNAME			"Ntrip Browser Qt"
 #define NTRIP_HOME		"rtcm-ntrip.org:2101" // caster list home
 #define NTRIP_TIMEOUT	10000				// response timeout (ms)
-#define NTRIP_CYCLE		50					// processing cycle (ms)
 #define MAXSRCTBL		512000				// max source table size (bytes)
 #define ENDSRCTBL		"ENDSOURCETABLE"	// end marker of table
-#define MAXLINE			1024				// max line size (byte)
 
 static char buff[MAXSRCTBL];				// source table buffer
 
 MainForm *mainForm;
 
 /* get source table -------------------------------------------------------*/
-static char *getsrctbl(const QString &addr)
+static char * getsrctbl(const QString addr)
 {
 	static int lock=0;
 	stream_t str;
 	char *p=buff,msg[MAXSTRMSG];
 	int ns,stat,len=strlen(ENDSRCTBL);
 	unsigned int tick=tickget();
-    char * path=new char(addr.length());
+
+    char * path=new char(addr.length()+1);
     strcpy(path,qPrintable(addr));
 	
 	if (lock) return NULL; else lock=1;
@@ -46,21 +46,23 @@ static char *getsrctbl(const QString &addr)
 
 	if (!stropen(&str,STR_NTRIPCLI,STR_MODE_R,path)) {
 		lock=0; 
-        mainForm->ShowMsg(QT_TR_NOOP("stream open error"));
+        QMetaObject::invokeMethod(mainForm,"ShowMsg",Qt::QueuedConnection,Q_ARG(QString,QT_TR_NOOP("stream open error")));
 		return NULL;
 	}
-    mainForm->ShowMsg(QT_TR_NOOP("connecting..."));
+    QMetaObject::invokeMethod(mainForm,"ShowMsg",Qt::QueuedConnection,Q_ARG(QString,QT_TR_NOOP("connecting...")));
 	
 	while(p<buff+MAXSRCTBL-1) {
         ns=strread(&str,(unsigned char*)p,(buff+MAXSRCTBL-p-1)); *(p+ns)='\0';
 		if (p-len-3>buff&&strstr(p-len-3,ENDSRCTBL)) break;
 		p+=ns;
-        //Sleep(NTRIP_CYCLE);
+        qApp->processEvents();
 		stat=strstat(&str,msg);
-        mainForm->ShowMsg(msg);
+
+        QMetaObject::invokeMethod(mainForm,"ShowMsg",Qt::QueuedConnection,Q_ARG(QString,msg));
+
 		if (stat<0) break;
 		if ((int)(tickget()-tick)>NTRIP_TIMEOUT) {
-            mainForm->ShowMsg(QT_TR_NOOP("response timeout"));
+            QMetaObject::invokeMethod(mainForm,"ShowMsg",Qt::QueuedConnection,Q_ARG(QString,QT_TR_NOOP("response timeout")));
 			break;
 		}
 	}
@@ -76,8 +78,8 @@ MainForm::MainForm(QWidget *parent)
     FiltFmt->setVisible(false);
     mainForm=this;
 
-//    QCoreApplication::setApplicationName(PRGNAME);
-//    QCoreApplication::setApplicationVersion("1.0");
+    QCoreApplication::setApplicationName(PRGNAME);
+    QCoreApplication::setApplicationVersion("1.0");
 
     setWindowIcon(QIcon(":/icons/srctblbrows_Icon"));
 
@@ -111,7 +113,7 @@ MainForm::MainForm(QWidget *parent)
     connect(MenuViewStr,SIGNAL(triggered(bool)),this,SLOT(MenuViewStrClick()));
     connect(MenuAbout,SIGNAL(triggered(bool)),this,SLOT(MenuAboutClick()));
     connect(Timer,SIGNAL(timeout()),this,SLOT(TimerTimer()));
-    connect(Table0,SIGNAL(cellActivated(int,int)),this,SLOT(Table0SelectCell(int,int)));
+    connect(Table0,SIGNAL(cellClicked(int,int)),this,SLOT(Table0SelectCell(int,int)));
 
     Table0->setSortingEnabled(true);
     Table1->setSortingEnabled(true);
@@ -345,15 +347,9 @@ void MainForm::BtnUpdateClick()
     GetTable();
 }
 //---------------------------------------------------------------------------
-void MainForm::AddressKeyPress(QString)
-{
-    GetTable(); //FIXME
-}
-//---------------------------------------------------------------------------
 void MainForm::AddressChange()
 {
-    GetTable(); //FIXME
-//	ShowTable();
+    GetTable();
 }
 //---------------------------------------------------------------------------
 void MainForm::TimerTimer()
@@ -381,25 +377,23 @@ void MainForm::GetCaster(void)
 //---------------------------------------------------------------------------
 void MainForm::UpdateCaster()
 {
-    QString text,item[3];
-    char buff[MAXLINE],*p,*q,*r,*srctbl;
-    int i,n;
+    QString text;
+    QString srctbl;
 
     BtnList->setEnabled(true);
     MenuUpdateCaster->setEnabled(true);
 
-    if (!(srctbl=CasterWatcher.result()))  return;
+    if ((srctbl=CasterWatcher.result()).isEmpty())  return;
 
     text=Address->currentText(); Address->clear(); Address->setCurrentText(text);
     Address->addItem("");
 
-	for (p=srctbl;*p;p=q+1) {
-		if (!(q=strchr(p,'\n'))) break;
-		n=q-p<MAXLINE-1?q-p:MAXLINE-1;
-		strncpy(buff,p,n); buff[n]='\0';
-		if (strncmp(buff,"CAS",3)) continue;
-		for (i=0,r=strtok(buff,";");i<3&&p;i++,r=strtok(NULL,";")) item[i]=r;
-        Address->addItem(item[1]+":"+item[2]);
+    QStringList tokens,lines=srctbl.split('\n');
+    foreach (const QString & line, lines) {
+        if (!line.contains("CAS")) continue;
+        tokens=line.split(";");
+        if (tokens.size()<3) continue;
+        Address->addItem(tokens.at(1)+":"+tokens.at(2));
 	}
     if (Address->count()>1) Address->setCurrentIndex(0);
 	ShowMsg("update caster list");
@@ -425,13 +419,13 @@ void MainForm::GetTable(void)
 //---------------------------------------------------------------------------
 void MainForm::UpdateTable(void)
 {
-    char *srctbl;
+    QString srctbl;
 
     BtnUpdate->setEnabled(true);
     Address->setEnabled(true);
     MenuUpdateTable->setEnabled(true);
 
-    if ((srctbl=TableWatcher.result())) {
+    if (!(srctbl=TableWatcher.result()).isEmpty()) {
 		SrcTable=srctbl;
         AddrCaster=Address->currentText();
 	}
@@ -442,7 +436,7 @@ void MainForm::ShowTable(void)
 {
     const QString ti[3][18]={{tr("Mountpoint"),tr("ID"),tr("Format"),tr("Format-Details"),tr("Carrier"),tr("Nav-System"),
         tr("Network"),tr("Country"),tr("Latitude"),tr("Longitude"),tr("NMEA"),tr("Solution"),
-        tr("Generator"),"Compr-Encrp","Authentication","Fee","Bitrate"},
+        tr("Generator"),"Compr-Encrp","Authentication","Fee","Bitrate",""},
         {tr("Host"),tr("Port"),tr("ID"),tr("Operator"),tr("NMEA"),tr("Country"),tr("Latitude"),tr("Longitude"),
         tr("Fallback_Host"),tr("Fallback_Port"),"","","","","","",""},
         {tr("ID"),tr("Operator"),tr("Authentication"),tr("Fee"),tr("Web-Net"),tr("Web-Str"),tr("Web-Reg"),"","","","",
@@ -451,8 +445,7 @@ void MainForm::ShowTable(void)
 
     QTableWidget *table[]={Table0,Table1,Table2};
     QAction *action[]={MenuViewStr,MenuViewCas,MenuViewNet,MenuViewSrc};
-    QString buff;
-	int i,j,n,ns,type;
+    int i,j,ns,type;
 
     Table3->setVisible(false);
     for (i=0;i<3;i++) table[i]->setVisible(false);
@@ -491,14 +484,12 @@ void MainForm::ShowTable(void)
     table[type]->setRowCount(ns);
     j=0;
     foreach (QString line, lines) {
-        n=line.length()<MAXLINE-1?line.length():MAXLINE-1;
-        buff=line.left(n);
 		switch (type) {
             case 0: if (line.contains("STR")) break; else continue;
             case 1: if (line.contains("CAS")) break; else continue;
             case 2: if (line.contains("NET")) break; else continue;
 		}
-        QStringList tokens=buff.split(";");
+        QStringList tokens=line.split(";");
         for (int i=0;i<18&&i<tokens.size();i++) {
             table[type]->setItem(j,i-1, new QTableWidgetItem(tokens.at(i)));
 		}

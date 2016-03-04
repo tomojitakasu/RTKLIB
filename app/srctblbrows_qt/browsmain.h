@@ -26,7 +26,6 @@ public slots:
     void BtnUpdateClick();
     void BtnListClick();
     void AddressChange();
-    void AddressKeyPress(QString);
     void MenuOpenClick();
     void MenuSaveClick();
     void MenuQuitClick();
@@ -44,6 +43,7 @@ public slots:
     void StaMaskClick();
     void UpdateCaster();
     void UpdateTable();
+    void ShowMsg(const QString &);
 
 private:
     QString AddrList,AddrCaster,SrcTable,IniFile;
@@ -62,7 +62,6 @@ private:
 public:
     QStringList StaList;
 
-    void ShowMsg(const QString &);
     MainForm(QWidget *parent=NULL);
 };
 //---------------------------------------------------------------------------
