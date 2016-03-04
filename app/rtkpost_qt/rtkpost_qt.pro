@@ -22,12 +22,16 @@ QMAKE_CXXFLAGS += -pg
 QMAKE_LFLAGS += -pg
 
 linux{
-    LIBS += -lpng ../../src/libRTKLib.a
+    RTKLIB =../../src/libRTKLib.a
+    LIBS += -lpng $${RTKLIB}
 }
 win32 {
-    debug:LIBS += ../../src/debug/libRTKLib.a -lWs2_32 -lwinmm
-    else:LIBS += ../../src/release/libRTKLib.a -lWs2_32 -lwinmm
+    debug:RTKLIB = ../../src/debug/libRTKLib.a
+    else:RTKLIB =../../src/release/libRTKLib.a
+    LIBS+= $${RTKLIB}  -lWs2_32 -lwinmm
 }
+
+PRE_TARGETDEPS = $${RTKLIB}
 
 SOURCES += \ 
     extopt.cpp \
@@ -74,3 +78,5 @@ FORMS    += \
 
 RESOURCES += \
     rtkpost_qt.qrc
+
+RC_FILE = rtkpost_qt.rc

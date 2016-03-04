@@ -18,6 +18,7 @@ OptDialog::OptDialog(QWidget *parent)
     : QDialog(parent)
 {
     setupUi(this);
+    widget->setVisible(false);
 
     int nglo=MAXPRNGLO,ngal=MAXPRNGAL,nqzs=MAXPRNQZS,ncmp=MAXPRNCMP;
     
@@ -1041,7 +1042,7 @@ void OptDialog::SetPos(int type, QLineEdit **edit, double *pos)
 void OptDialog::ReadAntList(void)
 {
     QString AntPcvFile_Text=AntPcvFile->text();
-	pcvs_t pcvs={0};
+    pcvs_t pcvs={0,0,0};
 	char *p;
 	
     if (!readpcv(qPrintable(AntPcvFile_Text),&pcvs)) return;

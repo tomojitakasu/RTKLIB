@@ -11,6 +11,9 @@
 #include "viewer.h"
 #include "vieweropt.h"
 //---------------------------------------------------------------------------
+QString ViewerOptDialog::color2String(const QColor &c){
+    return QString("rgb(%1,%2,%3)").arg(c.red()).arg(c.green()).arg(c.blue());
+}
 //---------------------------------------------------------------------------
 ViewerOptDialog::ViewerOptDialog(QWidget* parent)
     : QDialog(parent)
@@ -28,12 +31,11 @@ void ViewerOptDialog::showEvent(QShowEvent *event)
 {
     if (event->spontaneous()) return;
 
-    QPalette pal;
     FontLabel->setFont(Font);
-    FontLabel->setText(Font.family()+QString::number(Font.pointSize())+"px");
+    FontLabel->setText(Font.family()+QString::number(Font.pointSize())+" px");
 
-    pal=lbColor1->palette();pal.setColor(QPalette::Window,Color1);lbColor1->setPalette(pal);
-    pal=lbColor2->palette();pal.setColor(QPalette::Window,Color2);lbColor2->setPalette(pal);
+    lbColor1->setStyleSheet(QString("background-color: %1").arg(color2String(Color1)));
+    lbColor2->setStyleSheet(QString("background-color: %1").arg(color2String(Color2)));
 }
 //---------------------------------------------------------------------------
 void ViewerOptDialog::BtnOkClick()
@@ -44,25 +46,23 @@ void ViewerOptDialog::BtnOkClick()
 void ViewerOptDialog::BtnColor1Click()
 {
     QColorDialog d;
-    QPalette pal;
 
     d.setCurrentColor(Color1);    
     d.exec();
     Color1=d.selectedColor();
 
-    pal=lbColor1->palette();pal.setColor(QPalette::Window,Color1);lbColor1->setPalette(pal);
+    lbColor1->setStyleSheet(QString("background-color: %1").arg(color2String(Color1)));
 }
 //---------------------------------------------------------------------------
 void ViewerOptDialog::BtnColor2Click()
 {
     QColorDialog d;
-    QPalette pal;
 
     d.setCurrentColor(Color2);
     d.exec();
     Color2=d.selectedColor();
 
-    pal=lbColor2->palette();pal.setColor(QPalette::Window,Color2);lbColor2->setPalette(pal);
+    lbColor2->setStyleSheet(QString("background-color: %1").arg(color2String(Color2)));
 }
 //---------------------------------------------------------------------------
 void ViewerOptDialog::BtnFontClick()
@@ -74,6 +74,6 @@ void ViewerOptDialog::BtnFontClick()
     Font=d.selectedFont();
 
     FontLabel->setFont(Font);
-    FontLabel->setText(Font.family()+QString::number(Font.pointSize())+"pt");
+    FontLabel->setText(Font.family()+QString::number(Font.pointSize())+ "pt");
 }
 //---------------------------------------------------------------------------
