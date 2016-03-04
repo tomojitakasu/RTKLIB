@@ -44,6 +44,7 @@
 #include <QMessageBox>
 #include <QProcess>
 #include <QtGlobal>
+#include <QThread>
 #include <QMimeData>
 
 #include "rtklib.h"
@@ -71,8 +72,8 @@
 static const char version[]="$Revision: 1.1 $ $Date: 2008/07/17 22:14:45 $";
 
 // global variables ---------------------------------------------------------
-static gtime_t tstart_={0};         // time start for progress-bar
-static gtime_t tend_  ={0};         // time end for progress-bar
+static gtime_t tstart_={0,0};         // time start for progress-bar
+static gtime_t tend_  ={0,0};         // time end for progress-bar
 static char rov_ [256]="";          // rover name
 static char base_[256]="";          // base-station name
 
@@ -89,7 +90,8 @@ extern int showmsg(char *format, ...)
         va_start(arg,format);
         vsprintf(buff,format,arg);
         va_end(arg);
-        mainForm->ShowMsg(buff);
+        QMetaObject::invokeMethod(mainForm, "ShowMsg",Qt::QueuedConnection,
+                                  Q_ARG(QString,QString(buff)));
     }    
     return !mainForm->BtnExec->isEnabled();
 }
@@ -104,14 +106,60 @@ extern void settime(gtime_t time)
 {
     double tt;
     if (tend_.time!=0&&tstart_.time!=0&&(tt=timediff(tend_,tstart_))>0.0) {
-        mainForm->Progress->setValue((int)(timediff(time,tstart_)/tt*100.0+0.5));
+        QMetaObject::invokeMethod(mainForm->Progress,"setValue",
+                  Qt::QueuedConnection,
+                  Q_ARG(int,(int)(timediff(time,tstart_)/tt*100.0+0.5)));
     }
-    if ((mainForm->Progress->value()==0)||(mainForm->Progress->value()==mainForm->Progress->maximum()))
-            mainForm->Progress->setVisible(false);
 }
 
 } // extern "C"
 
+
+ProcessingThread::ProcessingThread(QObject *parent):QThread(parent)
+{
+    n=0;
+    prcopt=prcopt_default;
+    solopt=solopt_default;
+    ts={0};
+    te={0};
+    rov=base=NULL;
+    for (int i=0;i<6;i++) infile[i]=new char[1024];
+}
+ProcessingThread::~ProcessingThread()
+{
+    for (int i=0;i<6;i++) delete infile[i];
+    if (rov) delete rov;
+    if (base) delete base;
+    rov=base=NULL;
+}
+void ProcessingThread::addInput(const QString & file) {
+    if (file!="") {
+        strcpy(infile[n++],qPrintable(file));
+    }
+}
+void ProcessingThread::addList(char * sta, const QString & list) {
+    char *r;
+    sta =new char [list .length()+1];
+
+    QStringList lines=list.split("\n");
+
+    r=sta;
+    foreach(QString line,lines)
+    {
+        int index=line.indexOf("#");
+        strcpy(r,qPrintable(line.left(index)));
+        r+=index;
+        strcpy(r++," ");
+    }
+}
+void ProcessingThread::run()
+{
+    if ((stat=postpos(ts,te,ti,tu,&prcopt,&solopt,&filopt,infile,n,outfile,
+                      rov,base))==1) {
+        showmsg("aborted");
+    };
+    emit done(stat);
+}
 // constructor --------------------------------------------------------------
 MainForm::MainForm(QWidget *parent)
     : QDialog(parent)
@@ -443,7 +491,15 @@ void MainForm::BtnExecClick()
     BtnOption->setEnabled(false);
     Panel1   ->setEnabled(false);
     
-    if (ExecProc()>=0) {
+    ExecProc();
+}
+// callback on prcoessing finished-------------------------------------------
+void MainForm::ProcessingFinished(int stat)
+{
+    setCursor(Qt::ArrowCursor);
+    Progress->setVisible(false);
+
+    if (stat>=0) {
         AddHist(InputFile1);
         AddHist(InputFile2);
         AddHist(InputFile3);
@@ -452,6 +508,7 @@ void MainForm::BtnExecClick()
         AddHist(InputFile6);
         AddHist(OutputFile);
     }
+
     if (Message->text().contains("processing")) {
         showmsg("done");
     }
@@ -508,38 +565,38 @@ void MainForm::BtnTime2Click()
 // callback on button-inputfile-1 -------------------------------------------
 void MainForm::BtnInputFile1Click()
 {
-    InputFile1->setCurrentText(QFileDialog::getOpenFileName(this,tr("RINEX OBS (Rover) File"),QString(),tr("All (*.*);RINEX OBS (*.obs,*.*O,*.*D)")));
+    InputFile1->setCurrentText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("RINEX OBS (Rover) File"),InputFile1->currentText(),tr("All (*.*);;RINEX OBS (*.obs,*.*O,*.*D)"))));
     SetOutFile();
 }
 // callback on button-inputfile-2 -------------------------------------------
 void MainForm::BtnInputFile2Click()
 {
-    InputFile2->setCurrentText(QFileDialog::getOpenFileName(this,tr("RINEX OBS (Base Station) File"),QString(),tr("All (*.*);RINEX OBS (*.obs,*.*O,*.*D)")));
+    InputFile2->setCurrentText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("RINEX OBS (Base Station) File"),InputFile2->currentText(),tr("All (*.*);;RINEX OBS (*.obs,*.*O,*.*D)"))));
 }
 // callback on button-inputfile-3 -------------------------------------------
 void MainForm::BtnInputFile3Click()
 {
-    InputFile3->setCurrentText(QFileDialog::getOpenFileName(this,tr("RINEX NAV/CLK,SP3,FCB,IONEX or SBAS/EMS File"),QString(),tr("All (*.*);RINEX NAV (*.*nav,*.*N,*.*P,*.*G,*.*H,*.*Q)")));
+    InputFile3->setCurrentText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("RINEX NAV/CLK,SP3,FCB,IONEX or SBAS/EMS File"),InputFile3->currentText(),tr("All (*.*);;RINEX NAV (*.*nav,*.*N,*.*P,*.*G,*.*H,*.*Q)"))));
 }
 // callback on button-inputfile-4 -------------------------------------------
 void MainForm::BtnInputFile4Click()
 {
-    InputFile4->setCurrentText(QFileDialog::getOpenFileName(this,tr("RINEX NAV/CLK,SP3,FCB,IONEX or SBAS/EMS File"),QString(),tr("All (*.*);Precise Ephemeris/Clock (*.sp3,*.eph*,*.clk*)")));
+    InputFile4->setCurrentText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("RINEX NAV/CLK,SP3,FCB,IONEX or SBAS/EMS File"),InputFile4->currentText(),tr("All (*.*);;Precise Ephemeris/Clock (*.sp3,*.eph*,*.clk*)"))));
 }
 // callback on button-inputfile-5 -------------------------------------------
 void MainForm::BtnInputFile5Click()
 {
-    InputFile5->setCurrentText(QFileDialog::getOpenFileName(this,tr("RINEX NAV/CLK,SP3,FCB,IONEX or SBAS/EMS File"),QString(),tr("All (*.*);Precise Ephemeris/Clock (*.sp3,*.eph*,*.clk*)")));
+    InputFile5->setCurrentText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("RINEX NAV/CLK,SP3,FCB,IONEX or SBAS/EMS File"),InputFile5->currentText(),tr("All (*.*);;Precise Ephemeris/Clock (*.sp3,*.eph*,*.clk*)"))));
 }
 // callback on button-inputfile-6 -------------------------------------------
 void MainForm::BtnInputFile6Click()
 {
-    InputFile6->setCurrentText(QFileDialog::getOpenFileName(this,tr("RINEX NAV/CLK,SP3,FCB,IONEX or SBAS/EMS File"),QString(),tr("All (*.*);FCB (*.fcb),IONEX (*.*i,*.ionex),SBAS (*.sbs,*.ems)")));
+    InputFile6->setCurrentText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("RINEX NAV/CLK,SP3,FCB,IONEX or SBAS/EMS File"),InputFile6->currentText(),tr("All (*.*);;FCB (*.fcb),IONEX (*.*i,*.ionex),SBAS (*.sbs,*.ems)"))));
 }
 // callback on button-outputfile --------------------------------------------
 void MainForm::BtnOutputFileClick()
 {
-    OutputFile->setCurrentText(QFileDialog::getSaveFileName(this,tr("Output File"),QString(),tr("All (*.*);Position Files (*.pos)")));
+    OutputFile->setCurrentText(QDir::toNativeSeparators(QFileDialog::getSaveFileName(this,tr("Output File"),OutputFile->currentText(),tr("All (*.*);;Position Files (*.pos)"))));
 }
 // callback on button-inputview-1 -------------------------------------------
 void MainForm::BtnInputView1Click()
@@ -745,97 +802,73 @@ void MainForm::SetOutFile(void)
     OutputFile->setCurrentText(ofile);
 }
 // execute post-processing --------------------------------------------------
-int MainForm::ExecProc(void)
+void MainForm::ExecProc(void)
 {
     QString InputFile1_Text=InputFile1->currentText(),InputFile2_Text=InputFile2->currentText();
     QString InputFile3_Text=InputFile3->currentText(),InputFile4_Text=InputFile4->currentText();
     QString InputFile5_Text=InputFile5->currentText(),InputFile6_Text=InputFile6->currentText();
     QString OutputFile_Text=OutputFile->currentText();
     QString temp;
-    prcopt_t prcopt=prcopt_default;
-    solopt_t solopt=solopt_default;
-    filopt_t filopt={""};
-    gtime_t ts={0},te={0};
-    double ti=0.0,tu=0.0;
-    int n=0,stat;
-    char infile[6][1024],outfile[1024];
-    char *rov,*base,*r;
     
+    ProcessingThread *thread= new ProcessingThread(this);
+
     // get processing options
-    if (TimeStart->isChecked()) ts=GetTime1();
-    if (TimeEnd  ->isChecked()) te=GetTime2();
-    if (TimeIntF ->isChecked()) ti=TimeInt ->currentText().toDouble();
-    if (TimeUnitF->isChecked()) tu=TimeUnit->text().toDouble()*3600.0;
+    if (TimeStart->isChecked()) thread->ts=GetTime1();
+    if (TimeEnd  ->isChecked()) thread->te=GetTime2();
+    if (TimeIntF ->isChecked()) thread->ti=TimeInt ->currentText().toDouble();
+    if (TimeUnitF->isChecked()) thread->tu=TimeUnit->text().toDouble()*3600.0;
     
-    if (!GetOption(prcopt,solopt,filopt)) return 0;
+    if (!GetOption(thread->prcopt,thread->solopt,thread->filopt)) {ProcessingFinished(0);return;}
     
     // set input/output files
     
-    strcpy(infile[n++],qPrintable(InputFile1_Text));
+    thread->addInput(InputFile1_Text);
     
-    if (PMODE_DGPS<=prcopt.mode&&prcopt.mode<=PMODE_FIXED) {
-        strcpy(infile[n++],qPrintable(InputFile2_Text));
+    if (PMODE_DGPS<=thread->prcopt.mode&&thread->prcopt.mode<=PMODE_FIXED) {
+        thread->addInput(InputFile2_Text);
     }
-    if (InputFile3->currentText()!="") {
-        strcpy(infile[n++],qPrintable(InputFile3_Text));
+    if (InputFile3_Text!="") {
+        thread->addInput(InputFile3_Text);
     }
     else if (!ObsToNav(InputFile1_Text,temp)) {
         showmsg("error: no navigation data");
-        return 0;
-    }
-    strcpy(infile[n++],qPrintable(temp));
+        ProcessingFinished(0);
+        return;
+    } else thread->addInput(temp);
+
     if (InputFile4_Text!="") {
-        strcpy(infile[n++],qPrintable(InputFile4_Text));
+        thread->addInput(InputFile4_Text);
     }
     if (InputFile5_Text!="") {
-        strcpy(infile[n++],qPrintable(InputFile5_Text));
+        thread->addInput(InputFile5_Text);
     }
     if (InputFile6_Text!="") {
-        strcpy(infile[n++],qPrintable(InputFile6_Text));
+        thread->addInput(InputFile6_Text);
     }
-    strcpy(outfile,qPrintable(OutputFile_Text));
+    strcpy(thread->outfile,qPrintable(OutputFile_Text));
     
     // confirm overwrite
     if (!TimeStart->isChecked()||!TimeEnd->isChecked()) {
-        if (QFileInfo::exists(outfile)) {
-            if (QMessageBox::question(this,tr("Overwrite"),QString(tr("Overwrite existing file %1.")).arg(outfile))!=QMessageBox::Yes) return 0;
+        if (QFileInfo::exists(thread->outfile)) {
+            if (QMessageBox::question(this,tr("Overwrite"),QString(tr("Overwrite existing file %1.")).arg(thread->outfile))!=QMessageBox::Yes) {ProcessingFinished(0);return;}
         }
-    }
+    }    
     // set rover and base station list
-    rov =new char [RovList .length()];
-    base=new char [BaseList.length()];
-    
-    QStringList lines=RovList.split("\n");
-    r=rov;
-    foreach(QString line,lines)
-    {
-        int index=line.indexOf("#");
-        strcpy(r,qPrintable(line.left(index)));
-        r+=index;
-        strcpy(r++," ");
-    }
-    lines=BaseList.split("\n");
-    r=base;
-    foreach(QString line,lines)
-    {
-        int index=line.indexOf("#");
-        strcpy(r,qPrintable(line.left(index)));
-        r+=index;
-        strcpy(r++," ");
-    }
+    thread->addList(thread->rov,RovList);
+    thread->addList(thread->base,BaseList);
 
     Progress->setValue(0);
+    Progress->setVisible(true);
     showmsg("reading...");
+
+    setCursor(Qt::WaitCursor);
     
     // post processing positioning
-    if ((stat=postpos(ts,te,ti,tu,&prcopt,&solopt,&filopt,(char**)infile,n,outfile,
-                      rov,base))==1) {
-        showmsg("aborted");
-    }
-    delete [] rov ;
-    delete [] base;
+    connect(thread,SIGNAL(done(int)),this,SLOT(ProcessingFinished(int)));
+
+    thread->start();
     
-    return stat;
+    return;
 }
 // get processing and solution options --------------------------------------
 int MainForm::GetOption(prcopt_t &prcopt, solopt_t &solopt,
@@ -1047,7 +1080,7 @@ void MainForm::AddHist(QComboBox *combo)
     if (hist=="") return;
     int i=combo->currentIndex();
     if (i>=0) combo->removeItem(i);
-    combo->addItem(0);
+    combo->insertItem(0,hist);
     for (int i=combo->count()-1;i>=MAXHIST;i--) combo->removeItem(i);
     combo->setCurrentIndex(0);
 }

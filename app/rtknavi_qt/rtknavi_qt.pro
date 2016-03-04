@@ -24,13 +24,16 @@ TEMPLATE = app
 INCLUDEPATH += ../../src/ ../appcmn_qt ../rtkplot_qt
 
 linux{
-    LIBS += -lpng ../../src/libRTKLib.a
+    RTKLIB =../../src/libRTKLib.a
+    LIBS += -lpng $${RTKLIB}
 }
 win32 {
-    debug:LIBS += ../../src/debug/libRTKLib.a -lWs2_32 -lwinmm
-    else:LIBS += ../../src/release/libRTKLib.a -lWs2_32 -lwinmm
+    debug:RTKLIB = ../../src/debug/libRTKLib.a
+    else:RTKLIB =../../src/release/libRTKLib.a
+    LIBS+= $${RTKLIB}  -lWs2_32 -lwinmm
 }
 
+PRE_TARGETDEPS = $${RTKLIB}
 SOURCES += \
     ../appcmn_qt/aboutdlg.cpp \
     ../appcmn_qt/cmdoptdlg.cpp \

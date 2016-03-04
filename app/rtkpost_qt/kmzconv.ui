@@ -52,9 +52,6 @@
         <property name="toolTip">
          <string/>
         </property>
-        <property name="text" stdset="0">
-         <string>01.01.00</string>
-        </property>
        </widget>
       </item>
       <item row="9" column="0" colspan="9">
@@ -89,9 +86,6 @@
         </property>
         <property name="toolTip">
          <string/>
-        </property>
-        <property name="text" stdset="0">
-         <string>00:00</string>
         </property>
        </widget>
       </item>
@@ -291,9 +285,6 @@
         <property name="toolTip">
          <string/>
         </property>
-        <property name="text" stdset="0">
-         <string>00:00</string>
-        </property>
        </widget>
       </item>
       <item row="3" column="4" colspan="2">
@@ -317,8 +308,12 @@
         <property name="toolTip">
          <string/>
         </property>
-        <property name="text" stdset="0">
-         <string>01.01.00</string>
+        <property name="date">
+         <date>
+          <year>2000</year>
+          <month>1</month>
+          <day>2</day>
+         </date>
         </property>
        </widget>
       </item>
@@ -663,9 +658,6 @@
         <property name="text">
          <string>&amp;Google Earth</string>
         </property>
-        <property name="flat">
-         <bool>false</bool>
-        </property>
        </widget>
       </item>
       <item>
@@ -679,8 +671,11 @@
         <property name="text">
          <string>Con&amp;vert</string>
         </property>
-        <property name="flat">
-         <bool>false</bool>
+        <property name="autoDefault">
+         <bool>true</bool>
+        </property>
+        <property name="default">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -694,9 +689,6 @@
         </property>
         <property name="text">
          <string>&amp;Close</string>
-        </property>
-        <property name="flat">
-         <bool>false</bool>
         </property>
        </widget>
       </item>

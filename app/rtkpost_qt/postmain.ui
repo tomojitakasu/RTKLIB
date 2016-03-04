@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>673</width>
-    <height>573</height>
+    <width>532</width>
+    <height>436</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -163,9 +163,6 @@
            <property name="toolTip">
             <string/>
            </property>
-           <property name="text" stdset="0">
-            <string>01.01.00</string>
-           </property>
           </widget>
          </item>
          <item row="1" column="1" colspan="2">
@@ -175,9 +172,6 @@
            </property>
            <property name="toolTip">
             <string/>
-           </property>
-           <property name="text" stdset="0">
-            <string>00:00</string>
            </property>
           </widget>
          </item>
@@ -189,9 +183,6 @@
            <property name="toolTip">
             <string/>
            </property>
-           <property name="text" stdset="0">
-            <string>01.01.00</string>
-           </property>
           </widget>
          </item>
          <item row="1" column="4" colspan="2">
@@ -201,9 +192,6 @@
            </property>
            <property name="toolTip">
             <string/>
-           </property>
-           <property name="text" stdset="0">
-            <string>00:00</string>
            </property>
           </widget>
          </item>
@@ -404,7 +392,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="rtkpost_qt.qrc">
+            <iconset resource="../srctblbrows_qt/srctblbrows_qt.qrc">
              <normaloff>:/buttons/chart.bmp</normaloff>:/buttons/chart.bmp</iconset>
            </property>
            <property name="flat">
@@ -424,7 +412,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="rtkpost_qt.qrc">
+            <iconset resource="../srctblbrows_qt/srctblbrows_qt.qrc">
              <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
            </property>
            <property name="flat">
@@ -523,7 +511,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="rtkpost_qt.qrc">
+            <iconset resource="../srctblbrows_qt/srctblbrows_qt.qrc">
              <normaloff>:/buttons/chart.bmp</normaloff>:/buttons/chart.bmp</iconset>
            </property>
            <property name="flat">
@@ -543,7 +531,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="rtkpost_qt.qrc">
+            <iconset resource="../srctblbrows_qt/srctblbrows_qt.qrc">
              <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
            </property>
            <property name="flat">
@@ -642,7 +630,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="rtkpost_qt.qrc">
+            <iconset resource="../srctblbrows_qt/srctblbrows_qt.qrc">
              <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
            </property>
            <property name="flat">
@@ -662,7 +650,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="rtkpost_qt.qrc">
+            <iconset resource="../srctblbrows_qt/srctblbrows_qt.qrc">
              <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
            </property>
            <property name="flat">
@@ -682,7 +670,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="rtkpost_qt.qrc">
+            <iconset resource="../srctblbrows_qt/srctblbrows_qt.qrc">
              <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
            </property>
            <property name="flat">
@@ -702,7 +690,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="rtkpost_qt.qrc">
+            <iconset resource="../srctblbrows_qt/srctblbrows_qt.qrc">
              <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
            </property>
            <property name="flat">
@@ -1211,8 +1199,8 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="rtkpost_qt.qrc">
-             <normaloff>:/buttons/sqr.bmp</normaloff>:/buttons/sqr.bmp</iconset>
+            <iconset resource="../srctblbrows_qt/srctblbrows_qt.qrc">
+             <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
            </property>
            <property name="flat">
             <bool>true</bool>
@@ -1237,7 +1225,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="rtkpost_qt.qrc">
+            <iconset resource="../srctblbrows_qt/srctblbrows_qt.qrc">
              <normaloff>:/buttons/sqr.bmp</normaloff>:/buttons/sqr.bmp</iconset>
            </property>
            <property name="flat">
@@ -1520,7 +1508,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="rtkpost_qt.qrc"/>
+  <include location="../srctblbrows_qt/srctblbrows_qt.qrc"/>
  </resources>
  <connections/>
 </ui>

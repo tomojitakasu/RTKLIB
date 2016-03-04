@@ -29,7 +29,7 @@ private:
     QString File;
     QString TextStr;
 	
-    void ReadText(QString file);
+    void ReadText(const QString &file);
     void UpdateText(void);
 
 public:
@@ -37,8 +37,8 @@ public:
     static QColor Color1,Color2;
     static QFont FontD;
 
-    void Read(QString file);
-    void Save(QString file);
+    void Read(const QString &file);
+    void Save(const QString &file);
 
     TextViewer(QWidget* parent);
 };

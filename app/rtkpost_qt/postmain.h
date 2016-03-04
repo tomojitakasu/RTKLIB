@@ -4,6 +4,7 @@
 //---------------------------------------------------------------------------
 #include <QString>
 #include <QDialog>
+#include <QThread>
 
 #include "rtklib.h"
 
@@ -16,6 +17,32 @@ class OptDialog;
 class TextViewer;
 class ConvDialog;
 
+
+//Helper Class ------------------------------------------------------------------
+
+class ProcessingThread : public QThread
+{
+    Q_OBJECT
+public:
+    prcopt_t prcopt;
+    solopt_t solopt;
+    filopt_t filopt;
+    gtime_t ts,te;
+    double ti,tu;
+    int n,stat;
+    char *infile[6],outfile[1024];
+    char *rov,*base;
+
+    ProcessingThread(QObject *parent);
+    ~ProcessingThread();
+    void addInput(const QString &);
+    void addList(char * sta, const QString & list);
+protected:
+    void run();
+
+signals:
+    void done(int);
+};
 //---------------------------------------------------------------------------
 
 class MainForm : public QDialog, public Ui::MainForm
@@ -63,8 +90,10 @@ public slots:
     void BtnInputFile6Click();
     void BtnInputView6Click();
 
-protected:
     void FormCreate          ();
+    void ProcessingFinished  (int);
+    void ShowMsg(const QString  &msg);
+protected:
     void showEvent           (QShowEvent*);
     void closeEvent          (QCloseEvent*);
     void  dragEnterEvent        (QDragEnterEvent *event);
@@ -76,7 +105,7 @@ private:
     ConvDialog *convDialog;
     TextViewer *textViewer;
 
-    int  ExecProc           (void);
+    void  ExecProc           (void);
     int  GetOption(prcopt_t &prcopt, solopt_t &solopt, filopt_t &filopt);
     int  ObsToNav (const QString &obsfile, QString &navfile);
 	
@@ -128,8 +157,8 @@ public:
     QString RovList,BaseList;
 	
     void ViewFile(const QString &file);
-    void ShowMsg(const QString  &msg);
     MainForm(QWidget *parent=0);
 };
+
 //---------------------------------------------------------------------------
 #endif
