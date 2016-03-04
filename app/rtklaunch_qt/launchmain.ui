@@ -50,7 +50,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="rtklaunch_qt.qrc">
+      <iconset resource="../rtkget_qt/rtkget_qt.qrc">
        <normaloff>:/icons/rtk6.bmp</normaloff>:/icons/rtk6.bmp</iconset>
      </property>
      <property name="flat">
@@ -70,7 +70,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="rtklaunch_qt.qrc">
+      <iconset resource="../rtkget_qt/rtkget_qt.qrc">
        <normaloff>:/icons/rtk5.bmp</normaloff>:/icons/rtk5.bmp</iconset>
      </property>
      <property name="flat">
@@ -90,8 +90,8 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="rtklaunch_qt.qrc">
-       <normaloff>:/icons/rtk8.bmp</normaloff>:/icons/rtk8.bmp</iconset>
+      <iconset resource="../rtkget_qt/rtkget_qt.qrc">
+       <normaloff>:/icons/rtk3.bmp</normaloff>:/icons/rtk3.bmp</iconset>
      </property>
      <property name="flat">
       <bool>true</bool>
@@ -110,7 +110,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="rtklaunch_qt.qrc">
+      <iconset resource="../rtkget_qt/rtkget_qt.qrc">
        <normaloff>:/icons/rtk2.bmp</normaloff>:/icons/rtk2.bmp</iconset>
      </property>
      <property name="flat">
@@ -130,7 +130,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="rtklaunch_qt.qrc">
+      <iconset resource="../rtkget_qt/rtkget_qt.qrc">
        <normaloff>:/icons/rtk1.bmp</normaloff>:/icons/rtk1.bmp</iconset>
      </property>
      <property name="flat">
@@ -150,7 +150,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="rtklaunch_qt.qrc">
+      <iconset resource="../rtkget_qt/rtkget_qt.qrc">
        <normaloff>:/icons/rtk7.bmp</normaloff>:/icons/rtk7.bmp</iconset>
      </property>
      <property name="flat">
@@ -170,7 +170,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="rtklaunch_qt.qrc">
+      <iconset resource="../rtkget_qt/rtkget_qt.qrc">
        <normaloff>:/icons/rtk8.bmp</normaloff>:/icons/rtk8.bmp</iconset>
      </property>
      <property name="flat">
@@ -202,7 +202,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="rtklaunch_qt.qrc">
+      <iconset resource="../rtkget_qt/rtkget_qt.qrc">
        <normaloff>:/buttons/sqr.bmp</normaloff>:/buttons/sqr.bmp</iconset>
      </property>
      <property name="flat">
@@ -213,7 +213,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="rtklaunch_qt.qrc"/>
+  <include location="../rtkget_qt/rtkget_qt.qrc"/>
  </resources>
  <connections/>
 </ui>
