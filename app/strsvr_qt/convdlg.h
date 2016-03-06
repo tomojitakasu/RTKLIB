@@ -1,24 +1,29 @@
 //---------------------------------------------------------------------------
-#ifndef startdlgH
-#define startdlgH
+#ifndef convdlgH
+#define convdlgH
 //---------------------------------------------------------------------------
 #include <QDialog>
-#include "ui_startdlg.h"
+#include "ui_convdlg.h"
 
-#include "rtklib.h"
 class QShowEvent;
 //---------------------------------------------------------------------------
-class StartDialog : public QDialog, private Ui::StartDialog
+class ConvDialog : public QDialog, private Ui::ConvDialog
 {
     Q_OBJECT
+public slots:
+
+    void BtnOkClick();
+    void ConversionClick();
 protected:
     void showEvent(QShowEvent*);
-public slots:
-    void BtnOkClick();
 private:
+    void UpdateEnable(void);
 public:
-	gtime_t Time;
-    StartDialog(QWidget *parent=0);
+    QString ConvMsg,ConvOpt,AntType,RcvType;
+	int ConvEna,ConvInp,ConvOut,StaId;
+	double AntPos[3],AntOff[3];
+	
+    ConvDialog(QWidget *parent);
 };
 //---------------------------------------------------------------------------
 #endif

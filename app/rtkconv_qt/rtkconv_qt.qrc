@@ -14,7 +14,7 @@
         <file alias="tray0.bmp">../icon/tray0.bmp</file>
         <file alias="tray1.bmp">../icon/tray1.bmp</file>
         <file alias="tray2.bmp">../icon/tray2.bmp</file>
-	<file alias="rtknavi_Icon.ico">rtknavi_Icon.ico</file>
+	<file alias="rtkconv_Icon.ico">rtkconv_Icon.ico</file>
     </qresource>
     <qresource prefix="/buttons">
         <file alias="arrow.bmp">../icon/arrow.bmp</file>

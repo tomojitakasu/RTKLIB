@@ -2,189 +2,103 @@
 #ifndef convmainH
 #define convmainH
 //---------------------------------------------------------------------------
-#include <Classes.hpp>
-#include <Controls.hpp>
-#include <StdCtrls.hpp>
-#include <Forms.hpp>
-#include <Dialogs.hpp>
-#include <ExtCtrls.hpp>
-#include <Buttons.hpp>
-#include <Graphics.hpp>
-#include <ComCtrls.hpp>
-#include <FileCtrl.hpp>
-#ifdef TCPP
-#include <vcl\inifiles.hpp>
-#else
-#include <inifiles.hpp>
-#endif
+#include <QMainWindow>
+
+#include "ui_convmain.h"
 
 #include "rtklib.h"
+
+class QShowEvent;
+class QCloseEvent;
+class QSettings;
+class QComboBox;
+class ConvOptDialog;
+class TimeDialog;
+class KeyDialog;
+class AboutDialog;
+class StartDialog;
+
 //---------------------------------------------------------------------------
-class TMainWindow : public TForm
+class MainWindow : public QMainWindow, public Ui::MainWindow
 {
-__published:
-	TPanel *Panel1;
-	TPanel *Panel3;
-	TPanel *Panel2;
+    Q_OBJECT
+protected:
+    void showEvent           (QShowEvent*);
+    void closeEvent          (QCloseEvent*);
+
+public slots:
+    void FormCreate          ();
+
+    void BtnPlotClick        ();
+    void BtnConvertClick     ();
+    void BtnOptionsClick     ();
+    void BtnExitClick        ();
+    void BtnAboutClick       ();
+    void BtnTime1Click       ();
+    void BtnTime2Click       ();
+    void BtnInFileClick      ();
+    void BtnOutFile1Click    ();
+    void BtnOutFile2Click    ();
+    void BtnOutFile3Click    ();
+    void BtnOutFile4Click    ();
+    void BtnOutFileView1Click();
+    void BtnOutFileView2Click();
+    void BtnOutFileView3Click();
+    void BtnOutFileView4Click();
 	
-	TButton *BtnPlot;
-	TButton *BtnOptions;
-	TButton *BtnConvert;
-	TButton *BtnExit;
-	TButton *BtnInFile;
-	TButton *BtnOutFile1;
-	TButton *BtnOutFile2;
-	TButton *BtnOutFile4;
-	TButton *BtnOutFile3;
-	TSpeedButton *BtnAbout;
-	TSpeedButton *BtnTime1;
-	TSpeedButton *BtnTime2;
-	TSpeedButton *BtnOutFileView3;
-	TSpeedButton *BtnOutFileView1;
-	TSpeedButton *BtnOutFileView2;
-	TSpeedButton *BtnOutFileView4;
+    void TimeStartFClick     ();
+    void TimeEndFClick       ();
+    void TimeIntFClick       ();
+    void OutDirEnaClick     ();
 	
-	TCheckBox *TimeStartF;
-	TCheckBox *TimeEndF;
-	TCheckBox *TimeIntF;
-	TCheckBox *OutFileEna1;
-	TCheckBox *OutFileEna2;
-	TCheckBox *OutFileEna3;
-	TCheckBox *OutFileEna4;
-	
-	TEdit *TimeY1;
-	TEdit *TimeH1;
-	TEdit *TimeY2;
-	TEdit *TimeH2;
-	TUpDown *TimeY1UD;
-	TUpDown *TimeH1UD;
-	TUpDown *TimeY2UD;
-	TUpDown *TimeH2UD;
-	
-	TLabel *LabelInFile;
-	TLabel *LabelOutFile;
-	TLabel *LabelTimeInt;
-	TLabel *LabelFormat;
-	TLabel *Message;
-	
-	TComboBox *TimeInt;
-	TComboBox *Format;
-	TEdit *OutFile1;
-	TEdit *OutFile2;
-	TEdit *OutFile3;
-	TEdit *OutFile4;
-	
-	TOpenDialog *OpenDialog;
-	TOpenDialog *OpenDialog2;
-	TCheckBox *OutFileEna5;
-	TEdit *OutFile5;
-	TSpeedButton *BtnOutFileView5;
-	TButton *BtnOutFile5;
-	TCheckBox *OutFileEna6;
-	TEdit *OutFile6;
-	TSpeedButton *BtnOutFileView6;
-	TButton *BtnOutFile6;
-	TComboBox *InFile;
-	TCheckBox *OutDirEna;
-	TEdit *OutDir;
-	TLabel *LabelOutDir;
-	TButton *BtnOutDir;
-	TSpeedButton *BtnKey;
-	TCheckBox *TimeUnitF;
-	TLabel *LabelTimeUnit;
-	TEdit *TimeUnit;
-	TButton *BtnPost;
-	TCheckBox *OutFileEna7;
-	TEdit *OutFile7;
-	TSpeedButton *BtnOutFileView7;
-	TButton *BtnOutFile7;
-	TSpeedButton *BtnInFileView;
-	
-	void __fastcall FormCreate          (TObject *Sender);
-	void __fastcall FormShow            (TObject *Sender);
-	void __fastcall FormClose           (TObject *Sender, TCloseAction &Action);
-	
-	void __fastcall BtnPlotClick        (TObject *Sender);
-	void __fastcall BtnConvertClick     (TObject *Sender);
-	void __fastcall BtnOptionsClick     (TObject *Sender);
-	void __fastcall BtnExitClick        (TObject *Sender);
-	void __fastcall BtnAboutClick       (TObject *Sender);
-	void __fastcall BtnTime1Click       (TObject *Sender);
-	void __fastcall BtnTime2Click       (TObject *Sender);
-	void __fastcall BtnInFileClick      (TObject *Sender);
-	void __fastcall BtnOutFile1Click    (TObject *Sender);
-	void __fastcall BtnOutFile2Click    (TObject *Sender);
-	void __fastcall BtnOutFile3Click    (TObject *Sender);
-	void __fastcall BtnOutFile4Click    (TObject *Sender);
-	void __fastcall BtnOutFileView1Click(TObject *Sender);
-	void __fastcall BtnOutFileView2Click(TObject *Sender);
-	void __fastcall BtnOutFileView3Click(TObject *Sender);
-	void __fastcall BtnOutFileView4Click(TObject *Sender);
-	
-	void __fastcall TimeStartFClick     (TObject *Sender);
-	void __fastcall TimeEndFClick       (TObject *Sender);
-	void __fastcall TimeIntFClick       (TObject *Sender);
-	void __fastcall OutDirEnaClick     (TObject *Sender);
-	
-	void __fastcall TimeY1UDChangingEx  (TObject *Sender, bool &AllowChange,
-          short NewValue, TUpDownDirection Direction);
-	void __fastcall TimeH1UDChangingEx  (TObject *Sender, bool &AllowChange,
-          short NewValue, TUpDownDirection Direction);
-	void __fastcall TimeY2UDChangingEx  (TObject *Sender, bool &AllowChange,
-          short NewValue, TUpDownDirection Direction);
-	void __fastcall TimeH2UDChangingEx  (TObject *Sender, bool &AllowChange,
-          short NewValue, TUpDownDirection Direction);
-	void __fastcall InFileChange(TObject *Sender);
-	void __fastcall BtnOutFileView5Click(TObject *Sender);
-	void __fastcall BtnOutFile5Click(TObject *Sender);
-	void __fastcall FormatChange(TObject *Sender);
-	void __fastcall BtnOutFileView6Click(TObject *Sender);
-	void __fastcall BtnOutFile6Click(TObject *Sender);
-	void __fastcall OutDirChange(TObject *Sender);
-	void __fastcall BtnOutDirClick(TObject *Sender);
-	void __fastcall BtnKeyClick(TObject *Sender);
-	void __fastcall BtnPostClick(TObject *Sender);
-	void __fastcall BtnOutFile7Click(TObject *Sender);
-	void __fastcall BtnOutFileView7Click(TObject *Sender);
-	void __fastcall BtnInFileViewClick(TObject *Sender);
+    void InFileChange();
+    void BtnOutFileView5Click();
+    void BtnOutFile5Click();
+    void FormatChange();
+    void BtnOutFileView6Click();
+    void BtnOutFile6Click();
+    void OutDirChange();
+    void BtnOutDirClick();
+    void BtnKeyClick();
+    void BtnPostClick();
+    void BtnOutFile7Click();
+    void BtnOutFileView7Click();
+    void BtnInFileViewClick();
 	
 private:
-	AnsiString IniFile,CmdPostExe;
+    QString IniFile,CmdPostExe;
 	
-	void __fastcall DropFiles(TWMDropFiles msg); // for files drop
+//    void DropFiles(TWMDropFiles msg); // for files drop
 	
-	TStringList * __fastcall ReadList(TIniFile *ini, AnsiString cat,
-		AnsiString key);
-	void __fastcall WriteList(TIniFile *ini, AnsiString cat,
-		AnsiString key, TStrings *list);
-	void __fastcall AddHist(TComboBox *combo);
+    void ReadList(QComboBox* combo, QSettings *ini, const QString &key);
+    void WriteList(QSettings *ini, const QString &key, const QComboBox *combo);
+    void AddHist(QComboBox *combo);
 	
-	int  __fastcall AutoFormat(AnsiString File);
-	void __fastcall ConvertFile(void);
-	void __fastcall SetOutFiles(AnsiString infile);
-	void __fastcall UpdateEnable(void);
-	void __fastcall GetTime(gtime_t *ts, gtime_t *te, double *tint, double *tunit);
-	int  __fastcall ExecCmd(AnsiString cmd);
-	AnsiString __fastcall RepPath(AnsiString File);
-	void __fastcall LoadOpt(void);
-	void __fastcall SaveOpt(void);
-	
-	BEGIN_MESSAGE_MAP
-	MESSAGE_HANDLER(WM_DROPFILES,TWMDropFiles,DropFiles);
-	END_MESSAGE_MAP(TForm);
-	
+    int  AutoFormat(const QString &File);
+    void ConvertFile(void);
+    void SetOutFiles(const QString &infile);
+    void UpdateEnable(void);
+    void GetTime(gtime_t *ts, gtime_t *te, double *tint, double *tunit);
+    int  ExecCmd(const QString &cmd);
+    QString RepPath(const QString &File);
+    void LoadOpt(void);
+    void SaveOpt(void);
+		
+    ConvOptDialog *convOptDialog;
+    TimeDialog *timeDialog;
+    KeyDialog* keyDialog;
+    AboutDialog* aboutDialog;
+    StartDialog* startDialog;
 public:
 	gtime_t RnxTime;
-	AnsiString RunBy,Marker,MarkerNo,MarkerType,Name[2],Rec[3],Ant[3];
-	AnsiString RnxCode,Comment[2],RcvOption,ExSats;
-	AnsiString CodeMask[6];
+    QString RunBy,Marker,MarkerNo,MarkerType,Name[2],Rec[3],Ant[3];
+    QString RnxCode,Comment[2],RcvOption,ExSats;
+    QString CodeMask[6];
 	double AppPos[3],AntDel[3];
 	int RnxVer,RnxFile,NavSys,ObsType,FreqType,TraceLevel,EventEna;
 	int AutoPos,ScanObs,OutIono,OutTime,OutLeaps;
 	
-	__fastcall TMainWindow(TComponent* Owner);
+    MainWindow(QWidget *parent=0);
 };
-//---------------------------------------------------------------------------
-extern PACKAGE TMainWindow *MainWindow;
 //---------------------------------------------------------------------------
 #endif

@@ -1177,7 +1177,6 @@ void MainForm::UpdateEnable(void)
 void MainForm::LoadOpt(void)
 {
     QSettings ini(IniFile,QSettings::IniFormat);
-    QString s;
     
     TimeStart->setChecked(ini.value("set/timestart",   0).toBool());
     TimeEnd->setChecked(ini.value("set/timeend",     0).toBool());

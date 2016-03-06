@@ -1,190 +1,195 @@
 //---------------------------------------------------------------------------
-#include <vcl.h>
-#pragma hdrstop
+#include <QShowEvent>
 
 #include "convmain.h"
 #include "convopt.h"
 #include "codeopt.h"
-//---------------------------------------------------------------------------
-#pragma package(smart_init)
-#pragma resource "*.dfm"
-TConvOptDialog *ConvOptDialog;
-//---------------------------------------------------------------------------
-static double str2dbl(AnsiString str)
-{
-	double val=0.0;
-	sscanf(str.c_str(),"%lf",&val);
-	return val;
-}
-//---------------------------------------------------------------------------
-__fastcall TConvOptDialog::TConvOptDialog(TComponent* Owner)
-	: TForm(Owner)
-{
-	AnsiString s;
-	int glo=MAXPRNGLO,gal=MAXPRNGAL,qzs=MAXPRNQZS,cmp=MAXPRNCMP;
-	if (glo<=0) Nav2->Enabled=false;
-	if (gal<=0) Nav3->Enabled=false;
-	if (qzs<=0) Nav4->Enabled=false;
-	if (cmp<=0) Nav6->Enabled=false;
-	
-	UpdateEnable();
-}
-//---------------------------------------------------------------------------
-void __fastcall TConvOptDialog::FormShow(TObject *Sender)
-{
-	AnsiString s;
-	RnxVer->ItemIndex=MainWindow->RnxVer;
-	RnxFile->Checked=MainWindow->RnxFile;
-	RnxCode->Text=MainWindow->RnxCode;
-	RunBy->Text=MainWindow->RunBy;
-	Marker->Text=MainWindow->Marker;
-	MarkerNo->Text=MainWindow->MarkerNo;
-	MarkerType->Text=MainWindow->MarkerType;
-	Name0->Text=MainWindow->Name[0];
-	Name1->Text=MainWindow->Name[1];
-	Rec0->Text=MainWindow->Rec[0];
-	Rec1->Text=MainWindow->Rec[1];
-	Rec2->Text=MainWindow->Rec[2];
-	Ant0->Text=MainWindow->Ant[0];
-	Ant1->Text=MainWindow->Ant[1];
-	Ant2->Text=MainWindow->Ant[2];
-	AppPos0->Text=s.sprintf("%.4f",MainWindow->AppPos[0]);
-	AppPos1->Text=s.sprintf("%.4f",MainWindow->AppPos[1]);
-	AppPos2->Text=s.sprintf("%.4f",MainWindow->AppPos[2]);
-	AntDel0->Text=s.sprintf("%.4f",MainWindow->AntDel[0]);
-	AntDel1->Text=s.sprintf("%.4f",MainWindow->AntDel[1]);
-	AntDel2->Text=s.sprintf("%.4f",MainWindow->AntDel[2]);
-	Comment0->Text=MainWindow->Comment[0];
-	Comment1->Text=MainWindow->Comment[1];
-	RcvOption->Text=MainWindow->RcvOption;
-	for (int i=0;i<6;i++) CodeMask[i]=MainWindow->CodeMask[i];
-	AutoPos->Checked=MainWindow->AutoPos;
-	ScanObs->Checked=MainWindow->ScanObs;
-	OutIono->Checked=MainWindow->OutIono;
-	OutTime->Checked=MainWindow->OutTime;
-	OutLeaps->Checked=MainWindow->OutLeaps;
 
-	Nav1->Checked=MainWindow->NavSys&SYS_GPS;
-	Nav2->Checked=MainWindow->NavSys&SYS_GLO;
-	Nav3->Checked=MainWindow->NavSys&SYS_GAL;
-	Nav4->Checked=MainWindow->NavSys&SYS_QZS;
-	Nav5->Checked=MainWindow->NavSys&SYS_SBS;
-	Nav6->Checked=MainWindow->NavSys&SYS_CMP;
-	Obs1->Checked=MainWindow->ObsType&OBSTYPE_PR;
-	Obs2->Checked=MainWindow->ObsType&OBSTYPE_CP;
-	Obs3->Checked=MainWindow->ObsType&OBSTYPE_DOP;
-	Obs4->Checked=MainWindow->ObsType&OBSTYPE_SNR;
-	Freq1->Checked=MainWindow->FreqType&FREQTYPE_L1;
-	Freq2->Checked=MainWindow->FreqType&FREQTYPE_L2;
-	Freq3->Checked=MainWindow->FreqType&FREQTYPE_L5;
-	Freq4->Checked=MainWindow->FreqType&FREQTYPE_L6;
-	Freq5->Checked=MainWindow->FreqType&FREQTYPE_L7;
-	Freq6->Checked=MainWindow->FreqType&FREQTYPE_L8;
-	ExSats->Text=MainWindow->ExSats;
-	TraceLevel->ItemIndex=MainWindow->TraceLevel;
+extern MainWindow *mainWindow;
+//---------------------------------------------------------------------------
+ConvOptDialog::ConvOptDialog(QWidget *parent)
+    : QDialog(parent)
+{
+    setupUi(this);
+
+    codeOptDialog = new CodeOptDialog(this,this);
+
+	int glo=MAXPRNGLO,gal=MAXPRNGAL,qzs=MAXPRNQZS,cmp=MAXPRNCMP;
+    if (glo<=0) Nav2->setEnabled(false);
+    if (gal<=0) Nav3->setEnabled(false);
+    if (qzs<=0) Nav4->setEnabled(false);
+    if (cmp<=0) Nav6->setEnabled(false);
+
+    connect(BtnCancel,SIGNAL(clicked(bool)),this,SLOT(reject()));
+    connect(BtnOk,SIGNAL(clicked(bool)),this,SLOT(BtnOkClick()));
+    connect(BtnMask,SIGNAL(clicked(bool)),this,SLOT(BtnMaskClick()));
+    connect(AutoPos,SIGNAL(clicked(bool)),this,SLOT(AutoPosClick()));
+    connect(RnxFile,SIGNAL(clicked(bool)),this,SLOT(RnxFileClick()));
+    connect(RnxVer,SIGNAL(currentIndexChanged(int)),this,SLOT(RnxVerChange()));
+
+	UpdateEnable();
+}
+//---------------------------------------------------------------------------
+void ConvOptDialog::showEvent(QShowEvent *event)
+{
+    if (event->spontaneous()) return;
+
+    QString s;
+    RnxVer->setCurrentIndex(mainWindow->RnxVer);
+    RnxFile->setChecked(mainWindow->RnxFile);
+    RnxCode->setText(mainWindow->RnxCode);
+    RunBy->setText(mainWindow->RunBy);
+    Marker->setText(mainWindow->Marker);
+    MarkerNo->setText(mainWindow->MarkerNo);
+    MarkerType->setText(mainWindow->MarkerType);
+    Name0->setText(mainWindow->Name[0]);
+    Name1->setText(mainWindow->Name[1]);
+    Rec0->setText(mainWindow->Rec[0]);
+    Rec1->setText(mainWindow->Rec[1]);
+    Rec2->setText(mainWindow->Rec[2]);
+    Ant0->setText(mainWindow->Ant[0]);
+    Ant1->setText(mainWindow->Ant[1]);
+    Ant2->setText(mainWindow->Ant[2]);
+    AppPos0->setText(QString::number(mainWindow->AppPos[0],'f',4));
+    AppPos1->setText(QString::number(mainWindow->AppPos[1],'f',4));
+    AppPos2->setText(QString::number(mainWindow->AppPos[2],'f',4));
+    AntDel0->setText(QString::number(mainWindow->AntDel[0],'f',4));
+    AntDel1->setText(QString::number(mainWindow->AntDel[1],'f',4));
+    AntDel2->setText(QString::number(mainWindow->AntDel[2],'f',4));
+    Comment0->setText(mainWindow->Comment[0]);
+    Comment1->setText(mainWindow->Comment[1]);
+    RcvOption->setText(mainWindow->RcvOption);
+    for (int i=0;i<6;i++) CodeMask[i]=mainWindow->CodeMask[i];
+    AutoPos->setChecked(mainWindow->AutoPos);
+    ScanObs->setChecked(mainWindow->ScanObs);
+    OutIono->setChecked(mainWindow->OutIono);
+    OutTime->setChecked(mainWindow->OutTime);
+    OutLeaps->setChecked(mainWindow->OutLeaps);
+
+    Nav1->setChecked(mainWindow->NavSys&SYS_GPS);
+    Nav2->setChecked(mainWindow->NavSys&SYS_GLO);
+    Nav3->setChecked(mainWindow->NavSys&SYS_GAL);
+    Nav4->setChecked(mainWindow->NavSys&SYS_QZS);
+    Nav5->setChecked(mainWindow->NavSys&SYS_SBS);
+    Nav6->setChecked(mainWindow->NavSys&SYS_CMP);
+    Obs1->setChecked(mainWindow->ObsType&OBSTYPE_PR);
+    Obs2->setChecked(mainWindow->ObsType&OBSTYPE_CP);
+    Obs3->setChecked(mainWindow->ObsType&OBSTYPE_DOP);
+    Obs4->setChecked(mainWindow->ObsType&OBSTYPE_SNR);
+    Freq1->setChecked(mainWindow->FreqType&FREQTYPE_L1);
+    Freq2->setChecked(mainWindow->FreqType&FREQTYPE_L2);
+    Freq3->setChecked(mainWindow->FreqType&FREQTYPE_L5);
+    Freq4->setChecked(mainWindow->FreqType&FREQTYPE_L6);
+    Freq5->setChecked(mainWindow->FreqType&FREQTYPE_L7);
+    Freq6->setChecked(mainWindow->FreqType&FREQTYPE_L8);
+    ExSats->setText(mainWindow->ExSats);
+    TraceLevel->setCurrentIndex(mainWindow->TraceLevel);
 	
 	UpdateEnable();
 }
 //---------------------------------------------------------------------------
-void __fastcall TConvOptDialog::BtnOkClick(TObject *Sender)
+void ConvOptDialog::BtnOkClick()
 {
-	MainWindow->RnxVer=RnxVer->ItemIndex;
-	MainWindow->RnxFile=RnxFile->Checked;
-	MainWindow->RnxCode=RnxCode->Text;
-	MainWindow->RunBy=RunBy->Text;
-	MainWindow->Marker=Marker->Text;
-	MainWindow->MarkerNo=MarkerNo->Text;
-	MainWindow->MarkerType=MarkerType->Text;
-	MainWindow->Name[0]=Name0->Text;
-	MainWindow->Name[1]=Name1->Text;
-	MainWindow->Rec[0]=Rec0->Text;
-	MainWindow->Rec[1]=Rec1->Text;
-	MainWindow->Rec[2]=Rec2->Text;
-	MainWindow->Ant[0]=Ant0->Text;
-	MainWindow->Ant[1]=Ant1->Text;
-	MainWindow->Ant[2]=Ant2->Text;
-	MainWindow->AppPos[0]=str2dbl(AppPos0->Text);
-	MainWindow->AppPos[1]=str2dbl(AppPos1->Text);
-	MainWindow->AppPos[2]=str2dbl(AppPos2->Text);
-	MainWindow->AntDel[0]=str2dbl(AntDel0->Text);
-	MainWindow->AntDel[1]=str2dbl(AntDel1->Text);
-	MainWindow->AntDel[2]=str2dbl(AntDel2->Text);
-	MainWindow->Comment[0]=Comment0->Text;
-	MainWindow->Comment[1]=Comment1->Text;
-	MainWindow->RcvOption=RcvOption->Text;
-	for (int i=0;i<6;i++) MainWindow->CodeMask[i]=CodeMask[i];
-	MainWindow->AutoPos=AutoPos->Checked;
-	MainWindow->ScanObs=ScanObs->Checked;
-	MainWindow->OutIono=OutIono->Checked;
-	MainWindow->OutTime=OutTime->Checked;
-	MainWindow->OutLeaps=OutLeaps->Checked;
+    mainWindow->RnxVer=RnxVer->currentIndex();
+    mainWindow->RnxFile=RnxFile->isChecked();
+    mainWindow->RnxCode=RnxCode->text();
+    mainWindow->RunBy=RunBy->text();
+    mainWindow->Marker=Marker->text();
+    mainWindow->MarkerNo=MarkerNo->text();
+    mainWindow->MarkerType=MarkerType->text();
+    mainWindow->Name[0]=Name0->text();
+    mainWindow->Name[1]=Name1->text();
+    mainWindow->Rec[0]=Rec0->text();
+    mainWindow->Rec[1]=Rec1->text();
+    mainWindow->Rec[2]=Rec2->text();
+    mainWindow->Ant[0]=Ant0->text();
+    mainWindow->Ant[1]=Ant1->text();
+    mainWindow->Ant[2]=Ant2->text();
+    mainWindow->AppPos[0]=AppPos0->text().toDouble();
+    mainWindow->AppPos[1]=AppPos1->text().toDouble();
+    mainWindow->AppPos[2]=AppPos2->text().toDouble();
+    mainWindow->AntDel[0]=AntDel0->text().toDouble();
+    mainWindow->AntDel[1]=AntDel1->text().toDouble();
+    mainWindow->AntDel[2]=AntDel2->text().toDouble();
+    mainWindow->Comment[0]=Comment0->text();
+    mainWindow->Comment[1]=Comment1->text();
+    mainWindow->RcvOption=RcvOption->text();
+    for (int i=0;i<6;i++) mainWindow->CodeMask[i]=CodeMask[i];
+    mainWindow->AutoPos=AutoPos->isChecked();
+    mainWindow->ScanObs=ScanObs->isChecked();
+    mainWindow->OutIono=OutIono->isChecked();
+    mainWindow->OutTime=OutTime->isChecked();
+    mainWindow->OutLeaps=OutLeaps->isChecked();
 	
 	int navsys=0,obstype=0,freqtype=0;
-	if (Nav1->Checked) navsys|=SYS_GPS;
-	if (Nav2->Checked) navsys|=SYS_GLO;
-	if (Nav3->Checked) navsys|=SYS_GAL;
-	if (Nav4->Checked) navsys|=SYS_QZS;
-	if (Nav5->Checked) navsys|=SYS_SBS;
-	if (Nav6->Checked) navsys|=SYS_CMP;
-	if (Obs1->Checked) obstype|=OBSTYPE_PR;
-	if (Obs2->Checked) obstype|=OBSTYPE_CP;
-	if (Obs3->Checked) obstype|=OBSTYPE_DOP;
-	if (Obs4->Checked) obstype|=OBSTYPE_SNR;
-	if (Freq1->Checked) freqtype|=FREQTYPE_L1;
-	if (Freq2->Checked) freqtype|=FREQTYPE_L2;
-	if (Freq3->Checked) freqtype|=FREQTYPE_L5;
-	if (Freq4->Checked) freqtype|=FREQTYPE_L6;
-	if (Freq5->Checked) freqtype|=FREQTYPE_L7;
-	if (Freq6->Checked) freqtype|=FREQTYPE_L8;
-	MainWindow->NavSys=navsys;
-	MainWindow->ObsType=obstype;
-	MainWindow->FreqType=freqtype;
-	MainWindow->ExSats=ExSats->Text;
-	MainWindow->TraceLevel=TraceLevel->ItemIndex;
+    if (Nav1->isChecked()) navsys|=SYS_GPS;
+    if (Nav2->isChecked()) navsys|=SYS_GLO;
+    if (Nav3->isChecked()) navsys|=SYS_GAL;
+    if (Nav4->isChecked()) navsys|=SYS_QZS;
+    if (Nav5->isChecked()) navsys|=SYS_SBS;
+    if (Nav6->isChecked()) navsys|=SYS_CMP;
+    if (Obs1->isChecked()) obstype|=OBSTYPE_PR;
+    if (Obs2->isChecked()) obstype|=OBSTYPE_CP;
+    if (Obs3->isChecked()) obstype|=OBSTYPE_DOP;
+    if (Obs4->isChecked()) obstype|=OBSTYPE_SNR;
+    if (Freq1->isChecked()) freqtype|=FREQTYPE_L1;
+    if (Freq2->isChecked()) freqtype|=FREQTYPE_L2;
+    if (Freq3->isChecked()) freqtype|=FREQTYPE_L5;
+    if (Freq4->isChecked()) freqtype|=FREQTYPE_L6;
+    if (Freq5->isChecked()) freqtype|=FREQTYPE_L7;
+    if (Freq6->isChecked()) freqtype|=FREQTYPE_L8;
+    mainWindow->NavSys=navsys;
+    mainWindow->ObsType=obstype;
+    mainWindow->FreqType=freqtype;
+    mainWindow->ExSats=ExSats->text();
+    mainWindow->TraceLevel=TraceLevel->currentIndex();
+
+    accept();
 }
 //---------------------------------------------------------------------------
-void __fastcall TConvOptDialog::RnxFileClick(TObject *Sender)
+void ConvOptDialog::RnxFileClick()
 {
 	UpdateEnable();
 }
 //---------------------------------------------------------------------------
-void __fastcall TConvOptDialog::RnxVerChange(TObject *Sender)
+void ConvOptDialog::RnxVerChange()
 {
 	UpdateEnable();
 }
 //---------------------------------------------------------------------------
-void __fastcall TConvOptDialog::AutoPosClick(TObject *Sender)
+void ConvOptDialog::AutoPosClick()
 {
 	UpdateEnable();
 }
 //---------------------------------------------------------------------------
-void __fastcall TConvOptDialog::BtnMaskClick(TObject *Sender)
-{
-	CodeOptDialog->NavSys=0;
-	CodeOptDialog->FreqType=0;
-	if (Nav1->Checked) CodeOptDialog->NavSys|=SYS_GPS;
-	if (Nav2->Checked) CodeOptDialog->NavSys|=SYS_GLO;
-	if (Nav3->Checked) CodeOptDialog->NavSys|=SYS_GAL;
-	if (Nav4->Checked) CodeOptDialog->NavSys|=SYS_QZS;
-	if (Nav5->Checked) CodeOptDialog->NavSys|=SYS_SBS;
-	if (Nav6->Checked) CodeOptDialog->NavSys|=SYS_CMP;
-	if (Freq1->Checked) CodeOptDialog->FreqType|=FREQTYPE_L1;
-	if (Freq2->Checked) CodeOptDialog->FreqType|=FREQTYPE_L2;
-	if (Freq3->Checked) CodeOptDialog->FreqType|=FREQTYPE_L5;
-	if (Freq4->Checked) CodeOptDialog->FreqType|=FREQTYPE_L6;
-	if (Freq5->Checked) CodeOptDialog->FreqType|=FREQTYPE_L7;
-	if (Freq6->Checked) CodeOptDialog->FreqType|=FREQTYPE_L8;
-	CodeOptDialog->ShowModal();
+void ConvOptDialog::BtnMaskClick()
+{    
+    codeOptDialog->NavSys=0;
+    codeOptDialog->FreqType=0;
+    if (Nav1->isChecked()) codeOptDialog->NavSys|=SYS_GPS;
+    if (Nav2->isChecked()) codeOptDialog->NavSys|=SYS_GLO;
+    if (Nav3->isChecked()) codeOptDialog->NavSys|=SYS_GAL;
+    if (Nav4->isChecked()) codeOptDialog->NavSys|=SYS_QZS;
+    if (Nav5->isChecked()) codeOptDialog->NavSys|=SYS_SBS;
+    if (Nav6->isChecked()) codeOptDialog->NavSys|=SYS_CMP;
+    if (Freq1->isChecked()) codeOptDialog->FreqType|=FREQTYPE_L1;
+    if (Freq2->isChecked()) codeOptDialog->FreqType|=FREQTYPE_L2;
+    if (Freq3->isChecked()) codeOptDialog->FreqType|=FREQTYPE_L5;
+    if (Freq4->isChecked()) codeOptDialog->FreqType|=FREQTYPE_L6;
+    if (Freq5->isChecked()) codeOptDialog->FreqType|=FREQTYPE_L7;
+    if (Freq6->isChecked()) codeOptDialog->FreqType|=FREQTYPE_L8;
+
+    codeOptDialog->show();
 }
 //---------------------------------------------------------------------------
-void __fastcall TConvOptDialog::UpdateEnable(void)
+void ConvOptDialog::UpdateEnable(void)
 {
-//	Freq4->Enabled=RnxVer->ItemIndex>0;
-//	Freq5->Enabled=RnxVer->ItemIndex>0;
-//	Freq6->Enabled=RnxVer->ItemIndex>0;
-	AppPos0->Enabled=AutoPos->Checked;
-	AppPos1->Enabled=AutoPos->Checked;
-	AppPos2->Enabled=AutoPos->Checked;
+//	Freq4->setEnabled(RnxVer->currentIndex()>0);
+//	Freq5->setEnabled(RnxVer->currentIndex()>0);
+//	Freq6->setEnabled(RnxVer->currentIndex()>0);
+    AppPos0->setEnabled(AutoPos->isChecked());
+    AppPos1->setEnabled(AutoPos->isChecked());
+    AppPos2->setEnabled(AutoPos->isChecked());
 }
 //---------------------------------------------------------------------------
 
