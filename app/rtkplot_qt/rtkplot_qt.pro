@@ -64,7 +64,8 @@ SOURCES += \
     ../appcmn_qt/keydlg.cpp \
     ../appcmn_qt/graph.cpp \
     ../appcmn_qt/console.cpp \
-    ../appcmn_qt/tspandlg.cpp
+    ../appcmn_qt/tspandlg.cpp \
+    fileseldlg.cpp
 
 HEADERS  += \
     ../appcmn_qt/aboutdlg.h \
@@ -87,7 +88,8 @@ HEADERS  += \
     ../appcmn_qt/keydlg.h \
     ../appcmn_qt/graph.h \
     ../appcmn_qt/console.h \
-    ../appcmn_qt/tspandlg.h
+    ../appcmn_qt/tspandlg.h \
+    fileseldlg.h
 
 FORMS    += \
     ../appcmn_qt/aboutdlg.ui \
@@ -109,9 +111,13 @@ FORMS    += \
     ../appcmn_qt/tcpoptdlg.ui \
     ../appcmn_qt/keydlg.ui \
     ../appcmn_qt/console.ui \
-    ../appcmn_qt/tspandlg.ui
+    ../appcmn_qt/tspandlg.ui \
+    fileseldlg.ui
 
 RESOURCES += \
     rtkplot_qt.qrc
 
 RC_FILE = rtkplot_qt.rc
+
+DISTFILES += \
+    aboutdlg.o

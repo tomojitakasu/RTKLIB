@@ -74,6 +74,7 @@ class SkyImgDialog;
 class PlotOptDialog;
 class AboutDialog;
 class PntDialog;
+class FileSelDialog;
 
 class QEvent;
 class QMouseEvent;
@@ -362,6 +363,7 @@ private:
     PlotOptDialog *plotOptDialog;
     AboutDialog *aboutDialog;
     PntDialog *pntDialog;
+    FileSelDialog *fileSelDialog;
 public:
     QImage SkyImageR;
     QString IniFile;

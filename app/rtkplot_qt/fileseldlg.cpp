@@ -3,76 +3,123 @@
 #include "plotmain.h"
 #include "fileseldlg.h"
 
+#include <QShowEvent>
+#include <QDir>
+#include <QFileInfoList>
+#include <QTreeView>
+#include <QFileSystemModel>
+#include <QDebug>
+
+extern Plot *plot;
 
 //---------------------------------------------------------------------------
- FileSelDialog::FileSelDialog(QWidget *parent)
+FileSelDialog::FileSelDialog(QWidget *parent)
     : QDialog(parent)
 {
-     setupUi(this);
+    setupUi(this);
+
+    dirModel=new QFileSystemModel(this);
+    dirModel->setFilter(QDir::Dirs|QDir::NoDotAndDotDot);
+
+#ifdef FLOATING_DIRSELECTOR
+    DirSelector= new QTreeView(0);
+    DirSelector->setWindowFlags(Qt::Window|Qt::X11BypassWindowManagerHint|Qt::FramelessWindowHint);
+#else
+    DirSelector= new QTreeView(this);
+#endif
+    Panel2->layout()->addWidget(DirSelector);
+    DirSelector->setModel(dirModel);
+    DirSelector->hideColumn(1); DirSelector->hideColumn(2);DirSelector->hideColumn(3); //only show names
+
+    fileModel = new QFileSystemModel(this);
+    fileModel->setFilter((fileModel->filter()& ~QDir::Dirs & ~QDir::AllDirs));
+    fileModel->setNameFilterDisables(false);
+    FileList->setModel(fileModel);
+
+    connect(DriveSel,SIGNAL(currentIndexChanged(QString)),this,SLOT(DriveSelChanged()));
+    connect(DirSelector,SIGNAL(clicked(QModelIndex)),this,SLOT(DirSelChange(QModelIndex)));
+    connect(DirSelector,SIGNAL(doubleClicked(QModelIndex)),this,SLOT(DirSelSelected(QModelIndex)));
+    connect(BtnDirSel,SIGNAL(clicked(bool)),this,SLOT(BtnDirSelClick()));
+    connect(FileList,SIGNAL(clicked(QModelIndex)),this,SLOT(FileListClick(QModelIndex)));
+    connect(Filter,SIGNAL(currentIndexChanged(QString)),this,SLOT(FilterClick()));
+
+}
+FileSelDialog::~FileSelDialog() {
+    delete DirSelector;
+}
+
+//---------------------------------------------------------------------------
+void  FileSelDialog::showEvent(QShowEvent *event)
+{
+    if (event->spontaneous()) return;
+
+    QFileInfoList drives=QDir::drives();
+    if (drives.size()>1&&drives.at(0).filePath()!="/"){
+        Panel1->setVisible(true);
+        DriveSel->clear();
+
+        foreach (const QFileInfo & drive,drives) {
+            DriveSel->addItem(drive.filePath());
+        }
+    } else Panel1->setVisible(false); // do not show drive selection on unix
+
+    if (Dir=="") Dir=drives.at(0).filePath();
+
+    dirModel->setRootPath(Dir);
+    DirSelector->setVisible(false);
+    DirSelected->setText(Dir);
+    fileModel->setRootPath(Dir);
+    FileList->setRootIndex(fileModel->index(Dir));
 }
 //---------------------------------------------------------------------------
-void  FileSelDialog::FormShow()
+void  FileSelDialog::DriveSelChanged()
 {
-	DirSel->Directory=Dir;
-	Panel5->Visible=false;
-}
-//---------------------------------------------------------------------------
-void  FileSelDialog::FormResize()
-{
-	Panel5->Width=Width-16;
-}
-//---------------------------------------------------------------------------
-void  FileSelDialog::DriveSelClick()
-{
-	Panel5->Visible=false;
-}
-//---------------------------------------------------------------------------
-void  FileSelDialog::DirLabelClick()
-{
-	Panel5->Visible=!Panel5->Visible;
-}
-//---------------------------------------------------------------------------
-void  FileSelDialog::Panel4Click()
-{
-	Panel5->Visible=!Panel5->Visible;
+    DirSelector->setVisible(false);
+
+    DirSelector->setRootIndex(dirModel->index(DriveSel->currentText()));
 }
 //---------------------------------------------------------------------------
 void  FileSelDialog::BtnDirSelClick()
 {
-	Panel5->Visible=!Panel5->Visible;
+#ifdef FLOATING_DIRSELECTOR
+    QPoint pos=Panel5->mapToGlobal(BtnDirSel->pos());
+    pos.rx()+=BtnDirSel->width()-DirSelector->width();
+    pos.ry()+=BtnDirSel->height();
+
+    DirSelector->move(pos);
+#endif
+    DirSelector->setVisible(!DirSelector->isVisible());
 }
 //---------------------------------------------------------------------------
-void  FileSelDialog::DirSelChange()
+void  FileSelDialog::DirSelChange(QModelIndex index)
 {
-	Dir=DirSel->Directory;
-	Panel5->Height=DirSel->Count*DirSel->ItemHeight+8;
-	if (Panel5->Height>312) Panel5->Height=312;
-	Panel5->Visible=false;
+    DirSelector->expand(index);
+
+    Dir=dirModel->filePath(index);
+    DirSelected->setText(Dir);
+    fileModel->setRootPath(Dir);
+    FileList->setRootIndex(fileModel->index(Dir));
 }
 //---------------------------------------------------------------------------
-void  FileSelDialog::FileListClick()
+void  FileSelDialog::DirSelSelected(QModelIndex)
 {
-	TStringList *file=new TStringList;
-	file->Add(FileList->FileName);
-	Plot->ReadSol(file,0);
-	delete file;
-	Panel5->Visible=false;
+    DirSelector->setVisible(false);
 }
 //---------------------------------------------------------------------------
-void  FileSelDialog::FileListMouseDown(,
-      TMouseButton Button, TShiftState Shift, int X, int Y)
+void  FileSelDialog::FileListClick(QModelIndex index)
 {
-	Panel5->Visible=false;
+    QStringList file;
+    file.append(fileModel->filePath(index));
+    plot->ReadSol(file,0);
+
+    DirSelector->setVisible(false);
 }
 //---------------------------------------------------------------------------
 void  FileSelDialog::FilterClick()
 {
-	Panel5->Visible=false;
-}
-//---------------------------------------------------------------------------
-void  FileSelDialog::BtnUpdateClick()
-{
-	FileList->Update();
+    fileModel->setNameFilters(QStringList(Filter->currentText()));
+    qWarning()<<Filter->currentText();
+    DirSelector->setVisible(false);
 }
 //---------------------------------------------------------------------------
 

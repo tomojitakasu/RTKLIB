@@ -64,6 +64,7 @@
 #include "geview.h"
 #include "gmview.h"
 #include "viewer.h"
+#include "fileseldlg.h"
 
 #define YLIM_AGE    10.0            // ylimit of age of differential
 #define YLIM_RATIO  20.0            // ylimit of raito factor
@@ -199,6 +200,7 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
     plotOptDialog = new PlotOptDialog(this);
     aboutDialog = new AboutDialog(this);
     pntDialog = new PntDialog(this);
+    fileSelDialog = new FileSelDialog(this);
 
     BtnConnect->setDefaultAction(MenuConnect);
     BtnReload->setDefaultAction(MenuReload);
@@ -560,7 +562,7 @@ void Plot::MenuFileSelClick()
 {
     trace(3,"MenuFileSelClick\n");
     
-//    FileSelDialog->Show();FIXME, use QFileDialog
+    fileSelDialog->show();
 }
 // callback on menu-save image ----------------------------------------------
 void Plot::MenuSaveImageClick()
@@ -2456,7 +2458,7 @@ void Plot::LoadOpt(void)
     TextViewer::FontD.setFamily(settings.value ("viewer/fontname","Courier New").toString());
     TextViewer::FontD.setPointSize(settings.value("viewer/fontsize",9).toInt());
     
-//    fileSelDialog->Dir=settings.value("solbrows/dir","").toString();
+    fileSelDialog->Dir=settings.value("solbrows/dir","").toString();
     
     for (i=0;i<RangeList->count();i++) {
         
@@ -2579,7 +2581,7 @@ void Plot::SaveOpt(void)
     settings.setValue("viewer/fontname",TextViewer::FontD.family());
     settings.setValue("viewer/fontsize",TextViewer::FontD.pointSize());
     
-//    settings.setValue ("solbrows/dir",FileSelDialog->Dir);
+    settings.setValue ("solbrows/dir",fileSelDialog->Dir);
     
 }
 //---------------------------------------------------------------------------

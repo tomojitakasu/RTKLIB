@@ -3,49 +3,35 @@
 #define fileseldlgH
 
 //---------------------------------------------------------------------------
-#include <Classes.hpp>
-#include <Controls.hpp>
-#include <StdCtrls.hpp>
-#include <Forms.hpp>
-#include <ExtCtrls.hpp>
-#include <FileCtrl.hpp>
-#include <ComCtrls.hpp>
-#include <Buttons.hpp>
+#include <QDialog>
+
+#include "ui_fileseldlg.h"
+
+class QShowEVent;
+class QTreeView;
+class QFileSystemModel;
+class QModelIndex;
 
 //---------------------------------------------------------------------------
-class TFileSelDialog : public TForm
+class FileSelDialog : public QDialog, private Ui::FileSelDialog
 {
-__published:
-	TPanel *Panel1;
-	TDriveComboBox *DriveSel;
-	TPanel *Panel2;
-	TDirectoryListBox *DirSel;
-	TFileListBox *FileList;
-	TPanel *Panel3;
-	TFilterComboBox *Filter;
-	TLabel *DirLabel;
-	TBitBtn *BtnDirSel;
-	TPanel *Panel4;
-	TPanel *Panel5;
-	TSpeedButton *BtnUpdate;
-    void FileListClick();
-    void FormShow();
-    void DirSelChange();
-    void BtnDirSelClick();
-    void FormResize();
-    void DriveSelClick();
-    void DirLabelClick();
+    Q_OBJECT
+public slots:
+    void FileListClick(QModelIndex);
+    void DirSelChange(QModelIndex);
+    void DirSelSelected(QModelIndex);
+    void DriveSelChanged();
     void FilterClick();
-    void Panel4Click();
-    void FileListMouseDown(, TMouseButton Button,
-          TShiftState Shift, int X, int Y);
-    void BtnUpdateClick();
-private:
+    void BtnDirSelClick();
+protected:
+    void showEvent(QShowEvent*);
+    QTreeView *DirSelector;
+    QFileSystemModel *fileModel,*dirModel;
+
 public:
-	AnsiString Dir;
-    TFileSelDialog(TComponent* Owner);
+    QString Dir;
+    FileSelDialog(QWidget *parent=0);
+    ~FileSelDialog();
 };
-//---------------------------------------------------------------------------
-extern PACKAGE TFileSelDialog *FileSelDialog;
 //---------------------------------------------------------------------------
 #endif

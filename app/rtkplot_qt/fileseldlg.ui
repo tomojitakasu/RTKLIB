@@ -6,279 +6,207 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>183</width>
+    <width>251</width>
     <height>507</height>
    </rect>
-  </property>
-  <property name="toolTip">
-   <string></string>
   </property>
   <property name="windowTitle">
    <string>Solutions</string>
   </property>
-  <widget class="QLabel" name="Panel1">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>183</width>
-     <height>19</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string></string>
-   </property>
-   <property name="enabled">
-    <bool>true</bool>
-   </property>
-   <property name="alignment">
-    <enum>Qt::AlignCenter</enum>
-   </property>
-   <property name="layoutDirection">
-    <enum>Qt::LeftToRight</enum>
-   </property>
-   <property name="toolTip">
-    <string></string>
-   </property>
-   <property name="frameShape">
-    <enum>QFrame::NoFrame</enum>
-   </property>
-   <widget class="QFrame" name="DriveSel">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>0</y>
-      <width>183</width>
-      <height>19</height>
-     </rect>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::StyledPanel</enum>
-    </property>
-   </widget>
-  </widget>
-  <widget class="QLabel" name="Panel2">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>19</y>
-     <width>183</width>
-     <height>18</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string></string>
-   </property>
-   <property name="enabled">
-    <bool>true</bool>
-   </property>
-   <property name="alignment">
-    <enum>Qt::AlignCenter</enum>
-   </property>
-   <property name="layoutDirection">
-    <enum>Qt::LeftToRight</enum>
-   </property>
-   <property name="toolTip">
-    <string></string>
-   </property>
-   <property name="frameShape">
-    <enum>QFrame::Panel</enum>
-   </property>
-   <property name="frameShadow">
-    <enum>QFrame::Sunken</enum>
-   </property>
-   <widget class="QLabel" name="Panel4">
-    <property name="geometry">
-     <rect>
-      <x>1</x>
-      <y>1</y>
-      <width>181</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string></string>
-    </property>
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <property name="alignment">
-     <enum>Qt::AlignCenter</enum>
-    </property>
-    <property name="layoutDirection">
-     <enum>Qt::LeftToRight</enum>
-    </property>
-    <property name="toolTip">
-     <string></string>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::Panel</enum>
-    </property>
-    <property name="frameShadow">
-     <enum>QFrame::Sunken</enum>
-    </property>
-    <widget class="QLabel" name="DirLabel">
-     <property name="geometry">
-      <rect>
-       <x>4</x>
-       <y>1</y>
-       <width>114</width>
-       <height>13</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>D:\proj\rtklib\app\icon</string>
-     </property>
+  <property name="toolTip">
+   <string/>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QWidget" name="Panel1" native="true">
      <property name="enabled">
       <bool>true</bool>
      </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="toolTip">
-      <string></string>
+      <string/>
      </property>
+     <property name="layoutDirection">
+      <enum>Qt::LeftToRight</enum>
+     </property>
+     <property name="text" stdset="0">
+      <string/>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_5">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QComboBox" name="DriveSel"/>
+      </item>
+     </layout>
     </widget>
-    <widget class="QPushButton" name="BtnDirSel">
-     <property name="geometry">
-      <rect>
-       <x>162</x>
-       <y>1</y>
-       <width>18</width>
-       <height>14</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string></string>
-     </property>
+   </item>
+   <item>
+    <widget class="QWidget" name="Panel2" native="true">
      <property name="enabled">
       <bool>true</bool>
      </property>
-     <property name="flat">
-      <bool>false</bool>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
      <property name="toolTip">
-      <string></string>
+      <string/>
+     </property>
+     <property name="layoutDirection">
+      <enum>Qt::LeftToRight</enum>
+     </property>
+     <property name="text" stdset="0">
+      <string/>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QWidget" name="Panel5" native="true">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="layoutDirection">
+         <enum>Qt::LeftToRight</enum>
+        </property>
+        <property name="editable" stdset="0">
+         <bool>true</bool>
+        </property>
+        <property name="text" stdset="0">
+         <string/>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="DirSelected">
+           <property name="text">
+            <string>TextLabel</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="BtnDirSel">
+           <property name="text">
+            <string>...</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QListView" name="FileList">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
      </property>
     </widget>
-   </widget>
-  </widget>
-  <widget class="QFrame" name="FileList">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>37</y>
-     <width>183</width>
-     <height>449</height>
-    </rect>
-   </property>
-   <property name="frameShape">
-    <enum>QFrame::StyledPanel</enum>
-   </property>
-  </widget>
-  <widget class="QLabel" name="Panel3">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>486</y>
-     <width>183</width>
-     <height>21</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Panel3</string>
-   </property>
-   <property name="enabled">
-    <bool>true</bool>
-   </property>
-   <property name="alignment">
-    <enum>Qt::AlignCenter</enum>
-   </property>
-   <property name="layoutDirection">
-    <enum>Qt::LeftToRight</enum>
-   </property>
-   <property name="toolTip">
-    <string></string>
-   </property>
-   <property name="frameShape">
-    <enum>QFrame::NoFrame</enum>
-   </property>
-   <widget class="QPushButton" name="BtnUpdate">
-    <property name="geometry">
-     <rect>
-      <x>164</x>
-      <y>0</y>
-      <width>19</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string></string>
-    </property>
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
-    <property name="toolTip">
-     <string></string>
-    </property>
-   </widget>
-   <widget class="QFrame" name="Filter">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>0</y>
-      <width>164</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::StyledPanel</enum>
-    </property>
-   </widget>
-  </widget>
-  <widget class="QLabel" name="Panel5">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>36</y>
-     <width>183</width>
-     <height>327</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string></string>
-   </property>
-   <property name="enabled">
-    <bool>true</bool>
-   </property>
-   <property name="alignment">
-    <enum>Qt::AlignCenter</enum>
-   </property>
-   <property name="layoutDirection">
-    <enum>Qt::LeftToRight</enum>
-   </property>
-   <property name="toolTip">
-    <string></string>
-   </property>
-   <property name="frameShape">
-    <enum>QFrame::Box</enum>
-   </property>
-   <property name="frameShadow">
-    <enum>QFrame::Sunken</enum>
-   </property>
-   <widget class="QFrame" name="DirSel">
-    <property name="geometry">
-     <rect>
-      <x>2</x>
-      <y>2</y>
-      <width>179</width>
-      <height>308</height>
-     </rect>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::StyledPanel</enum>
-    </property>
-   </widget>
-  </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="Panel3" native="true">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="layoutDirection">
+      <enum>Qt::LeftToRight</enum>
+     </property>
+     <property name="text" stdset="0">
+      <string>Panel3</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QComboBox" name="Filter">
+        <item>
+         <property name="text">
+          <string>*.*</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>*.pos, *.nmea</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
  </widget>
+ <resources/>
+ <connections/>
 </ui>

@@ -454,7 +454,7 @@ void Graph::DrawText(QPainter &c,const QPoint &p, const QString &str, const QCol
 
     QRectF off=c.boundingRect(QRectF(),flags,str);
     QPoint ps,pr;
-    ps.setX(off.x());ps.setY(off.y()-off.height());
+    ps.setX(off.x());ps.setY(off.y());
 
     RoQPoint(&ps,1,p,rot,&pr);
 

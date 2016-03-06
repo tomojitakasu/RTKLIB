@@ -561,7 +561,7 @@ void MainForm::SvrStart(void)
         if ((p=strstr(filepath,"::"))) *p='\0';
         if (!(fp=fopen(filepath,"r"))) continue;
         fclose(fp);
-        if (QMessageBox::question(this,tr("Overwrite"),tr("Overwrite %1").arg(filepath))!=QMessageBox::Yes) return;
+        if (QMessageBox::question(this,tr("Overwrite"),tr("File %1 exists. \nDo you want to overwrite?").arg(filepath))!=QMessageBox::Yes) return;
     }
     strsetdir(qPrintable(LocalDirectory));
     strsetproxy(qPrintable(ProxyAddress));
