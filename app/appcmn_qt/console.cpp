@@ -53,7 +53,7 @@ void Console::BtnClearClick()
 //---------------------------------------------------------------------------
 void Console::BtnDownClick()
 {
-    textEdit->horizontalScrollBar()->setValue(textEdit->horizontalScrollBar()->maximum());
+    textEdit->verticalScrollBar()->setValue(textEdit->verticalScrollBar()->maximum());
 }
 //---------------------------------------------------------------------------
 void Console::AddMsg(unsigned char *msg, int n)
@@ -65,7 +65,7 @@ void Console::AddMsg(unsigned char *msg, int n)
 
     if (BtnStop->isChecked()) return;
 
-    p+=sprintf(p,"%s",qPrintable(ConBuff.at(ConBuff.count()-1)));
+    p+=sprintf(p,"%s",qPrintable(ConBuff.last()));
 
     for (int i=0;i<n;i++) {
             if (mode) {
@@ -79,20 +79,14 @@ void Console::AddMsg(unsigned char *msg, int n)
             if (p-buff>=MAXLEN) p+=sprintf(p,"\n");
 
             if (*(p-1)=='\n') {
-                    ConBuff[ConBuff.count()-1]=buff;
+                    ConBuff.last()=buff;
                     ConBuff.append("");
                     *(p=buff)=0;
                     if (ConBuff.count()>=MAXLINE) ConBuff.removeFirst();
             }
     }
-    ConBuff[ConBuff.count()-1]=buff;
-    textEdit->setText("");
+    ConBuff.last()=buff;
 
-    QString all;
-    foreach (const QString &str,ConBuff)
-        all+=str+"\n";
-
-    textEdit->setText(all);
+    textEdit->setText(ConBuff.join(QString()));
 }
 //---------------------------------------------------------------------------
-
