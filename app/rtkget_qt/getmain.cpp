@@ -648,7 +648,7 @@ void MainForm::LoadSta(QString file)
     
     StaList->clear();
     
-    while (f.canReadLine())
+    while (!f.atEnd())
     {
         buff=f.readLine();
         buff=buff.mid(buff.indexOf('#'));

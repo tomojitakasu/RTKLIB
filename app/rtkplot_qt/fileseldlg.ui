@@ -192,12 +192,12 @@
        <widget class="QComboBox" name="Filter">
         <item>
          <property name="text">
-          <string>*.*</string>
+          <string>Position File (*.pos *.nmea)</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>*.pos, *.nmea</string>
+          <string>All (*.*)</string>
          </property>
         </item>
        </widget>

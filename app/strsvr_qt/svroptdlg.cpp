@@ -44,7 +44,7 @@ void SvrOptDialog::showEvent(QShowEvent* event)
     if (event->spontaneous()) return;
 
 	double pos[3];
-    QString s;
+
     DataTimeout->setText(QString::number(SvrOpt[0]));
     ConnectInterval->setText(QString::number(SvrOpt[1]));
     AvePeriodRate->setText(QString::number(SvrOpt[2]));
@@ -114,14 +114,12 @@ void SvrOptDialog::BtnOkClick()
 //---------------------------------------------------------------------------
 void SvrOptDialog::BtnPosClick()
 {
-    QString s;
-
     RefDialog *refDialog=new RefDialog(this);
 
     refDialog->RovPos[0]=AntPos1->text().toDouble();
     refDialog->RovPos[1]=AntPos2->text().toDouble();
     refDialog->RovPos[2]=AntPos3->text().toDouble();
-//    refDialog->BtnLoad->setEnabled(true);//FIXME
+    refDialog->BtnLoad->setEnabled(true);
     refDialog->StaPosFile=StaPosFile;
 
     refDialog->exec();
@@ -138,15 +136,9 @@ void SvrOptDialog::BtnPosClick()
 //---------------------------------------------------------------------------
 void SvrOptDialog::BtnLocalDirClick()
 {
-#ifdef TCPP
-    QString dir=LocalDir->Text;
-    if (!SelectDirectory("Local Directory","",dir)) return;
-    LocalDir->Text=dir;
-#else
     QString dir=LocalDir->text();
     dir=QFileDialog::getExistingDirectory(this,tr("Local Directory"),dir);
     LocalDir->setText(dir);
-#endif
 }
 //---------------------------------------------------------------------------
 void SvrOptDialog::UpdateEnable(void)

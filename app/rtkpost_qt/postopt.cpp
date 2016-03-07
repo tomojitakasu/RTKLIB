@@ -219,7 +219,7 @@ void OptDialog::BtnSatPcvViewClick()
 //---------------------------------------------------------------------------
 void OptDialog::BtnSatPcvFileClick()
 {
-    SatPcvFile->setText(QFileDialog::getOpenFileName(this,tr("Satellite Antenna PCV File"),QString(),tr("All (*.*);PCV File (*.pcv,*.atx)")));
+    SatPcvFile->setText(QFileDialog::getOpenFileName(this,tr("Satellite Antenna PCV File"),QString(),tr("All (*.*);PCV File (*.pcv *.atx)")));
 }
 //---------------------------------------------------------------------------
 void OptDialog::BtnAntPcvViewClick()
@@ -233,7 +233,7 @@ void OptDialog::BtnAntPcvViewClick()
 //---------------------------------------------------------------------------
 void OptDialog::BtnAntPcvFileClick()
 {
-    AntPcvFile->setText(QFileDialog::getOpenFileName(this,tr("Receiver Antenna PCV File"),QString(),tr("All (*.*);PCV File (*.pcv,*.atx)")));
+    AntPcvFile->setText(QFileDialog::getOpenFileName(this,tr("Receiver Antenna PCV File"),QString(),tr("All (*.*);PCV File (*.pcv *.atx)")));
 }
 //---------------------------------------------------------------------------
 void OptDialog::BtnGeoidDataFileClick()

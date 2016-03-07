@@ -305,7 +305,7 @@ void Plot::ReadElMaskData(const QString &file)
         ShowLegend(NULL);
         return;
     }
-    while (fp.canReadLine()) {
+    while (!fp.atEnd()) {
         buff=fp.readLine();
 
         if (buff.at(0)=='%') continue;
@@ -565,7 +565,7 @@ void Plot::ReadSkyTag(const QString &file)
     
     if (!fp.open(QIODevice::ReadOnly)) return;
     
-    while (fp.canReadLine()) {
+    while (!fp.atEnd()) {
         buff=fp.readLine();
         if (buff.at(0)=='\0'||buff.at(0)=='%'||buff.at(0)=='#') continue;
         QList<QByteArray> tokens=buff.split('=');
@@ -643,7 +643,7 @@ void Plot::ReadMapTag(const QString &file)
     MapScaleEq=0;
     MapLat=MapLon=0.0;
     
-    while (fp.canReadLine()) {
+    while (!fp.atEnd()) {
         buff=fp.readLine();
         if (buff.at(0)=='\0'||buff.at(0)=='%'||buff.at(0)=='#') continue;
         QList<QByteArray> tokens=buff.split('=');
@@ -666,7 +666,7 @@ void Plot::ReadMapPath(const QString &file)
     
     if (!(fp.open(QIODevice::ReadOnly))) return;
 
-    while ((fp.canReadLine())&&(n<MAXMAPPATH)) {
+    while ((!fp.atEnd())&&(n<MAXMAPPATH)) {
         buff=fp.readLine();
         QList<QByteArray> tokens=buff.split(' ');
         if (tokens.size()<3) continue;
@@ -696,7 +696,7 @@ void Plot::ReadStaPos(const QString &file, const QString &sta,
     
     if (!(fp.open(QIODevice::ReadOnly))) return;
 
-    while (fp.canReadLine()) {
+    while (!fp.atEnd()) {
         buff=fp.readLine();
         if (buff.indexOf("%=SNX")) sinex=1;
         if (buff.at(0)=='%'||buff.at(1)=='#') continue;

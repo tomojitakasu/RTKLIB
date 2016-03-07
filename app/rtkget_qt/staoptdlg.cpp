@@ -54,7 +54,7 @@ void StaListDialog::BtnLoadClick()
     StaList->clear();
     StaList->setVisible(false);
     
-    while (fp.canReadLine())
+    while (!fp.atEnd())
     {
         buff=fp.readLine();
         buff=buff.mid(buff.indexOf('#'));

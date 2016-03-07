@@ -65,7 +65,7 @@ void  CmdOptDialog::BtnLoadClick()
     cmd[0]->clear();
     cmd[1]->clear();
 
-    while (f.canReadLine()) {
+    while (!f.atEnd()) {
         buff=f.readLine(0);
         if (buff[0]=='@') {n=1; continue;}
         if (buff[buff.length()-1]=='\n') buff[buff.length()-1]='\0';

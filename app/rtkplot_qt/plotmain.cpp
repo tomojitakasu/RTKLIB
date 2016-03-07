@@ -85,11 +85,11 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
 
     setlocale(LC_NUMERIC,"C"); // use point as decimal separator in formated output
 
-    gtime_t t0={0};
+    gtime_t t0={0,0};
     nav_t nav0={0};
     obs_t obs0={0};
     sta_t sta0={0};
-    solstatbuf_t solstat0={0};
+    solstatbuf_t solstat0={0,0,0};
     double ep[]={2000,1,1,0,0,0},xl[2],yl[2];
     double xs[]={-DEFTSPAN/2,DEFTSPAN/2};
     int i,nfreq=NFREQ;
@@ -521,7 +521,7 @@ void Plot::MenuOpenNavClick()
 {
     trace(3,"MenuOpenNavClick\n");
     
-    ReadNav(QFileDialog::getOpenFileNames(this,tr("Open Raw Obs/Nav Messages"),QString(),tr("RINEX NAV (*.nav *.gnav *.hnav *.qnav *.*n *.*g *.*h *.*q,*.*p);;All (*.*)")));
+    ReadNav(QFileDialog::getOpenFileNames(this,tr("Open Raw Obs/Nav Messages"),QString(),tr("RINEX NAV (*.nav *.gnav *.hnav *.qnav *.*n *.*g *.*h *.*q *.*p);;All (*.*)")));
 }
 // callback on menu-open-elev-mask ------------------------------------------
 void Plot::MenuOpenElevMaskClick()
@@ -1320,7 +1320,7 @@ void Plot::MouseDownSol(int X, int Y)
 {
     QPushButton *btn[]={BtnOn1,BtnOn2,BtnOn3};
     QPoint pnt,p(X,Y);
-    gtime_t time={0};
+    gtime_t time={0,0};
     sol_t *data;
     double x,xl[2],yl[2];
     int i,area=-1,sel=!BtnSol1->isChecked()&&BtnSol2->isChecked()?1:0;
@@ -1652,10 +1652,10 @@ void Plot::TimerTimer()
     const QColor color[]={Qt::red,Qt::gray,QColor(0x00,0xAA,0xFF),Qt::green,QColor(0x00,0xff,0x00)};
     QLabel *strstatus[]={StrStatus1,StrStatus2};
     Console *console[]={Console1,Console2};
-    QString connectmsg="",s;
+    QString connectmsg="";
     static unsigned char buff[16384];
     solopt_t opt=solopt_default;
-    const gtime_t ts={0};
+    const gtime_t ts={0,0};
     double tint=TimeEna[2]?TimeInt:0.0,pos[3];
     int i,j,n,inb,inr,cycle,nmsg[2]={0},stat,istat;
     int sel=!BtnSol1->isChecked()&&BtnSol2->isChecked()?1:0;
@@ -1906,7 +1906,7 @@ void Plot::UpdateTime(void)
 // update origin of plot ----------------------------------------------------
 void Plot::UpdateOrigin(void)
 {
-    gtime_t time={0};
+    gtime_t time={0,0};
     sol_t *sol;
     double opos[3]={0},pos[3],ovel[3]={0};
     int i,j,n=0,sel=!BtnSol1->isChecked()&&BtnSol2->isChecked()?1:0;

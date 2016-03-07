@@ -110,7 +110,7 @@ void PntDialog::BtnLoadClick()
     OpenDialog_FileName=QFileDialog::getOpenFileName(this,tr("Open"));
 
     if (!file.open(QIODevice::ReadOnly)) return;
-    while (file.canReadLine()&&i<PntList->rowCount()) {
+    while (!file.atEnd()&&i<PntList->rowCount()) {
         buff=file.readLine();
         if (buff.at(0)=='#') continue;
         QList<QByteArray> tokens=buff.split(' ');

@@ -8,7 +8,7 @@
 #include "ui_refdlg.h"
 
 //---------------------------------------------------------------------------
-class RefDialog : public QDialog, private Ui::RefDialog
+class RefDialog : public QDialog, public Ui::RefDialog
 {
     Q_OBJECT
 

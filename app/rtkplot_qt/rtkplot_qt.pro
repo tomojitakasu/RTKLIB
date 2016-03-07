@@ -118,6 +118,3 @@ RESOURCES += \
     rtkplot_qt.qrc
 
 RC_FILE = rtkplot_qt.rc
-
-DISTFILES += \
-    aboutdlg.o

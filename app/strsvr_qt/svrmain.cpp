@@ -25,6 +25,7 @@
 #include <QSystemTrayIcon>
 #include <QMessageBox>
 #include <QSettings>
+#include <QMenu>
 
 #include "rtklib.h"
 #include "svroptdlg.h"
@@ -86,6 +87,16 @@ MainForm::MainForm(QWidget *parent)
 
     TrayIcon = new QSystemTrayIcon(QIcon(":/icons/strsvr_Icon"));
 
+    QMenu *trayMenu= new QMenu(this);
+    trayMenu->addAction(MenuExpand);
+    trayMenu->addSeparator();
+    trayMenu->addAction(MenuStart);
+    trayMenu->addAction(MenuStop);
+    trayMenu->addSeparator();
+    trayMenu->addAction(MenuExit);
+
+    TrayIcon->setContextMenu(trayMenu);
+
     svrOptDialog = new SvrOptDialog(this);
     console = new Console(this);
     tcpOptDialog= new TcpOptDialog(this);
@@ -110,6 +121,7 @@ MainForm::MainForm(QWidget *parent)
     connect(MenuStart,SIGNAL(triggered(bool)),this,SLOT(MenuStartClick()));
     connect(MenuStop,SIGNAL(triggered(bool)),this,SLOT(MenuStopClick()));
     connect(MenuExit,SIGNAL(triggered(bool)),this,SLOT(MenuExitClick()));
+    connect(MenuExpand,SIGNAL(triggered(bool)),this,SLOT(MenuExpandClick()));
     connect(Output1,SIGNAL(currentIndexChanged(int)),this,SLOT(Output1Change()));
     connect(Output2,SIGNAL(currentIndexChanged(int)),this,SLOT(Output2Change()));
     connect(Output3,SIGNAL(currentIndexChanged(int)),this,SLOT(Output3Change()));
@@ -490,7 +502,7 @@ void MainForm::Timer1Timer()
     Progress->setValue(!stat[0]?0:MIN(100,(int)(fmod(byte[0]/500.0,110.0))));
     
     time2str(time,s1,0);
-    Time->setText(QString("%1 GPST").arg(s1));
+    Time->setText(QString(tr("%1 GPST")).arg(s1));
     
     if (Panel1->isEnabled()) {
         ctime=timediff(EndTime,StartTime);
@@ -506,7 +518,7 @@ void MainForm::Timer1Timer()
     ConTime->setText(QString("%1d %2:%3:%4").arg(t[0],0,'f',0).arg(t[1],2,'f',0,QChar('0')).arg(t[2],2,'f',0,QChar('0')).arg(t[3],2,'f',2,QChar('0')));
     
     num2cnum(byte[0],s1); num2cnum(bps[0],s2);
-    TrayIcon->setToolTip(QString("%1 bytes %2 bps").arg(s1).arg(s2));
+    TrayIcon->setToolTip(QString(tr("%1 bytes %2 bps")).arg(s1).arg(s2));
     SetTrayIcon(stat[0]<=0?0:(stat[0]==3?2:1));
     
     Message->setText(msg);
@@ -738,8 +750,8 @@ void MainForm::LoadOpt(void)
     FileSwapMargin    =settings.value("set/fswapmargin",30).toInt();
     StaId             =settings.value("set/staid"       ,0).toInt();
     StaSel            =settings.value("set/stasel"      ,0).toInt();
-    AntType           =settings.value ("set/anttype",    "").toString();
-    RcvType           =settings.value ("set/rcvtype",    "").toString();
+    AntType           =settings.value("set/anttype",    "").toString();
+    RcvType           =settings.value("set/rcvtype",    "").toString();
     
     for (int i=0;i<6;i++) {
         SvrOpt[i]=settings.value(QString("set/svropt_%1").arg(i),optdef[i]).toInt();
@@ -797,8 +809,8 @@ void MainForm::SaveOpt(void)
     settings.setValue("set/fswapmargin",FileSwapMargin);
     settings.setValue("set/staid",      StaId);
     settings.setValue("set/stasel",     StaSel);
-    settings.setValue ("set/anttype",    AntType);
-    settings.setValue ("set/rcvtype",    RcvType);
+    settings.setValue("set/anttype",    AntType);
+    settings.setValue("set/rcvtype",    RcvType);
     
     for (int i=0;i<6;i++) {
         settings.setValue(QString("set/svropt_%1").arg(i),SvrOpt[i]);
@@ -841,4 +853,3 @@ void MainForm::SaveOpt(void)
     settings.setValue("dirs/proxyaddress"  ,ProxyAddress  );
 }
 //---------------------------------------------------------------------------
-

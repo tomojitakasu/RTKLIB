@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>441</width>
+    <width>636</width>
     <height>324</height>
    </rect>
   </property>
@@ -315,7 +315,7 @@
       <string/>
      </property>
      <property name="text">
-      <string>0.000</string>
+      <string>000.000000000</string>
      </property>
     </widget>
    </item>
@@ -328,7 +328,7 @@
       <string/>
      </property>
      <property name="text">
-      <string>0.000</string>
+      <string>000.000000000</string>
      </property>
     </widget>
    </item>
@@ -341,7 +341,7 @@
       <string/>
      </property>
      <property name="text">
-      <string>0.000</string>
+      <string>0000.000</string>
      </property>
     </widget>
    </item>
