@@ -1,1 +1,1 @@
-copy rtklaunch_qt.exe ..\..\bin
+copy release\rtklaunch_qt.exe ..\..\bin

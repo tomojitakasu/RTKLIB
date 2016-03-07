@@ -1,1 +1,1 @@
-copy srctblbrows_qt.exe ..\..\bin
+copy release\srctblbrows_qt.exe ..\..\bin

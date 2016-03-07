@@ -17,7 +17,15 @@ TEMPLATE = app
 
 INCLUDEPATH += ../../src/ ../appcmn_qt 
 
-LIBS += -lpng ../../src/libRTKLib.a
+linux{
+    RTKLIB =../../src/libRTKLib.a
+    LIBS += -lpng $${RTKLIB}
+}
+win32 {
+    debug:RTKLIB = ../../src/debug/libRTKLib.a
+    else:RTKLIB =../../src/release/libRTKLib.a
+    LIBS+= $${RTKLIB}  -lWs2_32 -lwinmm
+}
 
 SOURCES += \ 
     codeopt.cpp \
