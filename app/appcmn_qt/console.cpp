@@ -18,6 +18,9 @@ Console::Console(QWidget *parent)
     ConBuff.reserve(MAXLINE);
     ConBuff.append("");
 
+    BtnHex->setChecked(true);
+    BtnAsc->setChecked(false);
+
     connect(BtnClose,SIGNAL(clicked(bool)),this,SLOT(BtnCloseClick()));
     connect(BtnClear,SIGNAL(clicked(bool)),this,SLOT(BtnClearClick()));
     connect(BtnAsc,SIGNAL(clicked(bool)),this,SLOT(BtnAscClick()));
@@ -32,12 +35,12 @@ void Console::BtnCloseClick()
 //---------------------------------------------------------------------------
 void Console::BtnAscClick()
 {
-    BtnAsc->setChecked(BtnHex->isChecked());
+    BtnHex->setChecked(!BtnAsc->isChecked());
 }
 //---------------------------------------------------------------------------
 void Console::BtnHexClick()
 {
-    BtnAsc->setChecked(BtnHex->isChecked());
+    BtnAsc->setChecked(!BtnHex->isChecked());
 }
 //---------------------------------------------------------------------------
 void Console::BtnClearClick()
@@ -45,6 +48,7 @@ void Console::BtnClearClick()
     ConBuff.clear();
     ConBuff.reserve(MAXLINE);
     ConBuff.append("");
+    textEdit->setText("");
 }
 //---------------------------------------------------------------------------
 void Console::BtnDownClick()
@@ -58,6 +62,8 @@ void Console::AddMsg(unsigned char *msg, int n)
     int mode=BtnAsc->isChecked();
 
     if (n<=0) return;
+
+    if (BtnStop->isChecked()) return;
 
     p+=sprintf(p,"%s",qPrintable(ConBuff.at(ConBuff.count()-1)));
 
@@ -82,9 +88,11 @@ void Console::AddMsg(unsigned char *msg, int n)
     ConBuff[ConBuff.count()-1]=buff;
     textEdit->setText("");
 
-    QString str;
-    foreach (str,ConBuff)
-        textEdit->setText(str);
+    QString all;
+    foreach (const QString &str,ConBuff)
+        all+=str+"\n";
+
+    textEdit->setText(all);
 }
 //---------------------------------------------------------------------------
 

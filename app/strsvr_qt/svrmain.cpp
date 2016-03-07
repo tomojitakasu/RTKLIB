@@ -93,6 +93,8 @@ MainForm::MainForm(QWidget *parent)
     fileOptDialog= new FileOptDialog(this);
     ftpOptDialog= new FtpOptDialog(this);
 
+    StartTime.sec=StartTime.time=EndTime.sec=EndTime.time=0;
+
     connect(BtnExit,SIGNAL(clicked(bool)),this,SLOT(BtnExitClick()));
     connect(BtnInput,SIGNAL(clicked(bool)),this,SLOT(BtnInputClick()));
     connect(BtnStart,SIGNAL(clicked(bool)),this,SLOT(BtnStartClick()));
