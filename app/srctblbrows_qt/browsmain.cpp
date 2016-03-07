@@ -37,20 +37,17 @@ static char * getsrctbl(const QString addr)
 	int ns,stat,len=strlen(ENDSRCTBL);
 	unsigned int tick=tickget();
 
-    char * path=new char(addr.length()+1);
-    strcpy(path,qPrintable(addr));
-	
 	if (lock) return NULL; else lock=1;
 	
     strinit(&str);
 
-	if (!stropen(&str,STR_NTRIPCLI,STR_MODE_R,path)) {
+    if (!stropen(&str,STR_NTRIPCLI,STR_MODE_R,qPrintable(addr))) {
 		lock=0; 
         QMetaObject::invokeMethod(mainForm,"ShowMsg",Qt::QueuedConnection,Q_ARG(QString,QT_TR_NOOP("stream open error")));
 		return NULL;
 	}
     QMetaObject::invokeMethod(mainForm,"ShowMsg",Qt::QueuedConnection,Q_ARG(QString,QT_TR_NOOP("connecting...")));
-	
+
 	while(p<buff+MAXSRCTBL-1) {
         ns=strread(&str,(unsigned char*)p,(buff+MAXSRCTBL-p-1)); *(p+ns)='\0';
 		if (p-len-3>buff&&strstr(p-len-3,ENDSRCTBL)) break;
