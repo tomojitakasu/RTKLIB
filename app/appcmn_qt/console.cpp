@@ -48,7 +48,7 @@ void Console::BtnClearClick()
     ConBuff.clear();
     ConBuff.reserve(MAXLINE);
     ConBuff.append("");
-    textEdit->setText("");
+    textEdit->setPlainText("");
 }
 //---------------------------------------------------------------------------
 void Console::BtnDownClick()
@@ -87,6 +87,6 @@ void Console::AddMsg(unsigned char *msg, int n)
     }
     ConBuff.last()=buff;
 
-    textEdit->setText(ConBuff.join(QString()));
+    textEdit->setPlainText(ConBuff.join(QString()));
 }
 //---------------------------------------------------------------------------
