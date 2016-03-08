@@ -18,7 +18,7 @@ ConvDialog::ConvDialog(QWidget *parent)
 
     connect(BtnOk,SIGNAL(clicked(bool)),this,SLOT(BtnOkClick()));
     connect(BtnCancel,SIGNAL(clicked(bool)),this,SLOT(reject()));
-    connect(Conversion,SIGNAL(),this,SLOT(ConversionClick()));
+    connect(Conversion,SIGNAL(clicked(bool)),this,SLOT(ConversionClick()));
 }
 //---------------------------------------------------------------------------
 void ConvDialog::showEvent(QShowEvent *event)

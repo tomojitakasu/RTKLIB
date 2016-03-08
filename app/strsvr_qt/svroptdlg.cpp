@@ -30,8 +30,8 @@ SvrOptDialog::SvrOptDialog(QWidget *parent)
     NmeaCycle->setValidator(new QIntValidator(0,0xffffffff));
     StationId->setValidator(new QIntValidator(0,0xffffffff));
 
-    AntPos1->setValidator(new QDoubleValidator(-90,90,8));
-    AntPos2->setValidator(new QDoubleValidator(-180,180,8));
+    AntPos1->setValidator(new QDoubleValidator(-90,90,9));
+    AntPos2->setValidator(new QDoubleValidator(-180,180,9));
     AntPos3->setValidator(new QDoubleValidator(0,8000,3));
 
     AntOff1->setValidator(new QDoubleValidator());
