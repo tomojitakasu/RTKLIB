@@ -45,7 +45,6 @@ SOURCES += \
     ../appcmn_qt/refdlg.cpp \
     ../appcmn_qt/viewer.cpp \
     ../appcmn_qt/vieweropt.cpp \
-    ../appcmn_qt/confdlg.cpp \
     ../appcmn_qt/timedlg.cpp
 
 HEADERS  += \ 
@@ -58,7 +57,6 @@ HEADERS  += \
     ../appcmn_qt/refdlg.h \
     ../appcmn_qt/viewer.h \
     ../appcmn_qt/vieweropt.h \
-    ../appcmn_qt/confdlg.h \
     ../appcmn_qt/aboutdlg.h \
     ../appcmn_qt/timedlg.h
 
@@ -72,7 +70,6 @@ FORMS    += \
     ../appcmn_qt/refdlg.ui \
     ../appcmn_qt/viewer.ui \
     ../appcmn_qt/vieweropt.ui \
-    ../appcmn_qt/confdlg.ui \
     ../appcmn_qt/aboutdlg.ui \
     ../appcmn_qt/timedlg.ui
 

@@ -53,7 +53,6 @@
 #include "kmzconv.h"
 #include "refdlg.h"
 #include "timedlg.h"
-#include "confdlg.h"
 #include "keydlg.h"
 #include "aboutdlg.h"
 #include "viewer.h"

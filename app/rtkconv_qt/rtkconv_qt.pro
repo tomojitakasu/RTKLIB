@@ -34,7 +34,6 @@ SOURCES += \
     rtkconv.cpp \
     startdlg.cpp \
     ../appcmn_qt/aboutdlg.cpp \
-    ../appcmn_qt/confdlg.cpp \
     ../appcmn_qt/keydlg.cpp \
     ../appcmn_qt/timedlg.cpp \
     ../appcmn_qt/viewer.cpp \
@@ -46,7 +45,6 @@ HEADERS  += \
     convopt.h \
     startdlg.h \
     ../appcmn_qt/aboutdlg.h \
-    ../appcmn_qt/confdlg.h \
     ../appcmn_qt/keydlg.h \
     ../appcmn_qt/timedlg.h \
     ../appcmn_qt/viewer.h \
@@ -58,7 +56,6 @@ FORMS    += \
     startdlg.ui \
     convmain.ui \
     ../appcmn_qt/aboutdlg.ui \
-    ../appcmn_qt/confdlg.ui \
     ../appcmn_qt/keydlg.ui \
     ../appcmn_qt/timedlg.ui \
     ../appcmn_qt/viewer.ui \
