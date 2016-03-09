@@ -213,6 +213,11 @@
        <string>RTS/CTS</string>
       </property>
      </item>
+     <item>
+      <property name="text">
+       <string>XON/XOFF</string>
+      </property>
+     </item>
     </widget>
    </item>
    <item row="4" column="3">

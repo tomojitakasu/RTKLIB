@@ -20,6 +20,8 @@
     connect(BtnCancel,SIGNAL(clicked()),this,SLOT(reject()));
     connect(BtnLoad,SIGNAL(clicked()),this,SLOT(BtnLoadClick()));
     connect(BtnSave,SIGNAL(clicked()),this,SLOT(BtnSaveClick()));
+    connect(ChkCloseCmd,SIGNAL(clicked(bool)),this,SLOT(ChkCloseCmdClick()));
+    connect(ChkOpenCmd,SIGNAL(clicked(bool)),this,SLOT(ChkOpenCmdClick()));
 }
 
 //---------------------------------------------------------------------------

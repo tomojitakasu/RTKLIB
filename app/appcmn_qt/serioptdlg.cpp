@@ -15,9 +15,6 @@
 #include <QSerialPortInfo>
 #endif
 
-#define MAXCOMNO	99				// maximun com number
-
-//---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
  SerialOptDialog::SerialOptDialog(QWidget* parent)
     : QDialog(parent)
@@ -55,7 +52,7 @@ void  SerialOptDialog::showEvent(QShowEvent *event)
     StopBits->setCurrentIndex(tokens.at(4)=="1"?0:1);
 
     if (tokens.size()<6) return;
-    FlowCtr->setCurrentIndex(tokens.at(5)=="off"?0:tokens.at(5)=="xon"?1:2);
+    FlowCtr->setCurrentIndex(tokens.at(5)=="off"?0:tokens.at(5)=="rts"?1:2);
 
     BtnCmd->setVisible(Opt);
 }
@@ -78,7 +75,7 @@ void  SerialOptDialog::BtnCmdClick()
 //---------------------------------------------------------------------------
 void  SerialOptDialog::BtnOkClick()
 {
-    char const *parity[]={"n","e","o"},*fctr[]={"off","rts"};
+    char const *parity[]={"n","e","o"},*fctr[]={"off","rts","xon"};
     QString Port_Text=Port->currentText(),BitRate_Text=BitRate->currentText();
 
     Path=QString("%1:%2:%3:%4:%5:%6").arg(Port_Text).arg(BitRate_Text)
