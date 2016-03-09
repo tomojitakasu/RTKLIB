@@ -74,9 +74,9 @@ void Plot::UpdateDisp(void)
 // draw track-plot ----------------------------------------------------------
 void Plot::DrawTrk(QPainter &c,int level)
 {
-    QString label,header,s;
+    QString label,header;
     TIMEPOS *pos,*pos1,*pos2,*vel;
-    gtime_t time1={0},time2={0};
+    gtime_t time1={0,0},time2={0,0};
     sol_t *sol;
     QPoint p1,p2;
     double xt,yt,sx,sy,opos[3];
@@ -268,7 +268,7 @@ void Plot::DrawTrk(QPainter &c,int level)
 // draw map-image on track-plot ---------------------------------------------
 void Plot::DrawTrkImage(QPainter &c,int level)
 {
-    gtime_t time={0};
+    gtime_t time={0,0};
     QPoint p1,p2;
     double pos[3]={0},rr[3],xyz[3]={0},x1,x2,y1,y2;
     
@@ -294,7 +294,7 @@ void Plot::DrawTrkImage(QPainter &c,int level)
 void Plot::DrawTrkPath(QPainter &c,int level)
 {
     QPainter x(Disp);
-    gtime_t time={0};
+    gtime_t time={0,0};
     QPoint *p;
     double xyz[3];
     int i,n=NMapPath;
@@ -345,7 +345,7 @@ void Plot::DrawTrkPnt(QPainter &c,const TIMEPOS *pos, int level, int style)
 // draw point with label on track-plot --------------------------------------
 void Plot::DrawTrkPos(QPainter &c,const double *rr, int type, const QString &label)
 {
-    gtime_t time={0};
+    gtime_t time={0,0};
     QPoint p1;
     double xyz[3],xs,ys;
     
@@ -488,7 +488,7 @@ void Plot::DrawSol(QPainter &c,int level, int type)
     QString label[]={tr("E-W"),tr("N-S"),tr("U-D")},unit[]={"m","m/s","m/s" CHARUP2};
     QPushButton *btn[]={BtnOn1,BtnOn2,BtnOn3};
     TIMEPOS *pos,*pos1,*pos2;
-    gtime_t time1={0},time2={0};
+    gtime_t time1={0,0},time2={0,0};
     QPoint p1,p2;
     double xc,yc,xl[2],yl[2],off,y;
     int i,j,k,sel=!BtnSol1->isChecked()&&BtnSol2->isChecked()?1:0,p=0;
@@ -1033,7 +1033,7 @@ void Plot::DrawSky(QPainter &c,int level)
     QPoint p1,p2;
     QString s,ss,ObsTypeText=ObsType->currentText();
     obsd_t *obs;
-    gtime_t t[MAXSAT]={{0}};
+    gtime_t t[MAXSAT]={{0,0}};
     double p[MAXSAT][2]={{0}},gfp[MAXSAT]={0},p0[MAXSAT][2]={{0}};
     double x,y,xp,yp,xs,ys,dt,dx,dy,xl[2],yl[2],r,gf;
     int i,j,ind=ObsIndex;
@@ -1224,7 +1224,6 @@ void Plot::DrawDop(QPainter &c,int level)
 {
     QString label;
     QPoint p1,p2;
-    gtime_t time;
     double xp,xc,yc,xl[2],yl[2],azel[MAXSAT*2],*dop,*x,*y;
     int i,j,*ns,n=0;
     int ind=ObsIndex,doptype=DopType->currentIndex();
@@ -1414,7 +1413,7 @@ void Plot::DrawSnr(QPainter &c,int level)
     QString unit[]={"dBHz","m",CHARDEG};
     QPoint p1,p2;
     QColor *col,colp[MAXSAT];
-    gtime_t time={0};
+    gtime_t time={0,0};
     double *x,*y,xl[2],yl[2],off,xc,yc,xp,yp[MAXSAT],ave[3]={0},rms[3]={0};
     const char *code=qPrintable(ObsTypeText.mid(1));
     int i,j,k,l,n,np,sat,ind=ObsIndex,nrms[3]={0};
@@ -1552,7 +1551,7 @@ void Plot::DrawSnrE(QPainter &c,int level)
     QString label[]={tr("SNR (dBHz)"),tr("Multipath (m)")};
     QPoint p1,p2;
     QColor *col[2],colp[2][MAXSAT];
-    gtime_t time={0};
+    gtime_t time={0,0};
     double *x[2],*y[2],xl[2]={-0.001,90.0},yl[2][2]={{10.0,65.0},{-10.0,10.0}};
     double xp[2][MAXSAT],yp[2][MAXSAT],ave=0.0,rms=0.0;
     const char *code=qPrintable(ObsTypeText.mid(1));

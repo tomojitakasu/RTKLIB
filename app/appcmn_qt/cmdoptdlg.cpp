@@ -71,7 +71,7 @@ void  CmdOptDialog::BtnLoadClick()
         buff=f.readLine(0);
         if (buff[0]=='@') {n=1; continue;}
         if (buff[buff.length()-1]=='\n') buff[buff.length()-1]='\0';
-        cmd[n]->appendPlainText(buff+"\r\n");
+        cmd[n]->appendPlainText(buff);
     }
 }
 

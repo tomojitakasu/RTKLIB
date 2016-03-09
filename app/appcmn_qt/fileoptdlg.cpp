@@ -23,6 +23,7 @@ FileOptDialog::FileOptDialog(QWidget* parent)
     connect(BtnOk,SIGNAL(clicked(bool)),this,SLOT(BtnOkClick()));
     connect(BtnKey,SIGNAL(clicked(bool)),this,SLOT(BtnKeyClick()));
     connect(BtnFilePath,SIGNAL(clicked(bool)),this,SLOT(BtnFilePathClick()));
+    connect(ChkTimeTag,SIGNAL(clicked(bool)),this,SLOT(ChkTimeTagClick()));
 
     SwapIntv->setValidator(new QIntValidator());
 }

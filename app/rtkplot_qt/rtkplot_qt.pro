@@ -42,7 +42,6 @@ SOURCES += \
     ../appcmn_qt/aboutdlg.cpp \
     conndlg.cpp \
     geview.cpp \
-    gmview.cpp \
     mapdlg.cpp \
     plotcmn.cpp \
     plotdata.cpp \
@@ -65,13 +64,13 @@ SOURCES += \
     ../appcmn_qt/graph.cpp \
     ../appcmn_qt/console.cpp \
     ../appcmn_qt/tspandlg.cpp \
-    fileseldlg.cpp
+    fileseldlg.cpp \
+    ../appcmn_qt/gmview.cpp
 
 HEADERS  += \
     ../appcmn_qt/aboutdlg.h \
     conndlg.h \
     geview.h \
-    gmview.h \
     mapdlg.h \
     plotmain.h \
     plotopt.h \
@@ -89,13 +88,13 @@ HEADERS  += \
     ../appcmn_qt/graph.h \
     ../appcmn_qt/console.h \
     ../appcmn_qt/tspandlg.h \
-    fileseldlg.h
+    fileseldlg.h \
+    ../appcmn_qt/gmview.h
 
 FORMS    += \
     ../appcmn_qt/aboutdlg.ui \
     conndlg.ui \
     geview.ui \
-    gmview.ui \
     mapdlg.ui \
     plotmain.ui \
     plotopt.ui \
@@ -112,7 +111,8 @@ FORMS    += \
     ../appcmn_qt/keydlg.ui \
     ../appcmn_qt/console.ui \
     ../appcmn_qt/tspandlg.ui \
-    fileseldlg.ui
+    fileseldlg.ui \
+    ../appcmn_qt/gmview.ui
 
 RESOURCES += \
     rtkplot_qt.qrc
