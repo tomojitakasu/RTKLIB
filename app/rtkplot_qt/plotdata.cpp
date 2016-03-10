@@ -1031,7 +1031,7 @@ void Plot::UpdateObs(int nobs)
         }
         per=(i+1)*100/Obs.n;
         if (per!=per_) {
-            ShowMsg(QString(tr("updating azimuth/elevation... (%1%%)")).arg(per_=per));
+            ShowMsg(QString(tr("updating azimuth/elevation... (%1%)")).arg(per_=per));
             qApp->processEvents();
         }
     }
@@ -1123,7 +1123,7 @@ void Plot::UpdateMp(void)
         }
         per=sat*100/MAXSAT;
         if (per!=per_) {
-            ShowMsg(QString(tr("updating multipath... (%1%%)")).arg(per));
+            ShowMsg(QString(tr("updating multipath... (%1%)")).arg(per));
             per_=per;
             qApp->processEvents();
         }

@@ -155,7 +155,7 @@ void Plot::UpdateInfoObs(void)
     if (n>0) {
         TimeStr(ts,0,0,s1);
         TimeStr(te,0,1,s2);
-        msg=QString("[1]%1-%2 : EP=%3 N=%4").arg(s1).arg(s2+(TimeLabel?5:0)).arg(ne).arg(n);
+        msg=QString("[1]%1-%2 : EP=%3 N=%4").arg(s1).arg(s2.mid(TimeLabel?5:0)).arg(ne).arg(n);
         
         for (i=0;i<7;i++) {
             if (PlotType==PLOT_DOP) {
