@@ -73,8 +73,6 @@ static const char version[]="$Revision: 1.1 $ $Date: 2008/07/17 22:14:45 $";
 // global variables ---------------------------------------------------------
 static gtime_t tstart_={0,0};         // time start for progress-bar
 static gtime_t tend_  ={0,0};         // time end for progress-bar
-static char rov_ [256]="";          // rover name
-static char base_[256]="";          // base-station name
 
 MainForm *mainForm;
 
@@ -119,8 +117,8 @@ ProcessingThread::ProcessingThread(QObject *parent):QThread(parent)
     n=0;
     prcopt=prcopt_default;
     solopt=solopt_default;
-    ts={0};
-    te={0};
+    ts.time=ts.sec=0;
+    te.time=te.sec=0;
     rov=base=NULL;
     for (int i=0;i<6;i++) infile[i]=new char[1024];
 }
@@ -1030,7 +1028,7 @@ int MainForm::ObsToNav(const QString &obsfile, QString &navfile)
 QString MainForm::FilePath(const QString &file)
 {
     QString s;
-    gtime_t ts={0};
+    gtime_t ts={0,0};
     int p;
     char rov[256]="",base[256]="",path[1024];
     

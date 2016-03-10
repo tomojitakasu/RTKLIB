@@ -82,7 +82,7 @@ void ConvDialog::BtnConvertClick()
     QString cmd;
     char file[1024],kmlfile[1024],*p;
     double offset[3]={0},tint=0.0;
-	gtime_t ts={0},te={0};
+    gtime_t ts={0,0},te={0,0};
 	ShowMsg("");
     if (InputFile->text()==""||OutputFile->text()=="") return;
     ShowMsg(tr("converting ..."));

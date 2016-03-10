@@ -28,7 +28,6 @@
 
 #include "convmain.h"
 #include "timedlg.h"
-#include "confdlg.h"
 #include "aboutdlg.h"
 #include "startdlg.h"
 #include "keydlg.h"

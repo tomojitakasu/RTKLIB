@@ -40,7 +40,7 @@ int Plot::ExecCmd(const QString &cmd)
 // get time span and time interval ------------------------------------------
 void Plot::TimeSpan(gtime_t *ts, gtime_t *te, double *tint)
 {
-    gtime_t t0={0};
+    gtime_t t0={0,0};
     
     trace(3,"TimeSpan\n");
     
@@ -127,7 +127,7 @@ int Plot::GetCenterPos(double *rr)
 TIMEPOS * Plot::SolToPos(solbuf_t *sol, int index, int qflag, int type)
 {
     TIMEPOS *pos,*vel,*acc;
-    gtime_t ts={0};
+    gtime_t ts={0,0};
     sol_t *data;
     double tint,xyz[3],xyzs[4];
     int i;

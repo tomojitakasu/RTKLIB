@@ -328,7 +328,7 @@ void Plot::ReadElMaskData(const QString &file)
 void Plot::GenVisData(void)
 {
     gtime_t time,ts,te;
-    obsd_t data={{0}};
+    obsd_t data={{0,0}};
     double tint,r,pos[3],rr[3],rs[6],e[3],azel[2];
     int i,j,nobs=0;
     char name[16];
@@ -964,7 +964,7 @@ void Plot::UpdateObs(int nobs)
     QString s;
     prcopt_t opt=prcopt_default;
     gtime_t time;
-    sol_t sol={0};
+    sol_t sol={0,0};
     double pos[3],rr[3],e[3],azel[MAXOBS*2]={0},rs[6],dts[2],var;
     int i,j,k,svh,per,per_=-1;
     char msg[128],name[16];

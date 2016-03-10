@@ -138,7 +138,7 @@ void Plot::UpdateInfoObs(void)
     QString msgs4[]={" MP=..0.6","..0.3","..0.0..","-0.3..","-0.6..","",""};
     QString msg;
     QString msgs[8];
-    gtime_t ts={0},te={0},t,tp={0};
+    gtime_t ts={0,0},te={0,0},t,tp={0,0};
     int i,n=0,ne=0;
     QString s1,s2;
     
@@ -181,7 +181,7 @@ void Plot::UpdateInfoSol(void)
     QString msg,msgs[8],s;
     TIMEPOS *pos=NULL,*pos1,*pos2;
     sol_t *data;
-    gtime_t ts={0},te={0};
+    gtime_t ts={0,0},te={0,0};
     double r[3],b,bl[2]={1E9,0.0};
     int i,j,n=0,nq[8]={0},sel=BtnSol1->isChecked()||!BtnSol2->isChecked()?0:1;
     QString s1,s2;
