@@ -22,14 +22,15 @@ static char path_str[MAXNFILE][1024];
 // read solutions -----------------------------------------------------------
 void Plot::ReadSol(const QStringList &files, int sel)
 {
-    solbuf_t sol={0};
-    QString s;
+    solbuf_t sol;
     gtime_t ts,te;
     double tint;
     int i,n=0;
     char *paths[MAXNFILE];
     
     trace(3,"ReadSol: sel=%d\n",sel);
+
+    memset(&sol,0,sizeof(solbuf_t));
     
     for (i=0;i<MAXNFILE;i++) paths[i]=path_str[i];
     
@@ -124,13 +125,16 @@ void Plot::ReadSolStat(const QStringList &files, int sel)
 // read observation data ----------------------------------------------------
 void Plot::ReadObs(const QStringList &files)
 {
-    obs_t obs={0};
-    nav_t nav={0};
-    sta_t sta={0};
+    obs_t obs={0,0,NULL};
+    nav_t nav;
+    sta_t sta;
     int nobs;
     
     trace(3,"ReadObs\n");
     
+    memset(&nav,0,sizeof(nav_t));
+    memset(&sta,0,sizeof(sta_t));
+
     if (files.size()==0) return;
     
     ReadWaitStart();
@@ -328,13 +332,15 @@ void Plot::ReadElMaskData(const QString &file)
 void Plot::GenVisData(void)
 {
     gtime_t time,ts,te;
-    obsd_t data={{0,0}};
+    obsd_t data;
     double tint,r,pos[3],rr[3],rs[6],e[3],azel[2];
     int i,j,nobs=0;
     char name[16];
     
     trace(3,"GenVisData\n");
     
+    memset(&data,0,sizeof(obsd_t));
+
     ClearObs();
     SimObs=1;
     
@@ -961,16 +967,17 @@ int Plot::CheckObs(const QString &file)
 // update observation data index, azimuth/elevation, satellite list ---------
 void Plot::UpdateObs(int nobs)
 {
-    QString s;
     prcopt_t opt=prcopt_default;
     gtime_t time;
-    sol_t sol={0,0};
+    sol_t sol;
     double pos[3],rr[3],e[3],azel[MAXOBS*2]={0},rs[6],dts[2],var;
     int i,j,k,svh,per,per_=-1;
     char msg[128],name[16];
     
     trace(3,"UpdateObs\n");
     
+    memset(&sol,0,sizeof(sol_t));
+
     delete [] IndexObs; IndexObs=NULL;
     delete [] Az; Az=NULL;
     delete [] El; El=NULL;
@@ -1160,9 +1167,11 @@ void Plot::ConnectPath(const QString &path, int ch)
 // clear obs data --------------------------------------------------------------
 void Plot::ClearObs(void)
 {
-    sta_t sta0={0};
+    sta_t sta0;
     int i;
     
+    memset(&sta0,0,sizeof(sta_t));
+
     freeobs(&Obs);
     freenav(&Nav,0xFF);
     delete [] IndexObs; IndexObs=NULL;

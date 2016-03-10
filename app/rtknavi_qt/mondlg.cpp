@@ -1174,11 +1174,14 @@ void MonitorDialog::SetSbsNav(void)
 //---------------------------------------------------------------------------
 void MonitorDialog::ShowSbsNav(void)
 {
-    QString s,s0="-";
-	seph_t seph[MAXPRNSBS-MINPRNSBS+1]={0};
+    seph_t seph[MAXPRNSBS-MINPRNSBS+1];
 	gtime_t time;
     int i,j,n,valid,prn,off=SelEph->currentIndex()?NSATSBS:0;
 	char tstr[64],id[32];
+
+    for (int i=0;i<MAXPRNSBS-MINPRNSBS+1; i++) seph[i].sat=seph[i].t0.time=seph[i].t0.sec=seph[i].tof.time=seph[i].tof.sec=seph[i].sva=seph[i].svh=
+                seph[i].pos[0]=seph[i].pos[1]=seph[i].pos[2]=seph[i].vel[0]=seph[i].vel[1]=seph[i].vel[2]=seph[i].acc[0]=seph[i].acc[1]=seph[i].acc[2]=
+                seph[i].af0=seph[i].af1;
 	
 	rtksvrlock(&rtksvr); // lock
 	time=rtksvr.rtk.sol.time;
@@ -2123,10 +2126,12 @@ void MonitorDialog::SetIonCorr(void)
 void MonitorDialog::ShowIonCorr(void)
 {
 	gtime_t time;
-	nav_t nav={0};
-    double pos[3]={0},ion,var,azel[]={0.0,PI/2.0};
+    nav_t nav;
+    double pos[3]={0,0,0},ion,var,azel[]={0.0,PI/2.0};
 	int i,j,ionoopt;
 	
+    memset(&nav,0,sizeof(nav_t));
+
 	rtksvrlock(&rtksvr);
 	time=rtksvr.rtk.sol.time;
 	for (i=0;i<8;i++) nav.ion_gps[i]=rtksvr.nav.ion_gps[i];

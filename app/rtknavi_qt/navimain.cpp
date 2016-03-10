@@ -870,11 +870,14 @@ void  MainWindow::SvrStart(void)
     char *paths[8],*cmds[3]={0},*rcvopts[3]={0};
     char buff[1024],*p;
     gtime_t time=timeget();
-    pcvs_t pcvr={0},pcvs={0};
+    pcvs_t pcvr,pcvs;
     pcv_t *pcv;
     
     trace(3,"SvrStart\n");
     
+    memset(&pcvr,0,sizeof(pcvs_t));
+    memset(&pcvs,0,sizeof(pcvs_t));
+
     Message->setText("");
     
     if (RovPosTypeF<=2) {
@@ -1831,13 +1834,15 @@ void  MainWindow::SaveLog(void)
 void  MainWindow::LoadNav(nav_t *nav)
 {
     QSettings settings(IniFile,QSettings::IniFormat);
-    QString str,s;
-    eph_t eph0={0};
+    QString str;
+    eph_t eph0;
     char buff[2049],*p;
     int i;
     
     trace(3,"LoadNav\n");
     
+    memset(&eph0,0,sizeof(eph_t));
+
     for (i=0;i<MAXSAT;i++) {
         if ((str=settings.value(QString("navi/eph_%1").arg(i,2)).toString()).isEmpty()) continue;
         nav->eph[i]=eph0;

@@ -86,15 +86,18 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
     setlocale(LC_NUMERIC,"C"); // use point as decimal separator in formated output
 
     gtime_t t0={0,0};
-    nav_t nav0={0};
-    obs_t obs0={0};
-    sta_t sta0={0};
+    nav_t nav0;
+    obs_t obs0={0,0,NULL};
+    sta_t sta0;
     solstatbuf_t solstat0={0,0,0};
     double ep[]={2000,1,1,0,0,0},xl[2],yl[2];
     double xs[]={-DEFTSPAN/2,DEFTSPAN/2};
     int i,nfreq=NFREQ;
 
     QString file=QApplication::applicationFilePath();
+
+    memset(&nav0,0,sizeof(nav_t));
+    memset(&sta0,0,sizeof(sta_t));
 
     IniFile=QFileInfo(file).absoluteFilePath()+".ini";
 

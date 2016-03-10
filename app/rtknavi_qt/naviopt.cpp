@@ -665,7 +665,9 @@ void OptDialog::LoadOpt(const QString &file)
 	int sat;
 	prcopt_t prcopt=prcopt_default;
 	solopt_t solopt=solopt_default;
-	filopt_t filopt={""};
+    filopt_t filopt;
+
+    memset(&filopt,0,sizeof(filopt_t));
 	
 	resetsysopts();
     if (!loadopts(qPrintable(file),sysopts)||
@@ -826,8 +828,10 @@ void OptDialog::SaveOpt(const QString &file)
 	int sat,ex;
 	prcopt_t prcopt=prcopt_default;
 	solopt_t solopt=solopt_default;
-	filopt_t filopt={""};
+    filopt_t filopt;
 	
+    memset(&filopt,0,sizeof(filopt_t));
+
 	for (int i=0;i<8;i++) {
         strtype[i]=i<3?itype[mainForm->Stream[i]]:otype[mainForm->Stream[i]];
         strfmt[i]=mainForm->Format[i];
@@ -1107,7 +1111,7 @@ void OptDialog::ReadAntList(void)
 {
     QString AntPcvFile_Text=AntPcvFile->text();
     QStringList list;
-	pcvs_t pcvs={0};
+    pcvs_t pcvs={0,0,NULL};
 	char *p;
 	
     if (!readpcv(qPrintable(AntPcvFile_Text),&pcvs)) return;

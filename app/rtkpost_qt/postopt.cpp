@@ -638,8 +638,10 @@ void OptDialog::LoadOpt(const QString &file)
 	int sat;
 	prcopt_t prcopt=prcopt_default;
 	solopt_t solopt=solopt_default;
-	filopt_t filopt={""};
+    filopt_t filopt;
 	
+    memset(&filopt,0,sizeof(filopt_t));
+
 	resetsysopts();
     if (!loadopts(qPrintable(file),sysopts)) return;
 	getsysopts(&prcopt,&solopt,&filopt);
@@ -783,8 +785,10 @@ void OptDialog::SaveOpt(const QString &file)
 	int sat,ex;
 	prcopt_t prcopt=prcopt_default;
 	solopt_t solopt=solopt_default;
-	filopt_t filopt={""};
+    filopt_t filopt;
 	
+    memset(&filopt,0,sizeof(filopt_t));
+
     prcopt.mode		=PosMode	 ->currentIndex();
     prcopt.nf		=Freq		 ->currentIndex()+1;
     prcopt.soltype	=Solution	 ->currentIndex();
