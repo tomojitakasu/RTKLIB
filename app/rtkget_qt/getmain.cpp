@@ -66,18 +66,18 @@ extern int showmsg(char *format,...)
     va_end(arg);
     
     if ((p=strstr(buff,"STAT="))) {
-        str=mainForm->MsgLabel3->text();
+        QMetaObject::invokeMethod(mainForm->MsgLabel3,"text",Qt::AutoConnection,Q_RETURN_ARG(QString,str));
         len=str.length();
         q=buff2;
         q+=sprintf(q,"%s",qPrintable(str)+MAX(len-66,0));
         if (*(q-1)=='_') q--;
         sprintf(q,"%s",p+5);
-        mainForm->MsgLabel3->setText(buff2);
+        QMetaObject::invokeMethod(mainForm->MsgLabel3,"setText",Qt::QueuedConnection,Q_ARG(QString,QString(buff2)));
     }
     else if ((p=strstr(buff,"->"))) {
         *p='\0';
-        mainForm->MsgLabel1->setText(buff);
-        mainForm->MsgLabel2->setText(p+2);
+        QMetaObject::invokeMethod(mainForm->MsgLabel1,"setText",Qt::QueuedConnection,Q_ARG(QString,QString(buff)));
+        QMetaObject::invokeMethod(mainForm->MsgLabel2,"setText",Qt::QueuedConnection,Q_ARG(QString,QString(p+2)));
     }
     return abortf;
 }
@@ -446,7 +446,7 @@ void MainForm::BtnHelpClick()
 //---------------------------------------------------------------------------
 void MainForm::dragEnterEvent(QDragEnterEvent *event)
 {
-    if (event->mimeData()->hasFormat("text/plain"))
+    if (event->mimeData()->hasFormat("text/uri-list"))
         event->acceptProposedAction();
 }
 //---------------------------------------------------------------------------

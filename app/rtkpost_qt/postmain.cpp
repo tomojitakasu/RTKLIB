@@ -184,6 +184,7 @@ MainForm::MainForm(QWidget *parent)
     for (i=0;i<3;i++) RefPos[i]=0.0;
 
     Progress->setVisible(false);
+    setAcceptDrops(true);
 
     optDialog= new OptDialog(this);
     convDialog=new ConvDialog(this);
@@ -375,7 +376,7 @@ void MainForm::closeEvent(QCloseEvent *event)
 // callback on drop files ---------------------------------------------------
 void  MainForm::dragEnterEvent(QDragEnterEvent *event)
 {
-    if (event->mimeData()->hasFormat("text/plain"))
+    if (event->mimeData()->hasFormat("text/uri-list"))
         event->acceptProposedAction();
 }
 void  MainForm::dropEvent(QDropEvent *event)
@@ -383,7 +384,7 @@ void  MainForm::dropEvent(QDropEvent *event)
     QPoint point=event->pos();
     int top;
     
-    if (!event->mimeData()->hasFormat("text/plain")) return;
+    if (!event->mimeData()->hasFormat("text/uri-list")) return;
 
     QString file=event->mimeData()->text();
 

@@ -30,7 +30,6 @@ void Plot::ShowMsg(const QString &msg)
     Message1->setText(msg);
     Message1->adjustSize();
     Panel21->updateGeometry();
-//    Panel21->repaint();
 }
 // execute command ----------------------------------------------------------
 int Plot::ExecCmd(const QString &cmd)
