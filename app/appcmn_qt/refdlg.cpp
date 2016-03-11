@@ -72,7 +72,7 @@ void  RefDialog::BtnOKClick()
 //---------------------------------------------------------------------------
 void  RefDialog::BtnLoadClick()
 {
-    StaPosFile=QFileDialog::getOpenFileName(this,tr("Load Station List..."),StaPosFile,tr("Position File (*.pos *.snx);;All (*.*)"));
+    StaPosFile=QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Load Station List..."),StaPosFile,tr("Position File (*.pos *.snx);;All (*.*)")));
 
 	LoadList();
 }

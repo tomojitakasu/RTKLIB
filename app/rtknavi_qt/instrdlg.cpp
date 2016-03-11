@@ -339,7 +339,6 @@ void  InputStrDialog::BtnRcvOpt3Click()
 //---------------------------------------------------------------------------
 void  InputStrDialog::BtnPosClick()
 {
-    QString s;
     bool ok;
 
     refDialog->RovPos[0]=NmeaPos1->text().toDouble(&ok);
@@ -366,17 +365,17 @@ void  InputStrDialog::SerialOpt(int index, int opt)
 //---------------------------------------------------------------------------
 void  InputStrDialog::BtnFile1Click()
 {
-    FilePath1->setText(QFileDialog::getOpenFileName(this,tr("Open..."),FilePath1->text()));
+    FilePath1->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Open..."),FilePath1->text())));
 }
 //---------------------------------------------------------------------------
 void  InputStrDialog::BtnFile2Click()
 {
-    FilePath2->setText(QFileDialog::getOpenFileName(this,tr("Open..."),FilePath2->text()));
+    FilePath2->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Open..."),FilePath2->text())));
 }
 //---------------------------------------------------------------------------
 void  InputStrDialog::BtnFile3Click()
 {
-    FilePath3->setText(QFileDialog::getOpenFileName(this,tr("Open..."),FilePath3->text()));
+    FilePath3->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Open..."),FilePath3->text())));
 }
 //---------------------------------------------------------------------------
 void  InputStrDialog::TcpOpt(int index, int opt)

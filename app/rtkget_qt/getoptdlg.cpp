@@ -26,12 +26,12 @@ DownOptDialog::DownOptDialog(QWidget* parent)
 //---------------------------------------------------------------------------
 void DownOptDialog::BtnUrlFileClick()
 {
-    UrlFile->setText(QFileDialog::getOpenFileName(this,tr("GNSS Data URL File")));
+    UrlFile->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("GNSS Data URL File"))));
 }
 //---------------------------------------------------------------------------
 void DownOptDialog::BtnLogFileClick()
 {
-    LogFile->setText(QFileDialog::getSaveFileName(this,tr("Download Log File")));
+    LogFile->setText(QDir::toNativeSeparators(QFileDialog::getSaveFileName(this,tr("Download Log File"))));
 }
 //---------------------------------------------------------------------------
 void DownOptDialog::showEvent(QShowEvent *event)

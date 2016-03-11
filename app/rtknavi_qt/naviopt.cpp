@@ -162,7 +162,7 @@ void OptDialog::BtnOkClick()
 void OptDialog::BtnLoadClick()
 {
     QString fileName;
-    fileName=QFileDialog::getOpenFileName(this,tr("Load Options..."),tr("All (*.*);;PCV File (*.pcv *.atx);;Position File (*.pos);;Options File (*.conf)"),tr("Options File (*.conf)"));
+    fileName=QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Load Options..."),tr("All (*.*);;PCV File (*.pcv *.atx);;Position File (*.pos);;Options File (*.conf)"),tr("Options File (*.conf)")));
 
     LoadOpt(fileName);
 }
@@ -171,7 +171,7 @@ void OptDialog::BtnSaveClick()
 {
     QString file;
 
-    file=QFileDialog::getOpenFileName(this,tr("Save Options..."),tr("All (*.*);;Options File (*.conf)"),tr("Options File (*.conf)"));
+    file=QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Save Options..."),tr("All (*.*);;Options File (*.conf)"),tr("Options File (*.conf)")));
 
     if (!file.contains('.')) file+=".conf";
 
@@ -192,7 +192,7 @@ void OptDialog::BtnStaPosFileClick()
 {
     QString fileName;
 
-    fileName=QFileDialog::getOpenFileName(this,tr("Station Postion File"),tr("All (*.*);;Position File (*.pos)"),tr("Position File (*.pos)"));
+    fileName=QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Station Postion File"),tr("All (*.*);;Position File (*.pos)"),tr("Position File (*.pos)")));
 
     StaPosFile->setText(fileName);
 }
@@ -295,7 +295,7 @@ void OptDialog::BtnSatPcvViewClick()
 //---------------------------------------------------------------------------
 void OptDialog::BtnSatPcvFileClick()
 {
-    SatPcvFile->setText(QFileDialog::getOpenFileName(this,tr("Satellite Antenna PCV File"),tr("All (*.*);;PCV File (*.pcv *.atx)"),tr("PCV File (*.pcv *.atx)")));
+    SatPcvFile->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Satellite Antenna PCV File"),tr("All (*.*);;PCV File (*.pcv *.atx)"),tr("PCV File (*.pcv *.atx)"))));
 }
 //---------------------------------------------------------------------------
 void OptDialog::BtnAntPcvViewClick()
@@ -309,24 +309,24 @@ void OptDialog::BtnAntPcvViewClick()
 //---------------------------------------------------------------------------
 void OptDialog::BtnAntPcvFileClick()
 {
-    AntPcvFile->setText(QFileDialog::getOpenFileName(this,tr("Receiver Antenna PCV File"),tr("All (*.*);;PCV File (*.pcv *.atx)"),tr("PCV File (*.pcv *.atx)")));
+    AntPcvFile->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Receiver Antenna PCV File"),tr("All (*.*);;PCV File (*.pcv *.atx)"),tr("PCV File (*.pcv *.atx)"))));
 }
 //---------------------------------------------------------------------------
 void OptDialog::BtnGeoidDataFileClick()
 {
-    QString fileName=QFileDialog::getOpenFileName(this,tr("Geoid Data File"),tr("All (*.*)"),tr("All (*.*)"));
+    QString fileName=QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Geoid Data File"),tr("All (*.*)"),tr("All (*.*)")));
     GeoidDataFile->setText(fileName);
 }
 //---------------------------------------------------------------------------
 void OptDialog::BtnDCBFileClick()
 {
-    QString fileName=QFileDialog::getOpenFileName(this,tr("DCB Data File"),tr("DCB (*.dcb)"),tr("DCB (*.dcb)"));
+    QString fileName=QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("DCB Data File"),tr("DCB (*.dcb)"),tr("DCB (*.dcb)")));
     DCBFile->setText(fileName);
 }
 //---------------------------------------------------------------------------
 void OptDialog::BtnEOPFileClick()
 {
-    QString fileName=QFileDialog::getOpenFileName(this,tr("EOP Data File"),tr("EOP (*.eop)"),tr("EOP (*.eop)"));
+    QString fileName=QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("EOP Data File"),tr("EOP (*.eop)"),tr("EOP (*.eop)")));
     EOPFile->setText(fileName);
 }
 //---------------------------------------------------------------------------
@@ -342,32 +342,31 @@ void OptDialog::BtnEOPViewClick()
 void OptDialog::BtnLocalDirClick()
 {
     QString dir=LocalDir->text();
-    dir=QFileDialog::getExistingDirectory(this,tr("FTP/HTTP Local Directory"),dir);
+    dir=QDir::toNativeSeparators(QFileDialog::getExistingDirectory(this,tr("FTP/HTTP Local Directory"),dir));
     LocalDir->setText(dir);
 }
 //---------------------------------------------------------------------------
 void OptDialog::BtnFontClick()
 {
-    QString s;
     QFontDialog dialog(this);
 
     dialog.setCurrentFont(FontLabel->font());
     dialog.exec();
 
     FontLabel->setFont(dialog.selectedFont());
-    FontLabel->setText(FontLabel->font().family()+QString::number(FontLabel->font().pointSize())+"pt");
+    FontLabel->setText(FontLabel->font().family()+QString::number(FontLabel->font().pointSize())+" pt");
 }
 //---------------------------------------------------------------------------
 void OptDialog::BtnTLESatFileClick()
 {
-    QString fileName=QFileDialog::getOpenFileName(this,tr("TLE Satellite Number File"),tr("All (*.*)"),tr("All (*.*)"));
+    QString fileName=QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("TLE Satellite Number File"),tr("All (*.*)"),tr("All (*.*)")));
 
     TLESatFile->setText(fileName);
 }
 //---------------------------------------------------------------------------
 void OptDialog::BtnTLEFileClick()
 {
-    QString fileName=QFileDialog::getOpenFileName(this,tr("TLE Data File"),tr("All (*.*)"),tr("All (*.*)"));
+    QString fileName=QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("TLE Data File"),tr("All (*.*)"),tr("All (*.*)")));
 
     TLEFile->setText(fileName);
 }
@@ -416,7 +415,6 @@ void OptDialog::GetOpt(void)
 {
     QLineEdit *editu[]={RovPos1,RovPos2,RovPos3};
     QLineEdit *editr[]={RefPos1,RefPos2,RefPos3};
-    QString s;
 	
     PosMode		 ->setCurrentIndex(PrcOpt.mode);
     Freq		 ->setCurrentIndex(PrcOpt.nf-1>NFREQ-1?NFREQ-1:PrcOpt.nf-1);
@@ -659,7 +657,6 @@ void OptDialog::LoadOpt(const QString &file)
     int otype[]={STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPSVR,STR_FILE};
     QLineEdit *editu[]={RovPos1,RovPos2,RovPos3};
     QLineEdit *editr[]={RefPos1,RefPos2,RefPos3};
-    QString s;
     QString buff;
     char id[32];
 	int sat;
@@ -1080,8 +1077,7 @@ void OptDialog::GetPos(int type, QLineEdit **edit, double *pos)
 //---------------------------------------------------------------------------
 void OptDialog::SetPos(int type, QLineEdit **edit, double *pos)
 {
-    QString s;
-	double p[3],dms1[3],dms2[3],s1,s2;
+    double p[3],dms1[3],dms2[3],s1,s2;
 	
 	if (type==1) { /* lat/lon/height dms/m */
 		ecef2pos(pos,p); s1=p[0]<0?-1:1; s2=p[1]<0?-1:1;

@@ -861,7 +861,6 @@ void  MainWindow::MenuExitClick()
 // start rtk server ---------------------------------------------------------
 void  MainWindow::SvrStart(void)
 {
-    QString s;
     solopt_t solopt[2];
     double pos[3],nmeapos[3];
     int itype[]={STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPCLI,STR_FILE,STR_FTP,STR_HTTP};
@@ -1802,7 +1801,7 @@ void  MainWindow::SaveLog(void)
     fileTemplate=QString("rtk_%1%2%3%4%5%6.txt")
             .arg(ep[0],4,'f',0,QChar('0')).arg(ep[1],2,'f',0,QChar('0')).arg(ep[2],2,'f',0,QChar('0'))
             .arg(ep[3],2,'f',0,QChar('0')).arg(ep[4],2,'f',0,QChar('0')).arg(ep[5],2,'f',0,QChar('0'));
-    fileName=QFileDialog::getSaveFileName(this,QString(),fileTemplate);
+    fileName=QDir::toNativeSeparators(QFileDialog::getSaveFileName(this,QString(),fileTemplate));
     QFile file(fileName);
 
     if (!file.open(QIODevice::WriteOnly)) {
@@ -1899,7 +1898,7 @@ void  MainWindow::LoadNav(nav_t *nav)
 void  MainWindow::SaveNav(nav_t *nav)
 {
     QSettings settings(IniFile,QSettings::IniFormat);
-    QString str,s;
+    QString str;
     char id[32];
     int i;
     
@@ -2153,7 +2152,6 @@ void  MainWindow::LoadOpt(void)
 void  MainWindow::SaveOpt(void)
 {
     QSettings settings(IniFile,QSettings::IniFormat);
-    QString s;
     int i,j,no,strno[]={0,1,6,2,3,4,5,7};
     
     trace(3,"SaveOpt\n");

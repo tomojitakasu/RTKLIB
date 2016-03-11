@@ -180,7 +180,7 @@ void  SkyImgDialog::SkyResChange()
 void  SkyImgDialog::BtnLoadClick()
 {
 
-    plot->ReadSkyTag(QFileDialog::getOpenFileName(this,tr("Ooen Tag"),QString(),"Tag File (*.tag);;All (*.*)"));
+    plot->ReadSkyTag(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Ooen Tag"),QString(),"Tag File (*.tag);;All (*.*)")));
     UpdateField();
     plot->UpdateSky();
 }

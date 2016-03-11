@@ -332,7 +332,7 @@ void MonitorDialog::SetRtk(void)
 void MonitorDialog::ShowRtk(void)
 {
 	rtk_t rtk;
-    QString s,exsats,navsys="";
+    QString exsats,navsys="";
     QString svrstate[]={tr("Stop"),tr("Run")};
     QString sol[]={tr("-"),tr("Fix"),tr("Float"),tr("SBAS"),tr("DGPS"),tr("Single"),tr("PPP"),""};
     QString mode[]={tr("Single"),tr("DGPS"),tr("Kinematic"),tr("Static"),tr("Moving-Base"),
@@ -839,7 +839,7 @@ void MonitorDialog::ShowCov(void)
 	gtime_t time;
 	int i,j,nx,n,m;
 	double *x,*P=NULL;
-    QString s,s0="-";
+    QString s0="-";
 	char tstr[64];
 
 	rtksvrlock(&rtksvr);
@@ -926,7 +926,6 @@ void MonitorDialog::SetObs(void)
 //---------------------------------------------------------------------------
 void MonitorDialog::ShowObs(void)
 {
-    QString s;
 	obsd_t obs[MAXOBS*2];
 	char tstr[64],id[32],*code;
 	int i,j,k,n=0,nex=ObsMode?NEXOBS:0;
@@ -1257,7 +1256,6 @@ void MonitorDialog::ShowIonUtc(void)
 	double utc_gps[4],utc_glo[4],utc_gal[4],utc_qzs[4];
 	double ion_gps[8],ion_gal[4],ion_qzs[8];
 	gtime_t time;
-    QString s;
 	double tow=0.0;
 	char tstr[64];
     int i,leaps,week=0;
@@ -1492,7 +1490,6 @@ void MonitorDialog::SetSbsLong(void)
 //---------------------------------------------------------------------------
 void MonitorDialog::ShowSbsLong(void)
 {
-    QString s;
 	sbssat_t sbssat;
 	sbssatp_t *satp;
 	gtime_t time;
@@ -1813,7 +1810,6 @@ void MonitorDialog::ShowRtcmDgps(void)
 //---------------------------------------------------------------------------
 void MonitorDialog::SetRtcmSsr(void)
 {
-    QString s;
     header.clear();
     header<<tr("SAT")<<tr("Status")<<tr("UDI(s)")<<tr("UDHR(s)")<<tr("IOD")<<tr("URA")<<tr("Datum")<<tr("T0")
         <<tr("D0-A(m)")<<tr("D0-C(m)")<<tr("D0-R(m)")<<tr("D1-A(mm/s)")<<tr("D1-C(mm/s)")<<tr("D1-R(mm/s)")
@@ -1837,7 +1833,6 @@ void MonitorDialog::SetRtcmSsr(void)
 //---------------------------------------------------------------------------
 void MonitorDialog::ShowRtcmSsr(void)
 {
-    QString s;
 	gtime_t time;
 	ssr_t ssr[MAXSAT];
 	int i,j,k,valid;
@@ -1977,7 +1972,6 @@ void MonitorDialog::SetLexEph(void)
 //---------------------------------------------------------------------------
 void MonitorDialog::ShowLexEph(void)
 {
-    QString s;
 	gtime_t time;
 	lexeph_t lexeph[MAXSAT];
 	int i,j,k,n,sys,valid;
@@ -2101,7 +2095,6 @@ void MonitorDialog::ShowLexIon(void)
 //---------------------------------------------------------------------------
 void MonitorDialog::SetIonCorr(void)
 {
-    QString s;
 	int i,j;
 
     header.clear();

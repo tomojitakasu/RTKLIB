@@ -59,7 +59,7 @@ void  CmdOptDialog::BtnLoadClick()
     QByteArray buff;
 	int n=0;
 
-    OpenDialog_FileName=QFileDialog::getOpenFileName(this);
+    OpenDialog_FileName=QDir::toNativeSeparators(QFileDialog::getOpenFileName(this));
     QFile f(OpenDialog_FileName);
 
     f.open(QIODevice::ReadOnly);
@@ -81,7 +81,7 @@ void  CmdOptDialog::BtnSaveClick()
     QString SaveDialog_FileName;
     QByteArray OpenCmd_Text=OpenCmd->toPlainText().toLatin1(),CloseCmd_Text=CloseCmd->toPlainText().toLatin1();
 
-    SaveDialog_FileName=QFileDialog::getSaveFileName(this);
+    SaveDialog_FileName=QDir::toNativeSeparators(QFileDialog::getSaveFileName(this));
     QFile fp(SaveDialog_FileName);
 
     if (!fp.open(QIODevice::WriteOnly)) return;

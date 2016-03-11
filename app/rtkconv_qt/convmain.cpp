@@ -145,8 +145,6 @@ MainWindow::MainWindow(QWidget *parent)
 // callback on form create --------------------------------------------------
 void MainWindow::FormCreate()
 {
-    QString s;
-    
     setWindowTitle(QString(tr("%1 ver.%2 %3")).arg(PRGNAME).arg(VER_RTKLIB).arg(PATCH_LEVEL));
 }
 // callback on form show ----------------------------------------------------
@@ -380,9 +378,9 @@ void MainWindow::BtnTime2Click()
 // callback on button-input-file --------------------------------------------
 void MainWindow::BtnInFileClick()
 {    
-    InFile->setCurrentText(QFileDialog::getOpenFileName(this,tr("Input RTCM, RCV RAW or RINEX OBS File"),QString(),
+    InFile->setCurrentText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Input RTCM, RCV RAW or RINEX OBS File"),QString(),
          tr("All (*.*);;RTCM 2 (*.rtcm2);;RTCM 3 (*.rtcm3);;NovtAtel (*.gps);;ublox (*.ubx);;SuperStart II (*.log);;"
-            "Hemisphere (*.bin);;Javad (*.jps);;RINEX OBS (*.obs *.*O);Septentrio (*.sbf)")));
+            "Hemisphere (*.bin);;Javad (*.jps);;RINEX OBS (*.obs *.*O);Septentrio (*.sbf)"))));
     SetOutFiles(InFile->currentText());
 }
 // callback on output-directory change --------------------------------------
@@ -393,7 +391,7 @@ void MainWindow::OutDirChange()
 // callback on button-output-directory --------------------------------------
 void MainWindow::BtnOutDirClick()
 {
-    OutDir->setText(QFileDialog::getExistingDirectory(this,tr("Output Directory"),OutDir->text()));
+    OutDir->setText(QDir::toNativeSeparators(QFileDialog::getExistingDirectory(this,tr("Output Directory"),OutDir->text())));
     SetOutFiles(InFile->currentText());
 }
 // callback on button-keyword -----------------------------------------------
@@ -406,57 +404,57 @@ void MainWindow::BtnKeyClick()
 void MainWindow::BtnOutFile1Click()
 {
     QString selectedFilter="RINEX OBS (*.obs *.*O";
-    OutFile1->setText(QFileDialog::getOpenFileName(this,tr("Output RINEX OBS File"),QString(),
+    OutFile1->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Output RINEX OBS File"),QString(),
               tr("All (*.*);;RINEX OBS (*.obs *.*O);;RINEX NAV (*.nav *.*N *.*P);;RINEX GNAV (*.gnav *.*G);;RINEX HNAV (*.hnav *.*H);;"
-                 "RINEX QNAV (*.qnav *.*Q);;RINEX LNAV (*.lnav *.*L);;SBAS Log (*.sbs);;LEX Log (*.lex)"),&selectedFilter));
+                 "RINEX QNAV (*.qnav *.*Q);;RINEX LNAV (*.lnav *.*L);;SBAS Log (*.sbs);;LEX Log (*.lex)"),&selectedFilter)));
 }
 // callback on button-output-file-2 -----------------------------------------
 void MainWindow::BtnOutFile2Click()
 {
     QString selectedFilter="RINEX NAV (*.nav *.*N *.*P)";
-    OutFile2->setText(QFileDialog::getOpenFileName(this,tr("Output RINEX NAV File"),QString(),
+    OutFile2->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Output RINEX NAV File"),QString(),
               tr("All (*.*);;RINEX OBS (*.obs *.*O);;RINEX NAV (*.nav *.*N *.*P);;RINEX GNAV (*.gnav *.*G);;RINEX HNAV (*.hnav *.*H);;"
-                 "RINEX QNAV (*.qnav *.*Q);;RINEX LNAV (*.lnav *.*L);;SBAS Log (*.sbs);;LEX Log (*.lex)"),&selectedFilter));
+                 "RINEX QNAV (*.qnav *.*Q);;RINEX LNAV (*.lnav *.*L);;SBAS Log (*.sbs);;LEX Log (*.lex)"),&selectedFilter)));
 }
 // callback on button-output-file-3 -----------------------------------------
 void MainWindow::BtnOutFile3Click()
 {
     QString selectedFilter="RINEX GNAV (*.gnav *.*G)";
-    OutFile3->setText(QFileDialog::getOpenFileName(this,tr("Output RINEX GNAV File"),QString(),
+    OutFile3->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Output RINEX GNAV File"),QString(),
               tr("All (*.*);;RINEX OBS (*.obs *.*O);;RINEX NAV (*.nav *.*N *.*P);;RINEX GNAV (*.gnav *.*G);;RINEX HNAV (*.hnav *.*H);;"
-                 "RINEX QNAV (*.qnav *.*Q);;RINEX LNAV (*.lnav *.*L);;SBAS Log (*.sbs);;LEX Log (*.lex)"),&selectedFilter));
+                 "RINEX QNAV (*.qnav *.*Q);;RINEX LNAV (*.lnav *.*L);;SBAS Log (*.sbs);;LEX Log (*.lex)"),&selectedFilter)));
 }
 // callback on button-output-file-4 -----------------------------------------
 void MainWindow::BtnOutFile4Click()
 {
     QString selectedFilter="RINEX HNAV (*.hnav *.*H)";
-    OutFile4->setText(QFileDialog::getOpenFileName(this,tr("Output RINEX HNAV File"),QString(),
+    OutFile4->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Output RINEX HNAV File"),QString(),
               tr("All (*.*);;RINEX OBS (*.obs *.*O);;RINEX NAV (*.nav *.*N *.*P);;RINEX GNAV (*.gnav *.*G);;RINEX HNAV (*.hnav *.*H);;"
-                 "RINEX QNAV (*.qnav *.*Q);;RINEX LNAV (*.lnav *.*L);;SBAS Log (*.sbs);;LEX Log (*.lex)"),&selectedFilter));
+                 "RINEX QNAV (*.qnav *.*Q);;RINEX LNAV (*.lnav *.*L);;SBAS Log (*.sbs);;LEX Log (*.lex)"),&selectedFilter)));
 }
 // callback on button-output-file-5 -----------------------------------------
 void MainWindow::BtnOutFile5Click()
 {
     QString selectedFilter="RINEX QNAV (*.qnav *.*Q)";
-    OutFile5->setText(QFileDialog::getOpenFileName(this,tr("Output RINEX QNAV File"),QString(),
+    OutFile5->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Output RINEX QNAV File"),QString(),
               tr("All (*.*);;RINEX OBS (*.obs *.*O);;RINEX NAV (*.nav *.*N *.*P);;RINEX GNAV (*.gnav *.*G);;RINEX HNAV (*.hnav *.*H);;"
-                 "RINEX QNAV (*.qnav *.*Q);;RINEX LNAV (*.lnav *.*L);;SBAS Log (*.sbs);;LEX Log (*.lex)"),&selectedFilter));
+                 "RINEX QNAV (*.qnav *.*Q);;RINEX LNAV (*.lnav *.*L);;SBAS Log (*.sbs);;LEX Log (*.lex)"),&selectedFilter)));
 }
 // callback on button-output-file-6 -----------------------------------------
 void MainWindow::BtnOutFile6Click()
 {
     QString selectedFilter="RINEX LNAV (*.lnav *.*L)";
-    OutFile6->setText(QFileDialog::getOpenFileName(this,tr("Output RINEX LNAV File"),QString(),
+    OutFile6->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Output RINEX LNAV File"),QString(),
               tr("All (*.*);;RINEX OBS (*.obs *.*O);;RINEX NAV (*.nav *.*N *.*P);;RINEX GNAV (*.gnav *.*G);;RINEX HNAV (*.hnav *.*H);;"
-                 "RINEX QNAV (*.qnav *.*Q);;RINEX LNAV (*.lnav *.*L);;SBAS Log (*.sbs);;LEX Log (*.lex)"),&selectedFilter));
+                 "RINEX QNAV (*.qnav *.*Q);;RINEX LNAV (*.lnav *.*L);;SBAS Log (*.sbs);;LEX Log (*.lex)"),&selectedFilter)));
 }
 // callback on button-output-file-7 -----------------------------------------
 void MainWindow::BtnOutFile7Click()
 {
     QString selectedFilter="SBAS Log (*.sbs)";
-    OutFile7->setText(QFileDialog::getOpenFileName(this,tr("Output SBAS/LEX Log File"),QString(),
+    OutFile7->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Output SBAS/LEX Log File"),QString(),
               tr("All (*.*);;RINEX OBS (*.obs *.*O);;RINEX NAV (*.nav *.*N *.*P);;RINEX GNAV (*.gnav *.*G);;RINEX HNAV (*.hnav *.*H);;"
-                 "RINEX QNAV (*.qnav *.*Q);;RINEX LNAV (*.lnav *.*L);;SBAS Log (*.sbs);;LEX Log (*.lex)"),&selectedFilter));
+                 "RINEX QNAV (*.qnav *.*Q);;RINEX LNAV (*.lnav *.*L);;SBAS Log (*.sbs);;LEX Log (*.lex)"),&selectedFilter)));
 }
 // callback on button-view-input-file ----------------------------------------
 void MainWindow::BtnInFileViewClick()

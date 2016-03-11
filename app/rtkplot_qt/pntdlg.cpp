@@ -30,8 +30,8 @@ PntDialog::PntDialog(QWidget* parent)
 void PntDialog::showEvent(QShowEvent *event)
 {
     if (event->spontaneous()) return;
-    QString s;
-	double pos[3];
+
+    double pos[3];
 	int width[]={90,90,80,90};
 	
     FontScale=this->physicalDpiX();
@@ -107,7 +107,7 @@ void PntDialog::BtnLoadClick()
     QByteArray buff,name;
 	double pos[3];
 	int i=0;
-    OpenDialog_FileName=QFileDialog::getOpenFileName(this,tr("Open"));
+    OpenDialog_FileName=QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Open")));
 
     if (!file.open(QIODevice::ReadOnly)) return;
     while (!file.atEnd()&&i<PntList->rowCount()) {
@@ -133,7 +133,7 @@ void PntDialog::BtnLoadClick()
 //---------------------------------------------------------------------------
 void PntDialog::BtnSaveClick()
 {
-    QString SaveDialog_FileName=QFileDialog::getSaveFileName(this,tr("Save.."));
+    QString SaveDialog_FileName=QDir::toNativeSeparators(QFileDialog::getSaveFileName(this,tr("Save..")));
     QFile file(SaveDialog_FileName);
 
     if (!file.open(QIODevice::WriteOnly)) return;

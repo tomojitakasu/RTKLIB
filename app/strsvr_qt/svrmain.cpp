@@ -141,7 +141,6 @@ MainForm::MainForm(QWidget *parent)
 // callback on form create --------------------------------------------------
 void MainForm::FormCreate()
 {
-    QString s;
     int autorun=0,tasktray=0;
     
     strsvrinit(&strsvr,3);

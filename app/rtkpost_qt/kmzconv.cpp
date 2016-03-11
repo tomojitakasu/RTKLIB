@@ -65,7 +65,7 @@ void ConvDialog::TimeIntFClick()
 //---------------------------------------------------------------------------
 void ConvDialog::BtnInputFileClick()
 {
-    InputFile->setText(QFileDialog::getOpenFileName(this,tr("Open..."),QString(),tr("All (*.*)")));
+    InputFile->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Open..."),QString(),tr("All (*.*)"))));
 }
 //---------------------------------------------------------------------------
 void ConvDialog::BtnGoogleClick()
@@ -179,7 +179,8 @@ void ConvDialog::UpdateOutFile(void)
     QString InputFile_Text=InputFile->text();
     if (InputFile_Text=="") return;
     QFileInfo fi(InputFile_Text);
-    if (fi.suffix()==NULL)
+    if (fi.suffix()==NULL) return;
+    InputFile_Text=QDir::toNativeSeparators(fi.absolutePath()+"/"+fi.baseName());
     InputFile_Text+=Compress->isChecked()?".kmz":".kml";
     OutputFile->setText(InputFile_Text);
 }
@@ -191,7 +192,7 @@ void ConvDialog::GoogleEarthFileChange()
 //---------------------------------------------------------------------------
 void ConvDialog::BtnGoogleEarthFileClick()
 {
-    GoogleEarthFile->setText(QFileDialog::getOpenFileName(this,tr("Google Earth Exe File")));
+    GoogleEarthFile->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Google Earth Exe File"))));
 }
 //---------------------------------------------------------------------------
 

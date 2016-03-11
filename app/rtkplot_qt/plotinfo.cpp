@@ -82,7 +82,7 @@ void Plot::UpdateTimeSol(void)
 {
     const char *unit[]={"m","m/s","m/s2"},*u;
     const QString sol[]={tr(""),tr("FIX"),tr("FLOAT"),tr("SBAS"),tr("DGPS"),tr("Single"),tr("PPP")};
-    QString msg,s;
+    QString msg;
     QString msgs[8];
     sol_t *data;
     double xyz[3],pos[3],r,az,el;
@@ -321,7 +321,6 @@ void Plot::UpdateSatList(void)
 // update observation type pull-down menu --------------------------------------
 void Plot::UpdateObsType(void)
 {
-    QString s;
     char *codes[MAXCODE+1],freqs[]="125678";
     int i,j,n=0,cmask[MAXCODE+1]={0},fmask[6]={0};
     

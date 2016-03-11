@@ -6,6 +6,7 @@
 #include <QFile>
 #include <QImage>
 #include <QColor>
+#include <QDir>
 
 #include "rtklib.h"
 #include "plotmain.h"
@@ -250,7 +251,6 @@ int Plot::ReadObsRnx(const QStringList &files, obs_t *obs, nav_t *nav,
 // read navigation data -----------------------------------------------------
 void Plot::ReadNav(const QStringList &files)
 {
-    QString s;
     gtime_t ts,te;
     double tint;
     char navfile[1024],opt[2048];
@@ -273,19 +273,21 @@ void Plot::ReadNav(const QStringList &files)
     qApp->processEvents();
     
     for (i=0;i<files.size();i++) {
-        strcpy(navfile,qPrintable(files.at(i)));
+        strcpy(navfile,qPrintable(QDir::toNativeSeparators(files.at(i))));
         readrnxt(navfile,1,ts,te,tint,opt,NULL,&Nav,NULL);
     }
     uniqnav(&Nav);
     
     if (Nav.n<=0&&Nav.ng<=0&&Nav.ns<=0) {
-        ShowMsg(QString(tr("no nav message: %1...")).arg(files.at(i)));
+        ShowMsg(QString(tr("no nav message: %1...")).arg(QDir::toNativeSeparators(files.at(i))));
         ReadWaitEnd();
         return;
     }
     if (NavFiles!=files) {
         NavFiles=files;
     }
+    for (i=0;i<NavFiles.size();i++) NavFiles[i]=QDir::toNativeSeparators(NavFiles.at(i));
+
     UpdateObs(NObs);
     UpdateMp();
     ReadWaitEnd();
@@ -601,7 +603,6 @@ void Plot::ReadSkyTag(const QString &file)
 void Plot::ReadSkyData(const QString &file)
 {
     QImage image;
-    QString s;
     int i,w,h,wr;
     
     trace(3,"ReadSkyData\n");
@@ -1051,7 +1052,6 @@ void Plot::UpdateObs(int nobs)
 // update Multipath ------------------------------------------------------------
 void Plot::UpdateMp(void)
 {
-    QString s;
     obsd_t *data;
     double lam1,lam2,I,C,B;
     int i,j,k,f1,f2,sat,sys,per,per_=-1,n;
@@ -1205,7 +1205,6 @@ void Plot::ClearSol(void)
 // clear data ------------------------------------------------------------------
 void Plot::Clear(void)
 {
-    QString s;
     double ep[]={2010,1,1,0,0,0};
     int i;
     

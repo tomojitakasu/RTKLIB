@@ -231,8 +231,6 @@ MainForm::MainForm(QWidget *parent)
 // callback on form create --------------------------------------------------
 void MainForm::FormCreate()
 {
-    QString s;
-    
     setWindowTitle(QString("%1 ver.%2 %3").arg(PRGNAME).arg(VER_RTKLIB).arg(PATCH_LEVEL));
     
 }
@@ -646,8 +644,7 @@ void MainForm::BtnOutputView1Click()
 {
     QString OutputFile_Text=OutputFile->currentText();
     QString file=FilePath(OutputFile_Text)+".stat";
-    FILE *fp=fopen(qPrintable(file),"r");
-    if (fp) fclose(fp); else return;
+    if (!QFile::exists(file)) return;
     ViewFile(file);
 }
 // callback on button-outputview-2 ------------------------------------------
@@ -655,8 +652,7 @@ void MainForm::BtnOutputView2Click()
 {
     QString OutputFile_Text=OutputFile->currentText();
     QString file=FilePath(OutputFile_Text)+".trace";
-    FILE *fp=fopen(qPrintable(file),"r");
-    if (fp) fclose(fp); else return;
+    if (!QFile::exists(file)) return;
     ViewFile(file);
 }
 // callback on button-inputplot-1 -------------------------------------------
@@ -727,7 +723,7 @@ void MainForm::BtnOutDirClick()
     if (!SelectDirectory("Output Directory","",dir)) return;
     OutDir->Text=dir;
 #else
-    OutDir->setText(QFileDialog::getExistingDirectory(this,tr("Output Directory"),OutDir->text()));
+    OutDir->setText(QDir::toNativeSeparators(QFileDialog::getExistingDirectory(this,tr("Output Directory"),OutDir->text())));
 #endif
 }
 // callback on button keyword -----------------------------------------------
@@ -797,7 +793,7 @@ void MainForm::SetOutFile(void)
     ofile+=SolFormat==SOLF_NMEA?".nmea":".pos";
     ofile.replace('*','0');
 
-    OutputFile->setCurrentText(ofile);
+    OutputFile->setCurrentText(QDir::toNativeSeparators(ofile));
 }
 // execute post-processing --------------------------------------------------
 void MainForm::ExecProc(void)
@@ -1028,7 +1024,6 @@ int MainForm::ObsToNav(const QString &obsfile, QString &navfile)
 // replace file path with keywords ------------------------------------------
 QString MainForm::FilePath(const QString &file)
 {
-    QString s;
     gtime_t ts={0,0};
     int p;
     char rov[256]="",base[256]="",path[1024];
@@ -1049,7 +1044,7 @@ QString MainForm::FilePath(const QString &file)
 
     reppath(qPrintable(file),path,ts,rov,base);
     
-    return (s=path);
+    return QString(path);
 }
 // read history -------------------------------------------------------------
 void MainForm::ReadList(QComboBox* combo, QSettings *ini, const QString &key)
@@ -1101,7 +1096,7 @@ void MainForm::ViewFile(const QString &file)
     
     textViewer->setWindowTitle(file);
     textViewer->show();
-    textViewer->Read(f);
+    if (!textViewer->Read(f)) textViewer->close();
     if (cstat==1) remove(tmpfile);
 }
 // show message in message area ---------------------------------------------
@@ -1375,7 +1370,6 @@ void MainForm::LoadOpt(void)
 void MainForm::SaveOpt(void)
 {
     QSettings ini(IniFile,QSettings::IniFormat);
-    QString s;
     
     ini.setValue("set/timestart",   TimeStart ->isChecked()?1:0);
     ini.setValue("set/timeend",     TimeEnd   ->isChecked()?1:0);

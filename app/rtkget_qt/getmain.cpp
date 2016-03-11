@@ -173,8 +173,6 @@ MainForm::MainForm(QWidget * parent)
 //---------------------------------------------------------------------------
 void MainForm::FormCreate()
 {
-    QString str;
-    
     QString file=QApplication::applicationFilePath();
 
     IniFile=QFileInfo(file).absoluteFilePath()+".ini";
@@ -403,7 +401,7 @@ void MainForm::BtnStasClick()
 void MainForm::BtnDirClick()
 {
     QString dir=Dir->currentText();
-    dir=QFileDialog::getExistingDirectory(this,tr("Output Directory"),dir);
+    dir=QDir::toNativeSeparators(QFileDialog::getExistingDirectory(this,tr("Output Directory"),dir));
     Dir->insertItem(0,dir);
     Dir->setCurrentIndex(0);
 }
@@ -825,7 +823,7 @@ void MainForm::PanelEnable(int ena)
 // --------------------------------------------------------------------------
 void MainForm::ReadHist(QSettings &setting, QString key, QComboBox *combo)
 {
-    QString s,item;
+    QString item;
     int i;
     
     combo->clear();
@@ -838,7 +836,6 @@ void MainForm::ReadHist(QSettings &setting, QString key, QComboBox *combo)
 // --------------------------------------------------------------------------
 void MainForm::WriteHist(QSettings &setting, QString key, QComboBox * combo)
 {
-    QString s;
     int i;
     
     for (i=0;i<combo->count();i++) {

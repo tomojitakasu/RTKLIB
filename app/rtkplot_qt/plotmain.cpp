@@ -482,35 +482,35 @@ void Plot::MenuOpenSol1Click()
 {
     trace(3,"MenuOpenSol1Click\n");
     
-    ReadSol(QStringList(QFileDialog::getOpenFileName(this,tr("Open Solution 1"),QString(),tr("Solution File (*.txt *.csv *.pos *.gps *.ubx *.bin);;All (*.*)"))),0);
+    ReadSol(QStringList(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Open Solution 1"),QString(),tr("Solution File (*.txt *.csv *.pos *.gps *.ubx *.bin);;All (*.*)")))),0);
 }
 // callback on menu-open-solution-2 -----------------------------------------
 void Plot::MenuOpenSol2Click()
 {
     trace(3,"MenuOpenSol2Click\n");
     
-    ReadSol(QStringList(QFileDialog::getOpenFileName(this,tr("Open Solution 2"),QString(),tr("Solution File (*.txt *.csv *.pos *.gps *.ubx *.bin);;All (*.*)"))),1);
+    ReadSol(QStringList(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Open Solution 2"),QString(),tr("Solution File (*.txt *.csv *.pos *.gps *.ubx *.bin);;All (*.*)")))),1);
 }
 // callback on menu-open-map-image ------------------------------------------
 void Plot::MenuOpenMapImageClick()
 {
     trace(3,"MenuOpenMapImage\n");
     
-    ReadMapData(QFileDialog::getOpenFileName(this,tr("Open Map Image"),MapImageFile,tr("JPEG File (*.jpg *.jpeg);;All (*.*)")));
+    ReadMapData(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Open Map Image"),MapImageFile,tr("JPEG File (*.jpg *.jpeg);;All (*.*)"))));
 }
 // callback on menu-open-track-points ---------------------------------------
 void Plot::MenuOpenMapPathClick()
 {
     trace(3,"MenuOpenMapPath\n");
     
-    ReadMapPath(QFileDialog::getOpenFileName(this,tr("Open Map Path"),QString(),tr("Text File (*.txt);;Position File (*.pos);;All (*.*)")));
+    ReadMapPath(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Open Map Path"),QString(),tr("Text File (*.txt);;Position File (*.pos);;All (*.*)"))));
 }
 // callback on menu-open-sky-image ------------------------------------------
 void Plot::MenuOpenSkyImageClick()
 {
     trace(3,"MenuOpenSkyImage\n");
     
-    ReadSkyData(QFileDialog::getOpenFileName(this,tr("Open Sky Image"),SkyImageFile,tr("JPEG File (*.jpg *.jpeg);;All (*.*)")));
+    ReadSkyData(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Open Sky Image"),SkyImageFile,tr("JPEG File (*.jpg *.jpeg);;All (*.*)"))));
 }
 // callback on menu-open-obs-data -------------------------------------------
 void Plot::MenuOpenObsClick()
@@ -531,7 +531,7 @@ void Plot::MenuOpenElevMaskClick()
 {
     trace(3,"MenuOpenElevMaskClick\n");
     
-    ReadElMaskData(QFileDialog::getOpenFileName(this,tr("Opene Elevation Mask"),QString(),tr("Text File (*.txt);;All (*.*)")));
+    ReadElMaskData(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Opene Elevation Mask"),QString(),tr("Text File (*.txt);;All (*.*)"))));
 }
 // callback on menu-vis-analysis --------------------------------------------
 void Plot::MenuVisAnaClick()
@@ -570,28 +570,28 @@ void Plot::MenuFileSelClick()
 // callback on menu-save image ----------------------------------------------
 void Plot::MenuSaveImageClick()
 {
-    Buff.save(QFileDialog::getSaveFileName(this,tr("Save Image"),QString(),tr("JPEG  (*.jpg);;Windows Bitmap (*.bmp)")));
+    Buff.save(QDir::toNativeSeparators(QFileDialog::getSaveFileName(this,tr("Save Image"),QString(),tr("JPEG  (*.jpg);;Windows Bitmap (*.bmp)"))));
 }
 // callback on menu-save-# of sats/dop --------------------------------------
 void Plot::MenuSaveDopClick()
 {
     trace(3,"MenuSaveDopClick\n");
     
-    SaveDop(QFileDialog::getSaveFileName(this,tr("Save Data"),QString(),tr("All (*.*);;Text File (*.txt)")));
+    SaveDop(QDir::toNativeSeparators(QFileDialog::getSaveFileName(this,tr("Save Data"),QString(),tr("All (*.*);;Text File (*.txt)"))));
 }
 // callback on menu-save-snr,azel -------------------------------------------
 void Plot::MenuSaveSnrMpClick()
 {
     trace(3,"MenuSaveSnrMpClick\n");
     
-    SaveSnrMp(QFileDialog::getSaveFileName(this,tr("Save Data"),QString(),tr("All (*.*);;Text File (*.txt)")));
+    SaveSnrMp(QDir::toNativeSeparators(QFileDialog::getSaveFileName(this,tr("Save Data"),QString(),tr("All (*.*);;Text File (*.txt)"))));
 }
 // callback on menu-save-elmask ---------------------------------------------
 void Plot::MenuSaveElMaskClick()
 {
     trace(3,"MenuSaveElMaskClick\n");
     
-    SaveElMask(QFileDialog::getSaveFileName(this,tr("Save Data"),QString(),tr("All (*.*);;Text File (*.txt)")));
+    SaveElMask(QDir::toNativeSeparators(QFileDialog::getSaveFileName(this,tr("Save Data"),QString(),tr("All (*.*);;Text File (*.txt)"))));
 }
 // callback on menu-connect -------------------------------------------------
 void Plot::MenuConnectClick()
@@ -933,8 +933,6 @@ void Plot::MenuMonitor2Click()
 // callback on menu-google-earth-view ---------------------------------------
 void Plot::MenuGEClick()
 {
-    QString s;
-    
     trace(3,"MenuGEClick\n");
     
     googleEarthView->setWindowTitle(
@@ -944,7 +942,6 @@ void Plot::MenuGEClick()
 // callback on menu-google-map-view -----------------------------------------
 void Plot::MenuGMClick()
 {
-    QString s;
     googleMapView->setWindowTitle(
         QString(tr("%1 ver.%2 %3: Google Map View")).arg(PRGNAME).arg(VER_RTKLIB).arg(PATCH_LEVEL));
     googleMapView->show();
@@ -2345,7 +2342,7 @@ void Plot::FitRange(int all)
 void Plot::LoadOpt(void)
 {
     QSettings settings(IniFile,QSettings::IniFormat);
-    QString s,s1;
+    QString s1;
     double range;
     char rangelist[64];
     int i,geopts[12];

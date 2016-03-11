@@ -56,10 +56,10 @@ void TextViewer::BtnReloadClick()
 void TextViewer::BtnReadClick()
 {
     if (BtnRead->text()==tr("Save...")) {
-        Save(QFileDialog::getSaveFileName(this,QString(),File));
+        Save(QDir::toNativeSeparators(QFileDialog::getSaveFileName(this,QString(),File)));
 	}
 	else {
-        Read(QFileDialog::getOpenFileName(this,QString(),File));
+        Read(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,QString(),File)));
 	}
 }
 //---------------------------------------------------------------------------
@@ -92,14 +92,14 @@ void TextViewer::BtnFindClick()
     Text->find(FindStr->text());
 }
 //---------------------------------------------------------------------------
-void TextViewer::Read(const QString &path)
+bool TextViewer::Read(const QString &path)
 {
     char file[256],*p[]={file};
-    if (expath(qPrintable(path),p,1)<1) return;
+    if (expath(qPrintable(path),p,1)<1) return false;
 
     QFile f(file);
 
-    if (!f.open(QIODevice::ReadOnly)) return;
+    if (!f.open(QIODevice::ReadOnly)) return false;
     Text->setPlainText("");
 
     TextStr=f.readAll();
@@ -107,16 +107,20 @@ void TextViewer::Read(const QString &path)
 
     setWindowTitle(file);
 	File=file;
+
+    return true;
 }
 //---------------------------------------------------------------------------
-void TextViewer::Save(const QString &file)
+bool TextViewer::Save(const QString &file)
 {
     QFile f(file);
 
-    f.open(QIODevice::WriteOnly);
+    if (!f.open(QIODevice::WriteOnly)) return false;
 
     f.write(Text->toPlainText().toLocal8Bit());
 	File=file;
+
+    return true;
 }
 //---------------------------------------------------------------------------
 void TextViewer::UpdateText(void)

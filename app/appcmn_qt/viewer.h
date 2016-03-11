@@ -37,8 +37,8 @@ public:
     static QColor Color1,Color2;
     static QFont FontD;
 
-    void Read(const QString &file);
-    void Save(const QString &file);
+    bool Read(const QString &file);
+    bool Save(const QString &file);
 
     TextViewer(QWidget* parent);
 };

@@ -233,7 +233,7 @@ void MainForm::closeEvent(QCloseEvent *event)
 //---------------------------------------------------------------------------
 void MainForm::MenuOpenClick()
 {
-    QString OpenDialog_FileName=QFileDialog::getOpenFileName(this,tr("Open"),QString(),tr("All File (*.*)"));
+    QString OpenDialog_FileName=QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Open"),QString(),tr("All File (*.*)")));
     QFile fp(OpenDialog_FileName);
 
     SrcTable="";
@@ -250,7 +250,7 @@ void MainForm::MenuOpenClick()
 //---------------------------------------------------------------------------
 void MainForm::MenuSaveClick()
 {
-    QString SaveDialog_FileName=QFileDialog::getSaveFileName(this,tr("Save File"),QString(),tr("All File (*.*)"));
+    QString SaveDialog_FileName=QDir::toNativeSeparators(QFileDialog::getSaveFileName(this,tr("Save File"),QString(),tr("All File (*.*)")));
     QFile fp(SaveDialog_FileName);
 
     if (!fp.open(QIODevice::WriteOnly)) return;

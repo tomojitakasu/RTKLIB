@@ -64,7 +64,6 @@ void ExtOptDialog::GetExtErrOpt(void)
 		{PhaseErr10,PhaseErr11,PhaseErr12,PhaseErr13,PhaseErr14,PhaseErr15},
 		{PhaseErr20,PhaseErr21,PhaseErr22,PhaseErr23,PhaseErr24,PhaseErr25}
 	};
-    QString s;
 	
     ExtEna0->setChecked(optDialog->ExtErr.ena[0]);
     ExtEna1->setChecked(optDialog->ExtErr.ena[1]);
