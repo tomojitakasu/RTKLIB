@@ -94,12 +94,12 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
     double xs[]={-DEFTSPAN/2,DEFTSPAN/2};
     int i,nfreq=NFREQ;
 
-    QString file=QApplication::applicationFilePath();
-
     memset(&nav0,0,sizeof(nav_t));
     memset(&sta0,0,sizeof(sta_t));
 
-    IniFile=QFileInfo(file).absoluteFilePath()+".ini";
+    QString file=QApplication::applicationFilePath();
+    QFileInfo fi(file);
+    IniFile=fi.absolutePath()+"/"+fi.baseName()+".ini";
 
     toolBar->addWidget(Panel1);
 

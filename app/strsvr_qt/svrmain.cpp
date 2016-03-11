@@ -78,12 +78,11 @@ MainForm::MainForm(QWidget *parent)
 
     setWindowIcon(QIcon(":/icons/rtk6.bmp"));
 
-     setlocale(LC_NUMERIC,"C"); // use point as decimal separator in formated output
-
+    setlocale(LC_NUMERIC,"C"); // use point as decimal separator in formated output
 
     QString file=QApplication::applicationFilePath();
-
-    IniFile=QFileInfo(file).absoluteFilePath()+".ini";
+    QFileInfo fi(file);
+    IniFile=fi.absolutePath()+"/"+fi.baseName()+".ini";
 
     TrayIcon = new QSystemTrayIcon(QIcon(":/icons/strsvr_Icon"));
 

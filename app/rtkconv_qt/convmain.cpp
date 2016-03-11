@@ -80,8 +80,8 @@ MainWindow::MainWindow(QWidget *parent)
     setAcceptDrops(true);
 
     QString file=QApplication::applicationFilePath();
-
-    IniFile=QFileInfo(file).absoluteFilePath()+".ini";
+    QFileInfo fi(file);
+    IniFile=fi.absolutePath()+"/"+fi.baseName()+".ini";
 
     convOptDialog = new ConvOptDialog(this);
     timeDialog = new TimeDialog(this);
@@ -655,9 +655,8 @@ void MainWindow::ConvertFile(void)
     QString OutFile3_Text=OutFile3->text(),OutFile4_Text=OutFile4->text();
     QString OutFile5_Text=OutFile5->text(),OutFile6_Text=OutFile6->text();
     QString OutFile7_Text=OutFile7->text();
-    int i,sat;
+    int i,satid;
     char *p;
-    char buff[256];
     double RNXVER[]={2.10,2.11,2.12,3.00,3.01,3.02};
     
     // abort conversion
@@ -761,11 +760,13 @@ void MainWindow::ConvertFile(void)
     conversionThread->rnxopt.outtime=OutTime;
     conversionThread->rnxopt.outleaps=OutLeaps;
     
-    strcpy(buff,qPrintable(ExSats));
-    for (p=strtok(buff," ");p;p=strtok(NULL," ")) {
-        if (!(sat=satid2no(p))) continue;
-        conversionThread->rnxopt.exsats[sat-1]=1;
+    QStringList exsatsLst=ExSats.split(" ");
+    foreach (const QString & sat,exsatsLst)
+    {
+        if (!(satid=satid2no(qPrintable(sat)))) continue;
+        conversionThread->rnxopt.exsats[satid-1]=1;
     }
+
     abortf=0;
     BtnConvert  ->setText(tr("Abort"));
     Panel1      ->setEnabled(false);
@@ -974,10 +975,10 @@ void MainWindow::SaveOpt(void)
     ini.setValue ("set/timestartf", TimeStartF ->isChecked());
     ini.setValue ("set/timeendf",   TimeEndF   ->isChecked());
     ini.setValue ("set/timeintf",   TimeIntF   ->isChecked());
-    ini.setValue ("set/timey1",     TimeY1     ->text());
-    ini.setValue ("set/timeh1",     TimeH1     ->text());
-    ini.setValue ("set/timey2",     TimeY2     ->text());
-    ini.setValue ("set/timeh2",     TimeH2     ->text());
+    ini.setValue ("set/timey1",     TimeY1     ->date());
+    ini.setValue ("set/timeh1",     TimeH1     ->time());
+    ini.setValue ("set/timey2",     TimeY2     ->date());
+    ini.setValue ("set/timeh2",     TimeH2     ->time());
     ini.setValue ("set/timeint",    TimeInt    ->currentText());
     ini.setValue("set/timeunitf",  TimeUnitF  ->isChecked());
     ini.setValue ("set/timeunit",   TimeUnit   ->text());

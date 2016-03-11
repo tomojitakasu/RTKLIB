@@ -174,8 +174,8 @@ MainForm::MainForm(QWidget * parent)
 void MainForm::FormCreate()
 {
     QString file=QApplication::applicationFilePath();
-
-    IniFile=QFileInfo(file).absoluteFilePath()+".ini";
+    QFileInfo fi(file);
+    IniFile=fi.absolutePath()+"/"+fi.baseName()+".ini";
     
     setWindowTitle(QString("%1 v.%2 %3").arg(PRGNAME).arg(VER_RTKLIB).arg(PATCH_LEVEL));
     

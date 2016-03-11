@@ -35,6 +35,7 @@ public:
             ofile[i]=new char[1024];
             ofile[i][0]='\0';
         };
+        memset(&rnxopt,0,sizeof(rnxopt_t));
     }
 
     ~ConversionThread() {

@@ -170,8 +170,6 @@ MainWindow::~MainWindow()
 // callback on form create --------------------------------------------------
 void  MainWindow::showEvent(QShowEvent *event)
 {
-    QString file;
-
     if (event->spontaneous()) return;
     
     trace(3,"FormCreate\n");
@@ -219,9 +217,9 @@ void  MainWindow::showEvent(QShowEvent *event)
     Timer.setSingleShot(false);
     Timer.start();
 
-    file=QApplication::applicationFilePath();
-
-    IniFile=QFileInfo(file).absoluteFilePath()+".ini";
+    QString file=QApplication::applicationFilePath();
+    QFileInfo fi(file);
+    IniFile=fi.absolutePath()+"/"+fi.baseName()+".ini";
     
     InitSolBuff();
     strinitcom();

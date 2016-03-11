@@ -81,8 +81,8 @@ MainForm::MainForm(QWidget *parent)
     setWindowIcon(QIcon(":/icons/srctblbrows_Icon"));
 
     QString file=QApplication::applicationFilePath();
-
-    IniFile=QFileInfo(file).absoluteFilePath()+".ini";
+    QFileInfo fi(file);
+    IniFile=fi.absolutePath()+"/"+fi.baseName()+".ini";
     
     googleMapView = new GoogleMapView(this);
     staListDialog = new StaListDialog(this);
