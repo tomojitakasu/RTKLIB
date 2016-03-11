@@ -1,0 +1,7 @@
+ui_*.h
+moc_*.cpp
+qrc*.cpp
+*.pro.user*
+Makefile
+*.res
+rtkget_qt
