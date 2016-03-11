@@ -30,7 +30,11 @@ public:
     int format;
 
     ConversionThread(QObject *parent):QThread(parent){
-        for (int i=0;i<7;i++) ofile[i]=new char[1024];
+        for (int i=0;i<7;i++)
+        {
+            ofile[i]=new char[1024];
+            ofile[i][0]='\0';
+        };
     }
 
     ~ConversionThread() {

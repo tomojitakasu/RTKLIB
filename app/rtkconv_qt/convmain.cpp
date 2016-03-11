@@ -920,7 +920,7 @@ void MainWindow::LoadOpt(void)
     TextViewer::FontD.setFamily(ini.value ("viewer/fontname","Courier New").toString());
     TextViewer::FontD.setPointSize(ini.value("viewer/fontsize",9).toInt());
 
-    CmdPostExe         =ini.value  ("set/cmdpostexe","rtkpost_mkl").toString();
+    CmdPostExe         =ini.value  ("set/cmdpostexe","rtkpost_qt").toString();
     
     UpdateEnable();
 }
