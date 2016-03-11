@@ -4,4 +4,4 @@ qrc*.cpp
 *.pro.user*
 Makefile
 *.res
-rtknavi_qt
+rtkget_qt

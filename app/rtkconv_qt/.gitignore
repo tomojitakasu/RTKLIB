@@ -4,4 +4,4 @@ qrc*.cpp
 *.pro.user*
 Makefile
 *.res
-rtklaunch_qt
+rtkconv_qt

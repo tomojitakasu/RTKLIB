@@ -4,4 +4,4 @@ qrc*.cpp
 *.pro.user*
 Makefile
 *.res
-rtkport_qt
+rtkplot_qt

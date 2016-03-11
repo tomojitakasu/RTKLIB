@@ -6,3 +6,5 @@ Release
 Release_Build
 Debug_Build
 __history
+Makefile
+*.pro.user
