@@ -1,5 +1,6 @@
 //---------------------------------------------------------------------------
 #include <QShowEvent>
+#include <QDebug>
 
 #include "rtklib.h"
 #include "convopt.h"
@@ -187,8 +188,8 @@ void CodeOptDialog::BtnOkClick()
 //---------------------------------------------------------------------------
 void CodeOptDialog::BtnSetAllClick()
 {
-    int set=BtnSetAll->text()==tr("Set All");
-	
+    bool set=BtnSetAll->text()==tr("&Set All");
+
     G01->setChecked(set);
     G02->setChecked(set);
     G03->setChecked(set);
@@ -263,7 +264,7 @@ void CodeOptDialog::BtnSetAllClick()
     S24->setChecked(set);
     S25->setChecked(set);
     S26->setChecked(set);
-    BtnSetAll->setText(BtnSetAll->text()==tr("Set All")?tr("Unset All"):tr("Set All"));
+    BtnSetAll->setText(BtnSetAll->text()==tr("&Set All")?tr("Un&set All"):tr("&Set All"));
 }
 //---------------------------------------------------------------------------
 void CodeOptDialog::UpdateEnable(void)

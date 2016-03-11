@@ -101,13 +101,13 @@ void OptDialog::BtnOkClick()
 //---------------------------------------------------------------------------
 void OptDialog::BtnLoadClick()
 {
-    LoadOpt(QFileDialog::getOpenFileName(this,tr("Load Options"),QString(),tr("Options File (*.conf);All (*.*)")));
+    LoadOpt(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Load Options"),QString(),tr("Options File (*.conf);;All (*.*)"))));
 }
 //---------------------------------------------------------------------------
 void OptDialog::BtnSaveClick()
 {
     QString file;
-    file=QFileDialog::getOpenFileName(this,tr("Save Options"),QString(),tr("Options File (*.conf);All (*.*)"));
+    file=QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Save Options"),QString(),tr("Options File (*.conf);;All (*.*)")));
     QFileInfo f(file);
     if (f.suffix()=="") file=file+".conf";
 	SaveOpt(file);
@@ -123,7 +123,7 @@ void OptDialog::BtnStaPosViewClick()
 //---------------------------------------------------------------------------
 void OptDialog::BtnStaPosFileClick()
 {
-    StaPosFile->setText(QFileDialog::getOpenFileName(this,tr("Station Postion File"),QString(),tr("Position File (*.pos);All (*.*)")));
+    StaPosFile->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Station Postion File"),QString(),tr("Position File (*.pos);;All (*.*)"))));
 }
 //---------------------------------------------------------------------------
 void OptDialog::RovPosTypeChange()
@@ -219,7 +219,7 @@ void OptDialog::BtnSatPcvViewClick()
 //---------------------------------------------------------------------------
 void OptDialog::BtnSatPcvFileClick()
 {
-    SatPcvFile->setText(QFileDialog::getOpenFileName(this,tr("Satellite Antenna PCV File"),QString(),tr("All (*.*);PCV File (*.pcv *.atx)")));
+    SatPcvFile->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Satellite Antenna PCV File"),QString(),tr("PCV File (*.pcv *.atx);;All (*.*)"))));
 }
 //---------------------------------------------------------------------------
 void OptDialog::BtnAntPcvViewClick()
@@ -233,17 +233,18 @@ void OptDialog::BtnAntPcvViewClick()
 //---------------------------------------------------------------------------
 void OptDialog::BtnAntPcvFileClick()
 {
-    AntPcvFile->setText(QFileDialog::getOpenFileName(this,tr("Receiver Antenna PCV File"),QString(),tr("All (*.*);PCV File (*.pcv *.atx)")));
+    AntPcvFile->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Receiver Antenna PCV File"),QString(),tr("APCV File (*.pcv *.atx);;All (*.*)"))));
+    ReadAntList();
 }
 //---------------------------------------------------------------------------
 void OptDialog::BtnGeoidDataFileClick()
 {
-    GeoidDataFile->setText(QFileDialog::getOpenFileName(this,tr("Geoid Data File"),QString(),tr("All (*.*)")));
+    GeoidDataFile->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Geoid Data File"),QString(),tr("All (*.*)"))));
 }
 //---------------------------------------------------------------------------
 void OptDialog::BtnDCBFileClick()
 {
-    DCBFile->setText(QFileDialog::getOpenFileName(this,tr("DCB Data File"),QString(),tr("All (*.*);DCB Data File (*.dcb)")));
+    DCBFile->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("DCB Data File"),QString(),tr("DCB Data File (*.dcb);;All (*.*)"))));
 }
 //---------------------------------------------------------------------------
 void OptDialog::BtnDCBViewClick()
@@ -258,7 +259,7 @@ void OptDialog::BtnDCBViewClick()
 //---------------------------------------------------------------------------
 void OptDialog::BtnEOPFileClick()
 {
-    EOPFile->setText(QFileDialog::getOpenFileName(this,tr("EOP Date File"),QString(),tr("All (*.*);EOP Data File (*.eop,*erp)")));
+    EOPFile->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("EOP Date File"),QString(),tr("EOP Data File (*.eop *.erp);;All (*.*)"))));
 }
 //---------------------------------------------------------------------------
 void OptDialog::BtnEOPViewClick()
@@ -273,7 +274,7 @@ void OptDialog::BtnEOPViewClick()
 //---------------------------------------------------------------------------
 void OptDialog::BtnBLQFileClick()
 {
-    BLQFile->setText(QFileDialog::getOpenFileName(this,tr("Ocean Tide Loading BLQ File"),QString(),tr("All (*.*);OTL BLQ File (*.blq)")));
+    BLQFile->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Ocean Tide Loading BLQ File"),QString(),tr("OTL BLQ File (*.blq);;All (*.*)"))));
 }
 //---------------------------------------------------------------------------
 void OptDialog::BtnBLQFileViewClick()
@@ -288,7 +289,7 @@ void OptDialog::BtnBLQFileViewClick()
 //---------------------------------------------------------------------------
 void OptDialog::BtnIonoFileClick()
 {
-    IonoFile->setText(QFileDialog::getOpenFileName(this,tr("Ionosphere DataFile"),QString(),tr("All (*.*);Ionosphere Data File (*.*i,*stec)")));
+    IonoFile->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Ionosphere DataFile"),QString(),tr("Ionosphere Data File (*.*i,*stec);;All (*.*)"))));
 }
 //---------------------------------------------------------------------------
 void OptDialog::FreqChange()
@@ -471,8 +472,6 @@ void OptDialog::GetOpt(void)
 	
     RovAntPcv	 ->setChecked(mainForm->RovAntPcv);
     RefAntPcv	 ->setChecked(mainForm->RefAntPcv);
-    RovAnt		 ->setCurrentText(mainForm->RovAnt);
-    RefAnt		 ->setCurrentText(mainForm->RefAnt);
     RovAntE		 ->setText(QString::number(mainForm->RovAntE,'f',4));
     RovAntN		 ->setText(QString::number(mainForm->RovAntN,'f',4));
     RovAntU		 ->setText(QString::number(mainForm->RovAntU,'f',4));
@@ -502,6 +501,9 @@ void OptDialog::GetOpt(void)
     SetPos(RefPosType->currentIndex(),editr,mainForm->RefPos);
 	ReadAntList();
 	
+    RovAnt		 ->setCurrentText(mainForm->RovAnt);
+    RefAnt		 ->setCurrentText(mainForm->RefAnt);
+
     RovList		 ->setPlainText(mainForm->RovList);
     BaseList	 ->setPlainText(mainForm->BaseList);
 	
@@ -632,14 +634,15 @@ void OptDialog::LoadOpt(const QString &file)
 {
     QLineEdit *editu[]={RovPos1,RovPos2,RovPos3};
     QLineEdit *editr[]={RefPos1,RefPos2,RefPos3};
-    QString s;
     QString buff;
     char id[32];
 	int sat;
 	prcopt_t prcopt=prcopt_default;
 	solopt_t solopt=solopt_default;
-	filopt_t filopt={""};
+    filopt_t filopt;
 	
+    memset(&filopt,0,sizeof(filopt_t));
+
 	resetsysopts();
     if (!loadopts(qPrintable(file),sysopts)) return;
 	getsysopts(&prcopt,&solopt,&filopt);
@@ -783,8 +786,10 @@ void OptDialog::SaveOpt(const QString &file)
 	int sat,ex;
 	prcopt_t prcopt=prcopt_default;
 	solopt_t solopt=solopt_default;
-	filopt_t filopt={""};
+    filopt_t filopt;
 	
+    memset(&filopt,0,sizeof(filopt_t));
+
     prcopt.mode		=PosMode	 ->currentIndex();
     prcopt.nf		=Freq		 ->currentIndex()+1;
     prcopt.soltype	=Solution	 ->currentIndex();
@@ -1012,7 +1017,6 @@ void OptDialog::GetPos(int type, QLineEdit **edit, double *pos)
 //---------------------------------------------------------------------------
 void OptDialog::SetPos(int type, QLineEdit **edit, double *pos)
 {
-    QString s;
 	double p[3],dms1[3],dms2[3],s1,s2;
 	
 	if (type==1) { /* lat/lon/height dms/m */

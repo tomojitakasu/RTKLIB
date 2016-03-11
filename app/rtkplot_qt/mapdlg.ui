@@ -153,9 +153,6 @@
         <property name="toolTip">
          <string/>
         </property>
-        <property name="text" stdset="0">
-         <string>0,000000000</string>
-        </property>
         <property name="decimals">
          <number>9</number>
         </property>
@@ -177,9 +174,6 @@
         </property>
         <property name="toolTip">
          <string/>
-        </property>
-        <property name="text" stdset="0">
-         <string>0,000000000</string>
         </property>
         <property name="decimals">
          <number>9</number>
@@ -229,9 +223,6 @@
         <property name="toolTip">
          <string/>
         </property>
-        <property name="text" stdset="0">
-         <string>0,0000</string>
-        </property>
         <property name="decimals">
          <number>4</number>
         </property>
@@ -250,9 +241,6 @@
         </property>
         <property name="toolTip">
          <string/>
-        </property>
-        <property name="text" stdset="0">
-         <string>8,0000</string>
         </property>
         <property name="decimals">
          <number>4</number>

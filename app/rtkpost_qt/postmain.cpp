@@ -73,8 +73,6 @@ static const char version[]="$Revision: 1.1 $ $Date: 2008/07/17 22:14:45 $";
 // global variables ---------------------------------------------------------
 static gtime_t tstart_={0,0};         // time start for progress-bar
 static gtime_t tend_  ={0,0};         // time end for progress-bar
-static char rov_ [256]="";          // rover name
-static char base_[256]="";          // base-station name
 
 MainForm *mainForm;
 
@@ -116,13 +114,19 @@ extern void settime(gtime_t time)
 
 ProcessingThread::ProcessingThread(QObject *parent):QThread(parent)
 {
-    n=0;
+    n=stat=0;
     prcopt=prcopt_default;
     solopt=solopt_default;
-    ts={0};
-    te={0};
+    ts.time=ts.sec=0;
+    te.time=te.sec=0;
+    ti=tu=0;
     rov=base=NULL;
-    for (int i=0;i<6;i++) infile[i]=new char[1024];
+    for (int i=0;i<6;i++) {infile[i]=new char[1024];infile[i][0]='\0';};
+    outfile[0]='\0';
+
+    memset(&prcopt,0,sizeof(prcopt_t));
+    memset(&solopt,0,sizeof(solopt_t));
+    memset(&filopt,0,sizeof(filopt_t));
 }
 ProcessingThread::~ProcessingThread()
 {
@@ -171,8 +175,8 @@ MainForm::MainForm(QWidget *parent)
     int i;
     
     QString file=QApplication::applicationFilePath();
-
-    IniFile=QFileInfo(file).absoluteFilePath()+".ini";
+    QFileInfo fi(file);
+    IniFile=fi.absolutePath()+"/"+fi.baseName()+".ini";
     
     DynamicModel=IonoOpt=TropOpt=RovAntPcv=RefAntPcv=AmbRes=0;
     RovPosType=RefPosType=0;
@@ -186,6 +190,7 @@ MainForm::MainForm(QWidget *parent)
     for (i=0;i<3;i++) RefPos[i]=0.0;
 
     Progress->setVisible(false);
+    setAcceptDrops(true);
 
     optDialog= new OptDialog(this);
     convDialog=new ConvDialog(this);
@@ -232,8 +237,6 @@ MainForm::MainForm(QWidget *parent)
 // callback on form create --------------------------------------------------
 void MainForm::FormCreate()
 {
-    QString s;
-    
     setWindowTitle(QString("%1 ver.%2 %3").arg(PRGNAME).arg(VER_RTKLIB).arg(PATCH_LEVEL));
     
 }
@@ -377,7 +380,7 @@ void MainForm::closeEvent(QCloseEvent *event)
 // callback on drop files ---------------------------------------------------
 void  MainForm::dragEnterEvent(QDragEnterEvent *event)
 {
-    if (event->mimeData()->hasFormat("text/plain"))
+    if (event->mimeData()->hasFormat("text/uri-list"))
         event->acceptProposedAction();
 }
 void  MainForm::dropEvent(QDropEvent *event)
@@ -385,7 +388,7 @@ void  MainForm::dropEvent(QDropEvent *event)
     QPoint point=event->pos();
     int top;
     
-    if (!event->mimeData()->hasFormat("text/plain")) return;
+    if (!event->mimeData()->hasFormat("text/uri-list")) return;
 
     QString file=event->mimeData()->text();
 
@@ -647,8 +650,7 @@ void MainForm::BtnOutputView1Click()
 {
     QString OutputFile_Text=OutputFile->currentText();
     QString file=FilePath(OutputFile_Text)+".stat";
-    FILE *fp=fopen(qPrintable(file),"r");
-    if (fp) fclose(fp); else return;
+    if (!QFile::exists(file)) return;
     ViewFile(file);
 }
 // callback on button-outputview-2 ------------------------------------------
@@ -656,8 +658,7 @@ void MainForm::BtnOutputView2Click()
 {
     QString OutputFile_Text=OutputFile->currentText();
     QString file=FilePath(OutputFile_Text)+".trace";
-    FILE *fp=fopen(qPrintable(file),"r");
-    if (fp) fclose(fp); else return;
+    if (!QFile::exists(file)) return;
     ViewFile(file);
 }
 // callback on button-inputplot-1 -------------------------------------------
@@ -728,7 +729,7 @@ void MainForm::BtnOutDirClick()
     if (!SelectDirectory("Output Directory","",dir)) return;
     OutDir->Text=dir;
 #else
-    OutDir->setText(QFileDialog::getExistingDirectory(this,tr("Output Directory"),OutDir->text()));
+    OutDir->setText(QDir::toNativeSeparators(QFileDialog::getExistingDirectory(this,tr("Output Directory"),OutDir->text())));
 #endif
 }
 // callback on button keyword -----------------------------------------------
@@ -798,7 +799,7 @@ void MainForm::SetOutFile(void)
     ofile+=SolFormat==SOLF_NMEA?".nmea":".pos";
     ofile.replace('*','0');
 
-    OutputFile->setCurrentText(ofile);
+    OutputFile->setCurrentText(QDir::toNativeSeparators(ofile));
 }
 // execute post-processing --------------------------------------------------
 void MainForm::ExecProc(void)
@@ -1029,8 +1030,7 @@ int MainForm::ObsToNav(const QString &obsfile, QString &navfile)
 // replace file path with keywords ------------------------------------------
 QString MainForm::FilePath(const QString &file)
 {
-    QString s;
-    gtime_t ts={0};
+    gtime_t ts={0,0};
     int p;
     char rov[256]="",base[256]="",path[1024];
     
@@ -1050,7 +1050,7 @@ QString MainForm::FilePath(const QString &file)
 
     reppath(qPrintable(file),path,ts,rov,base);
     
-    return (s=path);
+    return QString(path);
 }
 // read history -------------------------------------------------------------
 void MainForm::ReadList(QComboBox* combo, QSettings *ini, const QString &key)
@@ -1102,7 +1102,7 @@ void MainForm::ViewFile(const QString &file)
     
     textViewer->setWindowTitle(file);
     textViewer->show();
-    textViewer->Read(f);
+    if (!textViewer->Read(f)) textViewer->close();
     if (cstat==1) remove(tmpfile);
 }
 // show message in message area ---------------------------------------------
@@ -1376,7 +1376,6 @@ void MainForm::LoadOpt(void)
 void MainForm::SaveOpt(void)
 {
     QSettings ini(IniFile,QSettings::IniFormat);
-    QString s;
     
     ini.setValue("set/timestart",   TimeStart ->isChecked()?1:0);
     ini.setValue("set/timeend",     TimeEnd   ->isChecked()?1:0);

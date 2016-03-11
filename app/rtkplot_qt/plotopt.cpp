@@ -269,23 +269,21 @@ void PlotOptDialog::BtnFontClick()
 //---------------------------------------------------------------------------
 void PlotOptDialog::BtnQcCmdClick()
 {
-    QcCmd->setText(QFileDialog::getOpenFileName(this,tr("Open")));
+    QcCmd->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Open"))));
 }
 //---------------------------------------------------------------------------
 void PlotOptDialog::BtnTLEFileClick()
 {
-    TLEFile->setText(QFileDialog::getOpenFileName(this,tr("Open"),QString(),tr("Text Files (*.txt);;Position Files (*.pos *.snx);;All (*.*)")));
+    TLEFile->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Open"),QString(),tr("Text Files (*.txt);;Position Files (*.pos *.snx);;All (*.*)"))));
 }
 //---------------------------------------------------------------------------
 void PlotOptDialog::BtnTLESatFileClick()
 {
-    TLESatFile->setText(QFileDialog::getOpenFileName(this,tr("Open"),QString(),tr("Text Files (*.txt);;Position Files (*.pos *.snx);;All (*.*)")));
+    TLESatFile->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Open"),QString(),tr("Text Files (*.txt);;Position Files (*.pos *.snx);;All (*.*)"))));
 }
 //---------------------------------------------------------------------------
 void PlotOptDialog::BtnRefPosClick()
 {
-    QString s;
-
     refDialog->RovPos[0]=RefPos1->text().toDouble();
     refDialog->RovPos[1]=RefPos2->text().toDouble();
     refDialog->RovPos[2]=RefPos3->text().toDouble();

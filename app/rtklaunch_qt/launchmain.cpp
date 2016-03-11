@@ -36,10 +36,9 @@ MainForm::MainForm(QWidget *parent)
     setupUi(this);
 
     bool tray= false;
-
     QString file=QApplication::applicationFilePath();
-
-    IniFile=QFileInfo(file).absoluteFilePath()+".ini";
+    QFileInfo fi(file);
+    IniFile=fi.absolutePath()+"/"+fi.baseName()+".ini";
 
     setWindowTitle(tr("RTKLIB v.%1 %2").arg(VER_RTKLIB).arg(PATCH_LEVEL));
     setWindowIcon(QIcon(":/icons/rtk9.bmp"));

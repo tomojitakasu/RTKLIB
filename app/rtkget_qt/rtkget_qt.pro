@@ -36,6 +36,7 @@ SOURCES += main.cpp \
     ../appcmn_qt/keydlg.cpp \
     ../appcmn_qt/viewer.cpp \
     ../appcmn_qt/vieweropt.cpp \
+    ../appcmn_qt/timedlg.cpp
 
 HEADERS  += \
     getmain.h \
@@ -45,6 +46,7 @@ HEADERS  += \
     ../appcmn_qt/keydlg.h \
     ../appcmn_qt/viewer.h \
     ../appcmn_qt/vieweropt.h \
+    ../appcmn_qt/timedlg.h
 
 FORMS    += \
     getmain.ui \
@@ -53,7 +55,8 @@ FORMS    += \
     ../appcmn_qt/aboutdlg.ui \
     ../appcmn_qt/keydlg.ui \
     ../appcmn_qt/viewer.ui \
-    ../appcmn_qt/vieweropt.ui
+    ../appcmn_qt/vieweropt.ui \
+    ../appcmn_qt/timedlg.ui
 
 RESOURCES += \
     rtkget_qt.qrc

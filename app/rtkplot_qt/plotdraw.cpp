@@ -1031,7 +1031,7 @@ void Plot::DrawSkyImage(QPainter &c,int level)
 void Plot::DrawSky(QPainter &c,int level)
 {
     QPoint p1,p2;
-    QString s,ss,ObsTypeText=ObsType->currentText();
+    QString s,ObsTypeText=ObsType->currentText();
     obsd_t *obs;
     gtime_t t[MAXSAT]={{0,0}};
     double p[MAXSAT][2]={{0}},gfp[MAXSAT]={0},p0[MAXSAT][2]={{0}};
@@ -1355,7 +1355,7 @@ void Plot::DrawDop(QPainter &c,int level)
 void Plot::DrawDopStat(QPainter &c,double *dop, int *ns, int n)
 {
     QString s0[MAXOBS+2],s1[MAXOBS+2],s2[MAXOBS+2];
-    QPoint p1,p2,p3,p4;
+    QPoint p1,p2,p3;
     double ave[4]={0};
     int i,j,m=0;
     int ndop[4]={0},nsat[MAXOBS]={0},fonth=(int)(Disp->font().pointSize()*1.5);
@@ -1408,16 +1408,18 @@ void Plot::DrawDopStat(QPainter &c,double *dop, int *ns, int n)
 void Plot::DrawSnr(QPainter &c,int level)
 {
     QPushButton *btn[]={BtnOn1,BtnOn2,BtnOn3};
-    QString s,ObsTypeText=ObsType2->currentText();
+    QString ObsTypeText=ObsType2->currentText();
     QString label[]={tr("SNR"),tr("Multipath"),tr("Elevation")};
     QString unit[]={"dBHz","m",CHARDEG};
     QPoint p1,p2;
     QColor *col,colp[MAXSAT];
     gtime_t time={0,0};
     double *x,*y,xl[2],yl[2],off,xc,yc,xp,yp[MAXSAT],ave[3]={0},rms[3]={0};
-    const char *code=qPrintable(ObsTypeText.mid(1));
+    char code[1024];
     int i,j,k,l,n,np,sat,ind=ObsIndex,nrms[3]={0};
     
+    strcpy(code,qPrintable(ObsTypeText.mid(1)));
+
     trace(3,"DrawSnr: level=%d\n",level);
     
     if (0<=ind&&ind<NObs&&BtnShowTrack->isChecked()) {
@@ -1554,10 +1556,12 @@ void Plot::DrawSnrE(QPainter &c,int level)
     gtime_t time={0,0};
     double *x[2],*y[2],xl[2]={-0.001,90.0},yl[2][2]={{10.0,65.0},{-10.0,10.0}};
     double xp[2][MAXSAT],yp[2][MAXSAT],ave=0.0,rms=0.0;
-    const char *code=qPrintable(ObsTypeText.mid(1));
+    char code[1024];
     int i,j,k,n[2],np[2]={0},sat,ind=ObsIndex,hh=(int)(Disp->font().pointSize()*1.5);
     int nrms=0;
-    
+
+    strcpy(code,qPrintable(ObsTypeText.mid(1)));
+
     trace(3,"DrawSnrE: level=%d\n",level);
     
     yl[1][0]=-MaxMP; yl[1][1]=MaxMP;

@@ -34,7 +34,6 @@ void ConvOptDialog::showEvent(QShowEvent *event)
 {
     if (event->spontaneous()) return;
 
-    QString s;
     RnxVer->setCurrentIndex(mainWindow->RnxVer);
     RnxFile->setChecked(mainWindow->RnxFile);
     RnxCode->setText(mainWindow->RnxCode);

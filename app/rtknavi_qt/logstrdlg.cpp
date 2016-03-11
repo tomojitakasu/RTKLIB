@@ -78,17 +78,17 @@ void LogStrDialog::BtnOkClick()
 //---------------------------------------------------------------------------
 void LogStrDialog::BtnFile1Click()
 {
-    FilePath1->setText(QFileDialog::getSaveFileName(this,tr("Open..."),FilePath1->text()));
+    FilePath1->setText(QDir::toNativeSeparators(QFileDialog::getSaveFileName(this,tr("Open..."),FilePath1->text())));
 }
 //---------------------------------------------------------------------------
 void LogStrDialog::BtnFile2Click()
 {
-    FilePath2->setText(QFileDialog::getSaveFileName(this,tr("Open..."),FilePath2->text()));
+    FilePath2->setText(QDir::toNativeSeparators(QFileDialog::getSaveFileName(this,tr("Open..."),FilePath2->text())));
 }
 //---------------------------------------------------------------------------
 void LogStrDialog::BtnFile3Click()
 {
-    FilePath3->setText(QFileDialog::getSaveFileName(this,tr("Open..."),FilePath3->text()));
+    FilePath3->setText(QDir::toNativeSeparators(QFileDialog::getSaveFileName(this,tr("Open..."),FilePath3->text())));
 }
 //---------------------------------------------------------------------------
 void LogStrDialog::Stream1Change(int)

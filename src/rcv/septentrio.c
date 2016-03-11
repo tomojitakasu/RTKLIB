@@ -1023,7 +1023,7 @@ static int decode_sbasnav(raw_t *raw){
     eph.af1    = R4(puiTmp +  94);
 
     /* debug */
-    trace(1,"sat=%2d, week=%d, tow=%f\n",sat,week,U4(puiTmp +  14));
+    trace(2,"sat=%2d, week=%d, tow=%f\n",sat,week,U4(puiTmp +  2)/1000);
 
     if (!strstr(raw->opt,"-EPHALL")) {
         if (fabs(timediff(eph.t0,raw->nav.seph[prn-120].t0))<1.0&&

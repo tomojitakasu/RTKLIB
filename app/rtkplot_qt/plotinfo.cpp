@@ -82,7 +82,7 @@ void Plot::UpdateTimeSol(void)
 {
     const char *unit[]={"m","m/s","m/s2"},*u;
     const QString sol[]={tr(""),tr("FIX"),tr("FLOAT"),tr("SBAS"),tr("DGPS"),tr("Single"),tr("PPP")};
-    QString msg,s;
+    QString msg;
     QString msgs[8];
     sol_t *data;
     double xyz[3],pos[3],r,az,el;
@@ -138,7 +138,7 @@ void Plot::UpdateInfoObs(void)
     QString msgs4[]={" MP=..0.6","..0.3","..0.0..","-0.3..","-0.6..","",""};
     QString msg;
     QString msgs[8];
-    gtime_t ts={0},te={0},t,tp={0};
+    gtime_t ts={0,0},te={0,0},t,tp={0,0};
     int i,n=0,ne=0;
     QString s1,s2;
     
@@ -155,7 +155,7 @@ void Plot::UpdateInfoObs(void)
     if (n>0) {
         TimeStr(ts,0,0,s1);
         TimeStr(te,0,1,s2);
-        msg=QString("[1]%1-%2 : EP=%3 N=%4").arg(s1).arg(s2+(TimeLabel?5:0)).arg(ne).arg(n);
+        msg=QString("[1]%1-%2 : EP=%3 N=%4").arg(s1).arg(s2.mid(TimeLabel?5:0)).arg(ne).arg(n);
         
         for (i=0;i<7;i++) {
             if (PlotType==PLOT_DOP) {
@@ -181,7 +181,7 @@ void Plot::UpdateInfoSol(void)
     QString msg,msgs[8],s;
     TIMEPOS *pos=NULL,*pos1,*pos2;
     sol_t *data;
-    gtime_t ts={0},te={0};
+    gtime_t ts={0,0},te={0,0};
     double r[3],b,bl[2]={1E9,0.0};
     int i,j,n=0,nq[8]={0},sel=BtnSol1->isChecked()||!BtnSol2->isChecked()?0:1;
     QString s1,s2;
@@ -248,6 +248,7 @@ void Plot::UpdatePlotType(void)
     
     trace(3,"UpdatePlotType\n");
     
+    PlotTypeS->blockSignals(true);
     PlotTypeS->clear();
     if (SolData[0].n>0||SolData[1].n>0||
         (NObs<=0&&SolStat[0].n<=0&&SolStat[1].n<=0)) {
@@ -273,9 +274,12 @@ void Plot::UpdatePlotType(void)
     for (i=0;i<PlotTypeS->count();i++) {
         if (PlotTypeS->itemText(i)!=PTypes[PlotType]) continue;
         PlotTypeS->setCurrentIndex(i);
+        PlotTypeS->blockSignals(false);
         return;
     }
     PlotTypeS->setCurrentIndex(0);
+
+    PlotTypeS->blockSignals(false);
 }
 // update satellite-list pull-down menu -------------------------------------
 void Plot::UpdateSatList(void)
@@ -321,7 +325,6 @@ void Plot::UpdateSatList(void)
 // update observation type pull-down menu --------------------------------------
 void Plot::UpdateObsType(void)
 {
-    QString s;
     char *codes[MAXCODE+1],freqs[]="125678";
     int i,j,n=0,cmask[MAXCODE+1]={0},fmask[6]={0};
     

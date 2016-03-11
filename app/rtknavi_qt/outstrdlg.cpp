@@ -73,12 +73,12 @@ void OutputStrDialog::BtnOkClick()
 //---------------------------------------------------------------------------
 void OutputStrDialog::BtnFile1Click()
 {
-    FilePath1->setText(QFileDialog::getSaveFileName(this,tr("Load..."),FilePath1->text()));
+    FilePath1->setText(QDir::toNativeSeparators(QFileDialog::getSaveFileName(this,tr("Load..."),FilePath1->text())));
 }
 //---------------------------------------------------------------------------
 void OutputStrDialog::BtnFile2Click()
 {
-    FilePath2->setText(QFileDialog::getSaveFileName(this,tr("Load..."),FilePath2->text()));
+    FilePath2->setText(QDir::toNativeSeparators(QFileDialog::getSaveFileName(this,tr("Load..."),FilePath2->text())));
 }
 //---------------------------------------------------------------------------
 void OutputStrDialog::Stream1Change(int)

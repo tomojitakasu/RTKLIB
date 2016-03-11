@@ -30,7 +30,6 @@ void Plot::ShowMsg(const QString &msg)
     Message1->setText(msg);
     Message1->adjustSize();
     Panel21->updateGeometry();
-//    Panel21->repaint();
 }
 // execute command ----------------------------------------------------------
 int Plot::ExecCmd(const QString &cmd)
@@ -40,7 +39,7 @@ int Plot::ExecCmd(const QString &cmd)
 // get time span and time interval ------------------------------------------
 void Plot::TimeSpan(gtime_t *ts, gtime_t *te, double *tint)
 {
-    gtime_t t0={0};
+    gtime_t t0={0,0};
     
     trace(3,"TimeSpan\n");
     
@@ -127,7 +126,7 @@ int Plot::GetCenterPos(double *rr)
 TIMEPOS * Plot::SolToPos(solbuf_t *sol, int index, int qflag, int type)
 {
     TIMEPOS *pos,*vel,*acc;
-    gtime_t ts={0};
+    gtime_t ts={0,0};
     sol_t *data;
     double tint,xyz[3],xyzs[4];
     int i;
@@ -298,10 +297,10 @@ QColor Plot::ObsColor(const obsd_t *obs, double az, double el)
 {
     QColor color=Qt::black;
     QString ObsType_Text;
-    char code;
+    char code[16];
     int i;
     
-    code='\0';
+    code[0]='\0';
 
     trace(4,"ObsColor\n");
     
@@ -309,18 +308,18 @@ QColor Plot::ObsColor(const obsd_t *obs, double az, double el)
     
     if (PlotType==PLOT_SNR||PlotType==PLOT_SNRE) {
         ObsType_Text=ObsType2->currentText();
-        code=ObsType_Text.at(1).toLatin1();
+        strcpy(code,qPrintable(ObsType_Text.mid(1)));
     }
-    else if (ObsType->currentIndex()!=-1) {
+    else if (ObsType->currentIndex()!=0) {
         ObsType_Text=ObsType->currentText();
-        code=ObsType_Text.at(1).toLatin1();
+        strcpy(code,qPrintable(ObsType_Text.mid(1)));
     }
     if (SimObs) {
         color=SysColor(obs->sat);
     }
-    else if (code!='\n') {
+    else if (*code) {
         for (i=0;i<NFREQ+NEXOBS;i++) {
-            if (!strstr(code2obs(obs->code[i],NULL),&code)) continue;
+            if (!strstr(code2obs(obs->code[i],NULL),code)) continue;
             color=SnrColor(obs->SNR[i]*0.25);
             break;
         }

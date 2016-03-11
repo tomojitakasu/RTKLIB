@@ -46,7 +46,7 @@ void StaListDialog::BtnLoadClick()
     QByteArray buff;
     
     
-    file=QFileDialog::getOpenFileName(this,tr("Open..."));
+    file=QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Open...")));
 
     fp.setFileName(file);
     if (!fp.open(QIODevice::ReadOnly)) return;
@@ -66,7 +66,7 @@ void StaListDialog::BtnLoadClick()
 //---------------------------------------------------------------------------
 void StaListDialog::BtnSaveClick()
 {
-    QString file=QFileDialog::getSaveFileName(this,tr("Save..."));
+    QString file=QDir::toNativeSeparators(QFileDialog::getSaveFileName(this,tr("Save...")));
     QFile fp;
 
     fp.setFileName(file);

@@ -59,7 +59,6 @@ void MapAreaDialog::BtnSaveClick()
 //---------------------------------------------------------------------------
 void MapAreaDialog::BtnCenterClick()
 {
-    QString s;
 	double rr[3],pos[3];
 
     if (!plot->GetCenterPos(rr)) return;
@@ -89,8 +88,6 @@ void MapAreaDialog::ScaleEqClick()
 //---------------------------------------------------------------------------
 void MapAreaDialog::UpdateField(void)
 {
-    QString s;
-
     setWindowTitle(plot->MapImageFile);
 
     MapSize1->setText(QString::number(plot->MapSize[0]));

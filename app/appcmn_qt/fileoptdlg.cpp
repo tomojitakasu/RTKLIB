@@ -30,7 +30,6 @@ FileOptDialog::FileOptDialog(QWidget* parent)
 //---------------------------------------------------------------------------
 void FileOptDialog::showEvent(QShowEvent *event)
 {
-    QString s;
 	double speed=1.0,start=0.0,intv=0.0;
 
     if (event->spontaneous()) return;
@@ -120,10 +119,10 @@ void FileOptDialog::BtnOkClick()
 void FileOptDialog::BtnFilePathClick()
 {
 	if (!Opt) {
-        FilePath->setText(QFileDialog::getOpenFileName(this,QString(),FilePath->text()));
+        FilePath->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,QString(),FilePath->text())));
 	}
 	else {
-        FilePath->setText(QFileDialog::getSaveFileName(this,QString(),FilePath->text()));
+        FilePath->setText(QDir::toNativeSeparators(QFileDialog::getSaveFileName(this,QString(),FilePath->text())));
     }
 }
 //---------------------------------------------------------------------------

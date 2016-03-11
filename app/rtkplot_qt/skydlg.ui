@@ -28,9 +28,6 @@
      <property name="layoutDirection">
       <enum>Qt::LeftToRight</enum>
      </property>
-     <property name="text" stdset="0">
-      <string/>
-     </property>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <property name="leftMargin">
        <number>0</number>
@@ -65,9 +62,6 @@
         <property name="toolTip">
          <string/>
         </property>
-        <property name="text" stdset="0">
-         <string>0,00</string>
-        </property>
        </widget>
       </item>
       <item>
@@ -90,9 +84,6 @@
         </property>
         <property name="toolTip">
          <string/>
-        </property>
-        <property name="text" stdset="0">
-         <string>0,00</string>
         </property>
        </widget>
       </item>
@@ -122,9 +113,6 @@
      </property>
      <property name="layoutDirection">
       <enum>Qt::LeftToRight</enum>
-     </property>
-     <property name="text" stdset="0">
-      <string/>
      </property>
      <layout class="QGridLayout" name="gridLayout">
       <property name="leftMargin">
@@ -172,9 +160,6 @@
         </property>
         <property name="toolTip">
          <string/>
-        </property>
-        <property name="text" stdset="0">
-         <string>0,00</string>
         </property>
         <property name="minimum">
          <double>-180.000000000000000</double>
@@ -496,9 +481,6 @@
         <property name="toolTip">
          <string/>
         </property>
-        <property name="text" stdset="0">
-         <string>0,00</string>
-        </property>
         <property name="minimum">
          <double>-1.000000000000000</double>
         </property>
@@ -527,9 +509,6 @@
         </property>
         <property name="toolTip">
          <string/>
-        </property>
-        <property name="text" stdset="0">
-         <string>0,00</string>
         </property>
         <property name="minimum">
          <double>-180.000000000000000</double>
@@ -560,9 +539,6 @@
         <property name="toolTip">
          <string/>
         </property>
-        <property name="text" stdset="0">
-         <string>0,00</string>
-        </property>
         <property name="minimum">
          <double>-1.000000000000000</double>
         </property>
@@ -578,9 +554,6 @@
         </property>
         <property name="toolTip">
          <string/>
-        </property>
-        <property name="text" stdset="0">
-         <string>0,00</string>
         </property>
         <property name="minimum">
          <double>-180.000000000000000</double>

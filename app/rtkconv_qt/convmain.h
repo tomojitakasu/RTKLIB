@@ -3,6 +3,7 @@
 #define convmainH
 //---------------------------------------------------------------------------
 #include <QMainWindow>
+#include <QThread>
 
 #include "ui_convmain.h"
 
@@ -18,6 +19,36 @@ class KeyDialog;
 class AboutDialog;
 class StartDialog;
 
+//Helper Class ------------------------------------------------------------------
+
+class ConversionThread : public QThread
+{
+    Q_OBJECT
+public:
+    char ifile[1024],*ofile[7];
+    rnxopt_t rnxopt;
+    int format;
+
+    ConversionThread(QObject *parent):QThread(parent){
+        for (int i=0;i<7;i++)
+        {
+            ofile[i]=new char[1024];
+            ofile[i][0]='\0';
+        };
+        memset(&rnxopt,0,sizeof(rnxopt_t));
+    }
+
+    ~ConversionThread() {
+        for (int i=0;i<7;i++) delete[] ofile[i];
+    }
+
+protected:
+    void run() {
+        // convert to rinex
+        convrnx(format,&rnxopt,ifile,ofile);
+    }
+};
+
 //---------------------------------------------------------------------------
 class MainWindow : public QMainWindow, public Ui::MainWindow
 {
@@ -25,7 +56,8 @@ class MainWindow : public QMainWindow, public Ui::MainWindow
 protected:
     void showEvent           (QShowEvent*);
     void closeEvent          (QCloseEvent*);
-
+    void dragEnterEvent      (QDragEnterEvent *event);
+    void dropEvent           (QDropEvent *event);
 public slots:
     void FormCreate          ();
 
@@ -64,10 +96,12 @@ public slots:
     void BtnOutFile7Click();
     void BtnOutFileView7Click();
     void BtnInFileViewClick();
-	
+    void ConversionFinished();
+    void UpdateEnable();
+
 private:
     QString IniFile,CmdPostExe;
-	
+    ConversionThread *conversionThread;
 //    void DropFiles(TWMDropFiles msg); // for files drop
 	
     void ReadList(QComboBox* combo, QSettings *ini, const QString &key);
@@ -77,7 +111,6 @@ private:
     int  AutoFormat(const QString &File);
     void ConvertFile(void);
     void SetOutFiles(const QString &infile);
-    void UpdateEnable(void);
     void GetTime(gtime_t *ts, gtime_t *te, double *tint, double *tunit);
     int  ExecCmd(const QString &cmd);
     QString RepPath(const QString &File);

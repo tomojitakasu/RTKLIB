@@ -53,9 +53,6 @@
      <property name="toolTip">
       <string/>
      </property>
-     <property name="text" stdset="0">
-      <string>01.01.2000</string>
-     </property>
      <property name="displayFormat">
       <string>dd.MM.yyyy</string>
      </property>
@@ -81,9 +78,6 @@
      </property>
      <property name="toolTip">
       <string/>
-     </property>
-     <property name="text" stdset="0">
-      <string>01.01.2000</string>
      </property>
      <property name="displayFormat">
       <string>dd.MM.yyyy</string>
@@ -215,9 +209,6 @@
      <property name="toolTip">
       <string/>
      </property>
-     <property name="text" stdset="0">
-      <string>00:00</string>
-     </property>
     </widget>
    </item>
    <item row="0" column="2">
@@ -227,9 +218,6 @@
      </property>
      <property name="toolTip">
       <string/>
-     </property>
-     <property name="text" stdset="0">
-      <string>00:00</string>
      </property>
     </widget>
    </item>
