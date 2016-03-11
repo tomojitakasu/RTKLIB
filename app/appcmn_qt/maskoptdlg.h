@@ -17,7 +17,7 @@ protected:
 
 public slots:
     void  BtnOkClick();
-    void  MaskEna1Click();
+    void  MaskEnaClick();
 
 private:
     void  UpdateEnable(void);

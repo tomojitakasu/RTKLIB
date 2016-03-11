@@ -19,7 +19,8 @@ MaskOptDialog::MaskOptDialog(QWidget* parent)
 
     connect(BtnOk,SIGNAL(clicked(bool)),this,SLOT(BtnOkClick()));
     connect(BtnCancel,SIGNAL(clicked(bool)),this,SLOT(reject()));
-    connect(MaskEna1,SIGNAL(clicked(bool)),this,SLOT(MaskEna1Click()));
+    connect(MaskEna1,SIGNAL(clicked(bool)),this,SLOT(MaskEnaClick()));
+    connect(MaskEna2,SIGNAL(clicked(bool)),this,SLOT(MaskEnaClick()));
 }
 //---------------------------------------------------------------------------
 void  MaskOptDialog::showEvent(QShowEvent *event)
@@ -60,7 +61,7 @@ void  MaskOptDialog::BtnOkClick()
     accept();
 }
 //---------------------------------------------------------------------------
-void  MaskOptDialog::MaskEna1Click()
+void  MaskOptDialog::MaskEnaClick()
 {
 	UpdateEnable();
 }
