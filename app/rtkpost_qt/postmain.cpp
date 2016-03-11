@@ -114,13 +114,19 @@ extern void settime(gtime_t time)
 
 ProcessingThread::ProcessingThread(QObject *parent):QThread(parent)
 {
-    n=0;
+    n=stat=0;
     prcopt=prcopt_default;
     solopt=solopt_default;
     ts.time=ts.sec=0;
     te.time=te.sec=0;
+    ti=tu=0;
     rov=base=NULL;
-    for (int i=0;i<6;i++) infile[i]=new char[1024];
+    for (int i=0;i<6;i++) {infile[i]=new char[1024];infile[i][0]='\0';};
+    outfile[0]='\0';
+
+    memset(&prcopt,0,sizeof(prcopt_t));
+    memset(&solopt,0,sizeof(solopt_t));
+    memset(&filopt,0,sizeof(filopt_t));
 }
 ProcessingThread::~ProcessingThread()
 {

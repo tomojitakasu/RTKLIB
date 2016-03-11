@@ -13,6 +13,7 @@
 
 class TextViewer;
 class DownloadThread;
+class TimeDialog;
 //---------------------------------------------------------------------------
 class MainForm : public QWidget, public Ui::MainForm
 {
@@ -48,7 +49,9 @@ public slots:
     void  BtnAllClick();
     void  DirChange();
     void  DownloadFinished();
-	
+    void  BtnTime1Click();
+    void  BtnTime2Click();
+
 private:
     QStringList Types;
     QStringList Urls;
@@ -57,6 +60,7 @@ private:
     QSystemTrayIcon TrayIcon;
     DownloadThread *thread;
     TextViewer *viewer;
+    TimeDialog *timeDialog;
 
     void  LoadOpt(void);
     void  SaveOpt(void);

@@ -33,6 +33,7 @@
 #include "getmain.h"
 #include "getoptdlg.h"
 #include "staoptdlg.h"
+#include "timedlg.h"
 #include "viewer.h"
 
 #define PRGNAME     "RTKGET"  // program name
@@ -58,20 +59,17 @@ extern int showmsg(char *format,...)
 {
     va_list arg;
     QString str;
-    char buff[1024],buff2[10224],*p,*q;
-    int len;
+    static QString buff2;
+    char buff[1024],*p;
     
     va_start(arg,format);
     vsprintf(buff,format,arg);
     va_end(arg);
     
     if ((p=strstr(buff,"STAT="))) {
-        QMetaObject::invokeMethod(mainForm->MsgLabel3,"text",Qt::AutoConnection,Q_RETURN_ARG(QString,str));
-        len=str.length();
-        q=buff2;
-        q+=sprintf(q,"%s",qPrintable(str)+MAX(len-66,0));
-        if (*(q-1)=='_') q--;
-        sprintf(q,"%s",p+5);
+        buff2.append(str.right(66));
+        if (buff2.endsWith('_')) buff2.remove(buff2.length()-1,1);
+        buff2.append(p+5);
         QMetaObject::invokeMethod(mainForm->MsgLabel3,"setText",Qt::QueuedConnection,Q_ARG(QString,QString(buff2)));
     }
     else if ((p=strstr(buff,"->"))) {
@@ -95,32 +93,37 @@ public:
     double ti;
     char *stas[MAX_STA],dir[1024],msg[1024],path[1024];
     int nsta,nurl,seqnos,seqnoe,opts;
-    bool test;
+    bool test,append;
+    QString LogFile;
 
-    explicit DownloadThread(const QString LogFile, bool append, bool t){
+    explicit DownloadThread(QObject *parent, const QString lf, bool a, bool t):QThread(parent){
         seqnos=0;seqnoe=0;opts=0;
         test=t;
+        LogFile=lf;
+        append=a;
 
-        for (int i=0;i<MAX_STA;i++) stas[i]=new char [16];
+        for (int i=0;i<MAX_STA;i++) {stas[i]=new char [16];stas[i][0]='\0';};
+        for (int i=0;i<MAX_URL_SEL;i++) memset(&urls[i],0,sizeof(url_t));
+        dir[0]=msg[0]=path[0]='\0';
 
-        if (LogFile!="") {
-            reppath(qPrintable(LogFile),path,utc2gpst(timeget()),"","");
-            fp=fopen(path,append?"a":"w");
-        }
     }
     ~DownloadThread(){
-        if (fp)
-            fclose(fp);
         for (int i=0;i<MAX_STA;i++) delete [] stas[i];
     }
 
 protected:
     void run(){
+        if (LogFile!="") {
+            reppath(qPrintable(LogFile),path,utc2gpst(timeget()),"","");
+            fp=fopen(path,append?"a":"w");
+        }
         if (test)
             dl_test(ts,te,ti,urls,nurl,stas,nsta,dir,35,0,fp);
         else
             dl_exec(ts,te,ti,seqnos,seqnoe,urls,nurl,stas,nsta,dir,qPrintable(usr),
                 qPrintable(pwd),qPrintable(proxy),opts,msg,fp);
+        if (fp)
+            fclose(fp);
     }
 };
 
@@ -136,6 +139,7 @@ MainForm::MainForm(QWidget * parent)
     setlocale(LC_NUMERIC,"C");
 
     viewer=new TextViewer(this);
+    timeDialog = new TimeDialog(this);
 
     connect(BtnAll,SIGNAL(clicked(bool)),this,SLOT(BtnAllClick()));
     connect(BtnDir,SIGNAL(clicked(bool)),this,SLOT(BtnDirClick()));
@@ -158,6 +162,8 @@ MainForm::MainForm(QWidget * parent)
     connect(StaList,SIGNAL(clicked(QModelIndex)),this,SLOT(StaListClick()));
     connect(&TrayIcon,SIGNAL(activated(QSystemTrayIcon::ActivationReason)),this,SLOT(TrayIconActivated(QSystemTrayIcon::ActivationReason)));
     connect(&Timer,SIGNAL(timeout()),this,SLOT(TimerTimer()));
+    connect(BtnTime1,SIGNAL(clicked(bool)),this,SLOT(BtnTime1Click()));
+    connect(BtnTime2,SIGNAL(clicked(bool)),this,SLOT(BtnTime2Click()));
 
     for (int i=0;i<8;i++)
         Images[i].load(QString(":/buttons/wait%1.bmp").arg(i+1));
@@ -241,23 +247,21 @@ void MainForm::BtnLogClick()
     if (LogFile=="") return;
 
     viewer->setWindowTitle(LogFile);
-    viewer->exec();
     viewer->Read(LogFile);
+    viewer->exec();
 }
 //---------------------------------------------------------------------------
 void MainForm::BtnTestClick()
 {
-    url_t urls[MAX_URL_SEL];
-    
     if (BtnTest->text()==tr("&Abort")) {
         BtnTest->setEnabled(false);
         abortf=1;
         return;
     }
 
-    thread=new DownloadThread(TEST_FILE,false,true);
+    thread=new DownloadThread(this,TEST_FILE,false,true);
     GetTime(&thread->ts,&thread->te,&thread->ti);
-    thread->nurl=SelectUrl(urls);
+    thread->nurl=SelectUrl(thread->urls);
     if (timediff(thread->ts,thread->te)>0.0||thread->nurl<=0) {
         MsgLabel3->setText(tr("no local data"));
         return;
@@ -308,7 +312,7 @@ void MainForm::BtnDownloadClick()
         return;
     }
 
-    thread=new DownloadThread(LogFile,LogAppend, false);
+    thread=new DownloadThread(this, LogFile,LogAppend, false);
     GetTime(&thread->ts,&thread->te,&thread->ti);
     
     str=Number->text();
@@ -409,6 +413,23 @@ void MainForm::BtnDirClick()
 void MainForm::DirChange()
 {
     UpdateMsg();
+}
+void MainForm::BtnTime1Click()
+{
+    QDateTime time(TimeY1->date(),TimeH1->time());
+    gtime_t t1;
+    t1.time=time.toTime_t();t1.sec=time.time().msec()/1000;
+    timeDialog->Time=t1;
+    timeDialog->exec();
+}
+//---------------------------------------------------------------------------
+void MainForm::BtnTime2Click()
+{
+    QDateTime time(TimeY2->date(),TimeH2->time());
+    gtime_t t2;
+    t2.time=time.toTime_t();t2.sec=time.time().msec()/1000;
+    timeDialog->Time=t2;
+    timeDialog->exec();
 }
 //---------------------------------------------------------------------------
 void MainForm::BtnAllClick()
@@ -531,19 +552,20 @@ void MainForm::LoadOpt(void)
     DateFormat            =setting.value ("opt/dateformat",       0).toInt();
     TraceLevel            =setting.value ("opt/tracelevel",       0).toInt();
     LocalDir  ->setChecked(setting.value ("opt/localdirena",      0).toBool());
-    Dir       ->insertItem   (0,setting.value ("opt/localdir",        "").toString());Dir->setCurrentIndex(0);
-    DataType  ->insertItem   (0,setting.value ("opt/datatype",        "").toString());DataType->setCurrentIndex(0);
 
     StaList->clear();
 
     for (int i=0;i<10;i++) {
         stas=setting.value(QString("sta/station%1").arg(i),"").toString().split(",");
-        QString s;
-        foreach (s,stas) {
+        foreach (const QString &s,stas) {
             StaList->addItem(s);
         }
     }
     ReadHist(setting,"dir",Dir);
+
+    Dir       ->insertItem   (0,setting.value ("opt/localdir",        "").toString());Dir->setCurrentIndex(0);
+    DataType  ->insertItem   (0,setting.value ("opt/datatype",        "").toString());DataType->setCurrentIndex(0);
+
     TextViewer::Color1=setting.value("viewer/color1",QColor(Qt::black)).value<QColor>();
     TextViewer::Color2=setting.value("viewer/color2",QColor(Qt::white)).value<QColor>();
     TextViewer::FontD.setFamily(setting.value ("viewer/fontname","Courier New").toString());
@@ -555,7 +577,6 @@ void MainForm::SaveOpt(void)
     QSettings setting(IniFile,QSettings::IniFormat);
     QString sta;
 
-    
     setting.setValue ("opt/startd",     TimeY1->date()       );
     setting.setValue ("opt/starth",     TimeH1->time()       );
     setting.setValue ("opt/endd",       TimeY2->date()       );
@@ -597,9 +618,9 @@ void MainForm::SaveOpt(void)
 void MainForm::LoadUrl(QString file)
 {
     url_t *urls;
-    char *p,*subtype;
+    QString subtype, basetype;
     char *sel[]={"*"};
-    int i,n;
+    int i,n,p;
     
     urls=new url_t [MAX_URL];
     
@@ -621,13 +642,15 @@ void MainForm::LoadUrl(QString file)
         Urls.append(urls[i].path);
         Locals.append(urls[i].dir );
 
-        if (!(p=strchr(urls[i].type,'_'))) continue;
-        *p='\0';
-        if (DataType->findText(urls[i].type)==-1)
-            DataType->addItem(urls[i].type);
+        p=Types.last().indexOf('_');
+        if (p==-1) continue;
+        basetype=Types.last().mid(0,p);
+        if (DataType->findText(basetype)==-1)
+            DataType->addItem(basetype);
 
-        subtype=p+1;
-        if ((p=strchr(subtype,'_'))) *p='\0';
+        subtype=Types.last().mid(p+1);
+        if ((p=subtype.indexOf('_'))!=-1) subtype=subtype.mid(0,p);
+
         if (SubType->findText(subtype)==-1)
             SubType->addItem(subtype);
     }

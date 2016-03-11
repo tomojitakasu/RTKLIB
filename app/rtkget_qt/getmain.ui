@@ -533,6 +533,9 @@
         <property name="toolTip">
          <string/>
         </property>
+        <property name="editable">
+         <bool>true</bool>
+        </property>
        </widget>
       </item>
       <item row="1" column="7" rowspan="8" colspan="3">
@@ -769,7 +772,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset>
+         <iconset resource="rtkget_qt.qrc">
           <normaloff>:/buttons/ttray.bmp</normaloff>:/buttons/ttray.bmp</iconset>
         </property>
         <property name="flat">
@@ -917,6 +920,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="rtkget_qt.qrc"/>
+ </resources>
  <connections/>
 </ui>
