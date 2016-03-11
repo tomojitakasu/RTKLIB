@@ -248,6 +248,7 @@ void Plot::UpdatePlotType(void)
     
     trace(3,"UpdatePlotType\n");
     
+    PlotTypeS->blockSignals(true);
     PlotTypeS->clear();
     if (SolData[0].n>0||SolData[1].n>0||
         (NObs<=0&&SolStat[0].n<=0&&SolStat[1].n<=0)) {
@@ -273,9 +274,12 @@ void Plot::UpdatePlotType(void)
     for (i=0;i<PlotTypeS->count();i++) {
         if (PlotTypeS->itemText(i)!=PTypes[PlotType]) continue;
         PlotTypeS->setCurrentIndex(i);
+        PlotTypeS->blockSignals(false);
         return;
     }
     PlotTypeS->setCurrentIndex(0);
+
+    PlotTypeS->blockSignals(false);
 }
 // update satellite-list pull-down menu -------------------------------------
 void Plot::UpdateSatList(void)

@@ -1415,9 +1415,11 @@ void Plot::DrawSnr(QPainter &c,int level)
     QColor *col,colp[MAXSAT];
     gtime_t time={0,0};
     double *x,*y,xl[2],yl[2],off,xc,yc,xp,yp[MAXSAT],ave[3]={0},rms[3]={0};
-    const char *code=qPrintable(ObsTypeText.mid(1));
+    char code[1024];
     int i,j,k,l,n,np,sat,ind=ObsIndex,nrms[3]={0};
     
+    strcpy(code,qPrintable(ObsTypeText.mid(1)));
+
     trace(3,"DrawSnr: level=%d\n",level);
     
     if (0<=ind&&ind<NObs&&BtnShowTrack->isChecked()) {
@@ -1554,10 +1556,12 @@ void Plot::DrawSnrE(QPainter &c,int level)
     gtime_t time={0,0};
     double *x[2],*y[2],xl[2]={-0.001,90.0},yl[2][2]={{10.0,65.0},{-10.0,10.0}};
     double xp[2][MAXSAT],yp[2][MAXSAT],ave=0.0,rms=0.0;
-    const char *code=qPrintable(ObsTypeText.mid(1));
+    char code[1024];
     int i,j,k,n[2],np[2]={0},sat,ind=ObsIndex,hh=(int)(Disp->font().pointSize()*1.5);
     int nrms=0;
-    
+
+    strcpy(code,qPrintable(ObsTypeText.mid(1)));
+
     trace(3,"DrawSnrE: level=%d\n",level);
     
     yl[1][0]=-MaxMP; yl[1][1]=MaxMP;

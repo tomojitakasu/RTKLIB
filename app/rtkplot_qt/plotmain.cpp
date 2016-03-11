@@ -288,6 +288,7 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
     connect(SatList,SIGNAL(currentIndexChanged(int)),this,SLOT(SatListChange()));
     connect(DopType,SIGNAL(currentIndexChanged(int)),this,SLOT(DopTypeChange()));
     connect(ObsType,SIGNAL(currentIndexChanged(int)),this,SLOT(ObsTypeChange()));
+    connect(ObsType2,SIGNAL(currentIndexChanged(int)),this,SLOT(ObsTypeChange()));
 
     setMouseTracking(true);
     Disp->setMouseTracking(true);
@@ -1774,7 +1775,7 @@ void Plot::UpdateType(int type)
     else {
         SetRange(0,YRange);
     }
-    //UpdatePlotType();
+    UpdatePlotType();
 }
 // update size of plot ------------------------------------------------------
 void Plot::UpdateSize(void)

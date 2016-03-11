@@ -297,10 +297,10 @@ QColor Plot::ObsColor(const obsd_t *obs, double az, double el)
 {
     QColor color=Qt::black;
     QString ObsType_Text;
-    char code;
+    char code[16];
     int i;
     
-    code='\0';
+    code[0]='\0';
 
     trace(4,"ObsColor\n");
     
@@ -308,18 +308,18 @@ QColor Plot::ObsColor(const obsd_t *obs, double az, double el)
     
     if (PlotType==PLOT_SNR||PlotType==PLOT_SNRE) {
         ObsType_Text=ObsType2->currentText();
-        code=ObsType_Text.at(1).toLatin1();
+        strcpy(code,qPrintable(ObsType_Text.mid(1)));
     }
-    else if (ObsType->currentIndex()!=-1) {
+    else if (ObsType->currentIndex()!=0) {
         ObsType_Text=ObsType->currentText();
-        code=ObsType_Text.at(1).toLatin1();
+        strcpy(code,qPrintable(ObsType_Text.mid(1)));
     }
     if (SimObs) {
         color=SysColor(obs->sat);
     }
-    else if (code!='\n') {
+    else if (*code) {
         for (i=0;i<NFREQ+NEXOBS;i++) {
-            if (!strstr(code2obs(obs->code[i],NULL),&code)) continue;
+            if (!strstr(code2obs(obs->code[i],NULL),code)) continue;
             color=SnrColor(obs->SNR[i]*0.25);
             break;
         }
