@@ -244,7 +244,7 @@ void OptDialog::BtnGeoidDataFileClick()
 //---------------------------------------------------------------------------
 void OptDialog::BtnDCBFileClick()
 {
-    DCBFile->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("DCB Data File"),QString(),tr("DCB Data File (*.dcb);;All (*.*)"))));
+    DCBFile->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("DCB Data File"),QString(),tr("DCB Data File (*.dcb *.DCB);;All (*.*)"))));
 }
 //---------------------------------------------------------------------------
 void OptDialog::BtnDCBViewClick()

@@ -1165,10 +1165,7 @@
          <string/>
         </property>
         <property name="text">
-         <string>Set All</string>
-        </property>
-        <property name="flat">
-         <bool>false</bool>
+         <string>&amp;Set All</string>
         </property>
        </widget>
       </item>
@@ -1181,10 +1178,13 @@
          <string/>
         </property>
         <property name="text">
-         <string>OK</string>
+         <string>&amp;OK</string>
         </property>
-        <property name="flat">
-         <bool>false</bool>
+        <property name="autoDefault">
+         <bool>true</bool>
+        </property>
+        <property name="default">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -1197,10 +1197,7 @@
          <string/>
         </property>
         <property name="text">
-         <string>Cancel</string>
-        </property>
-        <property name="flat">
-         <bool>false</bool>
+         <string>&amp;Cancel</string>
         </property>
        </widget>
       </item>

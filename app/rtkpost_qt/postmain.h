@@ -36,7 +36,7 @@ public:
     ProcessingThread(QObject *parent);
     ~ProcessingThread();
     void addInput(const QString &);
-    void addList(char * sta, const QString & list);
+    void addList(char * &sta, const QString & list);
 protected:
     void run();
 

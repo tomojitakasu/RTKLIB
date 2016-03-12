@@ -90,7 +90,7 @@
              <string/>
             </property>
             <property name="icon">
-             <iconset resource="srctblbrows_qt.qrc">
+             <iconset resource="../rtkget_qt/rtkget_qt.qrc">
               <normaloff>:/buttons/reload.bmp</normaloff>:/buttons/reload.bmp</iconset>
             </property>
            </widget>
@@ -124,6 +124,10 @@
             </property>
             <property name="text">
              <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="../rtkget_qt/rtkget_qt.qrc">
+              <normaloff>:/buttons/load.bmp</normaloff>:/buttons/load.bmp</iconset>
             </property>
             <property name="flat">
              <bool>true</bool>
@@ -575,7 +579,7 @@
   </action>
  </widget>
  <resources>
-  <include location="srctblbrows_qt.qrc"/>
+  <include location="../rtkget_qt/rtkget_qt.qrc"/>
  </resources>
  <connections/>
 </ui>

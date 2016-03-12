@@ -140,9 +140,9 @@ void ProcessingThread::addInput(const QString & file) {
         strcpy(infile[n++],qPrintable(file));
     }
 }
-void ProcessingThread::addList(char * sta, const QString & list) {
+void ProcessingThread::addList(char * &sta, const QString & list) {
     char *r;
-    sta =new char [list .length()+1];
+    sta =new char [list.length()+1 +1];
 
     QStringList lines=list.split("\n");
 
@@ -150,7 +150,8 @@ void ProcessingThread::addList(char * sta, const QString & list) {
     foreach(QString line,lines)
     {
         int index=line.indexOf("#");
-        strcpy(r,qPrintable(line.left(index)));
+        if (index==-1) index=line.length();
+        strcpy(r,qPrintable(line.mid(0,index)));
         r+=index;
         strcpy(r++," ");
     }

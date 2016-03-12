@@ -184,7 +184,6 @@ void Plot::ReadObs(const QStringList &files)
 int Plot::ReadObsRnx(const QStringList &files, obs_t *obs, nav_t *nav,
                                  sta_t *sta)
 {
-    QString s;
     gtime_t ts,te;
     double tint;
     int i,n;
@@ -209,7 +208,7 @@ int Plot::ReadObsRnx(const QStringList &files, obs_t *obs, nav_t *nav,
     ShowMsg(tr("reading nav data..."));
     qApp->processEvents();
 
-    for (i=0;i<files.size();i++) {
+    for (i=0;i<files.count();i++) {
         strcpy(navfile,qPrintable(files.at(i)));
         
         if (!(p=strrchr(navfile,'.'))) continue;

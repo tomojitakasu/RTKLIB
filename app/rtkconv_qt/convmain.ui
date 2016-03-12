@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>713</width>
-    <height>497</height>
+    <height>608</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -43,6 +43,66 @@
          <property name="editable">
           <bool>true</bool>
          </property>
+         <item>
+          <property name="text">
+           <string>0</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>0.05</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>0.1</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>0.2</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>0.25</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>0.5</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>1</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>5</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>10</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>15</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>30</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>60</string>
+          </property>
+         </item>
         </widget>
        </item>
        <item row="1" column="3">
@@ -56,6 +116,9 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="text">
+          <string>?</string>
+         </property>
          <property name="flat">
           <bool>true</bool>
          </property>
@@ -65,7 +128,11 @@
         <widget class="QDateEdit" name="TimeY1"/>
        </item>
        <item row="0" column="6">
-        <widget class="QCheckBox" name="TimeIntF"/>
+        <widget class="QCheckBox" name="TimeIntF">
+         <property name="text">
+          <string>Interval</string>
+         </property>
+        </widget>
        </item>
        <item row="0" column="0" colspan="2">
         <widget class="QCheckBox" name="TimeStartF">
@@ -174,13 +241,6 @@
        </item>
        <item row="4" column="1">
         <widget class="QLineEdit" name="OutDir"/>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="LabelInFile">
-         <property name="text">
-          <string>RTCM, RCV RAW or RINEX OBS</string>
-         </property>
-        </widget>
        </item>
        <item row="6" column="0">
         <widget class="QCheckBox" name="OutFileEna1">
@@ -464,7 +524,7 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="1">
+       <item row="1" column="2">
         <widget class="QPushButton" name="BtnKey">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -477,6 +537,13 @@
          </property>
          <property name="flat">
           <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="2">
+        <widget class="QLabel" name="LabelInFile">
+         <property name="text">
+          <string>RTCM, RCV RAW or RINEX OBS</string>
          </property>
         </widget>
        </item>
