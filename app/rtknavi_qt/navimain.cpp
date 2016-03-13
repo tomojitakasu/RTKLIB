@@ -563,7 +563,7 @@ void  MainWindow::BtnOutputStrClick()
 {
     int otype[]={STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPSVR,STR_FILE};
     int i,j,str,update[2]={0};
-    const char *path;
+    char path[1024];
     
     trace(3,"BtnOutputStrClick\n");
     
@@ -615,10 +615,10 @@ void  MainWindow::BtnOutputStrClick()
         if (!StreamC[i]) continue;
         
         str=otype[Stream[i]];
-        if      (str==STR_SERIAL)             path=qPrintable(Paths[i][0]);
-        else if (str==STR_FILE  )             path=qPrintable(Paths[i][2]);
-        else if (str==STR_FTP||str==STR_HTTP) path=qPrintable(Paths[i][3]);
-        else                                  path=qPrintable(Paths[i][1]);
+        if      (str==STR_SERIAL)             strncpy(path,qPrintable(Paths[i][0]),1024);
+        else if (str==STR_FILE  )             strncpy(path,qPrintable(Paths[i][2]),1024);
+        else if (str==STR_FTP||str==STR_HTTP) strncpy(path,qPrintable(Paths[i][3]),1024);
+        else                                  strncpy(path,qPrintable(Paths[i][1]),1024);
         if (str==STR_FILE&&!ConfOverwrite(path)) {
             StreamC[i]=0;
             continue;
@@ -632,7 +632,7 @@ void  MainWindow::BtnLogStrClick()
 {
     int otype[]={STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPSVR,STR_FILE};
     int i,j,str,update[3]={0};
-    const char *path;
+    char path[1024];
     
     trace(3,"BtnLogStrClick\n");
     
@@ -682,10 +682,10 @@ void  MainWindow::BtnLogStrClick()
         if (!StreamC[i]) continue;
         
         str=otype[Stream[i]];
-        if      (str==STR_SERIAL)             path=qPrintable(Paths[i][0]);
-        else if (str==STR_FILE  )             path=qPrintable(Paths[i][2]);
-        else if (str==STR_FTP||str==STR_HTTP) path=qPrintable(Paths[i][3]);
-        else                                  path=qPrintable(Paths[i][1]);
+        if      (str==STR_SERIAL)             strncpy(path,qPrintable(Paths[i][0]),1024);
+        else if (str==STR_FILE  )             strncpy(path,qPrintable(Paths[i][2]),1024);
+        else if (str==STR_FTP||str==STR_HTTP) strncpy(path,qPrintable(Paths[i][3]),1024);
+        else                                  strncpy(path,qPrintable(Paths[i][1]),1024);
         if (str==STR_FILE&&!ConfOverwrite(path)) {
             StreamC[i]=0;
             continue;

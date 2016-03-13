@@ -2069,6 +2069,7 @@ void Plot::UpdateEnable(void)
     MenuShowPoint   ->setEnabled((PlotType==PLOT_TRK)&&!BtnSol12->isChecked());
     
     MenuShowSkyplot ->setVisible(PlotType==PLOT_SKY||PlotType==PLOT_MPS);
+    BtnShowSkyplot  ->setVisible(MenuShowSkyplot->isVisible());
     MenuShowMap     ->setVisible((PlotType==PLOT_TRK&&MapImage.height()>0&&!BtnSol12->isChecked())||
                              (PlotType==PLOT_SKY&&SkyImageI.height()>0)||
                              (PlotType==PLOT_MPS&&SkyImageI.height()>0));

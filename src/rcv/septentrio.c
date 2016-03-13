@@ -28,6 +28,9 @@
 *                           - cleanups
 *           2016/03/03  1.5 - fixed TOW in SBAS messages
 *           2016/03/12  1.6 - respect code priorities
+*                           - fixed bug in carrier phase calculation of type2 data
+*                           - unify frequency determination
+*                           - improve lock handling
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -38,6 +41,8 @@ static const char rcsid[]="$Id: Septentrio SBF,v 1.1 2016/02/11 FT $";
 
 extern const sbsigpband_t igpband1[][8]; /* SBAS IGP band 0-8 */
 extern const sbsigpband_t igpband2[][5]; /* SBAS IGP band 9-10 */
+
+static unsigned char locktime[255][32];
 
 /* SBF definitions Version 2.9.1 */
 #define SBF_SYNC1   0x24        /* SBF message header sync field 1 (correspond to $) */
@@ -118,7 +123,7 @@ extern const sbsigpband_t igpband2[][5]; /* SBAS IGP band 9-10 */
 
 /* function prototypes -------------------------------------------------------*/
 static int getSignalCode(int signType);
-static int getSigFreq(int _signType);
+static int getSigFreq(int _signType, int freqNo);
 static int getFreqNo(int signType);
 
 /* get fields (little-endian) ------------------------------------------------*/
@@ -314,46 +319,16 @@ static int decode_measepoch(raw_t *raw){
           SB1_FreqNr = ((ObsInfo >> 3) & 0x1f);
         }
 
-        /* Compute wavelength according to the used frequency */
-        if ( (signType1 == 0) ||                                   /* GPSL1CA */
-             (signType1 == 1) ||                                   /* GPSL1PY */
-             (signType1 == 16) ||                                  /* GALL1A  */
-             (signType1 == 17) ||                                  /* GALL1BC */
-             (signType1 == 24) ) {                                 /* GEOL1   */
-          SB1_WaveLength = 299792458 / 1575.42e6;
-        } else if ( (signType1 == 8) ||                            /* GLOL1CA */
-                    (signType1 == 9) ) {                           /* GLOL1P  */
-          SB1_WaveLength=(299792458/(1602.00e6+(562.50e3*SB1_FreqNr)));
-        } else if ( (signType1 == 2) ||                            /* GPSL2PY */
-                    (signType1 == 3) ) {                           /* GPSL2C  */
-          SB1_WaveLength = 299792458 / 1227.60e6;
-        } else if ( (signType1 == 10) ||                           /* GLOL2P  */
-                    (signType1 == 11) ) {                          /* GLOL2CA */
-          SB1_WaveLength=
-                  (9.0/7.0)*(299792458/(1602.00e6+(562.50e3*SB1_FreqNr)));
-        } else if ( (signType1 == 4) ||                            /* GPSL5   */
-                    (signType1 == 20) ||                           /* GALE5a  */
-                    (signType1 == 25) ) {                          /* GEOL5   */
-          SB1_WaveLength = 299792458 / 1176.45e6;
-        } else if ( (signType1 == 21) ) {                          /* GALE5b  */
-          SB1_WaveLength = 299792458 / 1207.14e6;
-        } else if ( (signType1 == 22) ) {                          /* GALE5   */
-          SB1_WaveLength = 299792458 / 1191.795e6;
-        } else if ( (signType1 == 18) ||                           /* GALE6A  */
-                    (signType1 == 19) ) {                          /* GALE6BC */
-          SB1_WaveLength = 299792458 / 1278.75e6;
-        } else {
-          SB1_WaveLength = 0.0;
-        }
+        SB1_WaveLength=CLIGHT/getSigFreq(signType1,SB1_FreqNr);
 
         /* final carrier phase calculation */
         adr = (SB1_Code/SB1_WaveLength)+(I1(p+14)*65.536)+(U2(p+12)*0.001);
         if ((I2(p+14)==-128)&&(U2(p+12)==0)) {
             adr=0;
         }
-        /* debug
-        trace(1,"signal type = %2d, \n",signType1);
-        */
+
+        /* debug */
+        trace(4,"signal type = %2d, \n",signType1);
 
         /* from the signal tiype get the type of RTKLIB signal code*/
         code = getSignalCode(signType1);
@@ -413,10 +388,10 @@ static int decode_measepoch(raw_t *raw){
             raw->obs.data[n].code[j]=CODE_NONE;            
         }
         /* detect which signals is stored in Type1 sub-block */
-        freqType1 = getSigFreq(signType1);
 #if 0
         h=getFreqNo(signType1);
 #else
+        freqType1 = getSigFreq(signType1,8);
         if      (freqType1 == FREQ1) h = 0;
         else if (freqType1 == FREQ2) h = 1;
         else if (freqType1 == FREQ5) h = 2;
@@ -434,9 +409,13 @@ static int decode_measepoch(raw_t *raw){
             raw->obs.data[n].code[h] = code;
 
             /* lock to signal indication */
-            if (raw->lockt[sat][h]>LockTime) raw->obs.data[n].LLI[h]=1;
-            else raw->obs.data[n].LLI[h]=0;
-            raw->lockt[sat][h]       = (unsigned char)LockTime;
+            if ((ObsInfo&0x4)==0x4) raw->obs.data[n].LLI[h]|=0x2; /* half-cycle ambiguity */
+            if (LockTime!=65535){
+                LockTime = LockTime>254?254:LockTime; /* limit locktime to sizeof(unsigned char) */
+                if (locktime[sat][signType1]>LockTime) raw->obs.data[n].LLI[h]|=0x1;
+                raw->lockt[sat][h]       = (unsigned char)LockTime;
+                locktime[sat][signType1] = LockTime;
+            };
         }
 
         /* decode all Type2 sub-blocks (if there is any) */
@@ -462,7 +441,9 @@ static int decode_measepoch(raw_t *raw){
             CarrierMSB = I1(p+4);
 
             ObsInfo2 = U1(p+5);                         /* minor informations */
-            (void)ObsInfo2;
+
+            freqType1 = getSigFreq(signType1,SB1_FreqNr);
+            freqType2 = getSigFreq(signType2,SB1_FreqNr);
 
             /* pseudrange in meters */
             CodeOffsetLSB = U2(p+6);
@@ -473,15 +454,13 @@ static int decode_measepoch(raw_t *raw){
 
             /* carrier phase in cycles */
             CarrierLSB = U2(p+8);
-            Ltype2=(psr/SB1_WaveLength)+(CarrierMSB*65536.+CarrierLSB)*0.001;
+            Ltype2=(PRtype2/CLIGHT*freqType2)+(CarrierMSB*65536.+CarrierLSB)*0.001;
             if ((CarrierMSB==-128)&&(CarrierLSB==0)) {
                 Ltype2=0;
             }
 
             /* Doppler in Hz */
             DopplerOffsetLSB = U2(p+10);
-            freqType1 = getSigFreq(signType1);
-            freqType2 = getSigFreq(signType2);
             alpha = pow((freqType1/freqType2),2);
             if ((DopplerOffsetMSB==-16) && (DopplerOffsetLSB==0)) dopplerType2=0;
             else
@@ -492,6 +471,7 @@ static int decode_measepoch(raw_t *raw){
 #if 0
             h=getFreqNo(signType2);
 #else
+            freqType2 = getSigFreq(signType2,8);
             if      (freqType2 == FREQ1) h = 0;
             else if (freqType2 == FREQ2) h = 1;
             else if (freqType2 == FREQ5) h = 2;
@@ -511,9 +491,12 @@ static int decode_measepoch(raw_t *raw){
                 raw->obs.data[n].code[h] = getSignalCode(signType2);
 
                 /* lock to signal indication */
-                if (raw->lockt[sat][h]>LockTime2) raw->obs.data[n].LLI[h]=1;
-                else raw->obs.data[n].LLI[h]=0;
-                raw->lockt[sat][h]       = (unsigned char)LockTime2;
+                if ((ObsInfo2&0x4)==0x4) raw->obs.data[n].LLI[h]|=0x2; /* half-cycle ambiguity */
+                if (LockTime2!=255) {
+                    if (locktime[sat][signType2]>LockTime2) raw->obs.data[n].LLI[h]|=0x1;
+                    raw->lockt[sat][h]       = (unsigned char)LockTime2;
+                    locktime[sat][signType2] = (unsigned char)LockTime2;
+                };
             }
 
             /* get to the beginning of next Type 2 block */
@@ -529,7 +512,7 @@ static int decode_measepoch(raw_t *raw){
 }
 
 /* return frequency value in Hz from signal type name ------------------------*/
-static int getSigFreq(int _signType){
+static int getSigFreq(int _signType, int freqNo){
 
     switch (_signType)
     {
@@ -548,13 +531,13 @@ static int getSigFreq(int _signType){
     case 7:                                                        /* QZSL2C  */
         return FREQ2;
     case 8:                                                        /* GLOL1CA */
-        return FREQ1;
+        return FREQ1+(freqNo-8)*9/16;
     case 9:                                                        /* GLOL1P  */
         return FREQ1;
     case 10:                                                       /* GLOL2P  */
-        return FREQ2;
+        return FREQ2+(freqNo-8)*7/16;
     case 11:                                                       /* GLOL2CA */
-        return FREQ2;
+        return FREQ2+(freqNo-8)*7/16;
     case 12:                                                       /* GLOL3X  */
         return 1.202025;
     case 15:                                                       /* IRNSSL5  */

@@ -63,7 +63,7 @@ void PntDialog::BtnOkClick()
         pos[1]=PntList->item(i,1)->text().toDouble()*D2R;
         pos[2]=PntList->item(i,2)->text().toDouble();
         pos2ecef(pos,plot->PntPos[n]);
-        plot->PntName[n++]=qPrintable(PntList->item(i,3)->text());
+        plot->PntName[n++]=PntList->item(i,3)->text();
 	}
     plot->NWayPnt=n;
 

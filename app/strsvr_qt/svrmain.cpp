@@ -534,7 +534,7 @@ void MainForm::SvrStart(void)
     };
     int ip[]={0,1,1,1,2,3,3},strs[4]={0},opt[7]={0},n;
     char *paths[4],filepath[1024],buff[1024];
-    char const *cmd=NULL;
+    char cmd[1024];
     char *ant[3]={"","",""},*rcv[3]={"","",""},*p;
     FILE *fp;
     
@@ -555,10 +555,10 @@ void MainForm::SvrStart(void)
     strcpy(paths[3],!Output3->currentIndex()?"":qPrintable(Paths[3][ip[Output3->currentIndex()-1]]));
     
     if (Input->currentIndex()==0) {
-        if (CmdEna[0]) cmd=qPrintable(Cmds[0]);
+        if (CmdEna[0]) strncpy(cmd,qPrintable(Cmds[0]),1024);
     }
     else if (Input->currentIndex()==1||Input->currentIndex()==3) {
-        if (CmdEnaTcp[0]) cmd=qPrintable(CmdsTcp[0]);
+        if (CmdEnaTcp[0]) strncpy(cmd,qPrintable(CmdsTcp[0]),1024);
     }
     for (int i=0;i<5;i++) {
         opt[i]=SvrOpt[i];
@@ -612,13 +612,13 @@ void MainForm::SvrStart(void)
 // stop stream server -------------------------------------------------------
 void MainForm::SvrStop(void)
 {
-    char const *cmd=NULL;
+    char cmd[1024];
     
     if (Input->currentIndex()==0) {
-        if (CmdEna[1]) cmd=qPrintable(Cmds[1]);
+        if (CmdEna[1]) strncpy(cmd,qPrintable(Cmds[1]),1024);
     }
     else if (Input->currentIndex()==1||Input->currentIndex()==3) {
-        if (CmdEnaTcp[1]) cmd=qPrintable(CmdsTcp[1]);
+        if (CmdEnaTcp[1]) strncpy(cmd,qPrintable(CmdsTcp[1]),1024);
     }
     strsvrstop(&strsvr,cmd);
     

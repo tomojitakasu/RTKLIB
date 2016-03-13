@@ -888,12 +888,12 @@ void Plot::DrawObsSlip(QPainter &c,double *yp)
     obsd_t *obs;
     QPoint ps[2];
     double gfp[MAXSAT]={0},gf;
-    const char *code;
+    char code[32];
     int i,j,slip;
     
     trace(3,"DrawObsSlip\n");
     
-    code=ObsType->currentIndex()?qPrintable(ObsTypeText)+1:"";
+    strncpy(code,ObsType->currentIndex()?qPrintable(ObsTypeText)+1:"",32);
     
     for (i=0;i<Obs.n;i++) {
         if (El[i]<ElMask*D2R) continue;
@@ -1038,9 +1038,11 @@ void Plot::DrawSky(QPainter &c,int level)
     double x,y,xp,yp,xs,ys,dt,dx,dy,xl[2],yl[2],r,gf;
     int i,j,ind=ObsIndex;
     int hh=(int)(Disp->font().pointSize()*1.5),slip;
-    const char *code=ObsType->currentIndex()?qPrintable(ObsTypeText)+1:"";
+    char code[32];
     char id[16];
     
+    strncpy(code,ObsType->currentIndex()?qPrintable(ObsTypeText)+1:"",32);
+
     trace(3,"DrawSky: level=%d\n",level);
     
     GraphS->GetLim(xl,yl);
@@ -1415,10 +1417,10 @@ void Plot::DrawSnr(QPainter &c,int level)
     QColor *col,colp[MAXSAT];
     gtime_t time={0,0};
     double *x,*y,xl[2],yl[2],off,xc,yc,xp,yp[MAXSAT],ave[3]={0},rms[3]={0};
-    char code[1024];
+    char code[32];
     int i,j,k,l,n,np,sat,ind=ObsIndex,nrms[3]={0};
     
-    strcpy(code,qPrintable(ObsTypeText.mid(1)));
+    strncpy(code,qPrintable(ObsTypeText.mid(1)),32);
 
     trace(3,"DrawSnr: level=%d\n",level);
     
@@ -1556,11 +1558,11 @@ void Plot::DrawSnrE(QPainter &c,int level)
     gtime_t time={0,0};
     double *x[2],*y[2],xl[2]={-0.001,90.0},yl[2][2]={{10.0,65.0},{-10.0,10.0}};
     double xp[2][MAXSAT],yp[2][MAXSAT],ave=0.0,rms=0.0;
-    char code[1024];
+    char code[32];
     int i,j,k,n[2],np[2]={0},sat,ind=ObsIndex,hh=(int)(Disp->font().pointSize()*1.5);
     int nrms=0;
 
-    strcpy(code,qPrintable(ObsTypeText.mid(1)));
+    strncpy(code,qPrintable(ObsTypeText.mid(1)),32);
 
     trace(3,"DrawSnrE: level=%d\n",level);
     
@@ -1698,9 +1700,11 @@ void Plot::DrawMpS(QPainter &c,int level)
     obsd_t *obs;
     double x,y,xp,yp,xs,ys,xl[2],yl[2],p[MAXSAT][2]={{0}},r;
     int i,j,sat,ind=ObsIndex;
-    const char *code=qPrintable(ObsTypeText.mid(1));
+    char code[32];
     char id[32];
     
+    strncpy(code,qPrintable(ObsTypeText.mid(1)),32);
+
     trace(3,"DrawSnrS: level=%d\n",level);
     
     GraphS->GetLim(xl,yl);
