@@ -288,7 +288,7 @@ void Graph::DrawAxis(QPainter &c,int label, int glabel)
     if (label) DrawLabel(c);
 }
 //---------------------------------------------------------------------------
-void Graph::RoQPoint(QPoint *ps, int n, const QPoint &pc, int rot, QPoint *pr)
+void Graph::RotPoint(QPoint *ps, int n, const QPoint &pc, int rot, QPoint *pr)
 {
 	for (int i=0;i<n;i++) {
         pr[i].setX(pc.x()+(int)floor(ps[i].x()*cos(rot*D2R)-ps[i].y()*sin(rot*D2R)+0.5));
@@ -380,7 +380,7 @@ void Graph::DrawMark(QPainter &c,const QPoint &p, int mark, const QColor &color,
 			for (int i=0;i<n;i++) {
                 ps[i].setX(xs3[i]*size/40); ps[i].setY(ys3[i]*size/40);
 			}
-            RoQPoint(&pd,1,p,rot,&pt);
+            RotPoint(&pd,1,p,rot,&pt);
             DrawText(c, pt,"N",color,0,0,rot);
 			break;
 		default:
@@ -389,7 +389,7 @@ void Graph::DrawMark(QPainter &c,const QPoint &p, int mark, const QColor &color,
     brush.setStyle(Qt::NoBrush);
     c.setBrush(brush);
 
-    RoQPoint(ps,n,p,rot,pr);
+    RotPoint(ps,n,p,rot,pr);
 
     DrawPoly(c,pr,n,color,0);
 }
@@ -453,19 +453,17 @@ void Graph::DrawText(QPainter &c,const QPoint &p, const QString &str, const QCol
     }
 
     QRectF off=c.boundingRect(QRectF(),flags,str);
-    QPoint ps,pr;
-    ps.setX(off.x());ps.setY(off.y());
-
-    RoQPoint(&ps,1,p,rot,&pr);
 
     QPen pen=c.pen();
     c.setBrush(Qt::NoBrush);
     pen.setColor(color);
     c.setPen(pen);
 
-    c.rotate(rot);
-    c.drawText(pr.x(),pr.y(),str);
+    c.translate(p);
     c.rotate(-rot);
+    c.drawText(off,str);
+    c.rotate(rot);
+    c.translate(-p);
 }
 //---------------------------------------------------------------------------
 void Graph::DrawText(QPainter &c,double x, double y, const QString &str, const QColor &color,
@@ -503,7 +501,6 @@ void Graph::DrawCircle(QPainter &c,const QPoint &p, const QColor &color, int rx,
 {
     Qt::PenStyle ps[]={Qt::SolidLine,Qt::DotLine,Qt::DashLine,Qt::DashDotLine,Qt::DashDotDotLine};
     int x=p.x()-rx,w=rx,y=p.y()-ry,h=ry;
-
     QPen pen=c.pen();
     pen.setColor(color);
     pen.setStyle(ps[style]);
@@ -728,8 +725,8 @@ void Graph::DrawSkyPlot(QPainter &c,const QPoint &p, const QColor &color1, const
 	}
     pen.setStyle(Qt::DotLine);pen.setColor(color2);c.setPen(pen);
 	for (int az=0,i=0;az<360;az+=30) {
-        ps.setX((int)( r*sin(az*D2R)+0.5));
-        ps.setY((int)(-r*cos(az*D2R)+0.5));
+        ps.setX((int)(p.x()+r*sin(az*D2R)+0.5));
+        ps.setY((int)(p.y()-r*cos(az*D2R)+0.5));
         c.drawLine(p.x(),p.y(),ps.x(),ps.y());
         ps.setX(ps.x()+ 3*sin(az*D2R));
         ps.setY(ps.y()+-3*cos(az*D2R));

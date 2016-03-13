@@ -27,6 +27,7 @@
 *                           - fixed sbas decoding
 *                           - cleanups
 *           2016/03/03  1.5 - fixed TOW in SBAS messages
+*           2016/03/12  1.6 - respect code priorities
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -243,6 +244,7 @@ static int decode_measepoch(raw_t *raw){
     uint8_t signType1, signType2;
     uint32_t codeLSB, SB2Num, sys;
     uint8_t codeMSB;
+    int pri;
 
     /* signals for type2 sub-block */
     int32_t CodeOffsetMSB, DopplerOffsetMSB, CarrierMSB;
@@ -498,8 +500,10 @@ static int decode_measepoch(raw_t *raw){
             else if (freqType2 == FREQ8) h = 5;
             else                         h = 0;
 #endif
+            pri=getcodepri(sys,getSignalCode(signType2),raw->opt); /* get signal priority */
             /* store signal info */
-            if (h<=NFREQ+NEXOBS) {
+            if ((h<=NFREQ+NEXOBS)&&
+                    (pri>getcodepri(sys,raw->obs.data[n].code[h],raw->opt))) {
                 raw->obs.data[n].L[h]    = Ltype2;
                 raw->obs.data[n].P[h]    = PRtype2;
                 raw->obs.data[n].D[h]    = (float)dopplerType2; /* NEGATIVE??*/

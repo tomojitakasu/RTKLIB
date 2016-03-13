@@ -2027,6 +2027,10 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="../rtkget_qt/rtkget_qt.qrc">
+     <normaloff>:/buttons/graph.bmp</normaloff>:/buttons/graph.bmp</iconset>
+   </property>
    <property name="text">
     <string>Sh&amp;ow Skyplot</string>
    </property>

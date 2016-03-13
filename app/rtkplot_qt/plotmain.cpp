@@ -220,6 +220,7 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
     BtnFixVert->setDefaultAction(MenuFixVert);
     BtnShowMap->setDefaultAction(MenuShowMap);
     BtnShowPoint->setDefaultAction(MenuShowPoint);
+    BtnShowSkyplot->setDefaultAction(MenuShowSkyplot);
 
     connect(BtnOn1,SIGNAL(clicked(bool)),this,SLOT(BtnOn1Click()));
     connect(BtnOn2,SIGNAL(clicked(bool)),this,SLOT(BtnOn2Click()));
@@ -289,6 +290,7 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
     connect(DopType,SIGNAL(currentIndexChanged(int)),this,SLOT(DopTypeChange()));
     connect(ObsType,SIGNAL(currentIndexChanged(int)),this,SLOT(ObsTypeChange()));
     connect(ObsType2,SIGNAL(currentIndexChanged(int)),this,SLOT(ObsTypeChange()));
+    connect(FrqType,SIGNAL(currentIndexChanged(int)),this,SLOT(ObsTypeChange()));
 
     setMouseTracking(true);
     Disp->setMouseTracking(true);

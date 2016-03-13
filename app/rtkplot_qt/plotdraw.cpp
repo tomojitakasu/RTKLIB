@@ -1375,7 +1375,7 @@ void Plot::DrawDopStat(QPainter &c,double *dop, int *ns, int n)
         if (ndop[i]>0) ave[i]/=ndop[i];
     }
     if (DopType->currentIndex()==0||DopType->currentIndex()>=2) {
-        s2[m++]=QString("AVE= GDOP:%1 PDOP:%2 HDOP:%3 VDOP:%3")
+        s2[m++]=QString("AVE= GDOP:%1 PDOP:%2 HDOP:%3 VDOP:%4")
                         .arg(ave[0],4,'f',1).arg(ave[1],4,'f',1).arg(ave[2],4,'f',1).arg(ave[3],4,'f',1);
         s2[m++]=QString("NDOP=%1(%2%%) %3(%4%%) %5(%6%%) %7(%8f%%)")
                         .arg(ndop[0]).arg(n>0?ndop[0]*100.0/n:0.0,4,'f',1)

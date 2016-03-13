@@ -76,7 +76,7 @@ MainWindow::MainWindow(QWidget *parent)
     int i;
 
     setlocale(LC_NUMERIC,"C");
-    setWindowIcon(QIcon(":/icons/rktconv_Icon.ico"));
+    setWindowIcon(QIcon(":/icons/rtkconv_Icon.ico"));
     setAcceptDrops(true);
 
     QString file=QApplication::applicationFilePath();

@@ -17,7 +17,7 @@ private:
         void DrawLabel(QPainter &c);
         void DrawGrid(QPainter &c,double xt, double yt);
         void DrawGridLabel(QPainter &c, double xt, double yt);
-        void RoQPoint(QPoint *ps, int n, const QPoint &pc, int rot, QPoint *pr);
+        void RotPoint(QPoint *ps, int n, const QPoint &pc, int rot, QPoint *pr);
         int ClipPoint(QPoint *p0, int area, QPoint *p1);
 
         QPoint p_;
