@@ -194,36 +194,6 @@ static void adj_utcweek(gtime_t time, double *utc)
     else if (utc[3]>week+128) utc[3]-=256.0;
 }
 
-
-/* check code priority and return obs position -------------------------------*/
-static int checkpri(const char *opt, int sys, int code, int freq)
-{
-    int nex=NEXOBS; /* number of extended obs data */
-
-    if (sys==SYS_GPS) {
-        if (strstr(opt,"-GL1W")&&freq==0) return code==CODE_L1W?0:-1;
-        if (strstr(opt,"-GL1X")&&freq==0) return code==CODE_L1X?0:-1;
-        if (strstr(opt,"-GL2X")&&freq==1) return code==CODE_L2X?1:-1;
-        if (code==CODE_L1W) return nex<1?-1:NFREQ;
-        if (code==CODE_L2X) return nex<2?-1:NFREQ+1;
-        if (code==CODE_L1X) return nex<3?-1:NFREQ+2;
-    }
-    else if (sys==SYS_GLO) {
-        if (strstr(opt,"-RL1C")&&freq==0) return code==CODE_L1C?0:-1;
-        if (strstr(opt,"-RL2C")&&freq==1) return code==CODE_L2C?1:-1;
-        if (code==CODE_L1C) return nex<1?-1:NFREQ;
-        if (code==CODE_L2C) return nex<2?-1:NFREQ+1;
-    }
-    else if (sys==SYS_QZS) {
-        if (strstr(opt,"-JL1Z")&&freq==0) return code==CODE_L1Z?0:-1;
-        if (strstr(opt,"-JL1X")&&freq==0) return code==CODE_L1X?0:-1;
-        if (code==CODE_L1Z) return nex<1?-1:NFREQ;
-        if (code==CODE_L1X) return nex<2?-1:NFREQ+1;
-    }
-    return freq<NFREQ?freq:-1;
-
-}
-
 /* decode SBF measurements message (observables) -----------------------------*/
 /*
  * this is the most importan block in the SBF format. It it contains all code
@@ -313,11 +283,7 @@ static int decode_measepoch(raw_t *raw){
         SB1_Code = psr;                  /* code phase (from before)          */
 
         /* FreqNr */
-        if ( (signType1 > 7) && (signType1 < 16) ) {
-          SB1_FreqNr = ((ObsInfo >> 3) & 0x1f) - 8;
-        } else {
-          SB1_FreqNr = ((ObsInfo >> 3) & 0x1f);
-        }
+        SB1_FreqNr = ((ObsInfo >> 3) & 0x1f) - 8;
 
         SB1_WaveLength=CLIGHT/getSigFreq(signType1,SB1_FreqNr);
 
@@ -388,7 +354,7 @@ static int decode_measepoch(raw_t *raw){
             raw->obs.data[n].code[j]=CODE_NONE;            
         }
         /* detect which signals is stored in Type1 sub-block */
-#if 0
+#if 1
         h=getFreqNo(signType1);
 #else
         freqType1 = getSigFreq(signType1,8);
@@ -468,7 +434,7 @@ static int decode_measepoch(raw_t *raw){
                     (DopplerOffsetMSB*65536.+DopplerOffsetLSB)*1E-4;
 
             /* store Type2 signal info in rtklib structure */
-#if 0
+#if 1
             h=getFreqNo(signType2);
 #else
             freqType2 = getSigFreq(signType2,8);
@@ -531,13 +497,13 @@ static int getSigFreq(int _signType, int freqNo){
     case 7:                                                        /* QZSL2C  */
         return FREQ2;
     case 8:                                                        /* GLOL1CA */
-        return FREQ1+(freqNo-8)*9/16;
+        return FREQ1_GLO+(freqNo)*9/16;
     case 9:                                                        /* GLOL1P  */
-        return FREQ1;
+        return FREQ1_GLO;
     case 10:                                                       /* GLOL2P  */
-        return FREQ2+(freqNo-8)*7/16;
+        return FREQ2_GLO+(freqNo)*7/16;
     case 11:                                                       /* GLOL2CA */
-        return FREQ2+(freqNo-8)*7/16;
+        return FREQ2_GLO+(freqNo)*7/16;
     case 12:                                                       /* GLOL3X  */
         return 1.202025;
     case 15:                                                       /* IRNSSL5  */
@@ -553,9 +519,9 @@ static int getSigFreq(int _signType, int freqNo){
     case 20:                                                       /* GALE5a  */
         return FREQ5;
     case 21:                                                       /* GALE5b  */
-        return FREQ5;
+        return FREQ7;
     case 22:                                                       /* GALE5   */
-        return FREQ5;
+        return FREQ8;
     case 24:                                                       /* GEOL1   */
         return FREQ1;
     case 25:                                                       /* GEOL5   */
@@ -713,7 +679,7 @@ static int getFreqNo(int signType){
         _freq=1;
         break;
     case 12:                                                       /* GLOL3 */
-        _freq=6;
+        _freq=2;
         break;
     case 15:                                                       /* IRNSSL5  */
         _freq=2;
@@ -725,19 +691,19 @@ static int getFreqNo(int signType){
         _freq=0;
         break;
     case 18:                                                       /* GALE6A  */
-        _freq=3;
+        _freq=1;
         break;
     case 19:                                                       /* GALE6BC */
-        _freq=3;
+        _freq=1;
         break;
     case 20:                                                       /* GALE5a  */
         _freq=2;
         break;
     case 21:                                                       /* GALE5b  */
-        _freq=4;
+        _freq=2;
         break;
     case 22:                                                       /* GALE5   */
-        _freq=5;
+        _freq=2;
         break;
     case 24:                                                       /* GEOL1   */
         _freq=0;
@@ -752,10 +718,10 @@ static int getFreqNo(int signType){
         _freq=0;
         break;
     case 29:                                                       /* CMPE5B  */
-        _freq=4;
+        _freq=2;
         break;
     case 30:                                                       /* CMPB3   */
-        _freq=3;
+        _freq=1;
         break;
     default:                                                       /* GPSL1CA */
         _freq=0;
@@ -935,7 +901,7 @@ static int decode_glonav(raw_t *raw){
         return -1;
     }
 
-    eph.frq   = U1(puiTmp +  9);
+    eph.frq   = U1(puiTmp +  9) - 8;
     eph.pos[0] = R8(puiTmp +  10) * 1000;
     eph.pos[1] = R8(puiTmp +  18) * 1000;
     eph.pos[2] = R8(puiTmp +  26) * 1000;
