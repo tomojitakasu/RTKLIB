@@ -2,6 +2,8 @@ ui_*.h
 moc_*.cpp
 qrc*.cpp
 *.pro.user*
-Makefile
+Makefile*
 *.res
 rtklaunch_qt
+rtklaunch_qt.exe
+object_script*

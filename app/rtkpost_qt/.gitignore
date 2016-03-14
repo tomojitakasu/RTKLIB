@@ -2,6 +2,8 @@ ui_*.h
 moc_*.cpp
 qrc*.cpp
 *.pro.user*
-Makefile
+Makefile*
 *.res
 rtkpost_qt
+rtkpost_qt.exe
+object_script*
