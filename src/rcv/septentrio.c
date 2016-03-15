@@ -747,7 +747,7 @@ static int decode_gpsnav(raw_t *raw){
     }
 
     prn = U1(puiTmp+8);
-    sat = prn;
+    sat = satno(SYS_GPS,prn);
 
     if (sat == 0) return -1;
 
