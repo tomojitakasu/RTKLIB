@@ -3,6 +3,7 @@
 #define plotmainH
 //---------------------------------------------------------------------------
 #include <QTimer>
+#include <QTime>
 #include <QMainWindow>
 
 #include "graph.h"
@@ -226,6 +227,7 @@ private:
     sta_t Sta;
     double *Az,*El,*Mp[NFREQ+NEXOBS];
     QTimer Timer;
+    QTime updateTime;
     
     gtime_t OEpoch;
     int FormWidth,FormHeight;

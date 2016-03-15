@@ -69,6 +69,8 @@
 #define YLIM_AGE    10.0            // ylimit of age of differential
 #define YLIM_RATIO  20.0            // ylimit of raito factor
 
+static int RefreshTime=200; // update only every 200ms
+
 extern QString color2String(const QColor &c);
 
 // instance of Plot --------------------------------------------------------
@@ -294,6 +296,7 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
 
     setMouseTracking(true);
     Disp->setMouseTracking(true);
+    updateTime.start();
 }
 // destructor ---------------------------------------------------------------
 Plot::~Plot()
@@ -1423,6 +1426,10 @@ void Plot::MouseMoveTrk(int X, int Y, double dx, double dy,
         GraphT->SetScale(Xs*dys,Ys*dys);
     }
     MenuCenterOri->setChecked(false);
+
+    if (updateTime.elapsed()<RefreshTime) return;
+    updateTime.restart();
+
     Refresh();
 }
 // callback on mouse-move event on solution-plot ----------------------------
@@ -1489,6 +1496,10 @@ void Plot::MouseMoveSol(int X, int Y, double dx, double dy,
         UpdateTime();
     }
     MenuCenterOri->setChecked(false);
+
+    if (updateTime.elapsed()<RefreshTime) return;
+    updateTime.restart();
+
     Refresh();
 }
 // callback on mouse-move events on observataion-data-plot ------------------
@@ -1531,6 +1542,10 @@ void Plot::MouseMoveObs(int X, int Y, double dx, double dy,
         UpdateTime();
     }
     MenuCenterOri->setChecked(false);
+
+    if (updateTime.elapsed()<RefreshTime) return;
+    updateTime.restart();
+
     Refresh();
 }
 // callback on mouse-wheel events -------------------------------------------
