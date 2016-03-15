@@ -345,7 +345,7 @@ static int decode_bnx_00_7f(raw_t *raw, unsigned char *buff, int len)
 /* decode binex mesaage 0x00: site/monument/marker/ref point/setup metadata --*/
 static int decode_bnx_00(raw_t *raw, unsigned char *buff, int len)
 {
-    const static double gpst0[]={1980,1,6,0,0,0};
+    static const double gpst0[]={1980,1,6,0,0,0};
     char *msg;
     unsigned char *p=buff;
     unsigned int min,qsec,src,fid;
@@ -1097,7 +1097,7 @@ static int decode_bnx_7f_05(raw_t *raw, unsigned char *buff, int len)
 /* decode binex mesaage 0x7f: gnss data prototyping --------------------------*/
 static int decode_bnx_7f(raw_t *raw, unsigned char *buff, int len)
 {
-    const static double gpst0[]={1980,1,6,0,0,0};
+    static const double gpst0[]={1980,1,6,0,0,0};
     char *msg;
     unsigned char *p=buff;
     unsigned int srec,min,msec;

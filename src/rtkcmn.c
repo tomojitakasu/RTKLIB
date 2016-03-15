@@ -113,6 +113,9 @@
 *           2016/01/23 1.33 enable septentrio
 *-----------------------------------------------------------------------------*/
 #define _POSIX_C_SOURCE 199309
+
+#include "rtklib.h"
+
 #include <stdarg.h>
 #include <ctype.h>
 #ifndef WIN32
@@ -125,7 +128,6 @@
 #include <windows.h>
 #include <Mmsystem.h>
 #endif
-#include "rtklib.h"
 
 static const char rcsid[]="$Id: rtkcmn.c,v 1.1 2008/07/17 21:48:06 ttaka Exp ttaka $";
 
@@ -2977,7 +2979,7 @@ extern int execcmd(const char *cmd)
 {
 #ifdef WIN32
     PROCESS_INFORMATION info;
-    STARTUPINFO si={0};
+    STARTUPINFOA si={0};
     DWORD stat;
     char cmds[1024];
     
@@ -2985,7 +2987,7 @@ extern int execcmd(const char *cmd)
     
     si.cb=sizeof(si);
     sprintf(cmds,"cmd /c %s",cmd);
-    if (!CreateProcess(NULL,(LPTSTR)cmds,NULL,NULL,FALSE,CREATE_NO_WINDOW,NULL,
+    if (!CreateProcessA(NULL,cmds,NULL,NULL,FALSE,CREATE_NO_WINDOW,NULL,
                        NULL,&si,&info)) return -1;
     WaitForSingleObject(info.hProcess,INFINITE);
     if (!GetExitCodeProcess(info.hProcess,&stat)) stat=-1;
@@ -3011,7 +3013,7 @@ extern int expath(const char *path, char *paths[], int nmax)
     int i,j,n=0;
     char tmp[1024];
 #ifdef WIN32
-    WIN32_FIND_DATA file;
+    WIN32_FIND_DATAA file;
     HANDLE h;
     char dir[1024]="",*p;
     
@@ -3020,12 +3022,12 @@ extern int expath(const char *path, char *paths[], int nmax)
     if ((p=strrchr(path,'\\'))) {
         strncpy(dir,path,p-path+1); dir[p-path+1]='\0';
     }
-    if ((h=FindFirstFile((LPCTSTR)path,&file))==INVALID_HANDLE_VALUE) {
+    if ((h=FindFirstFileA(path,&file))==INVALID_HANDLE_VALUE) {
         strcpy(paths[0],path);
         return 1;
     }
     sprintf(paths[n++],"%s%s",dir,file.cFileName);
-    while (FindNextFile(h,&file)&&n<nmax) {
+    while (FindNextFileA(h,&file)&&n<nmax) {
         if (file.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY) continue;
         sprintf(paths[n++],"%s%s",dir,file.cFileName);
     }
@@ -3087,7 +3089,7 @@ void createdir(const char *path)
     *p='\0';
     
 #ifdef WIN32
-    CreateDirectory(buff,NULL);
+    CreateDirectoryA(buff,NULL);
 #else
     mkdir(buff,0777);
 #endif

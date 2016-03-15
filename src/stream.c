@@ -312,7 +312,7 @@ static serial_t *openserial(const char *path, int mode, char *msg)
     if (mode&STR_MODE_R) rw|=GENERIC_READ;
     if (mode&STR_MODE_W) rw|=GENERIC_WRITE;
     
-    serial->dev=CreateFile(dev,rw,0,0,OPEN_EXISTING,0,NULL);
+    serial->dev=CreateFileA(dev,rw,0,0,OPEN_EXISTING,0,NULL);
     if (serial->dev==INVALID_HANDLE_VALUE) {
         sprintf(msg,"device open error (%d)",(int)GetLastError());
         tracet(1,"openserial: %s path=%s\n",msg,path);
@@ -327,7 +327,7 @@ static serial_t *openserial(const char *path, int mode, char *msg)
         return NULL;
     }
     sprintf(dcb,"baud=%d parity=%c data=%d stop=%d",brate,parity,bsize,stopb);
-    if (!BuildCommDCB(dcb,&cc.dcb)) {
+    if (!BuildCommDCBA(dcb,&cc.dcb)) {
         sprintf(msg,"buiddcb error (%d)",(int)GetLastError());
         tracet(1,"openserial: %s\n",msg);
         CloseHandle(serial->dev);
