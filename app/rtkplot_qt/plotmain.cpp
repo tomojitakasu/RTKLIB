@@ -223,6 +223,7 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
     BtnShowMap->setDefaultAction(MenuShowMap);
     BtnShowPoint->setDefaultAction(MenuShowPoint);
     BtnShowSkyplot->setDefaultAction(MenuShowSkyplot);
+    MenuShowSkyplot->setChecked(true);
 
     connect(BtnOn1,SIGNAL(clicked(bool)),this,SLOT(BtnOn1Click()));
     connect(BtnOn2,SIGNAL(clicked(bool)),this,SLOT(BtnOn2Click()));
@@ -537,7 +538,7 @@ void Plot::MenuOpenElevMaskClick()
 {
     trace(3,"MenuOpenElevMaskClick\n");
     
-    ReadElMaskData(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Opene Elevation Mask"),QString(),tr("Text File (*.txt);;All (*.*)"))));
+    ReadElMaskData(QDir::toNativeSeparators(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Opene Elevation Mask"),QString(),tr("Text File (*.txt);;All (*.*)")))));
 }
 // callback on menu-vis-analysis --------------------------------------------
 void Plot::MenuVisAnaClick()

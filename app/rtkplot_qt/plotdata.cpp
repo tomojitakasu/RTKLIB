@@ -195,7 +195,7 @@ int Plot::ReadObsRnx(const QStringList &files, obs_t *obs, nav_t *nav,
     TimeSpan(&ts,&te,&tint);
     
     for (i=0;i<files.count();i++) {
-        strcpy(obsfile,qPrintable(files.at(i)));
+        strcpy(obsfile,qPrintable(QDir::toNativeSeparators(files.at(i))));
         
         ShowMsg(QString(tr("reading obs data... %1")).arg(obsfile));
         qApp->processEvents();
@@ -209,7 +209,7 @@ int Plot::ReadObsRnx(const QStringList &files, obs_t *obs, nav_t *nav,
     qApp->processEvents();
 
     for (i=0;i<files.count();i++) {
-        strcpy(navfile,qPrintable(files.at(i)));
+        strcpy(navfile,qPrintable(QDir::toNativeSeparators(files.at(i))));
         
         if (!(p=strrchr(navfile,'.'))) continue;
         
