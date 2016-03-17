@@ -457,7 +457,7 @@ void MainForm::BtnExecClick()
 {
     QString OutputFile_Text=OutputFile->currentText();
     
-    if (BtnExec->text()==tr("Abort")) {
+    if (BtnExec->text().remove('&')==tr("Abort")) {
         BtnExec->setEnabled(false);
         return;
     }

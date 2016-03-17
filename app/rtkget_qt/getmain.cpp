@@ -253,7 +253,7 @@ void MainForm::BtnLogClick()
 //---------------------------------------------------------------------------
 void MainForm::BtnTestClick()
 {
-    if (BtnTest->text()==tr("&Abort")) {
+    if (BtnTest->text().remove('&')==tr("Abort")) {
         BtnTest->setEnabled(false);
         abortf=1;
         return;
@@ -274,7 +274,7 @@ void MainForm::BtnTestClick()
     }
     PanelEnable(0);
     BtnTest->setEnabled(true);
-    BtnTest->setText(tr("&Abort"));
+    BtnTest->setText(tr("Abort"));
     MsgLabel1->setStyleSheet("QLabel { color: gray;}");
     MsgLabel3->setText("");
     abortf=0;
@@ -306,7 +306,7 @@ void MainForm::BtnDownloadClick()
     QString str;
     int i;
 
-    if (BtnDownload->text()==tr("&Abort")) {
+    if (BtnDownload->text().remove('&')==tr("Abort")) {
         BtnDownload->setEnabled(false);
         abortf=1;
         return;
@@ -341,7 +341,7 @@ void MainForm::BtnDownloadClick()
     abortf=0;
     PanelEnable(0);
     BtnDownload->setEnabled(true);
-    BtnDownload->setText(tr("&Abort"));
+    BtnDownload->setText(tr("Abort"));
     MsgLabel3->setText("");
 
     connect(thread,SIGNAL(finished()),this,SLOT(DownloadFinished()));
@@ -383,7 +383,7 @@ void MainForm::DownloadFinished(){
     UpdateMsg();
     UpdateEnable();
 
-    thread->deleteLater();
+    delete thread;
 
 }
 //---------------------------------------------------------------------------
