@@ -33,6 +33,7 @@ OptDialog::OptDialog(QWidget *parent)
 
     connect(BtnOk,SIGNAL(clicked(bool)),this,SLOT(BtnOkClick()));
     connect(RovAntPcv,SIGNAL(clicked(bool)),this,SLOT(RovAntPcvClick()));
+    connect(RefAntPcv,SIGNAL(clicked(bool)),this,SLOT(RovAntPcvClick()));
     connect(BtnAntPcvFile,SIGNAL(clicked(bool)),this,SLOT(BtnAntPcvFileClick()));
     connect(BtnIonoFile,SIGNAL(clicked(bool)),this,SLOT(BtnIonoFileClick()));
     connect(BtnAntPcvView,SIGNAL(clicked(bool)),this,SLOT(BtnAntPcvViewClick()));
@@ -1051,6 +1052,9 @@ void OptDialog::ReadAntList(void)
 	
     if (!readpcv(qPrintable(AntPcvFile_Text),&pcvs)) return;
 	
+    RovAnt->clear();
+    RefAnt->clear();
+
     RovAnt->addItem("");RefAnt->addItem("");
     RovAnt->addItem("*");RefAnt->addItem("*");
 
