@@ -161,8 +161,6 @@ MainWindow::MainWindow(QWidget *parent)
     SetTrayIcon(1);
 
     trayMenu=new QMenu();
-    qWarning()<<pos();
-
 }
 
 MainWindow::~MainWindow()
@@ -173,7 +171,6 @@ MainWindow::~MainWindow()
 void  MainWindow::showEvent(QShowEvent *event)
 {
     if (event->spontaneous()) return;
-    qWarning()<<pos();
 
     trace(3,"FormCreate\n");
 
@@ -1321,7 +1318,7 @@ void  MainWindow::UpdatePos(void)
         s[3]=QString("%1 %2").arg(pitch*R2D,0,'f',3).arg(CHARDEG);
         s[4]=QString("%1 %2").arg(yaw*R2D,0,'f',3).arg(CHARDEG);
         s[5]=QString("%1 m").arg(len,0,'f',3);
-        s[6]=QString(tr("N:%1 E:2 U:3 m")).arg(SQRT(Qe[4]),6,'f',3).arg(SQRT(Qe[0]),6,'f',3).arg(SQRT(Qe[8]),6,'f',3);
+        s[6]=QString(tr("N:%1 E:%2 U:%3 m")).arg(SQRT(Qe[4]),6,'f',3).arg(SQRT(Qe[0]),6,'f',3).arg(SQRT(Qe[8]),6,'f',3);
     }
     s[7]=QString(tr("Age:%1 s Ratio:%2 # Sat:%3")).arg(Age[PSol],4,'f',1).arg(Ratio[PSol],4,'f',1).arg(Nvsat[PSol],2);
     
@@ -1707,10 +1704,20 @@ void  MainWindow::DrawSky(QPainter *c, int w, int h, int x0, int y0)
 void  MainWindow::DrawText(QPainter *c, int x, int y, const QString &s,
     const QColor &color, int align)
 {
-    QRectF off=c->boundingRect(QRectF(),s);
-    if (align==1) {x-=off.center().x()/2; y-=off.center().y()/2;} else if (align==2) x-=off.center().x();
+    int flags=0;
+    switch (align) {
+    case 0: flags|=Qt::AlignLeft;break;
+    case 1: flags|=Qt::AlignHCenter;break;
+    case 2: flags|=Qt::AlignRight;break;
+    }
+
+    QRectF off=c->boundingRect(QRectF(),flags,s);
+
     c->setPen(color);
-    c->drawText(x,y+off.height()/2,s);
+
+    c->translate(x,y);
+    c->drawText(off,s);
+    c->translate(-x,-y);
 }
 // draw arrow ---------------------------------------------------------------
 void  MainWindow::DrawArrow(QPainter *c, int x, int y, int siz,
@@ -1909,7 +1916,7 @@ void  MainWindow::SaveNav(nav_t *nav)
         if (nav->eph[i].ttr.time==0) continue;
         str="";
         satno2id(nav->eph[i].sat,id);
-        str=str+id;
+        str=str+id+",";
         str=str+QString("%1,").arg(nav->eph[i].iode);
         str=str+QString("%1,").arg(nav->eph[i].iodc);
         str=str+QString("%1,").arg(nav->eph[i].sva);

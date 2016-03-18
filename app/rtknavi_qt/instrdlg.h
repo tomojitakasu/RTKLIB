@@ -23,27 +23,28 @@ protected:
     void  showEvent(QShowEvent*);
 
 public slots:
-    void  BtnOkClick();
     void  BtnStr1Click();
     void  BtnStr2Click();
+    void  BtnStr3Click();
     void  Stream1Change(int);
     void  Stream2Change(int);
+    void  Stream3Change(int);
     void  BtnCmd1Click();
     void  BtnCmd2Click();
-    void  TimeTagCClick();
+    void  BtnCmd3Click();
     void  BtnFile1Click();
     void  BtnFile2Click();
-    void  NmeaReqLChange(int);
-    void  BtnPosClick();
+    void  BtnFile3Click();
     void  StreamC1Click();
     void  StreamC2Click();
-    void  Stream3Change(int);
-    void  BtnStr3Click();
-    void  BtnFile3Click();
-    void  BtnCmd3Click();
+    void  StreamC3Click();
     void  BtnRcvOpt1Click();
     void  BtnRcvOpt2Click();
     void  BtnRcvOpt3Click();
+    void  TimeTagCClick();
+    void  NmeaReqLChange(int);
+    void  BtnOkClick();
+    void  BtnPosClick();
 
 private:
     QString  GetFilePath(const QString &path);

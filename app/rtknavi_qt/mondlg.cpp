@@ -466,7 +466,7 @@ void MonitorDialog::ShowRtk(void)
     Console->setItem(i++,1, new QTableWidgetItem(navsys));
 	
     Console->setItem(i,0, new QTableWidgetItem(tr("Accumulated Time to Run")));
-    Console->setItem(i++,1, new QTableWidgetItem(QString("%1:%2:%3").arg(rt[0],2,'f',0).arg(rt[1],2,'f',0).arg(rt[2],4,'f',1)));
+    Console->setItem(i++,1, new QTableWidgetItem(QString("%1:%2:%3").arg(rt[0],2,'f',0,'0').arg(rt[1],2,'f',0,'0').arg(rt[2],4,'f',1,'0')));
 	
     Console->setItem(i,0, new QTableWidgetItem(tr("CPU Time for a Processing Cycle (ms)")));
     Console->setItem(i++,1, new QTableWidgetItem(QString::number(cputime)));

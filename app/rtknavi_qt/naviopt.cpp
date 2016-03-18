@@ -139,6 +139,7 @@ OptDialog::OptDialog(QWidget* parent)
     connect(RovPosTypeP,SIGNAL(currentIndexChanged(int)),this,SLOT(RovPosTypePChange(int)));
     connect(AmbRes,SIGNAL(currentIndexChanged(int)),this,SLOT(AmbResChange(int)));
     connect(RovAntPcv,SIGNAL(clicked(bool)),this,SLOT(RovAntPcvClick()));
+    connect(RefAntPcv,SIGNAL(clicked(bool)),this,SLOT(RovAntPcvClick()));
     connect(OutputHeight,SIGNAL(currentIndexChanged(int)),this,SLOT(OutputHeightClick()));
     connect(NavSys2,SIGNAL(clicked(bool)),this,SLOT(NavSys2Click()));
     connect(NavSys6,SIGNAL(clicked(bool)),this,SLOT(NavSys6Click()));
@@ -309,24 +310,25 @@ void OptDialog::BtnAntPcvViewClick()
 //---------------------------------------------------------------------------
 void OptDialog::BtnAntPcvFileClick()
 {
-    AntPcvFile->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Receiver Antenna PCV File"),tr("All (*.*);;PCV File (*.pcv *.atx)"),tr("PCV File (*.pcv *.atx)"))));
+    AntPcvFile->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Receiver Antenna PCV File"),tr("PCV File (*.pcv *.atx);;All (*.*)"))));
+    ReadAntList();
 }
 //---------------------------------------------------------------------------
 void OptDialog::BtnGeoidDataFileClick()
 {
-    QString fileName=QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Geoid Data File"),tr("All (*.*)"),tr("All (*.*)")));
+    QString fileName=QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Geoid Data File"),tr("All (*.*)")));
     GeoidDataFile->setText(fileName);
 }
 //---------------------------------------------------------------------------
 void OptDialog::BtnDCBFileClick()
 {
-    QString fileName=QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("DCB Data File"),tr("DCB (*.dcb)"),tr("DCB (*.dcb)")));
+    QString fileName=QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("DCB Data File"),tr("DCB (*.dcb)")));
     DCBFile->setText(fileName);
 }
 //---------------------------------------------------------------------------
 void OptDialog::BtnEOPFileClick()
 {
-    QString fileName=QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("EOP Data File"),tr("EOP (*.eop)"),tr("EOP (*.eop)")));
+    QString fileName=QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("EOP Data File"),tr("EOP (*.erp)")));
     EOPFile->setText(fileName);
 }
 //---------------------------------------------------------------------------
@@ -488,8 +490,6 @@ void OptDialog::GetOpt(void)
     RefPosTypeP	 ->setCurrentIndex(RefPosTypeF);
     RovAntPcv	 ->setChecked(RovAntPcvF);
     RefAntPcv	 ->setChecked(RefAntPcvF);
-    RovAnt		 ->setCurrentIndex(RovAnt->findText(RovAntF));
-    RefAnt		 ->setCurrentIndex(RefAnt->findText(RefAntF));
     RovAntE		 ->setText(QString::number(RovAntDel[0]));
     RovAntN		 ->setText(QString::number(RovAntDel[1]));
     RovAntU		 ->setText(QString::number(RovAntDel[2]));
@@ -509,7 +509,10 @@ void OptDialog::GetOpt(void)
     TLESatFile   ->setText(TLESatFileF);
     LocalDir	 ->setText(LocalDirectory);
 	ReadAntList();
-	
+
+    RovAnt		 ->setCurrentIndex(RovAnt->findText(RovAntF));
+    RefAnt		 ->setCurrentIndex(RefAnt->findText(RefAntF));
+
     SvrCycleE	 ->setText(QString::number(SvrCycle));
     TimeoutTimeE ->setText(QString::number(TimeoutTime));
     ReconTimeE   ->setText(QString::number(ReconTime));
@@ -1121,6 +1124,8 @@ void OptDialog::ReadAntList(void)
 		if (i>0&&!strcmp(pcvs.pcv[i].type,pcvs.pcv[i-1].type)) continue;
         list.append(pcvs.pcv[i].type);
 	}
+    RovAnt->clear();
+    RefAnt->clear();
     RovAnt->addItems(list);
     RefAnt->addItems(list);
 	

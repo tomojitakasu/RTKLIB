@@ -69,6 +69,7 @@ InputStrDialog::InputStrDialog(QWidget* parent)
     connect(BtnStr3,SIGNAL(clicked(bool)),this,SLOT(BtnStr3Click()));
     connect(StreamC1,SIGNAL(clicked(bool)),this,SLOT(StreamC1Click()));
     connect(StreamC2,SIGNAL(clicked(bool)),this,SLOT(StreamC2Click()));
+    connect(StreamC3,SIGNAL(clicked(bool)),this,SLOT(StreamC3Click()));
     connect(TimeTagC,SIGNAL(clicked(bool)),this,SLOT(TimeTagCClick()));
 }
 //---------------------------------------------------------------------------
@@ -129,12 +130,15 @@ void InputStrDialog::StreamC1Click()
 	UpdateEnable();
 }
 //---------------------------------------------------------------------------
-
 void  InputStrDialog::StreamC2Click()
 {
 	UpdateEnable();
 }
 //---------------------------------------------------------------------------
+void  InputStrDialog::StreamC3Click()
+{
+    UpdateEnable();
+}//---------------------------------------------------------------------------
 void  InputStrDialog::Stream1Change(int)
 {
 	UpdateEnable();
