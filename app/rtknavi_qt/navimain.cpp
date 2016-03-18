@@ -161,6 +161,8 @@ MainWindow::MainWindow(QWidget *parent)
     SetTrayIcon(1);
 
     trayMenu=new QMenu();
+    qWarning()<<pos();
+
 }
 
 MainWindow::~MainWindow()
@@ -171,7 +173,8 @@ MainWindow::~MainWindow()
 void  MainWindow::showEvent(QShowEvent *event)
 {
     if (event->spontaneous()) return;
-    
+    qWarning()<<pos();
+
     trace(3,"FormCreate\n");
 
     UpdatePlot();
@@ -1964,7 +1967,7 @@ void  MainWindow::LoadOpt(void)
     int i,j,no,strno[]={0,1,6,2,3,4,5,7};
     
     trace(3,"LoadOpt\n");
-    
+
     for (i=0;i<8;i++) {
         no=strno[i];
         StreamC[i]=settings.value(QString("stream/streamc%1").arg(no),0).toInt();

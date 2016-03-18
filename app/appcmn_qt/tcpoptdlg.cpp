@@ -42,7 +42,7 @@ void  TcpOptDialog::showEvent(QShowEvent* event)
     int index=Path.lastIndexOf(":");
     QString Str_Text=Path.mid(index);
 
-    QUrl url(Path.mid(0,index));
+    QUrl url("ftp://"+Path.mid(0,index));
 
     Addr->insertItem(0,url.host());Addr->setCurrentIndex(0);
     Port->setText(QString::number(url.port()));

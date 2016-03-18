@@ -2,14 +2,6 @@
 <ui version="4.0">
  <class>MainForm</class>
  <widget class="QWidget" name="MainForm">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>647</width>
-    <height>387</height>
-   </rect>
-  </property>
   <property name="windowTitle">
    <string>RTKNAVI</string>
   </property>
@@ -80,7 +72,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
           <normaloff>:/buttons/sqr.bmp</normaloff>:/buttons/sqr.bmp</iconset>
         </property>
         <property name="flat">
@@ -269,7 +261,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap resource="../rtklaunch_qt/rtklaunch_qt.qrc">:/buttons/rarrow.bmp</pixmap>
+            <pixmap resource="../rtkconv_qt/rtkconv_qt.qrc">:/buttons/rarrow.bmp</pixmap>
            </property>
           </widget>
          </item>
@@ -313,7 +305,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap resource="../rtklaunch_qt/rtklaunch_qt.qrc">:/buttons/rarrow.bmp</pixmap>
+            <pixmap resource="../rtkconv_qt/rtkconv_qt.qrc">:/buttons/rarrow.bmp</pixmap>
            </property>
           </widget>
          </item>
@@ -552,7 +544,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
           <normaloff>:/buttons/down.bmp</normaloff>:/buttons/down.bmp</iconset>
         </property>
         <property name="flat">
@@ -1259,7 +1251,7 @@
              <string/>
             </property>
             <property name="icon">
-             <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+             <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
               <normaloff>:/buttons/down.bmp</normaloff>:/buttons/down.bmp</iconset>
             </property>
             <property name="flat">
@@ -1412,7 +1404,7 @@
                  <string/>
                 </property>
                 <property name="icon">
-                 <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+                 <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
                   <normaloff>:/buttons/down.bmp</normaloff>:/buttons/down.bmp</iconset>
                 </property>
                 <property name="flat">
@@ -1451,7 +1443,7 @@
                  <string/>
                 </property>
                 <property name="icon">
-                 <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+                 <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
                   <normaloff>:/buttons/down.bmp</normaloff>:/buttons/down.bmp</iconset>
                 </property>
                 <property name="flat">
@@ -1518,7 +1510,7 @@
                  <string/>
                 </property>
                 <property name="icon">
-                 <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+                 <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
                   <normaloff>:/buttons/down.bmp</normaloff>:/buttons/down.bmp</iconset>
                 </property>
                 <property name="flat">
@@ -1541,7 +1533,7 @@
                  <string/>
                 </property>
                 <property name="icon">
-                 <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+                 <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
                   <normaloff>:/buttons/down.bmp</normaloff>:/buttons/down.bmp</iconset>
                 </property>
                 <property name="flat">
@@ -1602,7 +1594,7 @@
          <string>RTK Monitor</string>
         </property>
         <property name="icon">
-         <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
           <normaloff>:/buttons/sqr.bmp</normaloff>:/buttons/sqr.bmp</iconset>
         </property>
         <property name="flat">
@@ -1671,7 +1663,7 @@
             <string>Hide</string>
            </property>
            <property name="icon">
-            <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+            <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
              <normaloff>:/buttons/ttray.bmp</normaloff>:/buttons/ttray.bmp</iconset>
            </property>
            <property name="flat">
@@ -1817,7 +1809,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../rtklaunch_qt/rtklaunch_qt.qrc"/>
+  <include location="../rtkconv_qt/rtkconv_qt.qrc"/>
  </resources>
  <connections/>
 </ui>
