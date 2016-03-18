@@ -126,6 +126,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(TimeUnitF,SIGNAL(clicked(bool)),this,SLOT(UpdateEnable()));
     connect(OutDirEna,SIGNAL(clicked(bool)),this,SLOT(OutDirEnaClick()));
     connect(InFile,SIGNAL(currentIndexChanged(int)),this,SLOT(InFileChange()));
+    connect(InFile,SIGNAL(editTextChanged(QString)),this,SLOT(InFileChange()));
     connect(Format,SIGNAL(currentIndexChanged(int)),this,SLOT(FormatChange()));
     connect(OutDir,SIGNAL(editingFinished()),this,SLOT(OutDirChange()));
     connect(BtnOutDir,SIGNAL(clicked(bool)),this,SLOT(BtnOutDirClick()));
