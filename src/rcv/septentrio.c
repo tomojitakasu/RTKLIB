@@ -123,7 +123,7 @@ static unsigned char locktime[255][32];
 
 /* function prototypes -------------------------------------------------------*/
 static int getSignalCode(int signType);
-static int getSigFreq(int _signType, int freqNo);
+static double getSigFreq(int _signType, int freqNo);
 static int getFreqNo(int signType);
 
 /* get fields (little-endian) ------------------------------------------------*/
@@ -288,7 +288,7 @@ static int decode_measepoch(raw_t *raw){
         SB1_WaveLength=CLIGHT/getSigFreq(signType1,SB1_FreqNr);
 
         /* final carrier phase calculation */
-        adr = (SB1_Code/SB1_WaveLength)+(I1(p+14)*65.536)+(U2(p+12)*0.001);
+        adr = (SB1_Code/SB1_WaveLength)+(I1(p+14)*65536.0+U2(p+12))*0.001;
         if ((I2(p+14)==-128)&&(U2(p+12)==0)) {
             adr=0;
         }
@@ -325,8 +325,11 @@ static int decode_measepoch(raw_t *raw){
             sys = SYS_QZS;                      /* navigation system: QZSS    */
             sat = prn - 180;}
         else if ((prn>=191)&&(prn<=197)){
-            sys = SYS_NONE;                     /* navigation system: IRNSS, FIXME  */
+            sys = SYS_NONE;                     /* navigation system: IRNSS, TODO  */
             sat = prn - 190;}
+        else if ((prn>=198)&&(prn<=215)){
+            sys = SYS_SBS;                      /* navigation system: SBAS, */
+            sat = prn - 157;}
         else{
             sys = SYS_NONE;                     /* navigation system: none    */
             sat = 0;}
@@ -370,8 +373,8 @@ static int decode_measepoch(raw_t *raw){
         if (h<=NFREQ+NEXOBS) {
             raw->obs.data[n].L[h]    = adr;
             raw->obs.data[n].P[h]    = psr;
-            raw->obs.data[n].D[h]    = (float)dopplerType1; /* NEGATIVE??*/
-            raw->obs.data[n].SNR[h]  = (unsigned char)(SNR_DBHZ*4.0+0.5);
+            raw->obs.data[n].D[h]    = (float)dopplerType1;
+            raw->obs.data[n].SNR[h]  = (unsigned char)(SNR_DBHZ*4.0);
             raw->obs.data[n].code[h] = code;
 
             /* lock to signal indication */
@@ -427,7 +430,7 @@ static int decode_measepoch(raw_t *raw){
 
             /* Doppler in Hz */
             DopplerOffsetLSB = U2(p+10);
-            alpha = pow((freqType1/freqType2),2);
+            alpha = (freqType2/freqType1);
             if ((DopplerOffsetMSB==-16) && (DopplerOffsetLSB==0)) dopplerType2=0;
             else
                 dopplerType2 = dopplerType1*alpha +\
@@ -452,8 +455,8 @@ static int decode_measepoch(raw_t *raw){
                     (pri>getcodepri(sys,raw->obs.data[n].code[h],raw->opt))) {
                 raw->obs.data[n].L[h]    = Ltype2;
                 raw->obs.data[n].P[h]    = PRtype2;
-                raw->obs.data[n].D[h]    = (float)dopplerType2; /* NEGATIVE??*/
-                raw->obs.data[n].SNR[h]  = (unsigned char)(SNR2_DBHZ*4.0+0.5);
+                raw->obs.data[n].D[h]    = (float)dopplerType2;
+                raw->obs.data[n].SNR[h]  = (unsigned char)(SNR2_DBHZ*4.0);
                 raw->obs.data[n].code[h] = getSignalCode(signType2);
 
                 /* lock to signal indication */
@@ -478,7 +481,7 @@ static int decode_measepoch(raw_t *raw){
 }
 
 /* return frequency value in Hz from signal type name ------------------------*/
-static int getSigFreq(int _signType, int freqNo){
+static double getSigFreq(int _signType, int freqNo){
 
     switch (_signType)
     {
@@ -497,15 +500,15 @@ static int getSigFreq(int _signType, int freqNo){
     case 7:                                                        /* QZSL2C  */
         return FREQ2;
     case 8:                                                        /* GLOL1CA */
-        return FREQ1_GLO+(freqNo)*9/16;
+        return FREQ1_GLO+(freqNo*9./16.)*1e6;
     case 9:                                                        /* GLOL1P  */
-        return FREQ1_GLO;
+        return FREQ1_GLO+(freqNo*9./16.)*1e6;
     case 10:                                                       /* GLOL2P  */
-        return FREQ2_GLO+(freqNo)*7/16;
+        return FREQ2_GLO+(freqNo*7./16.)*1e6;
     case 11:                                                       /* GLOL2CA */
-        return FREQ2_GLO+(freqNo)*7/16;
+        return FREQ2_GLO+(freqNo*7./16.)*1e6;
     case 12:                                                       /* GLOL3X  */
-        return 1.202025;
+        return 1.202025*1e9;
     case 15:                                                       /* IRNSSL5  */
         return FREQ5;
     case 16:                                                       /* GALL1A  */
@@ -625,7 +628,7 @@ static int getSignalCode(int signType){
         _code=CODE_L5Q;
         break;
     case 28:                                                       /* CMPL1   */
-        _code=CODE_L1I;
+        _code=CODE_L2I;
         break;
     case 29:                                                       /* CMPE5B  */
         _code=CODE_L7I;
@@ -676,10 +679,10 @@ static int getFreqNo(int signType){
         _freq=1;
         break;
     case 11:                                                       /* GLOL2CA */
-        _freq=1;
+        _freq=2;
         break;
     case 12:                                                       /* GLOL3 */
-        _freq=2;
+        _freq=3;
         break;
     case 15:                                                       /* IRNSSL5  */
         _freq=2;
@@ -697,10 +700,10 @@ static int getFreqNo(int signType){
         _freq=1;
         break;
     case 20:                                                       /* GALE5a  */
-        _freq=2;
+        _freq=1;
         break;
     case 21:                                                       /* GALE5b  */
-        _freq=2;
+        _freq=1;
         break;
     case 22:                                                       /* GALE5   */
         _freq=2;
@@ -901,7 +904,7 @@ static int decode_glonav(raw_t *raw){
         return -1;
     }
 
-    eph.frq   = U1(puiTmp +  9) - 8;
+    eph.frq    = U1(puiTmp +  9) - 8;
     eph.pos[0] = R8(puiTmp +  10) * 1000;
     eph.pos[1] = R8(puiTmp +  18) * 1000;
     eph.pos[2] = R8(puiTmp +  26) * 1000;
@@ -914,15 +917,15 @@ static int decode_glonav(raw_t *raw){
     eph.gamn   = R4(puiTmp +  58);
     eph.taun   = R4(puiTmp +  62);
     eph.dtaun  = R4(puiTmp +  66);
-    week       = U2(puiTmp +  74); /* WN_toe modulo 1024*/
+    week       = U2(puiTmp +  74); /* WN_toe modulo 1024 */
     week       = adjgpsweek(week);
 
     eph.toe    = gpst2time(week, U4(puiTmp +  70));
-    eph.tof    = gpst2time(week, U4(puiTmp +  80)*60);
-    eph.iode   = U2(puiTmp +  80) & 0x3f;
-    eph.svh    = U1(puiTmp +  84);
-    eph.sva    = U2(puiTmp +  88); /* scaling? */
-    eph.age    = 0;     /* is that right? */
+    eph.tof    = raw->time;
+    eph.age    = U1(puiTmp +  78);
+    eph.svh    = U1(puiTmp +  79);
+    eph.iode   = U2(puiTmp +  80)/15;
+    eph.sva    = U2(puiTmp +  88);
 
     if (!strstr(raw->opt,"-EPHALL")) {
         if (eph.iode==raw->nav.geph[prn-1].iode) return 0;
@@ -942,10 +945,10 @@ static int decode_sbasnav(raw_t *raw){
     int prn, sat;
     uint16_t week;
 
-    trace(4,"SBF decode_glonav: len=%d\n",raw->len);
+    trace(4,"SBF decode_sbasnav: len=%d\n",raw->len);
 
     if ((raw->len)<104) {
-        trace(2,"SBF decode_glonav frame length error: len=%d\n",raw->len);
+        trace(2,"SBF decode_sbasnav frame length error: len=%d\n",raw->len);
         return -1;
     }
     prn = U1(puiTmp+8);
@@ -1565,7 +1568,7 @@ static int decode_galutc(raw_t *raw)
     raw->nav.utc_gal[0] = R8(p + 12);                                 /*   A0 */
     raw->nav.utc_gal[2] = U4(p + 20);                                 /*  tot */
     raw->nav.utc_gal[3] = adjgpsweek(U2(p + 4));                      /*   WN */
-    raw->nav.leaps      = I1(p + 22);                                 /* Dtls */
+    raw->nav.leaps      = I1(p + 25);                                 /* Dtls */
 
     /*NOTE. it is kind of strange that I have to use U1(p+4) and not U1(p+24)
             in fact if I take U1(p+24) I do not seem to ge the correct W in
