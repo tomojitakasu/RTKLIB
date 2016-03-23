@@ -31,6 +31,7 @@
 *                           - fixed bug in carrier phase calculation of type2 data
 *                           - unify frequency determination
 *                           - improve lock handling
+*                           - various bug fixes
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -265,7 +266,7 @@ static int decode_measepoch(raw_t *raw){
         codeLSB = U4(p+4);                        /* code phase LSB           */
 
         /* code pseudorange in m */
-        psr = (codeMSB*4294967296.296+codeLSB)*0.001;
+        psr = (codeMSB*4294967296.0+codeLSB)*0.001;
 
         /*  Doppler in Hz */
         dopplerType1  = 0.0001*I4(p+8);
@@ -336,7 +337,12 @@ static int decode_measepoch(raw_t *raw){
 
         /* store satellite number */
         sat = satno(sys, sat);
-        if (sat == 0) continue;
+        if (sat == 0)
+        {
+            p = p + SB1length; /* skip data */
+            p = p + SB2length*SB2Num;
+            continue;
+        };
 
         raw->obs.data[n].sat=sat;
 
@@ -934,6 +940,7 @@ static int decode_glonav(raw_t *raw){
     eph.sat=sat;
     raw->nav.geph[prn-1]=eph;
     raw->ephsat=sat;
+    raw->nav.glo_fcn[prn-1] = eph.frq + 8; /* savbe frequency number */
 
     return 2;
 }
