@@ -1439,7 +1439,7 @@ static int decode_glorawcanav(raw_t *raw){
     /* decode glonass ephemeris strings */
     geph.tof=gpst2time(U2(p+6),U4(p+2)/1000);
     if (!decode_glostr(raw->subfrm[sat-1],&geph)||geph.sat!=sat) return 0;
-    geph.frq=U1(p+12)-7;
+    geph.frq=U1(p+12)-8;
 
     if (!strstr(raw->opt,"-EPHALL")) {
         if (geph.iode==raw->nav.geph[prn-1].iode) return 0;
@@ -1447,6 +1447,7 @@ static int decode_glorawcanav(raw_t *raw){
 
     raw->nav.geph[prn-1]=geph;
     raw->ephsat=sat;
+    raw->nav.glo_fcn[prn-1] = eph.frq + 8; /* savbe frequency number */
 
     return 2;
 }
