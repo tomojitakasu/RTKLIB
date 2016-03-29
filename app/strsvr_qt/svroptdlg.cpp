@@ -3,6 +3,8 @@
 #include <QIntValidator>
 #include <QDoubleValidator>
 #include <QFileDialog>
+#include <QFileSystemModel>
+#include <QCompleter>
 
 #include "rtklib.h"
 #include "refdlg.h"
@@ -13,6 +15,13 @@ SvrOptDialog::SvrOptDialog(QWidget *parent)
     : QDialog(parent)
 {
     setupUi(this);
+
+    QCompleter *dirCompleter=new QCompleter(this);
+    QFileSystemModel *dirModel=new QFileSystemModel(dirCompleter);
+    dirModel->setRootPath("");
+    dirModel->setFilter(QDir::AllDirs|QDir::Drives|QDir::NoDotAndDotDot);
+    dirCompleter->setModel(dirModel);
+    LocalDir->setCompleter(dirCompleter);
 
     connect(BtnOk,SIGNAL(clicked(bool)),this,SLOT(BtnOkClick()));
     connect(BtnCancel,SIGNAL(clicked(bool)),this,SLOT(reject()));

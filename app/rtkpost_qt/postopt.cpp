@@ -10,6 +10,8 @@
 
 #include <QShowEvent>
 #include <QFileDialog>
+#include <QFileSystemModel>
+#include <QCompleter>
 
 extern MainForm *mainForm;
 
@@ -30,6 +32,21 @@ OptDialog::OptDialog(QWidget *parent)
         Freq->Items->Add(label);
     }
 #endif
+
+    QCompleter *fileCompleter=new QCompleter(this);
+    QFileSystemModel *fileModel=new QFileSystemModel(fileCompleter);
+    fileModel->setRootPath("");
+    fileCompleter->setModel(fileModel);
+    StaPosFile->setCompleter(fileCompleter);
+    AntPcvFile->setCompleter(fileCompleter);
+    SatPcvFile->setCompleter(fileCompleter);
+    DCBFile->setCompleter(fileCompleter);
+    GeoidDataFile->setCompleter(fileCompleter);
+    EOPFile->setCompleter(fileCompleter);
+    BLQFile->setCompleter(fileCompleter);
+    IonoFile->setCompleter(fileCompleter);
+
+
 
     connect(BtnOk,SIGNAL(clicked(bool)),this,SLOT(BtnOkClick()));
     connect(RovAntPcv,SIGNAL(clicked(bool)),this,SLOT(RovAntPcvClick()));
@@ -108,7 +125,7 @@ void OptDialog::BtnLoadClick()
 void OptDialog::BtnSaveClick()
 {
     QString file;
-    file=QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Save Options"),QString(),tr("Options File (*.conf);;All (*.*)")));
+    file=QDir::toNativeSeparators(QFileDialog::getSaveFileName(this,tr("Save Options"),QString(),tr("Options File (*.conf);;All (*.*)")));
     QFileInfo f(file);
     if (f.suffix()=="") file=file+".conf";
 	SaveOpt(file);

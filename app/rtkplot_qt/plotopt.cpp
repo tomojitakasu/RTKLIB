@@ -12,6 +12,8 @@
 #include <QFileDialog>
 #include <QPoint>
 #include <QDebug>
+#include <QFileSystemModel>
+#include <QCompleter>
 
 QString color2String(const QColor &c);
 
@@ -23,6 +25,13 @@ PlotOptDialog::PlotOptDialog(QWidget *parent)
     setupUi(this);
 
     refDialog= new RefDialog(this);
+
+    QCompleter *fileCompleter=new QCompleter(this);
+    QFileSystemModel *fileModel=new QFileSystemModel(fileCompleter);
+    fileModel->setRootPath("");
+    fileCompleter->setModel(fileModel);
+    TLEFile->setCompleter(fileCompleter);
+    TLESatFile->setCompleter(fileCompleter);
 
     connect(BtnCancel,SIGNAL(clicked(bool)),this,SLOT(reject()));
     connect(BtnColor1,SIGNAL(clicked(bool)),this,SLOT(BtnColor1Click()));

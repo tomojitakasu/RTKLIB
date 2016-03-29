@@ -2241,7 +2241,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+          <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
            <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
          </property>
          <property name="flat">
@@ -2303,7 +2303,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+          <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
            <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
          </property>
          <property name="flat">
@@ -2637,7 +2637,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+          <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
            <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
          </property>
          <property name="flat">
@@ -3211,7 +3211,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../rtklaunch_qt/rtklaunch_qt.qrc"/>
+  <include location="../rtkconv_qt/rtkconv_qt.qrc"/>
  </resources>
  <connections/>
 </ui>

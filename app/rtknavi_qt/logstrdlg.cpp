@@ -2,6 +2,8 @@
 #include <QDialog>
 #include <QShowEvent>
 #include <QFileDialog>
+#include <QCompleter>
+#include <QFileSystemModel>
 
 #include "rtklib.h"
 #include "serioptdlg.h"
@@ -20,6 +22,14 @@ LogStrDialog::LogStrDialog(QWidget* parent)
     keyDialog = new KeyDialog(this);
     serialOptDialog = new SerialOptDialog(this);
     tcpOptDialog = new TcpOptDialog(this);
+
+    QCompleter *fileCompleter=new QCompleter(this);
+    QFileSystemModel *fileModel=new QFileSystemModel(fileCompleter);
+    fileModel->setRootPath("");
+    fileCompleter->setModel(fileModel);
+    FilePath1->setCompleter(fileCompleter);
+    FilePath2->setCompleter(fileCompleter);
+    FilePath3->setCompleter(fileCompleter);
 
     connect(BtnCancel,SIGNAL(clicked(bool)),this,SLOT(reject()));
     connect(BtnOk,SIGNAL(clicked(bool)),this,SLOT(BtnOkClick()));

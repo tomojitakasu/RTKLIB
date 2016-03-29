@@ -6,6 +6,8 @@
 #include <QFileDialog>
 #include <QShowEvent>
 #include <QIntValidator>
+#include <QCompleter>
+#include <QFileSystemModel>
 
 extern MainForm *mainForm;
 
@@ -15,6 +17,14 @@ DownOptDialog::DownOptDialog(QWidget* parent)
     : QDialog(parent)
 {
     setupUi(this);
+
+
+    QCompleter *fileCompleter=new QCompleter(this);
+    QFileSystemModel *fileModel=new QFileSystemModel(fileCompleter);
+    fileModel->setRootPath("");
+    fileCompleter->setModel(fileModel);
+    UrlFile->setCompleter(fileCompleter);
+    LogFile->setCompleter(fileCompleter);
 
     connect(BtnCancel,SIGNAL(clicked(bool)),this,SLOT(reject()));
     connect(BtnLogFile,SIGNAL(clicked(bool)),this,SLOT(BtnLogFileClick()));

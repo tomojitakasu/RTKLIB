@@ -25,6 +25,8 @@
 #include <QtConcurrent/QtConcurrentRun>
 #include <QFuture>
 #include <QThread>
+#include <QCompleter>
+#include <QFileSystemModel>
 
 //---------------------------------------------------------------------------
 #include "rtklib.h"
@@ -140,6 +142,13 @@ MainForm::MainForm(QWidget * parent)
 
     viewer=new TextViewer(this);
     timeDialog = new TimeDialog(this);
+
+    QCompleter *dirCompleter=new QCompleter(this);
+    QFileSystemModel *dirModel=new QFileSystemModel(dirCompleter);
+    dirModel->setRootPath("");
+    dirModel->setFilter(QDir::AllDirs|QDir::Drives|QDir::NoDotAndDotDot);
+    dirCompleter->setModel(dirModel);
+    Dir->setCompleter(dirCompleter);
 
     connect(BtnAll,SIGNAL(clicked(bool)),this,SLOT(BtnAllClick()));
     connect(BtnDir,SIGNAL(clicked(bool)),this,SLOT(BtnDirClick()));

@@ -4,6 +4,8 @@
 #include <QFileInfo>
 #include <QShowEvent>
 #include <QFileDialog>
+#include <QFileSystemModel>
+#include <QCompleter>
 
 #include "rtklib.h"
 #include "refdlg.h"
@@ -47,6 +49,14 @@ InputStrDialog::InputStrDialog(QWidget* parent)
 
     NmeaPos1->setValidator(new QDoubleValidator());
     NmeaPos2->setValidator(new QDoubleValidator());
+
+    QCompleter *fileCompleter=new QCompleter(this);
+    QFileSystemModel *fileModel=new QFileSystemModel(fileCompleter);
+    fileModel->setRootPath("");
+    fileCompleter->setModel(fileModel);
+    FilePath1->setCompleter(fileCompleter);
+    FilePath2->setCompleter(fileCompleter);
+    FilePath3->setCompleter(fileCompleter);
 
     connect(Stream1,SIGNAL(currentIndexChanged(int)),this,SLOT(Stream1Change(int)));
     connect(Stream2,SIGNAL(currentIndexChanged(int)),this,SLOT(Stream2Change(int)));

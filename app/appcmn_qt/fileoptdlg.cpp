@@ -9,6 +9,8 @@
 #include <QShowEvent>
 #include <QFileDialog>
 #include <QIntValidator>
+#include <QFileSystemModel>
+#include <QCompleter>
 
 //---------------------------------------------------------------------------
 FileOptDialog::FileOptDialog(QWidget* parent)
@@ -18,6 +20,12 @@ FileOptDialog::FileOptDialog(QWidget* parent)
 	Opt=0;
 
     keyDialog=new KeyDialog(this);
+
+    QCompleter *fileCompleter=new QCompleter(this);
+    QFileSystemModel *fileModel=new QFileSystemModel(fileCompleter);
+    fileModel->setRootPath("");
+    fileCompleter->setModel(fileModel);
+    FilePath->setCompleter(fileCompleter);
 
     connect(BtnCancel,SIGNAL(clicked(bool)),this,SLOT(reject()));
     connect(BtnOk,SIGNAL(clicked(bool)),this,SLOT(BtnOkClick()));

@@ -5,6 +5,8 @@
 #include <QFontDialog>
 #include <QFont>
 #include <QShowEvent>
+#include <QFileSystemModel>
+#include <QCompleter>
 
 #include "rtklib.h"
 #include "naviopt.h"
@@ -108,6 +110,28 @@ OptDialog::OptDialog(QWidget* parent)
     if (ngal<=0) NavSys3->setEnabled(false);
     if (nqzs<=0) NavSys4->setEnabled(false);
     if (ncmp<=0) NavSys6->setEnabled(false);
+
+
+    QCompleter *fileCompleter=new QCompleter(this);
+    QFileSystemModel *fileModel=new QFileSystemModel(fileCompleter);
+    fileModel->setRootPath("");
+    fileCompleter->setModel(fileModel);
+    StaPosFile->setCompleter(fileCompleter);
+    AntPcvFile->setCompleter(fileCompleter);
+    SatPcvFile->setCompleter(fileCompleter);
+    DCBFile->setCompleter(fileCompleter);
+    GeoidDataFile->setCompleter(fileCompleter);
+    EOPFile->setCompleter(fileCompleter);
+    OLFile->setCompleter(fileCompleter);
+    TLEFile->setCompleter(fileCompleter);
+    TLESatFile->setCompleter(fileCompleter);
+
+    QCompleter *dirCompleter=new QCompleter(this);
+    QFileSystemModel *dirModel=new QFileSystemModel(dirCompleter);
+    dirModel->setRootPath("");
+    dirModel->setFilter(QDir::AllDirs|QDir::Drives|QDir::NoDotAndDotDot);
+    dirCompleter->setModel(dirModel);
+    LocalDir->setCompleter(dirCompleter);
 
 	UpdateEnable();
 

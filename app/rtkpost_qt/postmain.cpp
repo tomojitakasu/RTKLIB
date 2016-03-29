@@ -46,6 +46,8 @@
 #include <QtGlobal>
 #include <QThread>
 #include <QMimeData>
+#include <QFileSystemModel>
+#include <QCompleter>
 
 #include "rtklib.h"
 #include "postmain.h"
@@ -196,6 +198,26 @@ MainForm::MainForm(QWidget *parent)
     optDialog= new OptDialog(this);
     convDialog=new ConvDialog(this);
     textViewer=new TextViewer(this);
+
+    QCompleter *fileCompleter=new QCompleter(this);
+    QFileSystemModel *fileModel=new QFileSystemModel(fileCompleter);
+    fileModel->setRootPath("");
+    fileCompleter->setModel(fileModel);
+    InputFile1->setCompleter(fileCompleter);
+    InputFile2->setCompleter(fileCompleter);
+    InputFile3->setCompleter(fileCompleter);
+    InputFile4->setCompleter(fileCompleter);
+    InputFile5->setCompleter(fileCompleter);
+    InputFile6->setCompleter(fileCompleter);
+    OutputFile->setCompleter(fileCompleter);
+
+    QCompleter *dirCompleter=new QCompleter(this);
+    QFileSystemModel *dirModel=new QFileSystemModel(dirCompleter);
+    dirModel->setRootPath("");
+    dirModel->setFilter(QDir::AllDirs|QDir::Drives|QDir::NoDotAndDotDot);
+    dirCompleter->setModel(dirModel);
+    OutDir->setCompleter(dirCompleter);
+
 
     connect(BtnPlot,SIGNAL(clicked(bool)),this,SLOT(BtnPlotClick()));
     connect(BtnView,SIGNAL(clicked(bool)),this,SLOT(BtnViewClick()));
@@ -818,9 +840,9 @@ void MainForm::ExecProc(void)
     if (TimeEnd  ->isChecked()) thread->te=GetTime2();
     if (TimeIntF ->isChecked()) thread->ti=TimeInt ->currentText().toDouble();
     if (TimeUnitF->isChecked()) thread->tu=TimeUnit->text().toDouble()*3600.0;
-    
+
     if (!GetOption(thread->prcopt,thread->solopt,thread->filopt)) {ProcessingFinished(0);return;}
-    
+
     // set input/output files
     
     thread->addInput(InputFile1_Text);

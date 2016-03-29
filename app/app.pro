@@ -7,4 +7,5 @@ SUBDIRS= rtknavi_qt \
          rtklaunch_qt \
          srctblbrows_qt \
          strsvr_qt \
-         rtkconv_qt
+         rtkconv_qt \
+    rnx2rtkp

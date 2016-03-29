@@ -27,6 +27,8 @@
 #include <QSettings>
 #include <QMimeData>
 #include <QDebug>
+#include <QCompleter>
+#include <QFileSystemModel>
 
 #include "convmain.h"
 #include "timedlg.h"
@@ -97,6 +99,26 @@ MainWindow::MainWindow(QWidget *parent)
     Format->addItem(formatstrs[STRFMT_RINEX]);
     RnxTime=time0;
     EventEna=0;
+
+    QCompleter *fileCompleter=new QCompleter(this);
+    QFileSystemModel *fileModel=new QFileSystemModel(fileCompleter);
+    fileModel->setRootPath("");
+    fileCompleter->setModel(fileModel);
+    OutFile1->setCompleter(fileCompleter);
+    OutFile2->setCompleter(fileCompleter);
+    OutFile3->setCompleter(fileCompleter);
+    OutFile4->setCompleter(fileCompleter);
+    OutFile5->setCompleter(fileCompleter);
+    OutFile6->setCompleter(fileCompleter);
+    OutFile7->setCompleter(fileCompleter);
+    InFile->setCompleter(fileCompleter);
+
+    QCompleter *dirCompleter=new QCompleter(this);
+    QFileSystemModel *dirModel=new QFileSystemModel(dirCompleter);
+    dirModel->setRootPath("");
+    dirModel->setFilter(QDir::AllDirs|QDir::Drives|QDir::NoDotAndDotDot);
+    dirCompleter->setModel(dirModel);
+    OutDir->setCompleter(dirCompleter);
 
     connect(BtnPlot,SIGNAL(clicked(bool)),this,SLOT(BtnPlotClick()));
     connect(BtnConvert,SIGNAL(clicked(bool)),this,SLOT(BtnConvertClick()));

@@ -11,6 +11,8 @@
 #include <QFileInfo>
 #include <QProcess>
 #include <QtGlobal>
+#include <QFileSystemModel>
+#include <QCompleter>
 
 extern MainForm *mainForm;
 
@@ -19,6 +21,14 @@ ConvDialog::ConvDialog(QWidget *parent)
     : QDialog(parent)
 {
     setupUi(this);
+
+    QCompleter *fileCompleter=new QCompleter(this);
+    QFileSystemModel *fileModel=new QFileSystemModel(fileCompleter);
+    fileModel->setRootPath("");
+    fileCompleter->setModel(fileModel);
+    InputFile->setCompleter(fileCompleter);
+    OutputFile->setCompleter(fileCompleter);
+    GoogleEarthFile->setCompleter(fileCompleter);
 
     connect(BtnClose,SIGNAL(clicked(bool)),this,SLOT(BtnCloseClick()));
     connect(BtnConvert,SIGNAL(clicked(bool)),this,SLOT(BtnConvertClick()));

@@ -26,7 +26,7 @@ win32 {
     else:RTKLIB =../../src/release/libRTKLib.a
     LIBS+= $${RTKLIB}  -lWs2_32 -lwinmm
 }
-
+PRE_TARGETDEPS = $${RTKLIB}
 SOURCES += \ 
     codeopt.cpp \
     convmain.cpp \

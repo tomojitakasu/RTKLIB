@@ -1,5 +1,8 @@
 //---------------------------------------------------------------------------
 #include <QShortcutEvent>
+#include <QCompleter>
+#include <QFileSystemModel>
+#include <QFileDialog>
 
 #include "rtklib.h"
 #include "serioptdlg.h"
@@ -8,8 +11,6 @@
 #include "tcpoptdlg.h"
 #include "outstrdlg.h"
 #include "keydlg.h"
-
-#include <QFileDialog>
 
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -21,6 +22,13 @@ OutputStrDialog::OutputStrDialog(QWidget* parent)
     keyDialog = new KeyDialog(this);
     serialOptDialog = new SerialOptDialog(this);
     tcpOptDialog = new TcpOptDialog(this);
+
+    QCompleter *fileCompleter=new QCompleter(this);
+    QFileSystemModel *fileModel=new QFileSystemModel(fileCompleter);
+    fileModel->setRootPath("");
+    fileCompleter->setModel(fileModel);
+    FilePath1->setCompleter(fileCompleter);
+    FilePath2->setCompleter(fileCompleter);
 
     connect(BtnCancel,SIGNAL(clicked(bool)),this,SLOT(reject()));
     connect(BtnFile1,SIGNAL(clicked(bool)),this,SLOT(BtnFile1Click()));
