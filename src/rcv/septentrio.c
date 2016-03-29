@@ -1447,7 +1447,7 @@ static int decode_glorawcanav(raw_t *raw){
 
     raw->nav.geph[prn-1]=geph;
     raw->ephsat=sat;
-    raw->nav.glo_fcn[prn-1] = eph.frq + 8; /* savbe frequency number */
+    raw->nav.glo_fcn[prn-1] = geph.frq + 8; /* savbe frequency number */
 
     return 2;
 }
