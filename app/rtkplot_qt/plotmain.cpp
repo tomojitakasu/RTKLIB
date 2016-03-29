@@ -1235,20 +1235,20 @@ void Plot::DispPaint()
 // callback on mouse-down event ---------------------------------------------
 void Plot::mousePressEvent(QMouseEvent *event)
 {
-    X0=event->x(); Y0=event->y(); Xcent0=Xcent;
+    X0=event->globalX(); Y0=event->globalY(); Xcent0=Xcent;
 
-    trace(3,"DispMouseDown: X=%d Y=%d\n",event->x(),event->y());
+    trace(3,"DispMouseDown: X=%d Y=%d\n",event->globalX(),event->globalY());
     
     Drag=event->buttons().testFlag(Qt::LeftButton)?1:(event->buttons().testFlag(Qt::RightButton)?11:0);
     
     if (PlotType==PLOT_TRK) {
-        MouseDownTrk(event->x(),event->y());
+        MouseDownTrk(event->globalX(),event->globalY());
     }
     else if (PlotType<=PLOT_NSAT||PlotType==PLOT_RES||PlotType==PLOT_SNR) {
-        MouseDownSol(event->x(),event->y());
+        MouseDownSol(event->globalX(),event->globalY());
     }
     else if (PlotType==PLOT_OBS||PlotType==PLOT_DOP) {
-        MouseDownObs(event->x(),event->y());
+        MouseDownObs(event->globalX(),event->globalY());
     }
     else Drag=0;
     
@@ -1259,35 +1259,35 @@ void Plot::mouseMoveEvent(QMouseEvent *event)
 {
     double dx,dy,dxs,dys;
     
-    if ((abs(event->x()-Xn)<1)&&(abs(event->y()-Yn)<1)) return;
+    if ((abs(event->globalX()-Xn)<1)&&(abs(event->globalY()-Yn)<1)) return;
     
-    trace(4,"DispMouseMove: X=%d Y=%d\n",event->x(),event->y());
+    trace(4,"DispMouseMove: X=%d Y=%d\n",event->globalX(),event->globalY());
 
     if (Drag==0) {
-        UpdatePoint(event->x(),event->y());
+        UpdatePoint(event->globalX(),event->globalY());
         return;
     }
     
-    Xn=event->x(); Yn=event->y();
-    dx=(X0-event->x())*Xs;
-    dy=(event->y()-Y0)*Ys;
-    dxs=pow(2.0,(X0-event->x())/100.0);
-    dys=pow(2.0,(event->y()-Y0)/100.0);
+    Xn=event->globalX(); Yn=event->globalY();
+    dx=(X0-event->globalX())*Xs;
+    dy=(event->globalY()-Y0)*Ys;
+    dxs=pow(2.0,(X0-event->globalX())/100.0);
+    dys=pow(2.0,(event->globalY()-Y0)/100.0);
     
     if (PlotType==PLOT_TRK) {
-        MouseMoveTrk(event->x(),event->y(),dx,dy,dxs,dys);
+        MouseMoveTrk(event->globalX(),event->globalY(),dx,dy,dxs,dys);
     }
     else if (PlotType<=PLOT_NSAT||PlotType==PLOT_RES||PlotType==PLOT_SNR) {
-        MouseMoveSol(event->x(),event->y(),dx,dy,dxs,dys);
+        MouseMoveSol(event->globalX(),event->globalY(),dx,dy,dxs,dys);
     }
     else if (PlotType==PLOT_OBS||PlotType==PLOT_DOP) {
-        MouseMoveObs(event->x(),event->y(),dx,dy,dxs,dys);
+        MouseMoveObs(event->globalX(),event->globalY(),dx,dy,dxs,dys);
     }
 }
 // callback on mouse-up event -----------------------------------------------
 void Plot::mouseReleaseEvent(QMouseEvent *event)
 {
-    trace(3,"DispMouseUp: X=%d Y=%d\n",event->x(),event->y());
+    trace(3,"DispMouseUp: X=%d Y=%d\n",event->globalX(),event->globalY());
     
     Drag=0;
     setCursor(Qt::ArrowCursor);
@@ -1359,7 +1359,7 @@ void Plot::MouseDownSol(int X, int Y)
         
         GraphG[i]->GetCent(Xc,Yc);
         GraphG[i]->GetScale(Xs,Ys);
-        area=GraphG[i]->OnAxis(p);
+        area=GraphG[i]->OnAxis(Disp->mapFromGlobal(p));
         
         if (Drag==1&&area==0) {
             setCursor(Qt::SizeAllCursor);
@@ -1404,7 +1404,7 @@ void Plot::MouseDownObs(int X, int Y)
     }
     GraphR->GetCent(Xc,Yc);
     GraphR->GetScale(Xs,Ys);
-    area=GraphR->OnAxis(p);
+    area=GraphR->OnAxis(Disp->mapFromGlobal(p));
     
     if (area==0||area==8) {
         setCursor(Drag==1?Qt::SizeHorCursor:Qt::SplitHCursor);

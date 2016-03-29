@@ -399,7 +399,7 @@ int Plot::SearchPos(int x, int y)
     
     if (!BtnShowTrack->isChecked()||(!BtnSol1->isChecked()&&!BtnSol2->isChecked())) return -1;
     
-    GraphT->ToPos(p,xp,yp);
+    GraphT->ToPos(Disp->mapFromGlobal(p),xp,yp);
     GraphT->GetScale(xs,ys);
     r=(MarkSize/2+2)*xs;
     
