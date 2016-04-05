@@ -400,6 +400,11 @@ void Plot::showEvent (QShowEvent *event)
     }
     Timer.start(RefCycle);
     UpdatePlot();
+
+    if (OpenFiles.count()>0) {
+        if (CheckObs(OpenFiles.at(0))||OpenRaw) ReadObs(OpenFiles);
+        else ReadSol(OpenFiles,0);
+    }
 }
 // callback on form-close ---------------------------------------------------
 void Plot::closeEvent(QCloseEvent *)
@@ -412,16 +417,7 @@ void Plot::closeEvent(QCloseEvent *)
     
     if (Trace>0) traceclose();
 }
-// callback on form-activation ----------------------------------------------
-void Plot::focusInEvent(QFocusEvent *)
-{
-    trace(3,"FormActivate\n");
-    
-    if (OpenFiles.count()>0) {
-        if (CheckObs(OpenFiles.at(0))||OpenRaw) ReadObs(OpenFiles);
-        else ReadSol(OpenFiles,0);
-    }
-}
+
 // callback for painting   --------------------------------------------------
 void Plot::paintEvent(QPaintEvent *)
 {

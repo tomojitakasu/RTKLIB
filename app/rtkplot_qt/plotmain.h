@@ -116,7 +116,6 @@ protected:
         void  keyPressEvent			(QKeyEvent *);
         void  showEvent			    (QShowEvent*);
         void  resizeEvent			(QResizeEvent *);
-        void  focusInEvent      	(QFocusEvent*);
         void  leaveEvent    		(QEvent*);
         void  dragEnterEvent        (QDragEnterEvent *event);
         void  dropEvent             (QDropEvent *event);

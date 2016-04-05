@@ -23,9 +23,6 @@ TEMPLATE = app
 
 INCLUDEPATH += ../../src/ ../appcmn_qt ../rtkplot_qt
 
-#QMAKE_CXXFLAGS += -pg
-#QMAKE_LFLAGS += -pg
-
 linux{
     RTKLIB =../../src/libRTKLib.a
     LIBS += -lpng $${RTKLIB}

@@ -276,7 +276,7 @@ void MainForm::showEvent(QShowEvent* event)
     parser.setApplicationDescription("RTK post");
     parser.addHelpOption();
     parser.addVersionOption();
-     parser.setSingleDashWordOptionMode(QCommandLineParser::ParseAsLongOptions);
+    parser.setSingleDashWordOptionMode(QCommandLineParser::ParseAsLongOptions);
 
     QCommandLineOption iniFileOption(QStringList() << "i" ,
             QCoreApplication::translate("main", "use init file <file>"));
@@ -441,7 +441,7 @@ void MainForm::BtnPlotClick()
 {
     QString OutputFile_Text=OutputFile->currentText();
     QString file=FilePath(OutputFile_Text);
-    QString cmd1="rtkplot",cmd2="../../../bin/rtkplot_qt",opts="";
+    QString cmd1="rtkplot_qt",cmd2="../../../bin/rtkplot_qt",opts="";
     
     opts+=" \""+file+"\"";
     
