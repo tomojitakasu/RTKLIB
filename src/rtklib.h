@@ -1106,7 +1106,7 @@ typedef struct {        /* satellite status type */
     unsigned char snr [NFREQ]; /* signal strength (0.25 dBHz) */
     unsigned char fix [NFREQ]; /* ambiguity fix flag (1:fix,2:float,3:hold) */
     unsigned char slip[NFREQ]; /* cycle-slip flag */
-    unsigned int lock [NFREQ]; /* lock counter of phase */
+    int lock [NFREQ]; /* lock counter of phase */
     unsigned int outc [NFREQ]; /* obs outage counter of phase */
     unsigned int slipc[NFREQ]; /* cycle-slip counter */
     unsigned int rejc [NFREQ]; /* reject counter */

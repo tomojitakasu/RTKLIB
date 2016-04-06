@@ -8,7 +8,7 @@
 #include <QFileInfoList>
 #include <QTreeView>
 #include <QFileSystemModel>
-#include <QDebug>
+#include <QRegularExpression>
 
 extern Plot *plot;
 
@@ -65,6 +65,7 @@ void  FileSelDialog::showEvent(QShowEvent *event)
 
     if (Dir=="") Dir=drives.at(0).filePath();
 
+    DriveSel->setCurrentText(Dir.mid(0,Dir.indexOf(":")+2));
     dirModel->setRootPath(Dir);
     DirSelector->setVisible(false);
     DirSelected->setText(Dir);
@@ -77,6 +78,7 @@ void  FileSelDialog::DriveSelChanged()
     DirSelector->setVisible(false);
 
     DirSelector->setRootIndex(dirModel->index(DriveSel->currentText()));
+    DirSelected->setText(DriveSel->currentText());
 }
 //---------------------------------------------------------------------------
 void  FileSelDialog::BtnDirSelClick()
@@ -117,8 +119,13 @@ void  FileSelDialog::FileListClick(QModelIndex index)
 //---------------------------------------------------------------------------
 void  FileSelDialog::FilterClick()
 {
-    fileModel->setNameFilters(QStringList(Filter->currentText()));
-    qWarning()<<Filter->currentText();
+    QString filter=Filter->currentText();
+
+    // only keep data between brackets
+    filter=filter.mid(filter.indexOf("(")+1);
+    filter.remove(")");
+
+    fileModel->setNameFilters(filter.split(" "));
     DirSelector->setVisible(false);
 }
 //---------------------------------------------------------------------------
