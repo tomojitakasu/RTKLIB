@@ -1169,6 +1169,8 @@ static int decode_rawnav(raw_t *raw, int sys){
 
     /* get GPS satellite number */
     prn=U1(p+8);
+    if (sat==SYS_QZS) prn-=180;
+
     sat=satno(sys,prn);
     if (sat == 0) return -1;
 
@@ -1598,7 +1600,7 @@ static int decode_galalm(raw_t *raw)
         return -1;
     }
 
-    alm.sat =   satno(SYS_GAL,U1(p + 49));
+    alm.sat =   satno(SYS_GAL,U1(p + 49)-70);
     alm.e     = R4(p + 8);
     alm.toas  = U4(p + 12);
     alm.i0    = R4(p + 16) + 0.3;
@@ -1643,7 +1645,7 @@ static int decode_sbsfast(raw_t *raw)
     /* get satellite number */
     prn=U1(p+8);
     if (prn < 120) return -1;
-    if (prn > 139) return -1;
+    if (prn > 140) return -1;
 
     sat=satno(SYS_SBS,prn);
     if (sat == 0) return -1;
