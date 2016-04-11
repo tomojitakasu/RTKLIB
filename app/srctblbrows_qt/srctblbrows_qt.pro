@@ -4,13 +4,17 @@
 #
 #-------------------------------------------------
 
-QT       += core gui webkitwidgets
+QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 include(../../RTKLib.pri)
 
 INCLUDEPATH += ../../src/ ../appcmn_qt
+
+QWEBKIT {
+QT+= webkitwidgets
+}
 
 linux{
     RTKLIB =../../src/libRTKLib.a

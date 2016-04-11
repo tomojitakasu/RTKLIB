@@ -7,7 +7,10 @@
 
 #include "ui_gmview.h"
 
+#ifdef QWEBKIG
 class QWebView;
+#endif
+
 class QResizeEvent;
 //---------------------------------------------------------------------------
 class GoogleMapView : public QDialog, private Ui::GoogleMapView
@@ -30,7 +33,9 @@ private:
 	double Lat,Lon,Zoom;
 	double MarkPos[2][2];
     QTimer Timer1;
+#ifdef QWEBKIT
     QWebView *WebBrowser;
+#endif
 	
     void ExecFunc(const QString &func);
 

@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += widgets core gui webkitwidgets
+QT       += widgets core gui
 
 greaterThan(QT_MAJOR_VERSION, 4) {
     QT += widgets serialport
@@ -14,6 +14,10 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 lessThan(QT_MAJOR_VERSION, 5) {
     LIBS += -lqextserialport-1.2
     DEFINES += QEXTSERIALPORT
+}
+
+QWEBKIT {
+QT+= webkitwidgets
 }
 
 include(../../RTKLib.pri)

@@ -1,13 +1,15 @@
 //---------------------------------------------------------------------------
 // gmview.c: google map view
 //---------------------------------------------------------------------------
+#ifdef QWEBKIT
 #include <QWebView>
 #include <QWebFrame>
 #include <QWebElement>
+#endif
 #include <QDebug>
 
-#include "rtklib.h"
 #include "gmview.h"
+#include "rtklib.h"
 
 #define RTKLIB_GM_FILE "rtkplot_gm.htm"
 
@@ -23,11 +25,12 @@ GoogleMapView::GoogleMapView(QWidget *parent)
     connect(BtnFixCent,SIGNAL(clicked(bool)),this,SLOT(BtnFixCentClick()));
     connect(&Timer1,SIGNAL(timeout()),this,SLOT(Timer1Timer()));
 
+#ifdef QWEBKIT
     WebBrowser = new QWebView(Panel2);
     QHBoxLayout *layout=new QHBoxLayout();
     layout->addWidget(WebBrowser);
     Panel2->setLayout(layout);
-
+#endif
 
 	State=0;
 	Lat=Lon=0.0;
@@ -43,8 +46,10 @@ void GoogleMapView::FormCreate()
     dir=qApp->applicationDirPath(); // exe directory
     dir=dir+"/"+RTKLIB_GM_FILE;
 
+#ifdef QWEBKIT
     WebBrowser->load(QUrl::fromLocalFile(dir));
     WebBrowser->show();
+#endif
 
     Timer1.start(300);
 }
@@ -130,6 +135,7 @@ void GoogleMapView::HideMark(int index)
 //---------------------------------------------------------------------------
 int GoogleMapView::GetState(void)
 {
+#ifdef QWEBKIT
     QWebElement ele;
     int state;
 
@@ -146,16 +152,23 @@ int GoogleMapView::GetState(void)
     state=ele.attribute("value").toInt();
 
 	return state;
+#else
+    return 0;
+#endif
 }
 //---------------------------------------------------------------------------
 void GoogleMapView::ExecFunc(const QString &func)
 {
+#ifdef QWEBKIT
     if (!WebBrowser->page()) return;
     if (!WebBrowser->page()->mainFrame()) return;
 
     QWebFrame *frame=WebBrowser->page()->mainFrame();
 
     frame->evaluateJavaScript(func);
+#else
+    Q_UNUSED(func)
+#endif
 }
 //---------------------------------------------------------------------------
 void GoogleMapView::BtnShrinkClick()

@@ -112,6 +112,10 @@ MainForm::MainForm(QWidget *parent)
     connect(Timer,SIGNAL(timeout()),this,SLOT(TimerTimer()));
     connect(Table0,SIGNAL(cellClicked(int,int)),this,SLOT(Table0SelectCell(int,int)));
 
+#ifndef QWEBKIT
+    BtnMap->setEnabled(false);
+#endif
+
     Table0->setSortingEnabled(true);
     Table1->setSortingEnabled(true);
     Table2->setSortingEnabled(true);

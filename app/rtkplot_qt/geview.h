@@ -9,8 +9,9 @@
 
 #include "rtklib.h"
 
+#ifdef QWEBKIT
 class QWebView;
-
+#endif
 //---------------------------------------------------------------------------
 class GoogleEarthView : public QMainWindow, private Ui::GoogleEarthView
 {
@@ -42,8 +43,9 @@ private:
     double Lat,Lon,Range,Heading,LatSet,LonSet,RangeSet,HeadingSet;
     double MarkPos[2][2];
     QTimer Timer1,Timer2;
+#ifdef QWEBKIT
     QWebView *WebBrowser;
-    
+#endif
     void UpdateOpts (void);
     void UpdateEnable(void);
     void ExecFunc   (const QString &func);

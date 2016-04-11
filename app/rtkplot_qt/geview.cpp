@@ -4,13 +4,15 @@
 
 #include <QTimer>
 #include <QStringList>
+#ifdef QWEBKIT
 #include <QWebView>
 #include <QWebFrame>
 #include <QWebElement>
+#endif
 
-#include "rtklib.h"
 #include "geview.h"
 #include "plotmain.h"
+#include "rtklib.h"
 
 #define RTKPLOT_GE_FILE "rtkplot_ge.htm"
 
@@ -34,11 +36,11 @@ extern Plot *plot;
     : QMainWindow(parent)
 {
     setupUi(this);
-
+#ifdef QWEBKIT
     WebBrowser=new QWebView(this);
 
     setCentralWidget(WebBrowser);
-
+#endif
     toolBar->addWidget(BtnOpt1);
     toolBar->addWidget(BtnOpt2);
     toolBar->addWidget(BtnOpt3);
@@ -95,13 +97,15 @@ void  GoogleEarthView::FormCreate()
     
     dir=qApp->applicationDirPath(); // exe directory
     dir=dir+"/"+RTKPLOT_GE_FILE;
-
+#ifdef QWEBKIT
     WebBrowser->load(QUrl::fromLocalFile(dir));
     WebBrowser->show();
+#endif
 }
 //---------------------------------------------------------------------------
 void  GoogleEarthView::Timer1Timer()
 {
+#ifdef QWEBKIT
     QWebElement ele1,ele2;
     int state;
     
@@ -136,6 +140,7 @@ void  GoogleEarthView::Timer1Timer()
             plot->Refresh_GEView();
         }
     }
+#endif
 }
 //---------------------------------------------------------------------------
 void  GoogleEarthView::BtnCloseClick()
@@ -433,11 +438,15 @@ void  GoogleEarthView::UpdateEnable(void)
 //---------------------------------------------------------------------------
 void  GoogleEarthView::ExecFunc(const QString &func)
 {
+#ifdef QWEBKIT
     if (!WebBrowser->page()) return;
     if (!WebBrowser->page()->mainFrame()) return;
     QWebFrame *frame=WebBrowser->page()->mainFrame();
 
     frame->evaluateJavaScript(func);
+#else
+    Q_UNUSED(func)
+#endif
 }
 //---------------------------------------------------------------------------
 
