@@ -19,8 +19,8 @@
 
 #define PRGNAME     "RTKPLOT"           // program name
 
-#define CHARDEG     "\302\260"          // character code of degree (UTF-8)
-#define CHARUP2     "\302\262"          // character code of ^2     (UTF-8)
+const QChar degreeChar(0260);           // character code of degree (UTF-8)
+const QChar up2Char(0262);              // character code of ^2     (UTF-8)
 
 #define DEFTSPAN    600.0               // default time span (s)
 #define INTARROW    60.0                // direction arrow interval (s)

@@ -41,7 +41,7 @@ void Plot::UpdateDisp(void)
     trace(3,"UpdateDisp\n");
     
     if (Flush) {
-        Buff=QPixmap(Disp->size()*0.99);
+        Buff=QPixmap(Disp->size());
         if (Buff.isNull()) return;
         Buff.fill(CColor[0]);
 
@@ -255,8 +255,8 @@ void Plot::DrawTrk(QPainter &c,int level)
     }
     if (norm(OPos,3)>0.0) {
         ecef2pos(OPos,opos);
-        header=QString("ORI=%1" CHARDEG " %2" CHARDEG " %3m").arg(opos[0]*R2D,0,'f',9)
-                       .arg(opos[1]*R2D,0,'f',9).arg(opos[2],0,'f',4);
+        header=QString("ORI=%1%2 %3%4 %5m").arg(opos[0]*R2D,0,'f',9).arg(degreeChar)
+                       .arg(opos[1]*R2D,0,'f',9).arg(degreeChar).arg(opos[2],0,'f',4);
     }
     if (!level) { // center +
         GraphT->GetPos(p1,p2);
@@ -485,7 +485,7 @@ void Plot::DrawTrkVel(QPainter &c,const TIMEPOS *vel)
 // draw solution-plot -------------------------------------------------------
 void Plot::DrawSol(QPainter &c,int level, int type)
 {
-    QString label[]={tr("E-W"),tr("N-S"),tr("U-D")},unit[]={"m","m/s","m/s" CHARUP2};
+    QString label[]={tr("E-W"),tr("N-S"),tr("U-D")},unit[]={"m","m/s",QString("m/s%1").arg(up2Char)};
     QPushButton *btn[]={BtnOn1,BtnOn2,BtnOn3};
     TIMEPOS *pos,*pos1,*pos2;
     gtime_t time1={0,0},time2={0,0};
@@ -1253,13 +1253,13 @@ void Plot::DrawDop(QPainter &c,int level)
     p1.setX(Disp->font().pointSize());
     p1.setY((p1.y()+p2.y())/2);
     if (doptype==0) {
-        label=QString("# OF SATELLITES / DOP (EL>=%1%2)").arg(ElMask,0,'f',0).arg(CHARDEG);
+        label=QString("# OF SATELLITES / DOP (EL>=%1%2)").arg(ElMask,0,'f',0).arg(degreeChar);
     }
     else if (doptype==1) {
-        label=QString("# OF SATELLITES (EL>=%1%2)").arg(ElMask,0,'f',0).arg(CHARDEG);
+        label=QString("# OF SATELLITES (EL>=%1%2)").arg(ElMask,0,'f',0).arg(degreeChar);
     }
     else {
-        label=QString("DOP (EL>=%1%2)").arg(ElMask,0,'f',0).arg(CHARDEG);
+        label=QString("DOP (EL>=%1%2)").arg(ElMask,0,'f',0).arg(degreeChar);
     }
     GraphR->DrawText(c,p1,label,CColor[2],0,0,90);
     
@@ -1412,7 +1412,7 @@ void Plot::DrawSnr(QPainter &c,int level)
     QPushButton *btn[]={BtnOn1,BtnOn2,BtnOn3};
     QString ObsTypeText=ObsType2->currentText();
     QString label[]={tr("SNR"),tr("Multipath"),tr("Elevation")};
-    QString unit[]={"dBHz","m",CHARDEG};
+    QString unit[]={"dBHz","m",degreeChar};
     QPoint p1,p2;
     QColor *col,colp[MAXSAT];
     gtime_t time={0,0};
@@ -1583,7 +1583,7 @@ void Plot::DrawSnrE(QPainter &c,int level)
         GraphE[i]->DrawText(c,p1,label[i],CColor[2],0,0,90);
         if (i==j) {
             p2.rx()-=8; p2.ry()-=6;
-            GraphE[i]->DrawText(c,p2,tr("Elevation")+ "(" CHARDEG ")",CColor[2],2,1,0);
+            GraphE[i]->DrawText(c,p2,tr("Elevation ( %1 )").arg(degreeChar),CColor[2],2,1,0);
         }
     }
     if (0<=ind&&ind<NObs&&BtnShowTrack->isChecked()) {

@@ -118,8 +118,8 @@ void Plot::UpdateTimeSol(void)
             r=norm(data->rr,3);
             az=norm(data->rr,2)<=1E-12?0.0:atan2(data->rr[0],data->rr[1])*R2D;
             el=r<=1E-12?0.0:asin(data->rr[2]/r)*R2D;
-            msg+=QString("B=%1m D=%2" CHARDEG " %3" CHARDEG "  Q=")
-                           .arg(r,0,'f',3).arg(az<0.0?az+360.0:az,6,'f',2).arg(el,5,'f',2);
+            msg+=QString("B=%1m D=%2%3 %4%5  Q=")
+                           .arg(r,0,'f',3).arg(az<0.0?az+360.0:az,6,'f',2).arg(degreeChar).arg(el,5,'f',2).arg(degreeChar);
         }
         if (1<=data->stat&&data->stat<=6) {
             msgs[data->stat-1]=QString("%1:%2").arg(data->stat).arg(sol[data->stat]);
@@ -386,12 +386,12 @@ void Plot::UpdatePoint(int x, int y)
         if ((el=90.0-90.0*norm(q,2)/r)>0.0) {
             az=el>=90.0?0.0:ATAN2(q[0],q[1])*R2D;
             if (az<0.0) az+=360.0;
-            msg=QString("AZ=%1" CHARDEG " EL=%2" CHARDEG).arg(az,5,'f',1).arg(el,4,'f',1);
+            msg=QString("AZ=%1%2 EL=%3%4").arg(az,5,'f',1).arg(degreeChar).arg(el,4,'f',1).arg(degreeChar);
         }
     }
     else if (PlotType==PLOT_SNRE) { // snr-el-plot
         GraphE[0]->ToPos(p,q[0],q[1]);
-        msg=QString("EL=%1 " CHARDEG).arg(q[0],4,'f',1);
+        msg=QString("EL=%1%2").arg(q[0],4,'f',1).arg(degreeChar);
     }
     else {
         GraphG[0]->ToPos(p,xx,yy);
