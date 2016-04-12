@@ -59,7 +59,7 @@
 #include "aboutdlg.h"
 #include "viewer.h"
 
-#define PRGNAME     "RTKPOST"
+#define PRGNAME     "RTKPOST-QT"
 #define MAXHIST     20
 #ifdef Q_OS_WIN
 #define GOOGLE_EARTH "C:\\Program Files\\Google\\Google Earth\\googleearth.exe"

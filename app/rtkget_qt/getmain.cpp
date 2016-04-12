@@ -38,7 +38,7 @@
 #include "timedlg.h"
 #include "viewer.h"
 
-#define PRGNAME     "RTKGET"  // program name
+#define PRGNAME     "RTKGET-QT"  // program name
 
 #define URL_FILE    "..\\data\\URL_LIST.txt"
 #define TEST_FILE   "rtkget_test.txt"

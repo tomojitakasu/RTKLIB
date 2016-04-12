@@ -560,7 +560,7 @@ static gtime_t adjweek(gtime_t time, double tow)
 
 /* return the Septentrio signal type -----------------------------------------*/
 static int getSignalCode(int signType){
-    int _code;
+    int _code=-1;
 
     switch (signType)
     {
@@ -1169,7 +1169,7 @@ static int decode_rawnav(raw_t *raw, int sys){
 
     /* get GPS satellite number */
     prn=U1(p+8);
-    if (sat==SYS_QZS) prn-=180;
+    if (sys==SYS_QZS) prn-=180;
 
     sat=satno(sys,prn);
     if (sat == 0) return -1;

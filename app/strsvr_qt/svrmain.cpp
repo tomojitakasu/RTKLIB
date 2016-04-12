@@ -42,7 +42,7 @@
 
 //---------------------------------------------------------------------------
 
-#define PRGNAME     "STRSVR"        // program name
+#define PRGNAME     "STRSVR-QT"        // program name
 #define TRACEFILE   "strsvr.trace"  // debug trace file
 #define CLORANGE    QColor(0x00,0xAA,0xFF)
 

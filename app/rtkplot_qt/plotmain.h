@@ -17,7 +17,7 @@
 #define MAXWAYPNT   10                  // max number of waypoints
 #define MAXMAPPATH  4096                // max number of map path
 
-#define PRGNAME     "RTKPLOT"           // program name
+#define PRGNAME     "RTKPLOT-QT"           // program name
 
 const QChar degreeChar(0260);           // character code of degree (UTF-8)
 const QChar up2Char(0262);              // character code of ^2     (UTF-8)

@@ -57,7 +57,7 @@ MainWindow *mainForm;
 
 //---------------------------------------------------------------------------
 
-#define PRGNAME     "RTKNAVI"           // program name
+#define PRGNAME     "RTKNAVI-QT"           // program name
 #define TRACEFILE   "rtknavi_%Y%m%d%h%M.trace" // debug trace file
 #define STATFILE    "rtknavi_%Y%m%d%h%M.stat"  // solution status file
 const QChar degreeChar(0260);           // character code of degree (UTF-8)

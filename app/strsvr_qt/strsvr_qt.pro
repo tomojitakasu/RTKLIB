@@ -23,9 +23,13 @@ linux{
     LIBS += -lpng $${RTKLIB}
 }
 win32 {
-    debug:RTKLIB = ../../src/debug/libRTKLib.a
-    else:RTKLIB =../../src/release/libRTKLib.a
-    LIBS+= $${RTKLIB}  -lWs2_32 -lwinmm
+    CONFIG(debug) {
+        RTKLIB = ../../src/debug/libRTKLib.a
+    } else {
+        RTKLIB =../../src/release/libRTKLib.a
+    }
+
+    LIBS+= $${RTKLIB} -lWs2_32 -lwinmm
 }
 
 PRE_TARGETDEPS = $${RTKLIB}
@@ -77,5 +81,7 @@ FORMS    += \
     ../appcmn_qt/refdlg.ui \
     ../appcmn_qt/keydlg.ui
 
-RESOURCES += \
+RESOURCES +=  \
     strsvr_qt.qrc
+
+RC_FILE = strsvr_qt.rc

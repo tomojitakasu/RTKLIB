@@ -43,7 +43,7 @@
 
 MainWindow *mainWindow;
 
-#define PRGNAME     "RTKCONV"  // program name
+#define PRGNAME     "RTKCONV-QT"  // program name
 #define MAXHIST     20         // max number of histories
 #define TSTARTMARGIN 60.0      // time margin for file name replacement
 #define TRACEFILE   "rtkconv.trace" // trace file

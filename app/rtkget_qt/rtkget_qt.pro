@@ -17,9 +17,13 @@ linux{
     LIBS += -lpng $${RTKLIB}
 }
 win32 {
-    debug:RTKLIB = ../../src/debug/libRTKLib.a
-    else:RTKLIB =../../src/release/libRTKLib.a
-    LIBS+= $${RTKLIB}  -lWs2_32 -lwinmm
+    CONFIG(debug) {
+        RTKLIB = ../../src/debug/libRTKLib.a
+    } else {
+        RTKLIB =../../src/release/libRTKLib.a
+    }
+
+    LIBS+= $${RTKLIB} -lWs2_32 -lwinmm
 }
 
 PRE_TARGETDEPS = $${RTKLIB}
