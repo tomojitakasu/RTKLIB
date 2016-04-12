@@ -1,6 +1,7 @@
 //---------------------------------------------------------------------------
 #include <QShowEvent>
 #include <QCloseEvent>
+#include <QScrollBar>
 #include <QDebug>
 
 #include "rtklib.h"
@@ -11,7 +12,7 @@
 #define SQRT(x)     ((x)<0.0?sqrt(-(x)):sqrt(x))
 #define TOPMARGIN	2
 #define LEFTMARGIN	3
-#define MAXLINE		2048
+#define MAXLINE		128
 #define MAXLEN		200
 
 #define NMONITEM	29
@@ -50,6 +51,7 @@ MonitorDialog::MonitorDialog(QWidget* parent)
 
     connect(BtnClear,SIGNAL(clicked(bool)),this,SLOT(BtnClearClick()));
     connect(BtnClose,SIGNAL(clicked(bool)),this,SLOT(BtnCloseClick()));
+    connect(BtnDown,SIGNAL(clicked(bool)),this,SLOT(BtnDownClick()));
     connect(Type,SIGNAL(currentIndexChanged(int)),this,SLOT(TypeChange(int)));
     connect(SelFmt,SIGNAL(currentIndexChanged(int)),this,SLOT(SelFmtChange(int)));
     connect(SelObs,SIGNAL(currentIndexChanged(int)),this,SLOT(SelObsChange(int)));
@@ -269,7 +271,7 @@ void MonitorDialog::Timer2Timer()
 void MonitorDialog::AddConsole(unsigned char *msg, int n, int mode)
 {
     char buff[MAXLEN+16],*p=buff;
-    if (BtnPause->isDown()) return;
+    if (BtnPause->isChecked()) return;
 
     if (n<=0) return;
 
@@ -297,6 +299,7 @@ void MonitorDialog::AddConsole(unsigned char *msg, int n, int mode)
     ConBuff[ConBuff.count()-1]=buff;
 
     Console->setColumnCount(1);
+    Console->setRowCount(ConBuff.size());
     for (int i=0;i<ConBuff.size();i++)
         Console->setItem(i,0, new QTableWidgetItem(ConBuff.at(i)));
 
@@ -306,6 +309,13 @@ void MonitorDialog::AddConsole(unsigned char *msg, int n, int mode)
 void MonitorDialog::BtnClearClick()
 {
     ConBuff.clear();
+    Console->clear();
+    Console->setRowCount(0);
+}
+//---------------------------------------------------------------------------
+void MonitorDialog::BtnDownClick()
+{
+    Console->verticalScrollBar()->setValue(Console->verticalScrollBar()->maximum());
 }
 //---------------------------------------------------------------------------
 void MonitorDialog::SelObsChange(int)
@@ -824,6 +834,7 @@ void MonitorDialog::ShowEst(void)
 void MonitorDialog::SetCov(void)
 {
 	int i;
+    header.clear();
 	
     Console->setColumnCount(2);
     Console->setRowCount(2);
@@ -853,7 +864,7 @@ void MonitorDialog::ShowCov(void)
 	}
 	rtksvrunlock(&rtksvr);
 	
-	for (i=0,n=1;i<nx;i++) {
+    for (i=0,n=0;i<nx;i++) {
         if (SelSat->currentIndex()==1&&(x[i]==0.0||P[i+i*nx]==0.0)) continue;
 		n++;
 	}
@@ -864,16 +875,15 @@ void MonitorDialog::ShowCov(void)
 	}
     Console->setColumnCount(n);
     Console->setRowCount(n);
-    Console->setHorizontalHeaderLabels(header);
 
 	time2str(time,tstr,9);
     Label->setText(time.time?QString(tr("Time: %1")).arg(tstr):s0);
-	for (i=0,n=1;i<nx;i++) {
+    for (i=0,n=0;i<nx;i++) {
         if (SelSat->currentIndex()==1&&(x[i]==0.0||P[i+i*nx]==0.0)) continue;
         Console->setColumnWidth(n,45*FontScale/96);
-        Console->setItem(n,0, new QTableWidgetItem(QString(tr("X_%1")).arg(i+1)));
-        Console->setItem(0,n, new QTableWidgetItem(QString(tr("X_%1")).arg(i+1)));
-		for (j=0,m=1;j<nx;j++) {
+        Console->setHorizontalHeaderItem(n, new QTableWidgetItem(QString(tr("X_%1")).arg(i+1)));
+        Console->setVerticalHeaderItem(n, new QTableWidgetItem(QString(tr("X_%1")).arg(i+1)));
+        for (j=0,m=0;j<nx;j++) {
             if (SelSat->currentIndex()==1&&(x[j]==0.0||P[j+j*nx]==0.0)) continue;
             Console->setItem(n,m, new QTableWidgetItem(P[i+j*nx]==0.0?s0:QString::number(SQRT(P[i+j*nx]),'f',5)));
 			m++;

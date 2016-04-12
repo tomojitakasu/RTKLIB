@@ -187,7 +187,7 @@ void OptDialog::BtnOkClick()
 void OptDialog::BtnLoadClick()
 {
     QString fileName;
-    fileName=QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Load Options..."),tr("All (*.*);;PCV File (*.pcv *.atx);;Position File (*.pos);;Options File (*.conf)"),tr("Options File (*.conf)")));
+    fileName=QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Load Options..."),QString(),tr("Options File (*.conf);;All (*.*)")));
 
     LoadOpt(fileName);
 }
@@ -196,7 +196,7 @@ void OptDialog::BtnSaveClick()
 {
     QString file;
 
-    file=QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Save Options..."),tr("All (*.*);;Options File (*.conf)"),tr("Options File (*.conf)")));
+    file=QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Save Options..."),QString(),tr("Options File (*.conf);;All (*.*)")));
 
     if (!file.contains('.')) file+=".conf";
 
@@ -217,7 +217,7 @@ void OptDialog::BtnStaPosFileClick()
 {
     QString fileName;
 
-    fileName=QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Station Postion File"),tr("All (*.*);;Position File (*.pos)"),tr("Position File (*.pos)")));
+    fileName=QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Station Postion File"),QString(),tr("Position File (*.pos);;All (*.*)")));
 
     StaPosFile->setText(fileName);
 }
@@ -320,7 +320,7 @@ void OptDialog::BtnSatPcvViewClick()
 //---------------------------------------------------------------------------
 void OptDialog::BtnSatPcvFileClick()
 {
-    SatPcvFile->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Satellite Antenna PCV File"),tr("All (*.*);;PCV File (*.pcv *.atx)"),tr("PCV File (*.pcv *.atx)"))));
+    SatPcvFile->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Satellite Antenna PCV File"),QString(),tr("PCV File (*.pcv *.atx);;All (*.*)"))));
 }
 //---------------------------------------------------------------------------
 void OptDialog::BtnAntPcvViewClick()
@@ -334,25 +334,25 @@ void OptDialog::BtnAntPcvViewClick()
 //---------------------------------------------------------------------------
 void OptDialog::BtnAntPcvFileClick()
 {
-    AntPcvFile->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Receiver Antenna PCV File"),tr("PCV File (*.pcv *.atx);;All (*.*)"))));
+    AntPcvFile->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Receiver Antenna PCV File"),QString(),tr("PCV File (*.pcv *.atx);;All (*.*)"))));
     ReadAntList();
 }
 //---------------------------------------------------------------------------
 void OptDialog::BtnGeoidDataFileClick()
 {
-    QString fileName=QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Geoid Data File"),tr("All (*.*)")));
+    QString fileName=QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Geoid Data File"),QString(),tr("All (*.*)")));
     GeoidDataFile->setText(fileName);
 }
 //---------------------------------------------------------------------------
 void OptDialog::BtnDCBFileClick()
 {
-    QString fileName=QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("DCB Data File"),tr("DCB (*.dcb)")));
+    QString fileName=QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("DCB Data File"),QString(),tr("DCB (*.dcb)")));
     DCBFile->setText(fileName);
 }
 //---------------------------------------------------------------------------
 void OptDialog::BtnEOPFileClick()
 {
-    QString fileName=QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("EOP Data File"),tr("EOP (*.erp)")));
+    QString fileName=QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("EOP Data File"),QString(),tr("EOP (*.erp)")));
     EOPFile->setText(fileName);
 }
 //---------------------------------------------------------------------------
@@ -385,14 +385,14 @@ void OptDialog::BtnFontClick()
 //---------------------------------------------------------------------------
 void OptDialog::BtnTLESatFileClick()
 {
-    QString fileName=QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("TLE Satellite Number File"),tr("All (*.*)"),tr("All (*.*)")));
+    QString fileName=QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("TLE Satellite Number File"),QString(),tr("All (*.*)")));
 
     TLESatFile->setText(fileName);
 }
 //---------------------------------------------------------------------------
 void OptDialog::BtnTLEFileClick()
 {
-    QString fileName=QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("TLE Data File"),tr("All (*.*)"),tr("All (*.*)")));
+    QString fileName=QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("TLE Data File"),QString(),tr("All (*.*)")));
 
     TLEFile->setText(fileName);
 }

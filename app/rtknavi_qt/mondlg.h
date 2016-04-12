@@ -21,6 +21,7 @@ protected:
 public slots:
     void BtnCloseClick();
     void BtnClearClick();
+    void BtnDownClick();
     void TypeChange(int);
     void Timer1Timer();
     void Timer2Timer();

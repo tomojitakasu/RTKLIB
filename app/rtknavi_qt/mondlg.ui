@@ -386,7 +386,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="rtknavi_qt.qrc">
+         <iconset resource="../rtkget_qt/rtkget_qt.qrc">
           <normaloff>:/buttons/del.bmp</normaloff>:/buttons/del.bmp</iconset>
         </property>
         <property name="flat">
@@ -406,8 +406,11 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="rtknavi_qt.qrc">
+         <iconset resource="../rtkget_qt/rtkget_qt.qrc">
           <normaloff>:/buttons/pause.bmp</normaloff>:/buttons/pause.bmp</iconset>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
         </property>
         <property name="flat">
          <bool>true</bool>
@@ -426,7 +429,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="rtknavi_qt.qrc">
+         <iconset resource="../rtkget_qt/rtkget_qt.qrc">
           <normaloff>:/buttons/fitd.bmp</normaloff>:/buttons/fitd.bmp</iconset>
         </property>
         <property name="flat">
@@ -496,7 +499,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="rtknavi_qt.qrc"/>
+  <include location="../rtkget_qt/rtkget_qt.qrc"/>
  </resources>
  <connections/>
 </ui>
