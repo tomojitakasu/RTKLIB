@@ -1191,20 +1191,20 @@ void MonitorDialog::ShowSbsNav(void)
 	
     Label->setText("");
 	
-	for (i=0,n=1;i<NSATSBS;i++) {
+    for (i=0,n=0;i<NSATSBS;i++) {
 		valid=fabs(timediff(time,seph[i].t0)<=MAXDTOE_SBS)&&
 			  seph[i].t0.time&&!seph[i].svh;
         if (SelSat->currentIndex()==1&&!valid) continue;
 		n++;
 	}
-	if (n<2) {
+    if (n<1) {
         Console->setRowCount(0);
 		return;
 	}
     Console->setRowCount(n);
     Console->setHorizontalHeaderLabels(header);
 
-	for (i=0,n=1;i<NSATSBS;i++) {
+    for (i=0,n=0;i<NSATSBS;i++) {
 		j=0;
 		valid=fabs(timediff(time,seph[i].t0)<=MAXDTOE_SBS)&&
 			  seph[i].t0.time&&!seph[i].svh;
