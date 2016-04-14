@@ -31,7 +31,7 @@ MainForm *mainForm;
 /* get source table -------------------------------------------------------*/
 static char * getsrctbl(const QString addr)
 {
-	static int lock=0;
+    static int lock=0;
 	stream_t str;
 	char *p=buff,msg[MAXSTRMSG];
 	int ns,stat,len=strlen(ENDSRCTBL);
@@ -112,8 +112,14 @@ MainForm::MainForm(QWidget *parent)
     connect(Timer,SIGNAL(timeout()),this,SLOT(TimerTimer()));
     connect(Table0,SIGNAL(cellClicked(int,int)),this,SLOT(Table0SelectCell(int,int)));
 
-#ifndef QWEBKIT
+#ifdef QWEBKIT
+    BtnMap->setEnabled(true);
+#else
+  #ifdef QWEBENGINE
+    BtnMap->setEnabled(true);
+  #else
     BtnMap->setEnabled(false);
+  #endif
 #endif
 
     Table0->setSortingEnabled(true);

@@ -295,13 +295,20 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
     connect(ObsType2,SIGNAL(currentIndexChanged(int)),this,SLOT(ObsTypeChange()));
     connect(FrqType,SIGNAL(currentIndexChanged(int)),this,SLOT(ObsTypeChange()));
 
-#ifndef QWEBKIT
-    MenuGE->setEnabled(false);
-    MenuGM->setEnabled(false);
-    MenuPlotGE->setEnabled(false);
-    MenuPlotGEGM->setEnabled(false);
-    MenuPlotGM->setEnabled(false);
+    bool state=false;
+#ifdef QWEBKIT
+    state=true;
 #endif
+#ifdef QWEBENGINE
+    state=true;
+#endif
+    MenuGE->setEnabled(state);
+    MenuGM->setEnabled(state);
+    MenuPlotGE->setEnabled(state);
+    MenuPlotGEGM->setEnabled(state);
+    MenuPlotGM->setEnabled(state);
+
+
     setMouseTracking(true);
     Disp->setMouseTracking(true);
     updateTime.start();
@@ -2094,7 +2101,8 @@ void Plot::UpdateEnable(void)
                              (PlotType==PLOT_MPS&&SkyImageI.height()>0));
     BtnAnimate     ->setVisible(data&&MenuShowTrack->isChecked());
     TimeScroll     ->setVisible(data&&MenuShowTrack->isChecked());
-#ifdef QWEBKIT
+
+#if defined(QWEBKIT) || defined(QWEBENGINE)
     MenuGE          ->setEnabled(SolData[0].n>0||SolData[1].n>0);
     MenuGM          ->setEnabled(SolData[0].n>0||SolData[1].n>0);
 #endif

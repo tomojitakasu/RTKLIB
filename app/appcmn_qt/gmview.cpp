@@ -6,17 +6,24 @@
 #include <QWebFrame>
 #include <QWebElement>
 #endif
-#include <QDebug>
+#ifdef QWEBENGINE
+#include <QWebEngineView>
+#include <QWebEnginePage>
+#include <QWebChannel>
+#include <QFile>
+#endif
+#include <QShowEvent>
 
 #include "gmview.h"
 #include "rtklib.h"
 
-#define RTKLIB_GM_FILE "rtkplot_gm.htm"
+#define RTKLIB_GM_FILE "rtklib_gm.htm"
 
 //---------------------------------------------------------------------------
 GoogleMapView::GoogleMapView(QWidget *parent)
     : QDialog(parent)
 {
+    loaded=false;
     setupUi(this);
 
     connect(BtnClose,SIGNAL(clicked(bool)),this,SLOT(BtnCloseClick()));
@@ -31,7 +38,15 @@ GoogleMapView::GoogleMapView(QWidget *parent)
     layout->addWidget(WebBrowser);
     Panel2->setLayout(layout);
 #endif
+#ifdef QWEBENGINE
+    WebBrowser = new QWebEngineView(Panel2);
+    QHBoxLayout *layout=new QHBoxLayout();
+    layout->addWidget(WebBrowser);
+    Panel2->setLayout(layout);
+    pageState=new GMPageState(this);
 
+    connect(WebBrowser,SIGNAL(loadFinished(bool)),this,SLOT(PageLoaded(bool)));
+#endif
 	State=0;
 	Lat=Lon=0.0;
 	Zoom=2;
@@ -49,14 +64,36 @@ void GoogleMapView::FormCreate()
 #ifdef QWEBKIT
     WebBrowser->load(QUrl::fromLocalFile(dir));
     WebBrowser->show();
+    loaded=true;
 #endif
+#ifdef QWEBENGINE
+    WebBrowser->load(QUrl::fromLocalFile(dir));
+    QWebChannel *channel=new QWebChannel(this);
+    channel->registerObject(QStringLiteral("state"),pageState);
 
+    WebBrowser->page()->setWebChannel(channel);
+
+    WebBrowser->show();
+#endif
     Timer1.start(300);
 }
 //---------------------------------------------------------------------------
 void GoogleMapView::BtnCloseClick()
 {
     close();
+}
+//---------------------------------------------------------------------------
+void GoogleMapView::PageLoaded(bool ok)
+{
+    if (!ok) return;
+
+#ifdef QWEBENGINE
+    QFile webchannel(":/html/qwebchannel.js");
+    webchannel.open(QIODevice::ReadOnly);
+    WebBrowser->page()->runJavaScript(webchannel.readAll());
+    WebBrowser->page()->runJavaScript("new QWebChannel(qt.webChannelTransport,function(channel) {channel.objects.state.text=document.getElementById('state').value;});");
+#endif
+    loaded=true;
 }
 //---------------------------------------------------------------------------
 void GoogleMapView::Timer1Timer()
@@ -153,7 +190,12 @@ int GoogleMapView::GetState(void)
 
 	return state;
 #else
+ #ifdef QWEBENGINE
+    if (!loaded) return 0;
+    return pageState->getText().toInt();
+ #else
     return 0;
+ #endif
 #endif
 }
 //---------------------------------------------------------------------------
@@ -167,7 +209,16 @@ void GoogleMapView::ExecFunc(const QString &func)
 
     frame->evaluateJavaScript(func);
 #else
+ #ifdef QWEBENGINE
+    if (!loaded) return;
+
+    QWebEnginePage *page=WebBrowser->page();
+    if (page==NULL) return;
+
+    page->runJavaScript(func);
+ #else
     Q_UNUSED(func)
+ #endif
 #endif
 }
 //---------------------------------------------------------------------------

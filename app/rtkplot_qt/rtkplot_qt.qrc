@@ -90,4 +90,9 @@
         <file alias="wait7.bmp">../icon/wait7.bmp</file>
         <file alias="wait8.bmp">../icon/wait8.bmp</file>
     </qresource>
+    <qresource prefix="/html">
+        <file>qwebchannel.js</file>
+        <file>rtklib_ge.htm</file>
+        <file>rtklib_gm.htm</file>
+    </qresource>
 </RCC>

@@ -9,12 +9,18 @@
 #include <QWebFrame>
 #include <QWebElement>
 #endif
+#ifdef QWEBENGINE
+#include <QWebEngineView>
+#include <QWebEnginePage>
+#include <QWebChannel>
+#include <QFile>
+#endif
 
 #include "geview.h"
 #include "plotmain.h"
 #include "rtklib.h"
 
-#define RTKPLOT_GE_FILE "rtkplot_ge.htm"
+#define RTKPLOT_GE_FILE "rtklib_ge.htm"
 
 #define TIMEOUT_GE  5000   // timeout of GE load (ms)
 #define MAXTRACKS   4096   // max number of track poitnts
@@ -41,6 +47,14 @@ extern Plot *plot;
 
     setCentralWidget(WebBrowser);
 #endif
+#ifdef QWEBENGINE
+    WebBrowser = new QWebEngineView(this);
+    setCentralWidget(WebBrowser);
+    pageState=new GEPageState(this);
+
+    connect(WebBrowser,SIGNAL(loadFinished(bool)),this,SLOT(PageLoaded(bool)));
+#endif
+
     toolBar->addWidget(BtnOpt1);
     toolBar->addWidget(BtnOpt2);
     toolBar->addWidget(BtnOpt3);
@@ -68,8 +82,11 @@ extern Plot *plot;
     Lat=Lon=LatSet=LonSet=0.0;
     Range=RangeSet=0.0;
     Heading=HeadingSet=0.0;
+    loaded=false;
+    MarkVis[0]=MarkVis[1]=TrackVis[0]=TrackVis[1]=0;
+    MarkPos[0][0]=MarkPos[0][1]=0.0;
+    MarkPos[1][0]=MarkPos[1][1]=0.0;
 
-    Clear();
 
     connect(BtnClose,SIGNAL(clicked(bool)),this,SLOT(BtnCloseClick()));
     connect(BtnEnaAlt,SIGNAL(clicked(bool)),this,SLOT(BtnEnaAltClick()));
@@ -100,7 +117,33 @@ void  GoogleEarthView::FormCreate()
 #ifdef QWEBKIT
     WebBrowser->load(QUrl::fromLocalFile(dir));
     WebBrowser->show();
+    loaded=true;
+    Clear();
 #endif
+#ifdef QWEBENGINE
+    WebBrowser->load(QUrl::fromLocalFile(dir));
+    QWebChannel *channel=new QWebChannel(this);
+    channel->registerObject(QStringLiteral("state"),pageState);
+
+    WebBrowser->page()->setWebChannel(channel);
+
+    WebBrowser->show();
+#endif
+}
+//---------------------------------------------------------------------------
+void GoogleEarthView::PageLoaded(bool ok)
+{
+    if (!ok) return;
+
+    loaded=true;
+#ifdef QWEBENGINE
+    QFile webchannel(":/html/qwebchannel.js");
+    webchannel.open(QIODevice::ReadOnly);
+    WebBrowser->page()->runJavaScript(webchannel.readAll());
+    WebBrowser->page()->runJavaScript("new QWebChannel(qt.webChannelTransport,function(channel) {channel.objects.state.text=document.getElementById('state').value;" \
+                                      "channel.objects.state.view=document.getElementById('view').value;});");
+#endif
+    Clear();
 }
 //---------------------------------------------------------------------------
 void  GoogleEarthView::Timer1Timer()
@@ -140,6 +183,27 @@ void  GoogleEarthView::Timer1Timer()
             plot->Refresh_GEView();
         }
     }
+#else
+ #ifdef QWEBENGINE
+    QStringList tokens=pageState->getView().split(',');
+
+    if (tokens.size()!=4) return;
+
+    int state=pageState->getText().toInt();
+    Lat=tokens.at(0).toDouble();
+    Lon=tokens.at(1).toDouble();
+    Range=tokens.at(2).toDouble();
+    Heading=tokens.at(3).toDouble();
+
+    if (!State&&state) {
+        State=state;
+        UpdateOpts();
+        if (LatSet!=0.0||LonSet!=0.0) {
+            SetView(LatSet,LonSet,RangeSet,HeadingSet);
+            plot->Refresh_GEView();
+        }
+    }
+ #endif
 #endif
 }
 //---------------------------------------------------------------------------
@@ -445,7 +509,16 @@ void  GoogleEarthView::ExecFunc(const QString &func)
 
     frame->evaluateJavaScript(func);
 #else
-    Q_UNUSED(func)
+#ifdef QWEBENGINE
+   if (!loaded) return;
+
+   QWebEnginePage *page=WebBrowser->page();
+   if (page==NULL) return;
+
+   page->runJavaScript(func);
+#else
+   Q_UNUSED(func)
+#endif
 #endif
 }
 //---------------------------------------------------------------------------

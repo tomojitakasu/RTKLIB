@@ -14,7 +14,7 @@
         <file alias="tray0.bmp">../icon/tray0.bmp</file>
         <file alias="tray1.bmp">../icon/tray1.bmp</file>
         <file alias="tray2.bmp">../icon/tray2.bmp</file>
-	<file alias="srctblbrows_Icon">srctblbrows_Icon.ico</file>
+        <file alias="srctblbrows_Icon">srctblbrows_Icon.ico</file>
     </qresource>
     <qresource prefix="/buttons">
         <file alias="arrow.bmp">../icon/arrow.bmp</file>
@@ -89,5 +89,9 @@
         <file alias="wait6.bmp">../icon/wait6.bmp</file>
         <file alias="wait7.bmp">../icon/wait7.bmp</file>
         <file alias="wait8.bmp">../icon/wait8.bmp</file>
+    </qresource>
+    <qresource prefix="/html">
+        <file>rtklib_gm.htm</file>
+        <file>qwebchannel.js</file>
     </qresource>
 </RCC>

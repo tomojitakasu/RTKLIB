@@ -12,9 +12,17 @@ include(../../RTKLib.pri)
 
 INCLUDEPATH += ../../src/ ../appcmn_qt
 
-QWEBKIT {
-QT+= webkitwidgets
+qtHaveModule(webenginewidgets) {
+    QT+= webenginewidgets
+    DEFINES+=QWEBENGINE
+} else {
+    qtHaveModule(webkitwidgets) {
+        QT+= webkitwidgets
+        DEFINES+= QWEBKIT
+    }
 }
+
+
 
 linux{
     RTKLIB =../../src/libRTKLib.a

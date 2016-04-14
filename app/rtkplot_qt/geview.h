@@ -12,6 +12,28 @@
 #ifdef QWEBKIT
 class QWebView;
 #endif
+#ifdef QWEBENGINE
+class QWebEngineView;
+class GEPageState : public QObject
+{
+    Q_OBJECT
+    Q_PROPERTY(QString text MEMBER text NOTIFY textChanged)
+    Q_PROPERTY(QString view MEMBER view NOTIFY viewChanged)
+public:
+    explicit GEPageState(QObject *parent=NULL): QObject(parent){}
+    QString getText() {return text;}
+    QString getView() {return view;}
+signals:
+    void textChanged(const QString &text);
+    void viewChanged(const QString &view);
+private:
+    QString text;
+    QString view;
+};
+
+#endif
+
+class QShowEvent;
 //---------------------------------------------------------------------------
 class GoogleEarthView : public QMainWindow, private Ui::GoogleEarthView
 {
@@ -37,14 +59,20 @@ public slots:
     void BtnOptClick();
     void Timer1Timer();
     void Timer2Timer();
+    void PageLoaded(bool);
 
 private:
     int State,Expand,Rotate,MarkVis[2],TrackVis[2];
     double Lat,Lon,Range,Heading,LatSet,LonSet,RangeSet,HeadingSet;
     double MarkPos[2][2];
     QTimer Timer1,Timer2;
+    bool loaded;
 #ifdef QWEBKIT
     QWebView *WebBrowser;
+#endif
+#ifdef QWEBENGINE
+    QWebEngineView *WebBrowser;
+    GEPageState *pageState;
 #endif
     void UpdateOpts (void);
     void UpdateEnable(void);
