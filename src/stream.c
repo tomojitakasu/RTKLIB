@@ -299,7 +299,7 @@ static serial_t *openserial(const char *path, int mode, char *msg)
     else strcpy(port,path);
     
     for (i=0;i<11;i++) if (br[i]==brate) break;
-    if (i>12) {
+    if (i>=11) {
         sprintf(msg,"bitrate error (%d)",brate);
         tracet(1,"openserial: %s path=%s\n",msg,path);
         free(serial);

@@ -1884,7 +1884,7 @@ void MonitorDialog::ShowRtcmSsr(void)
         Console->setItem(i,j++, new QTableWidgetItem(QString::number(ssr[i].dclk[1]*1E3,'f',3)));
         Console->setItem(i,j++, new QTableWidgetItem(QString::number(ssr[i].dclk[2]*1E3,'f',5)));
         Console->setItem(i,j++, new QTableWidgetItem(QString::number(ssr[i].hrclk,'f',3)));
-		for (k=1;k<=MAXCODE;k++) {
+        for (k=1;k<MAXCODE;k++) {
             Console->setItem(i,j++, new QTableWidgetItem(QString::number(ssr[i].cbias[k],'f',2)));
 		}
 	}

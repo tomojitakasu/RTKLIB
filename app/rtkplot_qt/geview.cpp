@@ -158,7 +158,7 @@ void  GoogleEarthView::Timer1Timer()
     QWebFrame *frame=WebBrowser->page()->mainFrame();
 
     ele1=frame->findFirstElement("state");
-    ele1=frame->findFirstElement("view");
+    ele2=frame->findFirstElement("view");
 
     if (ele1.isNull()||ele2.isNull()) return;
     

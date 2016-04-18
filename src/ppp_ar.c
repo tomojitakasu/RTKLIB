@@ -152,8 +152,8 @@ static void filter_EWL(rtk_t *rtk, const obsd_t *obs, int n, const int *exc,
             amb->n[1]=0;
         }
         if (exc[i]||azel[1+2*i]<rtk->opt.elmin||lam[1]==0.0||lam[2]==0.0||
-            obs[i].L[1]==0.0||obs[i].P[2]==0.0||
-            obs[i].L[1]==0.0||obs[i].P[2]==0.0) continue;
+            obs[i].L[1]==0.0||obs[i].P[1]==0.0||
+            obs[i].L[2]==0.0||obs[i].P[2]==0.0) continue;
         
         /* EMW-LC and variance */
         lamE=lam[1]*lam[2]/(lam[2]-lam[1]);

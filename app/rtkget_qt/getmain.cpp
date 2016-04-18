@@ -100,6 +100,7 @@ public:
 
     explicit DownloadThread(QObject *parent, const QString lf, bool a, bool t):QThread(parent){
         seqnos=0;seqnoe=0;opts=0;
+        ts=te={0,0};
         test=t;
         LogFile=lf;
         append=a;
