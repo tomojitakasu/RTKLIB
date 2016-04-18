@@ -33,7 +33,7 @@ public:
     char *infile[6],outfile[1024];
     char *rov,*base;
 
-    ProcessingThread(QObject *parent);
+    explicit ProcessingThread(QObject *parent);
     ~ProcessingThread();
     void addInput(const QString &);
     void addList(char * &sta, const QString & list);
@@ -157,7 +157,7 @@ public:
     QString RovList,BaseList;
 	
     void ViewFile(const QString &file);
-    MainForm(QWidget *parent=0);
+    explicit MainForm(QWidget *parent=0);
 };
 
 //---------------------------------------------------------------------------

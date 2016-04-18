@@ -294,12 +294,12 @@ static serial_t *openserial(const char *path, int mode, char *msg)
     
     if ((p=strchr(path,':'))) {
         strncpy(port,path,p-path); port[p-path]='\0';
-        sscanf(p,":%d:%d:%c:%d:%s",&brate,&bsize,&parity,&stopb,fctr);
+        sscanf(p,":%d:%d:%c:%d:%63s",&brate,&bsize,&parity,&stopb,fctr);
     }
     else strcpy(port,path);
     
     for (i=0;i<11;i++) if (br[i]==brate) break;
-    if (i>=12) {
+    if (i>12) {
         sprintf(msg,"bitrate error (%d)",brate);
         tracet(1,"openserial: %s path=%s\n",msg,path);
         free(serial);
@@ -392,9 +392,10 @@ static serial_t *openserial(const char *path, int mode, char *msg)
 /* close serial --------------------------------------------------------------*/
 static void closeserial(serial_t *serial)
 {
+    if (!serial) return;
+
     tracet(3,"closeserial: dev=%d\n",serial->dev);
     
-    if (!serial) return;
 #ifdef WIN32
     serial->state=0;
     WaitForSingleObject(serial->thread,10000);
@@ -413,8 +414,8 @@ static int readserial(serial_t *serial, unsigned char *buff, int n, char *msg)
 #else
     int nr;
 #endif
-    tracet(4,"readserial: dev=%d n=%d\n",serial->dev,n);
     if (!serial) return 0;
+    tracet(4,"readserial: dev=%d n=%d\n",serial->dev,n);
 #ifdef WIN32
     if (!ReadFile(serial->dev,buff,n,&nr,NULL)) return 0;
 #else
@@ -428,9 +429,10 @@ static int writeserial(serial_t *serial, unsigned char *buff, int n, char *msg)
 {
     int ns;
     
+    if (!serial) return 0;
+
     tracet(3,"writeserial: dev=%d n=%d\n",serial->dev,n);
     
-    if (!serial) return 0;
 #ifdef WIN32
     if ((ns=writeseribuff(serial,buff,n))<n) serial->error=1;
 #else
@@ -462,7 +464,7 @@ static int openfile_(file_t *file, gtime_t time, char *msg)
     
     /* use stdin or stdout if file path is null */
     if (!*file->path) {
-        file->fp=file->mode&STR_MODE_R?stdin:stdout;
+        file->fp=(file->mode&STR_MODE_R)?stdin:stdout;
         return 1;
     }
     /* replace keywords */
@@ -586,9 +588,10 @@ static file_t *openfile(const char *path, int mode, char *msg)
 /* close file ----------------------------------------------------------------*/
 static void closefile(file_t *file)
 {
+    if (!file) return;
+
     tracet(3,"closefile: fp=%d\n",file->fp);
     
-    if (!file) return;
     closefile_(file);
     free(file);
 }
@@ -638,10 +641,10 @@ static int readfile(file_t *file, unsigned char *buff, int nmax, char *msg)
     unsigned int nr=0,t,tick;
     size_t fpos;
     
-    tracet(4,"readfile: fp=%d nmax=%d\n",file->fp,nmax);
-    
     if (!file) return 0;
-    
+
+    tracet(4,"readfile: fp=%d nmax=%d\n",file->fp,nmax);
+        
     if (file->fp==stdin) {
 #ifndef WIN32
         /* input from stdin */
@@ -704,9 +707,9 @@ static int writefile(file_t *file, unsigned char *buff, int n, char *msg)
     double tow1,tow2,intv;
     size_t fpos,fpos_tmp;
     
-    tracet(3,"writefile: fp=%d n=%d\n",file->fp,n);
-    
     if (!file) return 0;
+
+    tracet(3,"writefile: fp=%d n=%d\n",file->fp,n);
     
     wtime=utc2gpst(timeget()); /* write time in gpst */
     
@@ -1563,7 +1566,7 @@ static void decodeftppath(const char *path, char *addr, char *file, char *user,
         if ((q=strchr(buff,':'))) {
              *q='\0'; if (passwd) strcpy(passwd,q+1);
         }
-        *q='\0'; if (user) strcpy(user,buff); 
+        if (user) strcpy(user,buff);
     }
     else p=buff;
     

@@ -51,7 +51,7 @@ public:
     QString Paths[3][4],SwapInterval;
     QString History[10],MntpHist[10];
 
-    LogStrDialog(QWidget* parent);
+    explicit LogStrDialog(QWidget* parent);
 };
 //---------------------------------------------------------------------------
 #endif

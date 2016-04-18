@@ -22,7 +22,7 @@ protected:
     QString color2String(const QColor &c);
 
 public:
-    ViewerOptDialog(QWidget* parent);
+    explicit ViewerOptDialog(QWidget* parent);
 
     QFont Font;
     QColor Color1,Color2;

@@ -1042,7 +1042,7 @@ int MainForm::ObsToNav(const QString &obsfile, QString &navfile)
     if ((suffix.length()==3)&&(suffix.at(2).toLower()=='o')) suffix[2]='*';
     else if ((suffix.length()==3)&&(suffix.at(2).toLower()=='d')) suffix[2]='*';
     else if (suffix.toLower()=="obs") suffix="*nav";
-    else if ((p=suffix.indexOf("gz")!=-1)||(p=suffix.indexOf('Z')!=-1)) {
+    else if (((p=suffix.indexOf("gz"))!=-1)||((p=suffix.indexOf('Z'))!=-1)) {
         if (p<1) return 0;
         if (suffix.at(p-1).toLower()=='o') suffix[p-1]='*';
         else if (suffix.at(p-1).toLower()=='d') suffix[p-1]='*';

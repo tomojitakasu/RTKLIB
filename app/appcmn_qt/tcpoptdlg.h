@@ -27,7 +27,7 @@ public:
 	int Opt;
     QString Path,History[MAXHIST],MntpHist[MAXHIST];
 
-    TcpOptDialog(QWidget* parent);
+    explicit TcpOptDialog(QWidget* parent);
 };
 //---------------------------------------------------------------------------
 #endif

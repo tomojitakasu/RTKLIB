@@ -29,7 +29,7 @@ private:
 public:
 	int Opt;
     QString Path;
-    FileOptDialog(QWidget* parent);
+    explicit FileOptDialog(QWidget* parent);
 };
 //---------------------------------------------------------------------------
 #endif

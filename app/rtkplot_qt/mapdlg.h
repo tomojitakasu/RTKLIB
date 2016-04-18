@@ -28,7 +28,7 @@ private:
     void UpdateEnable(void);
 	
 public:
-    MapAreaDialog(QWidget *parent=NULL);
+    explicit MapAreaDialog(QWidget *parent=NULL);
 
     void UpdateField(void);
 };

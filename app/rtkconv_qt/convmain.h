@@ -29,13 +29,15 @@ public:
     rnxopt_t rnxopt;
     int format;
 
-    ConversionThread(QObject *parent):QThread(parent){
+    explicit ConversionThread(QObject *parent):QThread(parent){
         for (int i=0;i<7;i++)
         {
             ofile[i]=new char[1024];
             ofile[i][0]='\0';
         };
         memset(&rnxopt,0,sizeof(rnxopt_t));
+        format=0;
+        ifile[0]='\0';
     }
 
     ~ConversionThread() {
@@ -131,7 +133,7 @@ public:
 	int RnxVer,RnxFile,NavSys,ObsType,FreqType,TraceLevel,EventEna;
 	int AutoPos,ScanObs,OutIono,OutTime,OutLeaps;
 	
-    MainWindow(QWidget *parent=0);
+    explicit MainWindow(QWidget *parent=0);
 };
 //---------------------------------------------------------------------------
 #endif

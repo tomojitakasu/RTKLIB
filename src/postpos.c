@@ -746,7 +746,7 @@ static int getstapos(const char *file, char *name, double *r)
     while (fgets(buff,sizeof(buff),fp)) {
         if ((p=strchr(buff,'%'))) *p='\0';
         
-        if (sscanf(buff,"%lf %lf %lf %s",pos,pos+1,pos+2,sname)<4) continue;
+        if (sscanf(buff,"%lf %lf %lf %255s",pos,pos+1,pos+2,sname)<4) continue;
         
         for (p=sname,q=name;*p&&*q;p++,q++) {
             if (toupper((int)*p)!=toupper((int)*q)) break;

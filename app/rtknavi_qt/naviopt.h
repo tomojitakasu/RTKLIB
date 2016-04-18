@@ -77,7 +77,7 @@ public:
 	double RovAntDel[3],RefAntDel[3],RovPos[3],RefPos[3];
 	double Baseline[2],NmeaIntv[2];
 
-    OptDialog(QWidget* parent);
+    explicit OptDialog(QWidget* parent);
 };
 //---------------------------------------------------------------------------
 #endif

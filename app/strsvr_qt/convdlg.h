@@ -23,7 +23,7 @@ public:
 	int ConvEna,ConvInp,ConvOut,StaId;
 	double AntPos[3],AntOff[3];
 	
-    ConvDialog(QWidget *parent);
+    explicit ConvDialog(QWidget *parent);
 };
 //---------------------------------------------------------------------------
 #endif

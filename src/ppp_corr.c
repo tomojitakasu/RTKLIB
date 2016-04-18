@@ -203,11 +203,11 @@ static int read_stec(pppcorr_t *corr, const char *file)
         if (strstr(buff,"STATION POSITION")) sec=1;
         if ((p=strchr(buff,'#'))) *p='\0';
         if (sec) {
-            if (sscanf(buff,"%s %lf %lf %lf",sta,rr,rr+1,rr+2)<4) continue;
+            if (sscanf(buff,"%63s %lf %lf %lf",sta,rr,rr+1,rr+2)<4) continue;
             if (!add_pos(corr,sta,rr)) break;
         }
         else {
-            if (sscanf(buff,"%lf/%lf/%lf %lf:%lf:%lf %s %s %lf %lf %lf %lf %lf %lf %d",
+            if (sscanf(buff,"%lf/%lf/%lf %lf:%lf:%lf %63s %63s %lf %lf %lf %lf %lf %lf %d",
                        ep,ep+1,ep+2,ep+3,ep+4,ep+5,sat,sta,ion,ion+1,std,std+1,
                        azel,azel+1,&flag)<15) continue;
             time=epoch2time(ep);
@@ -242,12 +242,12 @@ static int read_snxtrop(pppcorr_t *corr, const char *file)
         else if (strstr(buff,"+TROP/STA_COORDINATES")==buff) sec=1;
         else if (strstr(buff,"+TROP/SOLUTION"       )==buff) sec=2;
         if (sec==1) {
-            if (sscanf(buff,"%s %*s %*s %*s %lf %lf %lf",sta,rr,rr+1,
+            if (sscanf(buff,"%63s %*s %*s %*s %lf %lf %lf",sta,rr,rr+1,
                        rr+2)<4) continue;
             if (!add_pos(corr,sta,rr)) break;
         }
         else if (sec==2) {
-            if (sscanf(buff,"%s %d:%d:%lf %lf %lf %lf %lf %lf %lf",sta,&year,
+            if (sscanf(buff,"%63s %d:%d:%lf %lf %lf %lf %lf %lf %lf",sta,&year,
                        &doy,&tod,trp,std,trp+1,std+1,trp+2,std+2)<6) continue;
             ep[0]=2000.0+year;
             time=timeadd(epoch2time(ep),(doy-1)*86400.0+tod);

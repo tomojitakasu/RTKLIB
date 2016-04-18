@@ -84,7 +84,7 @@ private:
     void ViewConsole(void);
 
 public:
-    MonitorDialog(QWidget* parent);
+    explicit MonitorDialog(QWidget* parent);
 };
 //---------------------------------------------------------------------------
 #endif

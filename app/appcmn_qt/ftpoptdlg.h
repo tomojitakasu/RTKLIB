@@ -27,7 +27,7 @@ private:
 public:
 	int Opt;
     QString Path,History[MAXHIST],MntpHist[MAXHIST];
-    FtpOptDialog(QWidget *parent);
+    explicit FtpOptDialog(QWidget *parent);
 };
 //---------------------------------------------------------------------------
 #endif

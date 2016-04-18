@@ -56,7 +56,7 @@ GoogleMapView::GoogleMapView(QWidget *parent)
 //---------------------------------------------------------------------------
 void GoogleMapView::FormCreate()
 {
-    QString dir=".";
+    QString dir;
 
     dir=qApp->applicationDirPath(); // exe directory
     dir=dir+"/"+RTKLIB_GM_FILE;

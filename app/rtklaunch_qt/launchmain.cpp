@@ -35,7 +35,6 @@ MainForm::MainForm(QWidget *parent)
 {
     setupUi(this);
 
-    bool tray= false;
     QString file=QApplication::applicationFilePath();
     QFileInfo fi(file);
     IniFile=fi.absolutePath()+"/"+fi.baseName()+".ini";
@@ -62,7 +61,7 @@ MainForm::MainForm(QWidget *parent)
 
     parser.process(*QApplication::instance());
 
-    tray=parser.isSet(trayOption);
+    bool tray=parser.isSet(trayOption);
 
     if (parser.isSet(titleOption))
         setWindowTitle(parser.value(titleOption));

@@ -40,7 +40,7 @@ public:
     bool Read(const QString &file);
     bool Save(const QString &file);
 
-    TextViewer(QWidget* parent);
+    explicit TextViewer(QWidget* parent);
 };
 //---------------------------------------------------------------------------
 #endif

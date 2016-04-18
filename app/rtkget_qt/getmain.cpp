@@ -107,6 +107,7 @@ public:
         for (int i=0;i<MAX_STA;i++) {stas[i]=new char [16];stas[i][0]='\0';};
         for (int i=0;i<MAX_URL_SEL;i++) memset(&urls[i],0,sizeof(url_t));
         dir[0]=msg[0]=path[0]='\0';
+        nurl=nsta=0;ti=0;
 
     }
     ~DownloadThread(){
@@ -629,7 +630,7 @@ void MainForm::LoadUrl(QString file)
     url_t *urls;
     QString subtype, basetype;
     char *sel[]={"*"};
-    int i,n,p;
+    int i,n;
     
     urls=new url_t [MAX_URL];
     
@@ -647,6 +648,7 @@ void MainForm::LoadUrl(QString file)
     n=dl_readurls(qPrintable(file),sel,1,urls,MAX_URL);
     
     for (i=0;i<n;i++) {
+        int p;
         Types.append(urls[i].type);
         Urls.append(urls[i].path);
         Locals.append(urls[i].dir );

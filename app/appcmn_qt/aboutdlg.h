@@ -20,6 +20,6 @@ protected:
 public:
 	int IconIndex;
     QString About;
-    AboutDialog(QWidget*);
+    explicit AboutDialog(QWidget*);
 };
 #endif

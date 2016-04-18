@@ -410,8 +410,8 @@ static int decode_measepoch(raw_t *raw){
             else SNR2_DBHZ=(((double)U1(p+2))*0.25)+10;
 
             offsetMSB = U1(p+3);
-            CodeOffsetMSB=((offsetMSB&0x4)==0x4)?offsetMSB| ~0x7:offsetMSB&0x7;                 /* bit[0-2] */
-            DopplerOffsetMSB=((offsetMSB&0x80)==0x80)?(offsetMSB>>3)| ~0x1f:(offsetMSB>>3)&0x1f;/* bit[3-7] */
+            CodeOffsetMSB=((offsetMSB&0x04)==0x04)?(offsetMSB&0x03)| ~((int32_t)0x03):offsetMSB&0x03;                 /* bit[0-2] */
+            DopplerOffsetMSB=((offsetMSB&0x80)==0x80)?((offsetMSB>>3)&0x1f)| ~((int32_t)0x1f):(offsetMSB>>3)&0x1f;/* bit[3-7] */
 
             CarrierMSB = I1(p+4);
 
@@ -1341,7 +1341,7 @@ static int decode_galrawinav(raw_t *raw){
         return -1;
     }
 
-    if ((U4(p+14)&0x80)!=0x8) /* E5b-I */
+    if ((U4(p+14)&0x80)!=0x80) /* E5b-I */
     {
         int pos,i;
         type=getbitu(buff,2,6);

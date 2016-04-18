@@ -254,11 +254,11 @@ void Graph::DrawBox(QPainter &c)
 void Graph::DrawLabel(QPainter &c)
 {
 	if (XLabel!="") {
-        QPoint p(X+Width/2,Y+Height+(XLPos%2?10:2));
+        QPoint p(X+Width/2,Y+Height+((XLPos%2)?10:2));
         DrawText(c,p,XLabel,Color[2],0,2,0);
 	}
 	if (YLabel!="") {
-        QPoint p(X-(YLPos%2?20:2),Y+Height/2);
+        QPoint p(X-((YLPos%2)?20:2),Y+Height/2);
         DrawText(c,p,YLabel,Color[2],0,1,90);
 	}
 	if (Title!="") {

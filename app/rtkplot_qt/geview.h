@@ -79,7 +79,7 @@ private:
     void ExecFunc   (const QString &func);
 
 public:
-    GoogleEarthView(QWidget *parent=NULL);
+    explicit GoogleEarthView(QWidget *parent=NULL);
 
     void Init       (void);
     void Clear      (void);

@@ -19,7 +19,7 @@ public slots:
     void  BtnLogFileClick();
 
 public:
-     DownOptDialog(QWidget* parent);
+    explicit DownOptDialog(QWidget* parent);
 };
 //---------------------------------------------------------------------------
 #endif

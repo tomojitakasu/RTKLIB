@@ -876,7 +876,7 @@ static int decode_solstat(char *buff, solstat_t *stat)
     
     for (p=buff;*p;p++) if (*p==',') *p=' ';
     
-    n=sscanf(buff,"$SAT%d%lf%s%d%lf%lf%lf%lf%d%d%d%d%d%d%d%d",
+    n=sscanf(buff,"$SAT%d%lf%31s%d%lf%lf%lf%lf%d%d%d%d%d%d%d%d",
              &week,&tow,id,&frq,&az,&el,&resp,&resc,&vsat,&snr,&fix,&slip,
              &lock,&outc,&slipc,&rejc);
     

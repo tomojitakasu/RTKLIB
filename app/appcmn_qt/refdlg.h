@@ -34,7 +34,7 @@ public:
 	int FontScale,Format;
 	double Pos[3],RovPos[3];
 
-    RefDialog(QWidget* parent);
+    explicit RefDialog(QWidget* parent);
 };
 //---------------------------------------------------------------------------
 #endif

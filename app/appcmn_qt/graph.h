@@ -28,7 +28,7 @@ private:
         double XCent,YCent,XScale,YScale,XTick,YTick;
 
 public:
-        Graph(QPaintDevice *parent);
+        explicit Graph(QPaintDevice *parent);
 
         int IsInArea(QPoint &p);
         int ToPoint(double x, double y, QPoint &p);

@@ -434,6 +434,7 @@ extern int lexreadmsg(const char *file, int sel, lex_t *lex)
             if (!(lex_msgs=(lexmsg_t *)realloc(lex->msgs,lex->nmax*sizeof(lexmsg_t)))) {
                 trace(1,"lexreadmsg malloc error: nmax=%d\n",lex->nmax);
                 free(lex->msgs); lex->msgs=NULL; lex->n=lex->nmax=0;
+                fclose(fp);
                 return 0;
             }
             lex->msgs=lex_msgs;

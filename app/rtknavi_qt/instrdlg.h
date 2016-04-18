@@ -69,6 +69,6 @@ public:
     QString RcvOpt[3];
     QString History[10],MntpHist[10];
 
-    InputStrDialog(QWidget* parent);
+    explicit InputStrDialog(QWidget* parent);
 };
 #endif

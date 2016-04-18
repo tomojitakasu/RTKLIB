@@ -488,7 +488,7 @@ void MainWindow::BtnInFileViewClick()
     if (ext.length()<4) return;
 
     if ((ext=="obs" )||(ext=="OBS" )||(ext=="nav")||
-        (ext=="NAV" )||(ext.mid(1)=="nav")||(ext=="NAV" )||
+        (ext=="NAV" )||(ext.mid(1)=="nav")||(ext.mid(1)=="NAV" )||
         (ext.at(2)=='o'  )||(ext.at(2)=='O'  )||(ext.at(2)=='n' )||
         (ext.at(2)=='N'  )||(ext.at(2)=='p'  )||(ext.at(2)=='P' )||
         (ext.at(2)=='g'  )||(ext.at(2)=='G'  )||(ext.at(2)=='h' )||
@@ -678,7 +678,7 @@ void MainWindow::ConvertFile(void)
     QString OutFile3_Text=OutFile3->text(),OutFile4_Text=OutFile4->text();
     QString OutFile5_Text=OutFile5->text(),OutFile6_Text=OutFile6->text();
     QString OutFile7_Text=OutFile7->text();
-    int i,satid;
+    int i;
     char *p;
     double RNXVER[]={2.10,2.11,2.12,3.00,3.01,3.02};
     
@@ -786,6 +786,7 @@ void MainWindow::ConvertFile(void)
     QStringList exsatsLst=ExSats.split(" ");
     foreach (const QString & sat,exsatsLst)
     {
+        int satid;
         if (!(satid=satid2no(qPrintable(sat)))) continue;
         conversionThread->rnxopt.exsats[satid-1]=1;
     }

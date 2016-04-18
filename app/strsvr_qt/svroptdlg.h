@@ -25,7 +25,7 @@ public:
     QString AntType,RcvType;
 	int SvrOpt[6],TraceLevel,NmeaReq,FileSwapMargin,StaId,StaSel;
 	double AntPos[3],AntOff[3];
-    SvrOptDialog(QWidget *parent);
+    explicit SvrOptDialog(QWidget *parent);
 };
 //---------------------------------------------------------------------------
 #endif

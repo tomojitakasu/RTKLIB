@@ -17,7 +17,7 @@ class TimeDialog;
 //---------------------------------------------------------------------------
 class MainForm : public QWidget, public Ui::MainForm
 {
-        Q_OBJECT
+     Q_OBJECT
 
 protected:
     void  closeEvent(QCloseEvent *);
@@ -94,7 +94,7 @@ public:
 	int TimerCnt;
     QTimer Timer;
 
-    MainForm(QWidget* parent);
+    explicit MainForm(QWidget* parent);
 };
 //---------------------------------------------------------------------------
 #endif

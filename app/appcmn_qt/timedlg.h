@@ -21,7 +21,7 @@ protected:
 public:
 	gtime_t Time;
 
-    TimeDialog(QWidget *parent);
+    explicit TimeDialog(QWidget *parent);
 };
 //---------------------------------------------------------------------------
 #endif

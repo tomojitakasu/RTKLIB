@@ -19,7 +19,7 @@ public slots:
 public:
     QString Option;
 
-    RcvOptDialog(QWidget* parent);
+    explicit RcvOptDialog(QWidget* parent);
 };
 //---------------------------------------------------------------------------
 #endif

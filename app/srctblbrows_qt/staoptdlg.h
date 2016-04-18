@@ -19,7 +19,7 @@ public slots:
     void  BtnSaveClick();
 
 public:
-     StaListDialog(QWidget* parent);
+    explicit StaListDialog(QWidget* parent);
 };
 //---------------------------------------------------------------------------
 #endif

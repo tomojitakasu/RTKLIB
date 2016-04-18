@@ -44,7 +44,7 @@ public:
     QString Paths[2][4],SwapInterval;
     QString History[10],MntpHist[10];
 
-    OutputStrDialog(QWidget* parent);
+    explicit OutputStrDialog(QWidget* parent);
 };
 //---------------------------------------------------------------------------
 #endif

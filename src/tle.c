@@ -467,7 +467,7 @@ extern int tle_name_read(const char *file, tle_t *tle)
         
         desig[0]='\0';
         
-        if (sscanf(buff,"%s %s %s",name,satno,desig)<2) continue;
+        if (sscanf(buff,"%255s %255s %255s",name,satno,desig)<2) continue;
         satno[5]='\0';
         
         for (i=0;i<tle->n;i++) {

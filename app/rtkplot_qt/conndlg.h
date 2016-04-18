@@ -46,7 +46,7 @@ public:
     QString TcpHistory[MAXHIST],TcpMntpHist[MAXHIST];
     QString Cmds1[2],Cmds2[2],FieldSep;
 
-    ConnectDialog(QWidget *parent=NULL);
+    explicit ConnectDialog(QWidget *parent=NULL);
 };
 //---------------------------------------------------------------------------
 #endif

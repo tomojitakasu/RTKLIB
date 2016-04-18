@@ -46,7 +46,7 @@ public:
     Plot *plot;
     RefDialog *refDialog;
 
-    PlotOptDialog(QWidget *parent=NULL);
+    explicit PlotOptDialog(QWidget *parent=NULL);
 };
 //---------------------------------------------------------------------------
 #endif

@@ -91,6 +91,7 @@ class TIMEPOS
 {
 private:
     int nmax_;
+    TIMEPOS(TIMEPOS &other){}
 public:
     int n;
     gtime_t *t;
@@ -465,7 +466,7 @@ public:
     void  Refresh_GEView(void);
     void  Refresh_GMView(void);
 
-    Plot(QWidget* parent=NULL);
+    explicit Plot(QWidget* parent=NULL);
     ~Plot();
 };
 

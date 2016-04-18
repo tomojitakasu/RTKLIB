@@ -25,7 +25,7 @@ private:
     void UpdateEnable(void);
 
 public:
-    ExtOptDialog(QWidget *parent);
+    explicit ExtOptDialog(QWidget *parent);
 
     OptDialog *optDialog;
 };

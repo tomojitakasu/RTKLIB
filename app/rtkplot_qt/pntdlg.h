@@ -24,7 +24,7 @@ public:
 	double Pos[3];
 	int FontScale;
 
-    PntDialog(QWidget* parent=NULL);
+    explicit PntDialog(QWidget* parent=NULL);
 };
 //---------------------------------------------------------------------------
 #endif

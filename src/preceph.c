@@ -339,7 +339,7 @@ static int readdcbf(const char *file, nav_t *nav, const sta_t *sta)
         else if (strstr(buff,"DIFFERENTIAL (P1-C1) CODE BIASES")) type=2;
         else if (strstr(buff,"DIFFERENTIAL (P2-C2) CODE BIASES")) type=3;
         
-        if (!type||sscanf(buff,"%s %s",str1,str2)<1) continue;
+        if (!type||sscanf(buff,"%31s %31s",str1,str2)<1) continue;
         
         if ((cbias=str2num(buff,26,9))==0.0) continue;
         
@@ -444,14 +444,18 @@ static int readfcbf(const char *file, nav_t *nav)
     }
     while (fgets(buff,sizeof(buff),fp)) {
         if ((p=strchr(buff,'#'))) *p='\0';
-        if (sscanf(buff,"%lf/%lf/%lf %lf:%lf:%lf %lf/%lf/%lf %lf:%lf:%lf %s"
+        if (sscanf(buff,"%lf/%lf/%lf %lf:%lf:%lf %lf/%lf/%lf %lf:%lf:%lf %31s"
                    "%lf %lf %lf %lf %lf %lf",ep1,ep1+1,ep1+2,ep1+3,ep1+4,ep1+5,
                    ep2,ep2+1,ep2+2,ep2+3,ep2+4,ep2+5,str,bias,std,bias+1,std+1,
                    bias+2,std+2)<17) continue;
         if (!(sat=satid2no(str))) continue;
         ts=epoch2time(ep1);
         te=epoch2time(ep2);
-        if (!addfcb(nav,ts,te,sat,bias,std)) return 0;
+        if (!addfcb(nav,ts,te,sat,bias,std))
+        {
+            fclose(fp);
+            return 0;
+        };
     }
     fclose(fp);
     return 1;

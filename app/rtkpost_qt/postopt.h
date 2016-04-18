@@ -87,7 +87,7 @@ private:
 public:
 	exterr_t ExtErr;
 	
-    OptDialog(QWidget *parent);
+    explicit OptDialog(QWidget *parent);
 };
 //---------------------------------------------------------------------------
 #endif

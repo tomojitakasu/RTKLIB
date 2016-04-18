@@ -344,7 +344,7 @@ void Plot::GenVisData(void)
 {
     gtime_t time,ts,te;
     obsd_t data;
-    double tint,r,pos[3],rr[3],rs[6],e[3],azel[2];
+    double tint,pos[3],rr[3],rs[6],e[3],azel[2];
     int i,j,nobs=0;
     char name[16];
     
@@ -370,7 +370,7 @@ void Plot::GenVisData(void)
         for (i=0;i<MAXSAT;i++) {
             satno2id(i+1,name);
             if (!tle_pos(time,name,"","",&TLEData,NULL,rs)) continue;
-            if ((r=geodist(rs,rr,e))<=0.0) continue;
+            if ((geodist(rs,rr,e))<=0.0) continue;
             if (satazel(pos,e,azel)<=0.0) continue;
             if (Obs.n>=Obs.nmax) {
                 Obs.nmax=Obs.nmax<=0?4096:Obs.nmax*2;

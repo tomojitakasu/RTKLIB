@@ -348,7 +348,7 @@ void MonitorDialog::ShowRtk(void)
     QString mode[]={tr("Single"),tr("DGPS"),tr("Kinematic"),tr("Static"),tr("Moving-Base"),
                        tr("Fixed"),tr("PPP-Kinematic"),tr("PPP-Static"),""};
     QString freq[]={tr("-"),tr("L1"),tr("L1+L2"),tr("L1+L2+L5"),tr("L1+L2+L5+L6"),tr("L1+L2+L5+L6+L7"),tr("L1+L2+L5+L6+L7+L8"),""};
-	double *del,*off1,*off2,runtime,rt[3]={0},dop[4]={0};
+    double *del,*off1,*off2,rt[3]={0},dop[4]={0};
 	double azel[MAXSAT*2],pos[3],vel[3];
     int i,j,k,cycle,state,rtkstat,nsat0,nsat1,prcout;
     unsigned long thread;
@@ -377,6 +377,7 @@ void MonitorDialog::ShowRtk(void)
 		nmsg[i][j]=rtksvr.nmsg[i][j];
 	}
 	if (rtksvr.state) {
+        double runtime;
 		runtime=(double)(tickget()-rtksvr.tick)/1000.0;
 		rt[0]=floor(runtime/3600.0); runtime-=rt[0]*3600.0;
 		rt[1]=floor(runtime/60.0); rt[2]=runtime-rt[1]*60.0;
@@ -871,7 +872,8 @@ void MonitorDialog::ShowCov(void)
     if (n<1) {
         Console->setColumnCount(0);
         Console->setRowCount(0);
-		return;
+        free(x); free(P);
+        return;
 	}
     Console->setColumnCount(n);
     Console->setRowCount(n);
@@ -938,7 +940,7 @@ void MonitorDialog::ShowObs(void)
 {
 	obsd_t obs[MAXOBS*2];
 	char tstr[64],id[32],*code;
-	int i,j,k,n=0,nex=ObsMode?NEXOBS:0;
+    int i,k,n=0,nex=ObsMode?NEXOBS:0;
 	
 	rtksvrlock(&rtksvr);
 	for (i=0;i<rtksvr.obs[0][0].n&&n<MAXOBS*2;i++) {
@@ -955,7 +957,7 @@ void MonitorDialog::ShowObs(void)
     Console->setHorizontalHeaderLabels(header);
 
 	for (i=0;i<n;i++) {
-		j=0;
+        int j=0;
 		time2str(obs[i].time,tstr,3);
         Console->setItem(i,j++, new QTableWidgetItem(tstr));
 		satno2id(obs[i].sat,id);
@@ -1011,7 +1013,7 @@ void MonitorDialog::ShowNav(int sys)
 	gtime_t time;
     QString s;
 	char tstr[64],id[32];
-    int i,j,k,n,prn,off=SelEph->currentIndex()?MAXSAT:0;
+    int i,k,n,prn,off=SelEph->currentIndex()?MAXSAT:0;
     bool valid;
 	
 	rtksvrlock(&rtksvr);
@@ -1035,7 +1037,7 @@ void MonitorDialog::ShowNav(int sys)
     Console->setHorizontalHeaderLabels(header);
 
     for (k=0,n=0;k<MAXSAT;k++) {
-		j=0;
+        int j=0;
 		if (!(satsys(k+1,&prn)&sys)) continue;
 		valid=eph[k].toe.time!=0&&!eph[k].svh&&fabs(timediff(time,eph[k].toe))<=MAXDTOE;
         if (SelSat->currentIndex()==1&&!valid) continue;
@@ -1108,7 +1110,7 @@ void MonitorDialog::ShowGnav(void)
 	gtime_t time;
     QString s;
 	char tstr[64],id[32];
-    int i,j,n,valid,prn,off=SelEph->currentIndex()?NSATGLO:0;
+    int i,n,valid,prn,off=SelEph->currentIndex()?NSATGLO:0;
 	
 	rtksvrlock(&rtksvr);
 	time=rtksvr.rtk.sol.time;
@@ -1131,7 +1133,7 @@ void MonitorDialog::ShowGnav(void)
     Console->setHorizontalHeaderLabels(header);
 
 	for (i=0,n=1;i<NSATGLO;i++) {
-		j=0;
+        int j=0;
 		valid=geph[i].toe.time!=0&&!geph[i].svh&&
 			  fabs(timediff(time,geph[i].toe))<=MAXDTOE_GLO;
         if (SelSat->currentIndex()==1&&!valid) continue;
@@ -1185,7 +1187,7 @@ void MonitorDialog::ShowSbsNav(void)
 {
     seph_t seph[MAXPRNSBS-MINPRNSBS+1];
 	gtime_t time;
-    int i,j,n,valid,prn,off=SelEph->currentIndex()?NSATSBS:0;
+    int i,n,valid,prn,off=SelEph->currentIndex()?NSATSBS:0;
 	char tstr[64],id[32];
 
     for (int i=0;i<MAXPRNSBS-MINPRNSBS+1; i++) seph[i].sat=seph[i].t0.time=seph[i].t0.sec=seph[i].tof.time=seph[i].tof.sec=seph[i].sva=seph[i].svh=
@@ -1215,7 +1217,7 @@ void MonitorDialog::ShowSbsNav(void)
     Console->setHorizontalHeaderLabels(header);
 
     for (i=0,n=0;i<NSATSBS;i++) {
-		j=0;
+        int j=0;
 		valid=fabs(timediff(time,seph[i].t0)<=MAXDTOE_SBS)&&
 			  seph[i].t0.time&&!seph[i].svh;
         if (SelSat->currentIndex()==1&&!valid) continue;
@@ -1376,8 +1378,8 @@ void MonitorDialog::ShowStr(void)
     QString state[]={tr("Error"),tr("-"),tr("OK")};
     QString mode,form;
 	stream_t stream[9];
-	int i,j,format[9]={0};
-	char path[MAXSTRPATH]="",*p,*q,*pp;
+    int i,format[9]={0};
+    char path[MAXSTRPATH]="",*p,*q;
 	
 	rtksvrlock(&rtksvr); // lock
 	for (i=0;i<8;i++) stream[i]=rtksvr.stream[i];
@@ -1392,7 +1394,7 @@ void MonitorDialog::ShowStr(void)
     Console->setHorizontalHeaderLabels(header);
 
 	for (i=0;i<9;i++) {
-		j=0;
+        int j=0;
         Console->setItem(i,j++, new QTableWidgetItem(ch[i]));
         Console->setItem(i,j++, new QTableWidgetItem(type[stream[i].type]));
         if (i<3) form=formatstrs[format[i]];
@@ -1408,7 +1410,7 @@ void MonitorDialog::ShowStr(void)
         Console->setItem(i,j++, new QTableWidgetItem(QString::number(stream[i].outb)));
         Console->setItem(i,j++, new QTableWidgetItem(QString::number(stream[i].outr)));
 		strcpy(path,stream[i].path);
-		pp=path;
+        char *pp=path;
 		if ((p=strchr(path,'@'))) {
 			for (q=p-1;q>=path;q--) if (*q==':') break;
 			if (q>=path) for (q++;q<p;q++) *q='*';
@@ -1456,7 +1458,7 @@ void MonitorDialog::ShowSbsMsg(void)
 	const int id[]={0,1,2,3,4,5,6,7,9,10,12,17,18,24,25,26,27,28,62,63,-1};
     char str[64];
     QString s;
-	int i,j,k,n,type;
+    int i,k,n;
 	
 	rtksvrlock(&rtksvr); // lock
 	n=rtksvr.nsbs;
@@ -1469,11 +1471,11 @@ void MonitorDialog::ShowSbsMsg(void)
     Console->setHorizontalHeaderLabels(header);
 
     for (i=0;i<n;i++) {
-		j=0;
+        int j=0;
 		time2str(gpst2time(msg[i].week,msg[i].tow),str,0);
         Console->setItem(i,j++, new QTableWidgetItem(str));
         Console->setItem(i,j++, new QTableWidgetItem(QString::number(msg[i].prn)));
-		type=msg[i].msg[1]>>2;
+        int type=msg[i].msg[1]>>2;
         Console->setItem(i,j++, new QTableWidgetItem(QString::number(type)));
         for (k=0;k<29;k++) s+=QString::number(msg[i].msg[k],16);
         Console->setItem(i,j++, new QTableWidgetItem(s));
@@ -1501,9 +1503,8 @@ void MonitorDialog::SetSbsLong(void)
 void MonitorDialog::ShowSbsLong(void)
 {
 	sbssat_t sbssat;
-	sbssatp_t *satp;
 	gtime_t time;
-	int i,j,valid;
+    int i;
 	char tstr[64],id[32];
 	
 	rtksvrlock(&rtksvr); // lock
@@ -1517,9 +1518,9 @@ void MonitorDialog::ShowSbsLong(void)
     Console->setHorizontalHeaderLabels(header);
 
     for (i=0;i<Console->rowCount();i++) {
-		j=0;
-		satp=sbssat.sat+i;
-		valid=timediff(time,satp->lcorr.t0)<=MAXSBSAGEL&&satp->lcorr.t0.time;
+        int j=0;
+        sbssatp_t *satp=sbssat.sat+i;
+        bool valid=timediff(time,satp->lcorr.t0)<=MAXSBSAGEL&&satp->lcorr.t0.time;
 		satno2id(satp->sat,id);
         Console->setItem(i,j++, new QTableWidgetItem(id));
         Console->setItem(i,j++, new QTableWidgetItem(valid?tr("OK"):tr("-")));
@@ -1557,7 +1558,7 @@ void MonitorDialog::SetSbsIono(void)
 void MonitorDialog::ShowSbsIono(void)
 {
     QString s0="-";
-	sbsion_t sbsion[MAXBAND+1],*ion;
+    sbsion_t sbsion[MAXBAND+1];
 	char tstr[64];
 	int i,j,k,n=0;
 	
@@ -1571,7 +1572,7 @@ void MonitorDialog::ShowSbsIono(void)
     Label->setText("");
     n=0;
     for (i=0;i<MAXBAND;i++) {
-		ion=sbsion+i;
+        sbsion_t *ion=sbsion+i;
 		for (j=0;j<ion->nigp;j++) {
 			k=0;
             Console->setItem(n,k++, new QTableWidgetItem(QString::number(ion->iodi)));
@@ -1608,9 +1609,8 @@ void MonitorDialog::ShowSbsFast(void)
 {
     QString s0="-";
 	sbssat_t sbssat;
-	sbssatp_t *satp;
 	gtime_t time;
-	int i,j,valid;
+    int i;
 	char tstr[64],id[32];
 	
 	rtksvrlock(&rtksvr); // lock
@@ -1624,9 +1624,9 @@ void MonitorDialog::ShowSbsFast(void)
     Console->setHorizontalHeaderLabels(header);
 
     for (i=0;i<Console->rowCount();i++) {
-		j=0;
-		satp=sbssat.sat+i;
-		valid=fabs(timediff(time,satp->fcorr.t0)<=MAXSBSAGEF)&&satp->fcorr.t0.time&&
+        int j=0;
+        sbssatp_t *satp=sbssat.sat+i;
+        bool valid=fabs(timediff(time,satp->fcorr.t0)<=MAXSBSAGEF)&&satp->fcorr.t0.time&&
 			  0<=satp->fcorr.udre-1&&satp->fcorr.udre-1<14;
 		satno2id(satp->sat,id);
         Console->setItem(i,j++, new QTableWidgetItem(id));
@@ -1791,7 +1791,7 @@ void MonitorDialog::ShowRtcmDgps(void)
 {
 	gtime_t time;
 	dgps_t dgps[MAXSAT];
-	int i,j,valid;
+    int i;
 	char tstr[64],id[32];
 	
 	rtksvrlock(&rtksvr);
@@ -1804,9 +1804,9 @@ void MonitorDialog::ShowRtcmDgps(void)
     Console->setHorizontalHeaderLabels(header);
 
     for (i=1;i<Console->rowCount();i++) {
-		j=0;
+        int j=0;
         satno2id(i,id);
-		valid=dgps[i].t0.time&&fabs(timediff(time,dgps[i].t0))<=1800.0;
+        bool valid=dgps[i].t0.time&&fabs(timediff(time,dgps[i].t0))<=1800.0;
         Console->setItem(i-1,j++, new QTableWidgetItem(id));
         Console->setItem(i-1,j++, new QTableWidgetItem(valid?tr("OK"):tr("-")));
         Console->setItem(i-1,j++, new QTableWidgetItem(QString::number(dgps[i].prc,'f',3)));
@@ -1825,7 +1825,6 @@ void MonitorDialog::SetRtcmSsr(void)
         <<tr("D0-A(m)")<<tr("D0-C(m)")<<tr("D0-R(m)")<<tr("D1-A(mm/s)")<<tr("D1-C(mm/s)")<<tr("D1-R(mm/s)")
         <<tr("C0(m)")<<tr("C1(mm/s)")<<tr("C2(mm/s2)")<<tr("C-HR(m)");
 	int i,width[]={25,30,30,30,30,25,15,115,50,50,50,50,50,50,50,50,50,50};
-	char *code;
 
     Console->setColumnCount(18+MAXCODE);
     Console->setRowCount(1);
@@ -1833,7 +1832,7 @@ void MonitorDialog::SetRtcmSsr(void)
         Console->setColumnWidth(i,width[i]*FontScale/96);
 	}
     for (i=18;i<Console->columnCount();i++) {
-		code=code2obs(i-17,NULL);
+        char *code=code2obs(i-17,NULL);
         Console->setColumnWidth(i,40*FontScale/96);
         header<<QString(tr("BL%1(m)")).arg(code);
         Console->setItem(1,i, new QTableWidgetItem(""));
@@ -1845,7 +1844,7 @@ void MonitorDialog::ShowRtcmSsr(void)
 {
 	gtime_t time;
 	ssr_t ssr[MAXSAT];
-	int i,j,k,valid;
+    int i,k;
 	char tstr[64],id[32];
 
 	rtksvrlock(&rtksvr);
@@ -1863,10 +1862,10 @@ void MonitorDialog::ShowRtcmSsr(void)
     Console->setHorizontalHeaderLabels(header);
 
     for (i=0;i<Console->rowCount();i++) {
-		j=0;
+        int j=0;
 		satno2id(i+1,id);
         Console->setItem(i,j++, new QTableWidgetItem(id));
-		valid=ssr[i].t0[0].time&&fabs(timediff(time,ssr[i].t0[0]))<=1800.0;
+        bool valid=ssr[i].t0[0].time&&fabs(timediff(time,ssr[i].t0[0]))<=1800.0;
         Console->setItem(i,j++, new QTableWidgetItem(valid?tr("OK"):tr("-")));
         Console->setItem(i,j++, new QTableWidgetItem(QString::number(ssr[i].udi[0],'f',0)));
         Console->setItem(i,j++, new QTableWidgetItem(QString::number(ssr[i].udi[2],'f',0)));
@@ -1984,7 +1983,7 @@ void MonitorDialog::ShowLexEph(void)
 {
 	gtime_t time;
 	lexeph_t lexeph[MAXSAT];
-	int i,j,k,n,sys,valid;
+    int i,j,k,n,valid;
     char tstr[64],health[16],id[32],*p;
 
 	rtksvrlock(&rtksvr);
@@ -1998,7 +1997,7 @@ void MonitorDialog::ShowLexEph(void)
 
     for (i=0,n=0;i<MAXSAT;i++) {
 		
-		sys=satsys(i+1,NULL);
+        int sys=satsys(i+1,NULL);
 		if (sys!=SYS_GPS&&sys!=SYS_QZS) continue;
 		j=0;
 		satno2id(i+1,id);

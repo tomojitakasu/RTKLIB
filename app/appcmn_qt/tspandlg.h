@@ -32,7 +32,7 @@ public:
 	gtime_t TimeStart,TimeEnd;
 	double TimeInt;
 
-    SpanDialog(QWidget* parent);
+    explicit SpanDialog(QWidget* parent);
 };
 //---------------------------------------------------------------------------
 #endif

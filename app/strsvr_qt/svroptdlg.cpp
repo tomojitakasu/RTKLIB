@@ -52,8 +52,6 @@ void SvrOptDialog::showEvent(QShowEvent* event)
 {
     if (event->spontaneous()) return;
 
-	double pos[3];
-
     DataTimeout->setText(QString::number(SvrOpt[0]));
     ConnectInterval->setText(QString::number(SvrOpt[1]));
     AvePeriodRate->setText(QString::number(SvrOpt[2]));
@@ -62,7 +60,9 @@ void SvrOptDialog::showEvent(QShowEvent* event)
     NmeaCycle->setText(QString::number(SvrOpt[5]));
     FileSwapMarginE->setText(QString::number(FileSwapMargin));
 	if (norm(AntPos,3)>0.0) {
-		ecef2pos(AntPos,pos);
+        double pos[3];
+
+        ecef2pos(AntPos,pos);
         AntPos1->setText(QString::number(pos[0]*R2D,'f',8));
         AntPos2->setText(QString::number(pos[1]*R2D,'f',8));
         AntPos3->setText(QString::number(pos[2],'f',3));

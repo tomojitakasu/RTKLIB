@@ -86,7 +86,7 @@ private:
     void LoadOpt(void);
     void SaveOpt(void);
 public:
-    MainForm(QWidget *parent=0);
+    explicit MainForm(QWidget *parent=0);
 };
 //---------------------------------------------------------------------------
 #endif

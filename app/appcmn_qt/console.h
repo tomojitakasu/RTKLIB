@@ -25,7 +25,7 @@ private:
         QStringList ConBuff;
 
 public:
-        Console(QWidget* parent);
+        explicit Console(QWidget* parent);
         void  AddMsg(unsigned char *msg, int n);
 };
 //---------------------------------------------------------------------------

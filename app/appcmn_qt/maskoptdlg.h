@@ -24,7 +24,7 @@ private:
 
 public:
 	snrmask_t Mask;
-    MaskOptDialog(QWidget* parent);
+    explicit MaskOptDialog(QWidget* parent);
 };
 //---------------------------------------------------------------------------
 #endif

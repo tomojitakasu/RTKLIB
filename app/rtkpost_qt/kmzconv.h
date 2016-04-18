@@ -33,7 +33,7 @@ protected:
     void showEvent(QShowEvent*);
 
 public:
-    ConvDialog(QWidget *parent);
+    explicit ConvDialog(QWidget *parent);
     void SetInput(const QString &File);
 };
 //---------------------------------------------------------------------------

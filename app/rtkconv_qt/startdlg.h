@@ -18,7 +18,7 @@ public slots:
 private:
 public:
 	gtime_t Time;
-    StartDialog(QWidget *parent=0);
+    explicit StartDialog(QWidget *parent=0);
 };
 //---------------------------------------------------------------------------
 #endif

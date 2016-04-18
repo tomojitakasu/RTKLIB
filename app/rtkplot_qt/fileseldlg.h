@@ -30,7 +30,7 @@ protected:
 
 public:
     QString Dir;
-    FileSelDialog(QWidget *parent=0);
+    explicit FileSelDialog(QWidget *parent=0);
     ~FileSelDialog();
 };
 //---------------------------------------------------------------------------

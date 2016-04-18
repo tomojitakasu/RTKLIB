@@ -34,7 +34,7 @@ static char * getsrctbl(const QString addr)
     static int lock=0;
 	stream_t str;
 	char *p=buff,msg[MAXSTRMSG];
-	int ns,stat,len=strlen(ENDSRCTBL);
+    int len=strlen(ENDSRCTBL);
 	unsigned int tick=tickget();
 
 	if (lock) return NULL; else lock=1;
@@ -49,11 +49,11 @@ static char * getsrctbl(const QString addr)
     QMetaObject::invokeMethod(mainForm,"ShowMsg",Qt::QueuedConnection,Q_ARG(QString,QT_TR_NOOP("connecting...")));
 
 	while(p<buff+MAXSRCTBL-1) {
-        ns=strread(&str,(unsigned char*)p,(buff+MAXSRCTBL-p-1)); *(p+ns)='\0';
+        int ns=strread(&str,(unsigned char*)p,(buff+MAXSRCTBL-p-1)); *(p+ns)='\0';
 		if (p-len-3>buff&&strstr(p-len-3,ENDSRCTBL)) break;
 		p+=ns;
         qApp->processEvents();
-		stat=strstat(&str,msg);
+        int stat=strstat(&str,msg);
 
         QMetaObject::invokeMethod(mainForm,"ShowMsg",Qt::QueuedConnection,Q_ARG(QString,msg));
 

@@ -110,7 +110,7 @@ extern Plot *plot;
 //---------------------------------------------------------------------------
 void  GoogleEarthView::FormCreate()
 {
-    QString dir=".";
+    QString dir;
     
     dir=qApp->applicationDirPath(); // exe directory
     dir=dir+"/"+RTKPLOT_GE_FILE;

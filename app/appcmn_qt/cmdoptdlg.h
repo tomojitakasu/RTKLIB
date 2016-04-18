@@ -25,6 +25,6 @@ public slots:
 public:
     QString Cmds[2];
     bool CmdEna[2];
-    CmdOptDialog(QWidget* parent);
+    explicit CmdOptDialog(QWidget* parent);
 };
 #endif

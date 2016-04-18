@@ -38,8 +38,6 @@ FileOptDialog::FileOptDialog(QWidget* parent)
 //---------------------------------------------------------------------------
 void FileOptDialog::showEvent(QShowEvent *event)
 {
-	double speed=1.0,start=0.0,intv=0.0;
-
     if (event->spontaneous()) return;
 
     ChkTimeTag->setText(Opt?tr("TimeTag"):tr("Time"));
@@ -55,6 +53,8 @@ void FileOptDialog::showEvent(QShowEvent *event)
     ChkTimeTag->setChecked(false);
 
     if (!Opt) {
+        double speed=1.0,start=0.0;
+
         QStringList tokens=Path.split("::");
 
         QString token;
@@ -80,6 +80,8 @@ void FileOptDialog::showEvent(QShowEvent *event)
         FilePath->setText(tokens.at(0));
 	}
 	else {
+        double intv=0.0;
+
         QStringList tokens=Path.split("::");
 
         QString token;

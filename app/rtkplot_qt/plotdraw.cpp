@@ -1874,7 +1874,7 @@ void Plot::DrawRes(QPainter &c,int level)
                 if (level&&i==1) { /* slip */
                     for (int j=0;j<m;j++) {
                         if (!s[j]) continue;
-                        QColor color=s[j]&1?MColor[0][5]:MColor[0][0];
+                        QColor color=(s[j]&1)?MColor[0][5]:MColor[0][0];
                         GraphG[i]->DrawMark(c,x[j],y[i][j],4,color,MarkSize*3,90);
                     }
                 }

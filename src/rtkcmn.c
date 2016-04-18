@@ -1445,7 +1445,7 @@ static int read_leaps_usno(FILE *fp)
     rewind(fp);
     
     while (fgets(buff,sizeof(buff),fp)&&n<MAXLEAPS) {
-        if (sscanf(buff,"%d %s %d =JD %lf TAI-UTC= %lf",&y,month,&d,&jd,
+        if (sscanf(buff,"%d %31s %d =JD %lf TAI-UTC= %lf",&y,month,&d,&jd,
                    &tai_utc)<5) continue;
         if (y<1980) continue;
         for (m=1;m<=12;m++) if (!strcmp(months[m-1],month)) break;
@@ -2289,7 +2289,7 @@ extern void readpos(const char *file, const char *rcv, double *pos)
     }
     while (np<2048&&fgets(buff,sizeof(buff),fp)) {
         if (buff[0]=='%'||buff[0]=='#') continue;
-        if (sscanf(buff,"%lf %lf %lf %s",&poss[np][0],&poss[np][1],&poss[np][2],
+        if (sscanf(buff,"%lf %lf %lf %255s",&poss[np][0],&poss[np][1],&poss[np][2],
                    str)<4) continue;
         strncpy(stas[np],str,15); stas[np++][15]='\0';
     }

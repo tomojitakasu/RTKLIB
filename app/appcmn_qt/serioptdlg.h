@@ -27,7 +27,7 @@ public:
     QString Path,Cmds[2];
 	int Opt,CmdEna[2];
 
-    SerialOptDialog(QWidget*);
+    explicit SerialOptDialog(QWidget*);
 };
 //---------------------------------------------------------------------------
 #endif

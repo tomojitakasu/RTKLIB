@@ -62,7 +62,7 @@ private:
 public:
     QStringList StaList;
 
-    MainForm(QWidget *parent=NULL);
+    explicit MainForm(QWidget *parent=NULL);
 };
 //---------------------------------------------------------------------------
 #endif
