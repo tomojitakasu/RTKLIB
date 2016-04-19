@@ -313,13 +313,16 @@ static int decode_measepoch(raw_t *raw){
         else if ((prn>=38)&&(prn<=61)){
             sys = SYS_GLO;                      /* navigation system: GLONASS */
             sat = prn - 37;}
+        else if ((prn>=63)&&(prn<=68)){
+            sys = SYS_GLO;                      /* navigation system: GLONASS */
+            sat = prn - 38;}
         else if ((prn>=71)&&(prn<=102)){
             sys = SYS_GAL;                      /* navigation system: Galileo */
             sat = prn - 70;}
         else if ((prn>=120)&&(prn<=140)){
             sys = SYS_SBS;                      /* navigation system: SBAS    */
             sat = prn;}
-        else if ((prn>=141)&&(prn<=172)){
+        else if ((prn>=141)&&(prn<=177)){
             sys = SYS_CMP;                      /* navigation system: BeiDou  */
             sat = prn - 140;}
         else if ((prn>=181)&&(prn<=187)){
