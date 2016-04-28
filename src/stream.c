@@ -2152,15 +2152,15 @@ extern gtime_t strgettime(stream_t *stream)
 *          double *pos      I   position {x,y,z} (ecef) (m)
 * return : none
 *-----------------------------------------------------------------------------*/
-extern void strsendnmea(stream_t *stream, const double *pos)
+extern void strsendnmea(stream_t *stream, const double *pos, unsigned char stat)
 {
     sol_t sol={{0}};
     unsigned char buff[1024];
     int i,n;
     
-    tracet(3,"strsendnmea: pos=%.3f %.3f %.3f\n",pos[0],pos[1],pos[2]);
+    tracet(3,"strsendnmea: pos=%.3f %.3f %.3f stat=%d\n",pos[0],pos[1],pos[2],stat);
     
-    sol.stat=SOLQ_SINGLE;
+    sol.stat=stat;
     sol.time=utc2gpst(timeget());
     for (i=0;i<3;i++) sol.rr[i]=pos[i];
     n=outnmea_gga(buff,&sol);

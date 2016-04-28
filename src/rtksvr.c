@@ -461,10 +461,10 @@ static void *rtksvrthread(void *arg)
         if (svr->nmeacycle>0&&(int)(tick-ticknmea)>=svr->nmeacycle) {
             if (svr->stream[1].state==1) {
                 if (svr->nmeareq==1) {
-                    strsendnmea(svr->stream+1,svr->nmeapos);
+                    strsendnmea(svr->stream+1,svr->nmeapos,SOLQ_SINGLE);
                 }
                 else if (svr->nmeareq==2&&norm(svr->rtk.sol.rr,3)>0.0) {
-                    strsendnmea(svr->stream+1,svr->rtk.sol.rr);
+                    strsendnmea(svr->stream+1,svr->rtk.sol.rr,svr->rtk.sol.stat);
                 }
             }
             ticknmea=tick;

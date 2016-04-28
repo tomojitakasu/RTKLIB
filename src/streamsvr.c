@@ -386,7 +386,7 @@ static void *strsvrthread(void *arg)
         }
         /* write nmea messages to input stream */
         if (svr->nmeacycle>0&&(int)(tick-ticknmea)>=svr->nmeacycle) {
-            strsendnmea(svr->stream,svr->nmeapos);
+            strsendnmea(svr->stream,svr->nmeapos,SOLQ_SINGLE);
             ticknmea=tick;
         }
         lock(&svr->lock);
