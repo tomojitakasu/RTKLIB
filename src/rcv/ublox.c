@@ -41,6 +41,7 @@
 *           2015/03/20 1.15 omit time adjustment for RXM-RAWX
 *           2016/01/22 1.16 add time-tag in raw-message-type
 *           2016/01/26 1.17 support galileo navigation data in RXM-SFRBX
+*                           enable option -TADJ for RXM-RAWX
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -156,7 +157,7 @@ static int decode_rxmraw(raw_t *raw)
         sprintf(raw->msgtype,"UBX RXM-RAW   (%4d): nsat=%d",raw->len,U1(p+6));
     }
     /* time tag adjustment option (-TADJ) */
-    if ((q=strstr(raw->opt,"-TADJ"))) {
+    if ((q=strstr(raw->opt,"-TADJ="))) {
         sscanf(q,"-TADJ=%lf",&tadj);
     }
     nsat=U1(p+6);
@@ -216,8 +217,9 @@ static int decode_rxmraw(raw_t *raw)
 static int decode_rxmrawx(raw_t *raw)
 {
     gtime_t time;
-    double tow,cp1,pr1;
-    int i,j,sys,prn,sat,n=0,nsat,week,tstat,lockt,halfc;
+    double tow,cp1,pr1,tadj=0.0,toff=0.0,freq,tn;
+    int i,j,sys,prn,sat,n=0,nsat,week,tstat,lockt,halfc,fcn;
+    char *q;
     unsigned char *p=raw->buff+6;
     
     trace(4,"decode_rxmrawx: len=%d\n",raw->len);
@@ -234,6 +236,16 @@ static int decode_rxmrawx(raw_t *raw)
     if (raw->outtype) {
         sprintf(raw->msgtype,"UBX RXM-RAWX  (%4d): time=%s nsat=%d",raw->len,
                 time_str(time,2),U1(p+11));
+    }
+    /* time tag adjustment option (-TADJ) */
+    if ((q=strstr(raw->opt,"-TADJ="))) {
+        sscanf(q,"-TADJ=%lf",&tadj);
+    }
+    /* time tag adjustment */
+    if (tadj>0.0) {
+        tn=time2gpst(time,&week)/tadj;
+        toff=(tn-floor(tn+0.5))*tadj;
+        time=timeadd(time,-toff);
     }
     for (i=0,p+=16;i<nsat&&i<MAXOBS;i++,p+=32) {
         
@@ -254,6 +266,15 @@ static int decode_rxmrawx(raw_t *raw)
         raw->obs.data[n].time=time;
         raw->obs.data[n].P[0]=pr1;
         raw->obs.data[n].L[0]=cp1;
+        
+        /* offset by time tag adjustment */
+        if (toff!=0.0) {
+            fcn=(int)U1(p+23)-7;
+            freq=sys==SYS_CMP?FREQ1_CMP:
+                 (sys==SYS_GLO?FREQ1_GLO+DFRQ1_GLO*fcn:FREQ1);
+            raw->obs.data[n].P[0]-=toff*CLIGHT;
+            raw->obs.data[n].L[0]-=toff*freq;
+        }
         raw->obs.data[n].D[0]=R4(p+16);
         raw->obs.data[n].SNR[0]=U1(p+26)*4;
         raw->obs.data[n].LLI[0]=0;
@@ -726,15 +747,21 @@ static int decode_enav(raw_t *raw, int sat, int off)
     /* skip word except for ephemeris, iono, utc parameters */
     if (type>6) return 0;
     
+    /* clear word 0-6 flags */
+    if (type==2) raw->subfrm[sat-1][112]=0;
+    
     /* save page data (112 + 16 bits) to frame buffer */
     k=type*16;
     for (i=0,j=2;i<14;i++,j+=8) raw->subfrm[sat-1][k++]=getbitu(buff   ,j,8);
     for (i=0,j=2;i< 2;i++,j+=8) raw->subfrm[sat-1][k++]=getbitu(buff+16,j,8);
     
+    /* test word 0-6 flags */
+    raw->subfrm[sat-1][112]|=(1<<type);
+    if (raw->subfrm[sat-1][112]!=0x7F) return 0;
+    
     /* decode galileo inav ephemeris */
     if (!decode_gal_inav(raw->subfrm[sat-1],&eph)) {
-        
-        return 0; /* incomplete ephemeris */
+        return 0;
     }
     /* test svid consistency */
     if (eph.sat!=sat) {
