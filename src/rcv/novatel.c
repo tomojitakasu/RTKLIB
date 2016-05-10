@@ -44,6 +44,8 @@
 *           2014/07/01 1.17 fix problem on decoding of bdsephemerisb
 *                           fix bug on beidou tracking codes
 *           2014/10/20 1.11 fix bug on receiver option -GL*,-RL*,-EL*
+*           2016/01/28 1.12 precede I/NAV for galileo ephemeris
+*                           add option -GALINAV and -GALFNAV
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -721,7 +723,7 @@ static int decode_galephemerisb(raw_t *raw)
     double tow,sqrtA,af0_fnav,af1_fnav,af2_fnav,af0_inav,af1_inav,af2_inav,tt;
     char *msg;
     int prn,rcv_fnav,rcv_inav,svh_e1b,svh_e5a,svh_e5b,dvs_e1b,dvs_e5a,dvs_e5b;
-    int toc_fnav,toc_inav,week;
+    int toc_fnav,toc_inav,week,sel_nav=0;
     
     trace(3,"decode_galephemerisb: len=%d\n",raw->len);
     
@@ -769,11 +771,17 @@ static int decode_galephemerisb(raw_t *raw)
     eph.iodc  =eph.iode;
     eph.svh   =(svh_e5b<<7)|(dvs_e5b<<6)|(svh_e5a<<4)|(dvs_e5a<<3)|
                (svh_e1b<<1)|dvs_e1b;
-    eph.code  =rcv_fnav?1:0;       /* 0:INAV,1:FNAV */
+    
+    /* ephemeris selection (0:INAV,1:FNAV) */
+    if      (strstr(raw->opt,"-GALINAV")) sel_nav=0;
+    else if (strstr(raw->opt,"-GALFNAV")) sel_nav=1;
+    else if (!rcv_inav&&rcv_fnav) sel_nav=1;
+    
     eph.A     =sqrtA*sqrtA;
-    eph.f0    =rcv_fnav?af0_fnav:af0_inav;
-    eph.f1    =rcv_fnav?af1_fnav:af1_inav;
-    eph.f2    =rcv_fnav?af2_fnav:af2_inav;
+    eph.f0    =sel_nav?af0_fnav:af0_inav;
+    eph.f1    =sel_nav?af1_fnav:af1_inav;
+    eph.f2    =sel_nav?af2_fnav:af2_inav;
+    eph.code  =sel_nav?2:1; /* data source 1:I/NAV E1B,2:F/NAV E5a-I */
     
     if (raw->outtype) {
         msg=raw->msgtype+strlen(raw->msgtype);
@@ -792,7 +800,7 @@ static int decode_galephemerisb(raw_t *raw)
     if      (tt<-302400.0) eph.week++;
     else if (tt> 302400.0) eph.week--;
     eph.toe=gpst2time(eph.week,eph.toes);
-    eph.toc=adjweek(eph.toe,rcv_fnav?toc_fnav:toc_inav);
+    eph.toc=adjweek(eph.toe,sel_nav?toc_fnav:toc_inav);
     eph.ttr=adjweek(eph.toe,tow);
     
     if (!strstr(raw->opt,"-EPHALL")) {
@@ -1371,6 +1379,8 @@ static int sync_oem3(unsigned char *buff, unsigned char data)
 *          -GL2X   : select 2X for GPS L2 (default 2W)
 *          -RL2C   : select 2C for GLO L2 (default 2P)
 *          -EL2C   : select 2C for GAL L2 (default 2C)
+*          -GALINAV: use I/NAV for GAL ephemeris
+*          -GALFNAV: use F/NAV for GAL ephemeris
 *
 *-----------------------------------------------------------------------------*/
 extern int input_oem4(raw_t *raw, unsigned char data)
