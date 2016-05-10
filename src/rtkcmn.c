@@ -111,6 +111,7 @@
 *                           add api add_fatal()
 *                           support usno leapsec.dat for api read_leaps()
 *           2016/01/23 1.33 enable septentrio
+*           2016/02/05 1.34 support GLONASS for savenav(), loadnav()
 *-----------------------------------------------------------------------------*/
 #define _POSIX_C_SOURCE 199309
 #include <stdarg.h>
@@ -2648,8 +2649,9 @@ extern int readnav(const char *file, nav_t *nav)
 {
     FILE *fp;
     eph_t eph0={0};
+    geph_t geph0={0};
     char buff[4096],*p;
-    int i,sat;
+    int i,sat,prn;
     
     trace(3,"loadnav: file=%s\n",file);
     
@@ -2669,21 +2671,36 @@ extern int readnav(const char *file, nav_t *nav)
         }
         if ((p=strchr(buff,','))) *p='\0'; else continue;
         if (!(sat=satid2no(buff))) continue;
-        nav->eph[sat-1]=eph0;
-        nav->eph[sat-1].sat=sat;
-        sscanf(p+1,"%d,%d,%d,%d,%ld,%ld,%ld,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,"
-                    "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%d,%d",
-               &nav->eph[sat-1].iode,&nav->eph[sat-1].iodc,&nav->eph[sat-1].sva ,
-               &nav->eph[sat-1].svh ,&nav->eph[sat-1].toe.time,
-               &nav->eph[sat-1].toc.time,&nav->eph[sat-1].ttr.time,
-               &nav->eph[sat-1].A   ,&nav->eph[sat-1].e   ,&nav->eph[sat-1].i0  ,
-               &nav->eph[sat-1].OMG0,&nav->eph[sat-1].omg ,&nav->eph[sat-1].M0  ,
-               &nav->eph[sat-1].deln,&nav->eph[sat-1].OMGd,&nav->eph[sat-1].idot,
-               &nav->eph[sat-1].crc ,&nav->eph[sat-1].crs ,&nav->eph[sat-1].cuc ,
-               &nav->eph[sat-1].cus ,&nav->eph[sat-1].cic ,&nav->eph[sat-1].cis ,
-               &nav->eph[sat-1].toes,&nav->eph[sat-1].fit ,&nav->eph[sat-1].f0  ,
-               &nav->eph[sat-1].f1  ,&nav->eph[sat-1].f2  ,&nav->eph[sat-1].tgd[0],
-               &nav->eph[sat-1].code, &nav->eph[sat-1].flag);
+        if (satsys(sat,&prn)==SYS_GLO) {
+            nav->geph[prn-1]=geph0;
+            nav->geph[prn-1].sat=sat;
+            sscanf(p+1,"%d,%d,%d,%d,%d,%ld,%ld,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,"
+                        "%lf,%lf,%lf,%lf",
+                   &nav->geph[prn-1].iode,&nav->geph[prn-1].frq,&nav->geph[prn-1].svh,
+                   &nav->geph[prn-1].sva,&nav->geph[prn-1].age,
+                   &nav->geph[prn-1].toe.time,&nav->geph[prn-1].tof.time,
+                   &nav->geph[prn-1].pos[0],&nav->geph[prn-1].pos[1],&nav->geph[prn-1].pos[2],
+                   &nav->geph[prn-1].vel[0],&nav->geph[prn-1].vel[1],&nav->geph[prn-1].vel[2],
+                   &nav->geph[prn-1].acc[0],&nav->geph[prn-1].acc[1],&nav->geph[prn-1].acc[2],
+                   &nav->geph[prn-1].taun  ,&nav->geph[prn-1].gamn  ,&nav->geph[prn-1].dtaun);
+        }
+        else {
+            nav->eph[sat-1]=eph0;
+            nav->eph[sat-1].sat=sat;
+            sscanf(p+1,"%d,%d,%d,%d,%ld,%ld,%ld,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,"
+                        "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%d,%d",
+                   &nav->eph[sat-1].iode,&nav->eph[sat-1].iodc,&nav->eph[sat-1].sva ,
+                   &nav->eph[sat-1].svh ,&nav->eph[sat-1].toe.time,
+                   &nav->eph[sat-1].toc.time,&nav->eph[sat-1].ttr.time,
+                   &nav->eph[sat-1].A   ,&nav->eph[sat-1].e   ,&nav->eph[sat-1].i0  ,
+                   &nav->eph[sat-1].OMG0,&nav->eph[sat-1].omg ,&nav->eph[sat-1].M0  ,
+                   &nav->eph[sat-1].deln,&nav->eph[sat-1].OMGd,&nav->eph[sat-1].idot,
+                   &nav->eph[sat-1].crc ,&nav->eph[sat-1].crs ,&nav->eph[sat-1].cuc ,
+                   &nav->eph[sat-1].cus ,&nav->eph[sat-1].cic ,&nav->eph[sat-1].cis ,
+                   &nav->eph[sat-1].toes,&nav->eph[sat-1].fit ,&nav->eph[sat-1].f0  ,
+                   &nav->eph[sat-1].f1  ,&nav->eph[sat-1].f2  ,&nav->eph[sat-1].tgd[0],
+                   &nav->eph[sat-1].code, &nav->eph[sat-1].flag);
+        }
     }
     fclose(fp);
     return 1;
@@ -2713,6 +2730,19 @@ extern int savenav(const char *file, const nav_t *nav)
                 nav->eph[i].cus ,nav->eph[i].cic,nav->eph[i].cis ,nav->eph[i].toes,
                 nav->eph[i].fit ,nav->eph[i].f0 ,nav->eph[i].f1  ,nav->eph[i].f2  ,
                 nav->eph[i].tgd[0],nav->eph[i].code,nav->eph[i].flag);
+    }
+    for (i=0;i<MAXPRNGLO;i++) {
+        if (nav->geph[i].tof.time==0) continue;
+        satno2id(nav->geph[i].sat,id);
+        fprintf(fp,"%s,%d,%d,%d,%d,%d,%d,%d,%.14E,%.14E,%.14E,%.14E,%.14E,%.14E,"
+                   "%.14E,%.14E,%.14E,%.14E,%.14E,%.14E\n",
+                id,nav->geph[i].iode,nav->geph[i].frq,nav->geph[i].svh,
+                nav->geph[i].sva,nav->geph[i].age,(int)nav->geph[i].toe.time,
+                (int)nav->geph[i].tof.time,
+                nav->geph[i].pos[0],nav->geph[i].pos[1],nav->geph[i].pos[2],
+                nav->geph[i].vel[0],nav->geph[i].vel[1],nav->geph[i].vel[2],
+                nav->geph[i].acc[0],nav->geph[i].acc[1],nav->geph[i].acc[2],
+                nav->geph[i].taun,nav->geph[i].gamn,nav->geph[i].dtaun);
     }
     fprintf(fp,"IONUTC,%.14E,%.14E,%.14E,%.14E,%.14E,%.14E,%.14E,%.14E,%.14E,"
                "%.14E,%.14E,%.14E,%d",
