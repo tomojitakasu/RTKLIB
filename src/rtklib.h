@@ -49,7 +49,7 @@ extern "C" {
 
 #define VER_RTKLIB  "2.4.3"             /* library version */
 
-#define PATCH_LEVEL "b8"                /* patch level */
+#define PATCH_LEVEL "b9"                /* patch level */
 
 #define COPYRIGHT_RTKLIB \
             "Copyright (C) 2007-2016 by T.Takasu\nAll rights reserved."
@@ -377,6 +377,8 @@ extern "C" {
 #define STR_NTRIPCLI 7                  /* stream type: NTRIP client */
 #define STR_FTP      8                  /* stream type: ftp */
 #define STR_HTTP     9                  /* stream type: http */
+#define STR_NTRIPCAS_S 10               /* stream type: NTRIP caster server */
+#define STR_NTRIPCAS_C 11               /* stream type: NTRIP caster client */
 
 #define STRFMT_RTCM2 0                  /* stream format: RTCM 2 */
 #define STRFMT_RTCM3 1                  /* stream format: RTCM 3 */
