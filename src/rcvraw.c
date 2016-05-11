@@ -613,7 +613,7 @@ static void decode_almanac(const unsigned char *buff, int sat, alm_t *alm)
 {
     gtime_t toa;
     double deltai,sqrtA,tt;
-    int i=50,f0;
+    int i=56,f0;
     
     trace(4,"decode_almanac: sat=%2d\n",sat);
     
