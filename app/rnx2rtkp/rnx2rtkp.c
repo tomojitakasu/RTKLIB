@@ -89,6 +89,7 @@ static void printhelp(void)
 /* rnx2rtkp main -------------------------------------------------------------*/
 int main(int argc, char **argv)
 {
+    printf ("\t\tНИР\n\tвыполнил студент группы Эр-14-12\n\tКузнецов Антон\n\tнаучный руководитель\n\tКорогодин Илья Владимирович\n\n\t");
     prcopt_t prcopt=prcopt_default;
     solopt_t solopt=solopt_default;
     filopt_t filopt={""};
