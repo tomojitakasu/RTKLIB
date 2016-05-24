@@ -41,3 +41,7 @@ UPDATE HISTORY
 2016/01/26  2.4.3 b7  fix bugs #126,#127,#128,#129,#130,#131
 2016/01/28  2.4.3 b8  support galileo navigation data in u-blox RXM-SFRBX
 2016/05/10  2.4.3 b9  unsupport ppp-ar features
+2016/05/25  2.4.3 b10 fix several bugs
+                      update data/TLE_GNSS_SATNO.txt
+                      repository for RTKLIB/bin is moved to new RTKLIB_bin to
+                      reduce repository size.
