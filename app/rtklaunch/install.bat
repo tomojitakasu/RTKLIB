@@ -1,1 +1,1 @@
-copy Release\rtklaunch.exe ..\..\bin
+copy Release\rtklaunch.exe ..\..\..\RTKLIB_bin\bin

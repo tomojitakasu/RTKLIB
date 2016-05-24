@@ -1,1 +1,1 @@
-copy Release_Build\rtkpost_mkl.exe ..\..\bin
+copy Release_Build\rtkpost.exe ..\..\..\RTKLIB_bin\bin

@@ -1,1 +1,1 @@
-copy Release_Build\rtkget.exe ..\..\bin
+copy Release_Build\rtkget.exe ..\..\..\RTKLIB_bin\bin

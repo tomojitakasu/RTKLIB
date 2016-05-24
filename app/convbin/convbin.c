@@ -27,6 +27,8 @@
 *           2014/08/26 1.10 add Trimble RT17 support
 *           2014/12/26 1.11 add option -nomask
 *           2016/01/23 1.12 enable septentrio
+*           2016/05/25 1.13 fix bug on initializing output file paths in
+*                           convbin()
 *-----------------------------------------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>
@@ -167,7 +169,7 @@ static int convbin(int format, rnxopt_t *opt, const char *ifile, char **file,
                    char *dir)
 {
     int i,def;
-    char work[1024],ofile_[7][1024],*ofile[7],*p;
+    char work[1024],ofile_[7][1024]={"","","","","","",""},*ofile[7],*p;
     char *extnav=opt->rnxver<=2.99||opt->navsys==SYS_GPS?"N":"P";
     char *extlog=format==STRFMT_LEXR?"lex":"sbs";
     

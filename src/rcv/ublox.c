@@ -42,6 +42,8 @@
 *           2016/01/22 1.16 add time-tag in raw-message-type
 *           2016/01/26 1.17 support galileo navigation data in RXM-SFRBX
 *                           enable option -TADJ for RXM-RAWX
+*           2016/05/25 1.18 fix bug on crc-buffer-overflow by decoding galileo
+*                           navigation data
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -712,7 +714,7 @@ static int decode_nav(raw_t *raw, int sat, int off)
 static int decode_enav(raw_t *raw, int sat, int off)
 {
     eph_t eph={0};
-    unsigned char *p=raw->buff+6+off,buff[32],crc_buff[25]={0};
+    unsigned char *p=raw->buff+6+off,buff[32],crc_buff[26]={0};
     int i,j,k,part1,page1,part2,page2,type;
     
     if (raw->len<44+off) {

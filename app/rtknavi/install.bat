@@ -1,1 +1,1 @@
-copy Release_Build\rtknavi.exe ..\..\bin
+copy Release_Build\rtknavi.exe ..\..\..\RTKLIB_bin\bin

@@ -25,6 +25,7 @@
 *                           add approx position in rinex obs header if blank
 *           2014/05/24 1.8  support beidou B1
 *           2014/08/26 1.9  support input format rt17
+*           2015/05/24 1.10 fix bug on setting antenna delta in rtcm2opt()
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -179,8 +180,8 @@ static void rtcm2opt(const rtcm_t *rtcm, rnxopt_t *opt)
     }
     else {
         opt->antdel[0]=rtcm->sta.hgt;
-        opt->antdel[0]=0.0;
-        opt->antdel[0]=0.0;
+        opt->antdel[1]=0.0;
+        opt->antdel[2]=0.0;
     }
 }
 /* generate stream file ------------------------------------------------------*/

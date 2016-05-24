@@ -1,1 +1,1 @@
-copy Release_Build\_convbin.exe ..\..\..\bin\convbin.exe
+copy Release_Build\_convbin.exe ..\..\..\..\RTKLIB_bin\bin\convbin.exe

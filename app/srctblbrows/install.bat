@@ -1,1 +1,1 @@
-copy Release_Build\srctblbrows.exe ..\..\bin
+copy Release_Build\srctblbrows.exe ..\..\..\RTKLIB_bin\bin
