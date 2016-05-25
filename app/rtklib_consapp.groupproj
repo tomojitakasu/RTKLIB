@@ -1,60 +1,60 @@
-﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-		<PropertyGroup>
-			<ProjectGuid>{342C8F81-DB4A-476F-8D34-1AF51F378AEA}</ProjectGuid>
-		</PropertyGroup>
-		<ItemGroup>
-			<Projects Include="rnx2rtkp\bcc\_rnx2rtkp.cbproj">
-				<Dependencies/>
-			</Projects>
-			<Projects Include="convbin\bcc\_convbin.cbproj">
-				<Dependencies/>
-			</Projects>
-			<Projects Include="pos2kml\bcc\_pos2kml.cbproj">
-				<Dependencies/>
-			</Projects>
-		</ItemGroup>
-		<ProjectExtensions>
-			<Borland.Personality>Default.Personality.12</Borland.Personality>
-			<Borland.ProjectType/>
-			<BorlandProject>
-				<Default.Personality/>
-			</BorlandProject>
-		</ProjectExtensions>
-		<Target Name="_rnx2rtkp">
-			<MSBuild Projects="rnx2rtkp\bcc\_rnx2rtkp.cbproj"/>
-		</Target>
-		<Target Name="_rnx2rtkp:Clean">
-			<MSBuild Projects="rnx2rtkp\bcc\_rnx2rtkp.cbproj" Targets="Clean"/>
-		</Target>
-		<Target Name="_rnx2rtkp:Make">
-			<MSBuild Projects="rnx2rtkp\bcc\_rnx2rtkp.cbproj" Targets="Make"/>
-		</Target>
-		<Target Name="_convbin">
-			<MSBuild Projects="convbin\bcc\_convbin.cbproj"/>
-		</Target>
-		<Target Name="_convbin:Clean">
-			<MSBuild Projects="convbin\bcc\_convbin.cbproj" Targets="Clean"/>
-		</Target>
-		<Target Name="_convbin:Make">
-			<MSBuild Projects="convbin\bcc\_convbin.cbproj" Targets="Make"/>
-		</Target>
-		<Target Name="_pos2kml">
-			<MSBuild Projects="pos2kml\bcc\_pos2kml.cbproj"/>
-		</Target>
-		<Target Name="_pos2kml:Clean">
-			<MSBuild Projects="pos2kml\bcc\_pos2kml.cbproj" Targets="Clean"/>
-		</Target>
-		<Target Name="_pos2kml:Make">
-			<MSBuild Projects="pos2kml\bcc\_pos2kml.cbproj" Targets="Make"/>
-		</Target>
-		<Target Name="Build">
-			<CallTarget Targets="_rnx2rtkp;_convbin;_pos2kml"/>
-		</Target>
-		<Target Name="Clean">
-			<CallTarget Targets="_rnx2rtkp:Clean;_convbin:Clean;_pos2kml:Clean"/>
-		</Target>
-		<Target Name="Make">
-			<CallTarget Targets="_rnx2rtkp:Make;_convbin:Make;_pos2kml:Make"/>
-		</Target>
-		<Import Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')" Project="$(BDS)\Bin\CodeGear.Group.Targets"/>
-	</Project>
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{342C8F81-DB4A-476F-8D34-1AF51F378AEA}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="rnx2rtkp\bcc\_rnx2rtkp.cbproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="convbin\bcc\_convbin.cbproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="pos2kml\bcc\_pos2kml.cbproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="_rnx2rtkp">
+        <MSBuild Projects="rnx2rtkp\bcc\_rnx2rtkp.cbproj"/>
+    </Target>
+    <Target Name="_rnx2rtkp:Clean">
+        <MSBuild Projects="rnx2rtkp\bcc\_rnx2rtkp.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="_rnx2rtkp:Make">
+        <MSBuild Projects="rnx2rtkp\bcc\_rnx2rtkp.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="_convbin">
+        <MSBuild Projects="convbin\bcc\_convbin.cbproj"/>
+    </Target>
+    <Target Name="_convbin:Clean">
+        <MSBuild Projects="convbin\bcc\_convbin.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="_convbin:Make">
+        <MSBuild Projects="convbin\bcc\_convbin.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="_pos2kml">
+        <MSBuild Projects="pos2kml\bcc\_pos2kml.cbproj"/>
+    </Target>
+    <Target Name="_pos2kml:Clean">
+        <MSBuild Projects="pos2kml\bcc\_pos2kml.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="_pos2kml:Make">
+        <MSBuild Projects="pos2kml\bcc\_pos2kml.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="_rnx2rtkp;_convbin;_pos2kml"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="_rnx2rtkp:Clean;_convbin:Clean;_pos2kml:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="_rnx2rtkp:Make;_convbin:Make;_pos2kml:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

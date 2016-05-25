@@ -45,3 +45,4 @@ UPDATE HISTORY
                       update data/TLE_GNSS_SATNO.txt
                       repository for RTKLIB/bin is moved to new RTKLIB_bin to
                       reduce repository size.
+                      septentrio.c is updated by Apr 6 ver by JensReimann.
