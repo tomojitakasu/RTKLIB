@@ -1,0 +1,39 @@
+RTKLIB package includes some companion executive binaries or
+shared libraries necessary to execute RTKLIB APs on Windows.
+
+Refer the following URLs for the licenses of these binaries
+or shared libraries.
+
+teqc.exe:
+TEQC - The Toolkit for GPS/GLONASS/Galileo/SBAS Data
+http://facility.unavco.org/software/teqc/teqc.html
+
+crx2rnx.exe:
+Hatanaka to RINEX conversion program
+ftp://terras.gsi.go.jp/software/RNXCMP/
+
+gzip.exe:
+GNU Gzip
+http://www.gnu.org/software/gzip/
+
+tar.exe:
+libintl-2.dll:
+libiconv-2.dll:
+GNU Tar and dependencies
+http://www.gnu.org/software/tar/
+
+wget.exe:
+GNU Wget
+http://www.gnu.org/software/wget/
+
+libguide40.dll:
+mkl_lapack.dll:
+mkl_p4p.dll:
+mkl_def.dll:
+Intel(R) Math Kernel Library for Windows
+http://software.intel.com/en-us/intel-mkl/
+
+MSVCR71.DLL:
+Microsoft C Runtime Library
+http://msdn.microsoft.com/
+
