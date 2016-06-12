@@ -284,9 +284,9 @@ object KeyDialog: TKeyDialog
   end
   object BtnOk: TButton
     Left = 280
-    Top = 110
+    Top = 100
     Width = 33
-    Height = 21
+    Height = 27
     Caption = '&OK'
     ModalResult = 1
     TabOrder = 0

@@ -121,7 +121,11 @@ void __fastcall TMainForm::FormCreate(TObject *Sender)
         SvrStart();
     }
 }
-// callback on form show ----------------------------------------------------// callback on form close ---------------------------------------------------
+// callback on form show ----------------------------------------------------
+void __fastcall TMainForm::FormShow(TObject *Sender)
+{
+	;
+}
 void __fastcall TMainForm::FormClose(TObject *Sender, TCloseAction &Action)
 {
     SaveOpt();
@@ -315,7 +319,13 @@ void __fastcall TMainForm::TrayIconDblClick(TObject *Sender)
     Visible=true;
     TrayIcon->Visible=false;
 }
-// callback on task-tray-icon click -----------------------------------------// callback on menu-expand --------------------------------------------------
+// callback on task-tray-icon click -----------------------------------------
+void __fastcall TMainForm::TrayIconMouseDown(TObject *Sender,
+      TMouseButton Button, TShiftState Shift, int X, int Y)
+{
+	;
+}
+// callback on menu-expand --------------------------------------------------
 void __fastcall TMainForm::MenuExpandClick(TObject *Sender)
 {
     Visible=true;
@@ -501,8 +511,8 @@ void __fastcall TMainForm::SvrStart(void)
     
     StartTime=utc2gpst(timeget());
     Panel1    ->Enabled=false;
-    BtnStart  ->Enabled=false;
-    BtnStop   ->Enabled=true;
+    BtnStart  ->Visible=false;
+    BtnStop   ->Visible=true;
     BtnOpt    ->Enabled=false;
     BtnExit   ->Enabled=false;
     MenuStart ->Enabled=false;
@@ -525,8 +535,8 @@ void __fastcall TMainForm::SvrStop(void)
     
     EndTime=utc2gpst(timeget());
     Panel1    ->Enabled=true;
-    BtnStart  ->Enabled=true;
-    BtnStop   ->Enabled=false;
+    BtnStart  ->Visible=true;
+    BtnStop   ->Visible=false;
     BtnOpt    ->Enabled=true;
     BtnExit   ->Enabled=true;
     MenuStart ->Enabled=true;

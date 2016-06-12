@@ -4,7 +4,7 @@ object SerialOptDialog: TSerialOptDialog
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Serial Options'
-  ClientHeight = 114
+  ClientHeight = 117
   ClientWidth = 310
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -63,7 +63,7 @@ object SerialOptDialog: TSerialOptDialog
     Left = 126
     Top = 88
     Width = 87
-    Height = 23
+    Height = 27
     Caption = '&OK'
     ModalResult = 1
     TabOrder = 1
@@ -73,7 +73,7 @@ object SerialOptDialog: TSerialOptDialog
     Left = 216
     Top = 88
     Width = 87
-    Height = 23
+    Height = 27
     Caption = '&Cancel'
     ModalResult = 2
     TabOrder = 0
@@ -84,7 +84,6 @@ object SerialOptDialog: TSerialOptDialog
     Width = 77
     Height = 21
     DropDownCount = 12
-    ItemHeight = 13
     ItemIndex = 0
     TabOrder = 3
     Text = '300'
@@ -107,7 +106,6 @@ object SerialOptDialog: TSerialOptDialog
     Width = 77
     Height = 21
     DropDownCount = 10
-    ItemHeight = 13
     ItemIndex = 0
     TabOrder = 2
     Text = 'COM1'
@@ -120,7 +118,6 @@ object SerialOptDialog: TSerialOptDialog
     Width = 77
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
     ItemIndex = 1
     TabOrder = 4
     Text = '8 bits'
@@ -134,7 +131,6 @@ object SerialOptDialog: TSerialOptDialog
     Width = 77
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
     ItemIndex = 0
     TabOrder = 5
     Text = 'None'
@@ -149,7 +145,6 @@ object SerialOptDialog: TSerialOptDialog
     Width = 77
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
     ItemIndex = 0
     TabOrder = 6
     Text = '1 bit'
@@ -163,7 +158,6 @@ object SerialOptDialog: TSerialOptDialog
     Width = 77
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
     ItemIndex = 0
     TabOrder = 7
     Text = 'None'
@@ -175,7 +169,7 @@ object SerialOptDialog: TSerialOptDialog
     Left = 8
     Top = 88
     Width = 87
-    Height = 23
+    Height = 27
     Caption = '&Commands...'
     TabOrder = 8
     Visible = False

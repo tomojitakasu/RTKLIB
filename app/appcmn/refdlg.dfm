@@ -3,7 +3,7 @@ object RefDialog: TRefDialog
   Top = 0
   BorderIcons = [biSystemMenu]
   Caption = 'Stations'
-  ClientHeight = 445
+  ClientHeight = 443
   ClientWidth = 433
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -20,7 +20,7 @@ object RefDialog: TRefDialog
     Left = 0
     Top = 0
     Width = 433
-    Height = 420
+    Height = 412
     Margins.Top = 1
     Margins.Bottom = 1
     Align = alClient
@@ -40,6 +40,7 @@ object RefDialog: TRefDialog
     TabOrder = 0
     OnDblClick = StaListDblClick
     OnMouseDown = StaListMouseDown
+    ExplicitHeight = 420
     ColWidths = (
       31
       78
@@ -51,44 +52,46 @@ object RefDialog: TRefDialog
   end
   object Panel1: TPanel
     Left = 0
-    Top = 420
+    Top = 412
     Width = 433
-    Height = 25
+    Height = 31
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
+    ExplicitLeft = -1
+    ExplicitTop = 411
     object BtnLoad: TButton
       Left = 2
       Top = 2
-      Width = 65
-      Height = 21
+      Width = 70
+      Height = 27
       Caption = '&Load'
       TabOrder = 0
       OnClick = BtnLoadClick
     end
     object Panel2: TPanel
-      Left = 294
+      Left = 280
       Top = 0
-      Width = 139
-      Height = 25
+      Width = 153
+      Height = 31
       Align = alRight
       BevelOuter = bvNone
       TabOrder = 1
       object BtnOK: TButton
         Left = 4
         Top = 2
-        Width = 65
-        Height = 21
+        Width = 70
+        Height = 27
         Caption = '&OK'
         ModalResult = 1
         TabOrder = 0
         OnClick = BtnOKClick
       end
       object BtnCancel: TButton
-        Left = 70
+        Left = 80
         Top = 2
-        Width = 65
-        Height = 21
+        Width = 70
+        Height = 27
         Caption = '&Cancel'
         ModalResult = 2
         TabOrder = 1
@@ -97,15 +100,15 @@ object RefDialog: TRefDialog
     object BtnFind: TButton
       Left = 202
       Top = 2
-      Width = 31
-      Height = 21
+      Width = 45
+      Height = 27
       Caption = 'Find'
       TabOrder = 2
       OnClick = BtnFindClick
     end
     object FindStr: TEdit
       Left = 112
-      Top = 2
+      Top = 4
       Width = 89
       Height = 21
       TabOrder = 3

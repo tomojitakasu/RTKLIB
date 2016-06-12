@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
-* pos2kml.c : convert positions to google earth kml file
+* pos2kml.c : convert positions to google earth KML or GPX file
 *
-*          Copyright (C) 2007-2008 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2007-2016 by T.TAKASU, All rights reserved.
 *
 * version : $Revision: 1.1 $ $Date: 2008/07/17 21:54:53 $
 * history : 2007/01/20  1.0 new
@@ -12,6 +12,7 @@
 *                           add time stamp option
 *                           separate readsol.c file
 *           2008/07/18  1.3 support change of convkml() arguments
+*           2016/06/11  1.4 add option -gpx for gpx conversion
 *-----------------------------------------------------------------------------*/
 #include <stdarg.h>
 #include "rtklib.h"
@@ -23,11 +24,11 @@ static const char *help[]={
 "",
 " usage: pos2kml [option]... file [...]",
 "",
-" Read solution file(s) and convert it to Google Earth KML file. Each line in",
-" the input file shall contain fields of time, position fields (latitude/",
-" longitude/height or x/y/z-ecef), and quality flag(option). The line started",
-" with '%', '#', ';' is treated as comment. Command options are as follows.",
-" ([]:default)",
+" Read solution file(s) and convert it to Google Earth KML file or GPX file.",
+" Each line in the input file shall contain fields of time, position fields ",
+" (latitude/longitude/height or x/y/z-ecef), and quality flag(option). The line",
+" started with '%', '#', ';' is treated as comment. Command options are as ",
+" follows. ([]:default)",
 "",
 " -h        print help",
 " -o file   output file [infile + .kml]",
@@ -40,6 +41,7 @@ static const char *help[]={
 " -i tint   output time interval (s) (0:all) [0]",
 " -q qflg   output q-flags (0:all) [0]",
 " -f n e h  add north/east/height offset to position (m) [0 0 0]"
+" -gpx      output GPX file"
 };
 /* print help ----------------------------------------------------------------*/
 static void printhelp(void)
@@ -51,7 +53,7 @@ static void printhelp(void)
 /* pos2kml main --------------------------------------------------------------*/
 int main(int argc, char **argv)
 {
-    int i,j,n,outalt=0,outtime=0,qflg=0,tcolor=5,pcolor=5;
+    int i,j,n,outalt=0,outtime=0,qflg=0,tcolor=5,pcolor=5,gpx=0,stat;
     char *infile[32],*outfile="";
     double offset[3]={0.0},tint=0.0,es[6]={2000,1,1},ee[6]={2000,1,1};
     gtime_t ts={0},te={0};
@@ -79,6 +81,7 @@ int main(int argc, char **argv)
         else if (!strcmp(argv[i],"-tu")) outtime=2;
         else if (!strcmp(argv[i],"-i")&&i+i<argc) tint=atof(argv[++i]);
         else if (!strcmp(argv[i],"-q")&&i+i<argc) qflg=atoi(argv[++i]);
+        else if (!strcmp(argv[i],"-gpx")) gpx=1;
         else if (*argv[i]=='-') printhelp();
         else if (n<32) infile[n++]=argv[i];
     }
@@ -91,8 +94,15 @@ int main(int argc, char **argv)
         return -1;
     }
     for (i=0;i<n;i++) {
-        switch (convkml(infile[i],outfile,ts,te,tint,qflg,offset,tcolor,pcolor,
-                        outalt,outtime)) {
+        if (gpx) {
+            stat=convgpx(infile[i],outfile,ts,te,tint,qflg,offset,tcolor,pcolor,
+                         outalt,outtime);
+        }
+        else {
+            stat=convkml(infile[i],outfile,ts,te,tint,qflg,offset,tcolor,pcolor,
+                         outalt,outtime);
+        }
+        switch (stat) {
         case -1: fprintf(stderr,"pos2kml : file read error (%d)\n",i+1);   break;
         case -2: fprintf(stderr,"pos2kml : file format error (%d)\n",i+1); break;
         case -3: fprintf(stderr,"pos2kml : no input data (%d)\n",i+1);     break;

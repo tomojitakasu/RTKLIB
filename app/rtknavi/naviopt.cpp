@@ -471,6 +471,7 @@ void __fastcall TOptDialog::GetOpt(void)
 	PrNoise4	 ->Text     =s.sprintf("%.2E",PrcOpt.prn[3]);
 	PrNoise5	 ->Text     =s.sprintf("%.2E",PrcOpt.prn[4]);
 	SatClkStab	 ->Text     =s.sprintf("%.2E",PrcOpt.sclkstab);
+	MaxAveEp	 ->Text		=s.sprintf("%d",PrcOpt.maxaveep);
 	
 	RovPosTypeP	 ->ItemIndex=RovPosTypeF;
 	RefPosTypeP	 ->ItemIndex=RefPosTypeF;
@@ -486,6 +487,7 @@ void __fastcall TOptDialog::GetOpt(void)
 	RefAntU		 ->Text     =s.sprintf("%.4f",RefAntDel[2]);
 	SetPos(RovPosTypeP->ItemIndex,editu,RovPos);
 	SetPos(RefPosTypeP->ItemIndex,editr,RefPos);
+	ChkInitRestart->Checked =InitRestart;
 	
 	SatPcvFile	 ->Text     =SatPcvFileF;
 	AntPcvFile	 ->Text     =AntPcvFileF;
@@ -595,6 +597,7 @@ void __fastcall TOptDialog::SetOpt(void)
 	PrcOpt.prn[3]    =str2dbl(PrNoise4  ->Text);
 	PrcOpt.prn[4]    =str2dbl(PrNoise5  ->Text);
 	PrcOpt.sclkstab  =str2dbl(SatClkStab->Text);
+	PrcOpt.maxaveep  =MaxAveEp->Text.ToInt();
 	
 	RovPosTypeF      =RovPosTypeP ->ItemIndex;
 	RefPosTypeF      =RefPosTypeP ->ItemIndex;
@@ -610,6 +613,7 @@ void __fastcall TOptDialog::SetOpt(void)
 	RefAntDel[2]     =str2dbl(RefAntU   ->Text);
 	GetPos(RovPosTypeP->ItemIndex,editu,RovPos);
 	GetPos(RefPosTypeP->ItemIndex,editr,RefPos);
+	InitRestart      =ChkInitRestart->Checked;
 	
 	SatPcvFileF      =SatPcvFile  ->Text;
 	AntPcvFileF      =AntPcvFile  ->Text;
@@ -634,6 +638,7 @@ void __fastcall TOptDialog::SetOpt(void)
 	ProxyAddr        =ProxyAddrE  ->Text;
 	MoniPort         =MoniPortE   ->Text.ToInt();
 	PanelStack       =PanelStackE ->ItemIndex;
+	
 	PosFont->Assign(FontLabel->Font);
 	UpdateEnable();
 }
@@ -772,10 +777,11 @@ void __fastcall TOptDialog::LoadOpt(AnsiString file)
 	RefAntE		 ->Text			=s.sprintf("%.4f",prcopt.antdel[1][0]);
 	RefAntN		 ->Text			=s.sprintf("%.4f",prcopt.antdel[1][1]);
 	RefAntU		 ->Text			=s.sprintf("%.4f",prcopt.antdel[1][2]);
+	MaxAveEp	 ->Text			=s.sprintf("%d",prcopt.maxaveep);
 	
-	RovPosTypeP	 ->ItemIndex	=prcopt.rovpos==0?0:3;
-	RefPosTypeP	 ->ItemIndex	=prcopt.refpos==0?0:3;
-	
+	RovPosTypeP	 ->ItemIndex	=prcopt.rovpos==0?0:(prcopt.rovpos==4?3:4);
+	RefPosTypeP	 ->ItemIndex	=prcopt.refpos==0?0:(prcopt.refpos==4?3:4);
+
 	RovPosTypeF					=RovPosTypeP->ItemIndex;
 	RefPosTypeF					=RefPosTypeP->ItemIndex;
 	SetPos(RovPosTypeP->ItemIndex,editu,prcopt.ru);
@@ -787,11 +793,11 @@ void __fastcall TOptDialog::LoadOpt(AnsiString file)
 	GeoidDataFile->Text			=filopt.geoid;
 	DCBFile    ->Text			=filopt.dcb;
 	LocalDir   ->Text			=filopt.tempdir;
-	
+
 	ReadAntList();
 	UpdateEnable();
 }
-//---------------------------------------------------------------------------
+//---j------------------------------------------------------------------------
 void __fastcall TOptDialog::SaveOpt(AnsiString file)
 {
 	AnsiString ProxyAddrE_Text=ProxyAddrE->Text;
@@ -936,9 +942,10 @@ void __fastcall TOptDialog::SaveOpt(AnsiString file)
 	prcopt.antdel[1][0]=str2dbl(RefAntE->Text);
 	prcopt.antdel[1][1]=str2dbl(RefAntN->Text);
 	prcopt.antdel[1][2]=str2dbl(RefAntU->Text);
+	prcopt.maxaveep=MaxAveEp->Text.ToInt();
 	
 	prcopt.rovpos=RovPosTypeP->ItemIndex<3?0:4;
-	prcopt.refpos=RefPosTypeP->ItemIndex<3?0:4;
+	prcopt.refpos=RefPosTypeP->ItemIndex<3?0:(RefPosTypeP->ItemIndex<4?4:1);
 	
 	if (prcopt.rovpos==0) GetPos(RovPosTypeP->ItemIndex,editu,prcopt.ru);
 	if (prcopt.refpos==0) GetPos(RefPosTypeP->ItemIndex,editr,prcopt.rb);
@@ -1029,6 +1036,10 @@ void __fastcall TOptDialog::UpdateEnable(void)
 	RefPos2        ->Enabled=RefPosTypeP->Enabled&&RefPosTypeP->ItemIndex<=2;
 	RefPos3        ->Enabled=RefPosTypeP->Enabled&&RefPosTypeP->ItemIndex<=2;
 	BtnRefPos      ->Enabled=RefPosTypeP->Enabled&&RefPosTypeP->ItemIndex<=2;
+	
+	LabelMaxAveEp  ->Visible=RefPosTypeP->ItemIndex==4;
+	MaxAveEp       ->Visible=RefPosTypeP->ItemIndex==4;
+	ChkInitRestart ->Visible=RefPosTypeP->ItemIndex==4;
 	
 //	SbasSatE       ->Enabled=PosMode->ItemIndex==0;
 }

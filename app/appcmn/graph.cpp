@@ -10,8 +10,10 @@
 #define MINSIZE		10			// min width/height
 #define MINSCALE	2E-5		// min scale factor (pixel/unit)
 #define MAXSCALE	1E7			// max scale factor (pixel/unit)
+#define MAXCIRCLES	100			// max number of circles
 #define SIZEORIGIN	6
 
+#define SQR(x)		((x)*(x))
 #define MIN(x,y)	((x)<(y)?(x):(y))
 #define MAX(x,y)	((x)>(y)?(x):(y))
 
@@ -19,7 +21,9 @@
 TGraph::TGraph(TPaintBox *parent)
 {
 	TPoint point;
-	Parent=parent; X=Y=0; Width=parent->Width; Height=parent->Height;
+	Canvas=parent->Canvas;
+	X=Y=0;
+	SetSize(parent->Width,parent->Height);
 	XCent =YCent =0.0;			// center coordinate (unit)
 	XScale=YScale=0.02; 		// scale factor (unit/pixel)
 	Box=1;						// show box (0:off,1:on)
@@ -30,11 +34,39 @@ TGraph::TGraph(TPaintBox *parent)
 								// 3:outer-rot,4:inner-rot,5/6:time,7:axis)
 	Week=0;						// gpsweek no. for time label
 	Title=XLabel=YLabel="";		// lable string ("":no label)
-	Color[0]=Parent->Color;		// background color
+	Color[0]=parent->Color;		// background color
 	Color[1]=clGray;			// grid color
 	Color[2]=clBlack;			// title/label color
 	
 	p_=point; mark_=0; color_=clBlack; size_=0; rot_=0;
+}
+TGraph::TGraph(TImage *parent)
+{
+	TPoint point;
+	Canvas=parent->Canvas;
+	X=Y=0;
+	SetSize(parent->Width,parent->Height);
+	XCent =YCent =0.0;			// center coordinate (unit)
+	XScale=YScale=0.02; 		// scale factor (unit/pixel)
+	Box=1;						// show box (0:off,1:on)
+	Fit=1;						// fit scale on resize (0:off,1:on):
+	XGrid=YGrid=1;				// show grid (0:off,1:on)
+	XTick=YTick=0.0;			// grid interval (unit) (0:auto)
+	XLPos=YLPos=1;				// grid label pos (0:off,1:outer,2:inner,
+								// 3:outer-rot,4:inner-rot,5/6:time,7:axis)
+	Week=0;						// gpsweek no. for time label
+	Title=XLabel=YLabel="";		// lable string ("":no label)
+	Color[0]=clWhite;			// background color
+	Color[1]=clGray;			// grid color
+	Color[2]=clBlack;			// title/label color
+	
+	p_=point; mark_=0; color_=clBlack; size_=0; rot_=0;
+}
+// --------------------------------------------------------------------------
+void TGraph::SetSize(int width, int height)
+{
+	Width =width;
+	Height=height;
 }
 // --------------------------------------------------------------------------
 int TGraph::IsInArea(TPoint &p)
@@ -166,7 +198,7 @@ AnsiString TGraph::TimeText(double x, double dx)
 //---------------------------------------------------------------------------
 void TGraph::DrawGrid(double xt, double yt)
 {
-	TCanvas *c=Parent->Canvas;
+	TCanvas *c=Canvas;
 	double xl[2],yl[2];
 	TPoint p;
 	GetLim(xl,yl);
@@ -229,7 +261,7 @@ void TGraph::DrawGridLabel(double xt, double yt)
 //---------------------------------------------------------------------------
 void TGraph::DrawBox(void)
 {
-	TCanvas *c=Parent->Canvas;
+	TCanvas *c=Canvas;
 	if (Box) {
 		c->Pen->Color=Color[1]; c->Pen->Style=psSolid; c->Brush->Style=bsClear;
 		c->Rectangle(X,Y,X+Width-1,Y+Height-1);
@@ -254,7 +286,7 @@ void TGraph::DrawLabel(void)
 //---------------------------------------------------------------------------
 void TGraph::DrawAxis(int label, int glabel)
 {
-	TCanvas *c=Parent->Canvas;
+	TCanvas *c=Canvas;
 	double xt,yt;
 	GetTick(xt,yt);
 	c->Pen->Color=Color[0]; c->Pen->Style=psSolid;
@@ -289,7 +321,7 @@ void TGraph::DrawMark(TPoint p, int mark, TColor color, int size, int rot)
 	}
 	p_=p; mark_=mark; color_=color; size_=size; rot_=rot;
 	
-	TCanvas *c=Parent->Canvas;
+	TCanvas *c=Canvas;
 	if (size<1) size=1;
 	int n,s=size/2;
 	int x1=p.x-s,x2=x1+size+1,y1=p.y-s,y2=y1+size+1;
@@ -404,7 +436,7 @@ void TGraph::DrawText(TPoint p, AnsiString str, TColor color, int ha, int va,
 	::MultiByteToWideChar(CP_UTF8,0,str.c_str(),-1,buff,2048);
 	UnicodeString u_str(buff);
 	
-	TCanvas *c=Parent->Canvas;
+	TCanvas *c=Canvas;
 	AnsiString Font_Name=c->Font->Name;
 	LOGFONT lf={0};
 	lf.lfHeight=c->Font->Height;
@@ -451,7 +483,7 @@ void TGraph::DrawText(double x, double y, AnsiString str, TColor color,
 //---------------------------------------------------------------------------
 void TGraph::DrawCircle(TPoint p, TColor color, int rx, int ry, int style)
 {
-	TCanvas *c=Parent->Canvas;
+	TCanvas *c=Canvas;
 	TPenStyle ps[]={psSolid,psDot,psDash,psDashDot,psDashDotDot};
 	int x1=p.x-rx,x2=p.x+rx,y1=p.y-ry,y2=p.y+ry;
 	c->Pen->Color=color; c->Pen->Style=ps[style]; c->Brush->Style=bsClear;
@@ -468,15 +500,37 @@ void TGraph::DrawCircle(double x, double y, TColor color, double rx,
 //---------------------------------------------------------------------------
 void TGraph::DrawCircles(int label)
 {
-	TCanvas *c=Parent->Canvas;
+	TCanvas *c=Canvas;
 	TPoint p;
-	double xl[2],yl[2],xt,yt,x2,y2,r;
+	double xl[2],yl[2],xt,yt,r[4],rmin=1E99,rmax=0.0;
+	int imin,imax;
 	GetLim(xl,yl);
-	x2=MAX(xl[0]*xl[0],xl[1]*xl[1]);
-	y2=MAX(yl[0]*yl[0],yl[1]*yl[1]);
-	r=sqrt(x2+y2);
 	GetTick(xt,yt);
-	for (int i=(int)floor(r/xt);i>0;i--) {
+	r[0]=sqrt(SQR(xl[0])+SQR(yl[0]));
+	r[1]=sqrt(SQR(xl[0])+SQR(yl[1]));
+	r[2]=sqrt(SQR(xl[1])+SQR(yl[0]));
+	r[3]=sqrt(SQR(xl[1])+SQR(yl[1]));
+	for (int i=0;i<4;i++) {
+		if (r[i]<rmin) rmin=r[i];
+		if (r[i]>rmax) rmax=r[i];
+	}
+	if (xl[0]<=0.0&&xl[1]>=0.0&&yl[0]<=0.0&&yl[1]>=0.0) {
+		imin=0;
+		imax=(int)ceil(rmax/xt);
+	}
+	else if (xl[0]<=0.0&&xl[1]>=0.0) {
+		imin=(int)floor((yl[1]<0.0?-yl[1]:yl[0])/xt);
+		imax=(int)ceil(rmax/xt);
+	}
+	else if (yl[0]<=0.0&&yl[1]>=0.0) {
+		imin=(int)floor((xl[1]<0.0?-xl[1]:xl[0])/xt);
+		imax=(int)ceil(rmax/xt);
+	}
+	else {
+		imin=(int)floor(rmin/xt);
+		imax=(int)ceil(rmax/xt);
+	}
+	for (int i=imin;i<=imax;i++) {
 		DrawCircle(0.0,0.0,Color[1],i*xt,i*xt,1);
 	}
 	ToPoint(0.0,0.0,p);
@@ -525,13 +579,13 @@ void TGraph::DrawPolyline(TPoint *p, int n)
 {
 	// avoid overflow of points
 	for (int i=0;i<n-1;i+=30000,p+=30000) {
-		Parent->Canvas->Polyline(p,n-i>30000?30000:n-i-1);
+		Canvas->Polyline(p,n-i>30000?30000:n-i-1);
 	}
 }
 //---------------------------------------------------------------------------
 void TGraph::DrawPoly(TPoint *p, int n, TColor color, int style)
 {
-	TCanvas *c=Parent->Canvas;
+	TCanvas *c=Canvas;
 	TPenStyle ps[]={psSolid,psDot,psDash,psDashDot,psDashDotDot};
 	c->Pen->Color=color; c->Pen->Style=ps[style]; c->Brush->Style=bsClear;
 	int i,j,area0=11,area1;
@@ -562,13 +616,14 @@ void TGraph::DrawPoly(double *x, double *y, int n, TColor color, int style)
 void TGraph::DrawPatch(TPoint *p, int n, TColor color1, TColor color2,
 	int style)
 {
-	TCanvas *c=Parent->Canvas;
+	TCanvas *c=Canvas;
 	TPenStyle ps[]={psSolid,psDot,psDash,psDashDot,psDashDotDot};
+	if (n>30000) return; // # of points overflow
 	c->Pen->Color=color1;
 	c->Pen->Style=ps[style];
 	c->Brush->Style=bsSolid;
 	c->Brush->Color=color2;
-	c->Polygon(p,n);
+	c->Polygon(p,n-1);
 }
 //---------------------------------------------------------------------------
 void TGraph::DrawPatch(double *x, double *y, int n, TColor color1,
@@ -584,7 +639,7 @@ void TGraph::DrawPatch(double *x, double *y, int n, TColor color1,
 //---------------------------------------------------------------------------
 void TGraph::DrawSkyPlot(TPoint p, TColor color1, TColor color2, int size)
 {
-	TCanvas *c=Parent->Canvas;
+	TCanvas *c=Canvas;
 	c->Pen->Color=color1; c->Brush->Style=bsClear;
 	AnsiString s,dir[]={"N","E","S","W"};
 	TPoint ps;
@@ -621,7 +676,7 @@ void TGraph::DrawSkyPlot(double x, double y, TColor color1, TColor color2,
 void TGraph::DrawSkyPlot(TPoint p, TColor color1, TColor color2,
 	TColor bgcolor, int size)
 {
-	TCanvas *c=Parent->Canvas;
+	TCanvas *c=Canvas;
 	c->Pen->Color=color1; c->Brush->Style=bsClear;
 	AnsiString s,dir[]={"N","E","S","W"};
 	TPoint ps;

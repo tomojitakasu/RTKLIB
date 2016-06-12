@@ -5,7 +5,7 @@ object OutputStrDialog: TOutputStrDialog
   BorderStyle = bsDialog
   Caption = 'Output Streams'
   ClientHeight = 155
-  ClientWidth = 386
+  ClientWidth = 390
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -76,7 +76,7 @@ object OutputStrDialog: TOutputStrDialog
     Caption = 'H'
   end
   object BtnCancel: TButton
-    Left = 298
+    Left = 301
     Top = 127
     Width = 85
     Height = 27
@@ -95,7 +95,7 @@ object OutputStrDialog: TOutputStrDialog
     OnClick = BtnOkClick
   end
   object Stream1: TComboBox
-    Left = 138
+    Left = 133
     Top = 18
     Width = 103
     Height = 21
@@ -112,9 +112,9 @@ object OutputStrDialog: TOutputStrDialog
       'File')
   end
   object BtnStr1: TButton
-    Left = 241
+    Left = 237
     Top = 17
-    Width = 21
+    Width = 25
     Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
@@ -127,9 +127,9 @@ object OutputStrDialog: TOutputStrDialog
     OnClick = BtnStr1Click
   end
   object BtnStr2: TButton
-    Left = 241
+    Left = 237
     Top = 39
-    Width = 21
+    Width = 25
     Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
@@ -142,7 +142,7 @@ object OutputStrDialog: TOutputStrDialog
     OnClick = BtnStr2Click
   end
   object Stream2: TComboBox
-    Left = 138
+    Left = 133
     Top = 40
     Width = 103
     Height = 21
@@ -161,7 +161,7 @@ object OutputStrDialog: TOutputStrDialog
   object Format1: TComboBox
     Left = 278
     Top = 18
-    Width = 103
+    Width = 107
     Height = 21
     Style = csDropDownList
     ItemIndex = 0
@@ -176,7 +176,7 @@ object OutputStrDialog: TOutputStrDialog
   object Format2: TComboBox
     Left = 278
     Top = 40
-    Width = 103
+    Width = 107
     Height = 21
     Style = csDropDownList
     ItemIndex = 0
@@ -198,7 +198,7 @@ object OutputStrDialog: TOutputStrDialog
   object BtnFile1: TButton
     Left = 361
     Top = 79
-    Width = 21
+    Width = 25
     Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
@@ -220,7 +220,7 @@ object OutputStrDialog: TOutputStrDialog
   object BtnFile2: TButton
     Left = 361
     Top = 101
-    Width = 21
+    Width = 25
     Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
@@ -243,7 +243,7 @@ object OutputStrDialog: TOutputStrDialog
   object Stream1C: TCheckBox
     Left = 8
     Top = 20
-    Width = 129
+    Width = 120
     Height = 17
     Caption = '(4) Solution 1'
     TabOrder = 2
@@ -252,7 +252,7 @@ object OutputStrDialog: TOutputStrDialog
   object Stream2C: TCheckBox
     Left = 8
     Top = 42
-    Width = 129
+    Width = 120
     Height = 17
     Caption = '(5) Solution 2'
     TabOrder = 6

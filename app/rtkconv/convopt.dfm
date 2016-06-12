@@ -477,7 +477,8 @@ object ConvOptDialog: TConvOptDialog
       '2.12'
       '3.00'
       '3.01'
-      '3.02')
+      '3.02'
+      '3.03')
   end
   object RnxFile: TCheckBox
     Left = 327

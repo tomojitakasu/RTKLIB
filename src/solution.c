@@ -822,11 +822,16 @@ extern void initsolbuf(solbuf_t *solbuf, int cyclic, int nmax)
 *-----------------------------------------------------------------------------*/
 extern void freesolbuf(solbuf_t *solbuf)
 {
+    int i;
+    
     trace(3,"freesolbuf: n=%d\n",solbuf->n);
     
     free(solbuf->data);
-    solbuf->n=solbuf->nmax=solbuf->start=solbuf->end=0;
+    solbuf->n=solbuf->nmax=solbuf->start=solbuf->end=solbuf->nb=0;
     solbuf->data=NULL;
+    for (i=0;i<3;i++) {
+        solbuf->rb[i]=0.0;
+    }
 }
 extern void freesolstatbuf(solstatbuf_t *solstatbuf)
 {

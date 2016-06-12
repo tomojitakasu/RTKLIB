@@ -51,11 +51,6 @@ __published:
 	
 	TTimer *Timer;
 	TPanel *Panel4;
-	TButton *BtnExit;
-	TButton *BtnOpt;
-	TButton *BtnPlot;
-	TButton *BtnStart;
-	TButton *BtnStop;
 	TPanel *Panel33;
 	TSpeedButton *BtnTaskTray;
 	TSpeedButton *BtnAbout;
@@ -120,6 +115,18 @@ __published:
 	TLabel *SolS;
 	TLabel *SolQ;
 	TSpeedButton *BtnSolType2;
+	TBitBtn *BtnStart;
+	TBitBtn *BtnMark;
+	TBitBtn *BtnPlot;
+	TBitBtn *BtnOpt;
+	TBitBtn *BtnExit;
+	TBitBtn *BtnStop;
+	TSpeedButton *BtnExpand1;
+	TSpeedButton *BtnShrink1;
+	TSpeedButton *BtnExpand2;
+	TSpeedButton *BtnShrink2;
+	TSpeedButton *BtnPnt1;
+	TSpeedButton *BtnPnt2;
 	
 	void __fastcall FormCreate        (TObject *Sender);
 	void __fastcall FormShow          (TObject *Sender);
@@ -165,6 +172,11 @@ __published:
 	void __fastcall BtnFreqType2Click(TObject *Sender);
 	void __fastcall Panel211Resize(TObject *Sender);
 	void __fastcall Panel5Resize(TObject *Sender);
+	void __fastcall BtnExpand1Click(TObject *Sender);
+	void __fastcall BtnShrink1Click(TObject *Sender);
+	void __fastcall BtnExpand2Click(TObject *Sender);
+	void __fastcall BtnShrink2Click(TObject *Sender);
+	void __fastcall BtnMarkClick(TObject *Sender);
 private:
 	tle_t TLEData;
 
@@ -181,12 +193,14 @@ private:
 	void __fastcall UpdateStr    (void);
 	void __fastcall DrawPlot     (TImage *plot, int type, int freq);
 	void __fastcall UpdatePlot   (void);
+	void __fastcall UpdateEnable (void);
 	void __fastcall ChangePlot   (void);
 	int  __fastcall ConfOverwrite(const char *path);
 	
-	void __fastcall DrawSnr      (TCanvas *c, int w, int h, int top, int index, int freq);
+	void __fastcall DrawSnr      (TCanvas *c, int w, int h, int x0, int y0, int index, int freq);
 	void __fastcall DrawSat      (TCanvas *c, int w, int h, int x0, int y0, int index, int freq);
-	void __fastcall DrawBL       (TCanvas *c, int w, int h);
+	void __fastcall DrawBL       (TImage *plot, int w, int h);
+	void __fastcall DrawTrk      (TImage *plot);
 	void __fastcall DrawSky      (TCanvas *c, int w, int h, int x0, int y0);
 	void __fastcall DrawText     (TCanvas *c, int x, int y, UnicodeString s,
 								  TColor color, int align);
@@ -212,6 +226,7 @@ public:
 	int Stream[MAXSTRRTK],StreamC[MAXSTRRTK],Format[MAXSTRRTK];
 	int CmdEna[3][2],CmdEnaTcp[3][2];
 	int TimeSys,SolType,PlotType1,FreqType1,PlotType2,FreqType2;
+	int TrkType1,TrkType2,TrkScale1,TrkScale2,BLMode1,BLMode2;
 	int MoniPort,OpenPort;
 	
 	int PSol,PSolS,PSolE,Nsat[2],SolCurrentStat;
@@ -220,6 +235,7 @@ public:
 	gtime_t *Time;
 	int *SolStat,*Nvsat;
 	double *SolRov,*SolRef,*Qr,*VelRov,*Age,*Ratio;
+	double TrkOri[3];
 	AnsiString Paths[MAXSTRRTK][4],Cmds[3][2],CmdsTcp[3][2];
 	AnsiString InTimeStart,InTimeSpeed,ExSats;
 	AnsiString RcvOpt[3],ProxyAddr;
@@ -228,7 +244,7 @@ public:
 	solopt_t SolOpt;
 	TFont *PosFont;
 	int DebugTraceF,DebugStatusF,OutputGeoidF,BaselineC;
-	int RovPosTypeF,RefPosTypeF,RovAntPcvF,RefAntPcvF;
+	int RovPosTypeF,RefPosTypeF,RovAntPcvF,RefAntPcvF,InitRestart;
 	AnsiString RovAntF,RefAntF,SatPcvFileF,AntPcvFileF;
 	double RovAntDel[3],RefAntDel[3],RovPos[3],RefPos[3],NmeaPos[2];
 	double Baseline[2];

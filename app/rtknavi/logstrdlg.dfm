@@ -5,7 +5,7 @@ object LogStrDialog: TLogStrDialog
   BorderStyle = bsDialog
   Caption = 'Log Streams'
   ClientHeight = 195
-  ClientWidth = 386
+  ClientWidth = 390
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -46,8 +46,8 @@ object LogStrDialog: TLogStrDialog
     Caption = 'Log File Paths'
   end
   object BtnKey: TSpeedButton
-    Left = 190
-    Top = 166
+    Left = 188
+    Top = 168
     Width = 21
     Height = 23
     Caption = '?'
@@ -55,21 +55,21 @@ object LogStrDialog: TLogStrDialog
     OnClick = BtnKeyClick
   end
   object Label1: TLabel
-    Left = 78
-    Top = 171
+    Left = 76
+    Top = 173
     Width = 49
     Height = 13
     Caption = 'Swap Intv'
   end
   object Label2: TLabel
-    Left = 176
-    Top = 171
+    Left = 175
+    Top = 173
     Width = 7
     Height = 13
     Caption = 'H'
   end
   object BtnCancel: TButton
-    Left = 298
+    Left = 302
     Top = 167
     Width = 85
     Height = 27
@@ -88,7 +88,7 @@ object LogStrDialog: TLogStrDialog
     OnClick = BtnOkClick
   end
   object Stream1: TComboBox
-    Left = 138
+    Left = 133
     Top = 18
     Width = 103
     Height = 21
@@ -105,7 +105,7 @@ object LogStrDialog: TLogStrDialog
       'File')
   end
   object Stream2: TComboBox
-    Left = 138
+    Left = 133
     Top = 40
     Width = 103
     Height = 21
@@ -122,9 +122,9 @@ object LogStrDialog: TLogStrDialog
       'File')
   end
   object BtnStr1: TButton
-    Left = 241
+    Left = 237
     Top = 17
-    Width = 21
+    Width = 25
     Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
@@ -137,9 +137,9 @@ object LogStrDialog: TLogStrDialog
     OnClick = BtnStr1Click
   end
   object BtnStr2: TButton
-    Left = 241
+    Left = 237
     Top = 39
-    Width = 21
+    Width = 25
     Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
@@ -168,7 +168,7 @@ object LogStrDialog: TLogStrDialog
   object BtnFile1: TButton
     Left = 363
     Top = 97
-    Width = 21
+    Width = 25
     Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
@@ -183,7 +183,7 @@ object LogStrDialog: TLogStrDialog
   object BtnFile2: TButton
     Left = 363
     Top = 119
-    Width = 21
+    Width = 25
     Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
@@ -231,7 +231,7 @@ object LogStrDialog: TLogStrDialog
     OnClick = Stream3CClick
   end
   object Stream3: TComboBox
-    Left = 138
+    Left = 133
     Top = 62
     Width = 103
     Height = 21
@@ -248,9 +248,9 @@ object LogStrDialog: TLogStrDialog
       'File')
   end
   object BtnStr3: TButton
-    Left = 241
+    Left = 237
     Top = 61
-    Width = 21
+    Width = 25
     Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
@@ -272,7 +272,7 @@ object LogStrDialog: TLogStrDialog
   object BtnFile3: TButton
     Left = 363
     Top = 141
-    Width = 21
+    Width = 25
     Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
@@ -285,8 +285,8 @@ object LogStrDialog: TLogStrDialog
     OnClick = BtnFile3Click
   end
   object SwapIntv: TComboBox
-    Left = 130
-    Top = 168
+    Left = 128
+    Top = 170
     Width = 45
     Height = 21
     TabOrder = 18

@@ -21,6 +21,7 @@ static double str2dbl(AnsiString str)
 //---------------------------------------------------------------------------
 void __fastcall TConvDialog::FormShow(TObject *Sender)
 {
+	FormatGPX->Checked=!FormatKML->Checked;
 	GoogleEarthFile->Text=MainForm->GoogleEarthFile;
 }
 //---------------------------------------------------------------------------
@@ -74,6 +75,7 @@ void __fastcall TConvDialog::BtnConvertClick(TObject *Sender)
 	char cmd[1024],file[1024],kmlfile[1024],*p;
 	double offset[3]={0},es[6]={1970,1,1},ee[6]={2038,1,1},tint=0.0;
 	gtime_t ts={0},te={0};
+	
 	ShowMsg("");
 	if (InputFile->Text==""||OutputFile->Text=="") return;
 	ShowMsg("converting ...");
@@ -92,20 +94,31 @@ void __fastcall TConvDialog::BtnConvertClick(TObject *Sender)
 	}
 	if (TimeIntF->Checked) tint=str2dbl(TimeInt->Text);
 	strcpy(file,InputFile_Text.c_str());
-	strcpy(kmlfile,file);
-	if (!(p=strrchr(kmlfile,'.'))) p=kmlfile+strlen(kmlfile);
-	strcpy(p,".kml");
-	if((stat=convkml(file,Compress->Checked?kmlfile:OutputFile_Text.c_str(),
-	                 ts,te,tint,QFlags->ItemIndex,offset,
-	                 TrackColor->ItemIndex,PointColor->ItemIndex,
-	                 OutputAlt->ItemIndex,OutputTime->ItemIndex))<0) {
+	if (FormatKML->Checked) {
+		if (Compress->Checked) {
+			strcpy(kmlfile,file);
+			if (!(p=strrchr(kmlfile,'.'))) p=kmlfile+strlen(kmlfile);
+			strcpy(p,".kml");
+		}
+		stat=convkml(file,Compress->Checked?kmlfile:OutputFile_Text.c_str(),
+		             ts,te,tint,QFlags->ItemIndex,offset,
+		             TrackColor->ItemIndex,PointColor->ItemIndex,
+		             OutputAlt->ItemIndex,OutputTime->ItemIndex);
+	}
+	else {
+		stat=convgpx(file,Compress->Checked?kmlfile:OutputFile_Text.c_str(),
+		             ts,te,tint,QFlags->ItemIndex,offset,
+		             TrackColor->ItemIndex,PointColor->ItemIndex,
+		             OutputAlt->ItemIndex,OutputTime->ItemIndex);
+	}
+	if (stat<0) {
 		if      (stat==-1) ShowMsg("error : read input file");
 		else if (stat==-2) ShowMsg("error : input file format");
 		else if (stat==-3) ShowMsg("error : no data in input file");
 		else               ShowMsg("error : write kml file");
 		return;
 	}
-	if (Compress->Checked) {
+	if (FormatKML->Checked&&Compress->Checked) {
 		sprintf(cmd,"zip.exe -j -m %s %s",OutputFile->Text.c_str(),kmlfile);
 		if (!ExecCmd(cmd)) {
 			ShowMsg("error : zip execution");
@@ -139,6 +152,10 @@ void __fastcall TConvDialog::UpdateEnable(void)
 	TimeY2UD->Enabled=TimeSpan->Checked;
 	TimeH2UD->Enabled=TimeSpan->Checked;
 	TimeInt->Enabled=TimeIntF->Checked;
+	BtnGoogle->Visible=FormatKML->Checked;
+	Compress->Visible=FormatKML->Checked;
+	GoogleEarthFile->Enabled=FormatKML->Checked;
+	BtnGoogleEarthFile->Enabled=FormatKML->Checked;
 }
 //---------------------------------------------------------------------------
 int __fastcall TConvDialog::ExecCmd(char *cmd)
@@ -173,7 +190,7 @@ void __fastcall TConvDialog::UpdateOutFile(void)
 	if (InputFile->Text=="") return;
 	strcpy(file,InputFile_Text.c_str());
 	if (!(p=strrchr(file,'.'))) p=file+strlen(file);
-	strcpy(p,Compress->Checked?".kmz":".kml");
+	strcpy(p,FormatGPX->Checked?".gpx":(Compress->Checked?".kmz":".kml"));
 	OutputFile->Text=file;
 }
 //---------------------------------------------------------------------------
@@ -250,6 +267,18 @@ void __fastcall TConvDialog::BtnGoogleEarthFileClick(TObject *Sender)
 	OpenDialog->FilterIndex=8;
 	if (!OpenDialog->Execute()) return;
 	GoogleEarthFile->Text=OpenDialog->FileName;
+}
+//---------------------------------------------------------------------------
+void __fastcall TConvDialog::FormatKMLClick(TObject *Sender)
+{
+	UpdateOutFile();
+	UpdateEnable();
+}
+//---------------------------------------------------------------------------
+void __fastcall TConvDialog::FormatGPXClick(TObject *Sender)
+{
+	UpdateOutFile();
+	UpdateEnable();
 }
 //---------------------------------------------------------------------------
 

@@ -102,6 +102,9 @@ void __fastcall TPlot::DrawTrk(int level)
     if (!BtnSol12->Down&&BtnShowMap->Down) {
         DrawTrkImage(level);
     }
+    if (BtnShowPoint->Down) {
+        DrawTrkPath(level);
+    }
 #if 1
     if (ShowGLabel>=3) {
         GraphT->XLPos=7; GraphT->YLPos=7;
@@ -112,9 +115,6 @@ void __fastcall TPlot::DrawTrk(int level)
         GraphT->DrawAxis(ShowLabel,ShowGLabel==2);
     }
 #endif
-    if (BtnShowPoint->Down) {
-        DrawTrkPath(level);
-    }
     if (norm(OPos,3)>0.0) {
         ecef2pos(OPos,opos);
         header="ORI="+LatLonStr(opos,9)+s.sprintf(" %.4fm",opos[2]);
@@ -293,26 +293,71 @@ void __fastcall TPlot::DrawTrkImage(int level)
 // draw map-path on track-plot ----------------------------------------------
 void __fastcall TPlot::DrawTrkPath(int level)
 {
+    gisd_t *data;
     gtime_t time={0};
-    TPoint *p;
-    double xyz[3];
-    int i,n=NMapPath;
+    TColor color,color_p;
+    TPoint *p,p1;
+    double xyz[3],S;
+    int i,j,n,m;
     
     trace(3,"DrawTrkPath: level=%d\n",level);
     
-    if (n<=0) return;
+    /* polygon fill color */
+    color_p=(TColor)(((0xFF-(0xFF-((unsigned int)CColor[1]>>16)&0xFF)/2)<<16)+
+                     ((0xFF-(0xFF-((unsigned int)CColor[1]>> 8)&0xFF)/2)<< 8)+
+                      (0xFF-(0xFF-((unsigned int)CColor[1]    )&0xFF)/2));
     
-    p=new TPoint [n];
-    
-    for (i=0;i<n;i++) {
-        PosToXyz(time,MapPath+i*3,0,xyz);
-        GraphT->ToPoint(xyz[0],xyz[1],p[i]);
+    for (i=0;i<MAXGISLAYER;i++) {
+        for (data=Gis.data[i];data;data=data->next) {
+            
+            if (data->type==3&&level) { /* polygon */
+                if ((n=((gis_polygon_t *)data->data)->npnt)<=0) {
+                    continue;
+                }
+                p=new TPoint [n];
+                for (j=m=0;j<n;j++) {
+                    PosToXyz(time,((gis_polygon_t *)data->data)->pos+j*3,0,xyz);
+                    GraphT->ToPoint(xyz[0],xyz[1],p1);
+                    if (m==0||p1.x!=p[m-1].x||p1.y!=p[m-1].y) {
+                        p[m++]=p1;
+                    }
+                }
+                // judge polygon hole
+                for (j=0,S=0.0;j<m-1;j++) {
+                    S+=(double)p[j].x*p[j+1].y-(double)p[j+1].x*p[j].y;
+                }
+                color=S<0.0?CColor[0]:color_p;
+                GraphT->DrawPatch(p,m,color,color,0);
+                delete [] p;
+            }
+        }
     }
-    GraphT->DrawPoly(p,n,CColor[1],0);
-    for (i=0;i<n;i++) {
-        DrawMark(GraphT,p[i],0,CColor[2],2,0);
+    for (i=0;i<MAXGISLAYER;i++) {
+        for (data=Gis.data[i];data;data=data->next) {
+            
+            if (data->type==1) { /* point */
+                PosToXyz(time,((gis_pnt_t *)data->data)->pos,0,xyz);
+                GraphT->ToPoint(xyz[0],xyz[1],p1);
+                DrawMark(GraphT,p1,1,CColor[2],6,0);
+                DrawMark(GraphT,p1,0,CColor[2],2,0);
+            }
+            else if (data->type==2&&level) { /* polyline */
+                if ((n=((gis_poly_t *)data->data)->npnt)<=0) {
+                    continue;
+                }
+                p=new TPoint [n];
+                for (j=m=0;j<n;j++) {
+                    PosToXyz(time,((gis_poly_t *)data->data)->pos+j*3,0,xyz);
+                    GraphT->ToPoint(xyz[0],xyz[1],p1);
+                    if (m==0||p1.x!=p[m-1].x||p1.y!=p[m-1].y) {
+                        p[m++]=p1;
+                    }
+                }
+                GraphT->DrawPoly(p,m,CColor[1],0);
+                delete [] p;
+            }
+        }
     }
-    delete [] p;
 }
 // draw track-points on track-plot ------------------------------------------
 void __fastcall TPlot::DrawTrkPnt(const TIMEPOS *pos, int level, int style)

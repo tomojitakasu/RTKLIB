@@ -112,6 +112,7 @@
 *                           support usno leapsec.dat for api read_leaps()
 *           2016/01/23 1.33 enable septentrio
 *           2016/02/05 1.34 support GLONASS for savenav(), loadnav()
+*           2016/06/11 1.35 delete trace() in reppath() to avoid deadlock
 *-----------------------------------------------------------------------------*/
 #define _POSIX_C_SOURCE 199309
 #include <stdarg.h>
@@ -3171,9 +3172,6 @@ extern int reppath(const char *path, char *rpath, gtime_t time, const char *rov,
     int week,dow,doy,stat=0;
     char rep[64];
     
-    trace(3,"reppath : path =%s time=%s rov=%s base=%s\n",path,time_str(time,0),
-          rov,base);
-    
     strcpy(rpath,path);
     
     if (!strstr(rpath,"%")) return 0;
@@ -3207,7 +3205,6 @@ extern int reppath(const char *path, char *rpath, gtime_t time, const char *rov,
              strstr(rpath,"%D" )||strstr(rpath,"%H" )||strstr(rpath,"%t" )) {
         return -1; /* no valid time */
     }
-    trace(3,"reppath : rpath=%s\n",rpath);
     return stat;
 }
 /* replace keywords in file path and generate multiple paths -------------------

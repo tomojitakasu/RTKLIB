@@ -763,7 +763,7 @@ object Plot: TPlot
         Top = 0
         Width = 23
         Height = 25
-        Hint = 'Show Map Path/Waypoints'
+        Hint = 'Show Map/Waypoints'
         Align = alLeft
         AllowAllUp = True
         GroupIndex = 14
@@ -800,7 +800,7 @@ object Plot: TPlot
         Top = 0
         Width = 23
         Height = 25
-        Hint = 'Map/Sky Image'
+        Hint = 'Show Image'
         Align = alLeft
         AllowAllUp = True
         GroupIndex = 15
@@ -1511,13 +1511,13 @@ object Plot: TPlot
         Caption = 'Open &Map Image...'
         OnClick = MenuOpenMapImageClick
       end
-      object MenuOpenMapPath: TMenuItem
-        Caption = 'Open Map &Path...'
-        OnClick = MenuOpenMapPathClick
-      end
       object MenuOpenSkyImage: TMenuItem
         Caption = 'Open Sky Image...'
         OnClick = MenuOpenSkyImageClick
+      end
+      object MenuOpenShape: TMenuItem
+        Caption = 'Open Sha&pefile...'
+        OnClick = MenuOpenShapeClick
       end
       object N4: TMenuItem
         Caption = '-'
@@ -1740,11 +1740,11 @@ object Plot: TPlot
         OnClick = MenuShowSkyplotClick
       end
       object MenuShowMap: TMenuItem
-        Caption = 'Show Map/Sky &Image'
+        Caption = 'Show &Image'
         OnClick = MenuShowMapClick
       end
       object MenuShowPoint: TMenuItem
-        Caption = 'Show Map Path/&Waypoints'
+        Caption = 'Show Map/&Waypoints'
         OnClick = MenuShowPointClick
       end
       object N6: TMenuItem
@@ -1824,10 +1824,9 @@ object Plot: TPlot
     Top = 220
   end
   object OpenMapPathDialog: TOpenDialog
-    Filter = 
-      'Text File (*.txt)|*.txt|Position File (*.pos)|*.pos|All (*.*)|*.' +
-      '*'
-    Title = 'Open Map Path'
+    Filter = 'Shapefile (*.shp)|*.shp|All (*.*)|*.*'
+    Options = [ofHideReadOnly, ofAllowMultiSelect, ofEnableSizing]
+    Title = 'Open Shapefile'
     Left = 306
     Top = 220
   end

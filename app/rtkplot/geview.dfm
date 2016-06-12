@@ -308,9 +308,7 @@ object GoogleEarthView: TGoogleEarthView
         FF00}
       ParentShowHint = False
       ShowHint = True
-      OnClick = BtnExpandClick
       OnMouseDown = BtnExpandMouseDown
-      OnMouseLeave = BtnExpandMouseLeave
       OnMouseUp = BtnExpandMouseUp
       ExplicitLeft = 375
     end

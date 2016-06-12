@@ -21,6 +21,7 @@
 *                            add selection precise for pos1-pospot3
 *           2015/11/26  1.7  modify pos1-frequency 4:l1+l2+l5+l6 -> l1+l5
 *           2015/12/05  1.8  add misc-pppopt
+*           2016/06/10  1.9  add ant2-maxaveep
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -155,6 +156,7 @@ opt_t sysopts[]={
     {"ant2-antdele",    1,  (void *)&prcopt_.antdel[1][0],"m"   },
     {"ant2-antdeln",    1,  (void *)&prcopt_.antdel[1][1],"m"   },
     {"ant2-antdelu",    1,  (void *)&prcopt_.antdel[1][2],"m"   },
+    {"ant2-maxaveep",   0,  (void *)&prcopt_.maxaveep    ,""    },
     
     {"misc-timeinterp", 3,  (void *)&prcopt_.intpref,    SWTOPT },
     {"misc-sbasatsel",  0,  (void *)&prcopt_.sbassatsel, "0:all"},

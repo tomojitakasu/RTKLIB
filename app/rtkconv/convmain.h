@@ -28,8 +28,6 @@ __published:
 	TPanel *Panel2;
 	
 	TButton *BtnPlot;
-	TButton *BtnOptions;
-	TButton *BtnConvert;
 	TButton *BtnExit;
 	TButton *BtnInFile;
 	TButton *BtnOutFile1;
@@ -99,6 +97,8 @@ __published:
 	TSpeedButton *BtnOutFileView7;
 	TButton *BtnOutFile7;
 	TSpeedButton *BtnInFileView;
+	TBitBtn *BtnOptions;
+	TBitBtn *BtnConvert;
 	
 	void __fastcall FormCreate          (TObject *Sender);
 	void __fastcall FormShow            (TObject *Sender);

@@ -3,7 +3,7 @@ object MaskOptDialog: TMaskOptDialog
   Top = 0
   BorderStyle = bsDialog
   Caption = 'SNR Mask'
-  ClientHeight = 141
+  ClientHeight = 145
   ClientWidth = 369
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -94,10 +94,10 @@ object MaskOptDialog: TMaskOptDialog
     Caption = '>85'
   end
   object BtnOk: TButton
-    Left = 216
+    Left = 210
     Top = 115
     Width = 73
-    Height = 23
+    Height = 27
     Caption = '&OK'
     ModalResult = 1
     TabOrder = 0
@@ -107,7 +107,7 @@ object MaskOptDialog: TMaskOptDialog
     Left = 289
     Top = 115
     Width = 73
-    Height = 23
+    Height = 27
     Caption = '&Cancel'
     ModalResult = 2
     TabOrder = 1

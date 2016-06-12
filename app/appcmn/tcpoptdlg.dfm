@@ -4,7 +4,7 @@ object TcpOptDialog: TTcpOptDialog
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'TCP Options'
-  ClientHeight = 144
+  ClientHeight = 150
   ClientWidth = 318
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -63,16 +63,16 @@ object TcpOptDialog: TTcpOptDialog
     Left = 224
     Top = 120
     Width = 87
-    Height = 23
+    Height = 27
     Caption = '&Cancel'
     ModalResult = 2
     TabOrder = 0
   end
   object BtnOk: TButton
-    Left = 136
+    Left = 130
     Top = 120
     Width = 87
-    Height = 23
+    Height = 27
     Caption = '&OK'
     ModalResult = 1
     TabOrder = 1
@@ -129,7 +129,7 @@ object TcpOptDialog: TTcpOptDialog
     Left = 8
     Top = 120
     Width = 75
-    Height = 23
+    Height = 27
     Caption = '&Ntrip...'
     TabOrder = 2
     OnClick = BtnNtripClick

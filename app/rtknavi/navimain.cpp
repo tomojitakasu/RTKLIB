@@ -32,9 +32,11 @@
 #include "tcpoptdlg.h"
 #include "confdlg.h"
 #include "aboutdlg.h"
+#include "markdlg.h"
 #include "viewer.h"
 #include "naviopt.h"
 #include "navimain.h"
+#include "graph.h"
 
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -63,6 +65,8 @@ TMainForm *MainForm;
 #define TIMEOUT     10000               // inactive timeout time (ms)
 #define DEFAULTPORT 52001               // default monitor port number
 #define MAXPORTOFF  9                   // max port number offset
+#define MAXTRKSCALE 23                  // track scale
+#define SPLITTER_WIDTH 6                // splitter width
 
 #define SQRT(x)     ((x)<0.0?0.0:sqrt(x))
 #define MIN(x,y)    ((x)<(y)?(x):(y))
@@ -109,6 +113,9 @@ __fastcall TMainForm::TMainForm(TComponent* Owner)
         StreamC[i]=Stream[i]=Format[i]=CmdEna[i][0]=CmdEna[i][1]=0;
     }
     TimeSys=SolType=PlotType1=PlotType2=FreqType1=FreqType2=0;
+    TrkType1=TrkType2=0;
+    TrkScale1=TrkScale2=5;
+    BLMode1=BLMode2=0;
     PSol=PSolS=PSolE=Nsat[0]=Nsat[1]=0;
     NMapPnt=0;
     OpenPort=0;
@@ -136,6 +143,10 @@ __fastcall TMainForm::TMainForm(TComponent* Owner)
     TLEData.data=NULL;
     
     PanelStack=PanelMode=0;
+    
+    for (int i=0;i<3;i++) {
+        TrkOri[i]=0.0;
+    }
 }
 // callback on form create --------------------------------------------------
 void __fastcall TMainForm::FormCreate(TObject *Sender)
@@ -196,6 +207,7 @@ void __fastcall TMainForm::FormShow(TObject *Sender)
     UpdateSolType();
     UpdateFont();
     UpdatePos();
+    UpdateEnable();
 }
 // callback on form close ---------------------------------------------------
 void __fastcall TMainForm::FormClose(TObject *Sender, TCloseAction &Action)
@@ -235,12 +247,13 @@ void __fastcall TMainForm::Panel211Resize(TObject *Sender)
     Plabel3  ->Top=y3; Pos3->Top=y3;
     LabelStd ->Top=y4;
     LabelNSat->Top=y5;
-    Solution->Left=40; Solution->Width=w-75; IndSol->Left=w-24;
+    Solution->Left=40; Solution->Width=w-72; IndSol->Left=w-24;
     Plabel1->Left=14; Pos1->Left=30; Pos1->Width=w-42;
     Plabel2->Left=14; Pos2->Left=30; Pos2->Width=w-42;
     Plabel3->Left=14; Pos3->Left=30; Pos3->Width=w-42;
     LabelStd ->Left=2; LabelStd ->Width=w-4;
     LabelNSat->Left=2; LabelNSat->Width=w-4;
+    UpdatePos();
 }
 // callback panel 221 resize -------------------------------------------------
 void __fastcall TMainForm::Panel221Resize(TObject *Sender)
@@ -263,13 +276,19 @@ void __fastcall TMainForm::Panel222Resize(TObject *Sender)
 // callback panel 4 resize ---------------------------------------------------
 void __fastcall TMainForm::Panel4Resize(TObject *Sender)
 {
-    TButton *btn[]={BtnStart,BtnStop,BtnPlot,BtnOpt,BtnExit};
+    TBitBtn *btn[]={BtnStart,BtnMark,BtnPlot,BtnOpt,BtnExit};
     TPanel *panel=(TPanel *)Sender;
-    int w=panel->Width/5;
+    int w=panel->Width/5,h=panel->Height;
     for (int i=0;i<5;i++) {
         btn[i]->Left=w*i+1;
+        btn[i]->Top=0;
         btn[i]->Width=w-2;
+        btn[i]->Height=h;
     }
+    BtnStop->Left  =BtnStart->Left;
+    BtnStop->Top   =BtnStart->Top;
+    BtnStop->Width =BtnStart->Width;
+    BtnStop->Height=BtnStart->Height;
 }
 // callback panel 5 resize ---------------------------------------------------
 void __fastcall TMainForm::Panel5Resize(TObject *Sender)
@@ -299,30 +318,46 @@ void __fastcall TMainForm::UpdatePanel(void)
         Panel5  ->Visible=true;
         Panel221->Visible=false;
     }
-    if (PanelStack==0) {
+    if (PanelStack==0) { // horizontal
         Panel21 ->Align=alLeft;
+        Panel211->Align=alClient;
         Panel221->Align=alLeft;
+        Panel222->Align=alClient;
+        
         Splitter1->Align=alNone;
         Splitter2->Align=alNone;
+        Splitter1->Width=PanelMode==2||PanelMode==3?0:SPLITTER_WIDTH;
+        Splitter2->Width=PanelMode==0||PanelMode==3?0:SPLITTER_WIDTH;
         Splitter1->Left=Panel21 ->Width;
         Splitter2->Left=Panel221->Width;
-        Splitter1->Width=2;
-        Splitter2->Width=2;
         Splitter1->Align=alLeft;
         Splitter2->Align=alLeft;
     }
-    else {
+    else { // vertical
         Panel21 ->Align=alTop;
+        Panel211->Align=alClient;
         Panel221->Align=alTop;
+        Panel222->Align=alClient;
+        
         Splitter1->Align=alNone;
         Splitter2->Align=alNone;
+        Splitter1->Height=PanelMode==2||PanelMode==3?0:SPLITTER_WIDTH;
+        Splitter2->Height=PanelMode==0||PanelMode==3?0:SPLITTER_WIDTH;
         Splitter1->Top=Panel21 ->Height;
         Splitter2->Top=Panel221->Height;
-        Splitter1->Height=2;
-        Splitter2->Height=2;
         Splitter1->Align=alTop;
         Splitter2->Align=alTop;
     }
+}
+// update enabled -----------------------------------------------------------
+void __fastcall TMainForm::UpdateEnable(void)
+{
+    BtnExpand1->Visible=PlotType1==6;
+    BtnShrink1->Visible=PlotType1==6;
+    BtnPnt1   ->Visible=PlotType1==6;
+    BtnExpand2->Visible=PlotType2==6;
+    BtnShrink2->Visible=PlotType2==6;
+    BtnPnt2   ->Visible=PlotType2==6;
 }
 // callback on button-exit --------------------------------------------------
 void __fastcall TMainForm::BtnExitClick(TObject *Sender)
@@ -393,6 +428,7 @@ void __fastcall TMainForm::BtnOptClick(TObject *Sender)
     OptDialog->TLEFileF   =TLEFileF;
     OptDialog->TLESatFileF=TLESatFileF;
     OptDialog->LocalDirectory=LocalDirectory;
+    OptDialog->InitRestart=InitRestart;
     
     OptDialog->SvrCycle   =SvrCycle;
     OptDialog->TimeoutTime=TimeoutTime;
@@ -444,6 +480,7 @@ void __fastcall TMainForm::BtnOptClick(TObject *Sender)
     TLEFileF   =OptDialog->TLEFileF;
     TLESatFileF=OptDialog->TLESatFileF;
     LocalDirectory=OptDialog->LocalDirectory;
+    InitRestart=OptDialog->InitRestart;
     
     SvrCycle   =OptDialog->SvrCycle;
     TimeoutTime=OptDialog->TimeoutTime;
@@ -461,6 +498,10 @@ void __fastcall TMainForm::BtnOptClick(TObject *Sender)
     MoniPort   =OptDialog->MoniPort;
     PanelStack =OptDialog->PanelStack;
     
+    PosFont->Assign(OptDialog->PosFont);
+    UpdateFont();
+    UpdatePanel();
+    
     if (SolBuffSize!=OptDialog->SolBuffSize) {
         SolBuffSize=OptDialog->SolBuffSize;
         InitSolBuff();
@@ -474,11 +515,6 @@ void __fastcall TMainForm::BtnOptClick(TObject *Sender)
         RovPos   [i]=OptDialog->RovPos   [i];
         RefPos   [i]=OptDialog->RefPos   [i];
     }
-    PosFont->Assign(OptDialog->PosFont);
-    
-    UpdateFont();
-    UpdatePanel();
-    
     if (!chgmoni) return;
     
     // send disconnect message
@@ -745,34 +781,84 @@ void __fastcall TMainForm::BtnPlotType1Click(TObject *Sender)
 {
     trace(3,"BtnPlotType1Click\n");
     
-    if (++PlotType1>4) PlotType1=0;
+    if (++PlotType1>6) PlotType1=0;
     UpdatePlot();
     UpdatePos();
+    UpdateEnable();
 }
 // callback on button-plottype-2 --------------------------------------------
 void __fastcall TMainForm::BtnPlotType2Click(TObject *Sender)
 {
     trace(3,"BtnPlotType2Click\n");
     
-    if (++PlotType2>4) PlotType2=0;
+    if (++PlotType2>6) PlotType2=0;
     UpdatePlot();
     UpdatePos();
+    UpdateEnable();
 }
 // callback on button frequency-type-1 --------------------------------------
 void __fastcall TMainForm::BtnFreqType1Click(TObject *Sender)
 {
     trace(3,"BtnFreqType1Click\n");
     
-    if (++FreqType1>NFREQ+1) FreqType1=0;
-    UpdateSolType();
+    if (PlotType1==6) {
+        if (++TrkType1>1) TrkType1=0;
+        UpdatePlot();
+    }
+    else if (PlotType1==5) {
+        if (++BLMode1>1) BLMode1=0;
+        UpdatePlot();
+    }
+    else {
+        if (++FreqType1>NFREQ+1) FreqType1=0;
+        UpdateSolType();
+    }
 }
 // callback on button frequency-type-2 --------------------------------------
 void __fastcall TMainForm::BtnFreqType2Click(TObject *Sender)
 {
     trace(3,"BtnFreqType2Click\n");
     
-    if (++FreqType2>NFREQ+1) FreqType2=0;
-    UpdateSolType();
+    if (PlotType2==6) {
+        if (++TrkType2>1) TrkType2=0;
+        UpdatePlot();
+    }
+    else if (PlotType1==5) {
+        if (++BLMode2>1) BLMode2=0;
+        UpdatePlot();
+    }
+    else {
+        if (++FreqType2>NFREQ+1) FreqType2=0;
+        UpdateSolType();
+    }
+}
+// callback on button expand-1 ----------------------------------------------
+void __fastcall TMainForm::BtnExpand1Click(TObject *Sender)
+{
+    if (TrkScale1<=0) return;
+    TrkScale1--;
+    UpdatePlot();
+}
+// callback on button shrink-1 ----------------------------------------------
+void __fastcall TMainForm::BtnShrink1Click(TObject *Sender)
+{
+    if (TrkScale1>=MAXTRKSCALE) return;
+    TrkScale1++;
+    UpdatePlot();
+}
+// callback on button expand-2 ----------------------------------------------
+void __fastcall TMainForm::BtnExpand2Click(TObject *Sender)
+{
+    if (TrkScale2<=0) return;
+    TrkScale2--;
+    UpdatePlot();
+}
+// callback on button shrink-2 ----------------------------------------------
+void __fastcall TMainForm::BtnShrink2Click(TObject *Sender)
+{
+    if (TrkScale2>=MAXTRKSCALE) return;
+    TrkScale2++;
+    UpdatePlot();
 }
 // callback on button-rtk-monitor -------------------------------------------
 void __fastcall TMainForm::BtnMonitorClick(TObject *Sender)
@@ -793,6 +879,7 @@ void __fastcall TMainForm::ScbSolChange(TObject *Sender)
     if (PSol>=SolBuffSize) PSol-=SolBuffSize;
     UpdateTime();
     UpdatePos();
+    UpdatePlot();
 }
 // callback on button-save --------------------------------------------------
 void __fastcall TMainForm::BtnSaveClick(TObject *Sender)
@@ -894,24 +981,28 @@ void __fastcall TMainForm::SvrStart(void)
     
     Message->Caption=""; Message->Parent->Hint="";
     
-    if (RovPosTypeF<=2) {
+    if (RovPosTypeF<=2) { // LLH,XYZ
         PrcOpt.rovpos=0;
         PrcOpt.ru[0]=RovPos[0];
         PrcOpt.ru[1]=RovPos[1];
         PrcOpt.ru[2]=RovPos[2];
     }
-    else {
+    else { // RTCM position
         PrcOpt.rovpos=4;
         for (i=0;i<3;i++) PrcOpt.ru[i]=0.0;
     }
-    if (RefPosTypeF<=2) {
+    if (RefPosTypeF<=2) { // LLH,XYZ
         PrcOpt.refpos=0;
         PrcOpt.rb[0]=RefPos[0];
         PrcOpt.rb[1]=RefPos[1];
         PrcOpt.rb[2]=RefPos[2];
     }
-    else {
+    else if (RefPosTypeF==3) { // RTCM position
         PrcOpt.refpos=4;
+        for (i=0;i<3;i++) PrcOpt.rb[i]=0.0;
+    }
+    else { // average of single position
+        PrcOpt.refpos=1;
         for (i=0;i<3;i++) PrcOpt.rb[i]=0.0;
     }
     for (i=0;i<MAXSAT;i++) {
@@ -1046,14 +1137,14 @@ void __fastcall TMainForm::SvrStart(void)
     Nsat[0]=Nsat[1]=0;
     UpdatePos();
     UpdatePlot();
-    BtnStart    ->Enabled=false;
+    BtnStart    ->Visible=false;
     BtnOpt      ->Enabled=false;
     BtnExit     ->Enabled=false;
     BtnInputStr ->Enabled=false;
     MenuStart   ->Enabled=false;
     MenuExit    ->Enabled=false;
     ScbSol      ->Enabled=false;
-    BtnStop     ->Enabled=true;
+    BtnStop     ->Visible=true;
     MenuStop    ->Enabled=true;
     Svr->Color=CLORANGE;
     SetTrayIcon(0);
@@ -1078,14 +1169,14 @@ void __fastcall TMainForm::SvrStop(void)
     }
     rtksvrstop(&rtksvr,cmds);
     
-    BtnStart    ->Enabled=true;
+    BtnStart    ->Visible=true;
     BtnOpt      ->Enabled=true;
     BtnExit     ->Enabled=true;
     BtnInputStr ->Enabled=true;
     MenuStart   ->Enabled=true;
     MenuExit    ->Enabled=true;
     ScbSol      ->Enabled=true;
-    BtnStop     ->Enabled=false;
+    BtnStop     ->Visible=false;
     MenuStop    ->Enabled=false;
     Svr->Color=clBtnFace;
     SetTrayIcon(1);
@@ -1144,7 +1235,7 @@ void __fastcall TMainForm::TimerTimer(TObject *Sender)
         Svr->Color=rtksvr.state?clGreen:clBtnFace;
     }
     if (!(++n%5)) UpdatePlot();
-	UpdateStr();
+    UpdateStr();
     
     // keep alive for monitor port
     if (!(++n%(KACYCLE/Timer->Interval))&&OpenPort) {
@@ -1251,7 +1342,7 @@ void __fastcall TMainForm::UpdatePos(void)
 {
     TLabel *label[]={Plabel1,Plabel2,Plabel3,Pos1,Pos2,Pos3,LabelStd,LabelNSat};
     AnsiString sol[]={"----","FIX","FLOAT","SBAS","DGPS","SINGLE","PPP"};
-    UnicodeString s[8];
+    UnicodeString s[9],ext=L"";
     TColor color[]={clSilver,clGreen,CLORANGE,clFuchsia,clBlue,clRed,clTeal};
     gtime_t time;
     double *rr=SolRov+PSol*3,*rb=SolRef+PSol*3,*qr=Qr+PSol*9,pos[3]={0},Qe[9]={0};
@@ -1260,6 +1351,13 @@ void __fastcall TMainForm::UpdatePos(void)
     
     trace(4,"UpdatePos\n");
     
+    if (rtksvr.rtk.opt.mode==PMODE_STATIC||rtksvr.rtk.opt.mode==PMODE_PPP_STATIC) {
+        ext=" (S)";
+    }
+    else if (rtksvr.rtk.opt.mode==PMODE_FIXED||rtksvr.rtk.opt.mode==PMODE_PPP_FIXED) {
+        ext=" (F)";
+    }
+    PlabelA->Caption=L"Solution"+ext+L":";
     Solution->Caption=sol[stat];
     Solution->Font->Color=rtksvr.state?color[stat]:clGray;
     IndSol->Color=rtksvr.state&&stat?color[stat]:clWhite;
@@ -1323,6 +1421,7 @@ void __fastcall TMainForm::UpdatePos(void)
         s[6].sprintf(L"E:%6.3f N:%6.3f U:%6.3f m",SQRT(Qe[0]),SQRT(Qe[4]),SQRT(Qe[8]));
     }
     s[7].sprintf(L"Age:%4.1f s Ratio:%4.1f # Sat:%2d",Age[PSol],Ratio[PSol],Nvsat[PSol]);
+    if (Ratio[PSol]>0.0) s[8].sprintf(L" R:%4.1f",Ratio[PSol]);
     
     for (i=0;i<8;i++) label[i]->Caption=s[i];
     for (i=3;i<6;i++) {
@@ -1331,9 +1430,9 @@ void __fastcall TMainForm::UpdatePos(void)
     IndQ->Color=IndSol->Color;
     SolS->Caption=Solution->Caption;
     SolS->Font->Color=Solution->Font->Color;
-    SolQ->Caption=label[0]->Caption+L" "+label[3]->Caption+L" "+
+    SolQ->Caption=ext+L" "+label[0]->Caption+L" "+label[3]->Caption+L" "+
                   label[1]->Caption+L" "+label[4]->Caption+L" "+
-                  label[2]->Caption+L" "+label[5]->Caption;
+                  label[2]->Caption+L" "+label[5]->Caption+s[8];
 }
 // update stream status indicators ------------------------------------------
 void __fastcall TMainForm::UpdateStr(void)
@@ -1357,7 +1456,7 @@ void __fastcall TMainForm::UpdateStr(void)
 // draw solution plot -------------------------------------------------------
 void __fastcall TMainForm::DrawPlot(TImage *plot, int type, int freq)
 {
-    UnicodeString s;
+    UnicodeString s1,s2;
     gtime_t time;
     TCanvas *c=plot->Canvas;
     TLabel *label[]={Plabel1,Plabel2,Plabel3,Pos1,Pos2,Pos3};
@@ -1420,33 +1519,70 @@ void __fastcall TMainForm::DrawPlot(TImage *plot, int type, int freq)
     c->Brush->Color=clWhite;
     c->FillRect(plot->ClientRect);
     x=4;
-    if (type==0) { // snr plot rover/base
-        DrawSnr(c,w,(h-12)/2,15,0,freq);
-        DrawSnr(c,w,(h-12)/2,14+(h-12)/2,1,freq);
-        s.sprintf(L"Rover:Base %sSNR (dBHz)",fstr[freq]);
-        DrawText(c,x,1,s,clGray,0);
+    if (type==0) { // snr plot rover+base
+        if (w<=3*h) { // vertical
+            DrawSnr(c,w,(h-12)/2,0,15,0,freq);
+            DrawSnr(c,w,(h-12)/2,0,14+(h-12)/2,1,freq);
+            s1.sprintf(L"Rover:Base %sSNR (dBHz)",fstr[freq]);
+            DrawText(c,x,1,s1,clGray,0);
+        }
+        else { // horizontal
+            DrawSnr(c,w/2,h-15,0  ,15,0,freq);
+            DrawSnr(c,w/2,h-15,w/2,15,1,freq);
+            s1.sprintf(L"Rover %s SNR (dBHz)",fstr[freq]);
+            s2.sprintf(L"Base %s SNR (dBHz)" ,fstr[freq]);
+            DrawText(c,x,1,s1,clGray,0);
+            DrawText(c,w/2+x,1,s2,clGray,0);
+        }
     }
     else if (type==1) { // snr plot rover
-        DrawSnr(c,w,h-15,15,0,freq);
-        s.sprintf(L"Rover %s SNR (dBHz)",fstr[freq]);
-        DrawText(c,x,1,s,clGray,0);
+        DrawSnr(c,w,h-15,0,15,0,freq);
+        s1.sprintf(L"Rover %s SNR (dBHz)",fstr[freq]);
+        DrawText(c,x,1,s1,clGray,0);
     }
     else if (type==2) { // skyplot rover
         DrawSat(c,w,h,0,0,0,freq);
-        s.sprintf(L"Rover %s",fstr[!freq?1:freq]);
-        DrawText(c,x,1,s,clGray,0);
+        s1.sprintf(L"Rover %s",fstr[!freq?1:freq]);
+        DrawText(c,x,1,s1,clGray,0);
     }
-    else if (type==3) { // skyplot rover/base
-        DrawSat(c,w/2,h,0  ,0,0,freq);
-        DrawSat(c,w/2,h,w/2,0,1,freq);
-        s.sprintf(L"Rover %s",fstr[!freq?1:freq]);
-        DrawText(c,x,1,s,clGray,0);
-        s.sprintf(L"Base %s",fstr[!freq?1:freq]);
-        DrawText(c,x+w/2,1,s,clGray,0);
+    else if (type==3) { // skyplot+snr plot rover
+        s1.sprintf(L"Rover %s",fstr[!freq?1:freq]);
+        s2.sprintf(L"SNR (dBHz)");
+        if (w>=h*2) { // horizontal
+            DrawSat(c,h,h,0,0,0,freq);
+            DrawSnr(c,w-h,h-15,h,15,0,freq);
+            DrawText(c,x,1,s1,clGray,0);
+            DrawText(c,x+h,1,s2,clGray,0);
+        }
+        else { // vertical
+            DrawSat(c,w,h/2,0,0,0,freq);
+            DrawSnr(c,w,(h-12)/2,0,14+(h-12)/2,0,freq);
+            DrawText(c,x,1,s1,clGray,0);
+        }
     }
-    else if (type==4) { // baseline plot
-        DrawBL(c,w,h);
+    else if (type==4) { // skyplot rover+base
+        s1.sprintf(L"Rover %s",fstr[!freq?1:freq]);
+        s2.sprintf(L"Base %s",fstr[!freq?1:freq]);
+        if (w>=h) { // horizontal
+            DrawSat(c,w/2,h,0  ,0,0,freq);
+            DrawSat(c,w/2,h,w/2,0,1,freq);
+            DrawText(c,x,1,s1,clGray,0);
+            DrawText(c,x+w/2,1,s2,clGray,0);
+        }
+        else { // vertical
+            DrawSat(c,w,h/2,0,0  ,0,freq);
+            DrawSat(c,w,h/2,0,h/2,1,freq);
+            DrawText(c,x,1,s1,clGray,0);
+            DrawText(c,x,h/2+1,s2,clGray,0);
+        }
+    }
+    else if (type==5) { // baseline plot
+        DrawBL(plot,w,h);
         DrawText(c,x,1,L"Baseline",clGray,0);
+    }
+    else if (type==6) { // track plot
+        DrawTrk(plot);
+        DrawText(c,x,3,L"Gnd Trk",clGray,0);
     }
 }
 // update solution plot ------------------------------------------------------
@@ -1454,8 +1590,8 @@ void __fastcall TMainForm::UpdatePlot(void)
 {
     DrawPlot(Plot1,PlotType1,FreqType1);
     DrawPlot(Plot2,PlotType2,FreqType2);
-    Disp1->Canvas->CopyRect(Disp1->ClientRect,Plot1->Canvas,Disp1->ClientRect);
-    Disp2->Canvas->CopyRect(Disp2->ClientRect,Plot2->Canvas,Disp2->ClientRect);
+    Disp1->Canvas->CopyRect(Panel221->ClientRect,Plot1->Canvas,Panel221->ClientRect);
+    Disp2->Canvas->CopyRect(Panel222->ClientRect,Plot2->Canvas,Panel222->ClientRect);
 }
 // snr color ----------------------------------------------------------------
 TColor __fastcall TMainForm::SnrColor(int snr)
@@ -1481,7 +1617,7 @@ TColor __fastcall TMainForm::SnrColor(int snr)
     return (TColor)((b1<<16)+(g1<<8)+r1);
 }
 // draw snr plot ------------------------------------------------------------
-void __fastcall TMainForm::DrawSnr(TCanvas *c, int w, int h, int top,
+void __fastcall TMainForm::DrawSnr(TCanvas *c, int w, int h, int x0, int y0,
 	int index, int freq)
 {
     static const TColor color[]={
@@ -1495,16 +1631,16 @@ void __fastcall TMainForm::DrawSnr(TCanvas *c, int w, int h, int top,
     int i,j,k,l,n,x1,x2,y1,y2,y3,k1,hh=h-15,ww,www,snr[NFREQ+1],mask[6]={0};
     char id[16],sys[]="GREJCS",*q;
     
-    trace(4,"DrawSnr: w=%d h=%d top=%d index=%d freq=%d\n",w,h,top,index,freq);
+    trace(4,"DrawSnr: w=%d h=%d x0=%d y0=%d index=%d freq=%d\n",w,h,x0,y0,index,freq);
     
     c->Pen->Color=clSilver;
     for (snr[0]=MINSNR+10;snr[0]<MAXSNR;snr[0]+=10) {
-        y1=top+hh-(snr[0]-MINSNR)*hh/(MAXSNR-MINSNR);
-        c->MoveTo(3,y1); c->LineTo(w-13,y1);
-        DrawText(c,w-9,y1,s.sprintf(L"%d",snr[0]),clGray,1);
+        y1=y0+hh-(snr[0]-MINSNR)*hh/(MAXSNR-MINSNR);
+        c->MoveTo(x0+3,y1); c->LineTo(x0+w-13,y1);
+        DrawText(c,x0+w-9,y1,s.sprintf(L"%d",snr[0]),clGray,1);
     }
-    y1=top+hh;
-    TRect b(1,top,w-2,y1);
+    y1=y0+hh;
+    TRect b(x0+1,y0,x0+w-2,y1);
     c->Pen->Color=clGray;
     c->Brush->Style=bsClear;
     c->Rectangle(b);
@@ -1513,7 +1649,7 @@ void __fastcall TMainForm::DrawSnr(TCanvas *c, int w, int h, int top,
         
         ww=(w-16)/Nsat[index];
         www=ww-2<8?ww-2:8;
-        x1=i*(w-16)/Nsat[index]+ww/2;
+        x1=x0+i*(w-16)/Nsat[index]+ww/2;
         satno2id(Sat[index][i],id);
         l=(q=strchr(sys,id[0]))?(int)(q-sys):5;
         
@@ -1550,7 +1686,7 @@ void __fastcall TMainForm::DrawSnr(TCanvas *c, int w, int h, int top,
     for (i=j=0;i<6;i++) {
         if (!mask[i]) continue;
         sprintf(id,"%c",sys[i]);
-        DrawText(c,w-15+8*(-n+j++),top+3,(s=id),color[i],0);
+        DrawText(c,x0+w-15+8*(-n+j++),y0+3,(s=id),color[i],0);
     }
 }
 // draw satellites in skyplot -----------------------------------------------
@@ -1595,22 +1731,25 @@ void __fastcall TMainForm::DrawSat(TCanvas *c, int w, int h, int x0, int y0,
     DrawText(c,x0+w-3,y0+h-15,s.sprintf(L"GDOP:%.1f",dop[0]),clGray,2);
 }
 // draw baseline plot -------------------------------------------------------
-void __fastcall TMainForm::DrawBL(TCanvas *c, int w, int h)
+void __fastcall TMainForm::DrawBL(TImage *plot, int w, int h)
 {
+    TCanvas *c=plot->Canvas;
     TColor color[]={clSilver,clGreen,CLORANGE,clFuchsia,clBlue,clRed,clTeal};
     UnicodeString s,label[]={"N","E","S","W"};
     TPoint p(w/2,h/2),p1,p2,pp;
     double r=MIN(w*0.95,h*0.95)/2;
     double *rr=SolRov+PSol*3,*rb=SolRef+PSol*3;
     double bl[3]={0},pos[3],enu[3],len=0.0,pitch=0.0,yaw=0.0;
-    double cp,q;
+    double cp,q,az=0.0;
     TColor col=clWhite;
-    int i,d1=9,d2=16,d3=10,cy=0,sy=0,cya=0,sya=0,a,x1,x2,y1,y2,digit;
+    int i,d1=10,d2=16,d3=10,cy=0,sy=0,cya=0,sya=0,a,x1,x2,y1,y2,r1,digit,mode;
     
     trace(4,"DrawBL: w=%d h=%d\n",w,h);
     
+    mode=plot->Name=="Plot1"?BLMode1:BLMode2;
+    
     if (PMODE_DGPS<=PrcOpt.mode&&PrcOpt.mode<=PMODE_FIXED) {
-        col=rtksvr.state&&SolStat[PSol]&SolCurrentStat?color[SolStat[PSol]]:clWhite;
+        col=rtksvr.state&&SolStat[PSol]&&SolCurrentStat?color[SolStat[PSol]]:clWhite;
         
         if (norm(rr,3)>0.0&&norm(rb,3)>0.0) {
             for (i=0;i<3;i++) bl[i]=rr[i]-rb[i];
@@ -1619,22 +1758,23 @@ void __fastcall TMainForm::DrawBL(TCanvas *c, int w, int h)
             ecef2pos(rb,pos); ecef2enu(pos,bl,enu);
             pitch=asin(enu[2]/len);
             yaw=atan2(enu[0],enu[1]); if (yaw<0.0) yaw+=2.0*PI;
+            if (mode) az=yaw;
         }
     }
     if (len>=MINBLLEN) {
         cp =cos(pitch);
-        cy =(int)((r-d1-d2/2)*cp*cos(yaw));
-        sy =(int)((r-d1-d2/2)*cp*sin(yaw));
-        cya=(int)(((r-d1-d2/2)*cp-d2/2-4)*cos(yaw));
-        sya=(int)(((r-d1-d2/2)*cp-d2/2-4)*sin(yaw));
+        cy =(int)((r-d1-d2/2)*cp*cos(yaw-az));
+        sy =(int)((r-d1-d2/2)*cp*sin(yaw-az));
+        cya=(int)(((r-d1-d2/2)*cp-d2/2-4)*cos(yaw-az));
+        sya=(int)(((r-d1-d2/2)*cp-d2/2-4)*sin(yaw-az));
     }
     p1.x=p.x-sy; p1.y=p.y+cy; // base
     p2.x=p.x+sy; p2.y=p.y-cy; // rover
     
     c->Pen->Color=clGray;
     c->Ellipse(p.x-r,p.y-r,p.x+r+1,p.y+r+1);
-    c->Pen->Color=clSilver;
-    c->Ellipse(p.x-r+d1,p.y-r+d1,p.x+r-d1+1,p.y+r-d1+1);
+    r1=(int)(r-d1/2);
+    c->Ellipse(p.x-r1,p.y-r1,p.x+r1+1,p.y+r1+1);
     c->Brush->Style=bsSolid;
     
     pp=pitch<0.0?p2:p1;
@@ -1643,20 +1783,28 @@ void __fastcall TMainForm::DrawBL(TCanvas *c, int w, int h)
     if (pitch<0.0) {
         c->Brush->Color=clWhite;
         c->Ellipse(pp.x-d2/2,pp.y-d2/2,pp.x+d2/2+1,pp.y+d2/2+1);
-        DrawArrow(c,p.x+sya,p.y-cya,d3,(int)(yaw*R2D),clSilver);
+        DrawArrow(c,p.x+sya,p.y-cya,d3,(int)((yaw-az)*R2D),clSilver);
     }
     c->Brush->Color=col;
     c->Ellipse(pp.x-d2/2+2,pp.y-d2/2+2,pp.x+d2/2-1,pp.y+d2/2-1);
-    c->Brush->Color=clWhite;
-    for (a=0;a<360;a+=15) {
-        q=a%45==0?r/2:r-d1;
-        x1=(int)(r*sin(a*D2R));
-        y1=(int)(r*cos(a*D2R));
-        x2=(int)(q*sin(a*D2R));
-        y2=(int)(q*cos(a*D2R));
+    for (a=0;a<360;a+=5) {
+        q=a%90==0?0:(a%30==0?r-d1*3:(a%10==0?r-d1*2:r-d1));
+        x1=(int)(r*sin(a*D2R-az));
+        y1=(int)(r*cos(a*D2R-az));
+        x2=(int)(q*sin(a*D2R-az));
+        y2=(int)(q*cos(a*D2R-az));
         c->Pen->Color=clSilver;
-        c->MoveTo(p.x+x1,p.y+y1); c->LineTo(p.x+x2,p.y+y2);
-        if (a%90==0) DrawText(c,p.x+x1,p.y-y1,label[a/90],clGray,1);
+        c->MoveTo(p.x+x1,p.y-y1);
+        c->LineTo(p.x+x2,p.y-y2);
+        c->Brush->Color=clWhite;
+        if (a%90==0) {
+            DrawText(c,p.x+x1,p.y-y1,label[a/90],clGray,1);
+        }
+        if (a==0) {
+            x1=(int)((r-d1*3/2)*sin(a*D2R-az));
+            y1=(int)((r-d1*3/2)*cos(a*D2R-az));
+            DrawArrow(c,p.x+x1,p.y-y1,d3,-(int)(az*R2D),clSilver);
+        }
     }
     pp=pitch>=0.0?p2:p1;
     c->Pen->Color=clGray;
@@ -1664,15 +1812,117 @@ void __fastcall TMainForm::DrawBL(TCanvas *c, int w, int h)
     if (pitch>=0.0) {
         c->Brush->Color=clWhite;
         c->Ellipse(pp.x-d2/2,pp.y-d2/2,pp.x+d2/2+1,pp.y+d2/2+1);
-        DrawArrow(c,p.x+sya,p.y-cya,d3,(int)(yaw*R2D),clGray);
+        DrawArrow(c,p.x+sya,p.y-cya,d3,(int)((yaw-az)*R2D),clGray);
     }
     c->Brush->Color=col;
     c->Ellipse(pp.x-d2/2+2,pp.y-d2/2+2,pp.x+d2/2-1,pp.y+d2/2-1);
     c->Brush->Color=clWhite;
     digit=len<10.0?3:(len<100.0?2:(len<1000.0?1:0));
     DrawText(c,p.x,p.y ,s.sprintf(L"%.*f m",digit,len),clGray,1);
-    DrawText(c,3,  h-15,s.sprintf(L"Y: %.1f%c",yaw*R2D,CHARDEG),clGray,0);
+    DrawText(c,5,  h-15,s.sprintf(L"Y: %.1f%c",yaw*R2D,CHARDEG),clGray,0);
     DrawText(c,w-3,h-15,s.sprintf(L"P: %.1f%c",pitch*R2D,CHARDEG),clGray,2);
+}
+// draw track plot ----------------------------------------------------------
+void __fastcall TMainForm::DrawTrk(TImage *plot)
+{
+    TColor mcolor[]={clSilver,clGreen,CLORANGE,clFuchsia,clBlue,clRed,clTeal};
+    TGraph *graph = new TGraph(plot);
+    TColor *c;
+    TPoint p1,p2;
+    AnsiString label;
+    double scale[]={
+        0.00021,0.00047,0.001,0.0021,0.0047,0.01,0.021,0.047,0.1,0.21,0.47,
+        1.0,2.1,4.7,10.0,21.0,47.0,100.0,210.0,470.0,1000.0,2100.0,4700.0,
+        10000.0
+    };
+    double *x,*y,xt,yt,sx,sy,ref[3],pos[3],dr[3],enu[3];
+    int i,j,k,n=0,type,scl;
+    
+    trace(3,"DrawTrk\n");
+    
+    type=plot->Name=="Plot1"?TrkType1 :TrkType2 ;
+    scl =plot->Name=="Plot1"?TrkScale1:TrkScale2;
+    
+    x=new double[SolBuffSize];
+    y=new double[SolBuffSize];
+    c=new TColor[SolBuffSize];
+    
+    if (norm(TrkOri,3)<1E-6) {
+        if (norm(SolRef+PSol*3,3)>1E-6) {
+            matcpy(TrkOri,SolRef+PSol*3,3,1);
+        }
+        else {
+            matcpy(TrkOri,SolRov+PSol*3,3,1);
+        }
+    }
+    if (norm(SolRef+PSol*3,3)>1E-6) {
+        matcpy(ref,SolRef+PSol*3,3,1);
+    }
+    else {
+        matcpy(ref,TrkOri,3,1);
+    }
+    ecef2pos(ref,pos);
+    for (i=k=PSolS;i!=PSolE;) {
+        for (j=0;j<3;j++) dr[j]=SolRov[j+i*3]-ref[j];
+        if (i==PSol) k=n;
+        ecef2enu(pos,dr,enu);
+        x[n]=enu[0];
+        y[n]=enu[1];
+        c[n++]=mcolor[SolStat[i]];
+        if (++i>=SolBuffSize) i=0;
+    }
+    graph->SetSize(plot->Parent->Width,plot->Parent->Height);
+    graph->SetScale(scale[scl],scale[scl]);
+    graph->Color[1]=clSilver;
+    
+    if (n>0) {
+        graph->SetCent(x[k],y[k]);
+    }
+    if (type==1) {
+        graph->XLPos=7;
+        graph->YLPos=7;
+        graph->DrawCircles(0);
+    }
+    else {
+        graph->XLPos=2;
+        graph->YLPos=4;
+        graph->DrawAxis(0,0);
+    }
+    graph->DrawPoly(x,y,n,clSilver,0);
+    graph->DrawMarks(x,y,c,n,0,3,0);
+    if (n>0) {
+        graph->ToPoint(x[k],y[k],p1);
+        graph->DrawMark(p1,0,clWhite,18,0);
+        graph->DrawMark(p1,1,clBlack,16,0);
+        graph->DrawMark(p1,5,clBlack,20,0);
+        graph->DrawMark(p1,0,clBlack,12,0);
+        graph->DrawMark(p1,0,c[k],10,0);
+    }
+    // scale
+    graph->GetPos(p1,p2);
+    graph->GetTick(xt,yt);
+    graph->GetScale(sx,sy);
+    p2.x-=35;
+    p2.y-=12;
+    graph->DrawMark(p2,11,clGray,(int)(xt/sx+0.5),0);
+    p2.y-=2;
+    if      (xt<0.01  ) label.sprintf("%.0f mm",xt*1000.0);
+    else if (xt<1.0   ) label.sprintf("%.0f cm",xt*100.0);
+    else if (xt<1000.0) label.sprintf("%.0f m" ,xt);
+    else                label.sprintf("%.0f km",xt/1000.0);
+    graph->DrawText(p2,label,clGray,clWhite,0,1,0);
+    
+    // ref position
+    if (norm(ref,3)>1E-6) {
+        p1.x+=2;
+        p1.y=p2.y+12;
+        label.sprintf("%.9f %.9f",pos[0]*R2D,pos[1]*R2D);
+        graph->DrawText(p1,label,clGray,clWhite,1,1,0);
+    }
+    delete graph;
+    delete [] x;
+    delete [] y;
+    delete [] c;
 }
 // draw skyplot -------------------------------------------------------------
 void __fastcall TMainForm::DrawSky(TCanvas *c, int w, int h, int x0, int y0)
@@ -1790,8 +2040,10 @@ void __fastcall TMainForm::SaveLog(void)
     FILE *fp;
     int posf[]={SOLF_LLH,SOLF_LLH,SOLF_XYZ,SOLF_ENU,SOLF_ENU,SOLF_LLH};
     solopt_t opt;
+    sol_t sol={0};
     double  ep[6],pos[3];
     char file[1024];
+    int i;
     
     trace(3,"SaveLog\n");
     
@@ -1818,6 +2070,16 @@ void __fastcall TMainForm::SaveLog(void)
         fprintf(fp,"%%\n");
     }
     outsolhead(fp,&opt);
+    for (i=PSolS;i!=PSolE;) {
+        sol.time=Time[i];
+        matcpy(sol.rr,SolRov+i*3,3,1);
+        sol.stat=SolStat[i];
+        sol.ns=Nvsat[i];
+        sol.ratio=Ratio[i];
+        sol.age=Age[i];
+        outsol(fp,&sol,SolRef+i*3,&opt);
+        if (++i>=SolBuffSize) i=0;
+    }
     fclose(fp);
 }
 // load navigation data -----------------------------------------------------
@@ -2038,6 +2300,7 @@ void __fastcall TMainForm::LoadOpt(void)
     PrcOpt.posopt[3]=ini->ReadInteger("prcopt", "posopt4",         0);
     PrcOpt.posopt[4]=ini->ReadInteger("prcopt", "posopt5",         0);
     PrcOpt.posopt[5]=ini->ReadInteger("prcopt", "posopt6",         0);
+    PrcOpt.maxaveep =ini->ReadInteger("prcopt", "maxaveep",     3600);
     
     BaselineC       =ini->ReadInteger("prcopt", "baselinec",       0);
     Baseline[0]     =ini->ReadFloat  ("prcopt", "baseline1",     0.0);
@@ -2075,6 +2338,7 @@ void __fastcall TMainForm::LoadOpt(void)
     TLEFileF        =ini->ReadString ("setting","tlefile",        "");
     TLESatFileF     =ini->ReadString ("setting","tlesatfile",     "");
     LocalDirectory  =ini->ReadString ("setting","localdirectory","C:\\Temp");
+    InitRestart     =ini->ReadInteger("setting","initrestart",     0);
     
     SvrCycle        =ini->ReadInteger("setting","svrcycle",       10);
     TimeoutTime     =ini->ReadInteger("setting","timeouttime", 10000);
@@ -2110,6 +2374,12 @@ void __fastcall TMainForm::LoadOpt(void)
     ProxyAddr       =ini->ReadString ("setting","proxyaddr",      "");
     MoniPort        =ini->ReadInteger("setting","moniport",DEFAULTPORT);
     PanelStack      =ini->ReadInteger("setting","panelstack",      0);
+    TrkType1        =ini->ReadInteger("setting","trktype1",        0);
+    TrkType2        =ini->ReadInteger("setting","trktype2",        0);
+    TrkScale1       =ini->ReadInteger("setting","trkscale1",       5);
+    TrkScale2       =ini->ReadInteger("setting","trkscale2",       5);
+    BLMode1         =ini->ReadInteger("setting","blmode1",         0);
+    BLMode2         =ini->ReadInteger("setting","blmode2",         0);
     
     for (i=0;i<3;i++) {
         RovAntDel[i]=ini->ReadFloat("setting",s.sprintf("rovantdel_%d",i),0.0);
@@ -2147,10 +2417,12 @@ void __fastcall TMainForm::LoadOpt(void)
     
     if (PanelStack==0) {
         Panel21 ->Width=ini->ReadInteger("window","splitpos" ,180);
+        Panel221->Width=ini->ReadInteger("window","splitpos1",180);
         Panel222->Width=ini->ReadInteger("window","splitpos2",180);
     }
     else {
         Panel21 ->Height=ini->ReadInteger("window","splitpos" ,180);
+        Panel221->Height=ini->ReadInteger("window","splitpos1",180);
         Panel222->Height=ini->ReadInteger("window","splitpos2",180);
     }
     Width         =ini->ReadInteger("window","width",   388);
@@ -2243,6 +2515,7 @@ void __fastcall TMainForm::SaveOpt(void)
     ini->WriteInteger("prcopt", "posopt4",    PrcOpt.posopt[3]   );
     ini->WriteInteger("prcopt", "posopt5",    PrcOpt.posopt[4]   );
     ini->WriteInteger("prcopt", "posopt6",    PrcOpt.posopt[5]   );
+    ini->WriteInteger("prcopt", "maxaveep",   PrcOpt.maxaveep    );
     
     ini->WriteFloat  ("prcopt", "baselinec",  BaselineC          );
     ini->WriteFloat  ("prcopt", "baseline1",  Baseline[0]        );
@@ -2279,6 +2552,7 @@ void __fastcall TMainForm::SaveOpt(void)
     ini->WriteString ("setting","tlefile",    TLEFileF           );
     ini->WriteString ("setting","tlesatfile", TLESatFileF        );
     ini->WriteString ("setting","localdirectory",LocalDirectory  );
+    ini->WriteInteger("setting","initrestart",InitRestart        );
     
     ini->WriteInteger("setting","svrcycle",   SvrCycle           );
     ini->WriteInteger("setting","timeouttime",TimeoutTime        );
@@ -2314,6 +2588,12 @@ void __fastcall TMainForm::SaveOpt(void)
     ini->WriteString ("setting","proxyaddr",  ProxyAddr          );
     ini->WriteInteger("setting","moniport",   MoniPort           );
     ini->WriteInteger("setting","panelstack", PanelStack         );
+    ini->WriteInteger("setting","trktype1",   TrkType1           );
+    ini->WriteInteger("setting","trktype2",   TrkType2           );
+    ini->WriteInteger("setting","trkscale1",  TrkScale1          );
+    ini->WriteInteger("setting","trkscale2",  TrkScale2          );
+    ini->WriteInteger("setting","blmode1",    BLMode1            );
+    ini->WriteInteger("setting","blmode2",    BLMode2            );
     
     for (i=0;i<3;i++) {
         ini->WriteFloat("setting",s.sprintf("rovantdel_%d",i),RovAntDel[i]);
@@ -2349,10 +2629,12 @@ void __fastcall TMainForm::SaveOpt(void)
     ini->WriteInteger("window","height",   Height);
     if (PanelStack==0) {
         ini->WriteInteger("window","splitpos", Panel21 ->Width);
+        ini->WriteInteger("window","splitpos1",Panel221->Width);
         ini->WriteInteger("window","splitpos2",Panel222->Width);
     }
     else {
         ini->WriteInteger("window","splitpos", Panel21 ->Height);
+        ini->WriteInteger("window","splitpos1",Panel221->Height);
         ini->WriteInteger("window","splitpos2",Panel222->Height);
     }
     delete ini;
@@ -2360,6 +2642,11 @@ void __fastcall TMainForm::SaveOpt(void)
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
-
-
+void __fastcall TMainForm::BtnMarkClick(TObject *Sender)
+{
+	MarkDialog->PosMode=rtksvr.rtk.opt.mode;
+	if (MarkDialog->ShowModal()!=mrOk) return;
+	rtksvr.rtk.opt.mode=MarkDialog->PosMode;
+}
+//---------------------------------------------------------------------------
 

@@ -4,7 +4,7 @@ object CmdOptDialog: TCmdOptDialog
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Serial/TCP Commands'
-  ClientHeight = 264
+  ClientHeight = 270
   ClientWidth = 318
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -21,7 +21,7 @@ object CmdOptDialog: TCmdOptDialog
     Left = 150
     Top = 240
     Width = 81
-    Height = 23
+    Height = 27
     Caption = '&OK'
     ModalResult = 1
     TabOrder = 1
@@ -31,7 +31,7 @@ object CmdOptDialog: TCmdOptDialog
     Left = 234
     Top = 240
     Width = 81
-    Height = 23
+    Height = 27
     Caption = '&Cancel'
     ModalResult = 2
     TabOrder = 0
@@ -76,7 +76,7 @@ object CmdOptDialog: TCmdOptDialog
     Left = 4
     Top = 240
     Width = 65
-    Height = 23
+    Height = 27
     Caption = '&Load...'
     TabOrder = 6
     OnClick = BtnLoadClick
@@ -85,7 +85,7 @@ object CmdOptDialog: TCmdOptDialog
     Left = 72
     Top = 240
     Width = 65
-    Height = 23
+    Height = 27
     Caption = '&Save...'
     TabOrder = 7
     OnClick = BtnSaveClick

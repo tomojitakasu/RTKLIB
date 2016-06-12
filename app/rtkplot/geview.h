@@ -71,8 +71,6 @@ __published:
           int X, int Y);
 	void __fastcall BtnRotRMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
           int X, int Y);
-	void __fastcall BtnExpandClick(TObject *Sender);
-	void __fastcall BtnExpandMouseLeave(TObject *Sender);
 	void __fastcall Panel2Gesture(TObject *Sender, const TGestureEventInfo &EventInfo,
           bool &Handled);
 	void __fastcall BtnOptClick(TObject *Sender);

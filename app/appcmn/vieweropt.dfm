@@ -4,7 +4,7 @@ object ViewerOptDialog: TViewerOptDialog
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Viewer Options'
-  ClientHeight = 105
+  ClientHeight = 110
   ClientWidth = 190
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -39,36 +39,36 @@ object ViewerOptDialog: TViewerOptDialog
   end
   object FontLabel: TLabel
     Left = 108
-    Top = 55
+    Top = 52
     Width = 52
     Height = 13
     Alignment = taRightJustify
     Caption = 'Font Name'
   end
   object BtnOk: TButton
-    Left = 18
+    Left = 11
     Top = 78
     Width = 79
-    Height = 21
+    Height = 27
     Caption = '&OK'
     ModalResult = 1
     TabOrder = 0
     OnClick = BtnOkClick
   end
   object BtnCancel: TButton
-    Left = 100
+    Left = 106
     Top = 78
     Width = 79
-    Height = 21
+    Height = 27
     Caption = '&Cancel'
     ModalResult = 2
     TabOrder = 1
   end
   object Color1: TPanel
     Left = 101
-    Top = 8
+    Top = 5
     Width = 61
-    Height = 19
+    Height = 23
     BevelInner = bvRaised
     BevelOuter = bvLowered
     Color = clInfoText
@@ -82,10 +82,10 @@ object ViewerOptDialog: TViewerOptDialog
     TabOrder = 2
   end
   object BtnColor1: TButton
-    Left = 164
-    Top = 8
-    Width = 16
-    Height = 18
+    Left = 162
+    Top = 5
+    Width = 25
+    Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -98,9 +98,9 @@ object ViewerOptDialog: TViewerOptDialog
   end
   object Color2: TPanel
     Left = 101
-    Top = 30
+    Top = 27
     Width = 61
-    Height = 19
+    Height = 23
     BevelInner = bvRaised
     BevelOuter = bvLowered
     Color = clWindow
@@ -108,10 +108,10 @@ object ViewerOptDialog: TViewerOptDialog
     TabOrder = 4
   end
   object BtnColor2: TButton
-    Left = 164
-    Top = 30
-    Width = 16
-    Height = 18
+    Left = 162
+    Top = 27
+    Width = 25
+    Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -123,10 +123,10 @@ object ViewerOptDialog: TViewerOptDialog
     OnClick = BtnColor2Click
   end
   object BtnFont: TButton
-    Left = 164
-    Top = 52
-    Width = 16
-    Height = 18
+    Left = 162
+    Top = 49
+    Width = 25
+    Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText

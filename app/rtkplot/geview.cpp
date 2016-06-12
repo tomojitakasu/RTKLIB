@@ -432,31 +432,12 @@ void __fastcall TGoogleEarthView::ExecFunc(AnsiString func)
     VariantClear(&var);
 }
 //---------------------------------------------------------------------------
-
-void __fastcall TGoogleEarthView::BtnExpandClick(TObject *Sender)
-{
-    Timer1->Enabled=false;
-    Timer2->Enabled=true;
-    Expand=-1;
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TGoogleEarthView::BtnExpandMouseLeave(TObject *Sender)
-{
-    Expand=0;
-    Timer1->Enabled=true;
-    Timer2->Enabled=false;
-    ExecFunc("UpdateState()");
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TGoogleEarthView::Panel2Gesture(TObject *Sender, const TGestureEventInfo &EventInfo,
-          bool &Handled)
+void __fastcall TGoogleEarthView::Panel2Gesture(TObject *Sender,
+	const TGestureEventInfo &EventInfo, bool &Handled)
 {
 	;
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TGoogleEarthView::BtnOptClick(TObject *Sender)
 {
 	Panel8->Visible=!Panel8->Visible;

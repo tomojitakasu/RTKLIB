@@ -921,6 +921,10 @@ object OptDialog: TOptDialog
     object TabSheet4: TTabSheet
       Caption = 'S&tatistics'
       ImageIndex = 3
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label29: TLabel
         Left = 34
         Top = 213
@@ -1155,6 +1159,14 @@ object OptDialog: TOptDialog
           Height = 13
           Caption = 'Delta-E/N/U (m)'
         end
+        object LabelMaxAveEp: TLabel
+          Left = 153
+          Top = 18
+          Width = 76
+          Height = 13
+          Caption = 'Max # Ave (ep)'
+          Visible = False
+        end
         object RefAntE: TEdit
           Left = 239
           Top = 74
@@ -1247,7 +1259,25 @@ object OptDialog: TOptDialog
             'Lat/Lon/Height (deg/m)'
             'Lat/Lon/Height (dms/m)'
             'X/Y/Z-ECEF (m)'
-            'RTCM Antenna Position')
+            'RTCM Antenna Position'
+            'Average of Single Position')
+        end
+        object MaxAveEp: TEdit
+          Left = 232
+          Top = 14
+          Width = 43
+          Height = 21
+          TabOrder = 10
+          Text = '3600'
+          Visible = False
+        end
+        object ChkInitRestart: TCheckBox
+          Left = 280
+          Top = 16
+          Width = 89
+          Height = 17
+          Caption = 'Init by Restart'
+          TabOrder = 11
         end
       end
       object StaPosFile: TEdit
@@ -1387,6 +1417,10 @@ object OptDialog: TOptDialog
     object TabSheet7: TTabSheet
       Caption = '&Files'
       ImageIndex = 6
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label1: TLabel
         Left = 6
         Top = 93

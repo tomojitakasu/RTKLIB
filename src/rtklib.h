@@ -49,7 +49,7 @@ extern "C" {
 
 #define VER_RTKLIB  "2.4.3"             /* library version */
 
-#define PATCH_LEVEL "b10"               /* patch level */
+#define PATCH_LEVEL "b11"               /* patch level */
 
 #define COPYRIGHT_RTKLIB \
             "Copyright (C) 2007-2016 by T.Takasu\nAll rights reserved."
@@ -231,6 +231,7 @@ extern "C" {
 #define MAXOBSBUF   128                 /* max number of observation data buffer */
 #define MAXNRPOS    16                  /* max number of reference positions */
 #define MAXLEAPS    64                  /* max number of leap seconds table */
+#define MAXGISLAYER 32                  /* max number of GIS data layers */
 
 #define RNX2VER     2.10                /* RINEX ver.2 default output version */
 #define RNX3VER     3.00                /* RINEX ver.3 default output version */
@@ -258,7 +259,7 @@ extern "C" {
 #define CODE_L1N    6                   /* obs code: L1codeless (GPS) */
 #define CODE_L1S    7                   /* obs code: L1C(D)     (GPS,QZS) */
 #define CODE_L1L    8                   /* obs code: L1C(P)     (GPS,QZS) */
-#define CODE_L1E    9                   /* obs code: L1-SAIF    (QZS) */
+#define CODE_L1E    9                   /* (not used) */
 #define CODE_L1A    10                  /* obs code: E1A        (GAL) */
 #define CODE_L1B    11                  /* obs code: E1B        (GAL) */
 #define CODE_L1X    12                  /* obs code: E1B+C,L1C(D+P) (GAL,QZS) */
@@ -1019,6 +1020,7 @@ typedef struct {        /* processing options type */
     double antdel[2][3]; /* antenna delta {{rov_e,rov_n,rov_u},{ref_e,ref_n,ref_u}} */
     pcv_t pcvr[2];      /* receiver antenna parameters {rov,base} */
     unsigned char exsats[MAXSAT]; /* excluded satellites (1:excluded,2:included) */
+    int  maxaveep;      /* max averaging epoches */
     char rnxopt[2][256]; /* rinex options {rover,base} */
     int  posopt[6];     /* positioning options */
     int  syncsol;       /* solution sync mode (0:off,1:on) */
@@ -1108,7 +1110,7 @@ typedef struct {        /* satellite status type */
     unsigned char snr [NFREQ]; /* signal strength (0.25 dBHz) */
     unsigned char fix [NFREQ]; /* ambiguity fix flag (1:fix,2:float,3:hold) */
     unsigned char slip[NFREQ]; /* cycle-slip flag */
-    unsigned int lock [NFREQ]; /* lock counter of phase */
+    int lock [NFREQ];   /* lock counter of phase */
     unsigned int outc [NFREQ]; /* obs outage counter of phase */
     unsigned int slipc[NFREQ]; /* cycle-slip counter */
     unsigned int rejc [NFREQ]; /* reject counter */
@@ -1259,6 +1261,31 @@ typedef struct {        /* RTK server type */
     int prcout;         /* missing observation data count */
     lock_t lock;        /* lock flag */
 } rtksvr_t;
+
+typedef struct {        /* gis data point type */
+    double pos[3];      /* point data {lat,lon,height} (rad,m) */
+} gis_pnt_t;
+
+typedef struct {        /* gis data polyline type */
+    int npnt;           /* number of points */
+    double *pos;        /* position data (3 x npnt) */
+} gis_poly_t;
+
+typedef struct {        /* gis data polygon type */
+    int npnt;           /* number of points */
+    double *pos;        /* position data (3 x npnt) */
+} gis_polygon_t;
+
+typedef struct gisd_tag { /* gis data list type */
+    int type;           /* data type (1:point,2:polyline,3:polygon) */
+    void *data;         /* data body */
+    struct gisd_tag *next; /* pointer to next */
+} gisd_t;
+
+typedef struct {        /* gis type */
+    char name[MAXGISLAYER][256]; /* name */
+    gisd_t *data[MAXGISLAYER]; /* gis data list */
+} gis_t;
 
 typedef void fatalfunc_t(const char *); /* fatal callback function type */
 
@@ -1600,6 +1627,11 @@ extern int convkml(const char *infile, const char *outfile, gtime_t ts,
                    gtime_t te, double tint, int qflg, double *offset,
                    int tcolor, int pcolor, int outalt, int outtime);
 
+/* gpx converter -------------------------------------------------------------*/
+extern int convgpx(const char *infile, const char *outfile, gtime_t ts,
+                   gtime_t te, double tint, int qflg, double *offset,
+                   int outtrk, int outpnt, int outalt, int outtime);
+
 /* sbas functions ------------------------------------------------------------*/
 extern int  sbsreadmsg (const char *file, int sel, sbs_t *sbs);
 extern int  sbsreadmsgt(const char *file, int sel, gtime_t ts, gtime_t te,
@@ -1729,6 +1761,10 @@ extern int dl_exec(gtime_t ts, gtime_t te, double ti, int seqnos, int seqnoe,
 extern void dl_test(gtime_t ts, gtime_t te, double ti, const url_t *urls,
                     int nurl, char **stas, int nsta, const char *dir,
                     int ncol, int datefmt, FILE *fp);
+
+/* gis data functions --------------------------------------------------------*/
+extern int gis_read(const char *file, gis_t *gis, int layer);
+extern void gis_free(gis_t *gis);
 
 /* application defined functions ---------------------------------------------*/
 extern int showmsg(char *format,...);

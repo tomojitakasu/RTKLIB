@@ -29,6 +29,7 @@
 *           2016/01/23 1.12 enable septentrio
 *           2016/05/25 1.13 fix bug on initializing output file paths in
 *                           convbin()
+*           2016/06/09 1.14 fix bug on output file with -v 3.02
 *-----------------------------------------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>
@@ -224,7 +225,7 @@ static int convbin(int format, rnxopt_t *opt, const char *ifile, char **file,
         else strcat(ofile[4],".qnav");
     }
     if (file[5]) strcpy(ofile[5],file[5]);
-    else if (*opt->staid) {
+    else if (opt->rnxver<=2.99&&*opt->staid) {
         strcpy(ofile[5],"%r%n0.%yL");
     }
     else if (opt->rnxver<=2.99&&def) {

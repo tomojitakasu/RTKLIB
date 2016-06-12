@@ -4,7 +4,7 @@ object MainForm: TMainForm
   BorderIcons = []
   BorderStyle = bsSingle
   Caption = 'STRSVR'
-  ClientHeight = 215
+  ClientHeight = 218
   ClientWidth = 384
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -15,6 +15,7 @@ object MainForm: TMainForm
   OldCreateOrder = False
   OnClose = FormClose
   OnCreate = FormCreate
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object Panel3: TPanel
@@ -25,7 +26,7 @@ object MainForm: TMainForm
     Align = alTop
     BevelOuter = bvNone
     BorderWidth = 1
-    TabOrder = 4
+    TabOrder = 0
     object Panel1: TPanel
       Left = 1
       Top = 27
@@ -243,23 +244,23 @@ object MainForm: TMainForm
         ParentFont = False
       end
       object Label1: TLabel
-        Left = 202
+        Left = 206
         Top = 4
         Width = 21
         Height = 13
         Caption = 'Cmd'
       end
       object Label2: TLabel
-        Left = 200
+        Left = 203
         Top = 41
         Width = 25
         Height = 13
         Caption = 'Conv'
       end
       object Input: TComboBox
-        Left = 91
+        Left = 88
         Top = 20
-        Width = 89
+        Width = 88
         Height = 21
         Style = csDropDownList
         ItemIndex = 0
@@ -276,9 +277,9 @@ object MainForm: TMainForm
           'HTTP')
       end
       object Output1: TComboBox
-        Left = 91
+        Left = 88
         Top = 54
-        Width = 89
+        Width = 88
         Height = 21
         Style = csDropDownList
         ItemIndex = 0
@@ -293,10 +294,10 @@ object MainForm: TMainForm
           'File')
       end
       object BtnInput: TButton
-        Left = 182
-        Top = 20
-        Width = 21
-        Height = 21
+        Left = 178
+        Top = 19
+        Width = 25
+        Height = 23
         Caption = '...'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -308,10 +309,10 @@ object MainForm: TMainForm
         OnClick = BtnInputClick
       end
       object BtnOutput1: TButton
-        Left = 182
-        Top = 54
-        Width = 21
-        Height = 21
+        Left = 178
+        Top = 53
+        Width = 25
+        Height = 23
         Caption = '...'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -323,10 +324,10 @@ object MainForm: TMainForm
         OnClick = BtnOutput1Click
       end
       object BtnOutput2: TButton
-        Left = 182
-        Top = 77
-        Width = 21
-        Height = 21
+        Left = 178
+        Top = 76
+        Width = 25
+        Height = 23
         Caption = '...'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -348,9 +349,9 @@ object MainForm: TMainForm
         TabOrder = 0
       end
       object Output2: TComboBox
-        Left = 91
+        Left = 88
         Top = 77
-        Width = 89
+        Width = 88
         Height = 21
         Style = csDropDownList
         ItemIndex = 0
@@ -385,9 +386,9 @@ object MainForm: TMainForm
         TabOrder = 7
       end
       object Output3: TComboBox
-        Left = 91
+        Left = 88
         Top = 100
-        Width = 89
+        Width = 88
         Height = 21
         Style = csDropDownList
         ItemIndex = 0
@@ -402,10 +403,10 @@ object MainForm: TMainForm
           'File')
       end
       object BtnOutput3: TButton
-        Left = 182
-        Top = 100
-        Width = 21
-        Height = 21
+        Left = 178
+        Top = 99
+        Width = 25
+        Height = 23
         Caption = '...'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -428,9 +429,9 @@ object MainForm: TMainForm
       end
       object BtnCmd: TButton
         Left = 204
-        Top = 20
-        Width = 21
-        Height = 21
+        Top = 19
+        Width = 25
+        Height = 23
         Caption = '...'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -443,9 +444,9 @@ object MainForm: TMainForm
       end
       object BtnConv1: TButton
         Left = 204
-        Top = 54
-        Width = 21
-        Height = 21
+        Top = 53
+        Width = 25
+        Height = 23
         Caption = '...'
         Enabled = False
         Font.Charset = DEFAULT_CHARSET
@@ -459,9 +460,9 @@ object MainForm: TMainForm
       end
       object BtnConv2: TButton
         Left = 204
-        Top = 77
-        Width = 21
-        Height = 21
+        Top = 76
+        Width = 25
+        Height = 23
         Caption = '...'
         Enabled = False
         Font.Charset = DEFAULT_CHARSET
@@ -475,9 +476,9 @@ object MainForm: TMainForm
       end
       object BtnConv3: TButton
         Left = 204
-        Top = 100
-        Width = 21
-        Height = 21
+        Top = 99
+        Width = 25
+        Height = 23
         Caption = '...'
         Enabled = False
         Font.Charset = DEFAULT_CHARSET
@@ -661,41 +662,101 @@ object MainForm: TMainForm
       end
     end
   end
-  object BtnStart: TButton
-    Left = 1
+  object BtnStart: TBitBtn
+    Left = 0
     Top = 188
-    Width = 91
-    Height = 27
+    Width = 120
+    Height = 29
     Caption = '&Start'
-    TabOrder = 0
+    Glyph.Data = {
+      3E020000424D3E0200000000000036000000280000000D0000000D0000000100
+      1800000000000802000000000000000000000000000000000000FFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      FF00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFFF00FFFFFFFFFFFF008000008000FFFFFFFFFFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFFFFFFFFFF0080000080000080
+      00008000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFFFFFFFFFF
+      008000008000008000008000008000008000FFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      FF00FFFFFFFFFFFF008000008000008000008000008000008000008000008000
+      FFFFFFFFFFFFFFFFFF00FFFFFFFFFFFF00800000800000800000800000800000
+      8000008000008000008000FFFFFFFFFFFF00FFFFFFFFFFFF0080000080000080
+      00008000008000008000008000008000FFFFFFFFFFFFFFFFFF00FFFFFFFFFFFF
+      008000008000008000008000008000008000FFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      FF00FFFFFFFFFFFF008000008000008000008000FFFFFFFFFFFFFFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFFF00FFFFFFFFFFFF008000008000FFFFFFFFFFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      FF00}
+    TabOrder = 1
     OnClick = BtnStartClick
   end
-  object BtnStop: TButton
-    Left = 92
+  object BtnStop: TBitBtn
+    Left = 0
     Top = 188
-    Width = 91
-    Height = 27
+    Width = 120
+    Height = 29
     Caption = 'S&top'
-    Enabled = False
-    TabOrder = 1
+    Glyph.Data = {
+      3E020000424D3E0200000000000036000000280000000D0000000D0000000100
+      1800000000000802000000000000000000000000000000000000FFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      FF00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFFF00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFFFFFFFFFFFFFFFF0000000000
+      00000000000000000000000000000000FFFFFFFFFFFFFFFFFF00FFFFFFFFFFFF
+      FFFFFF000000000000000000000000000000000000000000FFFFFFFFFFFFFFFF
+      FF00FFFFFFFFFFFFFFFFFF000000000000000000000000000000000000000000
+      FFFFFFFFFFFFFFFFFF00FFFFFFFFFFFFFFFFFF00000000000000000000000000
+      0000000000000000FFFFFFFFFFFFFFFFFF00FFFFFFFFFFFFFFFFFF0000000000
+      00000000000000000000000000000000FFFFFFFFFFFFFFFFFF00FFFFFFFFFFFF
+      FFFFFF000000000000000000000000000000000000000000FFFFFFFFFFFFFFFF
+      FF00FFFFFFFFFFFFFFFFFF000000000000000000000000000000000000000000
+      FFFFFFFFFFFFFFFFFF00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      FF00}
+    TabOrder = 2
+    Visible = False
     OnClick = BtnStopClick
   end
-  object BtnOpt: TButton
-    Left = 201
+  object BtnOpt: TBitBtn
+    Left = 132
     Top = 188
-    Width = 91
-    Height = 27
+    Width = 120
+    Height = 29
     Caption = '&Options...'
-    TabOrder = 2
+    Glyph.Data = {
+      3E020000424D3E0200000000000036000000280000000D0000000D0000000100
+      1800000000000802000000000000000000000000000000000000FFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      FF00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF7F7F7F0000007F7F7FFFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFFF00FFFFFFFFFFFFC3C3C3000000C3C3C37F7F7F0000007F
+      7F7FC3C3C3000000C3C3C3FFFFFFFFFFFF00FFFFFFFFFFFF0000000000000000
+      00000000000000000000000000000000000000FFFFFFFFFFFF00FFFFFFFFFFFF
+      C3C3C30000000000007F7F7F7F7F7F7F7F7F000000000000C3C3C3FFFFFFFFFF
+      FF00FFFFFF7F7F7F7F7F7F0000007F7F7FC3C3C3FFFFFFC3C3C37F7F7F000000
+      7F7F7F7F7F7FFFFFFF00FFFFFF0000000000000000007F7F7FFFFFFFFFFFFFFF
+      FFFF7F7F7F000000000000000000FFFFFF00FFFFFF7F7F7F7F7F7F0000007F7F
+      7FC3C3C3FFFFFFC3C3C37F7F7F0000007F7F7F7F7F7FFFFFFF00FFFFFFFFFFFF
+      C3C3C30000000000007F7F7F7F7F7F7F7F7F000000000000C3C3C3FFFFFFFFFF
+      FF00FFFFFFFFFFFF000000000000000000000000000000000000000000000000
+      000000FFFFFFFFFFFF00FFFFFFFFFFFFC3C3C3000000C3C3C37F7F7F0000007F
+      7F7FC3C3C3000000C3C3C3FFFFFFFFFFFF00FFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      FF7F7F7F0000007F7F7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      FF00}
+    TabOrder = 3
     OnClick = BtnOptClick
   end
-  object BtnExit: TButton
-    Left = 292
+  object BtnExit: TBitBtn
+    Left = 262
     Top = 188
-    Width = 91
-    Height = 27
+    Width = 120
+    Height = 29
     Caption = 'E&xit'
-    TabOrder = 3
+    TabOrder = 4
     OnClick = BtnExitClick
   end
   object Timer1: TTimer
@@ -786,6 +847,7 @@ object MainForm: TMainForm
       0000000000000000000000000000000000000000000000000000FFFF0000}
     PopupMenu = PopupMenu
     OnDblClick = TrayIconDblClick
+    OnMouseDown = TrayIconMouseDown
     Left = 288
     Top = 152
   end
@@ -793,7 +855,7 @@ object MainForm: TMainForm
     Left = 258
     Top = 152
     Bitmap = {
-      494C010103000400340010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010103000400380010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       000000000000000000000000000000000000C0C0C000C0C0C000C0C0C000C0C0
       C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0

@@ -3,9 +3,9 @@ object ConvDialog: TConvDialog
   Top = 0
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
-  Caption = 'Google Earth Converter'
-  ClientHeight = 268
-  ClientWidth = 372
+  Caption = 'KML/GPX Converter'
+  ClientHeight = 290
+  ClientWidth = 395
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,9 +18,9 @@ object ConvDialog: TConvDialog
   PixelsPerInch = 96
   TextHeight = 13
   object BtnClose: TButton
-    Left = 286
-    Top = 239
-    Width = 79
+    Left = 300
+    Top = 262
+    Width = 89
     Height = 27
     Caption = '&Close'
     TabOrder = 1
@@ -28,8 +28,8 @@ object ConvDialog: TConvDialog
   end
   object BtnConvert: TButton
     Left = 204
-    Top = 239
-    Width = 79
+    Top = 262
+    Width = 89
     Height = 27
     Caption = 'Con&vert'
     TabOrder = 0
@@ -38,71 +38,78 @@ object ConvDialog: TConvDialog
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 372
-    Height = 238
+    Width = 395
+    Height = 262
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 2
     object Label1: TLabel
-      Left = 12
-      Top = 59
-      Width = 54
+      Left = 10
+      Top = 83
+      Width = 64
       Height = 13
-      Caption = 'Track Color'
+      Caption = 'Output Track'
     end
     object Label2: TLabel
-      Left = 12
-      Top = 82
-      Width = 57
+      Left = 10
+      Top = 106
+      Width = 84
       Height = 13
-      Caption = 'Points Color'
+      Caption = 'Output Waypoint'
     end
     object Label3: TLabel
-      Left = 198
-      Top = 59
+      Left = 212
+      Top = 84
       Width = 74
       Height = 13
       Caption = 'Output Altitude'
     end
     object Label4: TLabel
-      Left = 198
-      Top = 82
+      Left = 212
+      Top = 107
       Width = 59
       Height = 13
       Caption = 'Output Time'
     end
     object Label5: TLabel
-      Left = 198
-      Top = 36
+      Left = 212
+      Top = 61
       Width = 37
       Height = 13
       Caption = 'Q-Flags'
       FocusControl = AddOffset
     end
     object Label7: TLabel
-      Left = 12
-      Top = 130
+      Left = 10
+      Top = 154
       Width = 121
       Height = 13
       Caption = 'Input/Output/GE Exe File'
     end
+    object Label6: TLabel
+      Left = 10
+      Top = 8
+      Width = 71
+      Height = 13
+      Caption = 'Output Format'
+    end
     object TimeIntF: TCheckBox
-      Left = 8
-      Top = 34
+      Left = 9
+      Top = 58
       Width = 83
       Height = 17
       Caption = 'Interval (s)'
-      TabOrder = 9
+      TabOrder = 11
       OnClick = TimeIntFClick
     end
     object TrackColor: TComboBox
-      Left = 98
-      Top = 55
-      Width = 81
+      Left = 105
+      Top = 80
+      Width = 85
       Height = 21
       Style = csDropDownList
       ItemIndex = 5
-      TabOrder = 11
+      TabOrder = 13
       Text = 'Yellow'
       Items.Strings = (
         'OFF'
@@ -113,13 +120,13 @@ object ConvDialog: TConvDialog
         'Yellow')
     end
     object PointColor: TComboBox
-      Left = 98
-      Top = 78
-      Width = 81
+      Left = 105
+      Top = 103
+      Width = 85
       Height = 21
       Style = csDropDownList
       ItemIndex = 5
-      TabOrder = 12
+      TabOrder = 14
       Text = 'By Q-Flag'
       Items.Strings = (
         'OFF'
@@ -130,13 +137,13 @@ object ConvDialog: TConvDialog
         'By Q-Flag')
     end
     object OutputAlt: TComboBox
-      Left = 284
-      Top = 55
-      Width = 81
+      Left = 302
+      Top = 80
+      Width = 85
       Height = 21
       Style = csDropDownList
       ItemIndex = 0
-      TabOrder = 14
+      TabOrder = 16
       Text = 'OFF'
       Items.Strings = (
         'OFF'
@@ -144,46 +151,46 @@ object ConvDialog: TConvDialog
         'Geodetic')
     end
     object AddOffset: TCheckBox
-      Left = 8
-      Top = 105
+      Left = 9
+      Top = 128
       Width = 133
       Height = 17
       Caption = 'Add Offset E/N/U (m)'
-      TabOrder = 16
+      TabOrder = 18
       OnClick = AddOffsetClick
     end
     object Offset1: TEdit
-      Left = 144
-      Top = 103
-      Width = 73
-      Height = 21
-      TabOrder = 17
-      Text = '0'
-    end
-    object Offset2: TEdit
-      Left = 218
-      Top = 103
-      Width = 73
-      Height = 21
-      TabOrder = 18
-      Text = '0'
-    end
-    object Offset3: TEdit
-      Left = 292
-      Top = 103
+      Left = 167
+      Top = 127
       Width = 73
       Height = 21
       TabOrder = 19
       Text = '0'
     end
+    object Offset2: TEdit
+      Left = 241
+      Top = 127
+      Width = 73
+      Height = 21
+      TabOrder = 20
+      Text = '0'
+    end
+    object Offset3: TEdit
+      Left = 315
+      Top = 127
+      Width = 73
+      Height = 21
+      TabOrder = 21
+      Text = '0'
+    end
     object OutputTime: TComboBox
-      Left = 284
-      Top = 78
-      Width = 81
+      Left = 302
+      Top = 103
+      Width = 85
       Height = 21
       Style = csDropDownList
       ItemIndex = 0
-      TabOrder = 15
+      TabOrder = 17
       Text = 'OFF'
       Items.Strings = (
         'OFF'
@@ -192,62 +199,62 @@ object ConvDialog: TConvDialog
         'JST')
     end
     object TimeInt: TEdit
-      Left = 98
-      Top = 32
-      Width = 81
+      Left = 105
+      Top = 57
+      Width = 85
       Height = 21
-      TabOrder = 10
+      TabOrder = 12
       Text = '1'
     end
     object TimeY1: TEdit
       Left = 80
-      Top = 8
+      Top = 32
       Width = 63
       Height = 21
-      TabOrder = 1
+      TabOrder = 3
       Text = '2000/01/01'
     end
     object TimeH1: TEdit
-      Left = 157
-      Top = 8
+      Left = 163
+      Top = 32
       Width = 51
       Height = 21
-      TabOrder = 3
+      TabOrder = 5
       Text = '00:00:00'
     end
     object TimeSpan: TCheckBox
-      Left = 8
-      Top = 10
+      Left = 9
+      Top = 34
       Width = 71
       Height = 17
       Caption = 'Time Span'
-      TabOrder = 0
+      TabOrder = 2
       OnClick = TimeSpanClick
     end
     object TimeY2: TEdit
-      Left = 222
-      Top = 8
+      Left = 234
+      Top = 32
       Width = 63
       Height = 21
-      TabOrder = 5
+      TabOrder = 7
       Text = '2000/01/01'
     end
     object TimeH2: TEdit
-      Left = 299
-      Top = 8
+      Left = 317
+      Top = 32
       Width = 51
       Height = 21
-      TabOrder = 7
+      TabOrder = 9
       Text = '00:00:00'
     end
     object QFlags: TComboBox
-      Left = 284
-      Top = 32
-      Width = 81
+      Left = 302
+      Top = 57
+      Width = 85
       Height = 21
       Style = csDropDownList
       ItemIndex = 0
-      TabOrder = 13
+      TabOrder = 15
       Text = 'ALL'
       Items.Strings = (
         'ALL'
@@ -260,23 +267,23 @@ object ConvDialog: TConvDialog
     end
     object OutputFile: TEdit
       Left = 8
-      Top = 168
-      Width = 357
+      Top = 192
+      Width = 380
       Height = 21
-      TabOrder = 23
+      TabOrder = 25
     end
     object InputFile: TEdit
       Left = 8
-      Top = 146
-      Width = 357
+      Top = 170
+      Width = 380
       Height = 21
-      TabOrder = 22
+      TabOrder = 24
       OnChange = InputFileChange
     end
     object BtnInputFile: TButton
-      Left = 344
-      Top = 125
-      Width = 21
+      Left = 363
+      Top = 149
+      Width = 25
       Height = 21
       Caption = '...'
       Font.Charset = DEFAULT_CHARSET
@@ -285,83 +292,83 @@ object ConvDialog: TConvDialog
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      TabOrder = 21
+      TabOrder = 23
       OnClick = BtnInputFileClick
     end
     object Message: TPanel
-      Left = 9
-      Top = 212
-      Width = 357
+      Left = 8
+      Top = 236
+      Width = 381
       Height = 25
       BevelInner = bvRaised
       BevelOuter = bvLowered
-      TabOrder = 24
+      TabOrder = 26
     end
     object TimeY1UD: TUpDown
       Left = 143
-      Top = 8
-      Width = 13
-      Height = 20
-      Min = -32000
-      Max = 32000
-      TabOrder = 2
-      Wrap = True
-      OnChangingEx = TimeY1UDChangingEx
-    end
-    object TimeH1UD: TUpDown
-      Left = 208
-      Top = 8
-      Width = 13
-      Height = 20
+      Top = 31
+      Width = 19
+      Height = 23
       Min = -32000
       Max = 32000
       TabOrder = 4
       Wrap = True
-      OnChangingEx = TimeH1UDChangingEx
+      OnChangingEx = TimeY1UDChangingEx
     end
-    object TimeY2UD: TUpDown
-      Left = 285
-      Top = 8
-      Width = 13
-      Height = 20
+    object TimeH1UD: TUpDown
+      Left = 214
+      Top = 31
+      Width = 19
+      Height = 23
       Min = -32000
       Max = 32000
       TabOrder = 6
       Wrap = True
-      OnChangingEx = TimeY2UDChangingEx
+      OnChangingEx = TimeH1UDChangingEx
     end
-    object TimeH2UD: TUpDown
-      Left = 350
-      Top = 8
-      Width = 13
-      Height = 20
+    object TimeY2UD: TUpDown
+      Left = 297
+      Top = 31
+      Width = 19
+      Height = 23
       Min = -32000
       Max = 32000
       TabOrder = 8
       Wrap = True
+      OnChangingEx = TimeY2UDChangingEx
+    end
+    object TimeH2UD: TUpDown
+      Left = 368
+      Top = 31
+      Width = 19
+      Height = 23
+      Min = -32000
+      Max = 32000
+      TabOrder = 10
+      Wrap = True
       OnChangingEx = TimeH2UDChangingEx
     end
     object Compress: TCheckBox
-      Left = 292
-      Top = 128
+      Left = 316
+      Top = 152
       Width = 45
       Height = 17
       Caption = '.kmz'
-      TabOrder = 20
+      TabOrder = 22
       OnClick = CompressClick
     end
     object GoogleEarthFile: TEdit
       Left = 8
-      Top = 190
-      Width = 336
+      Top = 214
+      Width = 355
       Height = 21
-      TabOrder = 25
+      TabOrder = 27
       OnChange = GoogleEarthFileChange
     end
     object BtnGoogleEarthFile: TButton
-      Left = 344
-      Top = 189
-      Width = 21
+      Left = 363
+      Top = 214
+      Width = 25
       Height = 21
       Caption = '...'
       Font.Charset = DEFAULT_CHARSET
@@ -370,14 +377,34 @@ object ConvDialog: TConvDialog
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      TabOrder = 26
+      TabOrder = 28
       OnClick = BtnGoogleEarthFileClick
+    end
+    object FormatKML: TRadioButton
+      Left = 106
+      Top = 7
+      Width = 113
+      Height = 17
+      Caption = 'Google Earth KML'
+      Checked = True
+      TabOrder = 0
+      TabStop = True
+      OnClick = FormatKMLClick
+    end
+    object FormatGPX: TRadioButton
+      Left = 240
+      Top = 7
+      Width = 113
+      Height = 17
+      Caption = 'GPX'
+      TabOrder = 1
+      OnClick = FormatGPXClick
     end
   end
   object BtnGoogle: TButton
-    Left = 7
-    Top = 239
-    Width = 79
+    Left = 8
+    Top = 262
+    Width = 89
     Height = 27
     Caption = '&Google Earth'
     TabOrder = 3
@@ -386,7 +413,7 @@ object ConvDialog: TConvDialog
   object OpenDialog: TOpenDialog
     Filter = 'All (*.*)|*.*'
     Options = [ofHideReadOnly, ofNoChangeDir, ofEnableSizing]
-    Left = 98
-    Top = 216
+    Left = 115
+    Top = 247
   end
 end

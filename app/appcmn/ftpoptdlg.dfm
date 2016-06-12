@@ -105,18 +105,18 @@ object FtpOptDialog: TFtpOptDialog
   end
   object BtnCancel: TButton
     Left = 278
-    Top = 114
+    Top = 112
     Width = 81
-    Height = 23
+    Height = 27
     Caption = '&Cancel'
     ModalResult = 2
     TabOrder = 0
   end
   object BtnOk: TButton
     Left = 194
-    Top = 114
+    Top = 112
     Width = 81
-    Height = 23
+    Height = 27
     Caption = '&OK'
     ModalResult = 1
     TabOrder = 1
@@ -144,7 +144,6 @@ object FtpOptDialog: TFtpOptDialog
     Width = 353
     Height = 21
     AutoComplete = False
-    ItemHeight = 13
     TabOrder = 2
   end
   object Interval: TComboBox
@@ -153,7 +152,6 @@ object FtpOptDialog: TFtpOptDialog
     Width = 71
     Height = 21
     DropDownCount = 16
-    ItemHeight = 13
     TabOrder = 3
     Text = '0'
     Items.Strings = (
@@ -171,7 +169,6 @@ object FtpOptDialog: TFtpOptDialog
     Width = 71
     Height = 21
     DropDownCount = 16
-    ItemHeight = 13
     TabOrder = 4
     Text = '0'
     Items.Strings = (
@@ -202,7 +199,6 @@ object FtpOptDialog: TFtpOptDialog
     Width = 71
     Height = 21
     DropDownCount = 16
-    ItemHeight = 13
     TabOrder = 5
     Text = '0'
     Items.Strings = (

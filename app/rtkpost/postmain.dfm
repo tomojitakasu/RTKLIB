@@ -5,7 +5,7 @@ object MainForm: TMainForm
   BorderStyle = bsSingle
   Caption = 'RTKPOST'
   ClientHeight = 336
-  ClientWidth = 466
+  ClientWidth = 470
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -22,7 +22,7 @@ object MainForm: TMainForm
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 466
+    Width = 470
     Height = 307
     Align = alTop
     BevelOuter = bvNone
@@ -30,7 +30,7 @@ object MainForm: TMainForm
     object Message: TPanel
       Left = 2
       Top = 275
-      Width = 463
+      Width = 467
       Height = 23
       BevelInner = bvRaised
       BevelOuter = bvLowered
@@ -122,7 +122,7 @@ object MainForm: TMainForm
     object Progress: TProgressBar
       Left = 2
       Top = 300
-      Width = 462
+      Width = 466
       Height = 7
       Smooth = True
       Step = 1
@@ -131,7 +131,7 @@ object MainForm: TMainForm
     object Panel3: TPanel
       Left = 2
       Top = 2
-      Width = 463
+      Width = 467
       Height = 43
       BevelInner = bvRaised
       BevelOuter = bvLowered
@@ -314,7 +314,7 @@ object MainForm: TMainForm
     object Panel4: TPanel
       Left = 2
       Top = 45
-      Width = 463
+      Width = 467
       Height = 182
       BevelInner = bvRaised
       BevelOuter = bvLowered
@@ -585,7 +585,7 @@ object MainForm: TMainForm
       object BtnInputFile1: TButton
         Left = 438
         Top = 18
-        Width = 21
+        Width = 25
         Height = 21
         Caption = '...'
         Font.Charset = DEFAULT_CHARSET
@@ -600,7 +600,7 @@ object MainForm: TMainForm
       object BtnInputFile3: TButton
         Left = 438
         Top = 92
-        Width = 21
+        Width = 25
         Height = 21
         Caption = '...'
         Font.Charset = DEFAULT_CHARSET
@@ -623,7 +623,7 @@ object MainForm: TMainForm
       object BtnInputFile2: TButton
         Left = 438
         Top = 54
-        Width = 21
+        Width = 25
         Height = 21
         Caption = '...'
         Font.Charset = DEFAULT_CHARSET
@@ -654,7 +654,7 @@ object MainForm: TMainForm
       object BtnInputFile4: TButton
         Left = 438
         Top = 114
-        Width = 21
+        Width = 25
         Height = 21
         Caption = '...'
         Font.Charset = DEFAULT_CHARSET
@@ -677,7 +677,7 @@ object MainForm: TMainForm
       object BtnInputFile5: TButton
         Left = 438
         Top = 136
-        Width = 21
+        Width = 25
         Height = 21
         Caption = '...'
         Font.Charset = DEFAULT_CHARSET
@@ -700,7 +700,7 @@ object MainForm: TMainForm
       object BtnInputFile6: TButton
         Left = 438
         Top = 158
-        Width = 21
+        Width = 25
         Height = 21
         Caption = '...'
         Font.Charset = DEFAULT_CHARSET
@@ -716,7 +716,7 @@ object MainForm: TMainForm
     object Panel5: TPanel
       Left = 2
       Top = 227
-      Width = 463
+      Width = 467
       Height = 48
       BevelInner = bvRaised
       BevelOuter = bvLowered
@@ -754,7 +754,7 @@ object MainForm: TMainForm
       object BtnOutputFile: TButton
         Left = 438
         Top = 24
-        Width = 21
+        Width = 25
         Height = 21
         Caption = '...'
         Font.Charset = DEFAULT_CHARSET
@@ -778,7 +778,7 @@ object MainForm: TMainForm
       object BtnOutDir: TButton
         Left = 438
         Top = 2
-        Width = 21
+        Width = 25
         Height = 21
         Caption = '...'
         Enabled = False
@@ -796,65 +796,124 @@ object MainForm: TMainForm
   object Panel2: TPanel
     Left = 0
     Top = 307
-    Width = 466
+    Width = 470
     Height = 29
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitHeight = 30
     object BtnPlot: TButton
       Left = 1
-      Top = 2
+      Top = 1
       Width = 78
       Height = 27
       Caption = '&Plot...'
       TabOrder = 0
       OnClick = BtnPlotClick
     end
-    object BtnView: TButton
-      Left = 78
-      Top = 2
-      Width = 78
-      Height = 27
-      Caption = '&View...'
-      TabOrder = 1
-      OnClick = BtnViewClick
-    end
     object BtnToKML: TButton
-      Left = 156
-      Top = 2
+      Left = 157
+      Top = 1
       Width = 78
       Height = 27
-      Caption = 'To &KML...'
-      TabOrder = 2
+      Caption = '&KML/GPX...'
+      TabOrder = 1
       OnClick = BtnToKMLClick
     end
-    object BtnOption: TButton
-      Left = 233
-      Top = 2
-      Width = 78
-      Height = 27
-      Caption = '&Options...'
-      TabOrder = 3
-      OnClick = BtnOptionClick
-    end
-    object BtnExec: TButton
-      Left = 310
-      Top = 2
-      Width = 78
-      Height = 27
-      Caption = 'E&xecute'
-      TabOrder = 4
-      OnClick = BtnExecClick
-    end
     object BtnExit: TButton
-      Left = 387
-      Top = 2
+      Left = 391
+      Top = 1
       Width = 78
       Height = 27
       Caption = '&Exit'
-      TabOrder = 5
+      TabOrder = 2
       OnClick = BtnExitClick
+    end
+    object BtnView: TBitBtn
+      Left = 79
+      Top = 1
+      Width = 78
+      Height = 27
+      Caption = '&View'
+      Glyph.Data = {
+        3E020000424D3E0200000000000036000000280000000D0000000D0000000100
+        1800000000000802000000000000000000000000000000000000FFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FF00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFF00FFFFFF00000000000000000000000000000000000000
+        0000000000000000000000000000FFFFFF00FFFFFF000000FFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FFFFFF00FFFFFF000000
+        FFFFFF808080808080808080808080808080FFFFFFFFFFFFFFFFFF000000FFFF
+        FF00FFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFF000000FFFFFF00FFFFFF000000FFFFFF808080808080808080FFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFF000000FFFFFF00FFFFFF000000FFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FFFFFF00FFFFFF000000
+        FFFFFF808080808080808080808080808080808080808080FFFFFF000000FFFF
+        FF00FFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFF000000FFFFFF00FFFFFF00000000000000000000000000000000000000
+        0000000000000000000000000000FFFFFF00FFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FF00}
+      TabOrder = 3
+      OnClick = BtnViewClick
+    end
+    object BtnOption: TBitBtn
+      Left = 235
+      Top = 1
+      Width = 78
+      Height = 27
+      Caption = '&Options...'
+      Glyph.Data = {
+        3E020000424D3E0200000000000036000000280000000D0000000D0000000100
+        1800000000000802000000000000000000000000000000000000FFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FF00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF7F7F7F0000007F7F7FFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFF00FFFFFFFFFFFFC3C3C3000000C3C3C37F7F7F0000007F
+        7F7FC3C3C3000000C3C3C3FFFFFFFFFFFF00FFFFFFFFFFFF0000000000000000
+        00000000000000000000000000000000000000FFFFFFFFFFFF00FFFFFFFFFFFF
+        C3C3C30000000000007F7F7F7F7F7F7F7F7F000000000000C3C3C3FFFFFFFFFF
+        FF00FFFFFF7F7F7F7F7F7F0000007F7F7FC3C3C3FFFFFFC3C3C37F7F7F000000
+        7F7F7F7F7F7FFFFFFF00FFFFFF0000000000000000007F7F7FFFFFFFFFFFFFFF
+        FFFF7F7F7F000000000000000000FFFFFF00FFFFFF7F7F7F7F7F7F0000007F7F
+        7FC3C3C3FFFFFFC3C3C37F7F7F0000007F7F7F7F7F7FFFFFFF00FFFFFFFFFFFF
+        C3C3C30000000000007F7F7F7F7F7F7F7F7F000000000000C3C3C3FFFFFFFFFF
+        FF00FFFFFFFFFFFF000000000000000000000000000000000000000000000000
+        000000FFFFFFFFFFFF00FFFFFFFFFFFFC3C3C3000000C3C3C37F7F7F0000007F
+        7F7FC3C3C3000000C3C3C3FFFFFFFFFFFF00FFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FF7F7F7F0000007F7F7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FF00}
+      TabOrder = 4
+      OnClick = BtnOptionClick
+    end
+    object BtnExec: TBitBtn
+      Left = 313
+      Top = 1
+      Width = 78
+      Height = 27
+      Caption = 'E&xecute'
+      Glyph.Data = {
+        3E020000424D3E0200000000000036000000280000000D0000000D0000000100
+        1800000000000802000000000000000000000000000000000000FFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FF00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFF00FFFFFFFFFFFF008000008000FFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFFFFFFFFFF0080000080000080
+        00008000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFFFFFFFFFF
+        008000008000008000008000008000008000FFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FF00FFFFFFFFFFFF008000008000008000008000008000008000008000008000
+        FFFFFFFFFFFFFFFFFF00FFFFFFFFFFFF00800000800000800000800000800000
+        8000008000008000008000FFFFFFFFFFFF00FFFFFFFFFFFF0080000080000080
+        00008000008000008000008000008000FFFFFFFFFFFFFFFFFF00FFFFFFFFFFFF
+        008000008000008000008000008000008000FFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FF00FFFFFFFFFFFF008000008000008000008000FFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFF00FFFFFFFFFFFF008000008000FFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FF00}
+      TabOrder = 5
+      OnClick = BtnExecClick
     end
   end
   object OpenDialog: TOpenDialog

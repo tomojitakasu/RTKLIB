@@ -46,3 +46,8 @@ UPDATE HISTORY
                       repository for RTKLIB/bin is moved to new RTKLIB_bin to
                       reduce repository size.
                       septentrio.c is updated by Apr 6 ver by JensReimann.
+2016/06/12  2.4.3 b11 fix several bugs
+                      support solution ground track pane in rtknavi
+                      support gpx conversion function to rtkpost and pos2kml
+                      support shapefile in rtkplot
+                      add data/ubx_m8p_ref_glo/bds_1hz.cmd

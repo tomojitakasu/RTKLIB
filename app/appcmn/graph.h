@@ -10,7 +10,7 @@
 class TGraph // graph class
 {
 private:
-	TPaintBox *Parent;
+	TCanvas *Canvas;
 	int X,Y,Width,Height;
 	double XCent,YCent,XScale,YScale,XTick,YTick;
 	double AutoTick(double scale);
@@ -29,12 +29,14 @@ public:
 	AnsiString Title,XLabel,YLabel;
 	TColor Color[3];
 	TGraph(TPaintBox *parent);
+	TGraph(TImage *parent);
 	int IsInArea(TPoint &p);
 	int ToPoint(double x, double y, TPoint &p);
 	int OnAxis(TPoint p);
 	AnsiString NumText(double x, double dx);
 	AnsiString TimeText(double x, double dx);
 	void ToPos(TPoint p, double &x, double &y);
+	void SetSize(int width, int height);
 	void SetPos(TPoint p1, TPoint p2);
 	void GetPos(TPoint &p1, TPoint &p2);
 	void SetCent(double x, double y);

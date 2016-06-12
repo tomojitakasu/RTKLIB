@@ -46,6 +46,8 @@
 *           2015/01/12 1.15 add rcv command to change bitrate by !BRATE
 *           2016/01/16 1.16 add constant CRTSCTS for non-CRTSCTS-defined env.
 *                           fix serial status for non-windows systems
+*           2016/06/09 1.17 fix bug on !BRATE rcv command always failed
+*                           fix program on struct alignment in time tag header
 *-----------------------------------------------------------------------------*/
 #include <ctype.h>
 #include "rtklib.h"
@@ -314,13 +316,13 @@ static serial_t *openserial(const char *path, int mode, char *msg)
     
     serial->dev=CreateFile(dev,rw,0,0,OPEN_EXISTING,0,NULL);
     if (serial->dev==INVALID_HANDLE_VALUE) {
-        sprintf(msg,"device open error (%d)",(int)GetLastError());
+        sprintf(msg,"%s open error (%d)",port,(int)GetLastError());
         tracet(1,"openserial: %s path=%s\n",msg,path);
         free(serial);
         return NULL;
     }
     if (!GetCommConfig(serial->dev,&cc,&siz)) {
-        sprintf(msg,"getconfig error (%d)",(int)GetLastError());
+        sprintf(msg,"%s getconfig error (%d)",port,(int)GetLastError());
         tracet(1,"openserial: %s\n",msg);
         CloseHandle(serial->dev);
         free(serial);
@@ -328,7 +330,7 @@ static serial_t *openserial(const char *path, int mode, char *msg)
     }
     sprintf(dcb,"baud=%d parity=%c data=%d stop=%d",brate,parity,bsize,stopb);
     if (!BuildCommDCB(dcb,&cc.dcb)) {
-        sprintf(msg,"buiddcb error (%d)",(int)GetLastError());
+        sprintf(msg,"%s buiddcb error (%d)",port,(int)GetLastError());
         tracet(1,"openserial: %s\n",msg);
         CloseHandle(serial->dev);
         free(serial);
@@ -352,12 +354,13 @@ static serial_t *openserial(const char *path, int mode, char *msg)
         return NULL;
     }
     if (!(serial->thread=CreateThread(NULL,0,serialthread,serial,0,NULL))) {
-        sprintf(msg,"serial thread error (%d)",(int)GetLastError());
+        sprintf(msg,"%s serial thread error (%d)",port,(int)GetLastError());
         tracet(1,"openserial: %s\n",msg);
         CloseHandle(serial->dev);
         free(serial);
         return NULL;
     }
+    sprintf(msg,"%s",port);
     return serial;
 #else
     sprintf(dev,"/dev/%s",port);
@@ -367,7 +370,7 @@ static serial_t *openserial(const char *path, int mode, char *msg)
     else if (mode&STR_MODE_W) rw=O_WRONLY;
     
     if ((serial->dev=open(dev,rw|O_NOCTTY|O_NONBLOCK))<0) {
-        sprintf(msg,"device open error (%d)",errno);
+        sprintf(msg,"%s open error (%d)",dev,errno);
         tracet(1,"openserial: %s dev=%s\n",msg,dev);
         free(serial);
         return NULL;
@@ -386,6 +389,7 @@ static serial_t *openserial(const char *path, int mode, char *msg)
     ios.c_cflag|=!strcmp(fctr,"rts")?CRTSCTS:0;
     tcsetattr(serial->dev,TCSANOW,&ios);
     tcflush(serial->dev,TCIOFLUSH);
+    sprintf(msg,"%s",dev);
     return serial;
 #endif
 }
@@ -453,6 +457,8 @@ static int openfile_(file_t *file, gtime_t time, char *msg)
     FILE *fp;
     char *rw,tagpath[MAXSTRPATH+4]="";
     char tagh[TIMETAGH_LEN+1]="";
+    double time_sec;
+    unsigned int time_time;
     
     tracet(3,"openfile_: path=%s time=%s\n",file->path,time_str(time,0));
     
@@ -495,7 +501,10 @@ static int openfile_(file_t *file, gtime_t time, char *msg)
         
         if (file->mode&STR_MODE_R) {
             if (fread(&tagh,TIMETAGH_LEN,1,file->fp_tag)==1&&
-                fread(&file->time,sizeof(file->time),1,file->fp_tag)==1) {
+                fread(&time_time,4,1,file->fp_tag)==1&&
+                fread(&time_sec ,8,1,file->fp_tag)==1) {
+                file->time.time=time_time;
+                file->time.sec =time_sec ;
                 memcpy(&file->tick_f,tagh+TIMETAGH_LEN-4,sizeof(file->tick_f));
             }
             else {
@@ -508,9 +517,12 @@ static int openfile_(file_t *file, gtime_t time, char *msg)
             sprintf(tagh,"TIMETAG RTKLIB %s",VER_RTKLIB);
             memcpy(tagh+TIMETAGH_LEN-4,&file->tick_f,sizeof(file->tick_f));
             fwrite(&tagh,1,TIMETAGH_LEN,file->fp_tag);
-            fwrite(&file->time,1,sizeof(file->time),file->fp_tag);
+            time_time=(unsigned int)file->time.time;
+            time_sec =file->time.sec;
+            fwrite(&time_time,1,4,file->fp_tag);
+            fwrite(&time_sec ,1,8,file->fp_tag);
             /* time tag file structure   */
-            /*   HEADER(60)+TICK(4)+TIME(12)+ */
+            /*   HEADER(60)+TICK(4)+TIME(4)+SEC(8) */
             /*   TICK0(4)+FPOS0(4/8)+    */
             /*   TICK1(4)+FPOS1(4/8)+... */
         }
@@ -2198,9 +2210,9 @@ static int gen_hex(const char *msg, unsigned char *buff)
 static int set_brate(stream_t *str, int brate)
 {
     char path[1024],buff[1024]="",*p,*q;
-    int mode=str->mode;
+    int type=str->type,mode=str->mode;
     
-    if (str->type!=STR_SERIAL) return 0;
+    if (type!=STR_SERIAL) return 0;
     
     strcpy(path,str->path);
     
@@ -2212,7 +2224,7 @@ static int set_brate(stream_t *str, int brate)
         sprintf(p,":%d%s",brate,buff);
     }
     strclose(str);
-    return stropen(str,str->type,mode,path);
+    return stropen(str,type,mode,path);
 }
 /* send receiver command -------------------------------------------------------
 * send receiver commands to stream

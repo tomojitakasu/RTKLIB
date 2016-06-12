@@ -81,10 +81,10 @@ object FileOptDialog: TFileOptDialog
       Caption = 'File Path'
     end
     object BtnFilePath: TButton
-      Left = 364
-      Top = 18
-      Width = 17
-      Height = 19
+      Left = 357
+      Top = 17
+      Width = 25
+      Height = 23
       Caption = '...'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -98,25 +98,25 @@ object FileOptDialog: TFileOptDialog
     object FilePath: TEdit
       Left = 6
       Top = 18
-      Width = 357
+      Width = 351
       Height = 21
       TabOrder = 1
     end
   end
   object BtnCancel: TButton
     Left = 300
-    Top = 46
+    Top = 45
     Width = 81
-    Height = 23
+    Height = 27
     Caption = '&Cancel'
     ModalResult = 2
     TabOrder = 0
   end
   object BtnOk: TButton
     Left = 216
-    Top = 46
+    Top = 45
     Width = 81
-    Height = 23
+    Height = 27
     Caption = '&OK'
     ModalResult = 1
     TabOrder = 1

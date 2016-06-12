@@ -322,6 +322,9 @@
 				<BuildOrder>7</BuildOrder>
 				<BuildOrder>23</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="..\..\src\gis.c">
+				<BuildOrder>59</BuildOrder>
+			</CppCompile>
 			<CppCompile Include="..\..\src\ionex.c">
 				<BuildOrder>37</BuildOrder>
 				<BuildOrder>20</BuildOrder>

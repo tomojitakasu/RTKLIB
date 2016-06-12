@@ -32,6 +32,7 @@
 *           2015/12/04 1.13 add MT63 beidou ephemeris (rtcm draft)
 *                           fix bug on msm message generation of beidou
 *                           fix bug on ssr 3 message generation (#321)
+*           2016/06/12 1.14 fix bug on segmentation fault by generating msm1
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -1806,7 +1807,7 @@ static void gen_msm_sat(rtcm_t *rtcm, int sys, int nsat,
             if (rrate[k]==0.0&&data->D[j]!=0.0) rrate[k]=rrate_s;
             
             /* extended satellite info */
-            info[k]=sys!=SYS_GLO?0:(fcn<0?15:fcn);
+            if (info) info[k]=sys!=SYS_GLO?0:(fcn<0?15:fcn);
         }
     }
 }

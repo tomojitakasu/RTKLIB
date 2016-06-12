@@ -30,7 +30,7 @@ object TextViewer: TTextViewer
       AutoSize = True
       BevelOuter = bvNone
       TabOrder = 0
-      ExplicitLeft = 408
+      ExplicitLeft = 400
       object BtnReload: TSpeedButton
         Left = 0
         Top = 0
@@ -79,6 +79,7 @@ object TextViewer: TTextViewer
         Caption = '&Option...'
         TabOrder = 2
         OnClick = BtnOptClick
+        ExplicitLeft = 92
       end
     end
     object FindStr: TEdit
@@ -116,8 +117,6 @@ object TextViewer: TTextViewer
     ScrollBars = ssBoth
     TabOrder = 1
     WordWrap = False
-    ExplicitTop = 23
-    ExplicitHeight = 392
   end
   object OpenDialog: TOpenDialog
     Filter = 'Text File (*.txt)|*.txt|All (*.*)|*.*'

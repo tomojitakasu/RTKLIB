@@ -34,6 +34,9 @@
 
 
 
+
+
+
 USEFORM("skydlg.cpp", SkyImgDialog);
 USEFORM("satdlg.cpp", SatDialog);
 USEFORM("..\appcmn\serioptdlg.cpp", SerialOptDialog);

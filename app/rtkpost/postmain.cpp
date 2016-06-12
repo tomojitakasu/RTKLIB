@@ -26,6 +26,7 @@
 //           2010/07/18  1.3 rtklib 2.4.0
 //           2010/09/07  1.3 rtklib 2.4.1
 //           2011/04/03  1.4 rtklib 2.4.2
+//           2016/06/11  1.5 rtklib 2.4.3
 //---------------------------------------------------------------------------
 #include <stdio.h>
 #include <stdlib.h>
@@ -1320,6 +1321,7 @@ void __fastcall TMainForm::LoadOpt(void)
     ConvDialog->Offset2   ->Text     =ini->ReadString ("conv","offset2", "0");
     ConvDialog->Offset3   ->Text     =ini->ReadString ("conv","offset3", "0");
     ConvDialog->Compress  ->Checked  =ini->ReadInteger("conv","compress",  0);
+    ConvDialog->FormatKML ->Checked  =ini->ReadInteger("conv","format",    0);
     
     TTextViewer::Color1=(TColor)ini->ReadInteger("viewer","color1",(int)clBlack);
     TTextViewer::Color2=(TColor)ini->ReadInteger("viewer","color2",(int)clWhite);
@@ -1526,6 +1528,7 @@ void __fastcall TMainForm::SaveOpt(void)
     ini->WriteString ("conv","offset2",    ConvDialog->Offset2   ->Text     );
     ini->WriteString ("conv","offset3",    ConvDialog->Offset3   ->Text     );
     ini->WriteInteger("conv","compress",   ConvDialog->Compress  ->Checked  );
+    ini->WriteInteger("conv","format",     ConvDialog->FormatKML ->Checked  );
     
     ini->WriteInteger("viewer","color1",(int)TTextViewer::Color1  );
     ini->WriteInteger("viewer","color2",(int)TTextViewer::Color2  );

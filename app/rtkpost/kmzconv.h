@@ -52,6 +52,9 @@ __published:
 	TCheckBox *Compress;
 	TEdit *GoogleEarthFile;
 	TButton *BtnGoogleEarthFile;
+	TRadioButton *FormatKML;
+	TLabel *Label6;
+	TRadioButton *FormatGPX;
 	void __fastcall BtnCloseClick(TObject *Sender);
 	void __fastcall AddOffsetClick(TObject *Sender);
 	void __fastcall BtnConvertClick(TObject *Sender);
@@ -72,6 +75,8 @@ __published:
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall GoogleEarthFileChange(TObject *Sender);
 	void __fastcall BtnGoogleEarthFileClick(TObject *Sender);
+	void __fastcall FormatKMLClick(TObject *Sender);
+	void __fastcall FormatGPXClick(TObject *Sender);
 private:
 	int __fastcall ExecCmd(char *cmd);
 	void __fastcall UpdateEnable(void);

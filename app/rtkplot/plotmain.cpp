@@ -26,6 +26,7 @@
 //           2010/06/10  1.3 rtklib 2.4.1
 //           2010/06/19  1.4 rtklib 2.4.1 p1
 //           2012/11/21  1.5 rtklib 2.4.2
+//           2016/06/11  1.6 rtklib 2.4.3
 //---------------------------------------------------------------------------
 #include <vcl.h>
 #include <inifiles.hpp>
@@ -66,6 +67,7 @@ __fastcall TPlot::TPlot(TComponent* Owner) : TForm(Owner)
     nav_t nav0={0};
     obs_t obs0={0};
     sta_t sta0={0};
+    gis_t gis0={0};
     solstatbuf_t solstat0={0};
     AnsiString s;
     double ep[]={2000,1,1,0,0,0},xl[2],yl[2];
@@ -92,6 +94,7 @@ __fastcall TPlot::TPlot(TComponent* Owner) : TForm(Owner)
     Obs=obs0;
     Nav=nav0;
     Sta=sta0;
+    Gis=gis0;
     SimObs=0;
     
     X0=Y0=Xc=Yc=Xs=Ys=Xcent=0.0;
@@ -345,25 +348,25 @@ void __fastcall TPlot::MenuOpenSol2Click(TObject *Sender)
 // callback on menu-open-map-image ------------------------------------------
 void __fastcall TPlot::MenuOpenMapImageClick(TObject *Sender)
 {
-    trace(3,"MenuOpenMapImage\n");
+    trace(3,"MenuOpenMapImageClick\n");
     
     OpenMapDialog->Title="Open Map Image";
     OpenMapDialog->FileName=MapImageFile;
     if (!OpenMapDialog->Execute()) return;
     ReadMapData(OpenMapDialog->FileName);
 }
-// callback on menu-open-track-points ---------------------------------------
-void __fastcall TPlot::MenuOpenMapPathClick(TObject *Sender)
+// callback on menu-open-shapefile ------------------------------------------
+void __fastcall TPlot::MenuOpenShapeClick(TObject *Sender)
 {
-    trace(3,"MenuOpenMapPath\n");
+    trace(3,"MenuOpenShapeClick\n");
     
     if (!OpenMapPathDialog->Execute()) return;
-    ReadMapPath(OpenMapPathDialog->FileName);
+    ReadShapeFile(OpenMapPathDialog->Files);
 }
 // callback on menu-open-sky-image ------------------------------------------
 void __fastcall TPlot::MenuOpenSkyImageClick(TObject *Sender)
 {
-    trace(3,"MenuOpenSkyImage\n");
+    trace(3,"MenuOpenSkyImageClick\n");
     
     OpenMapDialog->Title="Open Sky Image";
     OpenMapDialog->FileName=SkyImageFile;

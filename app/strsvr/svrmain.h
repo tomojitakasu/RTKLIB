@@ -21,9 +21,6 @@ class TMainForm : public TForm
 {
 __published:
 	TPanel *Panel1;
-	TButton *BtnExit;
-	TButton *BtnStart;
-	TButton *BtnStop;
 	TLabel *LabelInput;
 	TLabel *LabelOutput1;
 	TComboBox *Input;
@@ -48,7 +45,6 @@ __published:
 	TPanel *IndOutput2;
 	TLabel *Label5;
 	TTimer *Timer1;
-	TButton *BtnOpt;
 	TPanel *Panel3;
 	TLabel *LabelOutput3;
 	TComboBox *Output3;
@@ -82,6 +78,10 @@ __published:
 	TButton *BtnConv2;
 	TButton *BtnConv3;
 	TLabel *Label2;
+	TBitBtn *BtnStart;
+	TBitBtn *BtnStop;
+	TBitBtn *BtnOpt;
+	TBitBtn *BtnExit;
 	void __fastcall BtnExitClick(TObject *Sender);
 	void __fastcall BtnInputClick(TObject *Sender);
 	void __fastcall BtnOutput1Click(TObject *Sender);
@@ -113,6 +113,9 @@ __published:
 	void __fastcall EnaOut1Click(TObject *Sender);
 	void __fastcall EnaOut2Click(TObject *Sender);
 	void __fastcall EnaOut3Click(TObject *Sender);
+	void __fastcall FormShow(TObject *Sender);
+	void __fastcall TrayIconMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift,
+          int X, int Y);
 private:
 	AnsiString IniFile;
 	AnsiString Paths[4][4],Cmds[2],CmdsTcp[2];

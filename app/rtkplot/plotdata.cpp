@@ -656,31 +656,25 @@ void __fastcall TPlot::ReadMapTag(AnsiString file)
     }
     fclose(fp);
 }
-// read map path data -------------------------------------------------------
-void __fastcall TPlot::ReadMapPath(AnsiString file)
+// read shapefile -----------------------------------------------------------
+void __fastcall TPlot::ReadShapeFile(TStrings *files)
 {
-    FILE *fp;
-    int n=0;
-    char buff[1024];
-    double pos[3];
+    char path[1024];
+    int i;
     
-    if (!(fp=fopen(file.c_str(),"r"))) return;
+    ReadWaitStart();
     
-    while (fgets(buff,sizeof(buff),fp)&&n<MAXMAPPATH) {
-        
-        if (sscanf(buff,"%lf %lf %lf",pos,pos+1,pos+2)!=3) continue;
-        pos[0]*=D2R;
-        pos[1]*=D2R;
-        pos2ecef(pos,MapPath+n*3);
-        n++;
+    gis_free(&Gis);
+    
+    for (i=0;i<files->Count&&i<MAXGISLAYER;i++) {
+        strcpy(path,U2A(files->Strings[i]).c_str());
+        gis_read(path,&Gis,i);
     }
-    fclose(fp);
-    
-    NMapPath=n;
-    
     BtnShowPoint->Down=true;
     
     UpdatePlot();
+    
+    ReadWaitEnd();
 }
 // read station position data -----------------------------------------------
 void __fastcall TPlot::ReadStaPos(const char *file, const char *sta,
@@ -1193,6 +1187,7 @@ void __fastcall TPlot::Clear(void)
     
     ClearObs();
     ClearSol();
+    gis_free(&Gis);
     
     for (i=0;i<3;i++) {
         TimeEna[i]=0;

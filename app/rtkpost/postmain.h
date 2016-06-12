@@ -30,10 +30,7 @@ __published:
 	TPanel *Message;
 	
 	TButton *BtnPlot;
-	TButton *BtnView;
 	TButton *BtnToKML;
-	TButton *BtnOption;
-	TButton *BtnExec;
 	TButton *BtnExit;
 	TButton *BtnInputFile1;
 	TButton *BtnInputFile3;
@@ -95,6 +92,9 @@ __published:
 	TComboBox *InputFile6;
 	TButton *BtnInputFile6;
 	TSpeedButton *BtnInputView6;
+	TBitBtn *BtnView;
+	TBitBtn *BtnOption;
+	TBitBtn *BtnExec;
 	
 	void __fastcall FormCreate         (TObject *Sender);
 	void __fastcall FormShow           (TObject *Sender);

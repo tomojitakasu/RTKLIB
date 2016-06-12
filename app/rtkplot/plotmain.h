@@ -148,7 +148,7 @@ __published:
 	TMenuItem *MenuOpenSol1;
 	TMenuItem *MenuOpenSol2;
 	TMenuItem *MenuOpenMapImage;
-	TMenuItem *MenuOpenMapPath;
+	TMenuItem *MenuOpenShape;
 	TMenuItem *MenuOpenObs;
 	TMenuItem *MenuOpenNav;
 	TMenuItem *MenuOpenElevMask;
@@ -254,7 +254,7 @@ __published:
 	void __fastcall MenuOpenSol1Click	(TObject *Sender);
 	void __fastcall MenuOpenSol2Click	(TObject *Sender);
 	void __fastcall MenuOpenMapImageClick(TObject *Sender);
-	void __fastcall MenuOpenMapPathClick (TObject *Sender);
+	void __fastcall MenuOpenShapeClick (TObject *Sender);
 	void __fastcall MenuOpenObsClick	(TObject *Sender);
 	void __fastcall MenuOpenNavClick	(TObject *Sender);
 	void __fastcall MenuOpenElevMaskClick(TObject *Sender);
@@ -383,6 +383,7 @@ private:
     obs_t Obs;
     nav_t Nav;
     sta_t Sta;
+    gis_t Gis;
     double *Az,*El,*Mp[NFREQ+NEXOBS];
     
     gtime_t OEpoch;
@@ -393,9 +394,7 @@ private:
     int Flush,PlotType;
     int NSolF1,NSolF2,NObsF,NNavF;
     int SatMask[MAXSAT],SatSel[MAXSAT];
-    int NMapPath;
     int SimObs;
-    double MapPath[MAXMAPPATH*3];
     
     int Drag,Xn,Yn;
     double X0,Y0,Xc,Yc,Xs,Ys,Xcent,Xcent0;
@@ -408,7 +407,7 @@ private:
     void __fastcall ReadSolStat  (TStrings *files, int sel);
     int  __fastcall ReadObsRnx   (TStrings *files, obs_t *obs, nav_t *nav, sta_t *sta);
     void __fastcall ReadMapTag   (AnsiString file);
-    void __fastcall ReadMapPath  (AnsiString file);
+    void __fastcall ReadShapeFile(TStrings *files);
     void __fastcall GenVisData   (void);
     void __fastcall SaveDop      (AnsiString file);
     void __fastcall SaveSnrMp    (AnsiString file);

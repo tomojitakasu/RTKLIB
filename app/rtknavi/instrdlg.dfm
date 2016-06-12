@@ -5,7 +5,7 @@ object InputStrDialog: TInputStrDialog
   BorderStyle = bsDialog
   Caption = 'Input Streams'
   ClientHeight = 235
-  ClientWidth = 397
+  ClientWidth = 400
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -25,7 +25,7 @@ object InputStrDialog: TInputStrDialog
     Caption = 'Type'
   end
   object Label6: TLabel
-    Left = 232
+    Left = 229
     Top = 3
     Width = 18
     Height = 13
@@ -46,7 +46,7 @@ object InputStrDialog: TInputStrDialog
     Caption = 'Format'
   end
   object Label11: TLabel
-    Left = 254
+    Left = 253
     Top = 3
     Width = 21
     Height = 13
@@ -60,15 +60,15 @@ object InputStrDialog: TInputStrDialog
     Caption = 'Input File Paths'
   end
   object LabelF2: TLabel
-    Left = 166
-    Top = 209
+    Left = 165
+    Top = 211
     Width = 5
     Height = 13
     Caption = 's'
   end
   object LabelF3: TLabel
-    Left = 106
-    Top = 209
+    Left = 105
+    Top = 211
     Width = 8
     Height = 13
     Caption = '+'
@@ -106,8 +106,8 @@ object InputStrDialog: TInputStrDialog
     OnClick = StreamC1Click
   end
   object TimeTagC: TCheckBox
-    Left = 10
-    Top = 208
+    Left = 9
+    Top = 210
     Width = 47
     Height = 17
     Caption = 'Time'
@@ -115,7 +115,7 @@ object InputStrDialog: TInputStrDialog
     OnClick = TimeTagCClick
   end
   object BtnCancel: TButton
-    Left = 308
+    Left = 313
     Top = 206
     Width = 85
     Height = 27
@@ -134,9 +134,9 @@ object InputStrDialog: TInputStrDialog
     OnClick = BtnOkClick
   end
   object Stream1: TComboBox
-    Left = 128
+    Left = 120
     Top = 18
-    Width = 107
+    Width = 103
     Height = 21
     Style = csDropDownList
     ItemIndex = 0
@@ -151,9 +151,9 @@ object InputStrDialog: TInputStrDialog
       'File')
   end
   object BtnStr1: TButton
-    Left = 235
+    Left = 224
     Top = 17
-    Width = 21
+    Width = 25
     Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
@@ -166,9 +166,9 @@ object InputStrDialog: TInputStrDialog
     OnClick = BtnStr1Click
   end
   object Stream2: TComboBox
-    Left = 128
+    Left = 120
     Top = 40
-    Width = 107
+    Width = 103
     Height = 21
     Style = csDropDownList
     ItemIndex = 0
@@ -183,9 +183,9 @@ object InputStrDialog: TInputStrDialog
       'File')
   end
   object BtnStr2: TButton
-    Left = 235
+    Left = 224
     Top = 39
-    Width = 21
+    Width = 25
     Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
@@ -198,7 +198,7 @@ object InputStrDialog: TInputStrDialog
     OnClick = BtnStr2Click
   end
   object Format1: TComboBox
-    Left = 276
+    Left = 275
     Top = 18
     Width = 97
     Height = 21
@@ -207,7 +207,7 @@ object InputStrDialog: TInputStrDialog
     TabOrder = 6
   end
   object Format2: TComboBox
-    Left = 276
+    Left = 275
     Top = 40
     Width = 97
     Height = 21
@@ -216,9 +216,9 @@ object InputStrDialog: TInputStrDialog
     TabOrder = 12
   end
   object BtnCmd1: TButton
-    Left = 255
+    Left = 249
     Top = 17
-    Width = 21
+    Width = 25
     Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
@@ -231,9 +231,9 @@ object InputStrDialog: TInputStrDialog
     OnClick = BtnCmd1Click
   end
   object BtnCmd2: TButton
-    Left = 255
+    Left = 249
     Top = 39
-    Width = 21
+    Width = 25
     Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
@@ -260,8 +260,8 @@ object InputStrDialog: TInputStrDialog
     TabOrder = 26
   end
   object TimeStartE: TEdit
-    Left = 116
-    Top = 206
+    Left = 115
+    Top = 208
     Width = 47
     Height = 21
     TabOrder = 30
@@ -270,7 +270,7 @@ object InputStrDialog: TInputStrDialog
   object BtnFile1: TButton
     Left = 373
     Top = 137
-    Width = 21
+    Width = 25
     Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
@@ -285,7 +285,7 @@ object InputStrDialog: TInputStrDialog
   object BtnFile2: TButton
     Left = 373
     Top = 159
-    Width = 21
+    Width = 25
     Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
@@ -313,8 +313,8 @@ object InputStrDialog: TInputStrDialog
       'Single Solution')
   end
   object TimeSpeedL: TComboBox
-    Left = 58
-    Top = 206
+    Left = 57
+    Top = 208
     Width = 49
     Height = 21
     DropDownCount = 20
@@ -349,7 +349,7 @@ object InputStrDialog: TInputStrDialog
   object BtnPos: TButton
     Left = 373
     Top = 99
-    Width = 21
+    Width = 25
     Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
@@ -371,7 +371,7 @@ object InputStrDialog: TInputStrDialog
   object BtnFile3: TButton
     Left = 373
     Top = 181
-    Width = 21
+    Width = 25
     Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
@@ -393,9 +393,9 @@ object InputStrDialog: TInputStrDialog
     OnClick = StreamC2Click
   end
   object Stream3: TComboBox
-    Left = 128
+    Left = 120
     Top = 62
-    Width = 107
+    Width = 103
     Height = 21
     Style = csDropDownList
     ItemIndex = 0
@@ -412,9 +412,9 @@ object InputStrDialog: TInputStrDialog
       'HTTP')
   end
   object BtnStr3: TButton
-    Left = 235
+    Left = 224
     Top = 61
-    Width = 21
+    Width = 25
     Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
@@ -427,7 +427,7 @@ object InputStrDialog: TInputStrDialog
     OnClick = BtnStr3Click
   end
   object Format3: TComboBox
-    Left = 276
+    Left = 275
     Top = 62
     Width = 97
     Height = 21
@@ -436,9 +436,9 @@ object InputStrDialog: TInputStrDialog
     TabOrder = 18
   end
   object BtnCmd3: TButton
-    Left = 255
+    Left = 249
     Top = 61
-    Width = 21
+    Width = 25
     Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
@@ -453,7 +453,7 @@ object InputStrDialog: TInputStrDialog
   object BtnRcvOpt1: TButton
     Left = 373
     Top = 17
-    Width = 21
+    Width = 25
     Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
@@ -468,7 +468,7 @@ object InputStrDialog: TInputStrDialog
   object BtnRcvOpt2: TButton
     Left = 373
     Top = 39
-    Width = 21
+    Width = 25
     Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
@@ -483,7 +483,7 @@ object InputStrDialog: TInputStrDialog
   object BtnRcvOpt3: TButton
     Left = 373
     Top = 61
-    Width = 21
+    Width = 25
     Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
