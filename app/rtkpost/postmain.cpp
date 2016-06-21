@@ -77,7 +77,7 @@ extern int showmsg(char *format, ...)
         MainForm->ShowMsg(buff);
     }
     else Application->ProcessMessages();
-    return !MainForm->BtnExec->Enabled;
+    return MainForm->AbortFlag;
 }
 // set time span of progress bar --------------------------------------------
 extern void settspan(gtime_t ts, gtime_t te)
@@ -279,10 +279,6 @@ void __fastcall TMainForm::BtnExecClick(TObject *Sender)
     AnsiString OutputFile_Text=OutputFile->Text;
     char *p;
     
-    if (BtnExec->Caption=="Abort") {
-        BtnExec->Enabled=false;
-        return;
-    }
     if (InputFile1->Text=="") {
         showmsg("error : no rinex obs file (rover)");
         return;
@@ -307,7 +303,9 @@ void __fastcall TMainForm::BtnExecClick(TObject *Sender)
         }
     }
     showmsg("");
-    BtnExec  ->Caption="Abort";
+    BtnExec  ->Visible=false;
+    BtnAbort ->Visible=true;
+    AbortFlag=0;
     BtnExit  ->Enabled=false;
     BtnView  ->Enabled=false;
     BtnToKML ->Enabled=false;
@@ -328,7 +326,8 @@ void __fastcall TMainForm::BtnExecClick(TObject *Sender)
     if (strstr(Message_Caption.c_str(),"processing")) {
         showmsg("done");
     }
-    BtnExec  ->Caption="E&xecute";
+    BtnAbort ->Visible=false;
+    BtnExec  ->Visible=true;
     BtnExec  ->Enabled=true;
     BtnExit  ->Enabled=true;
     BtnView  ->Enabled=true;
@@ -338,9 +337,10 @@ void __fastcall TMainForm::BtnExecClick(TObject *Sender)
     Panel1   ->Enabled=true;
 }
 // callback on button-abort -------------------------------------------------
-void __fastcall TMainForm::BtnStopClick(TObject *Sender)
+void __fastcall TMainForm::BtnAbortClick(TObject *Sender)
 {
-    showmsg("abort");
+    AbortFlag=1;
+    showmsg("aborted");
 }
 // callback on button-exit --------------------------------------------------
 void __fastcall TMainForm::BtnExitClick(TObject *Sender)
@@ -1536,5 +1536,7 @@ void __fastcall TMainForm::SaveOpt(void)
     ini->WriteInteger("viewer","fontsize",TTextViewer::FontD->Size);
     delete ini;
 }
+
 //---------------------------------------------------------------------------
+
 

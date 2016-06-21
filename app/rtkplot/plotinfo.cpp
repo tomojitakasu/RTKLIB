@@ -361,8 +361,18 @@ void __fastcall TPlot::UpdatePoint(int x, int y)
     
     if (PlotType==PLOT_TRK) { // track-plot
         
-        if (norm(OPos,3)>0.0) {
-            GraphT->ToPos(p,enu[0],enu[1]);
+        GraphT->ToPos(p,enu[0],enu[1]);
+        
+        if (PointType==1||norm(OPos,3)<=0.0) {
+            msg.sprintf("E:%+.3f m N:%+.3f m",enu[0],enu[1]);
+        }
+        else if (PointType==2) {
+            r=norm(enu,2);
+            az=r<=0.0?0.0:ATAN2(enu[0],enu[1])*R2D;
+            if (az<0.0) az+=360.0;
+            msg.sprintf("R:%.3f m D:%5.1f" CHARDEG,r,az);
+        }
+        else {
             ecef2pos(OPos,pos);
             enu2ecef(pos,enu,rr);
             for (i=0;i<3;i++) rr[i]+=OPos[i];

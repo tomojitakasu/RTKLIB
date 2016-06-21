@@ -26,8 +26,6 @@ __published:
 	TPanel *Panel1;
 	TPanel *Panel3;
 	TPanel *Panel2;
-	
-	TButton *BtnPlot;
 	TButton *BtnExit;
 	TButton *BtnInFile;
 	TButton *BtnOutFile1;
@@ -99,6 +97,8 @@ __published:
 	TSpeedButton *BtnInFileView;
 	TBitBtn *BtnOptions;
 	TBitBtn *BtnConvert;
+	TBitBtn *BtnAbort;
+	TBitBtn *BtnPlot;
 	
 	void __fastcall FormCreate          (TObject *Sender);
 	void __fastcall FormShow            (TObject *Sender);
@@ -147,6 +147,7 @@ __published:
 	void __fastcall BtnOutFile7Click(TObject *Sender);
 	void __fastcall BtnOutFileView7Click(TObject *Sender);
 	void __fastcall BtnInFileViewClick(TObject *Sender);
+	void __fastcall BtnAbortClick(TObject *Sender);
 	
 private:
 	AnsiString IniFile,CmdPostExe;

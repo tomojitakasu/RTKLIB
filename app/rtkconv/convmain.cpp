@@ -288,6 +288,11 @@ void __fastcall TMainWindow::BtnOptionsClick(TObject *Sender)
     }
     UpdateEnable();
 }
+//---------------------------------------------------------------------------
+void __fastcall TMainWindow::BtnAbortClick(TObject *Sender)
+{
+    abortf=1;
+}
 // callback on button-convert -----------------------------------------------
 void __fastcall TMainWindow::BtnConvertClick(TObject *Sender)
 {
@@ -698,11 +703,6 @@ void __fastcall TMainWindow::ConvertFile(void)
     double RNXVER[]={2.10,2.11,2.12,3.00,3.01,3.02};
     FILE *fp;
     
-    // abort conversion
-    if (BtnConvert->Caption=="Abort") {
-        abortf=1;
-        return;
-    }
     for (i=0;i<7;i++) ofile[i]=ofile_[i];
     
     // recognize input file format
@@ -755,6 +755,7 @@ void __fastcall TMainWindow::ConvertFile(void)
     if (format==STRFMT_RTCM2||format==STRFMT_RTCM3||format==STRFMT_RT17) {
         
         // input start date/time for rtcm 2 ro rtcm 3
+        StartDialog->FileName=file;
         if (StartDialog->ShowModal()!=mrOk) return;
         rnxopt.trtcm=StartDialog->Time;
     }
@@ -810,7 +811,8 @@ void __fastcall TMainWindow::ConvertFile(void)
         rnxopt.exsats[sat-1]=1;
     }
     abortf=0;
-    BtnConvert  ->Caption="Abort";
+    BtnConvert  ->Visible=false;
+    BtnAbort    ->Visible=true;
     Panel1      ->Enabled=false;
     Panel2      ->Enabled=false;
     BtnPlot     ->Enabled=false;
@@ -835,7 +837,8 @@ void __fastcall TMainWindow::ConvertFile(void)
     if (TraceLevel>0) {
         traceclose();
     }
-    BtnConvert  ->Caption="&Convert";
+    BtnAbort    ->Visible=false;
+    BtnConvert  ->Visible=true;
     Panel1      ->Enabled=true;
     Panel2      ->Enabled=true;
     BtnPlot     ->Enabled=true;

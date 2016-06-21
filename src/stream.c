@@ -48,6 +48,7 @@
 *                           fix serial status for non-windows systems
 *           2016/06/09 1.17 fix bug on !BRATE rcv command always failed
 *                           fix program on struct alignment in time tag header
+*           2016/06/21 1.18 reverse time-tag handler of file to previous
 *-----------------------------------------------------------------------------*/
 #include <ctype.h>
 #include "rtklib.h"
@@ -457,8 +458,6 @@ static int openfile_(file_t *file, gtime_t time, char *msg)
     FILE *fp;
     char *rw,tagpath[MAXSTRPATH+4]="";
     char tagh[TIMETAGH_LEN+1]="";
-    double time_sec;
-    unsigned int time_time;
     
     tracet(3,"openfile_: path=%s time=%s\n",file->path,time_str(time,0));
     
@@ -501,10 +500,7 @@ static int openfile_(file_t *file, gtime_t time, char *msg)
         
         if (file->mode&STR_MODE_R) {
             if (fread(&tagh,TIMETAGH_LEN,1,file->fp_tag)==1&&
-                fread(&time_time,4,1,file->fp_tag)==1&&
-                fread(&time_sec ,8,1,file->fp_tag)==1) {
-                file->time.time=time_time;
-                file->time.sec =time_sec ;
+                fread(&file->time,sizeof(file->time),1,file->fp_tag)==1) {
                 memcpy(&file->tick_f,tagh+TIMETAGH_LEN-4,sizeof(file->tick_f));
             }
             else {
@@ -517,12 +513,9 @@ static int openfile_(file_t *file, gtime_t time, char *msg)
             sprintf(tagh,"TIMETAG RTKLIB %s",VER_RTKLIB);
             memcpy(tagh+TIMETAGH_LEN-4,&file->tick_f,sizeof(file->tick_f));
             fwrite(&tagh,1,TIMETAGH_LEN,file->fp_tag);
-            time_time=(unsigned int)file->time.time;
-            time_sec =file->time.sec;
-            fwrite(&time_time,1,4,file->fp_tag);
-            fwrite(&time_sec ,1,8,file->fp_tag);
+            fwrite(&file->time,1,sizeof(file->time),file->fp_tag);
             /* time tag file structure   */
-            /*   HEADER(60)+TICK(4)+TIME(4)+SEC(8) */
+            /*   HEADER(60)+TICK(4)+TIME(12)+ */
             /*   TICK0(4)+FPOS0(4/8)+    */
             /*   TICK1(4)+FPOS1(4/8)+... */
         }

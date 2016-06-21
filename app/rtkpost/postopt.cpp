@@ -895,12 +895,12 @@ void __fastcall TOptDialog::UpdateEnable(void)
 	BaselineLen    ->Enabled=BaselineConst->Checked&&PosMode->ItemIndex==PMODE_MOVEB;
 	BaselineSig    ->Enabled=BaselineConst->Checked&&PosMode->ItemIndex==PMODE_MOVEB;
 	
-	OutputHead     ->Enabled=SolFormat->ItemIndex!=3;
-	OutputOpt      ->Enabled=SolFormat->ItemIndex!=3;
-	TimeFormat     ->Enabled=SolFormat->ItemIndex!=3;
-	TimeDecimal    ->Enabled=SolFormat->ItemIndex!=3;
+	OutputHead     ->Enabled=SolFormat->ItemIndex<3;
+	OutputOpt      ->Enabled=SolFormat->ItemIndex<3;
+	TimeFormat     ->Enabled=SolFormat->ItemIndex<3;
+	TimeDecimal    ->Enabled=SolFormat->ItemIndex<3;
 	LatLonFormat   ->Enabled=SolFormat->ItemIndex==0;
-	FieldSep       ->Enabled=SolFormat->ItemIndex!=3;
+	FieldSep       ->Enabled=SolFormat->ItemIndex<3;
 	OutputDatum    ->Enabled=SolFormat->ItemIndex==0;
 	OutputHeight   ->Enabled=SolFormat->ItemIndex==0;
 	OutputGeoid    ->Enabled=SolFormat->ItemIndex==0&&OutputHeight->ItemIndex==1;

@@ -3,7 +3,7 @@ object ConnectDialog: TConnectDialog
   Top = 0
   BorderStyle = bsDialog
   Caption = 'Connection Settings'
-  ClientHeight = 158
+  ClientHeight = 163
   ClientWidth = 283
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -90,7 +90,7 @@ object ConnectDialog: TConnectDialog
     Left = 94
     Top = 134
     Width = 89
-    Height = 23
+    Height = 27
     Caption = '&OK'
     ModalResult = 1
     TabOrder = 0
@@ -100,7 +100,7 @@ object ConnectDialog: TConnectDialog
     Left = 186
     Top = 134
     Width = 89
-    Height = 23
+    Height = 27
     Cancel = True
     Caption = '&Cancel'
     ModalResult = 2
@@ -112,7 +112,6 @@ object ConnectDialog: TConnectDialog
     Width = 91
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
     ItemIndex = 0
     TabOrder = 2
     OnChange = SelStream1Change
@@ -145,7 +144,6 @@ object ConnectDialog: TConnectDialog
     Width = 110
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
     ItemIndex = 0
     TabOrder = 5
     Text = 'Lat/Lon/Height'
@@ -154,7 +152,8 @@ object ConnectDialog: TConnectDialog
       'Lat/Lon/Height'
       'X/Y/Z-ECEF'
       'E/N/U-Baseline'
-      'NMEA0183')
+      'NMEA0183'
+      'Solution Status')
   end
   object BtnCmd1: TButton
     Left = 134
@@ -177,7 +176,6 @@ object ConnectDialog: TConnectDialog
     Width = 105
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
     ItemIndex = 0
     TabOrder = 10
     Text = 'ww ssss.ss GPST'
@@ -194,7 +192,6 @@ object ConnectDialog: TConnectDialog
     Width = 105
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
     ItemIndex = 0
     TabOrder = 11
     Text = 'ddd.ddddddd'
@@ -232,7 +229,6 @@ object ConnectDialog: TConnectDialog
     Width = 91
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
     ItemIndex = 0
     TabOrder = 6
     OnChange = SelStream2Change
@@ -280,7 +276,6 @@ object ConnectDialog: TConnectDialog
     Width = 110
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
     ItemIndex = 0
     TabOrder = 9
     Text = 'Lat/Lon/Height'
@@ -289,6 +284,7 @@ object ConnectDialog: TConnectDialog
       'Lat/Lon/Height'
       'X/Y/Z-ECEF'
       'E/N/U-Baseline'
-      'NMEA0183')
+      'NMEA0183'
+      'Solution Status')
   end
 end

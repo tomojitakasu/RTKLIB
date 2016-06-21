@@ -354,10 +354,8 @@ void __fastcall TMainForm::UpdateEnable(void)
 {
     BtnExpand1->Visible=PlotType1==6;
     BtnShrink1->Visible=PlotType1==6;
-    BtnPnt1   ->Visible=PlotType1==6;
-    BtnExpand2->Visible=PlotType2==6;
+	BtnExpand2->Visible=PlotType2==6;
     BtnShrink2->Visible=PlotType2==6;
-    BtnPnt2   ->Visible=PlotType2==6;
 }
 // callback on button-exit --------------------------------------------------
 void __fastcall TMainForm::BtnExitClick(TObject *Sender)
@@ -823,7 +821,7 @@ void __fastcall TMainForm::BtnFreqType2Click(TObject *Sender)
         if (++TrkType2>1) TrkType2=0;
         UpdatePlot();
     }
-    else if (PlotType1==5) {
+    else if (PlotType2==5) {
         if (++BLMode2>1) BLMode2=0;
         UpdatePlot();
     }
@@ -2649,4 +2647,5 @@ void __fastcall TMainForm::BtnMarkClick(TObject *Sender)
 	rtksvr.rtk.opt.mode=MarkDialog->PosMode;
 }
 //---------------------------------------------------------------------------
+
 

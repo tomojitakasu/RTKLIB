@@ -21,51 +21,19 @@ static double str2dbl(AnsiString str)
 __fastcall TPntDialog::TPntDialog(TComponent* Owner)
 	: TForm(Owner)
 {
-	Pos[0]=Pos[1]=Pos[2]=0.0;
+	PntList->RowCount=MAXWAYPNT;
 }
 //---------------------------------------------------------------------------
 void __fastcall TPntDialog::FormShow(TObject *Sender)
 {
-	TGridRect r={0};
-	AnsiString s;
-	double pos[3];
-	int width[]={90,90,80,90};
+	int width[]={90,90,90};
 	
 	FontScale=Screen->PixelsPerInch;
-	for (int i=0;i<4;i++) {
+	for (int i=0;i<3;i++) {
 		PntList->ColWidths[i]=width[i]*FontScale/96;
 	}
 	PntList->DefaultRowHeight=17*FontScale/96;
-	
-	for (int i=0;i<PntList->RowCount;i++) {
-		if (i<Plot->NWayPnt) {
-			ecef2pos(Plot->PntPos[i],pos);
-			PntList->Cells[0][i]=s.sprintf("%.9f",pos[0]*R2D);
-			PntList->Cells[1][i]=s.sprintf("%.9f",pos[1]*R2D);
-			PntList->Cells[2][i]=s.sprintf("%.4f",pos[2]);
-			PntList->Cells[3][i]=Plot->PntName[i];
-		}
-		else {
-			for (int j=0;j<PntList->ColCount;j++) PntList->Cells[j][i]="";
-		}
-	}
-	r.Top=r.Bottom=PntList->RowCount;
-	PntList->Selection=r;
-}
-//---------------------------------------------------------------------------
-void __fastcall TPntDialog::BtnOkClick(TObject *Sender)
-{
-	double pos[3]={0};
-	int n=0;
-	for (int i=0;i<PntList->RowCount;i++) {
-		if (PntList->Cells[3][i]=="") continue;
-		pos[0]=str2dbl(PntList->Cells[0][i])*D2R;
-		pos[1]=str2dbl(PntList->Cells[1][i])*D2R;
-		pos[2]=str2dbl(PntList->Cells[2][i]);
-		pos2ecef(pos,Plot->PntPos[n]);
-		Plot->PntName[n++]=PntList->Cells[3][i];
-	}
-	Plot->NWayPnt=n;
+	SetPoint();
 }
 //---------------------------------------------------------------------------
 void __fastcall TPntDialog::BtnAddClick(TObject *Sender)
@@ -75,18 +43,16 @@ void __fastcall TPntDialog::BtnAddClick(TObject *Sender)
 	int i;
 	double rr[3],pos[3]={0};
 	for (i=0;i<PntList->RowCount;i++) {
-		if (PntList->Cells[3][i]=="") break;
+		if (PntList->Cells[2][i]=="") break;
 	}
 	if (i>=PntList->RowCount) return;
-	if (!Plot->GetCurrentPos(rr)) return;
+	if (!Plot->GetCenterPos(rr)) return;
 	if (norm(rr,3)<=0.0) return;
 	ecef2pos(rr,pos);
 	PntList->Cells[0][i]=s.sprintf("%.9f",pos[0]*R2D);
 	PntList->Cells[1][i]=s.sprintf("%.9f",pos[1]*R2D);
-	PntList->Cells[2][i]=s.sprintf("%.4f",pos[2]);
-	PntList->Cells[3][i]=s.sprintf("new point %d",i+1);
-	r.Top=r.Bottom=i;
-	r.Left=0; r.Right=3; PntList->Selection=r;
+	PntList->Cells[2][i]=s.sprintf("Point%02d",i+1);
+	UpdatePoint();
 }
 //---------------------------------------------------------------------------
 void __fastcall TPntDialog::BtnDelClick(TObject *Sender)
@@ -99,48 +65,56 @@ void __fastcall TPntDialog::BtnDelClick(TObject *Sender)
 			else PntList->Cells[j][i]=PntList->Cells[j][i+1];
 		}
 	}
+	UpdatePoint();
 }
 //---------------------------------------------------------------------------
-void __fastcall TPntDialog::BtnLoadClick(TObject *Sender)
+void __fastcall TPntDialog::BtnUpdateClick(TObject *Sender)
 {
-	AnsiString OpenDialog_FileName=OpenDialog->FileName,s;
-	FILE *fp;
-	char buff[256],name[256];
-	double pos[3];
-	int i=0;
-	if (!OpenDialog->Execute()) return;
-	if (!(fp=fopen(OpenDialog_FileName.c_str(),"r"))) return;
-	while (fgets(buff,sizeof(buff),fp)&&i<PntList->RowCount) {
-		if (buff[0]=='#') continue;
-		if (sscanf(buff,"%lf %lf %lf %s",pos,pos+1,pos+2,name)<4) continue;
-		PntList->Cells[0][i]=s.sprintf("%.9f",pos[0]);
-		PntList->Cells[1][i]=s.sprintf("%.9f",pos[1]);
-		PntList->Cells[2][i]=s.sprintf("%.4f",pos[2]);
-		PntList->Cells[3][i++]=name;
-	}
-	for (;i<PntList->RowCount;i++) {
-		PntList->Cells[0][i]="";
-		PntList->Cells[1][i]="";
-		PntList->Cells[2][i]="";
-		PntList->Cells[3][i]="";
-	}
-	fclose(fp);
+	UpdatePoint();
 }
 //---------------------------------------------------------------------------
-void __fastcall TPntDialog::BtnSaveClick(TObject *Sender)
+void __fastcall TPntDialog::PntListSetEditText(TObject *Sender, int ACol, int ARow,
+          const UnicodeString Value)
 {
-	AnsiString SaveDialog_FileName=SaveDialog->FileName;
-	FILE *fp;
-	if (!SaveDialog->Execute()) return;
-	if (!(fp=fopen(SaveDialog_FileName.c_str(),"w"))) return;
+	UpdatePoint();
+}
+//---------------------------------------------------------------------------
+void __fastcall TPntDialog::BtnCloseClick(TObject *Sender)
+{
+	Close();
+}
+//---------------------------------------------------------------------------
+void __fastcall TPntDialog::UpdatePoint(void)
+{
+	int n=0;
+	
 	for (int i=0;i<PntList->RowCount;i++) {
-		if (PntList->Cells[3][i]=="") break;
-		fprintf(fp,"%s %s %s %s\n",
-			PntList->Cells[0][i].c_str(),
-			PntList->Cells[1][i].c_str(),
-			PntList->Cells[2][i].c_str(),
-			PntList->Cells[3][i].c_str());
+		if (PntList->Cells[2][i]=="") continue;
+		Plot->PntPos[n][0]=str2dbl(PntList->Cells[0][i]);
+		Plot->PntPos[n][1]=str2dbl(PntList->Cells[1][i]);
+		Plot->PntPos[n][2]=0.0;
+		Plot->PntName[n++]=PntList->Cells[2][i];
 	}
-	fclose(fp);
+	Plot->NWayPnt=n;
+	Plot->UpdatePlot();
 }
 //---------------------------------------------------------------------------
+void __fastcall TPntDialog::SetPoint(void)
+{
+	AnsiString s;
+	
+	for (int i=0;i<Plot->NWayPnt;i++) {
+		PntList->Cells[0][i]=s.sprintf("%.9f",Plot->PntPos[i][0]);
+		PntList->Cells[1][i]=s.sprintf("%.9f",Plot->PntPos[i][1]);
+		PntList->Cells[2][i]=Plot->PntName[i];
+	}
+}
+//---------------------------------------------------------------------------
+void __fastcall TPntDialog::PntListClick(TObject *Sender)
+{
+	int sel=PntList->Selection.Top;
+	Plot->SelWayPnt=sel<Plot->NWayPnt?sel:-1;
+	Plot->UpdatePlot();
+}
+//---------------------------------------------------------------------------
+

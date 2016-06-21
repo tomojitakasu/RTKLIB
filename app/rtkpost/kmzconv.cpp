@@ -6,6 +6,7 @@
 
 #include "postmain.h"
 #include "kmzconv.h"
+#include "viewer.h"
 #include "rtklib.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -279,6 +280,18 @@ void __fastcall TConvDialog::FormatGPXClick(TObject *Sender)
 {
 	UpdateOutFile();
 	UpdateEnable();
+}
+//---------------------------------------------------------------------------
+void __fastcall TConvDialog::BtnViewClick(TObject *Sender)
+{
+    AnsiString file=OutputFile->Text;
+    TTextViewer *viewer;
+    
+    if (file=="") return;
+    viewer=new TTextViewer(Application);
+    viewer->Caption=file;
+    viewer->Show();
+    viewer->Read(file);
 }
 //---------------------------------------------------------------------------
 

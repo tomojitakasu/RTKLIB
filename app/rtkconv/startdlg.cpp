@@ -67,4 +67,22 @@ void __fastcall TStartDialog::TimeH1UDChangingEx(TObject *Sender,
 	TimeH1->SelStart=p>5||p==0?8:(p>2?5:2);
 }
 //---------------------------------------------------------------------------
+void __fastcall TStartDialog::BtnFileTimeClick(TObject *Sender)
+{
+	FILETIME tc,ta,tw;
+	SYSTEMTIME st;
+	AnsiString s;
+	HANDLE h;
+	
+	if ((h=CreateFile(FileName,GENERIC_READ,0,NULL,OPEN_EXISTING,
+					  FILE_ATTRIBUTE_NORMAL,0))==INVALID_HANDLE_VALUE) {
+		return;
+	}
+	GetFileTime(h,&tc,&ta,&tw);
+	CloseHandle(h);
+	FileTimeToSystemTime(&tc,&st); // file create time
+	TimeY1->Text=s.sprintf("%04d/%02d/%02d",st.wYear,st.wMonth,st.wDay);
+	TimeH1->Text=s.sprintf("%02d:%02d:%02d",st.wHour,st.wMinute,st.wSecond);
+}
+//---------------------------------------------------------------------------
 

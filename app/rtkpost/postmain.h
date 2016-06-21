@@ -28,8 +28,6 @@ __published:
 	TPanel *Panel4;
 	TPanel *Panel5;
 	TPanel *Message;
-	
-	TButton *BtnPlot;
 	TButton *BtnToKML;
 	TButton *BtnExit;
 	TButton *BtnInputFile1;
@@ -95,6 +93,8 @@ __published:
 	TBitBtn *BtnView;
 	TBitBtn *BtnOption;
 	TBitBtn *BtnExec;
+	TBitBtn *BtnAbort;
+	TBitBtn *BtnPlot;
 	
 	void __fastcall FormCreate         (TObject *Sender);
 	void __fastcall FormShow           (TObject *Sender);
@@ -105,7 +105,6 @@ __published:
 	void __fastcall BtnToKMLClick      (TObject *Sender);
 	void __fastcall BtnOptionClick     (TObject *Sender);
 	void __fastcall BtnExecClick       (TObject *Sender);
-	void __fastcall BtnStopClick       (TObject *Sender);
 	void __fastcall BtnExitClick       (TObject *Sender);
 	void __fastcall BtnAboutClick      (TObject *Sender);
 	
@@ -146,6 +145,7 @@ __published:
 	void __fastcall OutDirChange(TObject *Sender);
 	void __fastcall BtnInputFile6Click(TObject *Sender);
 	void __fastcall BtnInputView6Click(TObject *Sender);
+	void __fastcall BtnAbortClick(TObject *Sender);
 
 private:
 	void __fastcall DropFiles          (TWMDropFiles msg); // for files drop
@@ -178,6 +178,7 @@ private:
 	END_MESSAGE_MAP(TForm);
 public:
 	AnsiString IniFile;
+	int AbortFlag;
 	
 	// options
 	int PosMode,Freq,Solution,DynamicModel,IonoOpt,TropOpt,RcvBiasEst;

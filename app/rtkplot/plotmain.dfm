@@ -6,7 +6,7 @@ object Plot: TPlot
   ClientWidth = 664
   Color = clBtnFace
   Constraints.MinHeight = 150
-  Constraints.MinWidth = 100
+  Constraints.MinWidth = 150
   Font.Charset = ANSI_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -25,25 +25,6 @@ object Plot: TPlot
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
-  object Disp: TPaintBox
-    Left = 0
-    Top = 25
-    Width = 664
-    Height = 442
-    Align = alClient
-    Color = clGray
-    ParentColor = False
-    Touch.InteractiveGestures = [igZoom, igPressAndTap]
-    OnGesture = DispGesture
-    OnMouseDown = DispMouseDown
-    OnMouseLeave = DispMouseLeave
-    OnMouseMove = DispMouseMove
-    OnMouseUp = DispMouseUp
-    OnPaint = DispPaint
-    ExplicitLeft = 1
-    ExplicitTop = 24
-    ExplicitWidth = 657
-  end
   object Panel2: TPanel
     Left = 0
     Top = 467
@@ -52,21 +33,40 @@ object Plot: TPlot
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 0
-    object Panel22: TPanel
-      Left = 504
+    object BtnMessage2: TSpeedButton
+      Left = 648
       Top = 0
-      Width = 160
+      Width = 16
+      Height = 18
+      Align = alRight
+      Flat = True
+      Glyph.Data = {
+        DE000000424DDE00000000000000360000002800000007000000070000000100
+        180000000000A800000000000000000000000000000000000000FFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFF000000FFFF
+        FFFFFFFFFFFFFF000000FFFFFFFFFFFF7F7F7F0000007F7F7FFFFFFFFFFFFF00
+        0000FFFFFF000000000000000000000000000000FFFFFF000000FFFFFFFFFFFF
+        7F7F7F0000007F7F7FFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFF000000FFFF
+        FFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
+        0000}
+      OnClick = BtnMessage2Click
+      ExplicitLeft = 650
+      ExplicitTop = -1
+    end
+    object Panel22: TPanel
+      Left = 470
+      Top = 0
+      Width = 178
       Height = 18
       Align = alRight
       BevelInner = bvLowered
       BevelOuter = bvNone
       BorderWidth = 1
       TabOrder = 0
-      Visible = False
       object Message2: TLabel
         Left = 2
         Top = 2
-        Width = 156
+        Width = 174
         Height = 14
         Align = alClient
         Alignment = taCenter
@@ -85,7 +85,7 @@ object Plot: TPlot
     object Panel21: TPanel
       Left = 0
       Top = 0
-      Width = 504
+      Width = 470
       Height = 18
       Align = alClient
       AutoSize = True
@@ -470,7 +470,7 @@ object Plot: TPlot
         OnDblClick = BtnSol2DblClick
       end
       object BtnFixHoriz: TSpeedButton
-        Left = 403
+        Left = 380
         Top = 0
         Width = 23
         Height = 25
@@ -723,7 +723,7 @@ object Plot: TPlot
         ExplicitLeft = 303
       end
       object BtnFixVert: TSpeedButton
-        Left = 426
+        Left = 403
         Top = 0
         Width = 23
         Height = 25
@@ -767,6 +767,7 @@ object Plot: TPlot
         Align = alLeft
         AllowAllUp = True
         GroupIndex = 14
+        Down = True
         Flat = True
         Glyph.Data = {
           3E020000424D3E0200000000000036000000280000000D0000000D0000000100
@@ -796,7 +797,7 @@ object Plot: TPlot
         ExplicitTop = 1
       end
       object BtnShowMap: TSpeedButton
-        Left = 357
+        Left = 426
         Top = 0
         Width = 23
         Height = 25
@@ -804,6 +805,7 @@ object Plot: TPlot
         Align = alLeft
         AllowAllUp = True
         GroupIndex = 15
+        Down = True
         Flat = True
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBtnText
@@ -835,7 +837,7 @@ object Plot: TPlot
         ShowHint = True
         Spacing = 1
         OnClick = BtnShowMapClick
-        ExplicitLeft = 353
+        ExplicitLeft = 439
       end
       object BtnGE: TSpeedButton
         Left = 472
@@ -872,7 +874,7 @@ object Plot: TPlot
         ExplicitLeft = 473
       end
       object BtnFixCent: TSpeedButton
-        Left = 380
+        Left = 357
         Top = 0
         Width = 23
         Height = 25
@@ -1483,10 +1485,45 @@ object Plot: TPlot
     Visible = False
     OnClick = RangeListClick
   end
+  object Panel3: TPanel
+    Left = 0
+    Top = 25
+    Width = 664
+    Height = 442
+    Align = alClient
+    BevelOuter = bvNone
+    Color = clWhite
+    UseDockManager = False
+    DoubleBuffered = True
+    FullRepaint = False
+    ParentBackground = False
+    ParentDoubleBuffered = False
+    ShowCaption = False
+    TabOrder = 3
+    object Disp: TPaintBox
+      Left = 0
+      Top = 0
+      Width = 664
+      Height = 442
+      Align = alClient
+      Color = clGray
+      ParentColor = False
+      Touch.InteractiveGestures = [igZoom, igPressAndTap]
+      OnGesture = DispGesture
+      OnMouseDown = DispMouseDown
+      OnMouseLeave = DispMouseLeave
+      OnMouseMove = DispMouseMove
+      OnMouseUp = DispMouseUp
+      OnPaint = DispPaint
+      ExplicitLeft = 1
+      ExplicitTop = 24
+      ExplicitWidth = 657
+    end
+  end
   object OpenSolDialog: TOpenDialog
     Filter = 
-      'Solution File (*.txt,*.csv,*.pos,*.gps,*.ubx,*.bin)|*.txt;*.csv;' +
-      '*.pos;*.gps;*.ubx;*.bin|All (*.*)|*.*'
+      'Solution File (*.pos, *.stat, *.nmea, *.txt, *.ubx))|*.pos;*.sta' +
+      't;*.nmea;*.txt;*.ubx|All (*.*)|*.*'
     Options = [ofHideReadOnly, ofNoChangeDir, ofAllowMultiSelect, ofEnableSizing]
     Title = 'Open Solution'
     Left = 274
@@ -1509,6 +1546,7 @@ object Plot: TPlot
       end
       object MenuOpenMapImage: TMenuItem
         Caption = 'Open &Map Image...'
+        ShortCut = 16461
         OnClick = MenuOpenMapImageClick
       end
       object MenuOpenSkyImage: TMenuItem
@@ -1516,8 +1554,12 @@ object Plot: TPlot
         OnClick = MenuOpenSkyImageClick
       end
       object MenuOpenShape: TMenuItem
-        Caption = 'Open Sha&pefile...'
+        Caption = 'Open &Shapefile...'
         OnClick = MenuOpenShapeClick
+      end
+      object MenuOpenWaypoint: TMenuItem
+        Caption = 'Open &Waypoint...'
+        OnClick = MenuOpenWaypointClick
       end
       object N4: TMenuItem
         Caption = '-'
@@ -1558,6 +1600,10 @@ object Plot: TPlot
         Caption = 'Save &Image...'
         ShortCut = 16457
         OnClick = MenuSaveImageClick
+      end
+      object MenuSaveWaypoint: TMenuItem
+        Caption = 'Save Waypoint...'
+        OnClick = MenuSaveWaypointClick
       end
       object MenuSaveDop: TMenuItem
         Caption = 'Save # of Sats/DOP...'
@@ -1624,8 +1670,12 @@ object Plot: TPlot
         Caption = '&Sky Image...'
         OnClick = MenuSkyImgClick
       end
+      object MenuMapLayer: TMenuItem
+        Caption = 'Map &Layer...'
+        OnClick = MenuMapLayerClick
+      end
       object MenuWaypnt: TMenuItem
-        Caption = '&Waypoints...'
+        Caption = '&Waypoint...'
         ShortCut = 16471
         OnClick = MenuWaypointClick
       end
@@ -1700,7 +1750,6 @@ object Plot: TPlot
       end
       object MenuCenterOri: TMenuItem
         Caption = '&Center Origin'
-        ShortCut = 16466
         OnClick = MenuCenterOriClick
       end
       object MenuFitHoriz: TMenuItem
@@ -1762,11 +1811,8 @@ object Plot: TPlot
     end
     object Windows1: TMenuItem
       Caption = '&Windows'
-      object MenuOverlap: TMenuItem
-        Caption = 'Overlapped'
-      end
       object MenuMax: TMenuItem
-        Caption = 'Plot Maximized'
+        Caption = 'Maximized'
         OnClick = MenuMaxClick
       end
       object N17: TMenuItem
@@ -1800,7 +1846,7 @@ object Plot: TPlot
       '.*q,*.*p)|*.nav;*.gnav;*.hnav;*.qnav;*.*n;*.*g;*.*h;*.*q;*.*p|Al' +
       'l (*.*)|*.*'
     Options = [ofHideReadOnly, ofNoChangeDir, ofAllowMultiSelect, ofEnableSizing]
-    Title = 'Open Raw Obs/Nav Messages'
+    Title = 'Open Obs/Nav Data'
     Left = 306
     Top = 190
   end
@@ -1831,7 +1877,8 @@ object Plot: TPlot
     Top = 220
   end
   object SaveDialog: TSaveDialog
-    Filter = 'All (*.*`)|*.*|Text File (*.txt)|*.txt'
+    DefaultExt = 'txt'
+    Filter = 'Text File (*.txt)|*.txt|All File (*.*)|*.*'
     Options = [ofOverwritePrompt, ofHideReadOnly, ofEnableSizing]
     Title = 'Save Data'
     Left = 242
@@ -1844,5 +1891,19 @@ object Plot: TPlot
     Title = 'Save Image'
     Left = 337
     Top = 220
+  end
+  object OpenWaypointDialog: TOpenDialog
+    Filter = 'GPX File (*.gpx)|*.gpx|All (*.*)|*.*'
+    Title = 'Open Waypoint'
+    Left = 244
+    Top = 267
+  end
+  object SaveWaypointDialog: TSaveDialog
+    DefaultExt = 'gpx'
+    Filter = 'GPX File (*.gpx)|*.gpx|All File (*.*)|*.*'
+    Options = [ofOverwritePrompt, ofHideReadOnly, ofEnableSizing]
+    Title = 'Save Waypoint'
+    Left = 276
+    Top = 267
   end
 end

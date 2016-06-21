@@ -432,9 +432,7 @@ void TGraph::DrawText(TPoint p, AnsiString str, TColor color, int ha, int va,
 	// va  = vertical alignment   (0: center, 1: bottom, 2: top  )
 	// rot = rotation angle (deg)
 
-	wchar_t buff[1024]={0};
-	::MultiByteToWideChar(CP_UTF8,0,str.c_str(),-1,buff,2048);
-	UnicodeString u_str(buff);
+	UnicodeString u_str(str);
 	
 	TCanvas *c=Canvas;
 	AnsiString Font_Name=c->Font->Name;
@@ -618,7 +616,18 @@ void TGraph::DrawPatch(TPoint *p, int n, TColor color1, TColor color2,
 {
 	TCanvas *c=Canvas;
 	TPenStyle ps[]={psSolid,psDot,psDash,psDashDot,psDashDotDot};
+	int i,xmin=1000000,xmax=0,ymin=1000000,ymax=0;
+	
 	if (n>30000) return; // # of points overflow
+	for (int i=0;i<n-1;i++) {
+		if (p[i].x<xmin) xmin=p[i].x;
+		if (p[i].x>xmax) xmax=p[i].x;
+		if (p[i].y<ymin) ymin=p[i].y;
+		if (p[i].y>ymax) ymax=p[i].y;
+	}
+	if (xmax<X||xmin>X+Width-1||ymax<Y||ymin>Y+Height-1) {
+		return;
+	}
 	c->Pen->Color=color1;
 	c->Pen->Style=ps[style];
 	c->Brush->Style=bsSolid;

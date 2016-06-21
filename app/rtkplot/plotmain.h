@@ -21,8 +21,9 @@
 
 #define MAXNFILE    256                 // max number of solution files
 #define MAXSTRBUFF  1024                // max length of stream buffer
-#define MAXWAYPNT   10                  // max number of waypoints
-#define MAXMAPPATH  4096                // max number of map path
+#define MAXWAYPNT   99                  // max number of waypoints
+#define MAXMAPPATH  4096                // max number of map paths
+#define MAXMAPLAYER 12                  // max number of map layers
 
 #define PRGNAME     "RTKPLOT"           // program name
 
@@ -61,7 +62,9 @@
 #define ORG_REFPOS  4                   // plot-origin: reference position
 #define ORG_LLHPOS  5                   // plot-origin: lat/lon/hgt position
 #define ORG_AUTOPOS 6                   // plot-origin: auto-input position
-#define ORG_PNTPOS  7                   // plot-origin: way-point position
+#define ORG_IMGPOS  7                   // plot-origin: image-center position
+#define ORG_MAPPOS  8                   // plot-origin: map center position
+#define ORG_PNTPOS  9                   // plot-origin: way-point position
 
 #define TRACEFILE   "rtkplot.trace"     // trace file
 #define QCTMPFILE   "rtkplot_qc.temp"   // tempolary file for qc
@@ -125,6 +128,7 @@ __published:
 	TSpeedButton *BtnFixHoriz;
 	TSpeedButton *BtnFixVert;
 	TSpeedButton *BtnShowTrack;
+	TSpeedButton *BtnShowSkyplot;
 	TSpeedButton *BtnShowMap;
 	TSpeedButton *BtnShowPoint;
 	TSpeedButton *BtnAnimate;
@@ -230,10 +234,8 @@ __published:
 	TMenuItem *MenuGM;
 	TMenuItem *MenuOpenSkyImage;
 	TMenuItem *MenuSkyImg;
-	TSpeedButton *BtnShowSkyplot;
 	TMenuItem *MenuShowSkyplot;
 	TMenuItem *Windows1;
-	TMenuItem *MenuOverlap;
 	TMenuItem *MenuMax;
 	TMenuItem *MenuPlotGE;
 	TMenuItem *MenuPlotGM;
@@ -244,6 +246,13 @@ __published:
 	TPanel *Panel103;
 	TPanel *Panel104;
 	TMenuItem *MenuSaveElMask;
+	TMenuItem *MenuMapLayer;
+	TSpeedButton *BtnMessage2;
+	TMenuItem *MenuOpenWaypoint;
+	TMenuItem *MenuSaveWaypoint;
+	TOpenDialog *OpenWaypointDialog;
+	TSaveDialog *SaveWaypointDialog;
+	TPanel *Panel3;
 	
 	void __fastcall FormCreate			(TObject *Sender);
 	void __fastcall FormShow			(TObject *Sender);
@@ -356,6 +365,10 @@ __published:
 	void __fastcall DispGesture(TObject *Sender, const TGestureEventInfo &EventInfo,
           bool &Handled);
 	void __fastcall MenuSaveElMaskClick(TObject *Sender);
+	void __fastcall MenuMapLayerClick(TObject *Sender);
+	void __fastcall BtnMessage2Click(TObject *Sender);
+	void __fastcall MenuOpenWaypointClick(TObject *Sender);
+	void __fastcall MenuSaveWaypointClick(TObject *Sender);
 
 
 protected:
@@ -383,7 +396,6 @@ private:
     obs_t Obs;
     nav_t Nav;
     sta_t Sta;
-    gis_t Gis;
     double *Az,*El,*Mp[NFREQ+NEXOBS];
     
     gtime_t OEpoch;
@@ -459,9 +471,9 @@ private:
 
     void __fastcall DrawTrk      (int level);
     void __fastcall DrawTrkImage (int level);
-    void __fastcall DrawTrkPath  (int level);
+    void __fastcall DrawTrkMap   (int level);
     void __fastcall DrawTrkPnt   (const TIMEPOS *pos, int level, int style);
-    void __fastcall DrawTrkPos   (const double *rr, int type, AnsiString label);
+    void __fastcall DrawTrkPos   (const double *rr, int type, int siz, TColor color, AnsiString label);
     void __fastcall DrawTrkStat  (const TIMEPOS *pos, AnsiString header, int p);
     void __fastcall DrawTrkError (const TIMEPOS *pos, int style);
     void __fastcall DrawTrkArrow (const TIMEPOS *pos);
@@ -529,6 +541,7 @@ public:
     AnsiString SkyImageFile;
     AnsiString RnxOpts;
     tle_t TLEData;
+    gis_t Gis;
     
     // connection settings
     int RtStream[2];
@@ -555,6 +568,7 @@ public:
     int MapSize[2],MapScaleEq;
     double MapScaleX,MapScaleY;
     double MapLat,MapLon;
+    int PointType;
     
     // sky image options 
     int SkySize[2],SkyDestCorr,SkyElMask,SkyRes,SkyFlip,SkyBinarize;
@@ -588,6 +602,7 @@ public:
     double OOPos[3];
     TColor MColor[2][8]; // {{mark1 0-7},{mark2 0-7}}
     TColor CColor[4];    // {background,grid,text,line}
+    TColor MapColor[MAXMAPLAYER]; // mapcolors
     int PlotStyle;
     int MarkSize;
     int AnimCycle;
@@ -600,7 +615,7 @@ public:
     AnsiString Title;
     AnsiString PntName[MAXWAYPNT];
     double PntPos[MAXWAYPNT][3];
-    int NWayPnt;
+    int NWayPnt,SelWayPnt;
     int OPosType;
     double OPos[3],OVel[3];
     
@@ -614,6 +629,8 @@ public:
     void __fastcall ReadMapData(AnsiString file);
     void __fastcall ReadSkyData(AnsiString file);
     void __fastcall ReadSkyTag (AnsiString file);
+    void __fastcall ReadWaypoint(AnsiString file);
+    void __fastcall SaveWaypoint(AnsiString file);
     void __fastcall UpdateSky  (void);
     void __fastcall ReadElMaskData(AnsiString file);
     int __fastcall GetCurrentPos(double *rr);

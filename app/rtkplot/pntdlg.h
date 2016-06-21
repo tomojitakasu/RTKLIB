@@ -17,28 +17,29 @@ __published:
 	TLabel *Label2;
 	TLabel *Label1;
 	TLabel *Label3;
-	TLabel *Label4;
 	TButton *BtnDel;
 	TPanel *Panel2;
 	TStringGrid *PntList;
-	TButton *BtnCancel;
-	TButton *BtnLoad;
+	TButton *BtnClose;
 	TButton *BtnAdd;
-	TButton *BtnSave;
-	TButton *BtnOk;
 	TOpenDialog *OpenDialog;
 	TSaveDialog *SaveDialog;
+	TPanel *Panel3;
 	void __fastcall FormShow(TObject *Sender);
-	void __fastcall BtnOkClick(TObject *Sender);
 	void __fastcall BtnDelClick(TObject *Sender);
 	void __fastcall BtnAddClick(TObject *Sender);
-	void __fastcall BtnLoadClick(TObject *Sender);
-	void __fastcall BtnSaveClick(TObject *Sender);
+	void __fastcall BtnCloseClick(TObject *Sender);
+	void __fastcall BtnUpdateClick(TObject *Sender);
+	void __fastcall PntListSetEditText(TObject *Sender, int ACol, int ARow, const UnicodeString Value);
+	void __fastcall PntListClick(TObject *Sender);
+
+
 private:
+	void __fastcall UpdatePoint(void);
 public:
-	double Pos[3];
 	int FontScale;
 	__fastcall TPntDialog(TComponent* Owner);
+	void __fastcall SetPoint(void);
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TPntDialog *PntDialog;

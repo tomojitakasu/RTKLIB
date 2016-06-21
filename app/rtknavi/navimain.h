@@ -69,10 +69,9 @@ __published:
 	TPanel *Str7;
 	TPanel *Str8;
 	TPanel *Svr;
-	TPanel *Panel13;
-	TPanel *Panel131;
+	TPanel *Panel122;
 	TSpeedButton *BtnOutputStr;
-	TPanel *Panel132;
+	TPanel *Panel123;
 	TSpeedButton *BtnLogStr;
 	TPanel *Panel121;
 	TSpeedButton *BtnInputStr;
@@ -125,8 +124,6 @@ __published:
 	TSpeedButton *BtnShrink1;
 	TSpeedButton *BtnExpand2;
 	TSpeedButton *BtnShrink2;
-	TSpeedButton *BtnPnt1;
-	TSpeedButton *BtnPnt2;
 	
 	void __fastcall FormCreate        (TObject *Sender);
 	void __fastcall FormShow          (TObject *Sender);

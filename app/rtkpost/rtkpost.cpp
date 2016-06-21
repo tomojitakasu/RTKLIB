@@ -24,18 +24,34 @@
 
 
 
-USEFORM("..\appcmn\viewer.cpp", TextViewer);
-USEFORM("..\appcmn\timedlg.cpp", TimeDialog);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+USEFORM("kmzconv.cpp", ConvDialog);
+USEFORM("postmain.cpp", MainForm);
 USEFORM("extopt.cpp", ExtOptDialog);
+USEFORM("postopt.cpp", OptDialog);
+USEFORM("..\appcmn\keydlg.cpp", KeyDialog);
+USEFORM("..\appcmn\maskoptdlg.cpp", MaskOptDialog);
+USEFORM("..\appcmn\aboutdlg.cpp", AboutDialog);
+USEFORM("..\appcmn\confdlg.cpp", ConfDialog);
+USEFORM("..\appcmn\viewer.cpp", TextViewer);
 USEFORM("..\appcmn\vieweropt.cpp", ViewerOptDialog);
 USEFORM("..\appcmn\refdlg.cpp", RefDialog);
-USEFORM("..\appcmn\confdlg.cpp", ConfDialog);
-USEFORM("..\appcmn\aboutdlg.cpp", AboutDialog);
-USEFORM("..\appcmn\maskoptdlg.cpp", MaskOptDialog);
-USEFORM("..\appcmn\keydlg.cpp", KeyDialog);
-USEFORM("kmzconv.cpp", ConvDialog);
-USEFORM("postopt.cpp", OptDialog);
-USEFORM("postmain.cpp", MainForm);
+USEFORM("..\appcmn\timedlg.cpp", TimeDialog);
 //---------------------------------------------------------------------------
 WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {

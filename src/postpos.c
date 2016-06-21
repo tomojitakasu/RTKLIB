@@ -127,8 +127,9 @@ static void outheader(FILE *fp, char **file, int n, const prcopt_t *popt,
     
     trace(3,"outheader: n=%d\n",n);
     
-    if (sopt->posf==SOLF_NMEA) return;
-    
+    if (sopt->posf==SOLF_NMEA||sopt->posf==SOLF_STAT) {
+        return;
+    }
     if (sopt->outhead) {
         if (!*sopt->prog) {
             fprintf(fp,"%s program   : RTKLIB ver.%s\n",COMMENTH,VER_RTKLIB);

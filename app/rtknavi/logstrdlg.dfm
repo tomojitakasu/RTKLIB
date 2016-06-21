@@ -300,13 +300,21 @@ object LogStrDialog: TLogStrDialog
       '12'
       '24')
   end
+  object OutEventC: TCheckBox
+    Left = 276
+    Top = 20
+    Width = 105
+    Height = 17
+    Caption = 'Output Event'
+    TabOrder = 19
+  end
   object SaveDialog: TSaveDialog
     Filter = 
       'All File (*.*)|*.*|Log File (*.log)|*.log|RTCM2 File (*.rtcm2)|*' +
       '.rtcm2|RTCM3 File (*.rtcm3)|*.rtcm3'
     Options = [ofHideReadOnly, ofNoChangeDir, ofEnableSizing]
     Title = 'Output File Path'
-    Left = 330
-    Top = 28
+    Left = 307
+    Top = 64
   end
 end

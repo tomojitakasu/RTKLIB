@@ -76,6 +76,7 @@
 			<BCC_IncludePath>$(BDS)\include;..\appcmn;..\..\src;$(BCC_IncludePath)</BCC_IncludePath>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base_Win32)'!=''">
+			<ILINK_LibraryPath>D:\proj\RTKLIB\app\rtklib_dll\Win32\Release;$(ILINK_LibraryPath)</ILINK_LibraryPath>
 			<DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
 			<IncludePath>$(BDSINCLUDE)\windows\vcl;$(IncludePath)</IncludePath>
 			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
@@ -253,145 +254,118 @@
 				<BuildOrder>1</BuildOrder>
 			</ResFiles>
 			<CppCompile Include="..\..\src\datum.c">
-				<BuildOrder>7</BuildOrder>
-				<BuildOrder>26</BuildOrder>
+				<BuildOrder>23</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\..\src\ephemeris.c">
-				<BuildOrder>39</BuildOrder>
-				<BuildOrder>18</BuildOrder>
+				<BuildOrder>24</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\..\src\geoid.c">
-				<BuildOrder>8</BuildOrder>
 				<BuildOrder>25</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\..\src\ionex.c">
-				<BuildOrder>41</BuildOrder>
-				<BuildOrder>22</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\src\lambda.c">
-				<BuildOrder>9</BuildOrder>
-				<BuildOrder>30</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\src\options.c">
-				<BuildOrder>40</BuildOrder>
-				<BuildOrder>23</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\src\pntpos.c">
-				<BuildOrder>36</BuildOrder>
-				<BuildOrder>3</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\src\ppp.c">
-				<BuildOrder>4</BuildOrder>
-				<BuildOrder>35</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\src\ppp_ar.c">
-				<BuildOrder>56</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\src\ppp_corr.c">
-				<BuildOrder>57</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\src\preceph.c">
-				<BuildOrder>7</BuildOrder>
 				<BuildOrder>26</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\src\qzslex.c">
-				<BuildOrder>55</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\src\rcvraw.c">
-				<BuildOrder>28</BuildOrder>
-				<BuildOrder>11</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\src\rcv\binex.c">
-				<BuildOrder>54</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\src\rcv\crescent.c">
-				<BuildOrder>9</BuildOrder>
-				<BuildOrder>30</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\src\rcv\gw10.c">
-				<BuildOrder>42</BuildOrder>
-				<BuildOrder>21</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\src\rcv\javad.c">
-				<BuildOrder>43</BuildOrder>
-				<BuildOrder>14</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\src\rcv\novatel.c">
-				<BuildOrder>43</BuildOrder>
-				<BuildOrder>14</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\src\rcv\nvs.c">
-				<BuildOrder>51</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\src\rcv\rcvlex.c">
-				<BuildOrder>55</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\src\rcv\rt17.c">
-				<BuildOrder>56</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\src\rcv\septentrio.c">
-				<BuildOrder>54</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\src\rcv\skytraq.c">
-				<BuildOrder>33</BuildOrder>
-				<BuildOrder>0</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\src\rcv\ss2.c">
-				<BuildOrder>31</BuildOrder>
-				<BuildOrder>2</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\src\rcv\ublox.c">
-				<BuildOrder>48</BuildOrder>
-				<BuildOrder>15</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\src\rinex.c">
-				<BuildOrder>47</BuildOrder>
-				<BuildOrder>16</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\src\rtcm.c">
-				<BuildOrder>6</BuildOrder>
+			<CppCompile Include="..\..\src\lambda.c">
 				<BuildOrder>27</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\src\rtcm2.c">
+			<CppCompile Include="..\..\src\options.c">
+				<BuildOrder>28</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\src\pntpos.c">
+				<BuildOrder>29</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\src\ppp.c">
+				<BuildOrder>30</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\src\ppp_ar.c">
+				<BuildOrder>31</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\src\ppp_corr.c">
+				<BuildOrder>32</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\src\preceph.c">
+				<BuildOrder>33</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\src\qzslex.c">
 				<BuildOrder>47</BuildOrder>
-				<BuildOrder>16</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\src\rtcm3.c">
+			<CppCompile Include="..\..\src\rcvraw.c">
+				<BuildOrder>34</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\src\rcv\binex.c">
 				<BuildOrder>48</BuildOrder>
-				<BuildOrder>15</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\src\rtcm3e.c">
+			<CppCompile Include="..\..\src\rcv\crescent.c">
+				<BuildOrder>49</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\src\rcv\gw10.c">
+				<BuildOrder>50</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\src\rcv\javad.c">
+				<BuildOrder>51</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\src\rcv\novatel.c">
 				<BuildOrder>52</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="..\..\src\rcv\nvs.c">
+				<BuildOrder>53</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\src\rcv\rcvlex.c">
+				<BuildOrder>54</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\src\rcv\rt17.c">
+				<BuildOrder>55</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\src\rcv\septentrio.c">
+				<BuildOrder>56</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\src\rcv\skytraq.c">
+				<BuildOrder>57</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\src\rcv\ss2.c">
+				<BuildOrder>58</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\src\rcv\ublox.c">
+				<BuildOrder>59</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\src\rinex.c">
+				<BuildOrder>60</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\src\rtcm.c">
+				<BuildOrder>35</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\src\rtcm2.c">
+				<BuildOrder>36</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\src\rtcm3.c">
+				<BuildOrder>37</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\src\rtcm3e.c">
+				<BuildOrder>38</BuildOrder>
+			</CppCompile>
 			<CppCompile Include="..\..\src\rtkcmn.c">
-				<BuildOrder>29</BuildOrder>
-				<BuildOrder>10</BuildOrder>
+				<BuildOrder>39</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\..\src\rtkpos.c">
-				<BuildOrder>28</BuildOrder>
-				<BuildOrder>11</BuildOrder>
+				<BuildOrder>40</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\..\src\rtksvr.c">
-				<BuildOrder>42</BuildOrder>
-				<BuildOrder>21</BuildOrder>
+				<BuildOrder>41</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\..\src\sbas.c">
-				<BuildOrder>40</BuildOrder>
-				<BuildOrder>23</BuildOrder>
+				<BuildOrder>42</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\..\src\solution.c">
-				<BuildOrder>45</BuildOrder>
-				<BuildOrder>12</BuildOrder>
+				<BuildOrder>43</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\..\src\stream.c">
 				<BuildOrder>44</BuildOrder>
-				<BuildOrder>13</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\..\src\tides.c">
-				<BuildOrder>58</BuildOrder>
+				<BuildOrder>45</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\..\src\tle.c">
-				<BuildOrder>51</BuildOrder>
+				<BuildOrder>46</BuildOrder>
 			</CppCompile>
 			<FormResources Include="..\appcmn\tcpoptdlg.dfm"/>
 			<FormResources Include="..\appcmn\serioptdlg.dfm"/>
@@ -406,12 +380,12 @@
 			<FormResources Include="..\appcmn\confdlg.dfm"/>
 			<FormResources Include="..\appcmn\keydlg.dfm"/>
 			<FormResources Include="..\appcmn\ftpoptdlg.dfm"/>
-			<FormResources Include="naviopt.dfm"/>
 			<FormResources Include="navimain.dfm"/>
 			<FormResources Include="mondlg.dfm"/>
-			<FormResources Include="outstrdlg.dfm"/>
-			<FormResources Include="rcvoptdlg.dfm"/>
 			<FormResources Include="markdlg.dfm"/>
+			<FormResources Include="naviopt.dfm"/>
+			<FormResources Include="rcvoptdlg.dfm"/>
+			<FormResources Include="outstrdlg.dfm"/>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>
 				<CfgParent>Base</CfgParent>

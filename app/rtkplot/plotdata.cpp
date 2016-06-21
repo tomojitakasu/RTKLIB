@@ -4,14 +4,20 @@
 #include "rtklib.h"
 #include "plotmain.h"
 #include "mapdlg.h"
+#include "pntdlg.h"
 #include "geview.h"
 
-static char path_str[MAXNFILE][1024];
+#define HEADXML "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+#define HEADGPX "<gpx version=\"1.1\" creator=\"%s\" xmlns=\"%s\">\n"
+#define TAILGPX "</gpx>"
 
 #define MAX_SIMOBS	16384			// max genrated obs epochs
 #define MAX_SKYIMG_R 2048			// max size of resampled sky image
 
 #define THRES_SLIP  2.0             // threshold of cycle-slip
+
+static char path_str[MAXNFILE][1024];
+static const char *XMLNS="http://www.topografix.com/GPX/1/1";
 
 // read solutions -----------------------------------------------------------
 void __fastcall TPlot::ReadSol(TStrings *files, int sel)
@@ -414,6 +420,7 @@ void __fastcall TPlot::ReadMapData(AnsiString file)
     BtnShowMap->Down=true;
     
     MapAreaDialog->UpdateField();
+    UpdateOrigin();
     UpdatePlot();
 }
 // resample image pixel -----------------------------------------------------
@@ -659,22 +666,97 @@ void __fastcall TPlot::ReadMapTag(AnsiString file)
 // read shapefile -----------------------------------------------------------
 void __fastcall TPlot::ReadShapeFile(TStrings *files)
 {
+    UnicodeString name;
     char path[1024];
-    int i;
-    
-    ReadWaitStart();
+    int i,j;
     
     gis_free(&Gis);
     
-    for (i=0;i<files->Count&&i<MAXGISLAYER;i++) {
+    for (i=0;i<files->Count&&i<MAXMAPLAYER;i++) {
         strcpy(path,U2A(files->Strings[i]).c_str());
         gis_read(path,&Gis,i);
+        
+        name=files->Strings[i];
+        while ((j=name.Pos(L"\\"))) {
+            name=name.SubString(j+1,name.Length()-j);
+        }
+        if ((j=name.Pos(L"."))) {
+            name=name.SubString(1,j-1);
+        }
+        strcpy(Gis.name[i],U2A(name).c_str());
     }
     BtnShowPoint->Down=true;
     
+    UpdateOrigin();
     UpdatePlot();
+}
+// read waypoint ------------------------------------------------------------
+void __fastcall TPlot::ReadWaypoint(AnsiString file)
+{
+    UTF8String str,label1(L"<ogr:–¼Ì>"),label2(L"<ogr:“_–¼Ì>");
+    FILE *fp;
+    char buff[1024],name[256]="",*p;
+    double pos[3]={0};
     
-    ReadWaitEnd();
+    if (!(fp=fopen(file.c_str(),"r"))) return;
+    
+    NWayPnt=0;
+    
+    while (fgets(buff,sizeof(buff),fp)&&NWayPnt<MAXWAYPNT) {
+        if ((p=strstr(buff,"<wpt "))) {
+            if (sscanf(p+strlen("<wpt "),"lat=\"%lf\" lon=\"%lf\"",pos,
+                       pos+1)<2) continue;
+        }
+        else if ((p=strstr(buff,"<ele>"))&&norm(pos,2)>0.0) {
+            sscanf(p+strlen("<ele>"),"%lf",pos+2);
+        }
+        else if ((p=strstr(buff,"<name>"))&&norm(pos,3)>0.0) {
+            sscanf(p+strlen("<name>"),"%[^<]",name);
+        }
+        else if ((p=strstr(buff,label1.c_str()))&&norm(pos,3)>0.0&&!name[0]) {
+            sscanf(p+strlen(label1.c_str()),"%[^<]",name);
+        }
+        else if ((p=strstr(buff,label2.c_str()))&&norm(pos,3)>0.0&&!name[0]) {
+            sscanf(p+strlen(label2.c_str()),"%[^<]",name);
+        }
+        else if (strstr(buff,"</wpt>")&&norm(pos,3)>0.0) {
+            PntPos[NWayPnt][0]=pos[0];
+            PntPos[NWayPnt][1]=pos[1];
+            PntPos[NWayPnt][2]=pos[2];
+            str=name;
+            PntName[NWayPnt++]=str;
+            pos[0]=pos[1]=pos[2]=0.0;
+            name[0]='\0';
+        }
+    }
+    fclose(fp);
+    UpdatePlot();
+    PntDialog->SetPoint();
+}
+// save waypoint ------------------------------------------------------------
+void __fastcall TPlot::SaveWaypoint(AnsiString file)
+{
+    UTF8String str_utf8;
+    FILE *fp;
+    int i;
+    
+    if (!(fp=fopen(file.c_str(),"w"))) return;
+    
+    fprintf(fp,HEADXML);
+    fprintf(fp,HEADGPX,"RTKLIB " VER_RTKLIB,XMLNS);
+     
+    for (i=0;i<NWayPnt;i++) {
+        fprintf(fp,"<wpt lat=\"%.9f\" lon=\"%.9f\">\n",PntPos[i][0],
+                PntPos[i][1]);
+        if (PntPos[i][2]!=0.0) {
+            fprintf(fp," <ele>%.4f</ele>\n",PntPos[i][2]);
+        }
+        str_utf8=PntName[i];
+        fprintf(fp," <name>%s</name>\n",str_utf8.c_str());
+        fprintf(fp,"</wpt>\n");
+    }
+    fprintf(fp,"%s\n",TAILGPX);
+    fclose(fp);
 }
 // read station position data -----------------------------------------------
 void __fastcall TPlot::ReadStaPos(const char *file, const char *sta,
@@ -1188,6 +1270,11 @@ void __fastcall TPlot::Clear(void)
     ClearObs();
     ClearSol();
     gis_free(&Gis);
+    
+    MapImage->Height=0;
+    MapImage->Width=0;
+    MapImageFile="";
+    MapSize[0]=MapSize[1]=0;
     
     for (i=0;i<3;i++) {
         TimeEna[i]=0;

@@ -52,6 +52,7 @@
 #include "geview.h"
 #include "gmview.h"
 #include "viewer.h"
+#include "vmapdlg.h"
 #pragma link "SHDocVw_OCX"
 
 #define YLIM_AGE    10.0            // ylimit of age of differential
@@ -134,6 +135,10 @@ __fastcall TPlot::TPlot(TComponent* Owner) : TForm(Owner)
     MapScaleX=MapScaleY=0.1;
     MapScaleEq=0;
     MapLat=MapLon=0.0;
+    PointType=0;
+    
+    NWayPnt=0;
+    SelWayPnt=-1;
     
     SkySize[0]=SkySize[1]=SkyCent[0]=SkyCent[1]=0;
     SkyScale=SkyScaleR=240.0;
@@ -373,6 +378,14 @@ void __fastcall TPlot::MenuOpenSkyImageClick(TObject *Sender)
     if (!OpenMapDialog->Execute()) return;
     ReadSkyData(OpenMapDialog->FileName);
 }
+// callback on menu-oepn-waypoint -------------------------------------------
+void __fastcall TPlot::MenuOpenWaypointClick(TObject *Sender)
+{
+    trace(3,"MenuOpenWaypointClick\n");
+    
+    if (!OpenWaypointDialog->Execute()) return;
+    ReadWaypoint(OpenWaypointDialog->FileName);
+}
 // callback on menu-open-obs-data -------------------------------------------
 void __fastcall TPlot::MenuOpenObsClick(TObject *Sender)
 {
@@ -451,6 +464,15 @@ void __fastcall TPlot::MenuSaveImageClick(TObject *Sender)
     else {
         Buff->SaveToFile(SaveImageDialog->FileName);
     }
+}
+// callback on menu-save-waypoint -------------------------------------------
+void __fastcall TPlot::MenuSaveWaypointClick(TObject *Sender)
+{
+    trace(3,"MenuSaveWaypointClick\n");
+    
+    if (!SaveWaypointDialog->Execute()) return;
+    
+    SaveWaypoint(SaveWaypointDialog->FileName);
 }
 // callback on menu-save-# of sats/dop --------------------------------------
 void __fastcall TPlot::MenuSaveDopClick(TObject *Sender)
@@ -642,6 +664,15 @@ void __fastcall TPlot::MenuSkyImgClick(TObject *Sender)
     
     SkyImgDialog->Show();
 }
+// callback on menu-vec map -------------------------------------------------
+void __fastcall TPlot::MenuMapLayerClick(TObject *Sender)
+{
+    trace(3,"MenuMapLayerClick\n");
+    
+	if (VecMapDialog->ShowModal()!=mrOk) return;
+	
+	UpdatePlot();
+}
 // callback on menu-solution-source -----------------------------------------
 void __fastcall TPlot::MenuSrcSolClick(TObject *Sender)
 {
@@ -784,15 +815,9 @@ void __fastcall TPlot::MenuStatusBarClick(TObject *Sender)
 // callback on menu-waypoints -----------------------------------------------
 void __fastcall TPlot::MenuWaypointClick(TObject *Sender)
 {
-    unsigned int tick;
-    
     trace(3,"MenuWaypointClick\n");
     
-    if (PntDialog->ShowModal()!=mrOk) return;
-    
-    GoogleEarthView->UpdatePoint();
-    
-    if (PlotType==PLOT_TRK) Refresh();
+    PntDialog->Show();
 }
 // callback on menu-input-monitor-1 -----------------------------------------
 void __fastcall TPlot::MenuMonitor1Click(TObject *Sender)
@@ -1161,6 +1186,11 @@ void __fastcall TPlot::BtnReloadClick(TObject *Sender)
     trace(3,"BtnReloadClick\n");
     
     MenuReloadClick(Sender);
+}
+// callback on button-message 2 ---------------------------------------------
+void __fastcall TPlot::BtnMessage2Click(TObject *Sender)
+{
+	if (++PointType>2) PointType=0;
 }
 // callback on plot-type selection change -----------------------------------
 void __fastcall TPlot::PlotTypeSChange(TObject *Sender)
@@ -1967,6 +1997,18 @@ void __fastcall TPlot::UpdateOrigin(void)
             ReadStaPos(file,sta,opos);
         }
     }
+    else if (Origin==ORG_IMGPOS) {
+        pos[0]=MapLat*D2R;
+        pos[1]=MapLon*D2R;
+        pos[2]=0.0;
+        pos2ecef(pos,opos);
+    }
+    else if (Origin==ORG_MAPPOS) {
+        pos[0]=(Gis.bound[0]+Gis.bound[1])/2.0;
+        pos[1]=(Gis.bound[2]+Gis.bound[3])/2.0;
+        pos[2]=0.0;
+        pos2ecef(pos,opos);
+    }
     else if (Origin-ORG_PNTPOS<MAXWAYPNT) {
         for (i=0;i<3;i++) opos[i]=PntPos[Origin-ORG_PNTPOS][i];
     }
@@ -2111,6 +2153,11 @@ void __fastcall TPlot::UpdateEnable(void)
     MenuSrcSol     ->Enabled=SolFiles[sel]->Count>0;
     MenuSrcObs     ->Enabled=ObsFiles->Count>0;
     MenuQcObs      ->Enabled=ObsFiles->Count>0;
+    int n=0;
+    for (i=0;i<MAXMAPLAYER;i++) {
+        if (Gis.data[i]) n++;
+    }
+    MenuMapLayer   ->Enabled=n>0;
     
     MenuShowTrack  ->Enabled=BtnShowTrack->Enabled;
     MenuFitHoriz   ->Enabled=BtnFitHoriz ->Enabled;
@@ -2288,7 +2335,7 @@ void __fastcall TPlot::FitRange(int all)
     sol_t *data;
     double xs,ys,xp[2],tl[2],xl[]={1E8,-1E8},yl[2]={1E8,-1E8},zl[2]={1E8,-1E8};
     double lat,lon,lats[2]={90,-90},lons[2]={180,-180},llh[3];
-    int i,w,h,type=PlotType-PLOT_SOLP;
+    int i,j,n,w,h,type=PlotType-PLOT_SOLP;
     
     trace(3,"FitRange: all=%d\n",all);
     
@@ -2445,6 +2492,18 @@ void __fastcall TPlot::LoadOpt(void)
     MColor[1][5]=(TColor)ini->ReadInteger("plot","mcolor13",     0x8080FF );
     MColor[1][6]=(TColor)ini->ReadInteger("plot","mcolor14",     0xFF8080 );
     MColor[1][7]=(TColor)ini->ReadInteger("plot","mcolor15",(int)clGray   );
+    MapColor[0]=(TColor)ini->ReadInteger("plot","mapcolor1",     clSilver );
+    MapColor[1]=(TColor)ini->ReadInteger("plot","mapcolor2",     clSilver );
+    MapColor[2]=(TColor)ini->ReadInteger("plot","mapcolor3",     0xF0D0D0 );
+    MapColor[3]=(TColor)ini->ReadInteger("plot","mapcolor4",     0xD0F0D0 );
+    MapColor[4]=(TColor)ini->ReadInteger("plot","mapcolor5",     0xD0D0F0 );
+    MapColor[5]=(TColor)ini->ReadInteger("plot","mapcolor6",     0xD0F0F0 );
+    MapColor[6]=(TColor)ini->ReadInteger("plot","mapcolor7",     0xF8F8D0 );
+    MapColor[7]=(TColor)ini->ReadInteger("plot","mapcolor8",     0xF0F0F0 );
+    MapColor[8]=(TColor)ini->ReadInteger("plot","mapcolor9",     0xF0F0F0 );
+    MapColor[9]=(TColor)ini->ReadInteger("plot","mapcolor10",    0xF0F0F0 );
+    MapColor[10]=(TColor)ini->ReadInteger("plot","mapcolor11",   0xF0F0F0 );
+    MapColor[11]=(TColor)ini->ReadInteger("plot","mapcolor12",   0xF0F0F0 );
     CColor[0]=(TColor)ini->ReadInteger("plot","color1", (int)clWhite  );
     CColor[1]=(TColor)ini->ReadInteger("plot","color2", (int)clSilver );
     CColor[2]=(TColor)ini->ReadInteger("plot","color3", (int)clBlack  );
@@ -2490,13 +2549,6 @@ void __fastcall TPlot::LoadOpt(void)
     for (i=0;i<10;i++) {
         StrHistory [i]=ini->ReadString ("str",s.sprintf("strhistry_%d",  i),"");
         StrMntpHist[i]=ini->ReadString ("str",s.sprintf("strmntphist_%d",i),"");
-    }
-    NWayPnt   =ini->ReadInteger("plot","nmappnt",0);
-    for (i=0;i<NWayPnt;i++) {
-        PntName[i]=ini->ReadString("plot",s.sprintf("pntname%d",i+1),"");
-        s1=ini->ReadString("plot",s.sprintf("pntpos%d",i+1),"0,0,0");
-        PntPos[i][0]=PntPos[i][1]=PntPos[i][2]=0.0;
-        sscanf(s1.c_str(),"%lf,%lf,%lf",PntPos[i],PntPos[i]+1,PntPos[i]+2);
     }
     TTextViewer::Color1=(TColor)ini->ReadInteger("viewer","color1",(int)clBlack);
     TTextViewer::Color2=(TColor)ini->ReadInteger("viewer","color2",(int)clWhite);
@@ -2575,6 +2627,18 @@ void __fastcall TPlot::SaveOpt(void)
     ini->WriteInteger("plot","mcolor13",    (int)MColor[1][5]);
     ini->WriteInteger("plot","mcolor14",    (int)MColor[1][6]);
     ini->WriteInteger("plot","mcolor15",    (int)MColor[1][7]);
+    ini->WriteInteger("plot","mapcolor1",   (int)MapColor [0]);
+    ini->WriteInteger("plot","mapcolor2",   (int)MapColor [1]);
+    ini->WriteInteger("plot","mapcolor3",   (int)MapColor [2]);
+    ini->WriteInteger("plot","mapcolor4",   (int)MapColor [3]);
+    ini->WriteInteger("plot","mapcolor5",   (int)MapColor [4]);
+    ini->WriteInteger("plot","mapcolor6",   (int)MapColor [5]);
+    ini->WriteInteger("plot","mapcolor7",   (int)MapColor [6]);
+    ini->WriteInteger("plot","mapcolor8",   (int)MapColor [7]);
+    ini->WriteInteger("plot","mapcolor9",   (int)MapColor [8]);
+    ini->WriteInteger("plot","mapcolor10",  (int)MapColor [9]);
+    ini->WriteInteger("plot","mapcolor11",  (int)MapColor[10]);
+    ini->WriteInteger("plot","mapcolor12",  (int)MapColor[11]);
     ini->WriteInteger("plot","color1",      (int)CColor[0]);
     ini->WriteInteger("plot","color2",      (int)CColor[1]);
     ini->WriteInteger("plot","color3",      (int)CColor[2]);
@@ -2619,12 +2683,6 @@ void __fastcall TPlot::SaveOpt(void)
         ini->WriteString ("str",s.sprintf("strhistry_%d",  i),StrHistory [i]);
         ini->WriteString ("str",s.sprintf("strmntphist_%d",i),StrMntpHist[i]);
     }
-    ini->WriteInteger("plot","nmappnt",NWayPnt);
-    for (i=0;i<NWayPnt;i++) {
-        ini->WriteString("plot",s.sprintf("pntname%d",i+1),PntName[i]);
-        ini->WriteString("plot",s.sprintf("pntpos%d",i+1),
-            s1.sprintf("%.4f,%.4f,%.4f",PntPos[i][0],PntPos[i][1],PntPos[i][2]));
-    }
     ini->WriteInteger("viewer","color1",(int)TTextViewer::Color1  );
     ini->WriteInteger("viewer","color2",(int)TTextViewer::Color2  );
     ini->WriteString ("viewer","fontname",TTextViewer::FontD->Name);
@@ -2640,7 +2698,6 @@ void __fastcall TPlot::MenuPlotGEClick(TObject *Sender)
 {
     TRect rect;
     ::SystemParametersInfo(SPI_GETWORKAREA,0,&rect,0);
-#if 0
 	Top=rect.Top;
 	Left=rect.Left;
 	Width=rect.Width()/2;
@@ -2649,16 +2706,6 @@ void __fastcall TPlot::MenuPlotGEClick(TObject *Sender)
     GoogleEarthView->Left=Width;
     GoogleEarthView->Width=Width;
     GoogleEarthView->Height=Height;
-#else
-	Top=rect.Top+2;
-	Left=rect.Left-6;
-	Width=rect.Width()/2+12;
-	Height=rect.Height()+4;
-    GoogleEarthView->Top=Top;
-    GoogleEarthView->Left=Width-18;
-    GoogleEarthView->Width=Width;
-    GoogleEarthView->Height=Height;
-#endif
     GoogleMapView->Hide();
     GoogleEarthView->Show();
 }
@@ -2746,4 +2793,6 @@ void __fastcall TPlot::DispGesture(TObject *Sender, const TGestureEventInfo &Eve
 #endif
 }
 //---------------------------------------------------------------------------
+
+
 

@@ -314,6 +314,12 @@
 				<DependentOn>skydlg.h</DependentOn>
 				<BuildOrder>57</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="vmapdlg.cpp">
+				<Form>VecMapDialog</Form>
+				<FormType>dfm</FormType>
+				<DependentOn>vmapdlg.h</DependentOn>
+				<BuildOrder>60</BuildOrder>
+			</CppCompile>
 			<CppCompile Include="..\..\src\ephemeris.c">
 				<BuildOrder>35</BuildOrder>
 				<BuildOrder>19</BuildOrder>
@@ -419,25 +425,26 @@
 			<CppCompile Include="..\..\src\tle.c">
 				<BuildOrder>48</BuildOrder>
 			</CppCompile>
+			<FormResources Include="vmapdlg.dfm"/>
 			<FormResources Include="skydlg.dfm"/>
-			<FormResources Include="satdlg.dfm"/>
+			<FormResources Include="..\appcmn\tcpoptdlg.dfm"/>
 			<FormResources Include="..\appcmn\serioptdlg.dfm"/>
 			<FormResources Include="..\appcmn\refdlg.dfm"/>
-			<FormResources Include="..\appcmn\keydlg.dfm"/>
-			<FormResources Include="..\appcmn\tcpoptdlg.dfm"/>
+			<FormResources Include="..\appcmn\timedlg.dfm"/>
+			<FormResources Include="..\appcmn\vieweropt.dfm"/>
 			<FormResources Include="..\appcmn\viewer.dfm"/>
 			<FormResources Include="..\appcmn\tspandlg.dfm"/>
-			<FormResources Include="..\appcmn\timedlg.dfm"/>
+			<FormResources Include="..\appcmn\keydlg.dfm"/>
 			<FormResources Include="..\appcmn\confdlg.dfm"/>
 			<FormResources Include="..\appcmn\cmdoptdlg.dfm"/>
 			<FormResources Include="..\appcmn\aboutdlg.dfm"/>
 			<FormResources Include="..\appcmn\console.dfm"/>
 			<FormResources Include="..\appcmn\ftpoptdlg.dfm"/>
 			<FormResources Include="..\appcmn\fileoptdlg.dfm"/>
-			<FormResources Include="..\appcmn\vieweropt.dfm"/>
-			<FormResources Include="plotmain.dfm"/>
 			<FormResources Include="plotopt.dfm"/>
+			<FormResources Include="plotmain.dfm"/>
 			<FormResources Include="pntdlg.dfm"/>
+			<FormResources Include="satdlg.dfm"/>
 			<FormResources Include="geview.dfm"/>
 			<FormResources Include="fileseldlg.dfm"/>
 			<FormResources Include="conndlg.dfm"/>

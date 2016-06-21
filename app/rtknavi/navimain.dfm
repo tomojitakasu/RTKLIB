@@ -459,35 +459,6 @@ object MainForm: TMainForm
             FF00}
           OnClick = BtnShrink1Click
         end
-        object BtnPnt1: TSpeedButton
-          Left = 1
-          Top = 75
-          Width = 27
-          Height = 27
-          AllowAllUp = True
-          GroupIndex = 1
-          Flat = True
-          Glyph.Data = {
-            3E020000424D3E0200000000000036000000280000000D0000000D0000000100
-            1800000000000802000000000000000000000000000000000000FFFFFFFFFFFF
-            FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
-            FF00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
-            FFFFFFFFFFFFFFFFFF00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF787878FF
-            FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFFFFFFFFFFFFFFFFFFFFFFFFFF
-            FFDCDCDC787878DCDCDCFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFFFFFFFFFF
-            FFFFFFFFFFFFB4B4B4000000000000000000B4B4B4FFFFFFFFFFFFFFFFFFFFFF
-            FF00FFFFFFFFFFFFFFFFFFDCDCDC000000000000000000000000000000DCDCDC
-            FFFFFFFFFFFFFFFFFF00FFFFFFFFFFFF78787878787800000000000000000000
-            0000000000787878787878FFFFFFFFFFFF00FFFFFFFFFFFFFFFFFFDCDCDC0000
-            00000000000000000000000000DCDCDCFFFFFFFFFFFFFFFFFF00FFFFFFFFFFFF
-            FFFFFFFFFFFFB4B4B4000000000000000000B4B4B4FFFFFFFFFFFFFFFFFFFFFF
-            FF00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFDCDCDC787878DCDCDCFFFFFFFFFFFF
-            FFFFFFFFFFFFFFFFFF00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF787878FF
-            FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFFFFFFFFFFFFFFFFFFFFFFFFFF
-            FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFFFFFFFFFF
-            FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
-            FF00}
-        end
       end
       object Panel222: TPanel
         Left = 192
@@ -613,35 +584,6 @@ object MainForm: TMainForm
             FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
             FF00}
           OnClick = BtnShrink2Click
-        end
-        object BtnPnt2: TSpeedButton
-          Left = 1
-          Top = 75
-          Width = 27
-          Height = 27
-          AllowAllUp = True
-          GroupIndex = 2
-          Flat = True
-          Glyph.Data = {
-            3E020000424D3E0200000000000036000000280000000D0000000D0000000100
-            1800000000000802000000000000000000000000000000000000FFFFFFFFFFFF
-            FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
-            FF00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
-            FFFFFFFFFFFFFFFFFF00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF787878FF
-            FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFFFFFFFFFFFFFFFFFFFFFFFFFF
-            FFDCDCDC787878DCDCDCFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFFFFFFFFFF
-            FFFFFFFFFFFFB4B4B4000000000000000000B4B4B4FFFFFFFFFFFFFFFFFFFFFF
-            FF00FFFFFFFFFFFFFFFFFFDCDCDC000000000000000000000000000000DCDCDC
-            FFFFFFFFFFFFFFFFFF00FFFFFFFFFFFF78787878787800000000000000000000
-            0000000000787878787878FFFFFFFFFFFF00FFFFFFFFFFFFFFFFFFDCDCDC0000
-            00000000000000000000000000DCDCDCFFFFFFFFFFFFFFFFFF00FFFFFFFFFFFF
-            FFFFFFFFFFFFB4B4B4000000000000000000B4B4B4FFFFFFFFFFFFFFFFFFFFFF
-            FF00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFDCDCDC787878DCDCDCFFFFFFFFFFFF
-            FFFFFFFFFFFFFFFFFF00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF787878FF
-            FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFFFFFFFFFFFFFFFFFFFFFFFFFF
-            FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFFFFFFFFFF
-            FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
-            FF00}
         end
       end
     end
@@ -770,7 +712,6 @@ object MainForm: TMainForm
       ParentShowHint = False
       ShowHint = True
       TabOrder = 2
-      ExplicitTop = 3
       object Message: TLabel
         Left = 0
         Top = 5
@@ -802,9 +743,9 @@ object MainForm: TMainForm
     OnResize = Panel4Resize
     object BtnStart: TBitBtn
       Left = 2
-      Top = 1
+      Top = 0
       Width = 75
-      Height = 27
+      Height = 29
       Caption = '&Start'
       Glyph.Data = {
         3E020000424D3E0200000000000036000000280000000D0000000D0000000100
@@ -831,9 +772,9 @@ object MainForm: TMainForm
     end
     object BtnMark: TBitBtn
       Left = 76
-      Top = 1
+      Top = 0
       Width = 75
-      Height = 27
+      Height = 29
       Caption = '&Mark...'
       Glyph.Data = {
         06050000424D060500000000000036040000280000000D0000000D0000000100
@@ -882,18 +823,38 @@ object MainForm: TMainForm
     end
     object BtnPlot: TBitBtn
       Left = 151
-      Top = 1
+      Top = 0
       Width = 75
-      Height = 27
+      Height = 29
       Caption = '&Plot'
+      Glyph.Data = {
+        3E020000424D3E0200000000000036000000280000000D0000000D0000000100
+        1800000000000802000000000000000000000000000000000000FFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FF00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000000000000000FFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFF00FFFFFFFFFFFFFFFFFF000000000000FFFFFF808080FF
+        FFFF000000000000FFFFFFFFFFFFFFFFFF00FFFFFFFFFFFF000000FFFFFFFFFF
+        FFFFFFFF808080FFFFFFFFFFFFFFFFFF000000FFFFFFFFFFFF00FFFFFFFFFFFF
+        000000FFFFFFFFFFFFFFFFFF808080FFFFFFFFFFFFFFFFFF000000FFFFFFFFFF
+        FF00FFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFF808080FFFFFFFFFFFFFFFFFF
+        FFFFFF000000FFFFFF00FFFFFF00000080808080808080808080808080808080
+        8080808080808080808080000000FFFFFF00FFFFFF000000FFFFFFFFFFFFFFFF
+        FF000000808080FFFFFFFFFFFFFFFFFFFFFFFF000000FFFFFF00FFFFFFFFFFFF
+        000000FFFFFF000000FFFFFF000000FFFFFFFFFFFFFFFFFF000000FFFFFFFFFF
+        FF00FFFFFFFFFFFF000000FFFFFFFFFFFF000000808080FFFFFFFFFFFFFFFFFF
+        000000FFFFFFFFFFFF00FFFFFFFFFFFFFFFFFF000000000000FFFFFF808080FF
+        FFFF000000000000FFFFFFFFFFFFFFFFFF00FFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FF000000000000000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FF00}
       TabOrder = 2
       OnClick = BtnPlotClick
     end
     object BtnOpt: TBitBtn
       Left = 226
-      Top = 1
+      Top = 0
       Width = 75
-      Height = 27
+      Height = 29
       Caption = '&Options...'
       Glyph.Data = {
         3E020000424D3E0200000000000036000000280000000D0000000D0000000100
@@ -920,18 +881,18 @@ object MainForm: TMainForm
     end
     object BtnExit: TBitBtn
       Left = 300
-      Top = 1
+      Top = 0
       Width = 75
-      Height = 27
+      Height = 29
       Caption = 'E&xit'
       TabOrder = 4
       OnClick = BtnExitClick
     end
     object BtnStop: TBitBtn
       Left = 374
-      Top = 1
+      Top = 0
       Width = 75
-      Height = 27
+      Height = 29
       Caption = 'S&top'
       Glyph.Data = {
         3E020000424D3E0200000000000036000000280000000D0000000D0000000100
@@ -1101,15 +1062,15 @@ object MainForm: TMainForm
     end
     object Panel11: TPanel
       Left = 145
-      Top = 3
+      Top = 2
       Width = 34
-      Height = 21
-      TabOrder = 2
+      Height = 22
+      TabOrder = 1
       object BtnTimeSys: TSpeedButton
-        Left = 0
+        Left = 1
         Top = 0
-        Width = 34
-        Height = 19
+        Width = 32
+        Height = 21
         Hint = 'Switch Time System'
         Caption = 'GPST'
         Flat = True
@@ -1128,14 +1089,15 @@ object MainForm: TMainForm
     object Panel12: TPanel
       Left = 364
       Top = 2
-      Width = 152
+      Width = 200
       Height = 23
       Align = alRight
       BevelOuter = bvNone
-      TabOrder = 1
+      TabOrder = 0
+      ExplicitLeft = 361
       object Image1: TImage
-        Left = 71
-        Top = 4
+        Left = 63
+        Top = 3
         Width = 29
         Height = 17
         Picture.Data = {
@@ -1196,8 +1158,8 @@ object MainForm: TMainForm
         Transparent = True
       end
       object Image2: TImage
-        Left = 45
-        Top = 4
+        Left = 43
+        Top = 3
         Width = 29
         Height = 17
         Picture.Data = {
@@ -1258,109 +1220,106 @@ object MainForm: TMainForm
         Transparent = True
       end
       object Str1: TPanel
-        Left = 30
-        Top = 6
+        Left = 33
+        Top = 5
         Width = 9
-        Height = 12
+        Height = 14
         BevelInner = bvRaised
         BevelOuter = bvLowered
         ParentBackground = False
         TabOrder = 0
       end
       object Str2: TPanel
-        Left = 39
-        Top = 6
+        Left = 42
+        Top = 5
         Width = 9
-        Height = 12
+        Height = 14
         BevelInner = bvRaised
         BevelOuter = bvLowered
         ParentBackground = False
         TabOrder = 1
       end
       object Str3: TPanel
-        Left = 48
-        Top = 6
+        Left = 51
+        Top = 5
         Width = 9
-        Height = 12
+        Height = 14
         BevelInner = bvRaised
         BevelOuter = bvLowered
         ParentBackground = False
         TabOrder = 2
       end
       object Str4: TPanel
-        Left = 101
-        Top = 6
+        Left = 93
+        Top = 5
         Width = 9
-        Height = 12
+        Height = 14
         BevelInner = bvRaised
         BevelOuter = bvLowered
         ParentBackground = False
         TabOrder = 3
       end
       object Str5: TPanel
-        Left = 110
-        Top = 6
+        Left = 102
+        Top = 5
         Width = 9
-        Height = 12
+        Height = 14
         BevelInner = bvRaised
         BevelOuter = bvLowered
         ParentBackground = False
         TabOrder = 4
       end
       object Str6: TPanel
-        Left = 122
-        Top = 6
+        Left = 114
+        Top = 5
         Width = 9
-        Height = 12
+        Height = 14
         BevelInner = bvRaised
         BevelOuter = bvLowered
         ParentBackground = False
         TabOrder = 5
       end
       object Str7: TPanel
-        Left = 131
-        Top = 6
+        Left = 123
+        Top = 5
         Width = 9
-        Height = 12
+        Height = 14
         BevelInner = bvRaised
         BevelOuter = bvLowered
         ParentBackground = False
         TabOrder = 6
       end
       object Str8: TPanel
-        Left = 140
-        Top = 6
+        Left = 132
+        Top = 5
         Width = 9
-        Height = 12
+        Height = 14
         BevelInner = bvRaised
         BevelOuter = bvLowered
         ParentBackground = False
         TabOrder = 7
       end
       object Svr: TPanel
-        Left = 74
-        Top = 6
+        Left = 72
+        Top = 5
         Width = 9
-        Height = 12
+        Height = 14
         BevelInner = bvRaised
         BevelOuter = bvLowered
         ParentBackground = False
         TabOrder = 8
       end
       object Panel121: TPanel
-        Left = 1
-        Top = 1
-        Width = 23
-        Height = 21
-        AutoSize = True
-        BevelInner = bvRaised
-        BevelOuter = bvNone
+        Left = 0
+        Top = 0
+        Width = 27
+        Height = 22
         TabOrder = 9
         object BtnInputStr: TSpeedButton
           Left = 1
-          Top = 1
-          Width = 21
-          Height = 19
+          Top = 0
+          Width = 25
+          Height = 21
           Hint = 'Input Streams'
           Margins.Left = 2
           Margins.Top = 2
@@ -1379,29 +1338,17 @@ object MainForm: TMainForm
           OnClick = BtnInputStrClick
         end
       end
-    end
-    object Panel13: TPanel
-      Left = 516
-      Top = 2
-      Width = 48
-      Height = 23
-      Align = alRight
-      BevelOuter = bvNone
-      TabOrder = 0
-      object Panel131: TPanel
-        Left = 1
-        Top = 1
-        Width = 23
-        Height = 21
-        AutoSize = True
-        BevelInner = bvRaised
-        BevelOuter = bvNone
-        TabOrder = 0
+      object Panel122: TPanel
+        Left = 144
+        Top = 0
+        Width = 27
+        Height = 22
+        TabOrder = 10
         object BtnOutputStr: TSpeedButton
           Left = 1
-          Top = 1
-          Width = 21
-          Height = 19
+          Top = 0
+          Width = 25
+          Height = 21
           Hint = 'Output Streams'
           Margins.Left = 2
           Margins.Top = 2
@@ -1421,20 +1368,17 @@ object MainForm: TMainForm
           OnClick = BtnOutputStrClick
         end
       end
-      object Panel132: TPanel
-        Left = 25
-        Top = 1
-        Width = 23
-        Height = 21
-        AutoSize = True
-        BevelInner = bvRaised
-        BevelOuter = bvNone
-        TabOrder = 1
+      object Panel123: TPanel
+        Left = 173
+        Top = 0
+        Width = 27
+        Height = 22
+        TabOrder = 11
         object BtnLogStr: TSpeedButton
           Left = 1
-          Top = 1
-          Width = 21
-          Height = 19
+          Top = 0
+          Width = 25
+          Height = 21
           Hint = 'Log Streams'
           Margins.Left = 2
           Margins.Top = 2
@@ -1520,7 +1464,7 @@ object MainForm: TMainForm
     Left = 274
     Top = 91
     Bitmap = {
-      494C010102000400D00010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010102000400D80010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

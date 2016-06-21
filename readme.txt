@@ -51,3 +51,7 @@ UPDATE HISTORY
                       support gpx conversion function to rtkpost and pos2kml
                       support shapefile in rtkplot
                       add data/ubx_m8p_ref_glo/bds_1hz.cmd
+2016/06/21  2.4.3 b12 support GPX format as waypoints of RTKPLOT
+                      add menu Map Layer of RTKPLOT
+                      support solution status format as input of RTKPLOT
+                      support solution status format as output of RTKNAVI

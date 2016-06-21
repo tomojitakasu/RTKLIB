@@ -438,15 +438,16 @@ AnsiString __fastcall TPlot::LatLonStr(const double *pos, int ndec)
     double dms1[3],dms2[3];
     
     if (LatLonFmt==0) {
-        s.sprintf("%*.*f" CHARDEG " %*.*f" CHARDEG,ndec+4,ndec,pos[0]*R2D,
-                  ndec+5,ndec,pos[1]*R2D);
+        s.sprintf("%*.*f" CHARDEG "%s %*.*f" CHARDEG "%s",
+                  ndec+4,ndec,fabs(pos[0]*R2D),pos[0]<0.0?"S":"N",
+                  ndec+5,ndec,fabs(pos[1]*R2D),pos[1]<0.0?"W":"E");
     }
     else {
         deg2dms(pos[0]*R2D,dms1);
         deg2dms(pos[1]*R2D,dms2);
-        s.sprintf("%3.0f" CHARDEG "%02.0f'%0*.*f\" %4.0f" CHARDEG "%02.0f'%0*.*f\"",
-                  dms1[0],dms1[1],ndec-2,ndec-5,dms1[2],dms2[0],dms2[1],
-                  ndec-2,ndec-5,dms2[2]);
+        s.sprintf("%3.0f" CHARDEG "%02.0f'%0*.*f\"%s %4.0f" CHARDEG "%02.0f'%0*.*f\"%s",
+                  fabs(dms1[0]),dms1[1],ndec-2,ndec-5,dms1[2],pos[0]<0.0?"S":"N",
+                  fabs(dms2[0]),dms2[1],ndec-2,ndec-5,dms2[2],pos[1]<0.0?"W":"E");
     }
     return s;
 }

@@ -1,11 +1,14 @@
 object PntDialog: TPntDialog
   Left = 0
   Top = 0
-  BorderStyle = bsDialog
-  Caption = 'Waypoints'
-  ClientHeight = 216
-  ClientWidth = 361
+  BorderIcons = [biSystemMenu]
+  Caption = 'Waypoint'
+  ClientHeight = 344
+  ClientWidth = 294
   Color = clBtnFace
+  Constraints.MaxWidth = 310
+  Constraints.MinHeight = 200
+  Constraints.MinWidth = 310
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -19,142 +22,126 @@ object PntDialog: TPntDialog
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 361
+    Width = 294
     Height = 17
     Align = alTop
     BevelOuter = bvNone
-    TabOrder = 6
+    TabOrder = 0
+    ExplicitWidth = 380
     object Label2: TLabel
-      Left = 266
+      Left = 213
       Top = 2
-      Width = 54
+      Width = 27
       Height = 13
-      Caption = 'Point Name'
+      Caption = 'Name'
     end
     object Label1: TLabel
-      Left = 8
+      Left = 15
       Top = 2
       Width = 55
       Height = 13
       Caption = 'Latitude ('#176')'
     end
     object Label3: TLabel
-      Left = 96
+      Left = 105
       Top = 2
       Width = 63
       Height = 13
       Caption = 'Longitude ('#176')'
     end
-    object Label4: TLabel
-      Left = 190
-      Top = 2
-      Width = 50
-      Height = 13
-      Caption = 'Height (m)'
-    end
-  end
-  object BtnDel: TButton
-    Left = 180
-    Top = 192
-    Width = 57
-    Height = 23
-    Caption = '&Delete'
-    TabOrder = 5
-    OnClick = BtnDelClick
   end
   object Panel2: TPanel
     Left = 0
     Top = 17
-    Width = 361
-    Height = 172
-    Align = alTop
+    Width = 294
+    Height = 290
+    Align = alClient
     BevelInner = bvLowered
     BevelOuter = bvNone
     Caption = 'Panel2'
-    TabOrder = 7
+    TabOrder = 1
+    ExplicitWidth = 380
     object PntList: TStringGrid
       Left = 1
       Top = 1
-      Width = 359
-      Height = 170
+      Width = 292
+      Height = 288
       Align = alClient
       BorderStyle = bsNone
-      ColCount = 4
+      Color = clSilver
+      ColCount = 3
       DefaultRowHeight = 17
+      FixedColor = clWhite
       FixedCols = 0
       RowCount = 10
       FixedRows = 0
-      GridLineWidth = 0
+      GradientEndColor = clBlack
       Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goEditing]
-      ScrollBars = ssNone
+      ScrollBars = ssVertical
       TabOrder = 0
+      OnClick = PntListClick
+      OnSetEditText = PntListSetEditText
+      ExplicitWidth = 378
       ColWidths = (
         89
         95
-        76
-        99)
+        76)
     end
   end
-  object BtnCancel: TButton
-    Left = 302
-    Top = 192
-    Width = 57
-    Height = 23
-    Caption = '&Cancel'
-    ModalResult = 2
-    TabOrder = 0
-  end
-  object BtnLoad: TButton
-    Left = 2
-    Top = 192
-    Width = 57
-    Height = 23
-    Caption = '&Load'
+  object Panel3: TPanel
+    Left = 0
+    Top = 307
+    Width = 294
+    Height = 37
+    Align = alBottom
+    BevelOuter = bvNone
     TabOrder = 2
-    OnClick = BtnLoadClick
-  end
-  object BtnAdd: TButton
-    Left = 122
-    Top = 192
-    Width = 57
-    Height = 23
-    Caption = '&Add'
-    TabOrder = 4
-    OnClick = BtnAddClick
-  end
-  object BtnSave: TButton
-    Left = 60
-    Top = 192
-    Width = 57
-    Height = 23
-    Caption = '&Save'
-    TabOrder = 3
-    OnClick = BtnSaveClick
-  end
-  object BtnOk: TButton
-    Left = 244
-    Top = 192
-    Width = 57
-    Height = 23
-    Caption = '&OK'
-    ModalResult = 1
-    TabOrder = 1
-    OnClick = BtnOkClick
+    ExplicitLeft = 161
+    ExplicitTop = 316
+    ExplicitWidth = 185
+    ExplicitHeight = 41
+    object BtnAdd: TButton
+      Left = 1
+      Top = 6
+      Width = 75
+      Height = 29
+      Caption = '&Add'
+      TabOrder = 0
+      OnClick = BtnAddClick
+    end
+    object BtnClose: TButton
+      Left = 214
+      Top = 6
+      Width = 75
+      Height = 29
+      Caption = '&Close'
+      TabOrder = 1
+      OnClick = BtnCloseClick
+    end
+    object BtnDel: TButton
+      Left = 78
+      Top = 6
+      Width = 75
+      Height = 29
+      Caption = '&Delete'
+      TabOrder = 2
+      OnClick = BtnDelClick
+    end
   end
   object OpenDialog: TOpenDialog
     Filter = 'All Files (*.*)|*.*|Position Files (*.pos)|*.pos'
     Options = [ofHideReadOnly, ofNoChangeDir, ofEnableSizing]
     OptionsEx = [ofExNoPlacesBar]
     Title = 'Points File'
-    Left = 278
-    Top = 162
+    Left = 105
+    Top = 169
   end
   object SaveDialog: TSaveDialog
     Filter = 'All Files (*.*)|*.*|Position Files (*.pos)|*.pos'
     Options = [ofHideReadOnly, ofNoChangeDir, ofEnableSizing]
     OptionsEx = [ofExNoPlacesBar]
     Title = 'Points File'
-    Left = 308
-    Top = 160
+    Left = 136
+    Top = 168
   end
 end

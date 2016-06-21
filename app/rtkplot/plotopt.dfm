@@ -4,8 +4,8 @@ object PlotOptDialog: TPlotOptDialog
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Options'
-  ClientHeight = 390
-  ClientWidth = 537
+  ClientHeight = 397
+  ClientWidth = 552
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -25,48 +25,48 @@ object PlotOptDialog: TPlotOptDialog
   object Panel2: TPanel
     Left = 0
     Top = 0
-    Width = 537
-    Height = 388
+    Width = 552
+    Height = 395
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 2
     object Label1: TLabel
-      Left = 360
+      Left = 373
       Top = 123
       Width = 84
       Height = 13
       Caption = 'Background Color'
     end
     object Label2: TLabel
-      Left = 360
+      Left = 373
       Top = 145
       Width = 45
       Height = 13
       Caption = 'Plot Style'
     end
     object Label4: TLabel
-      Left = 186
+      Left = 193
       Top = 35
       Width = 74
       Height = 13
       Caption = 'Direction Arrow'
     end
     object Label5: TLabel
-      Left = 360
+      Left = 373
       Top = 101
       Width = 47
       Height = 13
       Caption = 'Grid Color'
     end
     object Label6: TLabel
-      Left = 360
+      Left = 373
       Top = 79
       Width = 50
       Height = 13
       Caption = 'Text Color'
     end
     object Label7: TLabel
-      Left = 360
+      Left = 373
       Top = 57
       Width = 47
       Height = 13
@@ -80,14 +80,14 @@ object PlotOptDialog: TPlotOptDialog
       Caption = 'Show Statistics'
     end
     object Label8: TLabel
-      Left = 186
+      Left = 193
       Top = 167
       Width = 68
       Height = 13
       Caption = 'Y-Range (+/-)'
     end
     object Label10: TLabel
-      Left = 360
+      Left = 373
       Top = 167
       Width = 45
       Height = 13
@@ -101,14 +101,14 @@ object PlotOptDialog: TPlotOptDialog
       Caption = 'Time Format'
     end
     object Label13: TLabel
-      Left = 186
+      Left = 193
       Top = 145
       Width = 38
       Height = 13
       Caption = 'Auto Fit'
     end
     object Label14: TLabel
-      Left = 360
+      Left = 373
       Top = 13
       Width = 87
       Height = 13
@@ -129,7 +129,7 @@ object PlotOptDialog: TPlotOptDialog
       Caption = 'Elevation Mask ('#176')'
     end
     object Label19: TLabel
-      Left = 186
+      Left = 193
       Top = 13
       Width = 73
       Height = 13
@@ -143,28 +143,28 @@ object PlotOptDialog: TPlotOptDialog
       Caption = 'Parity Unknown'
     end
     object Label20: TLabel
-      Left = 186
+      Left = 193
       Top = 57
       Width = 57
       Height = 13
       Caption = 'Graph Label'
     end
     object Label21: TLabel
-      Left = 186
+      Left = 193
       Top = 79
       Width = 70
       Height = 13
       Caption = 'Grid/Grid Label'
     end
     object Label22: TLabel
-      Left = 186
+      Left = 193
       Top = 123
       Width = 25
       Height = 13
       Caption = 'Scale'
     end
     object Label23: TLabel
-      Left = 186
+      Left = 193
       Top = 101
       Width = 43
       Height = 13
@@ -178,7 +178,7 @@ object PlotOptDialog: TPlotOptDialog
       Caption = 'Ephemeris'
     end
     object Label11: TLabel
-      Left = 360
+      Left = 373
       Top = 211
       Width = 88
       Height = 13
@@ -192,7 +192,7 @@ object PlotOptDialog: TPlotOptDialog
       Caption = 'Hide Low Satellite'
     end
     object Label3: TLabel
-      Left = 186
+      Left = 193
       Top = 211
       Width = 84
       Height = 13
@@ -200,14 +200,14 @@ object PlotOptDialog: TPlotOptDialog
     end
     object Label26: TLabel
       Left = 12
-      Top = 166
+      Top = 167
       Width = 86
       Height = 13
       Caption = 'Elev Mask Pattern'
     end
     object LabelRefPos: TLabel
-      Left = 185
-      Top = 255
+      Left = 193
+      Top = 257
       Width = 57
       Height = 13
       Caption = 'Lat/Lon/Hgt'
@@ -220,42 +220,42 @@ object PlotOptDialog: TPlotOptDialog
       Caption = 'Max NSAT/DOP'
     end
     object LabelExSats: TLabel
-      Left = 12
-      Top = 343
+      Left = 11
+      Top = 344
       Width = 67
       Height = 13
       Caption = 'Excluded Sats'
     end
     object Label29: TLabel
-      Left = 186
-      Top = 190
+      Left = 193
+      Top = 189
       Width = 68
       Height = 13
       Caption = 'RT Buffer Size'
     end
     object Label27: TLabel
-      Left = 360
+      Left = 373
       Top = 233
       Width = 88
       Height = 13
       Caption = 'Update Cycle (ms)'
     end
     object Label30: TLabel
-      Left = 185
-      Top = 277
+      Left = 193
+      Top = 279
       Width = 39
       Height = 13
       Caption = 'QC Cmd'
     end
     object Label31: TLabel
       Left = 12
-      Top = 255
+      Top = 257
       Width = 82
       Height = 13
       Caption = 'Receiver Position'
     end
     object Label32: TLabel
-      Left = 360
+      Left = 373
       Top = 35
       Width = 87
       Height = 13
@@ -269,36 +269,36 @@ object PlotOptDialog: TPlotOptDialog
       Caption = 'Lat/Lon Format'
     end
     object Label33: TLabel
-      Left = 185
-      Top = 299
+      Left = 193
+      Top = 301
       Width = 51
       Height = 13
       Caption = 'RINEX Opt'
     end
     object Label34: TLabel
-      Left = 185
-      Top = 321
+      Left = 193
+      Top = 325
       Width = 43
       Height = 13
       Caption = 'TLE Data'
     end
     object Label35: TLabel
-      Left = 185
-      Top = 343
+      Left = 193
+      Top = 347
       Width = 52
       Height = 13
       Caption = 'TLE Sat No'
     end
     object Label36: TLabel
       Left = 8
-      Top = 358
+      Top = 360
       Width = 76
       Height = 13
       Caption = '(+Sn: Included)'
     end
     object BtnTLEView: TSpeedButton
-      Left = 491
-      Top = 317
+      Left = 500
+      Top = 319
       Width = 21
       Height = 21
       Flat = True
@@ -325,8 +325,8 @@ object PlotOptDialog: TPlotOptDialog
       OnClick = BtnTLEViewClick
     end
     object BtnTLESatView: TSpeedButton
-      Left = 491
-      Top = 339
+      Left = 500
+      Top = 341
       Width = 21
       Height = 21
       Flat = True
@@ -360,22 +360,22 @@ object PlotOptDialog: TPlotOptDialog
       Caption = 'Max Multipath'
     end
     object Panel1: TPanel
-      Left = 350
+      Left = 361
       Top = 186
-      Width = 161
+      Width = 156
       Height = 27
       BevelOuter = bvNone
       TabOrder = 48
       object FontLabel: TLabel
-        Left = 105
-        Top = 4
+        Left = 102
+        Top = 5
         Width = 52
         Height = 13
         Alignment = taRightJustify
         Caption = 'Font Name'
       end
       object LabelFont: TLabel
-        Left = 11
+        Left = 12
         Top = 4
         Width = 22
         Height = 13
@@ -383,7 +383,7 @@ object PlotOptDialog: TPlotOptDialog
       end
     end
     object ShowArrow: TComboBox
-      Left = 276
+      Left = 283
       Top = 32
       Width = 77
       Height = 21
@@ -396,7 +396,7 @@ object PlotOptDialog: TPlotOptDialog
         'ON')
     end
     object PlotStyle: TComboBox
-      Left = 454
+      Left = 467
       Top = 142
       Width = 77
       Height = 21
@@ -411,7 +411,7 @@ object PlotOptDialog: TPlotOptDialog
         'None')
     end
     object Origin: TComboBox
-      Left = 276
+      Left = 283
       Top = 208
       Width = 77
       Height = 21
@@ -429,6 +429,8 @@ object PlotOptDialog: TPlotOptDialog
         'Base Station'
         'Lat/Lon/Hgt'
         'Auto Input'
+        'Image Center'
+        'Map Center'
         'Waypnt1'
         'Waypnt2'
         'Waypnt3'
@@ -441,99 +443,21 @@ object PlotOptDialog: TPlotOptDialog
         'Waypnt10')
     end
     object Color1: TPanel
-      Left = 454
-      Top = 121
-      Width = 58
-      Height = 19
-      BevelInner = bvRaised
-      BevelOuter = bvLowered
-      Color = clWhite
-      ParentBackground = False
-      TabOrder = 41
-    end
-    object BtnColor1: TButton
-      Left = 511
-      Top = 119
-      Width = 21
+      Left = 467
+      Top = 120
+      Width = 54
       Height = 21
-      Caption = '...'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -9
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 42
-      OnClick = BtnColor1Click
-    end
-    object Color2: TPanel
-      Left = 454
-      Top = 99
-      Width = 58
-      Height = 19
-      BevelInner = bvRaised
-      BevelOuter = bvLowered
-      Color = clMedGray
-      ParentBackground = False
-      TabOrder = 39
-    end
-    object BtnColor2: TButton
-      Left = 511
-      Top = 97
-      Width = 21
-      Height = 21
-      Caption = '...'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -9
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 40
-      OnClick = BtnColor2Click
-    end
-    object Color3: TPanel
-      Left = 454
-      Top = 77
-      Width = 58
-      Height = 19
-      BevelInner = bvRaised
-      BevelOuter = bvLowered
-      Color = clWhite
-      ParentBackground = False
-      TabOrder = 37
-    end
-    object BtnColor3: TButton
-      Left = 511
-      Top = 75
-      Width = 21
-      Height = 21
-      Caption = '...'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -9
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 38
-      OnClick = BtnColor3Click
-    end
-    object Color4: TPanel
-      Left = 454
-      Top = 55
-      Width = 58
-      Height = 19
       BevelInner = bvRaised
       BevelOuter = bvLowered
       Color = clWhite
       ParentBackground = False
       TabOrder = 35
     end
-    object BtnColor4: TButton
-      Left = 511
-      Top = 53
-      Width = 21
-      Height = 21
+    object BtnColor1: TButton
+      Left = 520
+      Top = 119
+      Width = 25
+      Height = 22
       Caption = '...'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -542,6 +466,84 @@ object PlotOptDialog: TPlotOptDialog
       Font.Style = []
       ParentFont = False
       TabOrder = 36
+      OnClick = BtnColor1Click
+    end
+    object Color2: TPanel
+      Left = 467
+      Top = 98
+      Width = 54
+      Height = 21
+      BevelInner = bvRaised
+      BevelOuter = bvLowered
+      Color = clMedGray
+      ParentBackground = False
+      TabOrder = 37
+    end
+    object BtnColor2: TButton
+      Left = 520
+      Top = 97
+      Width = 25
+      Height = 22
+      Caption = '...'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -9
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 38
+      OnClick = BtnColor2Click
+    end
+    object Color3: TPanel
+      Left = 467
+      Top = 76
+      Width = 54
+      Height = 21
+      BevelInner = bvRaised
+      BevelOuter = bvLowered
+      Color = clWhite
+      ParentBackground = False
+      TabOrder = 39
+    end
+    object BtnColor3: TButton
+      Left = 520
+      Top = 75
+      Width = 25
+      Height = 22
+      Caption = '...'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -9
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 40
+      OnClick = BtnColor3Click
+    end
+    object Color4: TPanel
+      Left = 467
+      Top = 54
+      Width = 54
+      Height = 21
+      BevelInner = bvRaised
+      BevelOuter = bvLowered
+      Color = clWhite
+      ParentBackground = False
+      TabOrder = 41
+    end
+    object BtnColor4: TButton
+      Left = 520
+      Top = 53
+      Width = 25
+      Height = 22
+      Caption = '...'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -9
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 42
       OnClick = BtnColor4Click
     end
     object ShowStats: TComboBox
@@ -573,7 +575,7 @@ object PlotOptDialog: TPlotOptDialog
         'h:m:s LT')
     end
     object AutoScale: TComboBox
-      Left = 276
+      Left = 283
       Top = 142
       Width = 77
       Height = 21
@@ -587,7 +589,7 @@ object PlotOptDialog: TPlotOptDialog
         'ON')
     end
     object MColor1: TPanel
-      Left = 454
+      Left = 467
       Top = 11
       Width = 13
       Height = 19
@@ -599,7 +601,7 @@ object PlotOptDialog: TPlotOptDialog
       OnClick = MColorClick
     end
     object MColor2: TPanel
-      Left = 466
+      Left = 479
       Top = 11
       Width = 13
       Height = 19
@@ -611,7 +613,7 @@ object PlotOptDialog: TPlotOptDialog
       OnClick = MColorClick
     end
     object MColor3: TPanel
-      Left = 478
+      Left = 491
       Top = 11
       Width = 13
       Height = 19
@@ -623,7 +625,7 @@ object PlotOptDialog: TPlotOptDialog
       OnClick = MColorClick
     end
     object MColor4: TPanel
-      Left = 490
+      Left = 503
       Top = 11
       Width = 13
       Height = 19
@@ -635,7 +637,7 @@ object PlotOptDialog: TPlotOptDialog
       OnClick = MColorClick
     end
     object MColor5: TPanel
-      Left = 502
+      Left = 515
       Top = 11
       Width = 13
       Height = 19
@@ -647,10 +649,10 @@ object PlotOptDialog: TPlotOptDialog
       OnClick = MColorClick
     end
     object BtnFont: TButton
-      Left = 511
+      Left = 520
       Top = 185
-      Width = 21
-      Height = 21
+      Width = 25
+      Height = 23
       Caption = '...'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -676,7 +678,7 @@ object PlotOptDialog: TPlotOptDialog
         'LLI Flag')
     end
     object ShowErr: TComboBox
-      Left = 276
+      Left = 283
       Top = 10
       Width = 77
       Height = 21
@@ -690,7 +692,7 @@ object PlotOptDialog: TPlotOptDialog
         'Dots')
     end
     object MarkSize: TComboBox
-      Left = 454
+      Left = 467
       Top = 164
       Width = 77
       Height = 21
@@ -722,7 +724,7 @@ object PlotOptDialog: TPlotOptDialog
         'ON')
     end
     object YRange: TComboBox
-      Left = 276
+      Left = 283
       Top = 164
       Width = 77
       Height = 21
@@ -748,7 +750,7 @@ object PlotOptDialog: TPlotOptDialog
         '10000')
     end
     object ShowLabel: TComboBox
-      Left = 276
+      Left = 283
       Top = 54
       Width = 77
       Height = 21
@@ -761,7 +763,7 @@ object PlotOptDialog: TPlotOptDialog
         'ON')
     end
     object ShowGLabel: TComboBox
-      Left = 276
+      Left = 283
       Top = 76
       Width = 77
       Height = 21
@@ -777,7 +779,7 @@ object PlotOptDialog: TPlotOptDialog
         'Circles/Label')
     end
     object ShowScale: TComboBox
-      Left = 276
+      Left = 283
       Top = 120
       Width = 77
       Height = 21
@@ -790,7 +792,7 @@ object PlotOptDialog: TPlotOptDialog
         'ON')
     end
     object ShowCompass: TComboBox
-      Left = 276
+      Left = 283
       Top = 98
       Width = 77
       Height = 21
@@ -817,7 +819,7 @@ object PlotOptDialog: TPlotOptDialog
     end
     object GroupBox1: TGroupBox
       Left = 4
-      Top = 277
+      Top = 279
       Width = 174
       Height = 61
       Caption = 'Satellite System'
@@ -894,9 +896,9 @@ object PlotOptDialog: TPlotOptDialog
         '45')
     end
     object AnimCycle: TComboBox
-      Left = 454
+      Left = 467
       Top = 208
-      Width = 77
+      Width = 78
       Height = 21
       TabOrder = 46
       Text = '1'
@@ -936,34 +938,34 @@ object PlotOptDialog: TPlotOptDialog
         'ON')
     end
     object RefPos1: TEdit
-      Left = 246
-      Top = 252
-      Width = 89
+      Left = 254
+      Top = 254
+      Width = 92
       Height = 21
       TabOrder = 49
       Text = '0'
     end
     object RefPos2: TEdit
-      Left = 336
-      Top = 252
-      Width = 89
+      Left = 348
+      Top = 254
+      Width = 94
       Height = 21
       TabOrder = 50
       Text = '0'
     end
     object RefPos3: TEdit
-      Left = 426
-      Top = 252
-      Width = 85
+      Left = 444
+      Top = 254
+      Width = 76
       Height = 21
       TabOrder = 51
       Text = '0'
     end
     object BtnRefPos: TButton
-      Left = 511
-      Top = 251
-      Width = 21
-      Height = 21
+      Left = 520
+      Top = 253
+      Width = 25
+      Height = 23
       Caption = '...'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -992,13 +994,13 @@ object PlotOptDialog: TPlotOptDialog
     end
     object ExSats: TEdit
       Left = 86
-      Top = 340
+      Top = 342
       Width = 92
       Height = 21
       TabOrder = 12
     end
     object BuffSize: TEdit
-      Left = 276
+      Left = 283
       Top = 186
       Width = 77
       Height = 21
@@ -1006,15 +1008,15 @@ object PlotOptDialog: TPlotOptDialog
       Text = '10800'
     end
     object RefCycle: TEdit
-      Left = 454
+      Left = 467
       Top = 230
-      Width = 77
+      Width = 78
       Height = 21
       TabOrder = 47
       Text = '100'
     end
     object MColor6: TPanel
-      Left = 514
+      Left = 527
       Top = 11
       Width = 13
       Height = 19
@@ -1026,16 +1028,16 @@ object PlotOptDialog: TPlotOptDialog
       OnClick = MColorClick
     end
     object QcCmd: TEdit
-      Left = 246
-      Top = 274
-      Width = 285
+      Left = 255
+      Top = 276
+      Width = 290
       Height = 21
       TabOrder = 53
       Text = 'teqc'
     end
     object RcvPos: TComboBox
       Left = 102
-      Top = 251
+      Top = 253
       Width = 77
       Height = 21
       Style = csDropDownList
@@ -1050,7 +1052,7 @@ object PlotOptDialog: TPlotOptDialog
         'RINEX Header')
     end
     object MColor7: TPanel
-      Left = 454
+      Left = 467
       Top = 33
       Width = 13
       Height = 19
@@ -1062,7 +1064,7 @@ object PlotOptDialog: TPlotOptDialog
       OnClick = MColorClick
     end
     object MColor8: TPanel
-      Left = 466
+      Left = 479
       Top = 33
       Width = 13
       Height = 19
@@ -1074,7 +1076,7 @@ object PlotOptDialog: TPlotOptDialog
       OnClick = MColorClick
     end
     object MColor9: TPanel
-      Left = 478
+      Left = 491
       Top = 33
       Width = 13
       Height = 19
@@ -1086,7 +1088,7 @@ object PlotOptDialog: TPlotOptDialog
       OnClick = MColorClick
     end
     object MColor10: TPanel
-      Left = 490
+      Left = 503
       Top = 33
       Width = 13
       Height = 19
@@ -1098,7 +1100,7 @@ object PlotOptDialog: TPlotOptDialog
       OnClick = MColorClick
     end
     object MColor11: TPanel
-      Left = 502
+      Left = 515
       Top = 33
       Width = 13
       Height = 19
@@ -1110,7 +1112,7 @@ object PlotOptDialog: TPlotOptDialog
       OnClick = MColorClick
     end
     object MColor12: TPanel
-      Left = 514
+      Left = 527
       Top = 33
       Width = 13
       Height = 19
@@ -1135,24 +1137,24 @@ object PlotOptDialog: TPlotOptDialog
         'ddd mm ss.ss')
     end
     object RnxOpts: TEdit
-      Left = 246
-      Top = 296
-      Width = 285
+      Left = 255
+      Top = 298
+      Width = 290
       Height = 21
       TabOrder = 54
     end
     object TLEFile: TEdit
-      Left = 247
-      Top = 318
-      Width = 244
+      Left = 255
+      Top = 320
+      Width = 245
       Height = 21
       TabOrder = 55
     end
     object BtnTLEFile: TButton
-      Left = 511
-      Top = 317
-      Width = 21
-      Height = 21
+      Left = 520
+      Top = 319
+      Width = 25
+      Height = 23
       Caption = '...'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -1164,17 +1166,17 @@ object PlotOptDialog: TPlotOptDialog
       OnClick = BtnTLEFileClick
     end
     object TLESatFile: TEdit
-      Left = 246
-      Top = 340
-      Width = 244
+      Left = 255
+      Top = 342
+      Width = 246
       Height = 21
       TabOrder = 57
     end
     object BtnTLESatFile: TButton
-      Left = 511
-      Top = 339
-      Width = 21
-      Height = 21
+      Left = 520
+      Top = 341
+      Width = 25
+      Height = 23
       Caption = '...'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -1204,27 +1206,27 @@ object PlotOptDialog: TPlotOptDialog
     end
   end
   object BtnCancel: TButton
-    Left = 413
-    Top = 362
-    Width = 120
-    Height = 27
+    Left = 457
+    Top = 366
+    Width = 89
+    Height = 29
     Caption = '&Cancel'
     ModalResult = 2
     TabOrder = 1
   end
   object BtnOK: TButton
-    Left = 292
-    Top = 362
-    Width = 120
-    Height = 27
+    Left = 360
+    Top = 366
+    Width = 89
+    Height = 29
     Caption = '&OK'
     ModalResult = 1
     TabOrder = 0
     OnClick = BtnOKClick
   end
   object ColorDialog: TColorDialog
-    Left = 221
-    Top = 355
+    Left = 118
+    Top = 350
   end
   object FontDialog: TFontDialog
     Font.Charset = DEFAULT_CHARSET
@@ -1233,15 +1235,15 @@ object PlotOptDialog: TPlotOptDialog
     Font.Name = 'Tahoma'
     Font.Style = []
     Options = []
-    Left = 279
-    Top = 356
+    Left = 177
+    Top = 348
   end
   object OpenDialog: TOpenDialog
     Filter = 
       'Text File (*.txt)|*.txt|Position File (*.pos,*.snx)|*.pos;*.snx|' +
       'All File (*.*)|*.*'
     Options = [ofHideReadOnly, ofNoChangeDir, ofEnableSizing]
-    Left = 251
-    Top = 356
+    Left = 148
+    Top = 352
   end
 end

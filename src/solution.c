@@ -264,6 +264,16 @@ static int test_nmea(const char *buff)
            !strncmp(buff+1,"GB",2)||!strncmp(buff+1,"BD",2)||
            !strncmp(buff+1,"QZ",2);
 }
+/* test solution status ------------------------------------------------------*/
+static int test_solstat(const char *buff)
+{
+    if (strlen(buff)<7||buff[0]!='$') return 0;
+    return !strncmp(buff+1,"POS" ,3)||!strncmp(buff+1,"VELACC",6)||
+           !strncmp(buff+1,"CLK" ,3)||!strncmp(buff+1,"ION"   ,3)||
+           !strncmp(buff+1,"TROP",4)||!strncmp(buff+1,"HWBIAS",6)||
+           !strncmp(buff+1,"TRPG",4)||!strncmp(buff+1,"AMB"   ,3)||
+           !strncmp(buff+1,"SAT" ,3);
+}
 /* decode nmea ---------------------------------------------------------------*/
 static int decode_nmea(char *buff, sol_t *sol)
 {
@@ -303,6 +313,9 @@ static char *decode_soltime(char *buff, const solopt_t *opt, gtime_t *time)
     else if (*opt->sep) strcpy(s,opt->sep);
     len=(int)strlen(s);
     
+    if (opt->posf==SOLF_STAT) {
+        return buff;
+    }
     /* yyyy/mm/dd hh:mm:ss or yyyy mm dd hh:mm:ss */
     if (sscanf(buff,"%lf/%lf/%lf %lf:%lf:%lf",v,v+1,v+2,v+3,v+4,v+5)>=6) {
         if (v[0]<100.0) {
@@ -457,6 +470,33 @@ static int decode_solenu(char *buff, const solopt_t *opt, sol_t *sol)
     if (MAXSOLQ<sol->stat) sol->stat=SOLQ_NONE;
     return 1;
 }
+/* decode solution status ----------------------------------------------------*/
+static int decode_solsss(char *buff, sol_t *sol)
+{
+    double tow,pos[3],std[3]={0};
+    int i,week,solq;
+    
+    trace(4,"decode_solssss:\n");
+    
+    if (sscanf(buff,"$POS,%d,%lf,%d,%lf,%lf,%lf,%lf,%lf,%lf",&week,&tow,&solq,
+               pos,pos+1,pos+2,std,std+1,std+2)<6) {
+        return 0;
+    }
+    if (week<=0||norm(pos,3)<=0.0||solq==SOLQ_NONE) {
+        return 0;
+    }
+    sol->time=gpst2time(week,tow);
+    for (i=0;i<6;i++) {
+        sol->rr[i]=i<3?pos[i]:0.0;
+        sol->qr[i]=i<3?(float)SQR(std[i]):0.0f;
+        sol->dtr[i]=0.0;
+    }
+    sol->ns=0;
+    sol->age=sol->ratio=sol->thres=0.0f;
+    sol->type=0; /* position type = xyz */
+    sol->stat=solq;
+    return 1;
+}
 /* decode gsi f solution -----------------------------------------------------*/
 static int decode_solgsi(char *buff, const solopt_t *opt, sol_t *sol)
 {
@@ -539,10 +579,11 @@ static int decode_sol(char *buff, const solopt_t *opt, sol_t *sol, double *rb)
     if (test_nmea(buff)) { /* decode nmea */
         return decode_nmea(buff,sol);
     }
-    else { /* decode position record */
-        if (!decode_solpos(buff,opt,sol)) return 0;
+    else if (test_solstat(buff)) { /* decode solution status */
+        return decode_solsss(buff,sol);
     }
-    return 1;
+    /* decode position record */
+    return decode_solpos(buff,opt,sol);
 }
 /* decode solution options ---------------------------------------------------*/
 static void decode_solopt(char *buff, solopt_t *opt)
@@ -1392,8 +1433,9 @@ extern int outsolheads(unsigned char *buff, const solopt_t *opt)
     
     trace(3,"outsolheads:\n");
     
-    if (opt->posf==SOLF_NMEA) return 0;
-    
+    if (opt->posf==SOLF_NMEA||opt->posf==SOLF_STAT||opt->posf==SOLF_GSIF) {
+        return 0;
+    }
     if (opt->outhead) {
         p+=sprintf(p,"%s (",COMMENTH);
         if      (opt->posf==SOLF_XYZ) p+=sprintf(p,"x/y/z-ecef=WGS84");

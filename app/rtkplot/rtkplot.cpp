@@ -37,30 +37,34 @@
 
 
 
+
+
+
 USEFORM("skydlg.cpp", SkyImgDialog);
-USEFORM("satdlg.cpp", SatDialog);
+USEFORM("..\appcmn\tcpoptdlg.cpp", TcpOptDialog);
 USEFORM("..\appcmn\serioptdlg.cpp", SerialOptDialog);
 USEFORM("..\appcmn\refdlg.cpp", RefDialog);
-USEFORM("..\appcmn\keydlg.cpp", KeyDialog);
-USEFORM("..\appcmn\tcpoptdlg.cpp", TcpOptDialog);
+USEFORM("..\appcmn\timedlg.cpp", TimeDialog);
+USEFORM("..\appcmn\vieweropt.cpp", ViewerOptDialog);
 USEFORM("..\appcmn\viewer.cpp", TextViewer);
 USEFORM("..\appcmn\tspandlg.cpp", SpanDialog);
-USEFORM("..\appcmn\timedlg.cpp", TimeDialog);
+USEFORM("..\appcmn\keydlg.cpp", KeyDialog);
 USEFORM("..\appcmn\confdlg.cpp", ConfDialog);
 USEFORM("..\appcmn\cmdoptdlg.cpp", CmdOptDialog);
 USEFORM("..\appcmn\aboutdlg.cpp", AboutDialog);
 USEFORM("..\appcmn\console.cpp", Console);
 USEFORM("..\appcmn\ftpoptdlg.cpp", FtpOptDialog);
 USEFORM("..\appcmn\fileoptdlg.cpp", FileOptDialog);
-USEFORM("..\appcmn\vieweropt.cpp", ViewerOptDialog);
-USEFORM("plotmain.cpp", Plot);
 USEFORM("plotopt.cpp", PlotOptDialog);
+USEFORM("plotmain.cpp", Plot);
 USEFORM("pntdlg.cpp", PntDialog);
+USEFORM("satdlg.cpp", SatDialog);
 USEFORM("geview.cpp", GoogleEarthView);
 USEFORM("fileseldlg.cpp", FileSelDialog);
 USEFORM("conndlg.cpp", ConnectDialog);
 USEFORM("gmview.cpp", GoogleMapView);
 USEFORM("mapdlg.cpp", MapAreaDialog);
+USEFORM("vmapdlg.cpp", VecMapDialog);
 //---------------------------------------------------------------------------
 WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
@@ -92,6 +96,7 @@ WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		Application->CreateForm(__classid(TGoogleMapView), &GoogleMapView);
 		Application->CreateForm(__classid(TMapAreaDialog), &MapAreaDialog);
 		Application->CreateForm(__classid(TSkyImgDialog), &SkyImgDialog);
+		Application->CreateForm(__classid(TVecMapDialog), &VecMapDialog);
 		Application->Run();
 	}
 	catch (Exception &exception)

@@ -4,7 +4,7 @@ object MapAreaDialog: TMapAreaDialog
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Map Image'
-  ClientHeight = 117
+  ClientHeight = 120
   ClientWidth = 341
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -21,7 +21,7 @@ object MapAreaDialog: TMapAreaDialog
     Left = 256
     Top = 92
     Width = 83
-    Height = 23
+    Height = 27
     Caption = '&Close'
     TabOrder = 0
     OnClick = BtnCloseClick
@@ -30,7 +30,7 @@ object MapAreaDialog: TMapAreaDialog
     Left = 86
     Top = 92
     Width = 83
-    Height = 23
+    Height = 27
     Caption = '&Center'
     ModalResult = 1
     TabOrder = 2
@@ -40,7 +40,7 @@ object MapAreaDialog: TMapAreaDialog
     Left = 2
     Top = 92
     Width = 83
-    Height = 23
+    Height = 27
     Caption = '&Save Tag'
     ModalResult = 1
     TabOrder = 1
@@ -50,7 +50,7 @@ object MapAreaDialog: TMapAreaDialog
     Left = 172
     Top = 92
     Width = 83
-    Height = 23
+    Height = 27
     Caption = '&Update'
     TabOrder = 3
     OnClick = BtnUpdateClick
@@ -121,6 +121,8 @@ object MapAreaDialog: TMapAreaDialog
       Top = 32
       Width = 75
       Height = 21
+      NumbersOnly = True
+      OEMConvert = True
       TabOrder = 0
       Text = '0.000'
     end
@@ -140,6 +142,8 @@ object MapAreaDialog: TMapAreaDialog
       Top = 32
       Width = 75
       Height = 21
+      NumbersOnly = True
+      OEMConvert = True
       TabOrder = 2
       Text = '0.000'
     end
@@ -159,6 +163,8 @@ object MapAreaDialog: TMapAreaDialog
       Top = 4
       Width = 75
       Height = 21
+      NumbersOnly = True
+      OEMConvert = True
       TabOrder = 4
       Text = '0.000000'
     end
@@ -178,6 +184,8 @@ object MapAreaDialog: TMapAreaDialog
       Top = 4
       Width = 75
       Height = 21
+      NumbersOnly = True
+      OEMConvert = True
       TabOrder = 6
       Text = '0.000000'
     end

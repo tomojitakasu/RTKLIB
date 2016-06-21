@@ -139,6 +139,7 @@
 			<BCC_SourceDebuggingOn>false</BCC_SourceDebuggingOn>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
+			<LinkPackageStatics>rtl.lib;vcl.lib;vclx.lib</LinkPackageStatics>
 			<Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
 			<ILINK_FullDebugInfo>false</ILINK_FullDebugInfo>
 			<BCC_SelectedOptimizations>true</BCC_SelectedOptimizations>
@@ -147,7 +148,6 @@
 			<BCC_DebugLineNumbers>false</BCC_DebugLineNumbers>
 			<BCC_PCHUsage>None</BCC_PCHUsage>
 			<VerInfo_Locale>1033</VerInfo_Locale>
-			<LinkPackageStatics>rtl.lib;vcl.lib;vclx.lib</LinkPackageStatics>
 			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
 		</PropertyGroup>
 		<ItemGroup>
@@ -230,107 +230,95 @@
 				<BuildOrder>1</BuildOrder>
 			</ResFiles>
 			<CppCompile Include="..\..\src\convgpx.c">
-				<BuildOrder>38</BuildOrder>
+				<BuildOrder>15</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\..\src\convkml.c">
-				<BuildOrder>9</BuildOrder>
-				<BuildOrder>29</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\src\ephemeris.c">
-				<BuildOrder>24</BuildOrder>
-				<BuildOrder>12</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\src\geoid.c">
-				<BuildOrder>4</BuildOrder>
 				<BuildOrder>16</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\src\ionex.c">
-				<BuildOrder>26</BuildOrder>
-				<BuildOrder>14</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\src\lambda.c">
-				<BuildOrder>5</BuildOrder>
+			<CppCompile Include="..\..\src\convrnx.c">
 				<BuildOrder>17</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\src\options.c">
-				<BuildOrder>21</BuildOrder>
-				<BuildOrder>1</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\src\pntpos.c">
-				<BuildOrder>7</BuildOrder>
-				<BuildOrder>23</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\src\postpos.c">
-				<BuildOrder>6</BuildOrder>
+			<CppCompile Include="..\..\src\datum.c">
 				<BuildOrder>18</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\src\ppp.c">
+			<CppCompile Include="..\..\src\ephemeris.c">
+				<BuildOrder>19</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\src\geoid.c">
+				<BuildOrder>20</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\src\ionex.c">
+				<BuildOrder>21</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\src\lambda.c">
 				<BuildOrder>22</BuildOrder>
-				<BuildOrder>2</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\src\options.c">
+				<BuildOrder>23</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\src\pntpos.c">
+				<BuildOrder>24</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\src\postpos.c">
+				<BuildOrder>25</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\src\ppp.c">
+				<BuildOrder>26</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\..\src\ppp_ar.c">
-				<BuildOrder>32</BuildOrder>
+				<BuildOrder>27</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\..\src\ppp_corr.c">
-				<BuildOrder>36</BuildOrder>
+				<BuildOrder>28</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\..\src\preceph.c">
-				<BuildOrder>20</BuildOrder>
-				<BuildOrder>0</BuildOrder>
+				<BuildOrder>29</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\..\src\qzslex.c">
-				<BuildOrder>37</BuildOrder>
+				<BuildOrder>40</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\..\src\rinex.c">
 				<BuildOrder>30</BuildOrder>
-				<BuildOrder>10</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\..\src\rtcm.c">
-				<BuildOrder>25</BuildOrder>
-				<BuildOrder>13</BuildOrder>
+				<BuildOrder>31</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\..\src\rtcm2.c">
-				<BuildOrder>8</BuildOrder>
-				<BuildOrder>28</BuildOrder>
+				<BuildOrder>32</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\..\src\rtcm3.c">
-				<BuildOrder>9</BuildOrder>
-				<BuildOrder>29</BuildOrder>
+				<BuildOrder>33</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\..\src\rtcm3e.c">
-				<BuildOrder>35</BuildOrder>
+				<BuildOrder>34</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\..\src\rtkcmn.c">
-				<BuildOrder>7</BuildOrder>
-				<BuildOrder>23</BuildOrder>
+				<BuildOrder>35</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\..\src\rtkpos.c">
-				<BuildOrder>8</BuildOrder>
-				<BuildOrder>28</BuildOrder>
+				<BuildOrder>36</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\..\src\sbas.c">
-				<BuildOrder>24</BuildOrder>
-				<BuildOrder>12</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\src\solution.c">
-				<BuildOrder>27</BuildOrder>
-				<BuildOrder>11</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\src\tides.c">
 				<BuildOrder>37</BuildOrder>
 			</CppCompile>
-			<FormResources Include="..\appcmn\viewer.dfm"/>
-			<FormResources Include="..\appcmn\timedlg.dfm"/>
+			<CppCompile Include="..\..\src\solution.c">
+				<BuildOrder>38</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\src\tides.c">
+				<BuildOrder>39</BuildOrder>
+			</CppCompile>
+			<FormResources Include="kmzconv.dfm"/>
+			<FormResources Include="postmain.dfm"/>
 			<FormResources Include="extopt.dfm"/>
+			<FormResources Include="postopt.dfm"/>
+			<FormResources Include="..\appcmn\keydlg.dfm"/>
+			<FormResources Include="..\appcmn\maskoptdlg.dfm"/>
+			<FormResources Include="..\appcmn\aboutdlg.dfm"/>
+			<FormResources Include="..\appcmn\confdlg.dfm"/>
+			<FormResources Include="..\appcmn\viewer.dfm"/>
 			<FormResources Include="..\appcmn\vieweropt.dfm"/>
 			<FormResources Include="..\appcmn\refdlg.dfm"/>
-			<FormResources Include="..\appcmn\confdlg.dfm"/>
-			<FormResources Include="..\appcmn\aboutdlg.dfm"/>
-			<FormResources Include="..\appcmn\maskoptdlg.dfm"/>
-			<FormResources Include="..\appcmn\keydlg.dfm"/>
-			<FormResources Include="kmzconv.dfm"/>
-			<FormResources Include="postopt.dfm"/>
-			<FormResources Include="postmain.dfm"/>
+			<FormResources Include="..\appcmn\timedlg.dfm"/>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>
 				<CfgParent>Base</CfgParent>

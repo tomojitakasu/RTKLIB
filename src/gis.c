@@ -55,6 +55,14 @@ static int read_shape_head(FILE *fp)
     }
     return I4_L(buff+32);
 }
+/* update boundary -----------------------------------------------------------*/
+static void update_bound(const double *pos, double *bound)
+{
+    if (pos[0]<bound[0]) bound[0]=pos[0];
+    if (pos[0]>bound[1]) bound[1]=pos[0];
+    if (pos[1]<bound[2]) bound[2]=pos[1];
+    if (pos[1]>bound[3]) bound[3]=pos[1];
+}
 /* add gis data --------------------------------------------------------------*/
 static int gis_add(gisd_t **p, int type, void *data)
 {
@@ -70,7 +78,7 @@ static int gis_add(gisd_t **p, int type, void *data)
     return 1;
 }
 /* read point data -----------------------------------------------------------*/
-static int read_pnt(FILE *fp, gisd_t **p)
+static int read_pnt(FILE *fp, double *bound, gisd_t **p)
 {
     gis_pnt_t *pnt;
     double pos[3]={0};
@@ -84,12 +92,13 @@ static int read_pnt(FILE *fp, gisd_t **p)
     }
     pos[0]=D8_L(buff+8)*D2R;
     pos[1]=D8_L(buff  )*D2R;
+    update_bound(pos,bound);
     pos2ecef(pos,pnt->pos);
     
     return gis_add(p,1,pnt);
 }
 /* read multi-point data ------------------------------------------------------*/
-static int read_mpnt(FILE *fp, gisd_t **p)
+static int read_mpnt(FILE *fp, double *bound, gisd_t **p)
 {
     unsigned char buff[36];
     int i,np;
@@ -100,14 +109,14 @@ static int read_mpnt(FILE *fp, gisd_t **p)
     np=I4_L(buff+32);
     
     for (i=0;i<np;i++) {
-        if (!read_pnt(fp,p)) {
+        if (!read_pnt(fp,bound,p)) {
             return 0;
         }
     }
     return 1;
 }
 /* read polyline data ---------------------------------------------------------*/
-static int read_poly(FILE *fp, gisd_t **p)
+static int read_poly(FILE *fp, double *bound, gisd_t **p)
 {
     gis_poly_t *poly;
     double pos[3]={0};
@@ -151,6 +160,7 @@ static int read_poly(FILE *fp, gisd_t **p)
             if (pos[0]<-1E16||pos[1]<-1E16) {
                 continue;
             }
+            update_bound(pos,bound);
             pos2ecef(pos,poly->pos+n*3);
             n++;
         }
@@ -166,7 +176,7 @@ static int read_poly(FILE *fp, gisd_t **p)
     return 1;
 }
 /* read polygon data ---------------------------------------------------------*/
-static int read_polygon(FILE *fp, gisd_t **p)
+static int read_polygon(FILE *fp, double *bound, gisd_t **p)
 {
     gis_polygon_t *polygon;
     double pos[3]={0};
@@ -210,6 +220,7 @@ static int read_polygon(FILE *fp, gisd_t **p)
             if (pos[0]<-1E16||pos[1]<-1E16) {
                 continue;
             }
+            update_bound(pos,bound);
             pos2ecef(pos,polygon->pos+n*3);
             n++;
         }
@@ -225,7 +236,8 @@ static int read_polygon(FILE *fp, gisd_t **p)
     return 1;
 }
 /* read shapefile records ----------------------------------------------------*/
-static int gis_read_record(FILE *fp, FILE *fp_idx, int type, gisd_t **data)
+static int gis_read_record(FILE *fp, FILE *fp_idx, int type, double *bound,
+                           gisd_t **data)
 {
     gisd_t *p,*next;
     unsigned char buff[16];
@@ -248,16 +260,16 @@ static int gis_read_record(FILE *fp, FILE *fp_idx, int type, gisd_t **data)
             continue;
         }
         if (type==1) { /* point */
-            read_pnt(fp,data);
+            read_pnt(fp,bound,data);
         }
         else if (type==8) { /* multi-point */
-            read_mpnt(fp,data);
+            read_mpnt(fp,bound,data);
         }
         else if (type==3) { /* polyline */
-            read_poly(fp,data);
+            read_poly(fp,bound,data);
         }
         else if (type==5) { /* polygon */
-            read_polygon(fp,data);
+            read_polygon(fp,bound,data);
         }
         else { /* skip record */
             for (i=0;i<len1-4;i++) {
@@ -284,7 +296,7 @@ static int gis_read_record(FILE *fp, FILE *fp_idx, int type, gisd_t **data)
 extern int gis_read(const char *file, gis_t *gis, int layer)
 {
     FILE *fp,*fp_idx;
-    char path[1024],*p;
+    char path[1024],*p,*q;
     int type1=0,type2=0;
     
     trace(3,"gis_read file=%s layer=%d\n",file,layer);
@@ -314,24 +326,21 @@ extern int gis_read(const char *file, gis_t *gis, int layer)
         fclose(fp_idx);
         return 0;
     }
+    gis->bound[0]= PI/2.0;
+    gis->bound[1]=-PI/2.0;
+    gis->bound[2]= PI;
+    gis->bound[3]=-PI;
+    
     /* read records */
-    if (!gis_read_record(fp,fp_idx,type1,gis->data+layer)) {
+    if (!gis_read_record(fp,fp_idx,type1,gis->bound,gis->data+layer)) {
         fclose(fp);
         fclose(fp_idx);
         return 0;
     }
     fclose(fp);
     fclose(fp_idx);
-    
-    /* set layer name */
-    *p='\0';
-    if ((p=strrchr(path,FILEPATHSEP))) {
-        strncpy(gis->name[layer],p+1,254);
-    }
-    else {
-        strncpy(gis->name[layer],path,254);
-    }
-    gis->name[layer][255]='\0';
+    gis->name[layer][0]='\0';
+    gis->flag[layer]=1;
     return 1;
 }
 /* free gis-data ---------------------------------------------------------------
@@ -357,5 +366,6 @@ extern void gis_free(gis_t *gis)
         }
         gis->data[i]=NULL;
         gis->name[i][0]='\0';
+        gis->flag[i]=0;
     }
 }

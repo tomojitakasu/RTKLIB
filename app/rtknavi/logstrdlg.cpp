@@ -203,6 +203,7 @@ void __fastcall TLogStrDialog::UpdateEnable(void)
 	TimeTagC ->Enabled=ena;
 	SwapIntv ->Enabled=ena;
 	BtnKey   ->Enabled=ena;
+	OutEventC->Enabled=FilePath1->Enabled;
 }
 //---------------------------------------------------------------------------
 

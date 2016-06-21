@@ -10,6 +10,7 @@
 #include <ExtCtrls.hpp>
 #include <Dialogs.hpp>
 #include <ComCtrls.hpp>
+#include <Vcl.Buttons.hpp>
 //---------------------------------------------------------------------------
 class TConvDialog : public TForm
 {
@@ -55,6 +56,7 @@ __published:
 	TRadioButton *FormatKML;
 	TLabel *Label6;
 	TRadioButton *FormatGPX;
+	TBitBtn *BtnView;
 	void __fastcall BtnCloseClick(TObject *Sender);
 	void __fastcall AddOffsetClick(TObject *Sender);
 	void __fastcall BtnConvertClick(TObject *Sender);
@@ -77,6 +79,7 @@ __published:
 	void __fastcall BtnGoogleEarthFileClick(TObject *Sender);
 	void __fastcall FormatKMLClick(TObject *Sender);
 	void __fastcall FormatGPXClick(TObject *Sender);
+	void __fastcall BtnViewClick(TObject *Sender);
 private:
 	int __fastcall ExecCmd(char *cmd);
 	void __fastcall UpdateEnable(void);

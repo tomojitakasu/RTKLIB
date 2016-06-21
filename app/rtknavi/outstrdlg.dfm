@@ -171,7 +171,8 @@ object OutputStrDialog: TOutputStrDialog
       'Lat/Lon/Height'
       'X/Y/Z-ECEF'
       'E/N/U-Baseline'
-      'NMEA0183')
+      'NMEA0183'
+      'Solution Status')
   end
   object Format2: TComboBox
     Left = 278
@@ -179,14 +180,13 @@ object OutputStrDialog: TOutputStrDialog
     Width = 107
     Height = 21
     Style = csDropDownList
-    ItemIndex = 0
     TabOrder = 9
-    Text = 'Lat/Lon/Height'
     Items.Strings = (
       'Lat/Lon/Height'
       'X/Y/Z-ECEF'
       'E/N/U-Baseline'
-      'NMEA0183')
+      'NMEA0183'
+      'Solution Status')
   end
   object FilePath1: TEdit
     Left = 6

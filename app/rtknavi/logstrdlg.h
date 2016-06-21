@@ -39,6 +39,7 @@ __published:
 	TComboBox *SwapIntv;
 	TLabel *Label1;
 	TLabel *Label2;
+	TCheckBox *OutEventC;
 	void __fastcall BtnOkClick(TObject *Sender);
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall Stream1Change(TObject *Sender);

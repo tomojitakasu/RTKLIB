@@ -9,6 +9,9 @@
 #pragma package(smart_init)
 #pragma resource "*.dfm"
 TRefDialog *RefDialog;
+
+#define CHARDEG     0x00B0              // character code of degree
+
 //---------------------------------------------------------------------------
 static double str2dbl(AnsiString str)
 {
@@ -26,6 +29,7 @@ __fastcall TRefDialog::TRefDialog(TComponent* Owner)
 void __fastcall TRefDialog::FormShow(TObject *Sender)
 {
 	FILE *fp;
+	UnicodeString s;
 	int width[]={30,80,90,65,40,70,55};
 	
 	FontScale=Screen->PixelsPerInch;
@@ -34,8 +38,8 @@ void __fastcall TRefDialog::FormShow(TObject *Sender)
 	}
 	StaList->DefaultRowHeight=16*FontScale/96;
 	StaList->Cells[0][0]=" No";
-	StaList->Cells[1][0]=" Latitude(deg)";
-	StaList->Cells[2][0]=" Longitude(deg)";
+	StaList->Cells[1][0]=s.sprintf(L" Latitude(%c)" ,CHARDEG);
+	StaList->Cells[2][0]=s.sprintf(L" Longitude(%c)",CHARDEG);
 	StaList->Cells[3][0]=" Height(m)";
 	StaList->Cells[4][0]=" Id";
 	StaList->Cells[5][0]=" Name";
