@@ -25,6 +25,40 @@ object Plot: TPlot
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
+  object Panel3: TPanel
+    Left = 0
+    Top = 25
+    Width = 664
+    Height = 442
+    Align = alClient
+    BevelOuter = bvNone
+    Color = clWhite
+    ParentBackground = False
+    TabOrder = 3
+    ExplicitLeft = 152
+    ExplicitTop = 96
+    ExplicitWidth = 185
+    ExplicitHeight = 86
+    object Disp: TPaintBox
+      Left = 0
+      Top = 0
+      Width = 664
+      Height = 442
+      Align = alClient
+      Color = clGray
+      ParentColor = False
+      Touch.InteractiveGestures = [igZoom, igPressAndTap]
+      OnGesture = DispGesture
+      OnMouseDown = DispMouseDown
+      OnMouseLeave = DispMouseLeave
+      OnMouseMove = DispMouseMove
+      OnMouseUp = DispMouseUp
+      OnPaint = DispPaint
+      ExplicitLeft = 1
+      ExplicitTop = 24
+      ExplicitWidth = 657
+    end
+  end
   object Panel2: TPanel
     Left = 0
     Top = 467
@@ -310,9 +344,9 @@ object Plot: TPlot
       end
       object StrStatus1: TPanel
         Left = 162
-        Top = 6
+        Top = 4
         Width = 8
-        Height = 12
+        Height = 16
         BevelInner = bvRaised
         BevelOuter = bvLowered
         Color = clWhite
@@ -321,9 +355,9 @@ object Plot: TPlot
       end
       object StrStatus2: TPanel
         Left = 170
-        Top = 6
+        Top = 4
         Width = 8
-        Height = 12
+        Height = 16
         BevelInner = bvRaised
         BevelOuter = bvLowered
         Color = clWhite
@@ -1451,8 +1485,8 @@ object Plot: TPlot
     end
   end
   object RangeList: TListBox
-    Left = 222
-    Top = 25
+    Left = 226
+    Top = 26
     Width = 44
     Height = 253
     AutoComplete = False
@@ -1484,41 +1518,6 @@ object Plot: TPlot
     TabOrder = 2
     Visible = False
     OnClick = RangeListClick
-  end
-  object Panel3: TPanel
-    Left = 0
-    Top = 25
-    Width = 664
-    Height = 442
-    Align = alClient
-    BevelOuter = bvNone
-    Color = clWhite
-    UseDockManager = False
-    DoubleBuffered = True
-    FullRepaint = False
-    ParentBackground = False
-    ParentDoubleBuffered = False
-    ShowCaption = False
-    TabOrder = 3
-    object Disp: TPaintBox
-      Left = 0
-      Top = 0
-      Width = 664
-      Height = 442
-      Align = alClient
-      Color = clGray
-      ParentColor = False
-      Touch.InteractiveGestures = [igZoom, igPressAndTap]
-      OnGesture = DispGesture
-      OnMouseDown = DispMouseDown
-      OnMouseLeave = DispMouseLeave
-      OnMouseMove = DispMouseMove
-      OnMouseUp = DispMouseUp
-      OnPaint = DispPaint
-      ExplicitLeft = 1
-      ExplicitTop = 24
-      ExplicitWidth = 657
-    end
   end
   object OpenSolDialog: TOpenDialog
     Filter = 
