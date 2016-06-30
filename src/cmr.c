@@ -211,7 +211,7 @@
 |    Kansas City, Missouri, USA, September, pp. 861-871.
 |
 | 2. Talbot, N.C., (1997), Improvements in the Compact Measurement
-|    Record Format, Trimble Userï¿½s Conference, San Jose, California,
+|    Record Format, Trimble User’s Conference, San Jose, California,
 |    pp. 322-337
 |
 | 3. A GLONASS Observation Message Compatible With The Compact
@@ -262,10 +262,10 @@
 #define M_BIT15 (1 << 15)
 
 /* Misc. constant definitions: */
-#define CMR	                 0x93   /* Trimble CMR  message number */
-#define CMRPLUS	             0x94   /* Trimble CMR+ message number */
+#define CMR                  0x93   /* Trimble CMR  message number */
+#define CMRPLUS              0x94   /* Trimble CMR+ message number */
 #define STX                  0x02   /* Start of message character */
-#define ETX	                 0x03   /* End of message character */
+#define ETX                  0x03   /* End of message character */
 #define BUFF_LENGTH           512   /* Size of message buffer */
 
 /* CMR message types: */
@@ -285,14 +285,14 @@
 #define CLOCK_OFFSET_VALID      3
 
 /* Receiver status byte bit masks: */
-#define M_STATUS_LOW_MEMORY	    M_BIT0  /* 0 = Memory  OK, 1 = Memory  low */
-#define M_STATUS_LOW_BATTERY	M_BIT1  /* 0 = Battery OK, 1 = Battery low */
-#define M_STATUS_RETURNTOPOINT	M_BIT2
+#define M_STATUS_LOW_MEMORY     M_BIT0  /* 0 = Memory  OK, 1 = Memory  low */
+#define M_STATUS_LOW_BATTERY    M_BIT1  /* 0 = Battery OK, 1 = Battery low */
+#define M_STATUS_RETURNTOPOINT  M_BIT2
 #define M_STATUS_ROVING         M_BIT3  /* 0 = Static base, 1 = Moving base */
-#define M_STATUS_CONTKIN	    M_BIT4
-#define M_STATUS_NEWBASE	    M_BIT5
-#define M_STATUS_SYNCED		    M_BIT6
-#define M_STATUS_RTKINITED	    M_BIT7
+#define M_STATUS_CONTKIN        M_BIT4
+#define M_STATUS_NEWBASE        M_BIT5
+#define M_STATUS_SYNCED         M_BIT6
+#define M_STATUS_RTKINITED      M_BIT7
 
 /* CMR type 1 and 2 flag bit masks: */
 #define M_CFLAG_RESERVED_01     M_BIT0
@@ -326,12 +326,12 @@
 #define M_L1_PCODE              M_BIT2  /* P/C 1 = L1P, 0 = L1C           */
 
 /* L2 observables flag bit masks: */
-#define M_L2_PHASE_FULL	 	    M_BIT0  /* (E) */
-#define M_L2_PHASE_VALID	    M_BIT1  /* (D) */
-#define M_L2_CODE_VALID	 	    M_BIT2  /* (C) */
+#define M_L2_PHASE_FULL         M_BIT0  /* (E) */
+#define M_L2_PHASE_VALID        M_BIT1  /* (D) */
+#define M_L2_CODE_VALID         M_BIT2  /* (C) */
 #define M_L2_WCODE              M_BIT3  /* (B) GPS     0 = L2P, 1 = L2W  */
 #define M_L2_PCODE              M_BIT3  /* (B) GLONASS 0 = L2P, 1 = L2C  */
-#define M_L2_CODE_AVAILABLE 	M_BIT4  /* (A) */
+#define M_L2_CODE_AVAILABLE     M_BIT4  /* (A) */
 
 /* RTCM special message flags bits: */
 #define M_MFLAG_LOWBATMSG1      M_BIT0
@@ -661,6 +661,7 @@ static const char *AntennaNumberToName(unsigned int Number)
 static void CheckCmrFlags(rtcm_t *rtcm, unsigned char *p)
 {
     cmr_t *cmr = &rtcm->cmr;
+    unsigned int CmrFlags = ubitn(p+1,0,5);
 
     if (CmrFlags & M_CFLAG_LOW_BATTERY)
         cmr->cmsg |= M_MFLAG_LOWBATMSG1;
@@ -878,7 +879,6 @@ static int DecodeCmr(rtcm_t *rtcm)
         tracet(2, "CMR: Unsupported CMR message type %u ignored.\n", Type);      
     }
 
-    /* ### NOTE: RTK MONITOR UI NEEDS UPDATING TO LABEL THIS AS A CMR MESSAGE ### */
     rtcm->nmsg2[Type]++;
 
     return ret;
@@ -1109,7 +1109,6 @@ static int DecodeCmrPlusBuffer(rtcm_t *rtcm)
             tracet(2, "CMR: Unsupported CMR+ message type %u ignored.\n", Type);  
         }
 
-        /* ### NOTE: RTK MONITOR UI NEEDS UPDATING TO LABEL THIS AS A CMR+ MESSAGE ### */
         rtcm->nmsg3[Type]++;
 
         buff += Length;

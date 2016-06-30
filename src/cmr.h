@@ -5,6 +5,7 @@
 *     [1] https://github.com/astrodanco/RTKLIB/tree/cmr/src/cmr.h
 *
 * version : $Revision:$ $Date:$
+* history : 2016/07/?? 1.0  imported from GitHub (ref [1])
 *-----------------------------------------------------------------------------
 */
 
