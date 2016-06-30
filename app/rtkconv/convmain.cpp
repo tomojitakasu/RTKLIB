@@ -324,7 +324,7 @@ void __fastcall TMainWindow::BtnTime2Click(TObject *Sender)
 // callback on button-input-file --------------------------------------------
 void __fastcall TMainWindow::BtnInFileClick(TObject *Sender)
 {
-    OpenDialog->Title="Input RTCM, RCV RAW or RINEX OBS File";
+    OpenDialog->Title="Input CMR, RTCM, RCV RAW or RINEX OBS File";
     OpenDialog->FileName="";
     if (!OpenDialog->Execute()) return;
     InFile->Text=OpenDialog->FileName;
@@ -711,6 +711,7 @@ void __fastcall TMainWindow::ConvertFile(void)
     if (Format->ItemIndex==0) { // auto
         if      (!strcmp(p,".rtcm2")) format=STRFMT_RTCM2;
         else if (!strcmp(p,".rtcm3")) format=STRFMT_RTCM3;
+        else if (!strcmp(p,".cmr"  )) format=STRFMT_CMR;
         else if (!strcmp(p,".gps"  )) format=STRFMT_OEM4;
         else if (!strcmp(p,".ubx"  )) format=STRFMT_UBX;
         else if (!strcmp(p,".log"  )) format=STRFMT_SS2;
@@ -752,7 +753,7 @@ void __fastcall TMainWindow::ConvertFile(void)
     }
     rnxopt.rnxver=RNXVER[RnxVer];
     
-    if (format==STRFMT_RTCM2||format==STRFMT_RTCM3||format==STRFMT_RT17) {
+    if (format==STRFMT_CMR||format==STRFMT_RTCM2||format==STRFMT_RTCM3||format==STRFMT_RT17) {
         
         // input start date/time for rtcm 2 ro rtcm 3
         StartDialog->FileName=file;

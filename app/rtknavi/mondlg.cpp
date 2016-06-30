@@ -1680,26 +1680,40 @@ void __fastcall TMonitorDialog::ShowRtcm(void)
 	
 	if (rtcm.time.time) time2str(rtcm.time,tstr,3);
 	
-	for (j=1;j<100;j++) {
-		if (rtcm.nmsg2[j]==0) continue;
-        p1+=sprintf(p1,"%s%d (%d)",p1>mstr1?",":"",j,rtcm.nmsg2[j]);
+	if (format==STRFMT_CMR) {
+		for (j=0;j<10;j++)
+			if (rtcm.nmsg2[j])
+        			p1+=sprintf(p1,"%s%d(%d)",p1>mstr1?", ":"CMR: ",j,rtcm.nmsg2[j]);
+
+		for (j=0;j<10;j++)
+			if (rtcm.nmsg3[j])
+        			p2+=sprintf(p2,"%s%d(%d)",p2>mstr2?", ":"CMR+: ",j,rtcm.nmsg3[j]);
+		if (strlen(mstr2))
+			strcat(mstr1, ", ");
+		strcat(mstr1,mstr2);
 	}
-	if (rtcm.nmsg2[0]>0) {
-		sprintf(p1,"%sother (%d)",p1>mstr1?",":"",rtcm.nmsg2[0]);
-	}
-	for (j=1;j<300;j++) {
-		if (rtcm.nmsg3[j]==0) continue;
-        p2+=sprintf(p2,"%s%d(%d)",p2>mstr2?",":"",j+1000,rtcm.nmsg3[j]);
-	}
-	if (rtcm.nmsg3[0]>0) {
-		sprintf(p2,"%sother(%d)",p2>mstr2?",":"",rtcm.nmsg3[0]);
+	else {
+		for (j=1;j<100;j++) {
+			if (rtcm.nmsg2[j]==0) continue;
+        		p1+=sprintf(p1,"%s%d (%d)",p1>mstr1?",":"",j,rtcm.nmsg2[j]);
+		}
+		if (rtcm.nmsg2[0]>0) {
+			sprintf(p1,"%sother (%d)",p1>mstr1?",":"",rtcm.nmsg2[0]);
+		}
+		for (j=1;j<300;j++) {
+			if (rtcm.nmsg3[j]==0) continue;
+        		p2+=sprintf(p2,"%s%d(%d)",p2>mstr2?",":"",j+1000,rtcm.nmsg3[j]);
+		}
+		if (rtcm.nmsg3[0]>0) {
+			sprintf(p2,"%sother(%d)",p2>mstr2?",":"",rtcm.nmsg3[0]);
+		}
 	}
 	Label->Caption="";
 	
 	Tbl->RowCount=27;
 	
 	Tbl->Cells[0][i  ]="Format";
-	Tbl->Cells[1][i++]=format==STRFMT_RTCM2?"RTCM2":"RTCM3";
+	Tbl->Cells[1][i++]=format==STRFMT_CMR?"CMR":format==STRFMT_RTCM2?"RTCM2":"RTCM3";
 	
 	Tbl->Cells[0][i  ]="Message Time";
 	Tbl->Cells[1][i++]=tstr;
@@ -1757,7 +1771,7 @@ void __fastcall TMonitorDialog::ShowRtcm(void)
 	Tbl->Cells[1][i++]=rtcm.msgtype;
 	
 	Tbl->Cells[0][i  ]="# of RTCM Messages";
-	Tbl->Cells[1][i++]=format==STRFMT_RTCM2?mstr1:mstr2;
+	Tbl->Cells[1][i++]=((format==STRFMT_CMR)||(format==STRFMT_RTCM2))?mstr1:mstr2;
 	
 	Tbl->Cells[0][i  ]="MSM Signals for GPS";
 	Tbl->Cells[1][i++]=rtcm.msmtype[0];

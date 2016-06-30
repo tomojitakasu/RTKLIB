@@ -1,11 +1,8 @@
 /*------------------------------------------------------------------------------
-* rt17.c : Trimble RT17 dependent functions
-*
-*          Copyright (C) 2014 by Daniel A. Cook, All rights reserved.
-*          Copyright (C) 2014 by T.TAKASU, All rights reserved.
+* rt17.c : Trimble RT-17 dependent functions
 *
 * references:
-*     [1] https://github.com/astrodanco/RTKLIB/blob/master/src/rcv/rt17.c
+*     [1] https://github.com/astrodanco/RTKLIB/tree/cmr/src/rcv/rt17.c
 *     [2] Trimble, Trimble OEM BD9xx GNSS Receiver Family IDC, version 4.82
 *         Revision A, December, 2013
 *
@@ -19,477 +16,510 @@
 *                           Fix len vs. plen typo
 *                           Check week/time valid flag in GSOF 16 message
 *                           Set time when reading GSOF messages, where possible.
+*           2016/06/16 1.2  Refactored
 *-----------------------------------------------------------------------------*/
 
 /*
-| Description:
+| Trimble real-time binary data stream and file handler functions.
 |
-|   Trimble RT17 file and stream handler functions for RTKLIB.
+| Written in July 2014 by Daniel A. Cook, for inclusion into the RTKLIB library.
+| Copyright (C) 2014, 2016 by Daniel A. Cook. All Rights Reserved.
 |
-|   Written in July 2014 by Daniel A. Cook
-|   Copyright c 2014 by Daniel A. Cook and T.TAKASU, All rights reserved.
+| Here we implement two public functions, one for reading Trimble real-time
+| binary data streams and another for reading log files containng data in the
+| same format. This real-time streaming data format, sometimes called RT-17,
+| was designed by Trimble for use by Trimble receivers. Trimble receivers with
+| the "Real-Time Survey Data" or "Binary Outputs" options can output this data.
+| The RT-17 moniker refers to the GPS observables data record (record type 0)
+| itself. There is also a GNSS observables data record (record type 6), which
+| is referred to as RT-27. We also wish to handle RT-27 data records, but lack
+| sufficient documentation to do so.
 |
-|   This source file implements two public functions, one for reading RT17
-|   format streams and another for reading RT17 format files.
+| Notes:
 |
-|   To specify receiver dependent options, set raw->opt to the following
-|   case sensitive option strings separated by spaces.
+| To specify receiver dependent options, set raw->opt to the following case
+| sensitive option strings separated by spaces.
 |
-|   Receiver dependent options:
+| Receiver dependent options:
 |
-|   -CO     : Add receiver clock offset
-|   -EPHALL : Input all ephemerides
-|   -LE     : Little endian format data
-|   -WEEK=n : Explicitly set starting GPS week number
+| -EPHALL : Input all ephemerides
+| -WEEK=n : Explicitly set starting GPS week number
 |
-|   The -CO option causes the receiver clock offset to be added to the time
-|   of all observables.
+| Neither the Trimble RT-17 observables packets nor the ION / UTC data packets
+| contain the GPS week number. By default the current computer "now" time is
+| used to determine the GPS week number. This works well in real time, but
+| can be problematic when later converting and/or post processing recorded
+| data. When recording data, also enable either GSOF Position & Time (1) or
+| GSOF Current Time (16) messages on the same serial port along with the
+| RT-17 Real-Time Survey Data output. For best results enable the GSOF
+| message(s) and get them streaming prior to enabling the RT-17 messages.
 |
-|   The -LE option specifies that the input data is in little-endian format.
-|   The default is big-endian format. RT17 data streamed directly from a
-|   receiver is always in big-endian format. RT17 data files are usually in
-|   big-endian format, but can sometimes be in little-endian format if a
-|   file transfer or file conversion utility was used and performed such
-|   a conversion as a side-effect.
+| If desired the -WEEK=n option can be specified when converting or post
+| processing recorded data to explicitly set the starting GPS week number.
+| This option overrides anything and everything, including the current
+| computer "now" time and any GSOF or other messages read from the raw
+| data stream or recorded file. Note that the GPS week number explicitly
+| specified with the -WEEK=n option GPS is automatically incremented when
+| and if a subsequent GPS week number rollover occurs in the raw data.
 |
-|   Neither the Trimble RT17 observables packets nor the ION / UTC data packets
-|   contain the GPS week number. By default the current computer "now" time is
-|   used to determine the GPS week number. This works well in real time, but
-|   can be problematic when later converting and/or post processing recorded
-|   data. When recording data, also enable either GSOF Position & Time (1) or
-|   GSOF Current Time (16) messages on the same serial port along with the
-|   RT17 Real-Time Survey Data output. For best results enable the GSOF
-|   message(s) and get them streaming prior to enabling the RT17 messages.
+| In addition to enabling RT-17 Real-Time Survey Data output, it is very
+| helpful to also enable GSOF Position & Time (1) or GSOF Current Time (16)
+| messages on the same serial port. This allows the GPS week number to be
+| determined without using the current computer "now" time or the -WEEK=n
+| option. Although not as important for real-time streaming data use where
+| the current computer "now" time can be used to determine the current GPS
+| week number, it becomes more important when recording files for later
+| conversion and/or post processing.  For best results enable the GSOF
+| message(s) and get them streaming prior to enabling the RT-17 messages.
 |
-|   If desired the -WEEK=n option can be specified when converting or post
-|   processing recorded data to explicitly set the starting GPS week number.
-|   This option overrides anything and everything, including the current
-|   computer "now" time and any GSOF or other messages read from the raw
-|   data stream or recorded file. Note that the GPS week number explicitly
-|   specified with the -WEEK=n option GPS is automatically incremented when
-|   and if a subsequent GPS week number rollover occurs in the raw data.
+| Support is provided for the following Trimble RT-17 packet Types:
 |
-|   In addition to enabling RT17 Real-Time Survey Data output, it is very
-|   helpful to also enable GSOF Position & Time (1) or GSOF Current Time (16)
-|   messages on the same serial port. This allows the GPS week number to be
-|   determined without using the current computer "now" time or the -WEEK=n
-|   option. Although not as important for real-time streaming data use where
-|   the current computer "now" time can be used to determine the current GPS
-|   week number, it becomes more important when recording files for later
-|   conversion and/or post processing.  For best results enable the GSOF
-|   message(s) and get them streaming prior to enabling the RT17 messages.
+|         Raw Observation   Satellite        ION/UTC
+| Format       Data         Ephemerides      Parameters       GSOF
+| ------- ---------------   ---------------- ---------------- ------------
+| Trimble 0x57 (RAWDATA)    0x55 (RETSVDATA) 0x55 (RETSVDATA) 1, 16,
+| RT-17   Recordtype 0 & 7  Subtype  1       Subtype 3        26, 41                   
 |
-|   Support is provided for the following Trimble RT17 packet Types:
+| When the -WEEK=n option is NOT used, the GPS week number is set from any
+| RAWDATA record type 7 or GENOUT (GSOF) 1, 16, 26, 41 records encountered
+| in the raw data stream. These messages are only used to obtain the GPS
+| WEEK number and are not used for any other purpose.
 |
-|           Raw Observation   Satellite        ION/UTC
-|   Format       Data         Ephemerides      Parameters       GSOF
-|   ------- ---------------   ---------------- ---------------- ------------
-|   Trimble 0x57 (RAWDATA)    0x55 (RETSVDATA) 0x55 (RETSVDATA) 1, 16,
-|   RT17    Recordtype 0 & 7  Subtype  1       Subtype 3        26, 41                   
+| Support is not provided for the GPS L2C or L5 signals. Those would likely
+| require Trimble RT-27 protocol support. Support for that and much more
+| could easily be added by anyone with the required RAWDATA record type
+| 6 documentation.
 |
-|   When the -WEEK=n option is NOT used, the GPS week number is set from any
-|   RAWDATA record type 7 or GENOUT (GSOF) 1, 16, 26, 41 records encountered
-|   in the raw data stream. These messages are only used to obtain the GPS
-|   WEEK number and are not used for any other purpose.
+| For Trimble GPS receivers which are capable of RT-17 binary output, the
+| receiver and/or receiver configuration software generally provide several
+| RT-17 binary output options:
 |
-|   Support is not provided the GPS L2C or L5 signals. Those would likely
-|   require Trimble RT27 protocol support.
+| 1. Compact format aka Concise format
+|    (RECOMMENDED)
 |
-|   For Trimble GPS receivers which are capable of RT17 binary output, the
-|   receiver and/or receiver configuration software generally provide several
-|   RT17 binary output options:
+| This option causes the raw satellite data to be streamed in a more compact
+| format. The compact format does not include L2 DOPPLER observables.
 |
-|   1. Compact format aka Concise format
-|      (RECOMMENDED)
+| 2. Expanded format
 |
-|   This option causes the raw satellite data to be streamed in a more compact
-|   format. The compact format does not include L2 DOPPLER observables.
+| This is usually the default format if compact format is not enabled. The
+| only advantage of this format over compact format is that L2 DOPPLER
+| observables are output when used in combination with the Real Time
+| Enhancements option. Otherwise this format just consumes more bandwidth
+| and/or file space than compact format while offering no other advantages.
 |
-|   2. Expanded format
+| 3. Real Time Enhancements, aka Real-time Enhanced format, aka R-T FLAGS
 |
-|   This is usually the default format if compact format is not enabled. The
-|   only advantage of this format over compact format is that L2 DOPPLER
-|   observables are output when used in combination with the Real Time
-|   Enhancements option. Otherwise this format just consumes more bandwidth
-|   and/or file space than compact format while offering no other advantages.
+| This option adds extra data to the raw satellite data output by the
+| receiver. When used in combination with expanded format, L2 DOPPLER
+| observables are output. L2 DOPPLER can be used by RTKLIB.
 |
-|   3. Real Time Enhancements, aka Real-time Enhanced format, aka RT-FLAGS
+| 3. Measurements
+|    (REQUIRED)
 |
-|   This option adds extra data to the raw satellite data output by the
-|   receiver. When used in combination with expanded format, L2 DOPPLER
-|   observables are output. L2 DOPPLER can be used by RTKLIB.
+| If your configuration has a measurements option, enable it. Measurements
+| are the raw satellite data. If you don't see this option then it is
+| implied and enabled by default.
 |
-|   3. Measurements
-|      (REQUIRED)
+| 4. Ephermeris AKA Stream Ephemeris
+|    (HIGHLY RECOMMENDED)
 |
-|   If your configuration has a measurements option, enable it. Measurements
-|   are the raw satellite data. If you don't see this option then it is
-|   implied and enabled by default.
+| This option causes satellite ephemerides and UTC / ION data to be streamed
+| along with the raw satellite data. Streamed ephemerides and UTC / ION data
+| consume very little extra bandwidth in the stream and/or space in a file.
+| In most situations with most applications you will need them as well.
 |
-|   4. Stream Ephemeris
-|      (HIGHLY RECOMMENDED)
+| 5. Positions AKA Stream Positions
+|    (NOT RECOMMENDED)
 |
-|   This option causes satellite ephemerides and UTC / ION data to be streamed
-|   along with the raw satellite data. Streamed ephemerides and UTC / ION data
-|   consume very little extra bandwidth in the stream and/or space in a file.
-|   In most situations with most applications you will need them as well.
+| Streamed postions are of no use to RTKLIB. They will be ignored. RTKLIB
+| computes positions from the raw satellite data. It has no use for the
+| receiver's position solutions. Streamed positions also consume
+| considerable bandwidth in the stream and/or space in a file.
 |
-|   5. Stream Positions, aka Positions
-|      (NOT RECOMMENDED)
+| 6. Positions Only
+|    (HIGHLY NOT RECOMMENDED)
 |
-|   Streamed postions are of no use to RTKLIB. They will be ignored. RTKLIB
-|   computes positions from the raw satellite data. It has no use for the
-|   receiver's position solutions. Streamed positions also consume
-|   considerable bandwidth in the stream and/or space in a file.
+| Enabling the positions only option causes only positions and nothing else
+| to be output, including no raw satellite data and no ephemerides and no
+| ION / UTC data.
 |
-|   6. Positions Only
-|      (HIGHLY NOT RECOMMENDED)
+| Design notes:
 |
-|   Enabling the positions only option causes only positions and nothing else
-|   to be output, including no raw satellite data and no ephemerides and no
-|   ION / UTC data.
+| This source code handles GPS L1/L2 only. RT-17 is GPS. RT27 is GNSS.
+| If you have RT27 (RAWDATA 57h record type 6) documentation, please
+| forward it to the author.
 |
-| Design Issues:
+| An RT-17 real-time survey data message is a series of RAWDATA (57h,
+| Real-time survey data report) and RETSVDATA (55h, Satellite information
+| report) packets.
 |
-|   This source code handles GPS L1/L2 only. RT17 is GPS. RT27 is GNSS.
-|   If you have RT27 (RAWDATA 57h record subtype 6) documentation, please
-|   forward it to the author.
+| Each assembled RAWDATA message in an RT-17 packet stream may contain
+| any of the following: Compact Format raw satellite measurements, Expanded
+| Format raw satellite measurements, a receiver computed position or an
+| event mark. Receiver computed positions and event marks are of no
+| interest to RTKLIB, therefore we ignore them.
 |
-|   An RT17 real-time survey data message is a series of RAWDATA (57h,
-|   Real-time survey data report) and RETSVDATA (55h, Satellite information
-|   report) packets.
+| Each RETSVDATA message in an RT-17 packet stream may contain any one
+| of the following: SV flags indicating tracking, a GPS Ephemeris, a GPS
+| Almanac, ION / UTC Data or an Extended GPS Almanac. Of these only
+| the GPS Ephemeris and the ION / UTC Data are of interest to RTKLIB.
+| In practice only GPS Ephemeris and ION / UTC Data are transmitted.
+| Some receivers can be set to transmit them at regular intervals
+| rather than only when they change.
 |
-|   Each assembled RAWDATA message _in an RT17 packet stream_ may contain
-|   any of the following: Compact Format raw satellite measurements, Expanded
-|   Format raw satellite measurements, a receiver computed position or an
-|   event mark. Receiver computed positions and event marks are of no
-|   interest to RTKLIB, therefore we ignore them.
+| Certain simplifying assumptions are made concerning the way in which
+| RAWDATA and GENOUT packets are transmitted in the stream or stored
+| into the file. Unfortunately reference #1 below does not clearly
+| specify these things. It would certainly be possible to write code
+| that made no assumptions and handled the worst possible no assumptions
+| interpretation imaginable, but the code would be more complicated.
+| Needless complication would be silly if not absolutely required in
+| practice.
 |
-|   Each RETSVDATA message _in an RT17 packet stream_ may contain any one
-|   of the following: SV flags indicating tracking, a GPS Ephemeris, a GPS
-|   Almanac, ION / UTC Data or an Extended GPS Almanac. Of these only
-|   the GPS Ephemeris and the ION / UTC Data are of interest to RTKLIB.
-|   In practice only GPS Ephemeris and ION / UTC Data are transmitted.
-|
-|   Certain simplifying assumptions are made concerning the way in which
-|   RAWDATA and GENOUT packets are transmitted in the stream or stored
-|   into the file. Unfortunately reference #1 below does not clearly
-|   specify these things. It would certainly be possible to write code
-|   that made no assumptions and handled the worst possible no assumptions
-|   interpretation imaginable, but the code would be more complicated.
-|   Needless complication would be silly if not absolutely required in
-|   practice.
-|
-|   Therefore it is assumed that:
+| Therefore it is assumed that:
 | 
-|   1. RAWDATA and GENOUT packets are never interleaved or interspersed
-|      with packets of other types.
+| 1. RAWDATA and GENOUT packets are never interleaved or interspersed
+|    with packets of other types.
 |
-|   2. The sequence of page frames in a RAWDATA message are transmitted in the
-|      stream or stored into a file as packets in order from first to last.
-|      RAWDATA page numbers are one based. That is, 1 of n, 2 of n, 3 of n,
-|      ..., to 15 of 15 for a total of 15 possible pages. We check for this
-|      ordering. RAWDATA messages can therefore reach almost 4K in total
-|      length. We check for potential buffer overflows in the input_rt17
-|      function.
+| 2. The sequence of page frames in a RAWDATA message are transmitted in the
+|    stream or stored into a file as packets in order from first to last.
+|    RAWDATA page numbers are one based. That is, 1 of n, 2 of n, 3 of n,
+|    ..., to 15 of 15 for a total of 15 possible pages. We check for this
+|    ordering. RAWDATA messages can therefore reach almost 4K in total
+|    length. We check for potential buffer overflows in the input_rt17()
+|    function.
 |
-|   3. The Record Interpretation Flags (RIF) field is repeated within the
-|      page frame of every page making up a single RAWDATA message. It is
-|      assumed that this is redundant and that the actual value of the record
-|      interpretation flags does not change from one page to the next within
-|      a single RAWDATA message. We check for this too.
+| 3. The Record Interpretation Flags (RIF) field is repeated within the
+|    page frame of every page making up a single RAWDATA message. It is
+|    assumed that this is redundant and that the actual value of the record
+|    interpretation flags does not change from one page to the next within
+|    a single RAWDATA message. We check for this too.
 |
-|   4. The sequence of pages in a GENOUT message are transmitted in the
-|      stream or stored into a file as packets in order from first to last.
-|      GENOUT page numbers are zero based. That is, 0 of n, 1 of n, 2 of n,
-|      ..., to 255 of 255 for a total of 256 possible pages. We check for
-|      this ordering. GENOUT messages can therefore reach almost 64K in
-|      total length. Such a large GENOUT message could exceed RTKLIB's
-|      maximum buffer size (which was only 4K when this was written).
-|      We check for potential buffer overflows in the input_rt17 function.
+| 4. The sequence of pages in a GENOUT message are transmitted in the
+|    stream or stored into a file as packets in order from first to last.
+|    GENOUT page numbers are zero based. That is, 0 of n, 1 of n, 2 of n,
+|    ..., to 255 of 255 for a total of 256 possible pages. We check for
+|    this ordering. GENOUT messages can therefore reach almost 64K in
+|    total length. Such a large GENOUT message could exceed RTKLIB's
+|    maximum buffer size (which was only 4K when this was written).
+|    We check for potential buffer overflows in the input_rt17() function.
 |
-|   This code was tested using RT17 data output from the following receivers:
+| This code was tested using RT-17 data output from the following receivers:
 |
-|   1. Trimble 4000SSI, firmware version 7.32
-|   2. Trimble 5700, firmware version 2.32
-|   3. Spectra Precision Epoch 25 Base, firmware version 2.32
+| 1. Trimble 4000SSI, firmware version 7.32
+| 2. Trimble 5700, firmware version 2.32
+| 3. Spectra Precision Epoch 25 Base, firmware version 2.32
 |
-|   The code herein was explicitly written to handle both big-endian and
-|   little-endian machine execution platforms, not just big-endian and
-|   little-endian input data. However I did not have an actual big-endian
-|   machine execution platform to test and debug with. If your platform is
-|   big-endian, please test first and then be prepared to fix big-endian
-|   platform related bugs. You have my sincere apologies if you run into any.
-|
-|   By convention functions within this source file appear in alphabetical
-|   order. Public functions appear as a set first (there are only two of
-|   them), followed by private functions as a set. Because of this, forward
-|   definitions are required for the private functions. Please keep that
-|   in mind when making changes to this source file.
+| By convention functions within this source file appear in alphabetical
+| order. Public functions appear as a set first (there are only two of
+| them), followed by private functions as a set. Because of this, forward
+| definitions are required for the private functions. Please keep that
+| in mind when making changes to this source file.
 |
 | References:
 |
-|   1. Trimble Serial Reference Specification, Version 4.82, Revision A,
-|      December 2013. Though not being in any way specific to the BD9xx
-|      family of receivers, a handy downloadable copy of this document
-|      is contained in the "Trimble OEM BD9xx GNSS Receiver Family ICD"
-|      document located at <http://www.trimble.com/OEM_ReceiverHelp/
-|      v4.85/en/BinaryInterfaceControlDoc.pdf>
+| 1. Trimble Serial Reference Specification, Version 4.82, Revision A,
+|    December 2013. Though not being in any way specific to the BD9xx
+|    family of receivers, a handy downloadable copy of this document
+|    is contained in the "Trimble OEM BD9xx GNSS Receiver Family ICD"
+|    document located at <http://www.trimble.com/OEM_ReceiverHelp/
+|    v4.85/en/BinaryInterfaceControlDoc.pdf>
 |
-|   2. Trimble General Serial Output Format (GSOF)
-|      <http://www.trimble.com/OEM_ReceiverHelp/v4.85/en/GSOFmessages_GSOF.html>
+| 2. Trimble General Serial Output Format (GSOF)
+|    <http://www.trimble.com/OEM_ReceiverHelp/v4.85/en/GSOFmessages_GSOF.html>
 |
-|   3. RTKLIB Version 2.4.2 Manual, April 29 2013
-|      <http://www.rtklib.com/prog/manual_2.4.2.pdf>
+| 3. ICD-GPS-200C, Interface Control Document, Revision C, 10 October 1993
+|    <http://www.gps.gov/technical/icwg/ICD-GPS-200C.pdf>
 |
-|   4. ICD-GPS-200C, Interface Control Document, Revision C, 10 October 1993
-|      <http://www.gps.gov/technical/icwg/ICD-GPS-200C.pdf>
+| 4. IS-GPS-200H, Interface Specification, 24 September 2013
+|    <http://www.gps.gov/technical/icwg/IS-GPS-200H.pdf>
 |
-|   5. IS-GPS-200H, Interface Specification, 24 September 2013
-|      <http://www.gps.gov/technical/icwg/IS-GPS-200H.pdf>
-*/
-                        
-
-/*
-| Included files:
+| 5. RTKLIB Version 2.4.2 Manual, April 29 2013
+|    <http://www.rtklib.com/prog/manual_2.4.2.pdf>
 */
 
+/* Included files: */
 #include "rtklib.h"
 
+/* General purpose flag bits masks: */
+#define M_BIT0 (1 << 0)
+#define M_BIT1 (1 << 1)
+#define M_BIT2 (1 << 2)
+#define M_BIT3 (1 << 3)
+#define M_BIT4 (1 << 4)
+#define M_BIT5 (1 << 5)
+#define M_BIT6 (1 << 6)
+#define M_BIT7 (1 << 7)
+#define M_BIT8 (1 << 8)
+#define M_BIT9 (1 << 9)
+#define M_BIT10 (1 << 10)
+#define M_BIT11 (1 << 11)
+#define M_BIT12 (1 << 12)
+#define M_BIT13 (1 << 13)
+#define M_BIT14 (1 << 14)
+#define M_BIT15 (1 << 15)
 
-/*
-| Constant definitions:
-*/
+/* Constant definitions: */
+#define STX           2         /* Start of packet character */
+#define ETX           3         /* End of packet character */
+#define GENOUT        0x40      /* General Serial Output Format (GSOF) */
+#define RETSVDATA     0x55      /* Satellite information reports */
+#define RAWDATA       0x57      /* Position or real-time survey data report */
+#define PBUFF_LENGTH  (4+255+2) /* Packet buffer length */
 
-#define STX           2    /* Start of packet character */
-#define ETX           3    /* End of packet character */
-#define GENOUT        0x40 /* General Serial Output Format (GSOF) */
-#define RETSVDATA     0x55 /* Satellite information reports */
-#define RAWDATA       0x57 /* Position or real-time survey data report */
-#define BIG_ENDIAN    1    /* Big-endian platform or data stream */
-#define LITTLE_ENDIAN 2    /* Little-endian platform or data stream */
+/* Record Interpretation Flags bit masks: */
+#define M_CONCISE     M_BIT0    /* Concise format */
+#define M_ENHANCED    M_BIT1    /* Enhanced record with real-time flags and IODE information */
 
-/*
-| Record Interpretation Flags bit masks:
-*/
-#define M_CONCISE     1    /* Concise format */
-#define M_ENHANCED    2    /* Enhanced record with real-time flags and IODE information */
+/* rt17.flag bit definitions: */
+#define M_WEEK_OPTION M_BIT0    /* GPS week number set by WEEK=n option */
+#define M_WEEK_EPH    M_BIT1    /* GPS week number set by ephemeris week */
+#define M_WEEK_TIME   M_BIT2    /* GPS week set by computer time */
+#define M_WEEK_SCAN   M_BIT3    /* WEEK=n option already looked for, no need to do it again */
 
-/*
-| Raw->flag bit definitions:
-*/
-#define M_WEEK_OPTION 1    /* Raw=>week contains GPS week number set by WEEK=n option */
-#define M_WEEK_SCAN   2    /* WEEK=n option already looked for, no need to do it again */
+/* Data conversion macros: */
+#define I1(p) (*((char*)(p)))           /* One byte signed integer */
+#define U1(p) (*((unsigned char*)(p)))  /* One byte unsigned integer */
+#define I2(p) ReadI2(p)                 /* Two byte signed integer */
+#define U2(p) ReadU2(p)                 /* Two byte unsigned integer */
+#define I4(p) ReadI4(p)                 /* Four byte signed integer */
+#define U4(p) ReadU4(p)                 /* Four byte unsigned integer */
+#define R4(p) ReadR4(p)                 /* IEEE S_FLOAT floating point number */
+#define R8(p) ReadR8(p)                 /* IEEE T_FLOAT floating point number */
 
-/*
-| Data conversion macros:
-*/
-
-#define I1(p) (*((char*)(p)))          /* One byte signed integer */
-#define U1(p) (*((unsigned char*)(p))) /* One byte unsigned integer */
-#define I2(p,e) read_i2(p,e)           /* Two byte signed integer */
-#define U2(p,e) read_u2(p,e)           /* Two byte unsigned integer */
-#define I4(p,e) read_i4(p,e)           /* Four byte signed integer */
-#define U4(p,e) read_u4(p,e)           /* Four byte unsigned integer */
-#define R4(p,e) read_r4(p,e)           /* IEEE S_FLOAT floating point number */
-#define R8(p,e) read_r8(p,e)           /* IEEE T_FLOAT floating point number */
-
-
-/*
-| Internal structure definitions.
-*/
+/* Internal structure definitions. */
 typedef union {unsigned short u2; unsigned char c[2];} ENDIAN_TEST; 
 
-
-/*
-| Static global literals:
-*/
-
+/* Static global literals: */
 static const char rcsid[]="$Id:$";
 
+/* GENOUT 0x40 message types: */
+static const char *GSOFTable[] = {
+    /* 00 */ NULL,
+    /* 01 */ "Position Time",
+    /* 02 */ "Latitude Longitude Height",
+    /* 03 */ "ECEF Position",
+    /* 04 */ "Local Datum LLH Position",
+    /* 05 */ "Local Zone ENU Position",
+    /* 06 */ "ECEF Delta",
+    /* 07 */ "Tangent Plane Delta",
+    /* 08 */ "Velocity Data",
+    /* 09 */ "DOP Information",
+    /* 10 */ "Clock Information",
+    /* 11 */ "Position VCV Information",
+    /* 12 */ "Position Sigma Information",
+    /* 13 */ "SV Brief Information",
+    /* 14 */ "SV Detailed Information",
+    /* 15 */ "Receiver Serial Number",
+    /* 16 */ "Current Time UTC",
+    /* 17 */ NULL,
+    /* 18 */ NULL,
+    /* 19 */ NULL,
+    /* 20 */ NULL,
+    /* 21 */ NULL,
+    /* 22 */ NULL,
+    /* 23 */ NULL,
+    /* 24 */ NULL,
+    /* 25 */ NULL,
+    /* 26 */ "Position Time UTC",
+    /* 27 */ "Attitude Information",
+    /* 28 */ NULL,
+    /* 29 */ NULL,
+    /* 30 */ NULL,
+    /* 31 */ NULL,
+    /* 32 */ NULL,
+    /* 33 */ "All SV Brief Information",
+    /* 34 */ "All SV Detailed Information",
+    /* 35 */ "Received Base Information",
+    /* 36 */ NULL,
+    /* 37 */ "Battery and Memory Information",
+    /* 38 */ NULL,
+    /* 39 */ NULL,
+    /* 40 */ "L-Band Status Information",
+    /* 41 */ "Base Position and Quality Indicator"
+};
 
-/*
-| Static global variables:
-*/
+/* RAWDATA 0x57 message types: */
+static const char *RawdataTable[] = {
+    /* 00 */ "Real-time GPS Survey Data, type 17",
+    /* 01 */ "Position Record, type 11",
+    /* 02 */ "Event Mark",
+    /* 03 */ NULL,
+    /* 04 */ NULL,
+    /* 05 */ NULL,
+    /* 06 */ "Real-time GNSS Survey Data, type 27",
+    /* 07 */ "Enhanced Position Record, type 29"
+};
 
+/* RETSVDATA 0x55 message types: */
+static const char *RetsvdataTable[] = {
+    /* 00 */ "SV Flags",
+    /* 01 */ "GPS Ephemeris",
+    /* 02 */ "GPS Almanac",
+    /* 03 */ "ION / UTC Data",
+    /* 04 */ "Disable Satellite, depreciated",
+    /* 05 */ "Enable Satellite, depreciated",
+    /* 06 */ NULL,
+    /* 07 */ "Extended GPS Almanac",
+    /* 08 */ "GLONASS Almanac",
+    /* 09 */ "GLONASS Ephemeris",
+    /* 10 */ NULL,
+    /* 11 */ "Galileo Ephemeris",
+    /* 12 */ "Galileo Almanac",
+    /* 13 */ NULL,
+    /* 14 */ "QZSS Ephemeris",
+    /* 15 */ NULL,
+    /* 16 */ "QZSS Almanac",
+    /* 17 */ NULL,
+    /* 18 */ NULL,
+    /* 19 */ NULL,
+    /* 20 */ "SV Flags",
+    /* 21 */ "BeiDou Ephemeris",
+    /* 22 */ "BeiDou Almanac"
+}; 
 
 /*
 | Internal private function forward declarations (in alphabetical order):
 */
+static int CheckPacketChecksum(raw_t *raw);
+static void ClearMessageBuffer(raw_t *raw);
+static void ClearPacketBuffer(raw_t *raw);
+static int DecodeBeidouEphemeris(raw_t *raw);
+static int DecodeGalileoEphemeris(raw_t *raw);
+static int DecodeGLONASSEphemeris(raw_t *raw);
+static int DecodeGPSEphemeris(raw_t *raw);
+static int DecodeGSOF(raw_t *raw);
+static int DecodeGSOF1(raw_t *raw, unsigned char *p);
+static int DecodeGSOF3(raw_t *raw, unsigned char *p);
+static int DecodeGSOF15(raw_t *raw, unsigned char *p);
+static int DecodeGSOF16(raw_t *raw, unsigned char *p);
+static int DecodeGSOF26(raw_t *raw, unsigned char *p);
+static int DecodeGSOF41(raw_t *raw, unsigned char *p);
+static int DecodeIONAndUTCData(raw_t *raw);
+static int DecodeQZSSEphemeris(raw_t *raw);
+static int DecodeRawdata(raw_t *raw);
+static int DecodeRetsvdata(raw_t *raw);
+static int DecodeType17(raw_t *raw, unsigned int rif);
+static int DecodeType29(raw_t *raw);
+static int GetWeek(raw_t *raw, double tow);
+static short ReadI2(unsigned char *p);
+static int ReadI4(unsigned char *p);
+static float ReadR4(unsigned char *p);
+static double ReadR8(unsigned char *p);
+static unsigned short ReadU2(unsigned char *p);
+static unsigned int ReadU4(unsigned char *p);
+static void SetWeek(raw_t *raw, int Week, double tow);
+static int SyncPacket(raw_t *raw, unsigned char Data);
+static void UnwrapRawdata(raw_t *raw, unsigned int *rif);
+static void UnwrapGenout(raw_t *raw);
 
-static int check_packet_checksum(raw_t *raw);
-static void clear_message_buffer(raw_t *raw);
-static void clear_packet_buffer(raw_t *raw);
-static void decode_genout(raw_t *raw, int endian);
-static int decode_gps_ephemeris(raw_t *raw, int endian);
-static void decode_gsof_1(raw_t *raw, unsigned char *p, int endian);
-static void decode_gsof_16(raw_t *raw, unsigned char *p, int endian);
-static void decode_gsof_26(raw_t *raw, unsigned char *p, int endian);
-static void decode_gsof_41(raw_t *raw, unsigned char *p, int endian);
-static int decode_ion_utc_data(raw_t *raw, int endian);
-static int decode_rawdata(raw_t *raw, int endian);
-static int decode_retsvdata(raw_t *raw, int endian);
-static int decode_type_17(raw_t *raw, unsigned int rif, int endian);
-static int decode_type_29(raw_t *raw, int endian);
-static int get_week(raw_t *raw, double receive_time);
-static short read_i2(unsigned char *p, int endian);
-static int read_i4(unsigned char *p, int endian);
-static float read_r4(unsigned char *p, int endian);
-static double read_r8(unsigned char *p, int endian);
-static unsigned short read_u2(unsigned char *p, int endian);
-static unsigned int read_u4(unsigned char *p, int endian);
-static void set_week(raw_t *raw, int week, double receive_time);
-static int sync_packet(raw_t *raw, unsigned char data);
-static void unwrap_rawdata(raw_t *raw, unsigned int *rif);
-static void unwrap_genout(raw_t *raw);
+/* Public functions (in alphabetical order): */
 
-/*
-| Public functions (in alphabetical order):
-*/
-
-
-/*
-| Function: input_rt17
-| Purpose:  Read an RT17 mesasge from a raw data stream 
-| Authors:  Daniel A. Cook
-|
-| Formal Parameters: 
-|
-|   Raw  = Receiver raw data control structure [Input]
-|   Data = stream data byte                    [Input]
-|
-| Implicit Inputs:
-|
-|   Raw->buff[]
-|   Raw->pbuff[]
-|   Raw->len
-|   Raw->plen
-|   Raw->nbyte
-|   Raw->pbyte
-|   Raw->reply
-|
-| Implicit outputs:
-|
-|   Raw->buff[]
-|   Raw->pbuff[]
-|   Raw->len
-|   Raw->plen
-|   Raw->nbyte
-|   Raw->pbyte
-|   Raw->reply
-|
-| Return Value:
-|
-|   -1: error message
-|    0: no message (tells caller to please read more data from the stream)
-|    1: input observation data
-|    2: input ephemeris
-|    3: input sbas message
-|    9: input ion/utc parameter
-|
-| Design Issues:
-|
-|
-|   Please refer to the Design Issues listed at the top of this source file.
-|
-|   There could be a potential gotcha lurking in this function. When we find
-|   what we thought was a packet, read in what we thought was the rest of the
-|   packet based on what we thought was the data length, but then it turns
-|   out it wasn't really a packet we found (becuase it doesn't end with an
-|   ETX), then we're screwed. Between 1 and 255 bytes that could contain a
-|   valid packet have been discarded and more may be discarded during the
-|   subsequent search for the next packet. I have never seen this scenario
-|   happen in practice with real data, but it could. If this turns out to be
-|   a real life problem, one could fix this by implementing an additional
-|   layer of buffering.
-*/
-extern int input_rt17(raw_t *raw, unsigned char data)
+/* free_rt17 - Free up RT17 storage */
+extern void free_rt17(raw_t *raw)
 {
-    int status = 0;
-    unsigned int page, pages, reply;
-                              
-    /*
-    | If no current packet.
-    */
-    if (raw->pbyte == 0)
-    {   
-        /*
-        | Find something that looks like a packet.
-        */
-        if (sync_packet(raw, data))
+    rt17_t *rt17 = &raw->rt17;
+    if (rt17->pbuff) free(rt17->pbuff);
+    memset(rt17, 0, sizeof(rt17_t));
+}
+
+/*
+| input_rt17 - Read an RT-17 mesasge from a raw data stream 
+|
+| Returns:
+|
+| -1: error message
+|  0: no message (tells caller to please read more data from the stream)
+|  1: input observation data
+|  2: input ephemeris
+|  9: input ion/utc parameter
+|
+| Each message begins with a 4-byte header, followed by the bytes of data in the packet,
+| and the packet ends with a 2-byte trailer. Byte 3 is set to 0 (00h) when the packet
+| contains no data.
+*/
+extern int input_rt17(raw_t *raw, unsigned char Data)
+{
+    rt17_t *rt17 = &raw->rt17;
+    unsigned char *pbuff = rt17->pbuff;
+    unsigned int Page, Pages, Reply;
+    int ret = 0;
+
+    if (!pbuff)
+    {
+        if (!(pbuff = (unsigned char*) calloc(PBUFF_LENGTH, sizeof(unsigned char))))
         {
-            /*
-            | Found one.
-            */
-            raw->plen = 4 + raw->pbuff[3] + 2; /* 4 (header) + length + 2 (trailer) */
-            raw->pbyte = 4; /* We now have four bytes in the packet buffer */
+            trace(0, "RT17: unable to allocate packet buffer.\n");
+            return -1;
         }
-                
-        /*
-        | Continue reading the rest of the packet from the stream.
-        */
-        return (0);
+        rt17->pbuff = pbuff;
     }
 
-    /*
-    | Store the next byte of the packet.
-    */
-    raw->pbuff[raw->pbyte++] = data;
+    /* If no current packet */
+    if (rt17->pbyte == 0)
+    {   
+        /* Find something that looks like a packet. */
+        if (SyncPacket(raw, Data))
+        {
+            /* Found one. */
+            rt17->plen = 4 + pbuff[3] + 2; /* 4 (header) + length + 2 (trailer) */
+            rt17->pbyte = 4; /* We now have four bytes in the packet buffer */
+        }
+                
+        /* Continue reading the rest of the packet from the stream */
+        return 0;
+    }
+
+    /* Store the next byte of the packet */
+    pbuff[rt17->pbyte++] = Data;
 
     /*
     | Keep storing bytes into the current packet
     | until we have what we think are all of them.
     */
-    if (raw->pbyte < raw->plen)
-        return (0);
+    if (rt17->pbyte < rt17->plen)
+        return 0;
 
     /*
     | At this point we think have an entire packet.
     | The prospective packet must end with an ETX.
     */
-    if (raw->pbuff[raw->plen-1] != ETX)
+    if (rt17->pbuff[rt17->plen-1] != ETX)
     {
-        trace( 2, "RT17: Prospective packet did not end with an "
-                  "ETX character. Some data lost.\n" );
-        clear_packet_buffer(raw);
-        return (0);
+        trace(2, "RT17: Prospective packet did not end with an ETX character. Some data lost.\n");
+        ClearPacketBuffer(raw);
+        return 0;
     }
 
     /*
     | We do indeed have an entire packet.
     | Check the packet checksum.
     */
-    if (!check_packet_checksum(raw))
+    if (!CheckPacketChecksum(raw))
     {
         trace(2, "RT17: Packet checksum failure. Packet discarded.\n");
-        clear_packet_buffer(raw);
-        return(0);
+        ClearPacketBuffer(raw);
+        return 0;
     }
 
-    /* added to output message type (by TTAKA 2014/08/26) */
-    if (raw->outtype) {
-        sprintf(raw->msgtype,"RT17 0x%02X (%4d)",raw->pbuff[2],raw->plen);
-    }
+    if (raw->outtype)
+        sprintf(raw->msgtype, "RT17 0x%02X (%4d)", pbuff[2], rt17->plen);
 
-    /*
-    | If this is a SVDATA packet, then process it immediately.
-    */
-    if (raw->pbuff[2] == RETSVDATA)
+    /* If this is a SVDATA packet, then process it immediately */
+    if (pbuff[2] == RETSVDATA)
     {
-        status = decode_retsvdata( raw, strstr(raw->opt,"-LE") ?
-                                        LITTLE_ENDIAN : BIG_ENDIAN );
-        clear_packet_buffer(raw);
-        return (status);
+        ret = DecodeRetsvdata(raw);
+        ClearPacketBuffer(raw);
+        return ret;
     }
         
-    /*
-    | Accumulate a sequence of RAWDATA packets (pages).
-    */
-    if (raw->pbuff[2] == RAWDATA)
+    /* Accumulate a sequence of RAWDATA packets (pages) */
+    if (pbuff[2] == RAWDATA)
     {
-        page = raw->pbuff[5] >> 4;
-        pages = raw->pbuff[5] & 15;
-        reply = raw->pbuff[6];
+        Page  = pbuff[5] >> 4;
+        Pages = pbuff[5] & 15;
+        Reply = pbuff[6];
 
         /*
         | If this is the first RAWDATA packet in a sequence of RAWDATA packets,
@@ -501,63 +531,55 @@ extern int input_rt17(raw_t *raw, unsigned char data)
         */
         if (raw->nbyte == 0)
         {       
-            if (page != 1)
+            if (Page != 1)
             {
-                trace( 2, "RT17: First RAWDATA packet is not page #1. "
-                          "Packet discarded.\n" );
-                clear_packet_buffer(raw);
-                return (0);
+                trace(2, "RT17: First RAWDATA packet is not page #1. Packet discarded.\n");
+                ClearPacketBuffer(raw);
+                return 0;
             }
 
-            raw->reply = raw->pbuff[6];
+            rt17->reply = pbuff[6];
         }
-        else if ((reply != raw->reply) || (page != (raw->page + 1)))
+        else if ((Reply != rt17->reply) || (Page != (rt17->page + 1)))
         {
-            trace( 2, "RT17: RAWDATA packet sequence number mismatch or page "
-                      "out of order. %d RAWDATA packets discarded.\n", page );
-            clear_message_buffer(raw);
-            clear_packet_buffer(raw);
-            return (0);
+            trace(2, "RT17: RAWDATA packet sequence number mismatch or page out of order. %u RAWDATA packets discarded.\n", Page);
+            ClearMessageBuffer(raw);
+            ClearPacketBuffer(raw);
+            return 0;
         }
         
-        /*
-        | Check for raw->buff buffer overflow.
-        */
-        if ((raw->nbyte + raw->pbyte) > MAXRAWLEN)
+        /* Check for raw->buff buffer overflow */
+        if ((raw->nbyte + rt17->pbyte) > MAXRAWLEN)
         {
-            trace( 2, "RT17: Buffer would overflow. "
-                      "%d RAWDATA packets discarded.\n", page );
-            clear_message_buffer(raw);
-            clear_packet_buffer(raw);
-            return (0); 
+            trace(2, "RT17: Buffer would overflow. %u RAWDATA packets discarded.\n", Page);
+            ClearMessageBuffer(raw);
+            ClearPacketBuffer(raw);
+            return 0; 
         }
 
-        memcpy(raw->buff + raw->nbyte, raw->pbuff, raw->pbyte);
-        raw->nbyte += raw->pbyte;
-        raw->len += raw->plen;
-        clear_packet_buffer(raw);
+        memcpy(raw->buff + raw->nbyte, rt17->pbuff, rt17->pbyte);
+        raw->nbyte += rt17->pbyte;
+        raw->len += rt17->plen;
+        ClearPacketBuffer(raw);
 
-        if (page == pages)
+        if (Page == Pages)
         {
-            status = decode_rawdata( raw, strstr(raw->opt,"-LE") ?
-                                          LITTLE_ENDIAN : BIG_ENDIAN );
-            clear_message_buffer(raw);
-            return (status);
+            ret = DecodeRawdata(raw);
+            ClearMessageBuffer(raw);
+            return ret;
         }
 
-        raw->page = page;
+        rt17->page = Page;
 
-        return (0);
+        return 0;
     }
 
-     /*
-    | Accumulate a sequence of GENOUT (GSOF) packets (pages).
-    */
-    if (raw->pbuff[2] == GENOUT)
+    /* Accumulate a sequence of GENOUT (GSOF) packets (pages) */
+    if (pbuff[2] == GENOUT)
     {
-        reply = raw->pbuff[4];
-        page = raw->pbuff[5];
-        pages = raw->pbuff[6];
+        Reply = pbuff[4];
+        Page  = pbuff[5];
+        Pages = pbuff[6];
 
         /*
         | If this is the first GENOUT packet in a sequence of GENOUT packets,
@@ -569,53 +591,47 @@ extern int input_rt17(raw_t *raw, unsigned char data)
         */
         if (raw->nbyte == 0)
         {       
-            if (page != 0)
+            if (Page != 0)
             {
-                trace( 3, "RT17: First GENOUT packet is not page #0. "
-                          "Packet discarded.\n" );
-                clear_packet_buffer(raw);
-                return (0);
+                trace(3, "RT17: First GENOUT packet is not page #0. Packet discarded.\n");
+                ClearPacketBuffer(raw);
+                return 0;
             }
 
-            raw->reply = raw->pbuff[4];
+            rt17->reply = pbuff[4];
         }
-        else if ((reply != raw->reply) || (page != (raw->page + 1)))
+        else if ((Reply != rt17->reply) || (Page != (rt17->page + 1)))
         {
-            trace( 2, "RT17: GENOUT packet sequence number mismatch or page "
-                      "out of order. %d GENOUT packets discarded.\n", page );
-            clear_message_buffer(raw);
-            clear_packet_buffer(raw);
-            return (0);
+            trace(2, "RT17: GENOUT packet sequence number mismatch or page out of order. %u GENOUT packets discarded.\n", Page);
+            ClearMessageBuffer(raw);
+            ClearPacketBuffer(raw);
+            return 0;
         }
         
-        /*
-        | Check for raw->buff buffer overflow.
-        */
-        if ((raw->nbyte + raw->pbyte) > MAXRAWLEN)
+        /* Check for raw->buff buffer overflow. */
+        if ((raw->nbyte + rt17->pbyte) > MAXRAWLEN)
         {
-            trace( 2, "RT17: Buffer would overflow. "
-                      "%d GENOUT packets discarded.\n", page );
-            clear_message_buffer(raw);
-            clear_packet_buffer(raw);
-            return (0); 
+            trace(2, "RT17: Buffer would overflow. %u GENOUT packets discarded.\n", Page);
+            ClearMessageBuffer(raw);
+            ClearPacketBuffer(raw);
+            return 0; 
         }
 
-        memcpy(raw->buff + raw->nbyte, raw->pbuff, raw->pbyte);
-        raw->nbyte += raw->pbyte;
-        raw->len += raw->plen;
-        clear_packet_buffer(raw);
+        memcpy(raw->buff + raw->nbyte, pbuff, rt17->pbyte);
+        raw->nbyte += rt17->pbyte;
+        raw->len += rt17->plen;
+        ClearPacketBuffer(raw);
 
-        if (page == pages)
+        if (Page == Pages)
         {
-            decode_genout( raw, strstr(raw->opt,"-LE") ?
-                                    LITTLE_ENDIAN : BIG_ENDIAN );
-            clear_message_buffer(raw);
-            return (0);
+            ret = DecodeGSOF(raw);
+            ClearMessageBuffer(raw);
+            return ret;
         }
 
-        raw->page = page;
+        rt17->page = Page;
 
-        return (0);
+        return 0;
     }
 
     /*
@@ -623,114 +639,60 @@ extern int input_rt17(raw_t *raw, unsigned char data)
     | (and hence we can't really even get here). Dump the packet on the floor
     | and continue reading from the stream.
     */
-    trace( 2, "RT17: Packet is not GENOUT, RAWDATA or RETSVDATA. "
-              "Packet discarded.\n" ); 
-    clear_packet_buffer(raw);
-    return (0);
+    trace(2, "RT17: Packet is not GENOUT, RAWDATA or RETSVDATA. Packet discarded.\n"); 
+    ClearPacketBuffer(raw);
+    return 0;
 }
 
 /*
-| Function: input_rt17f
-| Purpose:  Read an RT17 mesasge from a file 
-| Authors:  Daniel A. Cook
+| input_rt17f - Read an RT-17 mesasge from a file 
 |
-| Formal Parameters: 
+| Returns:
 |
-|   Raw    = Receiver raw data control structure [Input]
-|   FP     = File Pointer                        [Input]
-|
-| Implicit Inputs:
-|
-|   Raw->buff[]
-|   Raw->pbuff[]
-|   Raw->len
-|   Raw->plen
-|   Raw->nbyte
-|   Raw->pbyte
-|   Raw->reply
-|
-| Implicit outputs:
-|
-|   Raw->buff[]
-|   Raw->pbuff[]
-|   Raw->len
-|   Raw->plen
-|   Raw->nbyte
-|   Raw->pbyte
-|   Raw->reply
-|
-| Return Value:
-|
-|   -2: End of file (EOF)
-|   -1: error message
-|    0: no message
-|    1: input observation data
-|    2: input ephemeris
-|    3: input sbas message
-|    9: input ion/utc parameter
-|
-| Design Issues:
-|
+| -2: End of file (EOF)
+| -1: error message
+|  0: no message
+|  1: input observation data
+|  2: input ephemeris
+|  9: input ion/utc parameter
 */
 extern int input_rt17f(raw_t *raw, FILE *fp)
 {
-    int data, status; 
-  
-    while (1)
+    int i, Data, ret;
+    
+    for (i = 0; i < 4096; i++)
     {
-        if ((data = fgetc(fp)) == EOF) return (-2);
-        if ((status = input_rt17(raw, (unsigned char) data))) return (status);
+	if ((Data = fgetc(fp)) == EOF) return -2;
+	    if ((ret = input_rt17(raw, (unsigned char) Data))) return ret;
     }
+
+    return 0; /* return at every 4k bytes */
 }
 
 /*
 | Private functions (in alphabetical order):
 */
 
-
 /*
-| Function: check_packet_checksum
-| Purpose:  Check the packet checksum
-| Authors:  Daniel A. Cook
+| CheckPacketChecksum - Check the packet checksum
 |
-| Formal Parameters: 
-|
-|   Raw = Receiver raw data control structure [Input]
-|
-| Implicit Inputs:
-|
-|   Raw->pbuff[]
-|
-| Implicit Outputs:
-|
-|   Raw->pbuff[]
-|
-| Return Value:
-|
-|   TRUE  = Checksum matched
-|   FALSE = Checksum did not match
-|
-| Design issues:
-|
-|   The checksum is computed as the modulo 256 (unsigned 8-bit byte integer)
-|   sum of the packet contents starting with the status byte, including the
-|   packet type byte, length byte, data bytes and ending with the last byte
-|   of the data bytes. It does not include the STX leader, the ETX trailer
-|   nor the checksum byte.
+| The checksum is computed as the modulo 256 (unsigned 8-bit byte integer)
+| sum of the packet contents starting with the status byte, including the
+| packet type byte, length byte, data bytes and ending with the last byte
+| of the data bytes. It does not include the STX leader, the ETX trailer
+| nor the checksum byte.
 */
-static int check_packet_checksum(raw_t *raw)
+static int CheckPacketChecksum(raw_t *raw)
 {
-    unsigned char checksum = 0;
-    unsigned char *p = &raw->pbuff[1];       /* Starting with status */
-    unsigned int length = raw->pbuff[3] + 3; /* status, type, length, data */
+    unsigned char Checksum = 0;
+    unsigned char *p = &raw->rt17.pbuff[1];       /* Starting with status */
+    unsigned int Length = raw->rt17.pbuff[3] + 3; /* status, type, length, data */
   
-    /*
-    | Compute the packet checksum.
-    */
-    while (length > 0)
+    /* Compute the packet checksum */
+    while (Length > 0)
     {
-        checksum += *p++;
-        length--;
+        Checksum += *p++;
+        Length--;
     }
 
     /*
@@ -738,36 +700,11 @@ static int check_packet_checksum(raw_t *raw)
     | (Note that the above loop by design very conveniently left *p pointing
     |  to the checksum byte at the end of the packet.)
     */ 
-    return (checksum == *p);
+    return (Checksum == *p);
 }
 
-/*
-| Function: clear_message_buffer
-| Purpose:  Clear the raw data stream buffer
-| Authors:  Daniel A. Cook
-|
-| Formal Parameters: 
-|
-|   Raw  = Receiver raw data control structure [Input]
-|
-| Implicit Inputs:
-|
-|   <none>
-|
-| Implicit Outputs:
-|
-|   Raw->buff[0-4]
-|   Raw->nbyte;
-|   Raw->len;
-|
-| Return Value:
-|
-|   <none>
-|
-| Design issues:
-|
-*/
-static void clear_message_buffer(raw_t *raw)
+/* ClearMessageBuffer - Clear the raw data stream buffer */
+static void ClearMessageBuffer(raw_t *raw)
 {
     int i;
 
@@ -775,260 +712,88 @@ static void clear_message_buffer(raw_t *raw)
         raw->buff[i] = 0;
 
     raw->len = raw->nbyte = 0;
-    raw->reply = 0;
+    raw->rt17.reply = 0;
 }
 
-/*
-| Function: clear_packet_buffer
-| Purpose:  Clear the packet buffer
-| Authors:  Daniel A. Cook
-|
-| Formal Parameters: 
-|
-|   Raw = Receiver raw data control structure [Input]
-|
-| Implicit Inputs:
-|
-|   <none>
-|
-| Implicit Outputs:
-|
-|   Raw->pbuff[0-4]
-|   Raw->pbyte;
-|   Raw->plen;
-|
-| Return Value:
-|
-|   <none>
-|
-| Design issues:
-|
-*/
-static void clear_packet_buffer(raw_t *raw)
+/* ClearPacketBuffer - Clear the packet buffer */
+static void ClearPacketBuffer(raw_t *raw)
 {
     int i;
 
     for (i = 0; i < 4; i++)
-        raw->pbuff[i] = 0;
+        raw->rt17.pbuff[i] = 0;
 
-    raw->plen = raw->pbyte = 0;
+    raw->rt17.plen = raw->rt17.pbyte = 0;
 }
 
 /*
-| Function: decode_genout
-| Purpose:  Decode a General Serial Output Format (GSOF) message 
-| Authors:  Daniel A. Cook
+| DecodeBeidouEphemeris - Decode a Beidou Ephemeris record
 |
-| Formal Parameters: 
+| Returns:
 |
-|   Raw = Receiver raw data control structure [Input]
+| -1: error message
+|  2: input ephemeris
 |
-| Implicit Inputs:
-|
-|   Raw->buff[]
-|   Raw->len
-|
-| Implicit outputs:
-|
-|   Raw->buff[]
-|   Raw->len
-|
-| Return Value:
-|
-|   <none>
-|
-| Design Issues:
-|
+| See reference #1 above for documentation of the RETSVDATA Beidou Ephemeris.
 */
-static void decode_genout(raw_t *raw, int endian)
+static int DecodeBeidouEphemeris(raw_t *raw)
 {
-    static const char *rt[] = { NULL,                                   /* 00 */
-                                "Position Time",                        /* 01 */
-                                "Latitude Longitude Height",            /* 02 */
-                                "ECEF Position",                        /* 03 */
-                                "Local Datum LLH Position",             /* 04 */
-                                "Local Zone ENU Position",              /* 05 */
-                                "ECEF Delta",                           /* 06 */
-                                "Tangent Plane Delta",                  /* 07 */
-                                "Velocity Data",                        /* 08 */
-                                "PDOP Information",                     /* 09 */
-                                "Clock Information",                    /* 10 */
-                                "Position VCV Information",             /* 11 */
-                                "Position Sigma Information",           /* 12 */
-                                "SV Brief Information",                 /* 13 */
-                                "SV Detailed Information",              /* 14 */
-                                "Receiver Serial Number",               /* 15 */
-                                "Current Time",                         /* 16 */
-                                NULL,                                   /* 17 */
-                                NULL,                                   /* 18 */
-                                NULL,                                   /* 19 */
-                                NULL,                                   /* 20 */
-                                NULL,                                   /* 21 */
-                                NULL,                                   /* 22 */
-                                NULL,                                   /* 23 */
-                                NULL,                                   /* 24 */
-                                NULL,                                   /* 25 */
-                                "Position Time UTC",                    /* 26 */
-                                "Attitude Information",                 /* 27 */
-                                NULL,                                   /* 28 */
-                                NULL,                                   /* 29 */
-                                NULL,                                   /* 30 */
-                                NULL,                                   /* 31 */
-                                NULL,                                   /* 32 */
-                                "All SV Brief Information",             /* 33 */
-                                "All SV Detailed Information",          /* 34 */
-                                "Received Base Information",            /* 35 */
-                                NULL,                                   /* 36 */
-                                "Battery and Memory Information",       /* 37 */
-                                NULL,                                   /* 38 */
-                                NULL,                                   /* 39 */
-                                "L-Band Status Information",            /* 40 */
-                                "Base Position and Quality Indicator" };/* 41 */
+    tracet(3, "DecodeBeidouEphemeris(); not yet implemented.\n");
+    return 0;
 
-    int input_len;
-    unsigned char len, recordtype, *p;
-    char *recordtype_s = NULL;
- 
-   /*
-    | Reassemble origional message by removing packet headers,
-    | trailers and page framing.
-    */
-    unwrap_genout(raw);
-
-    p = raw->buff;
-    input_len = raw->len;
-
-    while (input_len)
-    {
-        recordtype = p[0];
-        len = p[1];
-
-        if (recordtype < (sizeof(rt) / sizeof(char*)))
-            recordtype_s = (char*) rt[recordtype];
-
-        if (!recordtype_s)
-            recordtype_s = "Unknown";
-
-        trace( 4, "RT17: Packet type=0X40 (GENOUT), GSOF record type=%d (%s), "
-                  "length=%d.\n", recordtype, recordtype_s, len );
-      
-        /*
-        | Process (or possibly ignore) the message.
-        */
-        switch (recordtype)
-        {
-        case 1:
-            decode_gsof_1(raw, p, endian);
-            break;
-        case 16:
-            decode_gsof_16(raw, p, endian);
-            break;
-        case 26:
-            decode_gsof_26(raw, p, endian);
-            break;
-        case 41:
-            decode_gsof_41(raw, p, endian);
-            break;
-        default:
-            trace(4, "RT17: GSOF message not processed.\n");    
-        }
-
-        len += 2;
-        p += len;
-        input_len -= len;
-    }
-}
-
-/*
-| Function: decode_gps_ephemeris
-| Purpose:  Decode a GPS Ephemeris record
-| Authors:  Daniel A. Cook
-|
-| Formal Parameters: 
-|
-|   Raw = Receiver raw data control structure [Input]
-|   Endian = Endianness indicator             [Input]
-|
-| Implicit Inputs:
-|
-|   Raw->pbuff[]
-|   Raw->plen
-|
-| Implicit outputs:
-|
-|   Raw->pbuff[]
-|   Raw->plen
-|
-| Return Value:
-|
-|   -1: error message
-|    0: no message (tells caller to please read more data from the stream)
-|    1: input observation data
-|    2: input ephemeris
-|    3: input sbas message
-|    9: input ion/utc parameter
-|
-| Design Issues:
-|
-|   See ICD-GPS-200C.PDF for documentation of the GPS satellite ephemeris.
-|   See reference #1 above for documentation of the RETSVDATA GPS Ephemeris.
-*/
-static int decode_gps_ephemeris(raw_t *raw, int e)
-{
-    unsigned char *p = raw->pbuff;
+#if 0
+    unsigned char *p = raw->rt17.pbuff;
     int prn, sat, toc, tow;
-    unsigned int flags, toe;
+    unsigned int Flags, toe;
     double sqrtA;
     eph_t eph={0};
 
-    trace(4, "RT17: decode_gps_ephemeris, length=%d\n", raw->plen);
+    trace(3, "RT17: DecodeBeidouEphemeris(); Length=%d\n", raw->rt17.plen);
 
-    if (raw->plen < 182)
+    if (raw->rt17.plen < 182)
     {
-        trace( 2, "RT17: RETSVDATA packet length %d < 182 bytes. "
-                  "GPS ephemeris packet discarded.\n", raw->plen );
-        return (-1);
+        trace(2, "RT17: RETSVDATA packet length %d < 182 bytes. GPS ephemeris packet discarded.\n", raw->rt17.plen);
+        return -1;
     }
 
     prn = U1(p+5);
 
-    if (!(sat=satno(SYS_GPS, prn)))
+    if (!(sat=satno(SYS_CMP, prn)))
     {
-        trace(2, "RT17: GPS ephemeris satellite number error, PRN=%d.\n", prn);
-        return (-1);
+        trace(2, "RT17: Beidou ephemeris satellite number error, PRN=%d.\n", prn);
+        return -1;
     }
  
-    eph.week  = U2(p+6,e);   /* 006-007: Ephemeris Week number (weeks) */
-    eph.iodc  = U2(p+8,e);   /* 008-009: IODC */ 
-    /* Reserved byte */      /* 010-010: RESERVED */
-    eph.iode  = U1(p+11);    /* 011-011: IODE */
-    tow       = I4(p+12,e);  /* 012-015: TOW */
-    toc       = I4(p+16,e);  /* 016-019: TOC (seconds) */
-    toe       = U4(p+20,e);  /* 020-023: TOE (seconds) */                                   
-    eph.tgd[0]= R8(p+24,e);  /* 024-031: TGD (seconds) */
-    eph.f2    = R8(p+32,e);  /* 032-029: AF2 (seconds/seconds^2) */
-    eph.f1    = R8(p+40,e);  /* 040-047: AF1 (seconds/seconds) */
-    eph.f0    = R8(p+48,e);  /* 048-055: AF0 (seconds) */
-    eph.crs   = R8(p+56,e);  /* 056-063: CRS (meters) */
-    eph.deln  = R8(p+64,e);  /* 064-071: DELTA N (semi-circles/second) */
-    eph.M0    = R8(p+72,e);  /* 072-079: M SUB 0 (semi-circles) */
-    eph.cuc   = R8(p+80,e);  /* 080-087: CUC (semi-circles) */
-    eph.e     = R8(p+88,e);  /* 088-095: ECCENTRICITY (dimensionless) */
-    eph.cus   = R8(p+96,e);  /* 096-103: CUS (semi-circles) */
-    sqrtA     = R8(p+104,e); /* 104-111: SQRT A (meters ^ 0.5) */
-    eph.cic   = R8(p+112,e); /* 112-119: CIC (semi-circles) */
-    eph.OMG0  = R8(p+120,e); /* 120-127: OMEGA SUB 0 (semi-circles) */
-    eph.cis   = R8(p+128,e); /* 128-135: CIS (semi-circlces) */
-    eph.i0    = R8(p+136,e); /* 136-143: I SUB 0 (semi-circles) */
-    eph.crc   = R8(p+144,e); /* 144-151: CRC (meters) */
-    eph.omg   = R8(p+152,e); /* 152-159: OMEGA (semi-circles?) */
-    eph.OMGd  = R8(p+160,e); /* 160-167: OMEGA DOT (semi-circles/second) */
-    eph.idot  = R8(p+168,e); /* 168-175: I DOT (semi-circles/second) */
-    flags     = U4(p+176,e); /* 176-179: FLAGS */
+    eph.week  = U2(p+6);    /* 006-007: Ephemeris Week number (weeks) */
+    eph.iodc  = U2(p+8);    /* 008-009: IODC */ 
+    /* Reserved byte */     /* 010-010: RESERVED */
+    eph.iode  = U1(p+11);   /* 011-011: IODE */
+    tow       = I4(p+12);   /* 012-015: TOW */
+    toc       = I4(p+16);   /* 016-019: TOC (seconds) */
+    toe       = U4(p+20);   /* 020-023: TOE (seconds) */                                   
+    eph.tgd[0]= R8(p+24);   /* 024-031: TGD (seconds) */
+    eph.f2    = R8(p+32);   /* 032-029: AF2 (seconds/seconds^2) */
+    eph.f1    = R8(p+40);   /* 040-047: AF1 (seconds/seconds) */
+    eph.f0    = R8(p+48);   /* 048-055: AF0 (seconds) */
+    eph.crs   = R8(p+56);   /* 056-063: CRS (meters) */
+    eph.deln  = R8(p+64);   /* 064-071: DELTA N (semi-circles/second) */
+    eph.M0    = R8(p+72);   /* 072-079: M SUB 0 (semi-circles) */
+    eph.cuc   = R8(p+80);   /* 080-087: CUC (semi-circles) */
+    eph.e     = R8(p+88);   /* 088-095: ECCENTRICITY (dimensionless) */
+    eph.cus   = R8(p+96);   /* 096-103: CUS (semi-circles) */
+    sqrtA     = R8(p+104);  /* 104-111: SQRT A (meters ^ 0.5) */
+    eph.cic   = R8(p+112);  /* 112-119: CIC (semi-circles) */
+    eph.OMG0  = R8(p+120);  /* 120-127: OMEGA SUB 0 (semi-circles) */
+    eph.cis   = R8(p+128);  /* 128-135: CIS (semi-circlces) */
+    eph.i0    = R8(p+136);  /* 136-143: I SUB 0 (semi-circles) */
+    eph.crc   = R8(p+144);  /* 144-151: CRC (meters) */
+    eph.omg   = R8(p+152);  /* 152-159: OMEGA (semi-circles?) */
+    eph.OMGd  = R8(p+160);  /* 160-167: OMEGA DOT (semi-circles/second) */
+    eph.idot  = R8(p+168);  /* 168-175: I DOT (semi-circles/second) */
+    Flags     = U4(p+176);  /* 176-179: FLAGS */
   
     /*
-    | Multiply these by PI to make ICD specified semi-circle units into radian
-    | units for RTKLIB.
+    | Multiply these by PI to make semi-circle units into radian units for RTKLIB.
     */
     eph.deln *= SC2RAD;
     eph.i0   *= SC2RAD;
@@ -1039,20 +804,19 @@ static int decode_gps_ephemeris(raw_t *raw, int e)
     eph.OMGd *= SC2RAD;
 
     /*
-    | As specifically directed to do so by Reference #1, multiply these by PI
-    | to make the non-standard Trimble specified semi-circle units into radian
-    | units, which is what ICD-GPS-200C calls for and also what RTKLIB needs.
+    | As specifically directed to do so by Reference #1, multiply these by PI.
+    | to make semi-circle units into radian units, which is what RTKLIB needs.
     */
     eph.cic *= SC2RAD;
     eph.cis *= SC2RAD;
     eph.cuc *= SC2RAD;
     eph.cus *= SC2RAD;
  
-    /*
+   /*
     | Select the correct curve fit interval as per ICD-GPS-200 sections
     | 20.3.3.4.3.1 and 20.3.4.4 using IODC, fit flag and Table 20-XII.
     */
-    if (flags & 1024)  /* Subframe 2, word 10, bit 17 (fit flag) */
+    if (Flags & M_BIT10)  /* Subframe 2, word 10, bit 17 (fit flag) */
     {
         if ((eph.iodc >= 240) && (eph.iodc <= 247))
             eph.fit = 8;
@@ -1075,11 +839,285 @@ static int decode_gps_ephemeris(raw_t *raw, int e)
     }
     else
         eph.fit = 4;
+ 
+    eph.flag  = (Flags & M_BIT0);   /* Subframe 1, word 4, bit 1, Data flag for L2 P-code */
+    eph.code  = (Flags >> 1) & 3;   /* Subframe 1, word 3, bits 11-12, Codes on L2 channel */
+    eph.svh   = (Flags >> 4) & 127; /* Subframe 1, word 3, bits 17-22, SV health from ephemeris */
+    eph.sva   = (Flags >> 11) & 15; /* Subframe 1, word 3, bits 13-16, User Range Accuracy index */     
 
-    eph.flag  = (flags & 1);        /* Subframe 1, word 4, bit 1, Data flag for L2 P-code */
-    eph.code  = (flags >> 1) & 3;   /* Subframe 1, word 3, bits 11?12, Codes on L2 channel */
-    eph.svh   = (flags >> 4) & 127; /* Subframe 1, word 3, bits 17?22, SV health from ephemeris */
-    eph.sva   = (flags >> 11) & 15; /* Subframe 1, word 3, bits 13?16, User Range Accuracy index */     
+    eph.A     = sqrtA * sqrtA;
+
+    eph.toes  = toe;
+    eph.toc   = bdt2gpst(bdt2time(eph.week, toc));
+    eph.toe   = bdt2gpst(bdt2time(eph.week, toe));
+    eph.ttr   = bdt2gpst(bdt2time(eph.week, tow));
+
+    trace(3, "RT17: DecodeBeidouEphemeris(); SAT=%d, IODC=%d, IODE=%d, WEEK=%d.\n", sat, eph.iodc, eph.iode, eph.week);
+
+    if (!strstr(raw->opt,"-EPHALL"))
+    {
+        if (eph.iode == raw->nav.eph[sat-1].iode)
+            return 0; /* unchanged */
+    }
+
+    eph.sat = sat;
+    raw->nav.eph[sat-1] = eph;
+    raw->ephsat = sat;
+
+    return 2;
+#endif
+}
+
+/*
+| DecodeGalileoEphemeris - Decode a Galileo Ephemeris record
+|
+| Returns:
+|
+| -1: error message
+|  2: input ephemeris
+|
+| See reference #1 above for documentation of the RETSVDATA Galileo Ephemeris.
+*/
+static int DecodeGalileoEphemeris(raw_t *raw)
+{
+    tracet(3, "DecodeGalileoEphemeris(); not yet implemented.\n");
+    return 0;
+
+#if 0
+    unsigned char *p = raw->rt17.pbuff;
+    int prn, sat, toc, tow;
+    unsigned int toe;
+    double sqrtA;
+    eph_t eph={0};
+
+    unsigned char SISA, MODEL1, MODEL2;
+    unsigned short IODnav, HSDVS;
+    double BDG1, BDG2;
+
+    trace(3, "RT17: DecodeGalileoEphemeris(); Length=%d\n", raw->rt17.plen);
+
+    if (raw->rt17.plen < 190)
+    {
+        trace(2, "RT17: RETSVDATA packet length %d < 190 bytes. Galileo ephemeris packet discarded.\n", raw->rt17.plen);
+        return -1;
+    }
+
+    prn = U1(p+5);
+
+    if (!(sat=satno(SYS_GAL, prn)))
+    {
+        trace(2, "RT17: Galileo ephemeris satellite number error, PRN=%d.\n", prn);
+        return -1;
+    }
+ 
+    eph.code  = U1(p+6);    /* 006-006: Data source 0:E1B 1:E5B 2:E5A */
+    eph.week  = U2(p+7);    /* 007-008: Ephemeris Week number (weeks) */
+    tow       = I4(p+9);    /* 008-012: TOW */
+    IODnav    = U2(p+13);   /* 013-014: Ephemeris and clock correction issue of data */
+    toe       = U4(p+15);   /* 015-018: TOE (seconds) */ 
+    eph.crs   = R8(p+19);   /* 019-026: CRS (meters) */
+    eph.deln  = R8(p+27);   /* 027-034: DELTA N (semi-circles/second) */
+    eph.M0    = R8(p+35);   /* 035-042: M SUB 0 (semi-circles) */
+    eph.cuc   = R8(p+43);   /* 043-050: CUC (semi-circles) */
+    eph.e     = R8(p+51);   /* 051-058: ECCENTRICITY (dimensionless) */
+    eph.cus   = R8(p+59);   /* 059-066: CUS (semi-circles) */
+    sqrtA     = R8(p+67);   /* 067-074: SQRT A (meters ^ 0.5) */
+    eph.cic   = R8(p+75);   /* 075-082: CIC (semi-circles) */
+    eph.OMG0  = R8(p+83);   /* 083-090: OMEGA SUB 0 (semi-circles) */
+    eph.cis   = R8(p+91);   /* 091-098: CIS (semi-circlces) */
+    eph.i0    = R8(p+99);   /* 099-106: I SUB 0 (semi-circles) */
+    eph.crc   = R8(p+107);  /* 107-114: CRC (meters) */
+    eph.omg   = R8(p+115);  /* 115-122: OMEGA (semi-circles?) */
+    eph.OMGd  = R8(p+123);  /* 123-130: OMEGA DOT (semi-circles/second) */
+    eph.idot  = R8(p+131);  /* 131-138: I DOT (semi-circles/second) */
+    SISA      = U1(p+149);  /* 149-149: ? */
+    HSDVS     = U2(p+150);  /* 150-151: Signal Health Flag */
+    toc       = I4(p+142);  /* 142-145: TOC (seconds) */
+    eph.f0    = R8(p+146);  /* 146-153: AF0 (seconds) */
+    eph.f1    = R8(p+154);  /* 154-161: AF1 (seconds/seconds) */
+    eph.f2    = R8(p+162);  /* 162-169: AF2 (seconds/seconds^2) */
+    BDG1      = R8(p+170);  /* 170-177: Seconds */
+    MODEL1    = U1(p+178);  /* 178-178: Clock model for TOC/AF0–2/BGD1 */
+    BDG2      = R8(p+179);  /* 179-186: Seconds */
+    MODEL2    = U1(p+187);  /* 187-187: Clock model for BGD2 */
+
+    /*
+    | Multiply these by PI to make semi-circle units into radian units for RTKLIB.
+    */
+    eph.deln *= SC2RAD;
+    eph.i0   *= SC2RAD;
+    eph.idot *= SC2RAD;
+    eph.M0   *= SC2RAD;
+    eph.omg  *= SC2RAD;
+    eph.OMG0 *= SC2RAD;
+    eph.OMGd *= SC2RAD;
+
+    /*
+    | As specifically directed to do so by Reference #1, multiply these by PI.
+    | to make semi-circle units into radian units, which is what RTKLIB needs.
+    */
+    eph.cic *= SC2RAD;
+    eph.cis *= SC2RAD;
+    eph.cuc *= SC2RAD;
+    eph.cus *= SC2RAD;
+ 
+    eph.A     = sqrtA * sqrtA;
+
+    eph.toes  = toe;
+    eph.toc   = gst2time(eph.week, toc);
+    eph.toe   = gst2time(eph.week, toe);
+    eph.ttr   = gst2time(eph.week, tow);
+
+    trace(3, "RT17: DecodeGalileoEphemeris(); SAT=%d, IODC=%d, IODE=%d, WEEK=%d.\n", sat, eph.iodc, eph.iode, eph.week);
+
+    if (!strstr(raw->opt,"-EPHALL"))
+    {
+        if (eph.iode == raw->nav.eph[sat-1].iode)
+            return 0; /* unchanged */
+    }
+
+    eph.sat = sat;
+    raw->nav.eph[sat-1] = eph;
+    raw->ephsat = sat;
+
+    return 2;
+#endif
+}
+
+/*
+| DecodeGLONASSEphemeris - Decode a GLONASS Ephemeris record
+|
+| Returns:
+|
+| -1: error message
+|  2: input ephemeris
+|
+| See reference #1 above for documentation of the RETSVDATA GLONASS Ephemeris.
+*/
+static int DecodeGLONASSEphemeris(raw_t *raw)
+{
+    tracet(3, "DecodeGLONASSEphemeris(); not yet implemented.\n");
+    return 0;
+}
+   
+/*
+| DecodeGPSEphemeris - Decode a GPS Ephemeris record
+|
+| Returns:
+|
+| -1: error message
+|  2: input ephemeris
+|
+| See ICD-GPS-200C.PDF for documentation of the GPS satellite ephemeris.
+| See reference #1 above for documentation of the RETSVDATA GPS Ephemeris.
+*/
+static int DecodeGPSEphemeris(raw_t *raw)
+{
+    rt17_t *rt17 = &raw->rt17;
+    unsigned char *p = rt17->pbuff;
+    int prn, sat, toc, tow;
+    unsigned int Flags, toe;
+    double sqrtA;
+    eph_t eph={0};
+
+    trace(3, "RT17: DecodeGPSEphemeris(); Length=%d\n", raw->rt17.plen);
+
+    if (raw->rt17.plen < 182)
+    {
+        trace(2, "RT17: RETSVDATA packet length %d < 182 bytes. GPS ephemeris packet discarded.\n", raw->rt17.plen);
+        return -1;
+    }
+
+    prn = U1(p+5);
+
+    if (!(sat=satno(SYS_GPS, prn)))
+    {
+        trace(2, "RT17: GPS ephemeris satellite number error, PRN=%d.\n", prn);
+        return -1;
+    }
+ 
+    eph.week  = U2(p+6);    /* 006-007: Ephemeris Week number (weeks) */
+    eph.iodc  = U2(p+8);    /* 008-009: IODC */ 
+    /* Reserved byte */     /* 010-010: RESERVED */
+    eph.iode  = U1(p+11);   /* 011-011: IODE */
+    tow       = I4(p+12);   /* 012-015: TOW */
+    toc       = I4(p+16);   /* 016-019: TOC (seconds) */
+    toe       = U4(p+20);   /* 020-023: TOE (seconds) */                                   
+    eph.tgd[0]= R8(p+24);   /* 024-031: TGD (seconds) */
+    eph.f2    = R8(p+32);   /* 032-029: AF2 (seconds/seconds^2) */
+    eph.f1    = R8(p+40);   /* 040-047: AF1 (seconds/seconds) */
+    eph.f0    = R8(p+48);   /* 048-055: AF0 (seconds) */
+    eph.crs   = R8(p+56);   /* 056-063: CRS (meters) */
+    eph.deln  = R8(p+64);   /* 064-071: DELTA N (semi-circles/second) */
+    eph.M0    = R8(p+72);   /* 072-079: M SUB 0 (semi-circles) */
+    eph.cuc   = R8(p+80);   /* 080-087: CUC (semi-circles) */
+    eph.e     = R8(p+88);   /* 088-095: ECCENTRICITY (dimensionless) */
+    eph.cus   = R8(p+96);   /* 096-103: CUS (semi-circles) */
+    sqrtA     = R8(p+104);  /* 104-111: SQRT A (meters ^ 0.5) */
+    eph.cic   = R8(p+112);  /* 112-119: CIC (semi-circles) */
+    eph.OMG0  = R8(p+120);  /* 120-127: OMEGA SUB 0 (semi-circles) */
+    eph.cis   = R8(p+128);  /* 128-135: CIS (semi-circlces) */
+    eph.i0    = R8(p+136);  /* 136-143: I SUB 0 (semi-circles) */
+    eph.crc   = R8(p+144);  /* 144-151: CRC (meters) */
+    eph.omg   = R8(p+152);  /* 152-159: OMEGA (semi-circles?) */
+    eph.OMGd  = R8(p+160);  /* 160-167: OMEGA DOT (semi-circles/second) */
+    eph.idot  = R8(p+168);  /* 168-175: I DOT (semi-circles/second) */
+    Flags     = U4(p+176);  /* 176-179: FLAGS */
+  
+    /*
+    | Multiply these by PI to make ICD specified semi-circle units into radian
+    | units for RTKLIB.
+    */
+    eph.deln *= SC2RAD;
+    eph.i0   *= SC2RAD;
+    eph.idot *= SC2RAD;
+    eph.M0   *= SC2RAD;
+    eph.omg  *= SC2RAD;
+    eph.OMG0 *= SC2RAD;
+    eph.OMGd *= SC2RAD;
+
+    /*
+    | As specifically directed to do so by Reference #1, multiply these by PI.
+    | to make semi-circle units into radian units, which is what ICD-GPS-200C
+    | calls for and also what RTKLIB needs.
+    */
+    eph.cic *= SC2RAD;
+    eph.cis *= SC2RAD;
+    eph.cuc *= SC2RAD;
+    eph.cus *= SC2RAD;
+ 
+   /*
+    | Select the correct curve fit interval as per ICD-GPS-200 sections
+    | 20.3.3.4.3.1 and 20.3.4.4 using IODC, fit flag and Table 20-XII.
+    */
+    if (Flags & M_BIT10)  /* Subframe 2, word 10, bit 17 (fit flag) */
+    {
+        if ((eph.iodc >= 240) && (eph.iodc <= 247))
+            eph.fit = 8;
+        else if (((eph.iodc >= 248) && (eph.iodc <= 255)) || (eph.iodc == 496))
+            eph.fit = 14;
+        else if ((eph.iodc >= 497) && (eph.iodc <= 503))
+            eph.fit = 26;
+        else if ((eph.iodc >= 504) && (eph.iodc <= 510))
+            eph.fit = 50;
+        else if ((eph.iodc == 511) || ((eph.iodc >= 752) && (eph.iodc <= 756)))
+            eph.fit = 74;
+        else if ((eph.iodc >= 757) && (eph.iodc <= 763))
+            eph.fit = 98;
+        else if (((eph.iodc >= 764) && (eph.iodc <= 767)) || ((eph.iodc >= 1008) && (eph.iodc <= 1010)))
+            eph.fit = 122;
+        else if ((eph.iodc >= 1011) && (eph.iodc <= 1020))
+            eph.fit = 146;
+        else
+            eph.fit = 6;
+    }
+    else
+        eph.fit = 4;
+ 
+    eph.flag  = (Flags & M_BIT0);   /* Subframe 1, word 4, bit 1, Data flag for L2 P-code */
+    eph.code  = (Flags >> 1) & 3;   /* Subframe 1, word 3, bits 11-12, Codes on L2 channel */
+    eph.svh   = (Flags >> 4) & 127; /* Subframe 1, word 3, bits 17-22, SV health from ephemeris */
+    eph.sva   = (Flags >> 11) & 15; /* Subframe 1, word 3, bits 13-16, User Range Accuracy index */     
 
     eph.A     = sqrtA * sqrtA;
 
@@ -1088,570 +1126,565 @@ static int decode_gps_ephemeris(raw_t *raw, int e)
     eph.toe   = gpst2time(eph.week, toe);
     eph.ttr   = gpst2time(eph.week, tow);
 
-    trace( 4, "RT17: decode_gps_ephemeris, SAT=%d, IODC=%d, IODE=%d.\n",
-           sat, eph.iodc, eph.iodc );
+    trace(3, "RT17: DecodeGPSEphemeris(); SAT=%d, IODC=%d, IODE=%d, WEEK=%d.\n", sat, eph.iodc, eph.iode, eph.week);
+    
+    if (rt17->week && (rt17->week != eph.week))
+    {
+        trace(2, "RT17: Currently set or assumed GPS week does not match received ephemeris week.\n");
+        trace(2, "RT17: Set or assumed GPS week: %d  Received ephemeris week: %d\n", rt17->week, eph.week);
+    }
 
+    if (!(rt17->flags & M_WEEK_OPTION))
+    {
+        if (!rt17->week || (rt17->flags & M_WEEK_TIME) || (eph.week > rt17->week))
+        {
+            if (!rt17->week)
+                trace(2, "RT17: Initial GPS WEEK number unknown; WEEK number %d assumed for now.\n", eph.week);
+            else
+                trace(2, "RT17: Changing assumed week number from %d to %d.\n", rt17->week, eph.week);
+            rt17->flags &= ~M_WEEK_TIME;
+            rt17->flags |= M_WEEK_EPH;
+            rt17->week = eph.week;
+        }
+    }
+ 
     if (!strstr(raw->opt,"-EPHALL"))
     {
         if (eph.iode == raw->nav.eph[sat-1].iode)
-            return (0); /* unchanged */
+            return 0; /* unchanged */
     }
 
     eph.sat = sat;
     raw->nav.eph[sat-1] = eph;
     raw->ephsat = sat;
 
-    return (2);
+    return 2;
 }
 
-/*
-| Function: decode_gsof_1
-| Purpose:  Decode a Position Time GSOF message 
-| Authors:  Daniel A. Cook
-|
-| Formal Parameters: 
-|
-|   Raw    = Receiver raw data control structure [Input]
-|   p      = Buffer pointer                      [Input]
-|   Endian = Endianness indicator                [Input]
-|
-| Implicit Inputs:
-|
-|   <none>
-|
-| Implicit outputs:
-|
-|   Raw->week
-|
-| Return Value:
-|
-|   <none>
-|
-| Design Issues:
-|
-|   We don't actually "decode" this message per-se.
-|   We're only interested in the GPS week number.
-|
-*/
-static void decode_gsof_1(raw_t *raw, unsigned char *p, int endian)
+/* DecodeGSOF - Decode a General Serial Output Format (GSOF) message */
+static int DecodeGSOF(raw_t *raw)
 {
-
-    if (p[1] < 7)
-       trace( 2, "RT17: GSOF Position Time message "
-                 "record length %d < 7 bytes. Record discarded.\n", p[1] );
-    else
-        set_week(raw, I2(p+6, endian), (double) I4(p+2, endian));
-}
+    int InputLength, ret = 0;
+    unsigned char RecordLength, RecordType, *p;
+    char *RecordType_s = NULL;
  
-/*
-| Function: decode_gsof_16
-| Purpose:  Decode a Current Time GSOF message 
-| Authors:  Daniel A. Cook
-|
-| Formal Parameters: 
-|
-|   Raw    = Receiver raw data control structure [Input]
-|   p      = Buffer pointer                      [Input]
-|   Endian = Endianness indicator                [Input]
-|
-| Implicit Inputs:
-|
-|   <none>
-|
-| Implicit outputs:
-|
-|   Raw->week
-|
-| Return Value:
-|
-|   <none>
-|
-| Design Issues:
-|
-|   We don't actually "decode" this message per-se.
-|   We're only interested in the GPS week number.
-|
-*/
-static void decode_gsof_16(raw_t *raw, unsigned char *p, int endian)
-{
-    if (p[1] < 10)
-        trace( 2, "RT17: GSOF Current Time message "
-                  "record length %d < 10 bytes. Record discarded.\n", p[1] );
-    else if (U1(p+10) & 1) /* If week and milliseconds of week are valid */
-        set_week(raw, I2(p+6, endian), (double) I4(p+2, endian));
-}
+   /*
+    | Reassemble origional message by removing packet headers,
+    | trailers and page framing.
+    */
+    UnwrapGenout(raw);
 
-/*
-| Function: decode_gsof_26
-| Purpose:  Decode a Position Time UTC GSOF message 
-| Authors:  Daniel A. Cook
-|
-| Formal Parameters: 
-|
-|   Raw    = Receiver raw data control structure [Input]
-|   p      = Buffer pointer                      [Input]
-|   Endian = Endianness indicator                [Input]
-|
-| Implicit Inputs:
-|
-|   <none>
-|
-| Implicit outputs:
-|
-|   Raw->week
-|
-| Return Value:
-|
-|   <none>
-|
-| Design Issues:
-|
-|   We don't actually "decode" this message per-se.
-|   We're only interested in the GPS week number.
-|
-*/
-static void decode_gsof_26(raw_t *raw, unsigned char *p, int endian)
-{
-    if (p[1] < 7)
-       trace( 2, "RT17: GSOF Position Time UTC message "
-                 "record length %d < 7 bytes. Record discarded.\n", p[1] );
-    else
-        set_week(raw, I2(p+6, endian), (double) I4(p+2, endian));
-}
+    p = raw->buff;
+    InputLength = raw->len;
 
-/*
-| Function: decode_gsof_41
-| Purpose:  Decode a Base Position and Quality Indicator GSOF message 
-| Authors:  Daniel A. Cook
-|
-| Formal Parameters: 
-|
-|   Raw    = Receiver raw data control structure [Input]
-|   p      = Buffer pointer                      [Input]
-|   Endian = Endianness indicator                [Input]
-|
-| Implicit Inputs:
-|
-|   <none>
-|
-| Implicit outputs:
-|
-|   Raw->week
-|
-| Return Value:
-|
-|   <none>
-|
-| Design Issues:
-|
-|   We don't actually "decode" this message per-se.
-|   We're only interested in the GPS week number.
-|
-*/
-static void decode_gsof_41(raw_t *raw, unsigned char *p, int endian)
-{
-    if (p[1] < 7)
-        trace( 2, "RT17: GSOF Base Position and Quality Indicator message "
-                   "record length %d < 7 bytes. Record discarded.\n", p[1] );
-    else 
-        set_week(raw, I2(p+6, endian), (double) I4(p+2, endian));
-}
-
-/*
-| Function: decode_ion_utc_data
-| Purpose:  Decode an ION / UTC data record
-| Authors:  Daniel A. Cook
-|
-| Formal Parameters: 
-|
-|   Raw  = Receiver raw data control structure [Input]
-|   Endian = Endianness indicator              [Input]
-|
-| Implicit Inputs:
-|
-|   Raw->buff[]
-|   Raw->len
-|
-| Implicit outputs:
-|
-|   Raw->buff[]
-|   Raw->len
-|
-| Return Value:
-|
-|   -1: error message
-|    0: no message (tells caller to please read more data from the stream)
-|    1: input observation data
-|    2: input ephemeris
-|    3: input sbas message
-|    9: input ion/utc parameter
-|
-| Design Issues:
-|
-|   See ICD-GPS-200C.PDF for documetation of GPS ION / UTC data.
-|   See reference #1 above for documentation of RETSVDATA and ION / UTC data.
-*/
-static int decode_ion_utc_data(raw_t *raw, int e)
-{
-    int week;
-    unsigned char *p = raw->pbuff;
-   
-    trace(4, "RT17: decode_ion_utc_data, length=%d.\n", raw->plen);
-
-    if (raw->plen < 129)
+    while (InputLength)
     {
-        trace( 2, "RT17: RETSVDATA packet length %d < 129 bytes. "
-                  "GPS ION / UTC data packet discarded.\n", raw->plen );
-        return (-1);
+        RecordType = p[0];
+        RecordLength = p[1];
+
+        if (RecordType < (sizeof(GSOFTable) / sizeof(char*)))
+            RecordType_s = (char*) GSOFTable[RecordType];
+
+        if (!RecordType_s)
+            RecordType_s = "Unknown";
+
+        trace(3, "RT17: Trimble packet type=0x40 (GENOUT), GSOF record type=%d (%s), Length=%d.\n", RecordType, RecordType_s, RecordLength);
+      
+        /* Process (or possibly ignore) the message */
+        switch (RecordType)
+        {
+        case 1:
+            ret = DecodeGSOF1(raw, p);
+            break;
+        case 3:
+            ret = DecodeGSOF3(raw, p);
+            break;
+        case 15:
+            ret = DecodeGSOF15(raw, p);
+            break;
+        case 16:
+            ret = DecodeGSOF16(raw, p);
+            break;
+        case 26:
+            ret = DecodeGSOF26(raw, p);
+            break;
+        case 41:
+            ret = DecodeGSOF41(raw, p);
+            break;
+        default:
+            trace(3, "RT17: GSOF message not processed.\n");    
+        }
+
+        RecordLength += 2;
+        p += RecordLength;
+        InputLength -= RecordLength;
     }
 
-    /*
-    | ION / UTC data does not have the current GPS week number. Punt!
-    */
-    week = get_week(raw, 0.0);
+    return ret;
+}
+
+/* DecodeGSOF1 - Decode a Position Time GSOF message */
+static int DecodeGSOF1(raw_t *raw, unsigned char *p)
+{
+
+    if (p[1] < 7)
+        trace(2, "RT17: GSOF Position Time message record length %d < 7 bytes. Record discarded.\n", p[1]);
+    else
+        SetWeek(raw, I2(p+6), ((double) I4(p+2)) * 0.001);
+
+    return 0;
+}
  
-    raw->nav.ion_gps[0] = R8(p+6,e);   /* 006?013: ALPHA 0 (seconds) */
-    raw->nav.ion_gps[1] = R8(p+14,e);  /* 014?021: ALPHA 1 (seconds/semi-circle) */
-    raw->nav.ion_gps[2] = R8(p+22,e);  /* 022?029: ALPHA 2 (seconds/semi-circle)^2 */ 
-    raw->nav.ion_gps[3] = R8(p+30,e);  /* 030?037: ALPHA 3 (seconds/semi-circle)^3 */
-    raw->nav.ion_gps[4] = R8(p+38,e);  /* 038?045: BETA 0  (seconds) */
-    raw->nav.ion_gps[5] = R8(p+46,e);  /* 046?053: BETA 1  (seconds/semi-circle) */
-    raw->nav.ion_gps[6] = R8(p+54,e);  /* 054?061: BETA 2  (seconds/semi-circle)^2 */
-    raw->nav.ion_gps[7] = R8(p+62,e);  /* 062?069: BETA 3  (seconds/semi-circle)^3 */
-    raw->nav.utc_gps[0] = R8(p+70,e);  /* 070?077: ASUB0   (seconds)*/ 
-    raw->nav.utc_gps[1] = R8(p+78,e);  /* 078?085: ASUB1   (seconds/seconds) */     
-    raw->nav.utc_gps[2] = R8(p+86,e);  /* 086?093: TSUB0T */ 
-    raw->nav.utc_gps[3] = week;
-    raw->nav.leaps =(int) R8(p+94,e);  /* 094?101: DELTATLS (seconds) */
-    /* Unused by RTKLIB R8 */          /* 102?109: DELTATLSF */
-    /* Unused by RTKLIB R8 */          /* 110?117: IONTIME */
-    /* Unused by RTKLIB U1 */          /* 118-118: WNSUBT */
-    /* Unused by RTKLIB U1 */          /* 119-119: WNSUBLSF */
-    /* Unused by RTKLIB U1 */          /* 120-120: DN */
-    /* Reserved six bytes */           /* 121?126: RESERVED */
-   
-   return (9);
+/* DecodeGSOF3 - Decode an ECEF Position GSOF message */
+static int DecodeGSOF3(raw_t *raw, unsigned char *p)
+{
+    sta_t *sta = &raw->sta;
+ 
+    if (p[1] < 24)
+        trace( 2, "RT17: GSOF ECEF Position record length %d < 24 bytes. Record discarded.\n", p[1] );
+    else
+    {
+        sta->pos[0] = R8(p+2);
+        sta->pos[1] = R8(p+10);
+        sta->pos[2] = R8(p+18);
+        sta->del[0] = 0.0;
+        sta->del[1] = 0.0;
+        sta->del[2] = 0.0;
+        sta->hgt    = 0.0;
+        sta->deltype = 0;  /* e/n/u */
+    }
+
+    return 5;
+}
+
+/* DecodeGSOF15 - Decode a Receiver Serial Number GSOF message  */
+static int DecodeGSOF15(raw_t *raw, unsigned char *p)
+{
+    if (p[1] < 15)
+        trace(2, "RT17: GSOF Receiver Serial Number record length %d < 15 bytes. Record discarded.\n", p[1]);
+    else
+        sprintf(raw->sta.recsno, "%u", U4(p+2));
+
+    return 0;
+}
+
+/* DecodeGSOF16 - Decode a Current Time GSOF message */
+static int DecodeGSOF16(raw_t *raw, unsigned char *p)
+{
+    if (p[1] < 10)
+        trace( 2, "RT17: GSOF Current Time message record length %d < 10 bytes. Record discarded.\n", p[1] );
+    else if (U1(p+10) & M_BIT0) /* If week and milliseconds of week are valid */
+        SetWeek(raw, I2(p+6), ((double) I4(p+2)) * 0.001);
+
+    return 0;
+}
+
+/* DecodeGSOF26 - Decode a Position Time UTC GSOF message */
+static int DecodeGSOF26(raw_t *raw, unsigned char *p)
+{
+    if (p[1] < 7)
+        trace(2, "RT17: GSOF Position Time UTC message record length %d < 7 bytes. Record discarded.\n", p[1]);
+    else
+        SetWeek(raw, I2(p+6), ((double) I4(p+2)) * 0.001);
+
+    return 0;
+}
+
+/* DecodeGSOF41 - Decode a Base Position and Quality Indicator GSOF message */
+static int DecodeGSOF41(raw_t *raw, unsigned char *p)
+{
+    if (p[1] < 7)
+        trace(2, "RT17: GSOF Base Position and Quality Indicator message record length %d < 7 bytes. Record discarded.\n", p[1]);
+    else 
+        SetWeek(raw, I2(p+6), ((double) I4(p+2)) * 0.001);
+
+    return 0;
 }
 
 /*
-| Function: decode_rawdata
-| Purpose:  Decode an RAWDATA packet sequence 
-| Authors:  Daniel A. Cook
+| DecodeIONAndUTCData - Decode an ION / UTC data record
 |
-| Formal Parameters: 
+| Returns:
 |
-|   Raw = Receiver raw data control structure [Input]
+| -1: error message
+|  9: input ion/utc parameter|
 |
-| Implicit Inputs:
-|
-|   Raw->buff[]
-|   Raw->len
-|
-| Implicit outputs:
-|
-|   Raw->buff[]
-|   Raw->len
-|
-| Return Value:
-|
-|   -1: error message
-|    0: no message (tells caller to please read more data from the stream)
-|    1: input observation data
-|    2: input ephemeris
-|    3: input sbas message
-|    9: input ion/utc parameter
-|
-| Design Issues:
-|
+| See ICD-GPS-200C.PDF for documetation of GPS ION / UTC data.
+| See reference #1 above for documentation of RETSVDATA and ION / UTC data.
 */
-static int decode_rawdata(raw_t *raw, int endian)
+static int DecodeIONAndUTCData(raw_t *raw)
 {
-    static const char *rt[] = { "Real-time GPS Survey Data (type 17)",  /* 00 */
-                                "Position Record (type 11)",            /* 01 */
-                                "Event Mark",                           /* 02 */
-                                NULL,                                   /* 03 */
-                                NULL,                                   /* 04 */
-                                NULL,                                   /* 05 */
-                                "Real-time GNSS Survey Data (type 27)", /* 06 */
-                                "Enhanced Position Record (type 29)" }; /* 07 */
+    int week;
+    unsigned char *p = raw->rt17.pbuff;
+    nav_t *nav = &raw->nav;
+    double *ion_gps = nav->ion_gps;
+    double *utc_gps = nav->utc_gps;
 
-    int status = 0;
-    unsigned int rif;
-    char *recordtype_s = NULL;
-    unsigned char recordtype = raw->buff[4];
+    trace(3, "RT17: DecodeIONAndUTCData, Length=%d.\n", raw->rt17.plen);
+
+    if (raw->rt17.plen < 129)
+    {
+        trace(2, "RT17: RETSVDATA packet length %d < 129 bytes. GPS ION / UTC data packet discarded.\n", raw->rt17.plen);
+        return -1;
+    }
+
+    /* ION / UTC data does not have the current GPS week number. Punt! */
+    week = GetWeek(raw, 0.0);
  
-    if (recordtype < (sizeof(rt) / sizeof(char*)))
-        recordtype_s = (char*) rt[recordtype];
+    ion_gps[0] = R8(p+6);  /* 006-013: ALPHA 0 (seconds) */
+    ion_gps[1] = R8(p+14); /* 014-021: ALPHA 1 (seconds/semi-circle) */
+    ion_gps[2] = R8(p+22); /* 022-029: ALPHA 2 (seconds/semi-circle)^2 */ 
+    ion_gps[3] = R8(p+30); /* 030-037: ALPHA 3 (seconds/semi-circle)^3 */
+    ion_gps[4] = R8(p+38); /* 038-045: BETA 0  (seconds) */
+    ion_gps[5] = R8(p+46); /* 046-053: BETA 1  (seconds/semi-circle) */
+    ion_gps[6] = R8(p+54); /* 054-061: BETA 2  (seconds/semi-circle)^2 */
+    ion_gps[7] = R8(p+62); /* 062-069: BETA 3  (seconds/semi-circle)^3 */
+    utc_gps[0] = R8(p+70); /* 070-077: ASUB0   (seconds)*/ 
+    utc_gps[1] = R8(p+78); /* 078-085: ASUB1   (seconds/seconds) */     
+    utc_gps[2] = R8(p+86); /* 086-093: TSUB0T */ 
+    utc_gps[3] = week;
+    nav->leaps =(int) R8(p+94); /* 094-101: DELTATLS (seconds) */
+    /* Unused by RTKLIB R8 */       /* 102-109: DELTATLSF */
+    /* Unused by RTKLIB R8 */       /* 110-117: IONTIME */
+    /* Unused by RTKLIB U1 */       /* 118-118: WNSUBT */
+    /* Unused by RTKLIB U1 */       /* 119-119: WNSUBLSF */
+    /* Unused by RTKLIB U1 */       /* 120-120: DN */
+    /* Reserved six bytes */        /* 121-126: RESERVED */
+   
+   return 9;
+}
 
-    if (!recordtype_s)
-        recordtype_s = "Unknown";
+/*
+| DecodeQZSSEphemeris - Decode a QZSS Ephemeris record
+|
+| Returns:
+|
+| -1: error message
+|  2: input ephemeris
+|
+| See reference #1 above for documentation of the RETSVDATA QZSS Ephemeris.
+*/
+static int DecodeQZSSEphemeris(raw_t *raw)
+{
+    tracet(3, "DecodeQZSSEphemeris(); not yet implemented.\n");
+    return 0;
+
+#if 0
+    unsigned char *p = raw->rt17.pbuff;
+    int prn, sat, toc, tow;
+    unsigned int Flags, toe;
+    double sqrtA;
+    eph_t eph={0};
+
+    trace(3, "RT17: DecodeQZSSEphemeris(); Length=%d\n", raw->rt17.plen);
+
+    if (raw->rt17.plen < 184)
+    {
+        trace(2, "RT17: RETSVDATA packet length %d < 184 bytes. QZSS ephemeris packet discarded.\n", raw->rt17.plen);
+        return -1;
+    }
+
+    prn = U1(p+5);
+
+    if (!(sat=satno(SYS_GPS, prn)))
+    {
+        trace(2, "RT17: QZSS ephemeris satellite number error, PRN=%d.\n", prn);
+        return -1;
+    }
+ 
+    /* Not used by RTKLIB      006-006: Source: 0:L1CA 1:L1C 2:L2C 3:L5 */
+    eph.week  = U2(p+8);    /* 008-009: Ephemeris Week number (weeks) */
+    eph.iodc  = U2(p+10);   /* 010-011: IODC */ 
+    /* Reserved byte           012-012: RESERVED */
+    eph.iode  = U1(p+13);   /* 013-013: IODE */
+    tow       = I4(p+14);   /* 014-017: TOW */
+    toc       = I4(p+18);   /* 018-021: TOC (seconds) */
+    toe       = U4(p+22);   /* 022-025: TOE (seconds) */                                   
+    eph.tgd[0]= R8(p+26);   /* 026-033: TGD (seconds) */
+    eph.f2    = R8(p+34);   /* 034-041: AF2 (seconds/seconds^2) */
+    eph.f1    = R8(p+42);   /* 042-049: AF1 (seconds/seconds) */
+    eph.f0    = R8(p+50);   /* 050-057: AF0 (seconds) */
+    eph.crs   = R8(p+58);   /* 058-065: CRS (meters) */
+    eph.deln  = R8(p+66);   /* 066-073: DELTA N (semi-circles/second) */
+    eph.M0    = R8(p+74);   /* 074-081: M SUB 0 (semi-circles) */
+    eph.cuc   = R8(p+82);   /* 082-089: CUC (semi-circles) */
+    eph.e     = R8(p+90);   /* 090-097: ECCENTRICITY (dimensionless) */
+    eph.cus   = R8(p+98);   /* 098-105: CUS (semi-circles) */
+    sqrtA     = R8(p+106);  /* 106-113: SQRT A (meters ^ 0.5) */
+    eph.cic   = R8(p+114);  /* 114-121: CIC (semi-circles) */
+    eph.OMG0  = R8(p+122);  /* 122-129: OMEGA SUB 0 (semi-circles) */
+    eph.cis   = R8(p+130);  /* 130-137: CIS (semi-circlces) */
+    eph.i0    = R8(p+138);  /* 138-145: I SUB 0 (semi-circles) */
+    eph.crc   = R8(p+146);  /* 146-153: CRC (meters) */
+    eph.omg   = R8(p+154);  /* 154-161: OMEGA (semi-circles?) */
+    eph.OMGd  = R8(p+162);  /* 162-169: OMEGA DOT (semi-circles/second) */
+    eph.idot  = R8(p+170);  /* 170-177: I DOT (semi-circles/second) */
+    Flags     = U4(p+178);  /* 178-181: FLAGS */
   
-    trace( 3, "RT17: Packet type=0X57 (RAWDATA), recordtype=%d (%s), "
-              "length=%d.\n", recordtype, recordtype_s, raw->len );
+    /*
+    | Multiply these by PI to make ICD specified semi-circle units into radian
+    | units for RTKLIB.
+    */
+    eph.deln *= SC2RAD;
+    eph.i0   *= SC2RAD;
+    eph.idot *= SC2RAD;
+    eph.M0   *= SC2RAD;
+    eph.omg  *= SC2RAD;
+    eph.OMG0 *= SC2RAD;
+    eph.OMGd *= SC2RAD;
+
+    /*
+    | As specifically directed to do so by Reference #1, multiply these by PI.
+    | to make semi-circle units into radian units, which is what ICD-GPS-200C
+    | calls for and also what RTKLIB needs.
+    */
+    eph.cic *= SC2RAD;
+    eph.cis *= SC2RAD;
+    eph.cuc *= SC2RAD;
+    eph.cus *= SC2RAD;
+ 
+   /*
+    | Select the correct curve fit interval as per ICD-GPS-200 sections
+    | 20.3.3.4.3.1 and 20.3.4.4 using IODC, fit flag and Table 20-XII.
+    */
+    if (Flags & M_BIT10)  /* Subframe 2, word 10, bit 17 (fit flag) */
+    {
+        if ((eph.iodc >= 240) && (eph.iodc <= 247))
+            eph.fit = 8;
+        else if (((eph.iodc >= 248) && (eph.iodc <= 255)) || (eph.iodc == 496))
+            eph.fit = 14;
+        else if ((eph.iodc >= 497) && (eph.iodc <= 503))
+            eph.fit = 26;
+        else if ((eph.iodc >= 504) && (eph.iodc <= 510))
+            eph.fit = 50;
+        else if ((eph.iodc == 511) || ((eph.iodc >= 752) && (eph.iodc <= 756)))
+            eph.fit = 74;
+        else if ((eph.iodc >= 757) && (eph.iodc <= 763))
+            eph.fit = 98;
+        else if (((eph.iodc >= 764) && (eph.iodc <= 767)) || ((eph.iodc >= 1008) && (eph.iodc <= 1010)))
+            eph.fit = 122;
+        else if ((eph.iodc >= 1011) && (eph.iodc <= 1020))
+            eph.fit = 146;
+        else
+            eph.fit = 6;
+    }
+    else
+        eph.fit = 4;
+ 
+    eph.flag  = (Flags & M_BIT0);   /* Subframe 1, word 4, bit 1, Data flag for L2 P-code */
+    eph.code  = (Flags >> 1) & 3;   /* Subframe 1, word 3, bits 11-12, Codes on L2 channel */
+    eph.svh   = (Flags >> 4) & 127; /* Subframe 1, word 3, bits 17-22, SV health from ephemeris */
+    eph.sva   = (Flags >> 11) & 15; /* Subframe 1, word 3, bits 13-16, User Range Accuracy index */     
+
+    eph.A     = sqrtA * sqrtA;
+
+    eph.toes  = toe;
+    eph.toc   = gpst2time(eph.week, toc);
+    eph.toe   = gpst2time(eph.week, toe);
+    eph.ttr   = gpst2time(eph.week, tow);
+
+    trace(3, "RT17: DecodeQZSSEphemeris(); SAT=%d, IODC=%d, IODE=%d, WEEK=%d.\n", sat, eph.iodc, eph.iode, eph.week);
+
+    if (!strstr(raw->opt,"-EPHALL"))
+    {
+        if (eph.iode == raw->nav.eph[sat-1].iode)
+            return 0; /* unchanged */
+    }
+
+    eph.sat = sat;
+    raw->nav.eph[sat-1] = eph;
+    raw->ephsat = sat;
+
+    return 2;
+#endif
+}
+
+/*
+| DecodeRawdata - Decode an RAWDATA packet sequence 
+|
+| Returns:
+|
+| -1: error message
+|  0: no message (tells caller to please read more data from the stream)
+|  1: input observation data
+*/
+static int DecodeRawdata(raw_t *raw)
+{
+    int ret = 0;
+    unsigned int rif;
+    char *RecordType_s = NULL;
+    unsigned char RecordType = raw->buff[4];
+ 
+    if (RecordType < (sizeof(RawdataTable) / sizeof(char*)))
+        RecordType_s = (char*) RawdataTable[RecordType];
+
+    if (!RecordType_s)
+        RecordType_s = "Unknown";
+  
+    trace(3, "RT17: Trimble packet type=0x57 (RAWDATA), Recordtype=%d (%s), Length=%d.\n", RecordType, RecordType_s, raw->len);
       
     /*
     | Reassemble origional message by removing packet headers,
     | trailers and page framing.
     */
-    unwrap_rawdata(raw, &rif);
+    UnwrapRawdata(raw, &rif);
 
-    /*
-    | Process (or possibly ignore) the message.
-    */
-    switch (recordtype)
+    /* Process (or possibly ignore) the message */
+    switch (RecordType)
     {
     case 0:
-        status = decode_type_17(raw, rif, endian);
+        ret = DecodeType17(raw, rif);
         break;
     case 7:
-        status = decode_type_29(raw, endian);
+        ret = DecodeType29(raw);
         break;
     default:
         trace(3, "RT17: Packet not processed.\n");      
     }
 
-    return (status);
+    return ret;
 }
 
 /*
-| Function: decode_retsvdata
-| Purpose:  Decode an SVDATA packet 
-| Authors:  Daniel A. Cook
+| DecodeRetsvdata - Decode an SVDATA packet 
 |
-| Formal Parameters: 
+| Returns:
 |
-|   Raw    = Receiver raw data control structure [Input]
-|   Endian = Endianness indicator                [Input]
-|
-| Implicit Inputs:
-|
-|   Raw->pbuff[]
-|   Raw->plen
-|
-| Implicit outputs:
-|
-|   Raw->pbuff[]
-|   Raw->plen
-|
-| Return Value:
-|
-|   -1: error message
-|    0: no message (tells caller to please read more data from the stream)
-|    1: input observation data
-|    2: input ephemeris
-|    3: input sbas message
-|    9: input ion/utc parameter
-|
-| Design Issues:
-|
+| -1: error message
+|  0: no message (tells caller to please read more data from the stream)
+|  2: input ephemeris
+|  9: input ion/utc parameter
 */
-static int decode_retsvdata(raw_t *raw, int endian)
+static int DecodeRetsvdata(raw_t *raw)
 {
-    static const char *st[] = { "SV Flags",                         /* 00 */
-                                "GPS Ephemeris",                    /* 01 */
-                                "GPS Almanac","ION / UTC Data",     /* 02 */
-                                "Disable Satellite (Depreciated)",  /* 03 */
-                                "Enable Satellite (Depreciated)",   /* 04 */
-                                NULL,                               /* 05 */
-                                "Extended GPS Almanac",             /* 06 */
-                                "GLONASS Almanac",                  /* 07 */
-                                "GLONASS Ephemeris",                /* 08 */
-                                NULL,                               /* 09 */
-                                "Galileo Ephemeris",                /* 10 */
-                                "Galileo Almanac",                  /* 11 */
-                                NULL,                               /* 12 */
-                                "QZSS Ephemeris",                   /* 13 */
-                                NULL,                               /* 14 */
-                                "QZSS Almanac",                     /* 15 */
-                                NULL,                               /* 16 */
-                                NULL,                               /* 17 */
-                                NULL,                               /* 18 */
-                                "SV Flags",                         /* 19 */
-                                "BeiDou Ephemeris",                 /* 20 */
-                                "BeiDou Almanac" };                 /* 21 */
- 
-    int status = 0;
-    char *subtype_s = NULL;
-    unsigned char subtype = raw->pbuff[4];
+    int ret = 0;
+    char *Subtype_s = NULL;
+    unsigned char Subtype = raw->rt17.pbuff[4];
 
-    if (subtype < (sizeof(st) / sizeof(char*)))
-        subtype_s = (char*) st[subtype];
+    if (Subtype < (sizeof(RetsvdataTable) / sizeof(char*)))
+        Subtype_s = (char*) RetsvdataTable[Subtype];
   
-    if (!subtype_s)
-        subtype_s = "Unknown";
+    if (!Subtype_s)
+        Subtype_s = "Unknown";
  
-    trace( 3, "RT17: packet type=0X55 (RETSVDATA), subtype=%d (%s), "
-              "length=%d.\n", subtype, subtype_s, raw->plen );
+    trace(3, "RT17: Trimble packet type=0x55 (RETSVDATA), Subtype=%d (%s), Length=%d.\n", Subtype, Subtype_s, raw->rt17.plen);
       
-    /*
-    | Process (or possibly ignore) the message.
-    */
-    switch (subtype)
+    /* Process (or possibly ignore) the message */
+    switch (Subtype)
     {
     case 1:
-        status = decode_gps_ephemeris(raw, endian);
+        ret = DecodeGPSEphemeris(raw);
         break;
     case 3:
-        status = decode_ion_utc_data(raw, endian);
+        ret = DecodeIONAndUTCData(raw);
+        break;
+    case 9:
+        ret = DecodeGLONASSEphemeris(raw);
+        break;
+    case 11:
+        ret = DecodeGalileoEphemeris(raw);
+        break;
+    case 14:
+        ret = DecodeQZSSEphemeris(raw);
+        break;
+    case 21:
+        ret = DecodeBeidouEphemeris(raw);
         break;
     default:
         trace(3, "RT17: Packet not processed.\n");      
-      }
+    }
 
-    return (status);
+    return ret;
 }
 
 /*
-| Function: decode_type_17
-| Purpose:  Decode Real-Time survey data (record type 17)
-| Authors:  Daniel A. Cook
+| DecodeType17 - Decode Real-Time survey data (record type 17)
 |
-| Formal Parameters: 
+| Returns:
 |
-|   Raw    = Receiver raw data control structure [Input]
-|   RIF    = Rcord Interpretation Flags          [Input]
-|   Endian = Endianness indicator                [Input]
+| -1: error message
+|  0: no message (tells caller to please read more data from the stream)
+|  1: input observation data
 |
-| Implicit Inputs:
-|
-|   Raw->buff[]
-|   Raw->len
-|
-| Implicit outputs:
-|
-|   Raw->buff[]
-|   Raw->len
-|
-| Return Value:
-|
-|   -1: error message
-|    0: no message (tells caller to please read more data from the stream)
-|    1: input observation data
-|    2: input ephemeris
-|    3: input sbas message
-|    9: input ion/utc parameter
-|
-| Design Issues:
-|
-|   Handles expanded and concise formats with and without enhanced record data.
+| Handles expanded and concise formats with and without enhanced record data.
 */
-static int decode_type_17(raw_t *raw, unsigned int rif, int e)
+static int DecodeType17(raw_t *raw, unsigned int rif)
 {
     unsigned char *p = raw->buff;
-    double clock_offset, receive_time;
-    double l1_carrier, l1_doppler, l1_pseudorange;
-    double l2_carrier, l2_doppler, l2_pseudorange;
-    unsigned char l1_code, l1_lli, l1_snr;
-    unsigned char l2_code, l2_lli, l2_snr;
-    int flags1, flags2, flag_status, i, j, nsat, prn, sat, week, n = 0;
-    gtime_t time;
+    double ClockOffset, tow;
+    int Flags1, Flags2, FlagStatus, i, n, nsat, prn, Week;
+    gtime_t Time;
+    obsd_t *obs;
 
-    receive_time = R8(p,e); p += 8; /* Receive time within the current GPS week (ms). */
-    clock_offset = R8(p,e); p += 8; /* Clock offset value (ms). 0.0 = not known */ 
+    tow = R8(p) * 0.001; p += 8;         /* Receive time within the current GPS week. */
+    ClockOffset = R8(p) * 0.001; p += 8; /* Clock offset value. 0.0 = not known */ 
 
-    if (strstr(raw->opt, "-CO"))
-        receive_time += clock_offset;
-
-    /*
-    | The observation data does not have the current GPS week number. Punt!
-    */
-    week = get_week(raw, receive_time);
+#if 0
+    tow += ClockOffset;
+#endif
  
-    /*
-    | Turn the receive time in milliseconds since the start of the current GPS week
-    | into time in seconds and fractional seconds.
-    */   
-    time = gpst2time(week, receive_time * 0.001);
+    /* The observation data does not have the current GPS week number. Punt! */
+    Week = GetWeek(raw, tow);
+    Time = gpst2time(Week, tow);
 
     nsat = U1(p); p++; /* Number of SV data blocks in the record */
 
-    for (i=0; (i < nsat) && (i < MAXOBS); i++)
+    for (i = n = 0; (i < nsat) && (i < MAXOBS); i++)
     {
-        l1_snr = 0;
-        l1_carrier = 0.0;
-        l1_pseudorange = 0.0;
-        l1_doppler = 0.0;
-        l1_code = CODE_NONE;
-        l1_lli = 0;
-
-        l2_snr = 0;
-        l2_carrier = 0.0;
-        l2_pseudorange = 0.0;
-        l2_doppler = 0.0;
-        l2_code = CODE_NONE;
-        l2_lli = 0;
+        obs = &raw->obs.data[n];
+        memset(obs, 0, sizeof(obsd_t));
+        obs->time = Time;
 
         if (rif & M_CONCISE)
         {
-            /*
-            | Satellite number (1?32).
-            */
+            /* Satellite number (1-32). */
             prn = U1(p);
             p++;
 
-            /*
-            | These indicate what data is loaded, is valid, etc.
-            */
-            flags1 = U1(p);
+            /* These indicate what data is loaded, is valid, etc */
+            Flags1 = U1(p);
             p++; 
-            flags2 = U1(p);
+            Flags2 = U1(p);
             p++;
 
-            /*
-            | These are not needed by RTKLIB.
-            */
+            /* These are not needed by RTKLIB */
             p++;    /* I1 Satellite Elevation Angle (degrees) */
             p += 2; /* I2 Satellite Azimuth (degrees) */
 
-            if (flags1 & 64)
+            if (Flags1 & M_BIT6) /* L1 data valid */
             {
-                /*
-                | Measure of L1 signal strength (dB * 4).
-                */
-                l1_snr = U1(p);
+                /* Measure of L1 signal strength (dB * 4) */
+                obs->SNR[0] = U1(p);
                 p++;
                 
-                /* 
-                | Full L1 C/A code or P-code pseudorange (meters)
-                */
-                l1_pseudorange = R8(p,e);
+                /* Full L1 C/A code or P-code pseudorange (meters) */
+                obs->P[0] = R8(p);
                 p += 8;
         
-                /* 
-                | L1 Continuous Phase (cycles).
-                */
-                if (flags1 & 16)
-                    l1_carrier = -R8(p,e);
+                /*  L1 Continuous Phase (cycles) */
+                if (Flags1 & M_BIT4) /* L1 phase valid */
+                    obs->L[0] = -R8(p);
                 p += 8;
 
-                /*
-                | L1 Doppler (Hz)
-                */
-                l1_doppler = R4(p,e);
+                /* L1 Doppler (Hz) */
+                obs->D[0] = R4(p);
                 p += 4; 
             }
 
-            if (flags1 & 1)
+            if (Flags1 & M_BIT0)  /* L2 data loaded */
             {
-                /*
-                | Measure of L2 signal strength (dB * 4).
-                */
-                l2_snr = U1(p);
+                /* Measure of L2 signal strength (dB * 4) */
+                obs->SNR[1] = U1(p);
                 p++;
                 
-                /*
-                | L2 Continuous Phase (cycles)
-                */
-                l2_carrier = -R8(p,e);
+                /* L2 Continuous Phase (cycles) */
+                if (Flags1 & M_BIT5)
+                    obs->L[1] = -R8(p);
                 p += 8; 
 
-                /*
-                | L2 P-Code or L2 Encrypted Code.
-                */              
-                if (flags1 & 32)
-                    l2_pseudorange = l1_pseudorange + R4(p,e);
-                else
-                    l2_carrier = -sqrt(fabs(l2_carrier));           
+                /* L2 P-Code or L2 Encrypted Code */              
+                if (Flags1 & M_BIT5) /* L2 range valid */
+                    obs->P[1] = obs->P[0] + R4(p);
                 p += 4;
             }
         
@@ -1668,29 +1701,21 @@ static int decode_type_17(raw_t *raw, unsigned int rif, int e)
         }
         else /* Expanded Format */
         {
-            /*
-            | Satellite number (1?32)
-            */
+            /* Satellite number (1-32) */
             prn = U1(p);
             p++;
 
-            /*
-            | These indicate what data is loaded, is valid, etc.
-            */
-            flags1 = U1(p);
+            /* These indicate what data is loaded, is valid, etc */
+            Flags1 = U1(p);
             p++;
-            flags2 = U1(p);
+            Flags2 = U1(p);
             p++;
 
-            /*
-            | Indicates whether FLAGS1 bit 6 and FLAGS2 are valid.
-            */
-            flag_status = U1(p);
+            /* Indicates whether FLAGS1 bit 6 and FLAGS2 are valid */
+            FlagStatus = U1(p);
             p++;
 
-            /*
-            | These are not needed by RTKLIB.
-            */
+            /* These are not needed by RTKLIB */
             p += 2; /* I2 Satellite Elevation Angle (degrees) */
             p += 2; /* I2 Satellite Azimuth (degrees) */
 
@@ -1702,64 +1727,46 @@ static int decode_type_17(raw_t *raw, unsigned int rif, int e)
             | for RAWDATA. If this bit is not set, then we're lost and cannot
             | process this message any further.
             */
-            if (!(flag_status & 1))
-                return (0);
+            if (!(FlagStatus & M_BIT0)) /* Flags invalid */
+                return 0;
           
-            if (flags1 & 64)
+            if (Flags1 & M_BIT6) /* L1 data valid */
             {           
-                /*
-                | Measure of satellite signal strength (dB).
-                */
-                l1_snr = R8(p,e) * 4.0;
+                /* Measure of satellite signal strength (dB) */
+                obs->SNR[0] = R8(p) * 4.0;
                 p += 8;
 
-                /*
-                | Full L1 C/A code or P-code pseudorange (meters).
-                */
-                l1_pseudorange = R8(p,e);
+                /* Full L1 C/A code or P-code pseudorange (meters) */
+                obs->P[0] = R8(p);
                 p += 8;
 
-                /*
-                | L1 Continuous Phase (cycles).
-                */
-                if (flags1 & 16)
-                    l1_carrier = -R8(p,e);
+                /* L1 Continuous Phase (cycles) */
+                if (Flags1 & M_BIT4) /* L1 phase valid */
+                    obs->L[0] = -R8(p);
                 p += 8;
 
-                /*
-                | L1 Doppler (Hz).
-                */
-                l1_doppler = R8(p,e);
+                /* L1 Doppler (Hz) */
+                obs->D[0] = R8(p);
                 p += 8;
 
-                /*
-                | Reserved 8 bytes.
-                */
+                /* Reserved 8 bytes */
                 p += 8;
             }
 
-            if (flags1 & 1)
+            if (Flags1 & M_BIT0) /* L2 data loaded */
             {
-                /*
-                | Measure of L2 signal strength (dB).
-                */
-                l2_snr = R8(p,e) * 4.0;
+                /* Measure of L2 signal strength (dB) */
+                obs->SNR[1] = R8(p) * 4.0;
                 p += 8;
 
-                /*
-                | L2 Continuous Phase (cycles).
-                */                
-                if (flags1 & 16)
-                    l2_carrier = -R8(p,e);
+                /* L2 Continuous Phase (cycles) */                
+                if (Flags1 & M_BIT5) /* L2 phase valid */
+                    obs->L[1] = -R8(p);
                 p += 8;
 
-                /*
-                | L2 P-Code or L2 Encrypted Code.
-                */              
-                if (flags1 & 32)
-                    l2_pseudorange = l1_pseudorange + R8(p,e);
-                else
-                    l2_carrier = -sqrt(fabs(l2_carrier));           
+                /* L2 P-Code or L2 Encrypted Code */              
+                if (Flags1 & M_BIT5) /* L2 pseudorange valid */
+                    obs->P[1] = obs->P[0] + R8(p);
                 p += 8;
             }   
                 
@@ -1774,247 +1781,133 @@ static int decode_type_17(raw_t *raw, unsigned int rif, int e)
                 p++; /* U1 L2 cycle slip roll-over counter */ 
                 p++; /* U1 Reserved byte */
 
-                /*
-                |L2 Doppler (Hz).
-                */
-                l2_doppler = R8(p,e);
+                /* L2 Doppler (Hz) */
+                obs->D[1] = R8(p);
                 p += 8;
             }
         }
 
-        /* modified according to ref [2] (by TTAKA 2014/08/26) */
-        l1_code = (flags2 & 1) ? ((flags2 & 4) ? CODE_L1W : CODE_L1P) : CODE_L1C;
-        l2_code = (flags2 & 4) ? CODE_L2W : ((flags2 & 2) ? CODE_L2P : CODE_L2C);
+        obs->code[0] = (obs->P[0] == 0.0) ? CODE_NONE : (Flags2 & M_BIT0) ? CODE_L1P : CODE_L1C;
+        obs->code[1] = (obs->P[1] == 0.0) ? CODE_NONE : (Flags2 & M_BIT2) ? CODE_L2W : (Flags2 & M_BIT1) ? CODE_L2P : CODE_L2C;
 
-        
-        if (l1_pseudorange != 0.0)
-        {
-            if (flags1 & 2)
-                l1_lli = 1;  /* L1 cycle slip */
-        }
+        if (Flags1 & M_BIT1)
+            obs->LLI[0] |= 1;  /* L1 cycle slip */
 
-        if (l2_pseudorange != 0.0)
-        {
-            if (flags1 & 4)
-                l2_lli = 1;  /* L2 cycle slip */
-            if (flags2 & 4)
-                l2_lli |= 4; /* Tracking encrypted code */
-        }
+        if (Flags1 & M_BIT2)
+            obs->LLI[1] |= 1;  /* L2 cycle slip */
+        if ((Flags2 & M_BIT2) && (obs->P[1] != 0.0))
+            obs->LLI[1] |= 4; /* Tracking encrypted code */
 
-        if (!(sat=satno(SYS_GPS, prn)))
+        if (!(obs->sat = satno(SYS_GPS, prn)))
         {
             trace(2, "RT17: Satellite number error, PRN=%d.\n", prn);
             continue;
         }
 
-        raw->obs.data[n].sat = sat;
-
-        raw->obs.data[n].time    = time;
-        raw->obs.data[n].L[0]    = l1_carrier;
-        raw->obs.data[n].P[0]    = l1_pseudorange;
-        raw->obs.data[n].D[0]    = (float) l1_doppler;
-        raw->obs.data[n].SNR[0]  = (unsigned char) l1_snr;
-        raw->obs.data[n].LLI[0]  = l1_lli; 
-        raw->obs.data[n].code[0] = l1_code;
-
-        raw->obs.data[n].L[1]    = l2_carrier;
-        raw->obs.data[n].P[1]    = l2_pseudorange;
-        raw->obs.data[n].D[1]    = (float) l2_doppler;
-        raw->obs.data[n].SNR[1]  = (unsigned char) l2_snr;
-        raw->obs.data[n].LLI[1]  = l2_lli; 
-        raw->obs.data[n].code[1] = l2_code;
-                
-        for (j = 2; j < NFREQ; j++)
+#if 0
+        /* Apply clock offset to observables */
+        if (ClockOffset != 0.0)
         {
-            raw->obs.data[n].L[j]    = 0.0;
-            raw->obs.data[n].P[j]    = 0.0;
-            raw->obs.data[n].D[j]    = 0.0;
-            raw->obs.data[n].SNR[j]  = 0;
-            raw->obs.data[n].LLI[j]  = 0;
-            raw->obs.data[n].code[j] = CODE_NONE;
+            obs->P[0] += ClockOffset * (CLIGHT/FREQ1);
+            obs->P[1] += ClockOffset * (CLIGHT/FREQ2);
+            obs->L[0] += ClockOffset * FREQ1;
+            obs->L[1] += ClockOffset * FREQ2;
         }
- 
-        n++;
+#endif
+         n++;
     }
-        
-    raw->time = time;
-    raw->obs.n = n;
 
-    return (1);
+    raw->time = Time;
+    raw->obs.n = n;
+    
+    if (n > 0)
+    {
+        tracet(2, "RT17: Observations output:\n");
+        traceobs(2, raw->obs.data, raw->obs.n);
+    }
+
+    return (n > 0);
 }
 
-
-/*
-| Function: decode_type_29
-| Purpose:  Decode Enhanced position (record type 29)
-| Authors:  Daniel A. Cook
-|
-| Formal Parameters: 
-|
-|   Raw    = Receiver raw data control structure [Input]
-|   Endian = Endianness indicator                [Input]
-|
-| Implicit Inputs:
-|
-|   Raw->buff[]
-|   Raw->len
-|
-| Implicit outputs:
-|
-|   Raw->buff[]
-|   Raw->len
-|
-| Return Value:
-|
-|   -1: error message
-|    0: no message (tells caller to please read more data from the stream)
-|    1: input observation data
-|    2: input ephemeris
-|    3: input sbas message
-|    9: input ion/utc parameter
-|
-| Design Issues:
-|
-|   We don't actually "decode" this message per-se.
-|   We're only interested in the GPS week number.
-|
-|   This message can only be output by receivers that can output RT27.
-|   It is enabled for output by outputting positions along with RT27 data.
-*/
-static int decode_type_29(raw_t *raw, int endian)
+/* DecodeType29 - Decode Enhanced position (record type 29) */
+static int DecodeType29(raw_t *raw)
 {
     unsigned char *p = raw->buff;
 
     if (*p < 7)
-       trace( 2, "RT17: Enhanced Position record block #1 length %d < 7 bytes. "
-                 "Record discarded.\n", *p );
+        trace(2, "RT17: Enhanced Position record block #1 length %d < 7 bytes. Record discarded.\n", *p);
     else
-        set_week(raw, I2(p+1, endian), (double) I4(p+3, endian));
+        SetWeek(raw, I2(p+1), ((double) I4(p+3)) * 0.001);
 
-    return (0);
+    return 0;
 }
 
 /*
-| Function: get_week
-| Purpose:  Get GPS week number
-| Authors:  Daniel A. Cook
+| GetWeek - Get GPS week number
 |
-| Formal Parameters: 
+| Returns: GPS week number
 |
-|   Raw         = Pointer to raw structure [Input]
-|   Receve_time = Receiver time of week    [Input]
-|
-| Implicit Inputs:
-|
-|   Raw->flag
-|   Raw->week
-|   Raw->receive_time
-|
-| Implicit Outputs:
-|
-|   Raw->flag
-|   Raw->week
-|   Raw->receive_time
-|
-| Return Value:
-|
-|   GPS week number
-|
-| Design Issues:
-|
-|   The -WEEK=n initial week option overrides everything else.
-|   Week rollover and increment from the initial week and subsequent weeks is handled.
+| The -WEEK=n initial week option overrides everything else.
+| Week rollover and increment from the initial week and
+| subsequent weeks is handled.
 */
-static int get_week(raw_t *raw, double receive_time)
+static int GetWeek(raw_t *raw, double tow)
 {
-    int week = 0;
+    rt17_t *rt17 = &raw->rt17;
+    int Week = 0;
 
-    if (raw->flag & M_WEEK_OPTION)
+    if (rt17->flags & M_WEEK_OPTION)
     {
-        if ((receive_time && raw->receive_time) &&
-            (receive_time < raw->receive_time))
+        if ((tow && rt17->tow) && (tow < rt17->tow))
         {
-            trace( 2, "RT17: GPS WEEK rolled over from %d to %d.\n",
-                   raw->week, raw->week + 1 );
-
-            raw->week++;
+            trace(2, "RT17: GPS WEEK rolled over from %d to %d.\n", rt17->week, rt17->week + 1);
+            rt17->week++;
         }
 
-        if (receive_time != 0.0)
-            raw->receive_time = receive_time;
+        if (tow != 0.0)
+            rt17->tow = tow;
     }
-    else if (!(raw->flag & M_WEEK_SCAN))
+    else if (!(rt17->flags & M_WEEK_SCAN))
     {
         char *opt = strstr(raw->opt, "-WEEK=");
 
-        raw->flag |= M_WEEK_SCAN;
+        rt17->flags |= M_WEEK_SCAN;
 
         if (opt)
         {
-            if (!sscanf(opt+6, "%d", &week) || (week <= 0))
-                trace(2, "RT17: Invalid -WEEK=n receiver option value.\n");
+            if (!sscanf(opt+6, "%d", &Week) || (Week <= 0))
+                trace(0, "RT17: Invalid -WEEK=n receiver option value.\n");
             else
             {
-                raw->week = week;
-                raw->flag |= M_WEEK_OPTION;
-
-                trace( 2, "RT17: Initial GPS WEEK explicitly set to %d "
-                          "by user.\n", week );
+                rt17->week = Week;
+                rt17->flags |= M_WEEK_OPTION;
+                trace(2, "RT17: Initial GPS WEEK explicitly set to %d by user.\n", Week, Week);
             }
         }
     }
 
-    week = raw->week;
+    Week = rt17->week;
 
-    if (week == 0)
+    if (!Week && !(rt17->flags & (M_WEEK_OPTION|M_WEEK_EPH)))
     {
         if ((raw->time.time == 0) && (raw->time.sec == 0.0))
             raw->time = timeget();
         
-        /* add to get week number (by TTAKA 2014/08/26) */
-        time2gpst(raw->time, &week);
+        time2gpst(raw->time, &Week);
 
-        if (receive_time != 0.0)
-            raw->time = gpst2time(week, receive_time * 0.001);
+        if (tow != 0.0)
+            raw->time = gpst2time(Week, tow);
 
-        raw->week = week;
-        
-        trace( 2, "RT17: Initial GPS WEEK number unknown; "
-                  "WEEK number %d assumed.\n", week );
+        rt17->week = Week;
+        rt17->flags |= M_WEEK_TIME; 
+        trace(2, "RT17: Initial GPS WEEK number unknown; WEEK number %d assumed for now.\n", Week);       
     }
  
-    return (week);
+    return Week;
 }
 
-/*
-| Function: read_i2
-| Purpose:  Fetch & convert a signed two byte integer (short)
-| Authors:  Daniel A. Cook
-|
-| Formal Parameters: 
-|
-|   P      = Input pointer        [Input]
-|   Endian = Endianness indicator [Input]
-|
-| Implicit Inputs:
-|
-|   <none>
-|
-| Implicit Outputs:
-|
-|   <none>
-|
-| Return Value:
-|
-|   Fetched and converted signed two byte integer (short)
-|
-| Design issues:
-|
-|   The data is fetched one byte at a time so as to handle data that
-|   is not naturally aligned. It is then converted from the input
-|   endianness to our execution platform endianness.
-*/
-static short read_i2(unsigned char *p, int endian) 
+/* ReadI2 - Fetch & convert a signed two byte integer (short) */
+static short ReadI2(unsigned char *p) 
 {
     union I2 {short i2; unsigned char c[2];} u;
     ENDIAN_TEST et;
@@ -2022,43 +1915,16 @@ static short read_i2(unsigned char *p, int endian)
     memcpy(&u.i2, p, sizeof(u.i2));
 
     et.u2 = 0; et.c[0] = 1;  
-    if ((et.u2 == 1) && (endian != LITTLE_ENDIAN))
+    if (et.u2 == 1)
     {
         unsigned char t;
         t = u.c[0]; u.c[0] = u.c[1]; u.c[1] = t;
     }
-    return (u.i2);
+    return u.i2;
 }
 
-/*
-| Function: read_i4
-| Purpose:  Fetch & convert a four byte signed integer (int)
-| Authors:  Daniel A. Cook
-|
-| Formal Parameters: 
-|
-|   P      = Input pointer        [Input]
-|   Endian = Endianness indicator [Input]
-|
-| Implicit Inputs:
-|
-|   <none>
-|
-| Implicit Outputs:
-|
-|   <none>
-|
-| Return Value:
-|
-|   Fetched and converted four byte signed integer (int)
-|
-| Design issues:
-|
-|   The data is fetched one byte at a time so as to handle data that is not
-|   naturally aligned. It is then converted from the input endianness to our
-|   execution platform endianness.
-*/
-static int read_i4(unsigned char *p, int endian)
+/* ReadI4 - Fetch & convert a four byte signed integer (int) */
+static int ReadI4(unsigned char *p)
 {
     union i4 {int i4; unsigned char c[4];} u;
     ENDIAN_TEST et;
@@ -2066,79 +1932,25 @@ static int read_i4(unsigned char *p, int endian)
     memcpy(&u.i4, p, sizeof(u.i4));
 
     et.u2 = 0; et.c[0] = 1;  
-    if ((et.u2 == 1) && (endian != LITTLE_ENDIAN))
+    if (et.u2 == 1)
     {
         unsigned char t;
         t = u.c[0]; u.c[0] = u.c[3]; u.c[3] = t;
         t = u.c[1]; u.c[1] = u.c[2]; u.c[2] = t;
     }   
-    return (u.i4);
+    return u.i4;
 }
 
-/*
-| Function: read_r4
-| Purpose:  Fetch & convert an IEEE S_FLOAT (float)
-| Authors:  Daniel A. Cook
-|
-| Formal Parameters: 
-|
-|   P      = Input pointer        [Input]
-|   Endian = Endianness indicator [Input]
-|
-| Implicit Inputs:
-|
-|   <none>
-|
-| Implicit Outputs:
-|
-|   <none>
-|
-| Return Value:
-|
-|   Fetched and converted IEEE S_FLOAT (float)
-|
-| Design issues:
-|
-|   The data is fetched one byte at a time so as to handle data that is not
-|   naturally aligned. It is then converted from the input endianness to our
-|   execution platform endianness.
-*/
-static float read_r4(unsigned char *p, int endian)
+/* ReadR4 - Fetch & convert an IEEE S_FLOAT (float) */
+static float ReadR4(unsigned char *p)
 {
     union R4 {float f; unsigned int u4;} u; 
-    u.u4 = U4(p, endian);
-    return (u.f);
+    u.u4 = U4(p);
+    return u.f;
 }
 
-/*
-| Function: read_r8
-| Purpose:  Fetch & convert an IEEE T_FLOAT (double)
-| Authors:  Daniel A. Cook
-|
-| Formal Parameters: 
-|
-|   P      = Input pointer        [Input]
-|   Endian = Endianness indicator [Input]
-|
-| Implicit Inputs:
-|
-|   <none>
-|
-| Implicit Outputs:
-|
-|   <none>
-|
-| Return Value:
-|
-|   Fetched and converted IEEE T_FLOAT (double)
-|
-| Design issues:
-|
-|   The data is fetched one byte at a time so as to handle data that is not
-|   naturally aligned. It is then converted from the input endianness to our
-|   execution platform endianness.
-*/
-static double read_r8(unsigned char *p, int endian)
+/* ReadR8 - Fetch & convert an IEEE T_FLOAT (double) */
+static double ReadR8(unsigned char *p)
 {
     ENDIAN_TEST et;
     union R8 {double d; unsigned char c[8];} u;
@@ -2146,7 +1958,7 @@ static double read_r8(unsigned char *p, int endian)
     memcpy(&u.d, p, sizeof(u.d));
  
     et.u2 = 0; et.c[0] = 1;  
-    if ((et.u2 == 1) && (endian != LITTLE_ENDIAN))
+    if (et.u2 == 1)
     {
         unsigned char t;
         t = u.c[0]; u.c[0] = u.c[7]; u.c[7] = t;
@@ -2154,38 +1966,11 @@ static double read_r8(unsigned char *p, int endian)
         t = u.c[2]; u.c[2] = u.c[5]; u.c[5] = t;
         t = u.c[3]; u.c[3] = u.c[4]; u.c[4] = t;  
     }
-    return (u.d);
+    return u.d;
 }
 
-/*
-| Function: read_u2
-| Purpose:  Fetch & convert an unsigned twe byte integer (unsigned short)
-| Authors:  Daniel A. Cook
-|
-| Formal Parameters: 
-|
-|   P      = Input pointer        [Input]
-|   Endian = Endianness indicator [Input]
-|
-| Implicit Inputs:
-|
-|   <none>
-|
-| Implicit Outputs:
-|
-|   <none>
-|
-| Return Value:
-|
-|   Fetched and converted two byte unsigned integer (unsigned short)
-|
-| Design issues:
-|
-|   The data is fetched one byte at a time so as to handle data that
-|   is not naturally aligned. It is then converted from the input
-|   endianness to our execution platform endianness.
-*/
-static unsigned short read_u2(unsigned char *p, int endian)
+/* ReadU2 - Fetch & convert an unsigned twe byte integer (unsigned short) */
+static unsigned short ReadU2(unsigned char *p)
 {
     ENDIAN_TEST et;
     union U2 {unsigned short u2; unsigned char c[2];} u;
@@ -2193,43 +1978,16 @@ static unsigned short read_u2(unsigned char *p, int endian)
     memcpy(&u.u2, p, sizeof(u.u2)); 
  
     et.u2 = 0; et.c[0] = 1;  
-    if ((et.u2 == 1) && (endian != LITTLE_ENDIAN))
+    if (et.u2 == 1)
     {
         unsigned char t;
         t = u.c[0]; u.c[0] = u.c[1]; u.c[1] = t;
     }
-    return (u.u2);
+    return u.u2;
 }
 
-/*
-| Function: read_u4
-| Purpose:  Fetch & convert a four byte unsigned integer (unsigned int)
-| Authors:  Daniel A. Cook
-|
-| Formal Parameters: 
-|
-|   P      = Input pointer        [Input]
-|   Endian = Endianness indicator [Input]
-|
-| Implicit Inputs:
-|
-|   <none>
-|
-| Implicit Outputs:
-|
-|   <none>
-|
-| Return Value:
-|
-|   Fetched and converted four byte unsigned integer (unsigned int)
-|
-| Design issues:
-|
-|   The data is fetched one byte at a time so as to handle data that is not
-|   naturally aligned. It is then converted from the input endianness to our
-|   execution platform endianness.
-*/
-static unsigned int read_u4(unsigned char *p, int endian)
+/* ReadU4 - Fetch & convert a four byte unsigned integer (unsigned int) */
+static unsigned int ReadU4(unsigned char *p)
 {
     ENDIAN_TEST et;
     union U4 {unsigned int u4; unsigned char c[4];} u;
@@ -2237,238 +1995,130 @@ static unsigned int read_u4(unsigned char *p, int endian)
     memcpy(&u.u4, p, sizeof(u.u4));
  
     et.u2 = 0; et.c[0] = 1;  
-    if ((et.u2 == 1) && (endian != LITTLE_ENDIAN))
+    if (et.u2 == 1)
     {
         unsigned char t;
         t = u.c[0]; u.c[0] = u.c[3]; u.c[3] = t;
         t = u.c[1]; u.c[1] = u.c[2]; u.c[2] = t;
     }   
-    return (u.u4);
+    return u.u4;
 }
 
 /*
-| Function: set_week
-| Purpose:  Set GPS week number
-| Authors:  Daniel A. Cook
+| SetWeek - Set GPS week number
 |
-| Formal Parameters: 
-|
-|   Raw         = Pointer to raw structure [Input]
-|   Week        = GPS week number          [Input]
-|   Receve_time = Receiver time of week    [Input]
-|
-| Implicit Inputs:
-|
-|   Raw->week
-|   Raw->flag
-|
-| Implicit Outputs:
-|
-|   Raw->week
-|
-| Return Value:
-|
-|   <none>
-|
-| Design Issues:
-|
-|   The -WEEK=n initial week option overrides us.
-|
-*/static void set_week(raw_t *raw, int week, double receive_time)
+| The -WEEK=n initial week option overrides us.
+*/
+static void SetWeek(raw_t *raw, int Week, double tow)
 {
-    if (!(raw->flag & M_WEEK_OPTION))
+    rt17_t *rt17 = &raw->rt17;
+
+    if (!(rt17->flags & M_WEEK_OPTION))
     {
-        if (raw->week)
+        if (rt17->week)
         {
-            if (week != raw->week)
+            if (Week != rt17->week)
             {
-                if (week == (raw->week + 1))
-                    trace(2, "RT17: GPS WEEK rolled over from %d to %d.\n", raw->week, week);
+                if (Week == (rt17->week + 1))
+                    trace(2, "RT17: GPS WEEK rolled over from %d to %d.\n", rt17->week, Week);
                 else
-                    trace(2, "RT17: GPS WEEK changed from %d to %d.\n", raw->week, week);
+                    trace(2, "RT17: GPS WEEK changed from %d to %d.\n", rt17->week, Week);
             }
         }
         else
-            trace(2, "RT17: GPS WEEK initially set to %d.\n", week);
+            trace(2, "RT17: GPS WEEK initially set to %d.\n", Week);
 
-        raw->week = week;
+        rt17->week = Week;
     }
 
-    /*
-    | Also update the time if we can.
-    */
-    if (week && (receive_time != 0.0))
-        raw->time = gpst2time(week, receive_time * 0.001);
+    /* Also update the time if we can */
+    if (Week && (tow != 0.0))
+        raw->time = gpst2time(Week, tow);
 }
 
-/*
-| Function: sync_packet
-| Purpose:  Synchronize the raw data stream to the start of a series of RT17 packets 
-| Authors:  Daniel A. Cook
-|
-| Formal Parameters: 
-|
-|   Raw  = Receiver raw data control structure [Input]
-|   Data = Next character in raw data stream   [Input]
-|
-| Implicit Inputs:
-|
-|   Raw->pbuff[1-3]
-|
-| Implicit Outputs:
-|
-|   Raw=>pbuff[0-3]
-|
-| Return Value:
-|
-|   TRUE  = Start of packet sequence tentatively found
-|   FALSE = Not found, keep reading data bytes from the stream
-|
-| Design Issues:
-|
-*/
-static int sync_packet(raw_t *raw, unsigned char data)
+/* SyncPacket - Synchronize the raw data stream to the start of a series of RT-17 packets */
+static int SyncPacket(raw_t *raw, unsigned char Data)
 {
-    unsigned char type;
+    unsigned char Type, *pbuff = raw->rt17.pbuff;;
 
-    raw->pbuff[0] = raw->pbuff[1];
-    raw->pbuff[1] = raw->pbuff[2];
-    raw->pbuff[2] = raw->pbuff[3];
-    raw->pbuff[3] = data;
+    pbuff[0] = pbuff[1];
+    pbuff[1] = pbuff[2];
+    pbuff[2] = pbuff[3];
+    pbuff[3] = Data;
 
-    type = raw->pbuff[2];
+    Type = pbuff[2];
 
     /*
     | Byte 0 must be an STX character.
     | Byte 1 = status byte which we always ignore (for now).
-    | Byte 2 = packet type which must be RAWDATA (57h) or RETSVDATA (55h) (for now).
+    | Byte 2 = packet type which must be GENOUT (0x40) RAWDATA (0x57) or RETSVDATA (0x55) (for now).
     | Byte 3 = data length which must be non-zero for any packet we're interested in.
     */
-    return ( (raw->pbuff[0] == STX) &&
-             (data != 0) &&
-             ((type == GENOUT) || (type == RAWDATA) || (type == RETSVDATA)) );
+    return ((pbuff[0] == STX) && (Data != 0) && ((Type == GENOUT) || (Type == RAWDATA) || (Type == RETSVDATA)));
 }
 
 /*
-| Function: unwrap_genout
-| Purpose:  Reassemble GENOUT message by removing packet headers, trailers and page framing
-| Authors:  Daniel A. Cook
+| UnwrapGenout - Reassemble GENOUT message by removing packet headers, trailers and page framing
 |
-| Formal Parameters: 
-|
-|   Raw  = Receiver raw data control structure [Input]
-|
-| Implicit Inputs:
-|
-|   Raw->buff[]
-|   Raw->len
-|
-| Implicit Outputs:
-|
-|   Raw->buff[]
-|   Raw->len
-|   Raw->nbyte
-|
-| Return Value:
-|
-|   -1: error message
-|    0: no message (tells caller to please read more data from the stream)
-|    1: input observation data
-|    2: input ephemeris
-|    3: input sbas message
-|    9: input ion/utc parameter
-|
-| Design Issues:
-|
-|   The GENOUT message is broken up on _arbitrary byte boundries_ into
-|   pages of no more than 246 bytes each, then wrapped with page frames,
-|   packet headers and packet trailers. We reassemble the original message
-|   so that it is uninterrupted by removing the extraneous packet headers,
-|   trailers and page framing.
+| The GENOUT message is broken up on _arbitrary byte boundries_ into
+| pages of no more than 246 bytes each, then wrapped with page frames,
+| packet headers and packet trailers. We reassemble the original message
+| so that it is uninterrupted by removing the extraneous packet headers,
+| trailers and page framing.
 */
-static void unwrap_genout(raw_t *raw)
+static void UnwrapGenout(raw_t *raw)
 {
     unsigned char *p_in = raw->buff;
     unsigned char *p_out = p_in;
-    unsigned int length_in, length_in_total = raw->len;
-    unsigned int length_out, length_out_total = 0;
+    unsigned int InputLength, InputLengthTotal = raw->len;
+    unsigned int OutputLength, OutputLengthTotal = 0;
 
-    while (length_in_total > 0)
+    while (InputLengthTotal > 0)
     {
-        length_in = p_in[3] + 6;
-        length_out = p_in[3] - 3;
-        memmove(p_out, p_in + 7, length_out);
-        p_in += length_in;
-        p_out += length_out;
-        length_out_total += length_out;
-        length_in_total -= length_in;  
+        InputLength = p_in[3] + 6;
+        OutputLength = p_in[3] - 3;
+        memmove(p_out, p_in + 7, OutputLength);
+        p_in += InputLength;
+        p_out += OutputLength;
+        OutputLengthTotal += OutputLength;
+        InputLengthTotal -= InputLength;  
     }
-    raw->nbyte = raw->len = length_out_total;
+    raw->nbyte = raw->len = OutputLengthTotal;
 }
 
 /*
-| Function: unwrap_rawdata
-| Purpose:  Reassemble message by removing packet headers, trailers and page framing
-| Authors:  Daniel A. Cook
+| UnwrapRawdata - Reassemble message by removing packet headers, trailers and page framing
 |
-| Formal Parameters: 
+| The RAWDATA message is broken up on _arbitrary byte boundries_ into
+| pages of no more than 244 bytes each, then wrapped with page frames,
+| packet headers and packet trailers. We reassemble the original message
+| so that it is uninterrupted by removing the extraneous packet headers,
+| trailers and page framing.
 |
-|   Raw  = Receiver raw data control structure [Input]
-|   RIF  = Record Interpreation Flags          [Output]
-|
-| Implicit Inputs:
-|
-|   Raw->buff[]
-|   Raw->len
-|
-| Implicit Outputs:
-|
-|   Raw->buff[]
-|   Raw->len
-|   Raw->nbyte
-|
-| Return Value:
-|
-|   -1: error message
-|    0: no message (tells caller to please read more data from the stream)
-|    1: input observation data
-|    2: input ephemeris
-|    3: input sbas message
-|    9: input ion/utc parameter
-|
-| Design Issues:
-|
-|   The RAWDATA message is broken up on _arbitrary byte boundries_ into
-|   pages of no more than 244 bytes each, then wrapped with page frames,
-|   packet headers and packet trailers. We reassemble the original message
-|   so that it is uninterrupted by removing the extraneous packet headers,
-|   trailers and page framing.
-|
-|   While we're at it we also check to make sure the Record Interpretation
-|   Flags are consistent. They should be the same in every page frame.
+| While we're at it we also check to make sure the Record Interpretation
+| Flags are consistent. They should be the same in every page frame.
 */
-static void unwrap_rawdata(raw_t *raw, unsigned int *rif)
+static void UnwrapRawdata(raw_t *raw, unsigned int *rif)
 {
     unsigned char *p_in = raw->buff;
     unsigned char *p_out = p_in;
-    unsigned int length_in, length_in_total = raw->len;
-    unsigned int length_out, length_out_total = 0;
+    unsigned int InputLength, InputLengthTotal = raw->len;
+    unsigned int OutputLength, OutputLengthTotal = 0;
 
     *rif = p_in[7];
 
-    while (length_in_total > 0)
+    while (InputLengthTotal > 0)
     {
         if ((unsigned int)p_in[7] != *rif)
-           trace( 2, "RT17: Inconsistent Record Interpretation "
-                     "Flags within a single RAWDATA message.\n" );
+           trace(2, "RT17: Inconsistent Record Interpretation Flags within a single RAWDATA message.\n");
 
-        length_in = p_in[3] + 6;
-        length_out = p_in[3] - 4;
-        memmove(p_out, p_in + 8, length_out);
-        p_in += length_in;
-        p_out += length_out;
-        length_out_total += length_out;
-        length_in_total -= length_in;  
+        InputLength = p_in[3] + 6;
+        OutputLength = p_in[3] - 4;
+        memmove(p_out, p_in + 8, OutputLength);
+        p_in += InputLength;
+        p_out += OutputLength;
+        OutputLengthTotal += OutputLength;
+        InputLengthTotal -= InputLength;
     }
-    raw->nbyte = raw->len = length_out_total;
+    raw->nbyte = raw->len = OutputLengthTotal;
 }

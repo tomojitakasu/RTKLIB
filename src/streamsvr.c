@@ -339,6 +339,11 @@ static void strconv(stream_t *str, strconv_t *conv, unsigned char *buff, int n)
             ret=input_rtcm3(&conv->rtcm,buff[i]);
             rtcm2rtcm(&conv->out,&conv->rtcm,ret,conv->stasel);
         }
+        /* input cmr messages */
+        else if (conv->itype==STRFMT_CMR) {
+            ret=input_cmr(&conv->rtcm,buff[i]);
+            rtcm2rtcm(&conv->out,&conv->rtcm,ret,conv->stasel);
+        }
         /* input receiver raw messages */
         else {
             ret=input_raw(&conv->raw,conv->itype,buff[i]);

@@ -49,7 +49,7 @@ object StartDialog: TStartDialog
       Top = 8
       Width = 224
       Height = 13
-      Caption = 'Input Approx. Log Start Time (GPST) for RTCM'
+      Caption = 'Input Approx. Log Start Time (GPST) for RTCM/CMR'
     end
     object TimeY1: TEdit
       Left = 10

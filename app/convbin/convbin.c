@@ -55,6 +55,7 @@ static const char *help[]={
 " message file. SBAS message file complies with RTKLIB SBAS/LEX message",
 " format. It supports the following messages or files.",
 "",
+" CMR                   : CMR Type 0, 1, 2, 3, 4, CMR+ Type 1, 2, 3",
 " RTCM 2                : Type 1, 3, 9, 14, 16, 17, 18, 19, 22",
 " RTCM 3                : Type 1002, 1004, 1005, 1006, 1010, 1012, 1019, 1020",
 "                         Type 1071-1127 (MSM except for compact msg)",
@@ -80,10 +81,11 @@ static const char *help[]={
 "     file         input receiver binary log file",
 "     -ts y/m/d h:m:s  start time [all]",
 "     -te y/m/d h:m:s  end time [all]",
-"     -tr y/m/d h:m:s  approximated time for rtcm messages",
+"     -tr y/m/d h:m:s  approximated time for cmr/rtcm messages",
 "     -ti tint     observation data interval (s) [all]",
 "     -span span   time span (h) [all]",
 "     -r format    log format type",
+"                  cmr  = CMR/CMR+",
 "                  rtcm2= RTCM 2",
 "                  rtcm3= RTCM 3",
 "                  nov  = NovAtel OEMV/4/6,OEMStar",
@@ -137,6 +139,7 @@ static const char *help[]={
 "",
 " If receiver type is not specified, type is recognized by the input",
 " file extension as follows.",
+"     *.cmr         CMR/CMR+",
 "     *.rtcm2       RTCM 2",
 "     *.rtcm3       RTCM 3",
 "     *.gps         NovAtel OEMV/4/6,OEMStar",
@@ -170,7 +173,7 @@ static int convbin(int format, rnxopt_t *opt, const char *ifile, char **file,
                    char *dir)
 {
     int i,def;
-    char work[1024],ofile_[7][1024]={"","","","","","",""},*ofile[7],*p;
+    char work[1024],ofile_[7][1024]={"","","","","","",""},*ofile[7]={0},*p;
     char *extnav=opt->rnxver<=2.99||opt->navsys==SYS_GPS?"N":"P";
     char *extlog=format==STRFMT_LEXR?"lex":"sbs";
     
@@ -444,6 +447,7 @@ static int cmdopts(int argc, char **argv, rnxopt_t *opt, char **ifile,
     if (*fmt) {
         if      (!strcmp(fmt,"rtcm2")) format=STRFMT_RTCM2;
         else if (!strcmp(fmt,"rtcm3")) format=STRFMT_RTCM3;
+        else if (!strcmp(fmt,"cmr"  )) format=STRFMT_CMR;
         else if (!strcmp(fmt,"nov"  )) format=STRFMT_OEM4;
         else if (!strcmp(fmt,"oem3" )) format=STRFMT_OEM3;
         else if (!strcmp(fmt,"ubx"  )) format=STRFMT_UBX;
@@ -462,6 +466,7 @@ static int cmdopts(int argc, char **argv, rnxopt_t *opt, char **ifile,
         if (!expath(*ifile,paths,1)||!(p=strrchr(path,'.'))) return -1;
         if      (!strcmp(p,".rtcm2"))  format=STRFMT_RTCM2;
         else if (!strcmp(p,".rtcm3"))  format=STRFMT_RTCM3;
+        else if (!strcmp(p,".cmr"  ))  format=STRFMT_CMR;
         else if (!strcmp(p,".gps"  ))  format=STRFMT_OEM4;
         else if (!strcmp(p,".ubx"  ))  format=STRFMT_UBX;
         else if (!strcmp(p,".log"  ))  format=STRFMT_SS2;
