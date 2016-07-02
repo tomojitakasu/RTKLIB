@@ -1204,13 +1204,6 @@ typedef struct {        /* receiver raw data control type */
     int outtype;        /* output message type */
     unsigned char buff[MAXRAWLEN]; /* message buffer */
     char opt[256];      /* receiver dependent options */
-    double receive_time;/* RT17: Reiceve time of week for week rollover detection */
-    unsigned int plen;  /* RT17: Total size of packet to be read */
-    unsigned int pbyte; /* RT17: How many packet bytes have been read so far */
-    unsigned int page;  /* RT17: Last page number */
-    unsigned int reply; /* RT17: Current reply number */
-    int week;           /* RT17: week number */
-    unsigned char pbuff[255+4+2]; /* RT17: Packet buffer */
 } raw_t;
 
 typedef struct {        /* stream type */
@@ -1577,6 +1570,7 @@ EXPORT int decode_gal_inav(const unsigned char *buff, eph_t *eph);
 
 EXPORT int init_raw   (raw_t *raw);
 EXPORT void free_raw  (raw_t *raw);
+EXPORT void free_rt17 (raw_t *raw);
 EXPORT int input_raw  (raw_t *raw, int format, unsigned char data);
 EXPORT int input_rawf (raw_t *raw, int format, FILE *fp);
 
@@ -1613,10 +1607,10 @@ EXPORT int gen_nvs (const char *msg, unsigned char *buff);
 EXPORT int gen_lexr(const char *msg, unsigned char *buff);
 
 /* CMR functions */
-extern int free_cmr(rtcm_t *rtcm);
-extern int input_cmr (rtcm_t *rtcm, unsigned char data);
-extern int input_cmrf(rtcm_t *rtcm, FILE *fp);
-extern int update_cmr(rtcm_t *rtcm, obs_t *obs);
+EXPORT int free_cmr(rtcm_t *rtcm);
+EXPORT int input_cmr (rtcm_t *rtcm, unsigned char data);
+EXPORT int input_cmrf(rtcm_t *rtcm, FILE *fp);
+EXPORT int update_cmr(rtcm_t *rtcm, obs_t *obs);
 
 /* rtcm functions ------------------------------------------------------------*/
 EXPORT int init_rtcm   (rtcm_t *rtcm);
