@@ -997,7 +997,7 @@ static int convrnx_s(int sess, int format, rnxopt_t *opt, const char *file,
         tend=te; /* end time of a file */
     }
     /* set receiver and antenna information to option */
-    if (format==STRFMT_RTCM2||format==STRFMT_RTCM3||format=STRFMT_CMR) {
+    if (format==STRFMT_RTCM2||format==STRFMT_RTCM3||format==STRFMT_CMR) {
         rtcm2opt(&str->rtcm,opt);
     }
     else if (format==STRFMT_RINEX) {

@@ -215,8 +215,7 @@ static void updatesvr(rtksvr_t *svr, int ret, obs_t *obs, nav_t *nav, int sat,
         if ((svr->rtk.opt.refpos==4||svr->rtk.opt.refpos==5)&&index==1) {
             if (svr->format[index]==STRFMT_RTCM2||
                 svr->format[index]==STRFMT_RTCM3||
-                svr->format[index]==STRFMT_CMR)
-            {
+                svr->format[index]==STRFMT_CMR) {
                 for (i=0;i<3;i++) {
                     svr->rtk.rb[i]=svr->rtcm[1].sta.pos[i];
                 }
@@ -253,6 +252,8 @@ static void updatesvr(rtksvr_t *svr, int ret, obs_t *obs, nav_t *nav, int sat,
                     enu2ecef(pos,svr->raw[index].sta.del,dr);
                     for (i=0;i<3;i++) {
                         svr->rtk.rb[i]+=dr[i];
+
+                    }
                 }
             }
         }
