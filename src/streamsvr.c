@@ -363,6 +363,14 @@ static void *strsvrthread(void *arg)
     unsigned int tick,ticknmea;
     int i,n;
     
+    /* This "fake" solution structure is passed to strsendnmea
+    * when inpstr2-nmeareq is set to latlon*/
+    sol_t latlon_sol={{0}};
+    latlon_sol.stat=SOLQ_SINGLE;
+    latlon_sol.time=utc2gpst(timeget());
+    for (i=0;i<3;i++)
+        latlon_sol.rr[i]=svr->nmeapos[i];
+
     tracet(3,"strsvrthread:\n");
     
     svr->state=1;
@@ -386,7 +394,7 @@ static void *strsvrthread(void *arg)
         }
         /* write nmea messages to input stream */
         if (svr->nmeacycle>0&&(int)(tick-ticknmea)>=svr->nmeacycle) {
-            strsendnmea(svr->stream,svr->nmeapos);
+            strsendnmea(svr->stream,&latlon_sol);
             ticknmea=tick;
         }
         lock(&svr->lock);

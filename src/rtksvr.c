@@ -385,6 +385,14 @@ static void *rtksvrthread(void *arg)
     unsigned int tick,ticknmea;
     unsigned char *p,*q;
     int i,j,n,fobs[3]={0},cycle,cputime;
+
+    /* This "fake" solution structure is passed to strsendnmea
+     * when inpstr2-nmeareq is set to latlon*/
+    sol_t latlon_sol={{0}};
+    latlon_sol.stat=SOLQ_SINGLE;
+    latlon_sol.time=utc2gpst(timeget());
+    for (i=0;i<3;i++)
+        latlon_sol.rr[i]=svr->nmeapos[i];
     
     tracet(3,"rtksvrthread:\n");
     
@@ -461,10 +469,10 @@ static void *rtksvrthread(void *arg)
         if (svr->nmeacycle>0&&(int)(tick-ticknmea)>=svr->nmeacycle) {
             if (svr->stream[1].state==1) {
                 if (svr->nmeareq==1) {
-                    strsendnmea(svr->stream+1,svr->nmeapos);
+                    strsendnmea(svr->stream+1,&latlon_sol);
                 }
                 else if (svr->nmeareq==2&&norm(svr->rtk.sol.rr,3)>0.0) {
-                    strsendnmea(svr->stream+1,svr->rtk.sol.rr);
+                    strsendnmea(svr->stream+1,&(svr->rtk.sol));
                 }
             }
             ticknmea=tick;

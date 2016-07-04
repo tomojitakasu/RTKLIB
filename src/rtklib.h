@@ -1627,7 +1627,7 @@ extern int  strstat  (stream_t *stream, char *msg);
 extern void strsum   (stream_t *stream, int *inb, int *inr, int *outb, int *outr);
 extern void strsetopt(const int *opt);
 extern gtime_t strgettime(stream_t *stream);
-extern void strsendnmea(stream_t *stream, const double *pos);
+extern void strsendnmea(stream_t *stream, sol_t *sol);
 extern void strsendcmd(stream_t *stream, const char *cmd);
 extern void strsettimeout(stream_t *stream, int toinact, int tirecon);
 extern void strsetdir(const char *dir);

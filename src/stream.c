@@ -2149,21 +2149,15 @@ extern gtime_t strgettime(stream_t *stream)
 /* send nmea request -----------------------------------------------------------
 * send nmea gpgga message to stream
 * args   : stream_t *stream I   stream
-*          double *pos      I   position {x,y,z} (ecef) (m)
+*          sol_t *sol       I   solution
 * return : none
 *-----------------------------------------------------------------------------*/
-extern void strsendnmea(stream_t *stream, const double *pos)
+extern void strsendnmea(stream_t *stream, sol_t *sol)
 {
-    sol_t sol={{0}};
     unsigned char buff[1024];
-    int i,n;
-    
-    tracet(3,"strsendnmea: pos=%.3f %.3f %.3f\n",pos[0],pos[1],pos[2]);
-    
-    sol.stat=SOLQ_SINGLE;
-    sol.time=utc2gpst(timeget());
-    for (i=0;i<3;i++) sol.rr[i]=pos[i];
-    n=outnmea_gga(buff,&sol);
+    int n;
+
+    n=outnmea_gga(buff,sol);
     strwrite(stream,buff,n);
 }
 /* generate general hex message ----------------------------------------------*/
