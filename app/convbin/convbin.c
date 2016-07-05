@@ -81,7 +81,7 @@ static const char *help[]={
 "     file         input receiver binary log file",
 "     -ts y/m/d h:m:s  start time [all]",
 "     -te y/m/d h:m:s  end time [all]",
-"     -tr y/m/d h:m:s  approximated time for cmr/rtcm messages",
+"     -tr y/m/d h:m:s  approximated time for rtcm messages",
 "     -ti tint     observation data interval (s) [all]",
 "     -span span   time span (h) [all]",
 "     -r format    log format type",

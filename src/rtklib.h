@@ -905,18 +905,6 @@ typedef struct {        /* solution status buffer type */
     solstat_t *data;    /* solution status data */
 } solstatbuf_t;
 
-typedef struct {        /* CMR information struct type */
-    void *buff;         /* Mini-buffer for building full CMR+ message from little parts */
-    void *roverobs;     /* Rover observables table */
-    void *rtksvr;       /* Pointer to RTK server structure (when running in that environment) */
-    void *t4data;       /* Type 3 reference data for type 4 observables */
-    unsigned int cmsg;  /* Current  base messages active */
-    unsigned int pmsg;  /* Previous base messages active */
-    unsigned int flags; /* Miscellaneous internal flag bits */
-    int nbyte;          /* Number of bytes of data in CMR+ message mini-buffer */
-    int page;           /* Previous page number added to CMR+ message mini-buffer */
-} cmr_t;
-
 typedef struct {        /* RTCM control struct type */
     int staid;          /* station id */
     int stah;           /* station health */
@@ -924,7 +912,6 @@ typedef struct {        /* RTCM control struct type */
     int outtype;        /* output message type */
     gtime_t time;       /* message time */
     gtime_t time_s;     /* message start time */
-    cmr_t cmr;          /* CMR dependent information */
     obs_t obs;          /* observation data (uncorrected) */
     nav_t nav;          /* satellite ephemerides */
     sta_t sta;          /* station parameters */
@@ -1166,24 +1153,13 @@ typedef struct {        /* RTK control/result type */
     prcopt_t opt;       /* processing options */
 } rtk_t;
 
-typedef struct {        /* RT17 information struct type */
-    double tow;         /* receive time of week */
-    unsigned int flags; /* Miscellaneous internal flag bits */
-    unsigned int page;  /* last page number */
-    unsigned int pbyte; /* how many packet bytes have been read so far */
-    unsigned int plen;  /* total size of packet to be read */
-    unsigned int reply; /* current reply number */
-    int week;           /* GPS week number */
-    unsigned char *pbuff; /* packet buffer */
-} rt17_t;
-
 typedef struct {        /* receiver raw data control type */
+    void *rcv_data;     /* receiver dependent data */
     gtime_t time;       /* message time */
     gtime_t tobs;       /* observation data time */
     obs_t obs;          /* observation data */
     obs_t obuf;         /* observation data buffer */
     nav_t nav;          /* satellite ephemerides */
-    rt17_t rt17;        /* RT17 dependent information */
     sta_t sta;          /* station parameters */
     int ephsat;         /* sat number of update ephemeris (0:no satellite) */
     sbsmsg_t sbsmsg;    /* SBAS message */
@@ -1570,7 +1546,6 @@ EXPORT int decode_gal_inav(const unsigned char *buff, eph_t *eph);
 
 EXPORT int init_raw   (raw_t *raw);
 EXPORT void free_raw  (raw_t *raw);
-EXPORT void free_rt17 (raw_t *raw);
 EXPORT int input_raw  (raw_t *raw, int format, unsigned char data);
 EXPORT int input_rawf (raw_t *raw, int format, FILE *fp);
 
@@ -1584,7 +1559,13 @@ EXPORT int input_gw10  (raw_t *raw, unsigned char data);
 EXPORT int input_javad (raw_t *raw, unsigned char data);
 EXPORT int input_nvs   (raw_t *raw, unsigned char data);
 EXPORT int input_bnx   (raw_t *raw, unsigned char data);
+EXPORT int free_rt17   (raw_t *raw);
+EXPORT int init_rt17   (raw_t *raw);
 EXPORT int input_rt17  (raw_t *raw, unsigned char data);
+EXPORT int free_cmr    (raw_t *raw);
+EXPORT int init_cmr    (raw_t *raw);
+EXPORT int input_cmr   (raw_t *raw, unsigned char data);
+EXPORT int update_cmr  (raw_t *raw, rtksvr_t *svr, obs_t *obs);
 EXPORT int input_sbf   (raw_t *raw, unsigned char data);
 EXPORT int input_lexr  (raw_t *raw, unsigned char data);
 EXPORT int input_oem4f (raw_t *raw, FILE *fp);
@@ -1598,6 +1579,7 @@ EXPORT int input_javadf(raw_t *raw, FILE *fp);
 EXPORT int input_nvsf  (raw_t *raw, FILE *fp);
 EXPORT int input_bnxf  (raw_t *raw, FILE *fp);
 EXPORT int input_rt17f (raw_t *raw, FILE *fp);
+EXPORT int input_cmrf  (raw_t *raw, FILE *fp);
 EXPORT int input_sbff  (raw_t *raw, FILE *fp);
 EXPORT int input_lexrf (raw_t *raw, FILE *fp);
 
@@ -1605,12 +1587,6 @@ EXPORT int gen_ubx (const char *msg, unsigned char *buff);
 EXPORT int gen_stq (const char *msg, unsigned char *buff);
 EXPORT int gen_nvs (const char *msg, unsigned char *buff);
 EXPORT int gen_lexr(const char *msg, unsigned char *buff);
-
-/* CMR functions */
-EXPORT int free_cmr(rtcm_t *rtcm);
-EXPORT int input_cmr (rtcm_t *rtcm, unsigned char data);
-EXPORT int input_cmrf(rtcm_t *rtcm, FILE *fp);
-EXPORT int update_cmr(rtcm_t *rtcm, obs_t *obs);
 
 /* rtcm functions ------------------------------------------------------------*/
 EXPORT int init_rtcm   (rtcm_t *rtcm);

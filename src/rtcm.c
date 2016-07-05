@@ -74,7 +74,6 @@ extern int init_rtcm(rtcm_t *rtcm)
     
     trace(3,"init_rtcm:\n");
     
-    memset(&rtcm->cmr, 0, sizeof(rtcm->cmr));
     rtcm->staid=rtcm->stah=rtcm->seqno=rtcm->outtype=0;
     rtcm->time=rtcm->time_s=time0;
     rtcm->sta.name[0]=rtcm->sta.marker[0]='\0';
@@ -134,7 +133,6 @@ extern void free_rtcm(rtcm_t *rtcm)
     free(rtcm->obs.data); rtcm->obs.data=NULL; rtcm->obs.n=0;
     free(rtcm->nav.eph ); rtcm->nav.eph =NULL; rtcm->nav.n=0;
     free(rtcm->nav.geph); rtcm->nav.geph=NULL; rtcm->nav.ng=0;
-    free_cmr(rtcm);
 }
 /* input rtcm 2 message from stream --------------------------------------------
 * fetch next rtcm 2 message and input a message from byte stream

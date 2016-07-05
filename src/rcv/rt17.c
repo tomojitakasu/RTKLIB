@@ -266,6 +266,7 @@
 #define GENOUT        0x40      /* General Serial Output Format (GSOF) */
 #define RETSVDATA     0x55      /* Satellite information reports */
 #define RAWDATA       0x57      /* Position or real-time survey data report */
+#define MBUFF_LENGTH  2048      /* Message buffer length */
 #define PBUFF_LENGTH  (4+255+2) /* Packet buffer length */
 
 /* Record Interpretation Flags bit masks: */
@@ -380,48 +381,119 @@ static const char *RetsvdataTable[] = {
 }; 
 
 /*
+| Typedefs.
+*/
+
+typedef struct {                    /* RT17 information struct type */
+    unsigned char *MessageBuffer;   /* Message buffer */
+    unsigned char *PacketBuffer;    /* Packet buffer */
+    double        Tow;              /* Receive time of week */
+    unsigned int  Flags;            /* Miscellaneous internal flag bits */
+    unsigned int  MessageBytes;     /* Number of bytes in message buffer */ 
+    unsigned int  MessageLength;    /* Message length (bytes) */
+    unsigned int  PacketBytes;      /* How many packet bytes have been read so far */
+    unsigned int  PacketLength;     /* Total size of packet to be read */
+    unsigned int  Page;             /* Last page number */
+    unsigned int  Reply;            /* Current reply number */
+    int           Week;             /* GPS week number */
+} rt17_t;
+
+/*
 | Internal private function forward declarations (in alphabetical order):
 */
-static int CheckPacketChecksum(raw_t *raw);
-static void ClearMessageBuffer(raw_t *raw);
-static void ClearPacketBuffer(raw_t *raw);
-static int DecodeBeidouEphemeris(raw_t *raw);
-static int DecodeGalileoEphemeris(raw_t *raw);
-static int DecodeGLONASSEphemeris(raw_t *raw);
-static int DecodeGPSEphemeris(raw_t *raw);
-static int DecodeGSOF(raw_t *raw);
-static int DecodeGSOF1(raw_t *raw, unsigned char *p);
-static int DecodeGSOF3(raw_t *raw, unsigned char *p);
-static int DecodeGSOF15(raw_t *raw, unsigned char *p);
-static int DecodeGSOF16(raw_t *raw, unsigned char *p);
-static int DecodeGSOF26(raw_t *raw, unsigned char *p);
-static int DecodeGSOF41(raw_t *raw, unsigned char *p);
-static int DecodeIONAndUTCData(raw_t *raw);
-static int DecodeQZSSEphemeris(raw_t *raw);
-static int DecodeRawdata(raw_t *raw);
-static int DecodeRetsvdata(raw_t *raw);
-static int DecodeType17(raw_t *raw, unsigned int rif);
-static int DecodeType29(raw_t *raw);
-static int GetWeek(raw_t *raw, double tow);
+static int CheckPacketChecksum(unsigned char *PacketBuffer);
+static void ClearMessageBuffer(rt17_t *rt17);
+static void ClearPacketBuffer(rt17_t *rt17);
+static int DecodeBeidouEphemeris(raw_t *Raw);
+static int DecodeGalileoEphemeris(raw_t *Raw);
+static int DecodeGLONASSEphemeris(raw_t *Raw);
+static int DecodeGPSEphemeris(raw_t *Raw);
+static int DecodeGSOF(raw_t *Raw);
+static int DecodeGSOF1(raw_t *Raw, unsigned char *p);
+static int DecodeGSOF3(raw_t *Raw, unsigned char *p);
+static int DecodeGSOF15(raw_t *Raw, unsigned char *p);
+static int DecodeGSOF16(raw_t *Raw, unsigned char *p);
+static int DecodeGSOF26(raw_t *Raw, unsigned char *p);
+static int DecodeGSOF41(raw_t *Raw, unsigned char *p);
+static int DecodeIONAndUTCData(raw_t *Raw);
+static int DecodeQZSSEphemeris(raw_t *Raw);
+static int DecodeRawdata(raw_t *Raw);
+static int DecodeRetsvdata(raw_t *Raw);
+static int DecodeType17(raw_t *Raw, unsigned int rif);
+static int DecodeType29(raw_t *Raw);
+static int GetWeek(raw_t *Raw, double tow);
 static short ReadI2(unsigned char *p);
 static int ReadI4(unsigned char *p);
 static float ReadR4(unsigned char *p);
 static double ReadR8(unsigned char *p);
 static unsigned short ReadU2(unsigned char *p);
 static unsigned int ReadU4(unsigned char *p);
-static void SetWeek(raw_t *raw, int Week, double tow);
-static int SyncPacket(raw_t *raw, unsigned char Data);
-static void UnwrapRawdata(raw_t *raw, unsigned int *rif);
-static void UnwrapGenout(raw_t *raw);
+static void SetWeek(raw_t *Raw, int Week, double tow);
+static int SyncPacket(rt17_t *rt17, unsigned char Data);
+static void UnwrapRawdata(rt17_t *rt17, unsigned int *rif);
+static void UnwrapGenout(rt17_t *rt17);
 
 /* Public functions (in alphabetical order): */
 
-/* free_rt17 - Free up RT17 storage */
-extern void free_rt17(raw_t *raw)
+/* free_rt17 - Free up RT17 dependent private storage */
+EXPORT int free_rt17(raw_t *Raw)
 {
-    rt17_t *rt17 = &raw->rt17;
-    if (rt17->pbuff) free(rt17->pbuff);
-    memset(rt17, 0, sizeof(rt17_t));
+    rt17_t *rt17 = NULL;
+    
+    if (Raw && (rt17 = (rt17_t*) Raw->rcv_data))
+    {
+        if (rt17->MessageBuffer)
+        {
+            memset(rt17->MessageBuffer, 0, MBUFF_LENGTH);
+            free(rt17->MessageBuffer);
+            rt17->MessageBuffer = NULL;
+        }
+
+        if (rt17->PacketBuffer)
+        {
+            memset(rt17->PacketBuffer, 0, PBUFF_LENGTH);
+            free(rt17->PacketBuffer);
+            rt17->PacketBuffer = NULL;
+        }
+
+        memset(rt17, 0, sizeof(rt17_t));
+        free(rt17);
+        Raw->rcv_data = NULL;
+    }
+
+    return 1;
+}
+
+/* init_rt17 = Initialize RT17 dependent private storage */
+EXPORT int init_rt17(raw_t *Raw)
+{
+	rt17_t *rt17 = NULL;
+    unsigned char *MessageBuffer = NULL, *PacketBuffer = NULL;
+
+    if (!(rt17 = (rt17_t*) calloc(1, sizeof(rt17_t))))
+    {
+        tracet(0, "RT17: unable to allocate RT17 dependent private data structure.\n");
+        return 0;
+    }
+    Raw->rcv_data = (void*) rt17;
+    
+    if (!(MessageBuffer = (unsigned char*) calloc(MBUFF_LENGTH, sizeof(unsigned char))))
+    {
+        tracet(0, "RT17: unable to allocate RT17 message buffer.\n");
+        free_rt17(Raw);
+        return 0;
+    }
+    rt17->MessageBuffer = MessageBuffer;
+
+    if (!(PacketBuffer = (unsigned char*) calloc(PBUFF_LENGTH, sizeof(unsigned char))))
+    {
+        tracet(0, "RT17: unable to allocate RT17 packet buffer.\n");
+        free_rt17(Raw);
+        return 0;
+    }
+    rt17->PacketBuffer = PacketBuffer;
+
+    return 1;
 }
 
 /*
@@ -439,32 +511,23 @@ extern void free_rt17(raw_t *raw)
 | and the packet ends with a 2-byte trailer. Byte 3 is set to 0 (00h) when the packet
 | contains no data.
 */
-extern int input_rt17(raw_t *raw, unsigned char Data)
+EXPORT int input_rt17(raw_t *Raw, unsigned char Data)
 {
-    rt17_t *rt17 = &raw->rt17;
-    unsigned char *pbuff = rt17->pbuff;
+    rt17_t *rt17 = (rt17_t*) Raw->rcv_data;
+    unsigned char *MessageBuffer = rt17->MessageBuffer;
+    unsigned char *PacketBuffer = rt17->PacketBuffer;
     unsigned int Page, Pages, Reply;
-    int ret = 0;
-
-    if (!pbuff)
-    {
-        if (!(pbuff = (unsigned char*) calloc(PBUFF_LENGTH, sizeof(unsigned char))))
-        {
-            tracet(0, "RT17: unable to allocate packet buffer.\n");
-            return -1;
-        }
-        rt17->pbuff = pbuff;
-    }
+    int Ret = 0;
 
     /* If no current packet */
-    if (rt17->pbyte == 0)
+    if (rt17->PacketBytes == 0)
     {   
         /* Find something that looks like a packet. */
-        if (SyncPacket(raw, Data))
+        if (SyncPacket(rt17, Data))
         {
             /* Found one. */
-            rt17->plen = 4 + pbuff[3] + 2; /* 4 (header) + length + 2 (trailer) */
-            rt17->pbyte = 4; /* We now have four bytes in the packet buffer */
+            rt17->PacketLength = 4 + PacketBuffer[3] + 2; /* 4 (header) + length + 2 (trailer) */
+            rt17->PacketBytes = 4; /* We now have four bytes in the packet buffer */
         }
                 
         /* Continue reading the rest of the packet from the stream */
@@ -472,23 +535,23 @@ extern int input_rt17(raw_t *raw, unsigned char Data)
     }
 
     /* Store the next byte of the packet */
-    pbuff[rt17->pbyte++] = Data;
+    PacketBuffer[rt17->PacketBytes++] = Data;
 
     /*
     | Keep storing bytes into the current packet
     | until we have what we think are all of them.
     */
-    if (rt17->pbyte < rt17->plen)
+    if (rt17->PacketBytes < rt17->PacketLength)
         return 0;
 
     /*
     | At this point we think have an entire packet.
     | The prospective packet must end with an ETX.
     */
-    if (rt17->pbuff[rt17->plen-1] != ETX)
+    if (rt17->PacketBuffer[rt17->PacketLength-1] != ETX)
     {
         tracet(2, "RT17: Prospective packet did not end with an ETX character. Some data lost.\n");
-        ClearPacketBuffer(raw);
+        ClearPacketBuffer(rt17);
         return 0;
     }
 
@@ -496,30 +559,30 @@ extern int input_rt17(raw_t *raw, unsigned char Data)
     | We do indeed have an entire packet.
     | Check the packet checksum.
     */
-    if (!CheckPacketChecksum(raw))
+    if (!CheckPacketChecksum(PacketBuffer))
     {
         tracet(2, "RT17: Packet checksum failure. Packet discarded.\n");
-        ClearPacketBuffer(raw);
+        ClearPacketBuffer(rt17);
         return 0;
     }
 
-    if (raw->outtype)
-        sprintf(raw->msgtype, "RT17 0x%02X (%4d)", pbuff[2], rt17->plen);
+    if (Raw->outtype)
+        sprintf(Raw->msgtype, "RT17 0x%02X (%4d)", PacketBuffer[2], rt17->PacketLength);
 
     /* If this is a SVDATA packet, then process it immediately */
-    if (pbuff[2] == RETSVDATA)
+    if (PacketBuffer[2] == RETSVDATA)
     {
-        ret = DecodeRetsvdata(raw);
-        ClearPacketBuffer(raw);
-        return ret;
+        Ret = DecodeRetsvdata(Raw);
+        ClearPacketBuffer(rt17);
+        return Ret;
     }
         
     /* Accumulate a sequence of RAWDATA packets (pages) */
-    if (pbuff[2] == RAWDATA)
+    if (PacketBuffer[2] == RAWDATA)
     {
-        Page  = pbuff[5] >> 4;
-        Pages = pbuff[5] & 15;
-        Reply = pbuff[6];
+        Page  = PacketBuffer[5] >> 4;
+        Pages = PacketBuffer[5] & 15;
+        Reply = PacketBuffer[6];
 
         /*
         | If this is the first RAWDATA packet in a sequence of RAWDATA packets,
@@ -529,57 +592,57 @@ extern int input_rt17(raw_t *raw, unsigned char Data)
         | a part of the same requence of packets as the last one, that it's
         | page number is in sequence.
         */
-        if (raw->nbyte == 0)
+        if (rt17->MessageBytes == 0)
         {       
             if (Page != 1)
             {
                 tracet(2, "RT17: First RAWDATA packet is not page #1. Packet discarded.\n");
-                ClearPacketBuffer(raw);
+                ClearPacketBuffer(rt17);
                 return 0;
             }
 
-            rt17->reply = pbuff[6];
+            rt17->Reply = PacketBuffer[6];
         }
-        else if ((Reply != rt17->reply) || (Page != (rt17->page + 1)))
+        else if ((Reply != rt17->Reply) || (Page != (rt17->Page + 1)))
         {
             tracet(2, "RT17: RAWDATA packet sequence number mismatch or page out of order. %u RAWDATA packets discarded.\n", Page);
-            ClearMessageBuffer(raw);
-            ClearPacketBuffer(raw);
+            ClearMessageBuffer(rt17);
+            ClearPacketBuffer(rt17);
             return 0;
         }
         
-        /* Check for raw->buff buffer overflow */
-        if ((raw->nbyte + rt17->pbyte) > MAXRAWLEN)
+        /* Check for message buffer overflow */
+        if ((rt17->MessageBytes + rt17->PacketBytes) > MBUFF_LENGTH)
         {
             tracet(2, "RT17: Buffer would overflow. %u RAWDATA packets discarded.\n", Page);
-            ClearMessageBuffer(raw);
-            ClearPacketBuffer(raw);
+            ClearMessageBuffer(rt17);
+            ClearPacketBuffer(rt17);
             return 0; 
         }
 
-        memcpy(raw->buff + raw->nbyte, rt17->pbuff, rt17->pbyte);
-        raw->nbyte += rt17->pbyte;
-        raw->len += rt17->plen;
-        ClearPacketBuffer(raw);
+        memcpy(MessageBuffer + rt17->MessageBytes, PacketBuffer, rt17->PacketBytes);
+        rt17->MessageBytes += rt17->PacketBytes;
+        rt17->MessageLength += rt17->PacketLength;
+        ClearPacketBuffer(rt17);
 
         if (Page == Pages)
         {
-            ret = DecodeRawdata(raw);
-            ClearMessageBuffer(raw);
-            return ret;
+            Ret = DecodeRawdata(Raw);
+            ClearMessageBuffer(rt17);
+            return Ret;
         }
 
-        rt17->page = Page;
+        rt17->Page = Page;
 
         return 0;
     }
 
     /* Accumulate a sequence of GENOUT (GSOF) packets (pages) */
-    if (pbuff[2] == GENOUT)
+    if (PacketBuffer[2] == GENOUT)
     {
-        Reply = pbuff[4];
-        Page  = pbuff[5];
-        Pages = pbuff[6];
+        Reply = PacketBuffer[4];
+        Page  = PacketBuffer[5];
+        Pages = PacketBuffer[6];
 
         /*
         | If this is the first GENOUT packet in a sequence of GENOUT packets,
@@ -589,47 +652,47 @@ extern int input_rt17(raw_t *raw, unsigned char Data)
         | a part of the same requence of packets as the last one, that it's
         | page number is in sequence.
         */
-        if (raw->nbyte == 0)
+        if (rt17->MessageBytes == 0)
         {       
             if (Page != 0)
             {
                 tracet(3, "RT17: First GENOUT packet is not page #0. Packet discarded.\n");
-                ClearPacketBuffer(raw);
+                ClearPacketBuffer(rt17);
                 return 0;
             }
 
-            rt17->reply = pbuff[4];
+            rt17->Reply = PacketBuffer[4];
         }
-        else if ((Reply != rt17->reply) || (Page != (rt17->page + 1)))
+        else if ((Reply != rt17->Reply) || (Page != (rt17->Page + 1)))
         {
             tracet(2, "RT17: GENOUT packet sequence number mismatch or page out of order. %u GENOUT packets discarded.\n", Page);
-            ClearMessageBuffer(raw);
-            ClearPacketBuffer(raw);
+            ClearMessageBuffer(rt17);
+            ClearPacketBuffer(rt17);
             return 0;
         }
         
-        /* Check for raw->buff buffer overflow. */
-        if ((raw->nbyte + rt17->pbyte) > MAXRAWLEN)
+        /* Check for message buffer overflow. */
+        if ((rt17->MessageBytes + rt17->PacketBytes) > MBUFF_LENGTH)
         {
             tracet(2, "RT17: Buffer would overflow. %u GENOUT packets discarded.\n", Page);
-            ClearMessageBuffer(raw);
-            ClearPacketBuffer(raw);
+            ClearMessageBuffer(rt17);
+            ClearPacketBuffer(rt17);
             return 0; 
         }
 
-        memcpy(raw->buff + raw->nbyte, pbuff, rt17->pbyte);
-        raw->nbyte += rt17->pbyte;
-        raw->len += rt17->plen;
-        ClearPacketBuffer(raw);
+        memcpy(MessageBuffer + rt17->MessageBytes, PacketBuffer, rt17->PacketBytes);
+        rt17->MessageBytes += rt17->PacketBytes;
+        rt17->MessageLength += rt17->PacketLength;
+        ClearPacketBuffer(rt17);
 
         if (Page == Pages)
         {
-            ret = DecodeGSOF(raw);
-            ClearMessageBuffer(raw);
-            return ret;
+            Ret = DecodeGSOF(Raw);
+            ClearMessageBuffer(rt17);
+            return Ret;
         }
 
-        rt17->page = Page;
+        rt17->Page = Page;
 
         return 0;
     }
@@ -640,7 +703,7 @@ extern int input_rt17(raw_t *raw, unsigned char Data)
     | and continue reading from the stream.
     */
     tracet(2, "RT17: Packet is not GENOUT, RAWDATA or RETSVDATA. Packet discarded.\n"); 
-    ClearPacketBuffer(raw);
+    ClearPacketBuffer(rt17);
     return 0;
 }
 
@@ -656,14 +719,14 @@ extern int input_rt17(raw_t *raw, unsigned char Data)
 |  2: input ephemeris
 |  9: input ion/utc parameter
 */
-extern int input_rt17f(raw_t *raw, FILE *fp)
+EXPORT int input_rt17f(raw_t *Raw, FILE *fp)
 {
-    int i, Data, ret;
+    int i, Data, Ret;
     
     for (i = 0; i < 4096; i++)
     {
 	if ((Data = fgetc(fp)) == EOF) return -2;
-	    if ((ret = input_rt17(raw, (unsigned char) Data))) return ret;
+	    if ((Ret = input_rt17(Raw, (unsigned char) Data))) return Ret;
     }
 
     return 0; /* return at every 4k bytes */
@@ -682,11 +745,11 @@ extern int input_rt17f(raw_t *raw, FILE *fp)
 | of the data bytes. It does not include the STX leader, the ETX trailer
 | nor the checksum byte.
 */
-static int CheckPacketChecksum(raw_t *raw)
+static int CheckPacketChecksum(unsigned char *PacketBuffer)
 {
     unsigned char Checksum = 0;
-    unsigned char *p = &raw->rt17.pbuff[1];       /* Starting with status */
-    unsigned int Length = raw->rt17.pbuff[3] + 3; /* status, type, length, data */
+    unsigned char *p = &PacketBuffer[1];        /* Starting with status */
+    unsigned int Length = PacketBuffer[3] + 3; /* status, type, length, data */
   
     /* Compute the packet checksum */
     while (Length > 0)
@@ -704,26 +767,28 @@ static int CheckPacketChecksum(raw_t *raw)
 }
 
 /* ClearMessageBuffer - Clear the raw data stream buffer */
-static void ClearMessageBuffer(raw_t *raw)
+static void ClearMessageBuffer(rt17_t *rt17)
 {
-    int i;
+   unsigned char *MessageBuffer = rt17->MessageBuffer;
+   int i;
+   
+   for (i = 0; i < 4; i++)
+       MessageBuffer[i] = 0;
 
-    for (i = 0; i < 4; i++)
-        raw->buff[i] = 0;
-
-    raw->len = raw->nbyte = 0;
-    raw->rt17.reply = 0;
+    rt17->MessageLength = rt17->MessageBytes = 0;
+    rt17->Reply = 0;
 }
 
 /* ClearPacketBuffer - Clear the packet buffer */
-static void ClearPacketBuffer(raw_t *raw)
+static void ClearPacketBuffer(rt17_t *rt17)
 {
+    unsigned char *PacketBuffer = rt17->PacketBuffer;
     int i;
 
     for (i = 0; i < 4; i++)
-        raw->rt17.pbuff[i] = 0;
+        PacketBuffer[i] = 0;
 
-    raw->rt17.plen = raw->rt17.pbyte = 0;
+    rt17->PacketLength = rt17->PacketBytes = 0;
 }
 
 /*
@@ -736,23 +801,24 @@ static void ClearPacketBuffer(raw_t *raw)
 |
 | See reference #1 above for documentation of the RETSVDATA Beidou Ephemeris.
 */
-static int DecodeBeidouEphemeris(raw_t *raw)
+static int DecodeBeidouEphemeris(raw_t *Raw)
 {
     tracet(3, "DecodeBeidouEphemeris(); not yet implemented.\n");
     return 0;
 
 #if 0
-    unsigned char *p = raw->rt17.pbuff;
+    rt17_t *rt17 = (rt17_t*) Raw->rcv_data;
+    unsigned char *p = rt17->PacketBuffer;
     int prn, sat, toc, tow;
     unsigned int Flags, toe;
     double sqrtA;
     eph_t eph={0};
 
-    tracet(3, "RT17: DecodeBeidouEphemeris(); Length=%d\n", raw->rt17.plen);
+    tracet(3, "RT17: DecodeBeidouEphemeris(); Length=%d\n", rt17->PacketLength);
 
-    if (raw->rt17.plen < 182)
+    if (rt17->PacketLength < 182)
     {
-        tracet(2, "RT17: RETSVDATA packet length %d < 182 bytes. GPS ephemeris packet discarded.\n", raw->rt17.plen);
+        tracet(2, "RT17: RETSVDATA packet length %d < 182 bytes. GPS ephemeris packet discarded.\n", rt17->PacketLength);
         return -1;
     }
 
@@ -854,15 +920,15 @@ static int DecodeBeidouEphemeris(raw_t *raw)
 
     tracet(3, "RT17: DecodeBeidouEphemeris(); SAT=%d, IODC=%d, IODE=%d, WEEK=%d.\n", sat, eph.iodc, eph.iode, eph.week);
 
-    if (!strstr(raw->opt,"-EPHALL"))
+    if (!strstr(Raw->opt,"-EPHALL"))
     {
-        if (eph.iode == raw->nav.eph[sat-1].iode)
+        if (eph.iode == Raw->nav.eph[sat-1].iode)
             return 0; /* unchanged */
     }
 
     eph.sat = sat;
-    raw->nav.eph[sat-1] = eph;
-    raw->ephsat = sat;
+    Raw->nav.eph[sat-1] = eph;
+    Raw->ephsat = sat;
 
     return 2;
 #endif
@@ -878,13 +944,14 @@ static int DecodeBeidouEphemeris(raw_t *raw)
 |
 | See reference #1 above for documentation of the RETSVDATA Galileo Ephemeris.
 */
-static int DecodeGalileoEphemeris(raw_t *raw)
+static int DecodeGalileoEphemeris(raw_t *Raw)
 {
     tracet(3, "DecodeGalileoEphemeris(); not yet implemented.\n");
     return 0;
 
 #if 0
-    unsigned char *p = raw->rt17.pbuff;
+    rt17_t *rt17 = (rt17_t*) Raw->rcv_data;
+    unsigned char *p = rt17->PacketBuffer;
     int prn, sat, toc, tow;
     unsigned int toe;
     double sqrtA;
@@ -894,11 +961,11 @@ static int DecodeGalileoEphemeris(raw_t *raw)
     unsigned short IODnav, HSDVS;
     double BDG1, BDG2;
 
-    tracet(3, "RT17: DecodeGalileoEphemeris(); Length=%d\n", raw->rt17.plen);
+    tracet(3, "RT17: DecodeGalileoEphemeris(); Length=%d\n", rt17->PacketLength);
 
-    if (raw->rt17.plen < 190)
+    if (rt17->PacketLength < 190)
     {
-        tracet(2, "RT17: RETSVDATA packet length %d < 190 bytes. Galileo ephemeris packet discarded.\n", raw->rt17.plen);
+        tracet(2, "RT17: RETSVDATA packet length %d < 190 bytes. Galileo ephemeris packet discarded.\n", rt17->PacketLength);
         return -1;
     }
 
@@ -970,15 +1037,15 @@ static int DecodeGalileoEphemeris(raw_t *raw)
 
     tracet(3, "RT17: DecodeGalileoEphemeris(); SAT=%d, IODC=%d, IODE=%d, WEEK=%d.\n", sat, eph.iodc, eph.iode, eph.week);
 
-    if (!strstr(raw->opt,"-EPHALL"))
+    if (!strstr(Raw->opt,"-EPHALL"))
     {
-        if (eph.iode == raw->nav.eph[sat-1].iode)
+        if (eph.iode == Raw->nav.eph[sat-1].iode)
             return 0; /* unchanged */
     }
 
     eph.sat = sat;
-    raw->nav.eph[sat-1] = eph;
-    raw->ephsat = sat;
+    Raw->nav.eph[sat-1] = eph;
+    Raw->ephsat = sat;
 
     return 2;
 #endif
@@ -994,7 +1061,7 @@ static int DecodeGalileoEphemeris(raw_t *raw)
 |
 | See reference #1 above for documentation of the RETSVDATA GLONASS Ephemeris.
 */
-static int DecodeGLONASSEphemeris(raw_t *raw)
+static int DecodeGLONASSEphemeris(raw_t *Raw)
 {
     tracet(3, "DecodeGLONASSEphemeris(); not yet implemented.\n");
     return 0;
@@ -1011,20 +1078,20 @@ static int DecodeGLONASSEphemeris(raw_t *raw)
 | See ICD-GPS-200C.PDF for documentation of the GPS satellite ephemeris.
 | See reference #1 above for documentation of the RETSVDATA GPS Ephemeris.
 */
-static int DecodeGPSEphemeris(raw_t *raw)
+static int DecodeGPSEphemeris(raw_t *Raw)
 {
-    rt17_t *rt17 = &raw->rt17;
-    unsigned char *p = rt17->pbuff;
+    rt17_t *rt17 = (rt17_t*) Raw->rcv_data;
+    unsigned char *p = rt17->PacketBuffer;
     int prn, sat, toc, tow;
     unsigned int Flags, toe;
     double sqrtA;
     eph_t eph={0};
 
-    tracet(3, "RT17: DecodeGPSEphemeris(); Length=%d\n", raw->rt17.plen);
+    tracet(3, "RT17: DecodeGPSEphemeris(); Length=%d\n", rt17->PacketLength);
 
-    if (raw->rt17.plen < 182)
+    if (rt17->PacketLength < 182)
     {
-        tracet(2, "RT17: RETSVDATA packet length %d < 182 bytes. GPS ephemeris packet discarded.\n", raw->rt17.plen);
+        tracet(2, "RT17: RETSVDATA packet length %d < 182 bytes. GPS ephemeris packet discarded.\n", rt17->PacketLength);
         return -1;
     }
 
@@ -1128,43 +1195,44 @@ static int DecodeGPSEphemeris(raw_t *raw)
 
     tracet(3, "RT17: DecodeGPSEphemeris(); SAT=%d, IODC=%d, IODE=%d, WEEK=%d.\n", sat, eph.iodc, eph.iode, eph.week);
     
-    if (rt17->week && (rt17->week != eph.week))
+    if (rt17->Week && (rt17->Week != eph.week))
     {
         tracet(2, "RT17: Currently set or assumed GPS week does not match received ephemeris week.\n");
-        tracet(2, "RT17: Set or assumed GPS week: %d  Received ephemeris week: %d\n", rt17->week, eph.week);
+        tracet(2, "RT17: Set or assumed GPS week: %d  Received ephemeris week: %d\n", rt17->Week, eph.week);
     }
 
-    if (!(rt17->flags & M_WEEK_OPTION))
+    if (!(rt17->Flags & M_WEEK_OPTION))
     {
-        if (!rt17->week || (rt17->flags & M_WEEK_TIME) || (eph.week > rt17->week))
+        if (!rt17->Week || (rt17->Flags & M_WEEK_TIME) || (eph.week > rt17->Week))
         {
-            if (!rt17->week)
+            if (!rt17->Week)
                 tracet(2, "RT17: Initial GPS WEEK number unknown; WEEK number %d assumed for now.\n", eph.week);
             else
-                tracet(2, "RT17: Changing assumed week number from %d to %d.\n", rt17->week, eph.week);
-            rt17->flags &= ~M_WEEK_TIME;
-            rt17->flags |= M_WEEK_EPH;
-            rt17->week = eph.week;
+                tracet(2, "RT17: Changing assumed week number from %d to %d.\n", rt17->Week, eph.week);
+            rt17->Flags &= ~M_WEEK_TIME;
+            rt17->Flags |= M_WEEK_EPH;
+            rt17->Week = eph.week;
         }
     }
  
-    if (!strstr(raw->opt,"-EPHALL"))
+    if (!strstr(Raw->opt,"-EPHALL"))
     {
-        if (eph.iode == raw->nav.eph[sat-1].iode)
+        if (eph.iode == Raw->nav.eph[sat-1].iode)
             return 0; /* unchanged */
     }
 
     eph.sat = sat;
-    raw->nav.eph[sat-1] = eph;
-    raw->ephsat = sat;
+    Raw->nav.eph[sat-1] = eph;
+    Raw->ephsat = sat;
 
     return 2;
 }
 
 /* DecodeGSOF - Decode a General Serial Output Format (GSOF) message */
-static int DecodeGSOF(raw_t *raw)
+static int DecodeGSOF(raw_t *Raw)
 {
-    int InputLength, ret = 0;
+    rt17_t *rt17 = (rt17_t*) Raw->rcv_data;
+    int InputLength, Ret = 0;
     unsigned char RecordLength, RecordType, *p;
     char *RecordType_s = NULL;
  
@@ -1172,10 +1240,10 @@ static int DecodeGSOF(raw_t *raw)
     | Reassemble origional message by removing packet headers,
     | trailers and page framing.
     */
-    UnwrapGenout(raw);
+    UnwrapGenout(rt17);
 
-    p = raw->buff;
-    InputLength = raw->len;
+    p = rt17->MessageBuffer;
+    InputLength = rt17->MessageLength;
 
     while (InputLength)
     {
@@ -1194,22 +1262,22 @@ static int DecodeGSOF(raw_t *raw)
         switch (RecordType)
         {
         case 1:
-            ret = DecodeGSOF1(raw, p);
+            Ret = DecodeGSOF1(Raw, p);
             break;
         case 3:
-            ret = DecodeGSOF3(raw, p);
+            Ret = DecodeGSOF3(Raw, p);
             break;
         case 15:
-            ret = DecodeGSOF15(raw, p);
+            Ret = DecodeGSOF15(Raw, p);
             break;
         case 16:
-            ret = DecodeGSOF16(raw, p);
+            Ret = DecodeGSOF16(Raw, p);
             break;
         case 26:
-            ret = DecodeGSOF26(raw, p);
+            Ret = DecodeGSOF26(Raw, p);
             break;
         case 41:
-            ret = DecodeGSOF41(raw, p);
+            Ret = DecodeGSOF41(Raw, p);
             break;
         default:
             tracet(3, "RT17: GSOF message not processed.\n");    
@@ -1220,25 +1288,25 @@ static int DecodeGSOF(raw_t *raw)
         InputLength -= RecordLength;
     }
 
-    return ret;
+    return Ret;
 }
 
 /* DecodeGSOF1 - Decode a Position Time GSOF message */
-static int DecodeGSOF1(raw_t *raw, unsigned char *p)
+static int DecodeGSOF1(raw_t *Raw, unsigned char *p)
 {
 
     if (p[1] < 6)
         tracet(2, "RT17: GSOF Position Time message record length %d < 6 bytes. Record discarded.\n", p[1]);
     else
-        SetWeek(raw, I2(p+6), ((double) I4(p+2)) * 0.001);
+        SetWeek(Raw, I2(p+6), ((double) I4(p+2)) * 0.001);
 
     return 0;
 }
  
 /* DecodeGSOF3 - Decode an ECEF Position GSOF message */
-static int DecodeGSOF3(raw_t *raw, unsigned char *p)
+static int DecodeGSOF3(raw_t *Raw, unsigned char *p)
 {
-    sta_t *sta = &raw->sta;
+    sta_t *sta = &Raw->sta;
  
     if (p[1] < 24)
         tracet( 2, "RT17: GSOF ECEF Position record length %d < 24 bytes. Record discarded.\n", p[1] );
@@ -1258,34 +1326,34 @@ static int DecodeGSOF3(raw_t *raw, unsigned char *p)
 }
 
 /* DecodeGSOF15 - Decode a Receiver Serial Number GSOF message  */
-static int DecodeGSOF15(raw_t *raw, unsigned char *p)
+static int DecodeGSOF15(raw_t *Raw, unsigned char *p)
 {
     if (p[1] < 15)
         tracet(2, "RT17: GSOF Receiver Serial Number record length %d < 15 bytes. Record discarded.\n", p[1]);
     else
-        sprintf(raw->sta.recsno, "%u", U4(p+2));
+        sprintf(Raw->sta.recsno, "%u", U4(p+2));
 
     return 0;
 }
 
 /* DecodeGSOF16 - Decode a Current Time GSOF message */
-static int DecodeGSOF16(raw_t *raw, unsigned char *p)
+static int DecodeGSOF16(raw_t *Raw, unsigned char *p)
 {
     if (p[1] < 9)
         tracet( 2, "RT17: GSOF Current Time message record length %d < 9 bytes. Record discarded.\n", p[1] );
     else if (U1(p+10) & M_BIT0) /* If week and milliseconds of week are valid */
-        SetWeek(raw, I2(p+6), ((double) I4(p+2)) * 0.001);
+        SetWeek(Raw, I2(p+6), ((double) I4(p+2)) * 0.001);
 
     return 0;
 }
 
 /* DecodeGSOF26 - Decode a Position Time UTC GSOF message */
-static int DecodeGSOF26(raw_t *raw, unsigned char *p)
+static int DecodeGSOF26(raw_t *Raw, unsigned char *p)
 {
     if (p[1] < 6)
         tracet(2, "RT17: GSOF Position Time UTC message record length %d < 6 bytes. Record discarded.\n", p[1]);
     else
-        SetWeek(raw, I2(p+6), ((double) I4(p+2)) * 0.001);
+        SetWeek(Raw, I2(p+6), ((double) I4(p+2)) * 0.001);
 
     return 0;
 }
@@ -1312,24 +1380,25 @@ static int DecodeGSOF41(raw_t *raw, unsigned char *p)
 | See ICD-GPS-200C.PDF for documetation of GPS ION / UTC data.
 | See reference #1 above for documentation of RETSVDATA and ION / UTC data.
 */
-static int DecodeIONAndUTCData(raw_t *raw)
+static int DecodeIONAndUTCData(raw_t *Raw)
 {
+    rt17_t *rt17 = (rt17_t*) Raw->rcv_data;
     int week;
-    unsigned char *p = raw->rt17.pbuff;
-    nav_t *nav = &raw->nav;
+    unsigned char *p = rt17->PacketBuffer;
+    nav_t *nav = &Raw->nav;
     double *ion_gps = nav->ion_gps;
     double *utc_gps = nav->utc_gps;
 
-    tracet(3, "RT17: DecodeIONAndUTCData, Length=%d.\n", raw->rt17.plen);
+    tracet(3, "RT17: DecodeIONAndUTCData, Length=%d.\n", rt17->PacketLength);
 
-    if (raw->rt17.plen < 129)
+    if (rt17->PacketLength < 129)
     {
-        tracet(2, "RT17: RETSVDATA packet length %d < 129 bytes. GPS ION / UTC data packet discarded.\n", raw->rt17.plen);
+        tracet(2, "RT17: RETSVDATA packet length %d < 129 bytes. GPS ION / UTC data packet discarded.\n", rt17->PacketLength);
         return -1;
     }
 
     /* ION / UTC data does not have the current GPS week number. Punt! */
-    week = GetWeek(raw, 0.0);
+    week = GetWeek(Raw, 0.0);
  
     ion_gps[0] = R8(p+6);  /* 006-013: ALPHA 0 (seconds) */
     ion_gps[1] = R8(p+14); /* 014-021: ALPHA 1 (seconds/semi-circle) */
@@ -1364,23 +1433,24 @@ static int DecodeIONAndUTCData(raw_t *raw)
 |
 | See reference #1 above for documentation of the RETSVDATA QZSS Ephemeris.
 */
-static int DecodeQZSSEphemeris(raw_t *raw)
+static int DecodeQZSSEphemeris(raw_t *Raw)
 {
     tracet(3, "DecodeQZSSEphemeris(); not yet implemented.\n");
     return 0;
 
 #if 0
-    unsigned char *p = raw->rt17.pbuff;
+    rt17_t *rt17 = (rt17_t*) Raw->rcv_data;
+    unsigned char *p = rt17->PacketBuffer;
     int prn, sat, toc, tow;
     unsigned int Flags, toe;
     double sqrtA;
     eph_t eph={0};
 
-    tracet(3, "RT17: DecodeQZSSEphemeris(); Length=%d\n", raw->rt17.plen);
+    tracet(3, "RT17: DecodeQZSSEphemeris(); Length=%d\n", rt17->PacketLength);
 
-    if (raw->rt17.plen < 184)
+    if (rt17->PacketLength < 184)
     {
-        tracet(2, "RT17: RETSVDATA packet length %d < 184 bytes. QZSS ephemeris packet discarded.\n", raw->rt17.plen);
+        tracet(2, "RT17: RETSVDATA packet length %d < 184 bytes. QZSS ephemeris packet discarded.\n", rt17->PacketLength);
         return -1;
     }
 
@@ -1485,15 +1555,15 @@ static int DecodeQZSSEphemeris(raw_t *raw)
 
     tracet(3, "RT17: DecodeQZSSEphemeris(); SAT=%d, IODC=%d, IODE=%d, WEEK=%d.\n", sat, eph.iodc, eph.iode, eph.week);
 
-    if (!strstr(raw->opt,"-EPHALL"))
+    if (!strstr(Raw->opt,"-EPHALL"))
     {
-        if (eph.iode == raw->nav.eph[sat-1].iode)
+        if (eph.iode == Raw->nav.eph[sat-1].iode)
             return 0; /* unchanged */
     }
 
     eph.sat = sat;
-    raw->nav.eph[sat-1] = eph;
-    raw->ephsat = sat;
+    Raw->nav.eph[sat-1] = eph;
+    Raw->ephsat = sat;
 
     return 2;
 #endif
@@ -1508,12 +1578,14 @@ static int DecodeQZSSEphemeris(raw_t *raw)
 |  0: no message (tells caller to please read more data from the stream)
 |  1: input observation data
 */
-static int DecodeRawdata(raw_t *raw)
+static int DecodeRawdata(raw_t *Raw)
 {
-    int ret = 0;
+    rt17_t *rt17 = (rt17_t*) Raw->rcv_data;
+    unsigned char *MessageBuffer = rt17->MessageBuffer;
+    int Ret = 0;
     unsigned int rif;
     char *RecordType_s = NULL;
-    unsigned char RecordType = raw->buff[4];
+    unsigned char RecordType = MessageBuffer[4];
  
     if (RecordType < (sizeof(RawdataTable) / sizeof(char*)))
         RecordType_s = (char*) RawdataTable[RecordType];
@@ -1521,28 +1593,28 @@ static int DecodeRawdata(raw_t *raw)
     if (!RecordType_s)
         RecordType_s = "Unknown";
   
-    tracet(3, "RT17: Trimble packet type=0x57 (RAWDATA), Recordtype=%d (%s), Length=%d.\n", RecordType, RecordType_s, raw->len);
+    tracet(3, "RT17: Trimble packet type=0x57 (RAWDATA), Recordtype=%d (%s), Length=%d.\n", RecordType, RecordType_s, rt17->MessageLength);
       
     /*
     | Reassemble origional message by removing packet headers,
     | trailers and page framing.
     */
-    UnwrapRawdata(raw, &rif);
+    UnwrapRawdata(rt17, &rif);
 
     /* Process (or possibly ignore) the message */
     switch (RecordType)
     {
     case 0:
-        ret = DecodeType17(raw, rif);
+        Ret = DecodeType17(Raw, rif);
         break;
     case 7:
-        ret = DecodeType29(raw);
+        Ret = DecodeType29(Raw);
         break;
     default:
         tracet(3, "RT17: Packet not processed.\n");      
     }
 
-    return ret;
+    return Ret;
 }
 
 /*
@@ -1555,11 +1627,13 @@ static int DecodeRawdata(raw_t *raw)
 |  2: input ephemeris
 |  9: input ion/utc parameter
 */
-static int DecodeRetsvdata(raw_t *raw)
+static int DecodeRetsvdata(raw_t *Raw)
 {
-    int ret = 0;
+    rt17_t *rt17 = (rt17_t*) Raw->rcv_data;
+    unsigned char *PacketBuffer = rt17->PacketBuffer;
+    int Ret = 0;
     char *Subtype_s = NULL;
-    unsigned char Subtype = raw->rt17.pbuff[4];
+    unsigned char Subtype = PacketBuffer[4];
 
     if (Subtype < (sizeof(RetsvdataTable) / sizeof(char*)))
         Subtype_s = (char*) RetsvdataTable[Subtype];
@@ -1567,34 +1641,34 @@ static int DecodeRetsvdata(raw_t *raw)
     if (!Subtype_s)
         Subtype_s = "Unknown";
  
-    tracet(3, "RT17: Trimble packet type=0x55 (RETSVDATA), Subtype=%d (%s), Length=%d.\n", Subtype, Subtype_s, raw->rt17.plen);
+    tracet(3, "RT17: Trimble packet type=0x55 (RETSVDATA), Subtype=%d (%s), Length=%d.\n", Subtype, Subtype_s, rt17->PacketLength);
       
     /* Process (or possibly ignore) the message */
     switch (Subtype)
     {
     case 1:
-        ret = DecodeGPSEphemeris(raw);
+        Ret = DecodeGPSEphemeris(Raw);
         break;
     case 3:
-        ret = DecodeIONAndUTCData(raw);
+        Ret = DecodeIONAndUTCData(Raw);
         break;
     case 9:
-        ret = DecodeGLONASSEphemeris(raw);
+        Ret = DecodeGLONASSEphemeris(Raw);
         break;
     case 11:
-        ret = DecodeGalileoEphemeris(raw);
+        Ret = DecodeGalileoEphemeris(Raw);
         break;
     case 14:
-        ret = DecodeQZSSEphemeris(raw);
+        Ret = DecodeQZSSEphemeris(Raw);
         break;
     case 21:
-        ret = DecodeBeidouEphemeris(raw);
+        Ret = DecodeBeidouEphemeris(Raw);
         break;
     default:
         tracet(3, "RT17: Packet not processed.\n");      
     }
 
-    return ret;
+    return Ret;
 }
 
 /*
@@ -1608,9 +1682,10 @@ static int DecodeRetsvdata(raw_t *raw)
 |
 | Handles expanded and concise formats with and without enhanced record data.
 */
-static int DecodeType17(raw_t *raw, unsigned int rif)
+static int DecodeType17(raw_t *Raw, unsigned int rif)
 {
-    unsigned char *p = raw->buff;
+    rt17_t *rt17 = (rt17_t*) Raw->rcv_data;
+    unsigned char *p = rt17->MessageBuffer;
     double ClockOffset, tow;
     int Flags1, Flags2, FlagStatus, i, n, nsat, prn, Week;
     gtime_t Time;
@@ -1624,14 +1699,14 @@ static int DecodeType17(raw_t *raw, unsigned int rif)
 #endif
  
     /* The observation data does not have the current GPS week number. Punt! */
-    Week = GetWeek(raw, tow);
+    Week = GetWeek(Raw, tow);
     Time = gpst2time(Week, tow);
 
     nsat = U1(p); p++; /* Number of SV data blocks in the record */
 
     for (i = n = 0; (i < nsat) && (i < MAXOBS); i++)
     {
-        obs = &raw->obs.data[n];
+        obs = &Raw->obs.data[n];
         memset(obs, 0, sizeof(obsd_t));
         obs->time = Time;
 
@@ -1817,27 +1892,28 @@ static int DecodeType17(raw_t *raw, unsigned int rif)
          n++;
     }
 
-    raw->time = Time;
-    raw->obs.n = n;
+    Raw->time = Time;
+    Raw->obs.n = n;
     
     if (n > 0)
     {
         tracet(2, "RT17: Observations output:\n");
-        traceobs(2, raw->obs.data, raw->obs.n);
+        traceobs(2, Raw->obs.data, Raw->obs.n);
     }
 
     return (n > 0);
 }
 
 /* DecodeType29 - Decode Enhanced position (record type 29) */
-static int DecodeType29(raw_t *raw)
+static int DecodeType29(raw_t *Raw)
 {
-    unsigned char *p = raw->buff;
+    rt17_t *rt17 = (rt17_t*) Raw->rcv_data;
+    unsigned char *p = rt17->MessageBuffer;
 
     if (*p < 7)
         tracet(2, "RT17: Enhanced Position record block #1 length %d < 7 bytes. Record discarded.\n", *p);
     else
-        SetWeek(raw, I2(p+1), ((double) I4(p+3)) * 0.001);
+        SetWeek(Raw, I2(p+1), ((double) I4(p+3)) * 0.001);
 
     return 0;
 }
@@ -1851,27 +1927,27 @@ static int DecodeType29(raw_t *raw)
 | Week rollover and increment from the initial week and
 | subsequent weeks is handled.
 */
-static int GetWeek(raw_t *raw, double tow)
+static int GetWeek(raw_t *Raw, double Tow)
 {
-    rt17_t *rt17 = &raw->rt17;
+    rt17_t *rt17 = (rt17_t*) Raw->rcv_data;
     int Week = 0;
 
-    if (rt17->flags & M_WEEK_OPTION)
+    if (rt17->Flags & M_WEEK_OPTION)
     {
-        if ((tow && rt17->tow) && (tow < rt17->tow))
+        if ((Tow && rt17->Tow) && (Tow < rt17->Tow))
         {
-            tracet(2, "RT17: GPS WEEK rolled over from %d to %d.\n", rt17->week, rt17->week + 1);
-            rt17->week++;
+            tracet(2, "RT17: GPS WEEK rolled over from %d to %d.\n", rt17->Week, rt17->Week + 1);
+            rt17->Week++;
         }
 
-        if (tow != 0.0)
-            rt17->tow = tow;
+        if (Tow != 0.0)
+            rt17->Tow = Tow;
     }
-    else if (!(rt17->flags & M_WEEK_SCAN))
+    else if (!(rt17->Flags & M_WEEK_SCAN))
     {
-        char *opt = strstr(raw->opt, "-WEEK=");
+        char *opt = strstr(Raw->opt, "-WEEK=");
 
-        rt17->flags |= M_WEEK_SCAN;
+        rt17->Flags |= M_WEEK_SCAN;
 
         if (opt)
         {
@@ -1879,27 +1955,27 @@ static int GetWeek(raw_t *raw, double tow)
                 tracet(0, "RT17: Invalid -WEEK=n receiver option value.\n");
             else
             {
-                rt17->week = Week;
-                rt17->flags |= M_WEEK_OPTION;
+                rt17->Week = Week;
+                rt17->Flags |= M_WEEK_OPTION;
                 tracet(2, "RT17: Initial GPS WEEK explicitly set to %d by user.\n", Week, Week);
             }
         }
     }
 
-    Week = rt17->week;
+    Week = rt17->Week;
 
-    if (!Week && !(rt17->flags & (M_WEEK_OPTION|M_WEEK_EPH)))
+    if (!Week && !(rt17->Flags & (M_WEEK_OPTION|M_WEEK_EPH)))
     {
-        if ((raw->time.time == 0) && (raw->time.sec == 0.0))
-            raw->time = timeget();
+        if ((Raw->time.time == 0) && (Raw->time.sec == 0.0))
+            Raw->time = timeget();
         
-        time2gpst(raw->time, &Week);
+        time2gpst(Raw->time, &Week);
 
-        if (tow != 0.0)
-            raw->time = gpst2time(Week, tow);
+        if (Tow != 0.0)
+            Raw->time = gpst2time(Week, Tow);
 
-        rt17->week = Week;
-        rt17->flags |= M_WEEK_TIME; 
+        rt17->Week = Week;
+        rt17->Flags |= M_WEEK_TIME; 
         tracet(2, "RT17: Initial GPS WEEK number unknown; WEEK number %d assumed for now.\n", Week);       
     }
  
@@ -2009,44 +2085,44 @@ static unsigned int ReadU4(unsigned char *p)
 |
 | The -WEEK=n initial week option overrides us.
 */
-static void SetWeek(raw_t *raw, int Week, double tow)
+static void SetWeek(raw_t *Raw, int Week, double Tow)
 {
-    rt17_t *rt17 = &raw->rt17;
+    rt17_t *rt17 = (rt17_t*) Raw->rcv_data;
 
-    if (!(rt17->flags & M_WEEK_OPTION))
+    if (!(rt17->Flags & M_WEEK_OPTION))
     {
-        if (rt17->week)
+        if (rt17->Week)
         {
-            if (Week != rt17->week)
+            if (Week != rt17->Week)
             {
-                if (Week == (rt17->week + 1))
-                    tracet(2, "RT17: GPS WEEK rolled over from %d to %d.\n", rt17->week, Week);
+                if (Week == (rt17->Week + 1))
+                    tracet(2, "RT17: GPS WEEK rolled over from %d to %d.\n", rt17->Week, Week);
                 else
-                    tracet(2, "RT17: GPS WEEK changed from %d to %d.\n", rt17->week, Week);
+                    tracet(2, "RT17: GPS WEEK changed from %d to %d.\n", rt17->Week, Week);
             }
         }
         else
             tracet(2, "RT17: GPS WEEK initially set to %d.\n", Week);
 
-        rt17->week = Week;
+        rt17->Week = Week;
     }
 
     /* Also update the time if we can */
-    if (Week && (tow != 0.0))
-        raw->time = gpst2time(Week, tow);
+    if (Week && (Tow != 0.0))
+        Raw->time = gpst2time(Week, Tow);
 }
 
 /* SyncPacket - Synchronize the raw data stream to the start of a series of RT-17 packets */
-static int SyncPacket(raw_t *raw, unsigned char Data)
+static int SyncPacket(rt17_t *rt17, unsigned char Data)
 {
-    unsigned char Type, *pbuff = raw->rt17.pbuff;;
+    unsigned char Type, *PacketBuffer = rt17->PacketBuffer;
 
-    pbuff[0] = pbuff[1];
-    pbuff[1] = pbuff[2];
-    pbuff[2] = pbuff[3];
-    pbuff[3] = Data;
+    PacketBuffer[0] = PacketBuffer[1];
+    PacketBuffer[1] = PacketBuffer[2];
+    PacketBuffer[2] = PacketBuffer[3];
+    PacketBuffer[3] = Data;
 
-    Type = pbuff[2];
+    Type = PacketBuffer[2];
 
     /*
     | Byte 0 must be an STX character.
@@ -2054,7 +2130,7 @@ static int SyncPacket(raw_t *raw, unsigned char Data)
     | Byte 2 = packet type which must be GENOUT (0x40) RAWDATA (0x57) or RETSVDATA (0x55) (for now).
     | Byte 3 = data length which must be non-zero for any packet we're interested in.
     */
-    return ((pbuff[0] == STX) && (Data != 0) && ((Type == GENOUT) || (Type == RAWDATA) || (Type == RETSVDATA)));
+    return ((PacketBuffer[0] == STX) && (Data != 0) && ((Type == GENOUT) || (Type == RAWDATA) || (Type == RETSVDATA)));
 }
 
 /*
@@ -2066,11 +2142,11 @@ static int SyncPacket(raw_t *raw, unsigned char Data)
 | so that it is uninterrupted by removing the extraneous packet headers,
 | trailers and page framing.
 */
-static void UnwrapGenout(raw_t *raw)
+static void UnwrapGenout(rt17_t *rt17)
 {
-    unsigned char *p_in = raw->buff;
+    unsigned char *p_in = rt17->MessageBuffer;
     unsigned char *p_out = p_in;
-    unsigned int InputLength, InputLengthTotal = raw->len;
+    unsigned int InputLength, InputLengthTotal = rt17->MessageLength;
     unsigned int OutputLength, OutputLengthTotal = 0;
 
     while (InputLengthTotal > 0)
@@ -2083,7 +2159,7 @@ static void UnwrapGenout(raw_t *raw)
         OutputLengthTotal += OutputLength;
         InputLengthTotal -= InputLength;  
     }
-    raw->nbyte = raw->len = OutputLengthTotal;
+    rt17->MessageBytes = rt17->MessageLength = OutputLengthTotal;
 }
 
 /*
@@ -2098,11 +2174,11 @@ static void UnwrapGenout(raw_t *raw)
 | While we're at it we also check to make sure the Record Interpretation
 | Flags are consistent. They should be the same in every page frame.
 */
-static void UnwrapRawdata(raw_t *raw, unsigned int *rif)
+static void UnwrapRawdata(rt17_t *rt17, unsigned int *rif)
 {
-    unsigned char *p_in = raw->buff;
+    unsigned char *p_in = rt17->MessageBuffer;
     unsigned char *p_out = p_in;
-    unsigned int InputLength, InputLengthTotal = raw->len;
+    unsigned int InputLength, InputLengthTotal = rt17->MessageLength;
     unsigned int OutputLength, OutputLengthTotal = 0;
 
     *rif = p_in[7];
@@ -2120,5 +2196,5 @@ static void UnwrapRawdata(raw_t *raw, unsigned int *rif)
         OutputLengthTotal += OutputLength;
         InputLengthTotal -= InputLength;
     }
-    raw->nbyte = raw->len = OutputLengthTotal;
+    rt17->MessageBytes = rt17->MessageLength = OutputLengthTotal;
 }

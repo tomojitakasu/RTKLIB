@@ -213,9 +213,7 @@ static void updatesvr(rtksvr_t *svr, int ret, obs_t *obs, nav_t *nav, int sat,
     }
     else if (ret==5) { /* antenna postion parameters */
         if ((svr->rtk.opt.refpos==4||svr->rtk.opt.refpos==5)&&index==1) {
-            if (svr->format[index]==STRFMT_RTCM2||
-                svr->format[index]==STRFMT_RTCM3||
-                svr->format[index]==STRFMT_CMR) {
+            if (svr->format[index]==STRFMT_RTCM2||svr->format[index]==STRFMT_RTCM3) {
                 for (i=0;i<3;i++) {
                     svr->rtk.rb[i]=svr->rtcm[1].sta.pos[i];
                 }
@@ -327,12 +325,6 @@ static int decoderaw(rtksvr_t *svr, int index)
             nav=&svr->rtcm[index].nav;
             sat=svr->rtcm[index].ephsat;
         }
-        else if (svr->format[index]==STRFMT_CMR) {
-            ret=input_cmr(svr->rtcm+index,svr->buff[index][i]);
-            obs=&svr->rtcm[index].obs;
-            nav=&svr->rtcm[index].nav;
-            sat=svr->rtcm[index].ephsat;
-        }
         else {
             ret=input_raw(svr->raw+index,svr->format[index],svr->buff[index][i]);
             obs=&svr->raw[index].obs;
@@ -348,7 +340,7 @@ static int decoderaw(rtksvr_t *svr, int index)
 #endif
         /* update cmr rover observations cache */
         if ((svr->format[1]==STRFMT_CMR)&&(index==0)&&(ret==1))
-            update_cmr(&svr->rtcm[1],obs);
+            update_cmr(&svr->raw[1], svr, obs);
 
         /* update rtk server */
         if (ret>0) updatesvr(svr,ret,obs,nav,sat,sbsmsg,index,fobs);
@@ -731,7 +723,6 @@ extern int rtksvrstart(rtksvr_t *svr, int cycle, int buffsize, int *strs,
         /* initialize receiver raw and rtcm control */
         init_raw (svr->raw +i);
         init_rtcm(svr->rtcm+i);
-        svr->rtcm[i].cmr.rtksvr=(void*)svr;
 
         /* set receiver and rtcm option */
         strcpy(svr->raw [i].opt,rcvopts[i]);

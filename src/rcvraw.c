@@ -862,7 +862,6 @@ extern int init_raw(raw_t *raw)
     
     trace(3,"init_raw:\n");
     
-    memset(&raw->rt17, 0, sizeof(raw->rt17));
     raw->time=raw->tobs=time0;
     raw->ephsat=0;
     raw->sbsmsg=sbsmsg0;
@@ -922,6 +921,12 @@ extern int init_raw(raw_t *raw)
         raw->sta.pos[i]=raw->sta.del[i]=0.0;
     }
     raw->sta.hgt=0.0;
+
+    if (!init_cmr(raw) || !init_rt17(raw)) {
+        free_raw(raw);
+        return 0;
+    }
+    
     return 1;
 }
 /* free receiver raw data control ----------------------------------------------
@@ -939,6 +944,8 @@ extern void free_raw(raw_t *raw)
     free(raw->nav.alm  ); raw->nav.alm  =NULL; raw->nav.na=0;
     free(raw->nav.geph ); raw->nav.geph =NULL; raw->nav.ng=0;
     free(raw->nav.seph ); raw->nav.seph =NULL; raw->nav.ns=0;
+
+    free_cmr(raw);
     free_rt17(raw);
 }
 /* input receiver raw data from stream -----------------------------------------

@@ -193,7 +193,7 @@ static strfile_t *gen_strfile(int format, const char *opt, gtime_t time)
     
     if (!(str=(strfile_t *)calloc(sizeof(strfile_t), 1))) return NULL;
     
-    if (format==STRFMT_RTCM2||format==STRFMT_RTCM3||format==STRFMT_CMR) {
+    if (format==STRFMT_RTCM2||format==STRFMT_RTCM3) {
         if (!init_rtcm(&str->rtcm)) {
             showmsg("init rtcm error");
             return 0;
@@ -232,7 +232,7 @@ static void free_strfile(strfile_t *str)
 {
     trace(3,"free_strfile:\n");
     
-    if (str->format==STRFMT_RTCM2||str->format==STRFMT_RTCM3||str->format==STRFMT_CMR) {
+    if (str->format==STRFMT_RTCM2||str->format==STRFMT_RTCM3) {
         free_rtcm(&str->rtcm);
     }
     else if (str->format<=MAXRCVFMT) {
@@ -262,12 +262,6 @@ static int input_strfile(strfile_t *str)
             str->sat=str->rtcm.ephsat;
         }
     }
-    else if (str->format==STRFMT_CMR) {
-        if ((type=input_cmrf(&str->rtcm,str->fp))>=1) {
-            str->time=str->rtcm.time;
-            str->sat=str->rtcm.ephsat;
-        }
-    }
     else if (str->format<=MAXRCVFMT) {
         if ((type=input_rawf(&str->raw,str->format,str->fp))>=1) {
             str->time=str->raw.time;
@@ -292,12 +286,6 @@ static int open_strfile(strfile_t *str, const char *file)
     if (str->format==STRFMT_RTCM2||str->format==STRFMT_RTCM3) {
         if (!(str->fp=fopen(file,"rb"))) {
             showmsg("rtcm open error: %s",file);
-            return 0;
-        }
-    }
-    else if (str->format==STRFMT_CMR) {
-        if (!(str->fp=fopen(file,"rb"))) {
-            showmsg("cmr open error: %s",file);
             return 0;
         }
     }
@@ -333,7 +321,7 @@ static void close_strfile(strfile_t *str)
 {
     trace(3,"close_strfile:\n");
     
-    if (str->format==STRFMT_RTCM2||str->format==STRFMT_RTCM3||str->format==STRFMT_CMR) {
+    if (str->format==STRFMT_RTCM2||str->format==STRFMT_RTCM3) {
         if (str->fp) fclose(str->fp);
     }
     else if (str->format<=MAXRCVFMT) {
@@ -495,7 +483,7 @@ static void set_obstype(int format, rnxopt_t *opt)
 {
     /* supported codes by cmr */
     const unsigned char codes_cmr[6][8]={
-        {CODE_L1C,CODE_L1P,CODE_L2W,CODE_L2P},
+        {CODE_L1C,CODE_L1P,CODE_L2C,CODE_L2P,CODE_L2W},
         {CODE_L1C,CODE_L1P,CODE_L2C,CODE_L2P}
     };    /* supported codes by rtcm2 */
     const unsigned char codes_rtcm2[6][8]={
@@ -555,7 +543,7 @@ static void set_obstype(int format, rnxopt_t *opt)
     };
     /* supported codes by rt17 */
     const unsigned char codes_rt17[6][8]={
-        {CODE_L1C,CODE_L2W,CODE_L2P}
+        {CODE_L1C,CODE_L1P,CODE_L2C,CODE_L2P,CODE_L2W}
     };
     /* supported codes by others */
     const unsigned char codes_other[6][8]={
@@ -928,7 +916,7 @@ static int convrnx_s(int sess, int format, rnxopt_t *opt, const char *file,
     }
     nf=expath(path,epath,MAXEXFILE);
     
-    if (format==STRFMT_RTCM2||format==STRFMT_RTCM3||format==STRFMT_RT17||format==STRFMT_CMR) {
+    if (format==STRFMT_RTCM2||format==STRFMT_RTCM3) {
         time=opt->trtcm;
     }
     if (opt->scanobs) {
@@ -997,7 +985,7 @@ static int convrnx_s(int sess, int format, rnxopt_t *opt, const char *file,
         tend=te; /* end time of a file */
     }
     /* set receiver and antenna information to option */
-    if (format==STRFMT_RTCM2||format==STRFMT_RTCM3||format==STRFMT_CMR) {
+    if (format==STRFMT_RTCM2||format==STRFMT_RTCM3) {
         rtcm2opt(&str->rtcm,opt);
     }
     else if (format==STRFMT_RINEX) {
