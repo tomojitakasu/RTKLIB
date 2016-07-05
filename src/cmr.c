@@ -1391,42 +1391,40 @@ EXPORT int free_cmr(raw_t *Raw)
 {
     cmr_t *Cmr = NULL;
     
-    if (Raw && (Cmr = (cmr_t*) Raw->rcv_data))
-    {  
+    if (Raw->strfmt != STRFMT_CMR)
+       return 0;
+   
+    if (Cmr = (cmr_t*) Raw->rcv_data)
+    {
         if (Cmr->Buffer)
         {
-            memset(Cmr->Buffer, 0, BUFFER_LENGTH);
             free(Cmr->Buffer);
             Cmr->Buffer = NULL;
         }
-
+       
         if (Cmr->MessageBuffer)
         {
-            memset(Cmr->MessageBuffer, 0, MESSAGEBUFFER_LENGTH);
             free(Cmr->MessageBuffer);
             Cmr->MessageBuffer = NULL;
         }
 
         if (Cmr->RoverObservables)
         {
-            memset(Cmr->RoverObservables, 0, MAXOBS * sizeof(obsbd_t));
             free(Cmr->RoverObservables);
             Cmr->RoverObservables = NULL;
         }
 
         if (Cmr->T4Data)
         {
-            memset(Cmr->T4Data, 0, MAXSAT * sizeof(obsr_t));
             free(Cmr->T4Data);
             Cmr->T4Data = NULL;
         }
 
-        memset(Cmr, 0, sizeof(cmr_t));
         free(Cmr);
         Raw->rcv_data = NULL;
     }
 
-    return 0;
+    return 1;
 }
 
 /* init_cmr = Initialize CMR dependent private storage */
@@ -1437,10 +1435,13 @@ EXPORT int init_cmr(raw_t *Raw)
     obsbd_t *T4Data = NULL;
     unsigned char *MessageBuffer = NULL, *Buffer = NULL;
 
+    if (Raw->strfmt != STRFMT_CMR)
+        return 0;
+
     if (!(Cmr = (cmr_t*) calloc(1, sizeof(cmr_t))))
     {
         tracet(0, "CMR: init_cmr(); unable to allocate CMR dependent private data structure.\n");
-        return -1;
+        return 0;
     }
     Raw->rcv_data = (void*) Cmr;
     
@@ -1448,7 +1449,7 @@ EXPORT int init_cmr(raw_t *Raw)
     {
         tracet(0, "CMR: init_cmr(); unable to allocate CMR+ message buffer.\n");
         free_cmr(Raw);
-        return -1;
+        return 0;
     }
     Cmr->Buffer = Buffer;
 
@@ -1456,7 +1457,7 @@ EXPORT int init_cmr(raw_t *Raw)
     {
         tracet(0, "CMR: init_cmr(); unable to allocate CMR message buffer.\n");
         free_cmr(Raw);
-        return -1;
+        return 0;
     }
     Cmr->MessageBuffer = MessageBuffer;
 
@@ -1464,7 +1465,7 @@ EXPORT int init_cmr(raw_t *Raw)
     {
         tracet(0, "CMR: init_cmr(); unable to allocate rover observables table.\n");
         free_cmr(Raw);
-        return -1;
+        return 0;
     }
     Cmr->RoverObservables = RoverObservables;
 
@@ -1472,11 +1473,11 @@ EXPORT int init_cmr(raw_t *Raw)
     {
         tracet(0, "CMR: init_cmr(); unable to allocate high speed GPS observations reference table.\n");
         free_cmr(Raw);
-        return -1;
+        return 0;
     }
     Cmr->T4Data = T4Data;
 
-    return 0;
+    return 1;
 }
 
 /*

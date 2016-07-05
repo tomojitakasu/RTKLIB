@@ -1155,6 +1155,7 @@ typedef struct {        /* RTK control/result type */
 
 typedef struct {        /* receiver raw data control type */
     void *rcv_data;     /* receiver dependent data */
+    int strfmt;         /* receiver format */
     gtime_t time;       /* message time */
     gtime_t tobs;       /* observation data time */
     obs_t obs;          /* observation data */

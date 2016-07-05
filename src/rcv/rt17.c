@@ -440,7 +440,10 @@ EXPORT int free_rt17(raw_t *Raw)
 {
     rt17_t *rt17 = NULL;
     
-    if (Raw && (rt17 = (rt17_t*) Raw->rcv_data))
+    if (Raw->strfmt != STRFMT_CMR)
+        return 0;
+ 
+    if (rt17 = (rt17_t*) Raw->rcv_data)
     {
         if (rt17->MessageBuffer)
         {
@@ -470,6 +473,9 @@ EXPORT int init_rt17(raw_t *Raw)
 	rt17_t *rt17 = NULL;
     unsigned char *MessageBuffer = NULL, *PacketBuffer = NULL;
 
+    if (Raw->strfmt != STRFMT_RT17)
+       return 0;
+ 
     if (!(rt17 = (rt17_t*) calloc(1, sizeof(rt17_t))))
     {
         tracet(0, "RT17: unable to allocate RT17 dependent private data structure.\n");
