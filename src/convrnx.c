@@ -91,6 +91,62 @@ static void convcode(double ver, int sys, char *type)
         type[2]='\0';
     }
 }
+/* set raw antenna and receiver info to options -----------------------------*/
+static void raw2opt(const raw_t *raw, rnxopt_t *opt)
+{
+    double pos[3],enu[3];
+    int i;
+    
+    trace(3,"raw2opt:\n");
+    
+    /* comment */
+#if 0
+    sprintf(opt->comment[1]+strlen(opt->comment[1]),", station ID: %d", raw->staid);
+#endif
+
+    /* receiver and antenna info */
+    if (!*opt->marker&&!*opt->markerno) {
+        strcpy(opt->marker,raw->sta.name);
+        strcpy(opt->markerno,raw->sta.marker);
+    }
+    if (!*opt->rec[0]&&!*opt->rec[1]&&!*opt->rec[2]) {
+        strcpy(opt->rec[0],raw->sta.recsno);
+        strcpy(opt->rec[1],raw->sta.rectype);
+        strcpy(opt->rec[2],raw->sta.recver);
+    }
+    if (!*opt->ant[0]&&!*opt->ant[1]&&!*opt->ant[2]) {
+        strcpy(opt->ant[0],raw->sta.antsno);
+        strcpy(opt->ant[1],raw->sta.antdes);
+        if (raw->sta.antsetup) {
+            sprintf(opt->ant[2],"%d",raw->sta.antsetup);
+        }
+        else *opt->ant[2]='\0';
+    }
+    /* antenna approx position */
+    if (!opt->autopos&&norm(raw->sta.pos,3)>0.0) {
+        for (i=0;i<3;i++) opt->apppos[i]=raw->sta.pos[i];
+    }
+    /* antenna delta */
+    if (norm(raw->sta.del,3)>0.0) {
+        if (!raw->sta.deltype&&norm(raw->sta.del,3)>0.0) { /* enu */
+            opt->antdel[0]=raw->sta.del[2]; /* h */
+            opt->antdel[1]=raw->sta.del[0]; /* e */
+            opt->antdel[2]=raw->sta.del[1]; /* n */
+        }
+        else if (norm(raw->sta.pos,3)>0.0) { /* xyz */
+            ecef2pos(raw->sta.pos,pos);
+            ecef2enu(pos,raw->sta.del,enu);
+            opt->antdel[0]=enu[2]; /* h */
+            opt->antdel[1]=enu[0]; /* e */
+            opt->antdel[2]=enu[1]; /* n */
+        }
+    }
+    else {
+        opt->antdel[0]=raw->sta.hgt;
+        opt->antdel[1]=0.0;
+        opt->antdel[2]=0.0;
+    }
+}
 /* set rinex station and receiver info to options ----------------------------*/
 static void rnx2opt(const rnxctr_t *rnx, rnxopt_t *opt)
 {
@@ -990,6 +1046,9 @@ static int convrnx_s(int sess, int format, rnxopt_t *opt, const char *file,
     }
     else if (format==STRFMT_RINEX) {
         rnx2opt(&str->rnx,opt);
+    }
+    else if (format==STRFMT_CMR) {
+        raw2opt(&str->raw,opt);
     }
     /* close output files */
     closefile(ofp,opt,str->nav);

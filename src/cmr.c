@@ -1959,7 +1959,6 @@ static int DecodeCmrPlus(raw_t *Raw)
     if (!CheckStation(Raw, StationID))
         return 0;
 
- 
     if (((Page == Pages) && Cmr->BufferBytes) || ((Page == 0) && (Pages == 0)))
     {
         /*
@@ -2213,7 +2212,7 @@ static int DecodeCmrType0(raw_t *Raw)
         Obs.n++;
     }
 
-    return OutputCmrObs(Raw, &Obs);
+    return (Obs.n > 0) ? OutputCmrObs(Raw, &Obs) : 0;
 }
 
 /*
@@ -2377,7 +2376,7 @@ static int DecodeCmrType3(raw_t *Raw)
         Obs.n++;
     }
     
-    return OutputCmrObs(Raw, &Obs);
+    return (Obs.n > 0) ? OutputCmrObs(Raw, &Obs) : 0;
 }
 
 /*
@@ -2446,13 +2445,13 @@ static int DecodeCmrType4(raw_t *Raw)
         */
         p += 5;
 
-        if (b->L[0] == 0.0)
+        if (!b->Sat || (b->L[0] == 0.0))
             continue;
 
         Obs.n++;
     }
 
-    return OutputCmrObs(Raw, &Obs);
+    return (Obs.n > 0) ? OutputCmrObs(Raw, &Obs) : 0;
 }
 
 /* Convert a double to a gtime_t time */
@@ -2474,6 +2473,7 @@ static double GtimeToDouble(gtime_t Gtime)
 static int OutputCmrObs(raw_t *Raw, obsb_t *Obs)
 {
     cmr_t *Cmr = (cmr_t*) Raw->rcv_data;
+    rtksvr_t *svr = Cmr->svr;
     obsr_t *r, *RoverObsTable = (obsr_t*) Cmr->RoverObservables;
     obsbd_t *b; int n, Ret = 0; unsigned char Sat;
     double WindowSize = (Obs->Type == CMR_TYPE_4) ? 4.0 : 240.0;
@@ -2481,7 +2481,7 @@ static int OutputCmrObs(raw_t *Raw, obsb_t *Obs)
 
     Raw->obs.n = 0;
 
-    if (RoverObsTable)
+    if (svr && RoverObsTable)
     {
         for (n = 0; !(Ret < 0) && (n < Obs->n) && (Raw->obs.n < MAXOBS); n++)
         {
