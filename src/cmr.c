@@ -2555,7 +2555,7 @@ static int ReferenceCmrObs(raw_t *Raw, gtime_t Time, unsigned char Type, double 
     
     if (Type == CMR_TYPE_4)
     {
-        L0 = (svr) ? b->L[0] : b->L[0] + t4[b->Slot].L[0];
+        L0 = (svr) ? b->L[0] + t4[b->Slot].L[0] : b->L[0];
         memcpy(b, &t4[b->Slot], sizeof(obsbd_t));
         b->L[0] = L0;
 #if 0
