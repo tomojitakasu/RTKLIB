@@ -138,6 +138,7 @@ const static double gst0 []={1999,8,22,0,0,0}; /* galileo system time reference 
 const static double bdt0 []={2006,1, 1,0,0,0}; /* beidou time reference */
 
 static double leaps[MAXLEAPS+1][7]={ /* leap seconds (y,m,d,h,m,s,utc-gpst) */
+    {2017,1,1,0,0,0,-18},
     {2015,7,1,0,0,0,-17},
     {2012,7,1,0,0,0,-16},
     {2009,1,1,0,0,0,-15},
