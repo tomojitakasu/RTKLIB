@@ -25,15 +25,16 @@
 | Written in July 2014 by Daniel A. Cook, for inclusion into the RTKLIB library.
 | Copyright (C) 2014, 2016 by Daniel A. Cook. All Rights Reserved.
 |
-| Here we implement two public functions, one for reading Trimble real-time
+| Here we implement four public functions, one for reading Trimble real-time
 | binary data streams and another for reading log files containng data in the
-| same format. This real-time streaming data format, sometimes called RT-17,
-| was designed by Trimble for use by Trimble receivers. Trimble receivers with
-| the "Real-Time Survey Data" or "Binary Outputs" options can output this data.
-| The RT-17 moniker refers to the GPS observables data record (record type 0)
-| itself. There is also a GNSS observables data record (record type 6), which
-| is referred to as RT-27. We also wish to handle RT-27 data records, but lack
-| sufficient documentation to do so.
+| same format, a third to initialize RT17 related memory storage and a fourth
+| to free up RT17 related memory storage. This real-time streaming data format,
+| sometimes called RT-17, was designed by Trimble for use by Trimble receivers.
+| Trimble receivers with the "Real-Time Survey Data" or "Binary Outputs" options
+| can output this data. The RT-17 moniker refers to the GPS observables data
+| record (record type 0) itself. There is also a GNSS observables data record
+| (record type 6), which is referred to as RT-27. We also wish to handle RT-27
+| data records, but lack sufficient documentation to do so.
 |
 | Notes:
 |
@@ -170,12 +171,7 @@
 |
 | Certain simplifying assumptions are made concerning the way in which
 | RAWDATA and GENOUT packets are transmitted in the stream or stored
-| into the file. Unfortunately reference #1 below does not clearly
-| specify these things. It would certainly be possible to write code
-| that made no assumptions and handled the worst possible no assumptions
-| interpretation imaginable, but the code would be more complicated.
-| Needless complication would be silly if not absolutely required in
-| practice.
+| into the file.
 |
 | Therefore it is assumed that:
 | 
@@ -201,9 +197,9 @@
 |    GENOUT page numbers are zero based. That is, 0 of n, 1 of n, 2 of n,
 |    ..., to 255 of 255 for a total of 256 possible pages. We check for
 |    this ordering. GENOUT messages can therefore reach almost 64K in
-|    total length. Such a large GENOUT message could exceed RTKLIB's
-|    maximum buffer size (which was only 4K when this was written).
-|    We check for potential buffer overflows in the input_rt17() function.
+|    total length. Such a large GENOUT message could exceed our maximum
+|    buffer size. We check for potential buffer overflows in the
+|    input_rt17() function.
 |
 | This code was tested using RT-17 data output from the following receivers:
 |
@@ -266,7 +262,7 @@
 #define GENOUT        0x40      /* General Serial Output Format (GSOF) */
 #define RETSVDATA     0x55      /* Satellite information reports */
 #define RAWDATA       0x57      /* Position or real-time survey data report */
-#define MBUFF_LENGTH  2048      /* Message buffer length */
+#define MBUFF_LENGTH  8192      /* Message buffer length */
 #define PBUFF_LENGTH  (4+255+2) /* Packet buffer length */
 
 /* Record Interpretation Flags bit masks: */
@@ -745,8 +741,8 @@ EXPORT int input_rt17f(raw_t *Raw, FILE *fp)
 /*
 | CheckPacketChecksum - Check the packet checksum
 |
-| The checksum is computed as the modulo 256 (unsigned 8-bit byte integer)
-| sum of the packet contents starting with the status byte, including the
+| The checksum is computed as the modulo 256 (unsigned 8-bit integer) sum
+| of the packet contents starting with the status byte, including the
 | packet type byte, length byte, data bytes and ending with the last byte
 | of the data bytes. It does not include the STX leader, the ETX trailer
 | nor the checksum byte.
@@ -1419,12 +1415,12 @@ static int DecodeIONAndUTCData(raw_t *Raw)
     utc_gps[2] = R8(p+86); /* 086-093: TSUB0T */ 
     utc_gps[3] = week;
     nav->leaps =(int) R8(p+94); /* 094-101: DELTATLS (seconds) */
-    /* Unused by RTKLIB R8 */       /* 102-109: DELTATLSF */
-    /* Unused by RTKLIB R8 */       /* 110-117: IONTIME */
-    /* Unused by RTKLIB U1 */       /* 118-118: WNSUBT */
-    /* Unused by RTKLIB U1 */       /* 119-119: WNSUBLSF */
-    /* Unused by RTKLIB U1 */       /* 120-120: DN */
-    /* Reserved six bytes */        /* 121-126: RESERVED */
+    /* Unused by RTKLIB R8 */   /* 102-109: DELTATLSF */
+    /* Unused by RTKLIB R8 */   /* 110-117: IONTIME */
+    /* Unused by RTKLIB U1 */   /* 118-118: WNSUBT */
+    /* Unused by RTKLIB U1 */   /* 119-119: WNSUBLSF */
+    /* Unused by RTKLIB U1 */   /* 120-120: DN */
+    /* Reserved six bytes */    /* 121-126: RESERVED */
    
    return 9;
 }

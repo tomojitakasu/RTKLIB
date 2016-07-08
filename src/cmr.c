@@ -20,10 +20,10 @@
 | the availability of practical alternatives such RTCM v3.1, CMR and CMR+
 | still remain de facto industry standards, especially in the US market.
 |
-| Here we implement four public functions, one for reading CMR format streams
+| Here we implement five public functions, one for reading CMR format streams
 | and another for reading CMR format files, a third to supply rover observations
-| to the CMR base observations referencing engine and aa fourth to free up CMR
-| related memory storage.
+| to the CMR base observations referencing engine and a fourth to initialize
+| CMR related memory storage and a fifth to free up CMR related memory storage.
 |
 | Although a Trimble proprietary protocol, CMR was documented in reference #1
 | and CMR+ was documented in reference #2. These were then adopted by many
@@ -37,6 +37,10 @@
 |
 | RTCM3 should always be used whenever possible in lieu of CMR. Use CMR only
 | when there is no other option.
+|
+| Receiver dependent options:
+|
+| -STA=nn - Set the base station ID to receive (0-31 for CMR).
 |
 | Notes:
 |
@@ -183,8 +187,8 @@
 |
 | CMR type 4 messages contain the following GPS observables for each satellite:
 |
-| 1. CBT  (Actually just once in the messsage header and it's modulo 4000 instead of 240000.)
-| 2. CL1L (But it's a delta against the prior CMR type 3 BL1L for this satellte.)
+| 1. CBT (Actually just once in the messsage header and it's modulo 4000 instead of 240000.)
+| 2. CL1 (But it's a delta against the prior CMR type 3 BL1 for this satellte.)
 |
 | CMR type 4 messages are only received with time represending the intervals
 | between the seconds and never on an exact second.
@@ -194,10 +198,6 @@
 | by private functions as a set. Because of this, forward definitions are required
 | for the private functions. Please keep that in mind when making changes to this
 | source file.
-|
-| The companion include file cmr.h contains the antenna number to name and receiver
-| number to name lookup tables. They were placed there to keep them from cluttering
-| up this source file. Everything else is contained herein.
 |
 | References:
 |
@@ -382,14 +382,14 @@ typedef struct {                    /* Base observables header record */
     gtime_t       Time;             /* Base observables time */
     int           n;                /* Number of observables */
     unsigned char Type;             /* Observables type (0, 3, 4) */
-    obsbd_t       Data[MAXSAT];     /* Base observables data records */
+    obsbd_t       Data[MAXOBS];     /* Base observables data records */
 } obsb_t;
 
 typedef struct {                    /* CMR information struct type */ 
     unsigned char *Buffer;          /* Buffer for building full CMR+ message from little parts */
     unsigned char *MessageBuffer;   /* Message buffer */
     obsr_t        *RoverObservables;/* Rover observables table */
-    rtksvr_t      *svr;             /* Pointer to RTK server structure (when running in that environment otherwise NULL) */
+    rtksvr_t      *Svr;             /* Pointer to RTK server structure (when running in that environment otherwise NULL) */
     obsbd_t       *T4Data;          /* Type 3 reference data for type 4 observables */
     unsigned int  Flags;            /* Miscellaneous internal flag bits */
     unsigned int  CurrentMessages;  /* Current  base messages active */
@@ -1430,7 +1430,7 @@ EXPORT int free_cmr(raw_t *Raw)
 /* init_cmr = Initialize CMR dependent private storage */
 EXPORT int init_cmr(raw_t *Raw)
 {
-	cmr_t *Cmr = NULL;
+    cmr_t *Cmr = NULL;
     obsr_t *RoverObservables = NULL;
     obsbd_t *T4Data = NULL;
     unsigned char *MessageBuffer = NULL, *Buffer = NULL;
@@ -1614,13 +1614,13 @@ extern int input_cmrf(raw_t *Raw, FILE *fp)
 | Call this function in the RTK SERVER immediately
 | after any rover observations have been received.
 */
-extern int update_cmr(raw_t *Raw, rtksvr_t *svr, obs_t *obs)
+extern int update_cmr(raw_t *Raw, rtksvr_t *Svr, obs_t *obs)
 {
     cmr_t *Cmr = (cmr_t*) Raw->rcv_data;
     obsr_t *RoverObsTable = (obsr_t*) Cmr->RoverObservables;
     obsd_t *r; int n; unsigned char Sat;
 
-    Cmr->svr = svr;
+    Cmr->Svr = Svr;
 
     for (n = 0; (n < obs->n) && (n < MAXOBS); n++)
     {
@@ -1919,7 +1919,7 @@ static int DecodeCmr(raw_t *Raw)
 | basically the same information, are normally supressed (otherewise
 | there would be no point to CMR+).
 |
-| We can't process CMR+ messages immediatelly as they are received
+| We can't process CMR+ messages immediately as they are received
 | because they are incomplete. They are each just a small incomplete
 | portion of an original whole message that has been broken down on
 | arbitrary boundaries and tricked out over time. We must buffer all
@@ -2293,8 +2293,8 @@ static int DecodeCmrType3(raw_t *Raw)
 {
     double L1WaveLength;
     cmr_t *Cmr = (cmr_t*) Raw->rcv_data;
-    rtksvr_t *svr = Cmr->svr;
-    nav_t *Nav = (svr) ? &svr->nav : &Raw->nav;
+    rtksvr_t *Svr = Cmr->Svr;
+    nav_t *Nav = (Svr) ? &Svr->nav : &Raw->nav;
     unsigned char *p = (unsigned char*) &Cmr->MessageBuffer[4];
     gtime_t CmrTime = utc2gpst(CmrTimeToGtime(ubitn(p+4,6,18)));
     unsigned int L1Flags, L2Flags, nsat = ubitn(p+1,0,5), Slot, StationID = ubitn(p,0,5);
@@ -2394,7 +2394,7 @@ static int DecodeCmrType3(raw_t *Raw)
 | I'm not certain exactly what that data is nor how RTKLIB might utilize it.
 | The GPS L1 carrier phase observables are 24 bit twos complement signed
 | deltas from those which where transmitted at the last CMR type 0 message.
-| The PRN numbers are not re-transmitted and are assumed to be tho same
+| The PRN numbers are not re-transmitted and are assumed to be the same
 | ones in the same order transmitted in the last CMR type 0 message.
 |
 | So far as I know this is a GPS only message and it has not been extended
@@ -2473,7 +2473,7 @@ static double GtimeToDouble(gtime_t Gtime)
 static int OutputCmrObs(raw_t *Raw, obsb_t *Obs)
 {
     cmr_t *Cmr = (cmr_t*) Raw->rcv_data;
-    rtksvr_t *svr = Cmr->svr;
+    rtksvr_t *Svr = Cmr->Svr;
     obsr_t *r, *RoverObsTable = (obsr_t*) Cmr->RoverObservables;
     obsbd_t *b; int n, Ret = 0; unsigned char Sat;
     double WindowSize = (Obs->Type == CMR_TYPE_4) ? 4.0 : 240.0;
@@ -2481,7 +2481,7 @@ static int OutputCmrObs(raw_t *Raw, obsb_t *Obs)
 
     Raw->obs.n = 0;
 
-    if (svr && RoverObsTable)
+    if (Svr && RoverObsTable)
     {
         for (n = 0; !(Ret < 0) && (n < Obs->n) && (Raw->obs.n < MAXOBS); n++)
         {
@@ -2518,8 +2518,8 @@ static int ReferenceCmrObs(raw_t *Raw, gtime_t Time, unsigned char Type, double 
 {
     cmr_t *Cmr = (cmr_t*) Raw->rcv_data;
     obsbd_t *t4 = (obsbd_t*) Cmr->T4Data;
-    rtksvr_t *svr = Cmr->svr;
-    nav_t *Nav = (svr) ? &svr->nav : &Raw->nav;
+    rtksvr_t *Svr = Cmr->Svr;
+    nav_t *Nav = (Svr) ? &Svr->nav : &Raw->nav;
     obsd_t *obs = &Raw->obs.data[Raw->obs.n];
     double L0, L1WaveLength, L2WaveLength;
 
@@ -2555,7 +2555,7 @@ static int ReferenceCmrObs(raw_t *Raw, gtime_t Time, unsigned char Type, double 
     
     if (Type == CMR_TYPE_4)
     {
-        L0 = (svr) ? b->L[0] + t4[b->Slot].L[0] : b->L[0];
+        L0 = (Svr) ? b->L[0] + t4[b->Slot].L[0] : b->L[0];
         memcpy(b, &t4[b->Slot], sizeof(obsbd_t));
         b->L[0] = L0;
 #if 0
@@ -2651,7 +2651,7 @@ static int sbitn(const unsigned char *Address, int BitPosition, int BitLength)
 static void SetStationCoordinates(raw_t *Raw, unsigned char *p)
 {
     sta_t *sta = &Raw->sta;
-    sta->pos[0]  = ((sbitn(p+3, 0,32)*4.0)+ubitn(p+4,6,2)) *0.001;
+    sta->pos[0]  = ((sbitn(p+3, 0,32)*4.0)+ubitn(p+4, 6,2))*0.001;
     sta->pos[1]  = ((sbitn(p+9, 0,32)*4.0)+ubitn(p+10,6,2))*0.001;
     sta->pos[2]  = ((sbitn(p+15,0,32)*4.0)+ubitn(p+16,6,2))*0.001;
     sta->del[0]  = sbitn(p+11,0,14)*0.001;
