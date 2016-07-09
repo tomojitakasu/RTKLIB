@@ -12,7 +12,7 @@ LDLIBS  = -lm -lrt -lpthread
 
 all        : rtkrcv
 rtkrcv     : rtkrcv.o vt.o rtkcmn.o rtksvr.o rtkpos.o geoid.o solution.o lambda.o
-rtkrcv     : sbas.o stream.o rcvraw.o rtcm.o preceph.o options.o pntpos.o ppp.o ppp_ar.o
+rtkrcv     : sbas.o stream.o rcvraw.o cmr.o rtcm.o preceph.o options.o pntpos.o ppp.o ppp_ar.o
 rtkrcv     : novatel.o ublox.o ss2.o crescent.o skytraq.o gw10.o javad.o nvs.o binex.o
 rtkrcv     : rt17.o ephemeris.o rinex.o ionex.o rtcm2.o rtcm3.o rtcm3e.o qzslex.o
 rtkrcv     : ppp_corr.o tides.o septentrio.o
@@ -39,6 +39,8 @@ stream.o   : $(SRC)/stream.c
 	$(CC) -c $(CFLAGS) $(SRC)/stream.c
 rcvraw.o : $(SRC)/rcvraw.c
 	$(CC) -c $(CFLAGS) $(SRC)/rcvraw.c
+cmr.o      : $(SRC)/cmr.c
+	$(CC) -c $(CFLAGS) $(SRC)/cmr.c
 rtcm.o     : $(SRC)/rtcm.c
 	$(CC) -c $(CFLAGS) $(SRC)/rtcm.c
 rtcm2.o    : $(SRC)/rtcm2.c
@@ -101,6 +103,7 @@ solution.o : $(SRC)/rtklib.h
 lambda.o   : $(SRC)/rtklib.h
 sbas.o     : $(SRC)/rtklib.h
 rcvraw.o   : $(SRC)/rtklib.h
+cmr.o      : $(SRC)/rtklib.h
 rtcm.o     : $(SRC)/rtklib.h
 rtcm2.o    : $(SRC)/rtklib.h
 rtcm3.o    : $(SRC)/rtklib.h

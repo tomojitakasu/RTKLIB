@@ -140,7 +140,7 @@ static const char *pathopts[]={         /* path options help */
 #define FLGOPT  "0:off,1:std+2:age/ratio/ns"
 #define ISTOPT  "0:off,1:serial,2:file,3:tcpsvr,4:tcpcli,7:ntripcli,8:ftp,9:http"
 #define OSTOPT  "0:off,1:serial,2:file,3:tcpsvr,4:tcpcli,6:ntripsvr"
-#define FMTOPT  "0:rtcm2,1:rtcm3,2:oem4,3:oem3,4:ubx,5:ss2,6:hemis,7:skytraq,8:gw10,9:javad,10:nvs,11:binex,12:rt17,13:sbf,16:sp3"
+#define FMTOPT  "0:rtcm2,1:rtcm3,2:oem4,3:oem3,4:ubx,5:ss2,6:hemis,7:skytraq,8:gw10,9:javad,10:nvs,11:binex,12:rt17,13:sept,14:cmr,17:sp3"
 #define NMEOPT  "0:off,1:latlon,2:single"
 #define SOLOPT  "0:llh,1:xyz,2:enu,3:nmea,4:stat"
 #define MSGOPT  "0:all,1:rover,2:base,3:corr"
@@ -858,7 +858,7 @@ static void prstream(vt_t *vt)
         "-","serial","file","tcpsvr","tcpcli","udp","ntrips","ntripc","ftp","http"
     };
     const char *fmt[]={"rtcm2","rtcm3","oem4","oem3","ubx","ss2","hemis","skytreq",
-                       "gw10","javad","nvs","binex","rt17","","","sp3","","",""};
+                       "gw10","javad","nvs","binex","rt17","sept","cmr","","sp3","","",""};
     const char *sol[]={"llh","xyz","enu","nmea","stat","-"};
     stream_t stream[9];
     int i,format[9]={0};

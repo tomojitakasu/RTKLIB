@@ -401,16 +401,17 @@ extern "C" {
 #define STRFMT_BINEX 11                 /* stream format: BINEX */
 #define STRFMT_RT17  12                 /* stream format: Trimble RT17 */
 #define STRFMT_SEPT  13                 /* stream format: Septentrio */
-#define STRFMT_LEXR  14                 /* stream format: Furuno LPY-10000 */
-#define STRFMT_RINEX 15                 /* stream format: RINEX */
-#define STRFMT_SP3   16                 /* stream format: SP3 */
-#define STRFMT_RNXCLK 17                /* stream format: RINEX CLK */
-#define STRFMT_SBAS  18                 /* stream format: SBAS messages */
-#define STRFMT_NMEA  19                 /* stream format: NMEA 0183 */
+#define STRFMT_CMR   14                 /* stream format: Trimble CMR/CMR+ */
+#define STRFMT_LEXR  15                 /* stream format: Furuno LPY-10000 */
+#define STRFMT_RINEX 16                 /* stream format: RINEX */
+#define STRFMT_SP3   17                 /* stream format: SP3 */
+#define STRFMT_RNXCLK 18                /* stream format: RINEX CLK */
+#define STRFMT_SBAS  19                 /* stream format: SBAS messages */
+#define STRFMT_NMEA  20                 /* stream format: NMEA 0183 */
 #ifndef EXTLEX
-#define MAXRCVFMT    13                 /* max number of receiver format */
+#define MAXRCVFMT    14                 /* max number of receiver format */
 #else
-#define MAXRCVFMT    14
+#define MAXRCVFMT    15
 #endif
 
 #define STR_MODE_R  0x1                 /* stream mode: read */
@@ -1153,6 +1154,8 @@ typedef struct {        /* RTK control/result type */
 } rtk_t;
 
 typedef struct {        /* receiver raw data control type */
+    void *rcv_data;     /* receiver dependent data */
+    int strfmt;         /* receiver format */
     gtime_t time;       /* message time */
     gtime_t tobs;       /* observation data time */
     obs_t obs;          /* observation data */
@@ -1178,13 +1181,6 @@ typedef struct {        /* receiver raw data control type */
     int outtype;        /* output message type */
     unsigned char buff[MAXRAWLEN]; /* message buffer */
     char opt[256];      /* receiver dependent options */
-    double receive_time;/* RT17: Reiceve time of week for week rollover detection */
-    unsigned int plen;  /* RT17: Total size of packet to be read */
-    unsigned int pbyte; /* RT17: How many packet bytes have been read so far */
-    unsigned int page;  /* RT17: Last page number */
-    unsigned int reply; /* RT17: Current reply number */
-    int week;           /* RT17: week number */
-    unsigned char pbuff[255+4+2]; /* RT17: Packet buffer */
 } raw_t;
 
 typedef struct {        /* stream type */
@@ -1564,7 +1560,13 @@ EXPORT int input_gw10  (raw_t *raw, unsigned char data);
 EXPORT int input_javad (raw_t *raw, unsigned char data);
 EXPORT int input_nvs   (raw_t *raw, unsigned char data);
 EXPORT int input_bnx   (raw_t *raw, unsigned char data);
+EXPORT int free_rt17   (raw_t *raw);
+EXPORT int init_rt17   (raw_t *raw);
 EXPORT int input_rt17  (raw_t *raw, unsigned char data);
+EXPORT int free_cmr    (raw_t *raw);
+EXPORT int init_cmr    (raw_t *raw);
+EXPORT int input_cmr   (raw_t *raw, unsigned char data);
+EXPORT int update_cmr  (raw_t *raw, rtksvr_t *svr, obs_t *obs);
 EXPORT int input_sbf   (raw_t *raw, unsigned char data);
 EXPORT int input_lexr  (raw_t *raw, unsigned char data);
 EXPORT int input_oem4f (raw_t *raw, FILE *fp);
@@ -1578,6 +1580,7 @@ EXPORT int input_javadf(raw_t *raw, FILE *fp);
 EXPORT int input_nvsf  (raw_t *raw, FILE *fp);
 EXPORT int input_bnxf  (raw_t *raw, FILE *fp);
 EXPORT int input_rt17f (raw_t *raw, FILE *fp);
+EXPORT int input_cmrf  (raw_t *raw, FILE *fp);
 EXPORT int input_sbff  (raw_t *raw, FILE *fp);
 EXPORT int input_lexrf (raw_t *raw, FILE *fp);
 

@@ -65,6 +65,7 @@ static const char *help[]={
 "    file         : [file://]path[::T][::+start][::xseppd][::S=swap]",
 "",
 "  format",
+"    cmr          : CMR/CMR+ (only in)",
 "    rtcm2        : RTCM 2 (only in)",
 "    rtcm3        : RTCM 3",
 "    nov          : NovAtel OEMV/4/6,OEMStar (only in)",
@@ -121,6 +122,7 @@ static void decodefmt(char *path, int *fmt)
     if ((p=strrchr(path,'#'))) {
         if      (!strcmp(p,"#rtcm2")) *fmt=STRFMT_RTCM2;
         else if (!strcmp(p,"#rtcm3")) *fmt=STRFMT_RTCM3;
+        else if (!strcmp(p,"#cmr"  )) *fmt=STRFMT_CMR;
         else if (!strcmp(p,"#nov"  )) *fmt=STRFMT_OEM4;
         else if (!strcmp(p,"#oem3" )) *fmt=STRFMT_OEM3;
         else if (!strcmp(p,"#ubx"  )) *fmt=STRFMT_UBX;

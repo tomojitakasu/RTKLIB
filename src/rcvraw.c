@@ -858,7 +858,7 @@ extern int init_raw(raw_t *raw)
     seph_t seph0={0};
     sbsmsg_t sbsmsg0={0};
     lexmsg_t lexmsg0={0};
-    int i,j,sys;
+    int i,j,ret,sys;
     
     trace(3,"init_raw:\n");
     
@@ -880,9 +880,6 @@ extern int init_raw(raw_t *raw)
     raw->tod=-1;
     for (i=0;i<MAXRAWLEN;i++) raw->buff[i]=0;
     raw->opt[0]='\0';
-    raw->receive_time=0.0;
-    raw->plen=raw->pbyte=raw->page=raw->reply=0;
-    raw->week=0;
     
     raw->obs.data =NULL;
     raw->obuf.data=NULL;
@@ -924,6 +921,19 @@ extern int init_raw(raw_t *raw)
         raw->sta.pos[i]=raw->sta.del[i]=0.0;
     }
     raw->sta.hgt=0.0;
+    raw->rcv_data = NULL;
+    
+    switch (raw->strfmt) {
+    case STRFMT_CMR:  ret = init_cmr(raw);  break;
+    case STRFMT_RT17: ret = init_rt17(raw); break;
+    }
+
+    if (!ret)
+    {
+        free_raw(raw);
+        return 0;
+    }
+    
     return 1;
 }
 /* free receiver raw data control ----------------------------------------------
@@ -941,6 +951,11 @@ extern void free_raw(raw_t *raw)
     free(raw->nav.alm  ); raw->nav.alm  =NULL; raw->nav.na=0;
     free(raw->nav.geph ); raw->nav.geph =NULL; raw->nav.ng=0;
     free(raw->nav.seph ); raw->nav.seph =NULL; raw->nav.ns=0;
+
+    switch (raw->strfmt) {
+    case STRFMT_CMR:  free_cmr(raw);  break;
+    case STRFMT_RT17: free_rt17(raw); break;
+    }
 }
 /* input receiver raw data from stream -----------------------------------------
 * fetch next receiver raw data and input a message from stream
@@ -967,6 +982,7 @@ extern int input_raw(raw_t *raw, int format, unsigned char data)
         case STRFMT_NVS  : return input_nvs  (raw,data);
         case STRFMT_BINEX: return input_bnx  (raw,data);
         case STRFMT_RT17 : return input_rt17 (raw,data);
+        case STRFMT_CMR  : return input_cmr  (raw,data);
         case STRFMT_SEPT : return input_sbf  (raw,data);
         case STRFMT_LEXR : return input_lexr (raw,data);
     }
@@ -995,6 +1011,7 @@ extern int input_rawf(raw_t *raw, int format, FILE *fp)
         case STRFMT_NVS  : return input_nvsf  (raw,fp);
         case STRFMT_BINEX: return input_bnxf  (raw,fp);
         case STRFMT_RT17 : return input_rt17f (raw,fp);
+        case STRFMT_CMR  : return input_cmrf  (raw,fp);
         case STRFMT_SEPT : return input_sbff  (raw,fp);
         case STRFMT_LEXR : return input_lexrf (raw,fp);
     }

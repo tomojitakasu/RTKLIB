@@ -138,6 +138,7 @@ const static double gst0 []={1999,8,22,0,0,0}; /* galileo system time reference 
 const static double bdt0 []={2006,1, 1,0,0,0}; /* beidou time reference */
 
 static double leaps[MAXLEAPS+1][7]={ /* leap seconds (y,m,d,h,m,s,utc-gpst) */
+    {2017,1,1,0,0,0,-18},
     {2015,7,1,0,0,0,-17},
     {2012,7,1,0,0,0,-16},
     {2009,1,1,0,0,0,-15},
@@ -214,12 +215,13 @@ EXPORT const char *formatstrs[32]={    /* stream format strings */
     "BINEX",                    /* 11 */
     "Trimble RT17",             /* 12 */
     "Septentrio",               /* 13 */
-    "LEX Receiver",             /* 14 */
-    "RINEX",                    /* 15 */
-    "SP3",                      /* 16 */
-    "RINEX CLK",                /* 17 */
-    "SBAS",                     /* 18 */
-    "NMEA 0183",                /* 19 */
+    "CMR",                      /* 14 */
+    "LEX Receiver",             /* 15 */
+    "RINEX",                    /* 16 */
+    "SP3",                      /* 17 */
+    "RINEX CLK",                /* 18 */
+    "SBAS",                     /* 19 */
+    "NMEA 0183",                /* 20 */
     NULL
 };
 static char *obscodes[]={       /* observation code strings */
@@ -2880,7 +2882,7 @@ extern void traceobs(int level, const obsd_t *obs, int n)
     for (i=0;i<n;i++) {
         time2str(obs[i].time,str,3);
         satno2id(obs[i].sat,id);
-        fprintf(fp_trace," (%2d) %s %-3s rcv%d %13.3f %13.3f %13.3f %13.3f %d %d %d %d %3.1f %3.1f\n",
+        fprintf(fp_trace," (%02d) %s %-3s rcv%d %13.3f %13.3f %13.3f %13.3f %d %d %02d %02d %3.1f %3.1f\n",
               i+1,str,id,obs[i].rcv,obs[i].L[0],obs[i].L[1],obs[i].P[0],
               obs[i].P[1],obs[i].LLI[0],obs[i].LLI[1],obs[i].code[0],
               obs[i].code[1],obs[i].SNR[0]*0.25,obs[i].SNR[1]*0.25);

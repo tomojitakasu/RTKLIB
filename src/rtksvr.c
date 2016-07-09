@@ -212,23 +212,46 @@ static void updatesvr(rtksvr_t *svr, int ret, obs_t *obs, nav_t *nav, int sat,
         svr->nmsg[index][2]++;
     }
     else if (ret==5) { /* antenna postion parameters */
-        if (svr->rtk.opt.refpos==4&&index==1) {
-            for (i=0;i<3;i++) {
-                svr->rtk.rb[i]=svr->rtcm[1].sta.pos[i];
-            }
-            /* antenna delta */
-            ecef2pos(svr->rtk.rb,pos);
-            if (svr->rtcm[1].sta.deltype) { /* xyz */
-                del[2]=svr->rtcm[1].sta.hgt;
-                enu2ecef(pos,del,dr);
+        if ((svr->rtk.opt.refpos==4||svr->rtk.opt.refpos==5)&&index==1) {
+            if (svr->format[index]==STRFMT_RTCM2||svr->format[index]==STRFMT_RTCM3) {
                 for (i=0;i<3;i++) {
-                    svr->rtk.rb[i]+=svr->rtcm[1].sta.del[i]+dr[i];
+                    svr->rtk.rb[i]=svr->rtcm[1].sta.pos[i];
+                }
+                /* antenna delta */
+                ecef2pos(svr->rtk.rb,pos);
+                if (svr->rtcm[1].sta.deltype) { /* xyz */
+                    del[2]=svr->rtcm[1].sta.hgt;
+                    enu2ecef(pos,del,dr);
+                    for (i=0;i<3;i++) {
+                        svr->rtk.rb[i]+=svr->rtcm[1].sta.del[i]+dr[i];
+                    }
+                }
+                else { /* enu */
+                    enu2ecef(pos,svr->rtcm[1].sta.del,dr);
+                    for (i=0;i<3;i++) {
+                        svr->rtk.rb[i]+=dr[i];
+                    }
                 }
             }
-            else { /* enu */
-                enu2ecef(pos,svr->rtcm[1].sta.del,dr);
+            else {
                 for (i=0;i<3;i++) {
-                    svr->rtk.rb[i]+=dr[i];
+                    svr->rtk.rb[i]=svr->raw[index].sta.pos[i];
+                }
+                /* antenna delta */
+                ecef2pos(svr->rtk.rb,pos);
+                if (svr->raw[index].sta.deltype) { /* xyz */
+                    del[2]=svr->raw[index].sta.hgt;
+                    enu2ecef(pos,del,dr);
+                    for (i=0;i<3;i++) {
+                        svr->rtk.rb[i]+=svr->raw[index].sta.del[i]+dr[i];
+                    }
+                }
+                else { /* enu */
+                    enu2ecef(pos,svr->raw[index].sta.del,dr);
+                    for (i=0;i<3;i++) {
+                        svr->rtk.rb[i]+=dr[i];
+
+                    }
                 }
             }
         }
@@ -315,6 +338,10 @@ static int decoderaw(rtksvr_t *svr, int index)
                   time_str(obs->data[0].time,0),obs->n);
         }
 #endif
+        /* update cmr rover observations cache */
+        if ((svr->format[1]==STRFMT_CMR)&&(index==0)&&(ret==1))
+            update_cmr(&svr->raw[1], svr, obs);
+
         /* update rtk server */
         if (ret>0) updatesvr(svr,ret,obs,nav,sat,sbsmsg,index,fobs);
         
@@ -696,7 +723,7 @@ extern int rtksvrstart(rtksvr_t *svr, int cycle, int buffsize, int *strs,
         /* initialize receiver raw and rtcm control */
         init_raw (svr->raw +i);
         init_rtcm(svr->rtcm+i);
-        
+
         /* set receiver and rtcm option */
         strcpy(svr->raw [i].opt,rcvopts[i]);
         strcpy(svr->rtcm[i].opt,rcvopts[i]);
