@@ -273,7 +273,7 @@ extern int input_rtcm3(rtcm_t *rtcm, unsigned char data)
     rtcm->nbyte=0;
     
     /* check parity */
-    if (crc24q(rtcm->buff,rtcm->len)!=getbitu(rtcm->buff,rtcm->len*8,24)) {
+    if (rtk_crc24q(rtcm->buff,rtcm->len)!=getbitu(rtcm->buff,rtcm->len*8,24)) {
         trace(2,"rtcm3 parity error: len=%d\n",rtcm->len);
         return 0;
     }
@@ -373,7 +373,7 @@ extern int gen_rtcm3(rtcm_t *rtcm, int type, int sync)
     setbitu(rtcm->buff,14,10,rtcm->len-3);
     
     /* crc-24q */
-    crc=crc24q(rtcm->buff,rtcm->len);
+    crc=rtk_crc24q(rtcm->buff,rtcm->len);
     setbitu(rtcm->buff,i,24,crc);
     
     /* length total (bytes) */

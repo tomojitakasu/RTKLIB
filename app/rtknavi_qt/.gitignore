@@ -1,0 +1,9 @@
+ui_*.h
+moc_*.cpp
+qrc*.cpp
+*.pro.user*
+Makefile*
+*.res
+rtknavi_qt
+rtknavi_qt.exe
+object_script*

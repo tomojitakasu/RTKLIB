@@ -1,0 +1,9 @@
+ui_*.h
+moc_*.cpp
+qrc*.cpp
+*.pro.user*
+Makefile*
+*.res
+rtkconv_qt
+rtkconv_qt.exe
+object_script*

@@ -1,0 +1,934 @@
+==18097== Memcheck, a memory error detector
+==18097== Copyright (C) 2002-2015, and GNU GPL'd, by Julian Seward et al.
+==18097== Using Valgrind-3.11.0 and LibVEX; rerun with -h for copyright info
+==18097== Command: ./rtkget_qt
+==18097== 
+--18097-- Valgrind options:
+--18097--    -v
+--18097-- Contents of /proc/version:
+--18097--   Linux version 4.2.6-301.fc23.x86_64 (mockbuild@bkernel02.phx2.fedoraproject.org) (gcc version 5.1.1 20150618 (Red Hat 5.1.1-4) (GCC) ) #1 SMP Fri Nov 20 22:22:41 UTC 2015
+--18097-- 
+--18097-- Arch and hwcaps: AMD64, LittleEndian, amd64-cx16-rdtscp-sse3-avx
+--18097-- Page sizes: currently 4096, max supported 4096
+--18097-- Valgrind library directory: /usr/lib64/valgrind
+--18097-- Reading syms from /home/jens/rtklib-qt/app/rtkget_qt/rtkget_qt
+--18097-- Reading syms from /usr/lib64/ld-2.22.so
+--18097-- Reading syms from /usr/lib64/valgrind/memcheck-amd64-linux
+--18097--    object doesn't have a symbol table
+--18097--    object doesn't have a dynamic symbol table
+--18097-- Scheduler: using generic scheduler lock implementation.
+--18097-- Reading suppressions file: /usr/lib64/valgrind/default.supp
+==18097== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-18097-by-jens-on-localhost.localdomain
+==18097== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-18097-by-jens-on-localhost.localdomain
+==18097== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-18097-by-jens-on-localhost.localdomain
+==18097== 
+==18097== TO CONTROL THIS PROCESS USING vgdb (which you probably
+==18097== don't want to do, unless you know exactly what you're doing,
+==18097== or are doing some strange experiment):
+==18097==   /usr/lib64/valgrind/../../bin/vgdb --pid=18097 ...command...
+==18097== 
+==18097== TO DEBUG THIS PROCESS USING GDB: start GDB like this
+==18097==   /path/to/gdb ./rtkget_qt
+==18097== and then give GDB the following command
+==18097==   target remote | /usr/lib64/valgrind/../../bin/vgdb --pid=18097
+==18097== --pid is optional if only one valgrind process is running
+==18097== 
+--18097-- REDIR: 0x4019b90 (ld-linux-x86-64.so.2:strlen) redirected to 0x3809e2b1 (???)
+--18097-- Reading syms from /usr/lib64/valgrind/vgpreload_core-amd64-linux.so
+--18097-- Reading syms from /usr/lib64/valgrind/vgpreload_memcheck-amd64-linux.so
+==18097== WARNING: new redirection conflicts with existing -- ignoring it
+--18097--     old: 0x04019b90 (strlen              ) R-> (0000.0) 0x3809e2b1 ???
+--18097--     new: 0x04019b90 (strlen              ) R-> (2007.0) 0x04c2bce0 strlen
+--18097-- REDIR: 0x40198f0 (ld-linux-x86-64.so.2:index) redirected to 0x4c2b880 (index)
+--18097-- REDIR: 0x4019b10 (ld-linux-x86-64.so.2:strcmp) redirected to 0x4c2cd90 (strcmp)
+--18097-- REDIR: 0x401a850 (ld-linux-x86-64.so.2:mempcpy) redirected to 0x4c2ffb0 (mempcpy)
+--18097-- Reading syms from /usr/lib64/libpng16.so.16.19.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libQt5Widgets.so.5.5.1
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libQt5Gui.so.5.5.1
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libQt5Core.so.5.5.1
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libGL.so.1.2.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libpthread-2.22.so
+--18097-- Reading syms from /usr/lib64/libstdc++.so.6.0.21
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libm-2.22.so
+--18097-- Reading syms from /usr/lib64/libgcc_s-5.3.1-20151207.so.1
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libc-2.22.so
+--18097-- Reading syms from /usr/lib64/libz.so.1.2.8
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libgobject-2.0.so.0.4600.2
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libglib-2.0.so.0.4600.2
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libXext.so.6.4.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libX11.so.6.3.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libharfbuzz.so.0.10000.6
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libicui18n.so.54.1
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libicuuc.so.54.1
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libicudata.so.54.1
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libpcre16.so.0.2.6
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libdl-2.22.so
+--18097-- Reading syms from /usr/lib64/libgthread-2.0.so.0.4600.2
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/librt-2.22.so
+--18097-- Reading syms from /usr/lib64/libexpat.so.1.6.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libxcb-dri3.so.0.0.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libxcb-present.so.0.0.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libxcb-randr.so.0.1.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libxcb-xfixes.so.0.0.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libxcb-render.so.0.0.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libxcb-shape.so.0.0.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libxcb-sync.so.1.0.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libxshmfence.so.1.0.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libglapi.so.0.0.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libselinux.so.1
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libXdamage.so.1.1.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libXfixes.so.3.1.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libX11-xcb.so.1.0.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libxcb-glx.so.0.0.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libxcb-dri2.so.0.0.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libxcb.so.1.1.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libXxf86vm.so.1.0.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libdrm.so.2.4.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libffi.so.6.0.2
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libfreetype.so.6.12.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libgraphite2.so.3.0.1
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libXau.so.6.0.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libpcre.so.1.2.6
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libbz2.so.1.0.6
+--18097--    object doesn't have a symbol table
+--18097-- REDIR: 0x74e0de0 (libc.so.6:strcasecmp) redirected to 0x4a2372e (_vgnU_ifunc_wrapper)
+--18097-- REDIR: 0x74dc670 (libc.so.6:strcspn) redirected to 0x4a2372e (_vgnU_ifunc_wrapper)
+--18097-- REDIR: 0x74e30d0 (libc.so.6:strncasecmp) redirected to 0x4a2372e (_vgnU_ifunc_wrapper)
+--18097-- REDIR: 0x74deb00 (libc.so.6:strpbrk) redirected to 0x4a2372e (_vgnU_ifunc_wrapper)
+--18097-- REDIR: 0x74dee90 (libc.so.6:strspn) redirected to 0x4a2372e (_vgnU_ifunc_wrapper)
+--18097-- REDIR: 0x74e056b (libc.so.6:memcpy@GLIBC_2.2.5) redirected to 0x4a2372e (_vgnU_ifunc_wrapper)
+--18097-- REDIR: 0x74dcf30 (libc.so.6:strncmp) redirected to 0x4a2372e (_vgnU_ifunc_wrapper)
+--18097-- REDIR: 0x74dae70 (libc.so.6:index) redirected to 0x4a2372e (_vgnU_ifunc_wrapper)
+--18097-- REDIR: 0x74e05c0 (libc.so.6:memset) redirected to 0x4a2372e (_vgnU_ifunc_wrapper)
+--18097-- REDIR: 0x74dffd0 (libc.so.6:bcmp) redirected to 0x4a2372e (_vgnU_ifunc_wrapper)
+--18097-- REDIR: 0x74db0c0 (libc.so.6:strcmp) redirected to 0x4a2372e (_vgnU_ifunc_wrapper)
+--18097-- REDIR: 0x7563620 (libc.so.6:__memcpy_chk) redirected to 0x4a2372e (_vgnU_ifunc_wrapper)
+--18097-- REDIR: 0x74e57b0 (libc.so.6:memcpy@@GLIBC_2.14) redirected to 0x4a2372e (_vgnU_ifunc_wrapper)
+--18097-- REDIR: 0x74de7d0 (libc.so.6:strncpy) redirected to 0x4a2372e (_vgnU_ifunc_wrapper)
+--18097-- REDIR: 0x74dac70 (libc.so.6:strcat) redirected to 0x4a2372e (_vgnU_ifunc_wrapper)
+--18097-- REDIR: 0x74dfa40 (libc.so.6:strstr) redirected to 0x4a2372e (_vgnU_ifunc_wrapper)
+--18097-- REDIR: 0x74dc550 (libc.so.6:strcpy) redirected to 0x4a2372e (_vgnU_ifunc_wrapper)
+--18097-- REDIR: 0x74e0c30 (libc.so.6:stpcpy) redirected to 0x4a2372e (_vgnU_ifunc_wrapper)
+--18097-- REDIR: 0x74e0730 (libc.so.6:mempcpy) redirected to 0x4a2372e (_vgnU_ifunc_wrapper)
+--18097-- REDIR: 0x74dcef0 (libc.so.6:strncat) redirected to 0x4a2372e (_vgnU_ifunc_wrapper)
+--18097-- REDIR: 0x7563690 (libc.so.6:__memmove_chk) redirected to 0x4a2372e (_vgnU_ifunc_wrapper)
+--18097-- REDIR: 0x74de810 (libc.so.6:rindex) redirected to 0x4c2b560 (rindex)
+--18097-- REDIR: 0x74d5900 (libc.so.6:malloc) redirected to 0x4c28c7f (malloc)
+--18097-- REDIR: 0x74df470 (libc.so.6:__GI_strstr) redirected to 0x4c30210 (__strstr_sse2)
+--18097-- REDIR: 0x74dfc80 (libc.so.6:memchr) redirected to 0x4c2ce30 (memchr)
+--18097-- REDIR: 0x74e5820 (libc.so.6:__GI_memcpy) redirected to 0x4c2d7e0 (__GI_memcpy)
+--18097-- REDIR: 0x74f9e30 (libc.so.6:__strstr_sse2_unaligned) redirected to 0x4c301a0 (strstr)
+--18097-- REDIR: 0x74d5c60 (libc.so.6:free) redirected to 0x4c29d79 (free)
+--18097-- REDIR: 0x74dcb10 (libc.so.6:strlen) redirected to 0x4c2bc20 (strlen)
+--18097-- REDIR: 0x74d63f0 (libc.so.6:calloc) redirected to 0x4c2aa02 (calloc)
+--18097-- REDIR: 0x74f0bd0 (libc.so.6:__memcpy_sse2_unaligned) redirected to 0x4c2d180 (memcpy@@GLIBC_2.14)
+--18097-- REDIR: 0x74f0920 (libc.so.6:__strcmp_sse2_unaligned) redirected to 0x4c2cc50 (strcmp)
+--18097-- REDIR: 0x74d5e30 (libc.so.6:realloc) redirected to 0x4c2abd1 (realloc)
+--18097-- REDIR: 0x75aaed0 (libc.so.6:__memmove_ssse3_back) redirected to 0x4c2cef0 (memcpy@GLIBC_2.2.5)
+--18097-- REDIR: 0x74daea0 (libc.so.6:__GI_strchr) redirected to 0x4c2b6c0 (__GI_strchr)
+--18097-- REDIR: 0x74f85b0 (libc.so.6:__strcat_sse2_unaligned) redirected to 0x4c2b8c0 (strcat)
+--18097-- REDIR: 0x6c450e0 (libstdc++.so.6:operator new(unsigned long)) redirected to 0x4c2929f (operator new(unsigned long))
+--18097-- REDIR: 0x74e0630 (libc.so.6:__GI_memset) redirected to 0x4c2f1a0 (memset)
+--18097-- REDIR: 0x75baea0 (libc.so.6:__memcmp_sse4_1) redirected to 0x4c2e9b0 (__memcmp_sse4_1)
+--18097-- REDIR: 0x74db100 (libc.so.6:__GI_strcmp) redirected to 0x4c2cca0 (__GI_strcmp)
+--18097-- REDIR: 0x74dcf80 (libc.so.6:__GI_strncmp) redirected to 0x4c2c3d0 (__GI_strncmp)
+--18097-- REDIR: 0x74e7b40 (libc.so.6:strchrnul) redirected to 0x4c2fae0 (strchrnul)
+--18097-- REDIR: 0x74e0790 (libc.so.6:__GI_mempcpy) redirected to 0x4c2fce0 (__GI_mempcpy)
+--18097-- REDIR: 0x74f5dc0 (libc.so.6:__strncpy_sse2_unaligned) redirected to 0x4c2c230 (__strncpy_sse2_unaligned)
+--18097-- REDIR: 0x75a5920 (libc.so.6:__memcpy_chk_ssse3_back) redirected to 0x4c300a0 (__memcpy_chk)
+--18097-- REDIR: 0x6c43190 (libstdc++.so.6:operator delete(void*)) redirected to 0x4c2a229 (operator delete(void*))
+--18097-- REDIR: 0x74e0410 (libc.so.6:__GI_memmove) redirected to 0x4c2f4e0 (__GI_memmove)
+--18097-- REDIR: 0x6c45190 (libstdc++.so.6:operator new[](unsigned long)) redirected to 0x4c29944 (operator new[](unsigned long))
+--18097-- REDIR: 0x6c431c0 (libstdc++.so.6:operator delete[](void*)) redirected to 0x4c2a6d9 (operator delete[](void*))
+--18097-- REDIR: 0x7592500 (libc.so.6:__strncmp_sse42) redirected to 0x4c2c4b0 (__strncmp_sse42)
+--18097-- Reading syms from /usr/lib64/qt5/plugins/platforms/libqxcb.so
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libQt5XcbQpa.so.5.5.1
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libXi.so.6.1.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libxcb-render-util.so.0.0.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libSM.so.6.0.1
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libICE.so.6.3.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libdbus-1.so.3.14.6
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libxcb-image.so.0.0.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libxcb-icccm.so.4.0.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libxcb-shm.so.0.0.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libxcb-keysyms.so.1.0.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libxcb-xkb.so.1.0.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libxkbcommon-x11.so.0.0.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libfontconfig.so.1.9.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libXrender.so.1.3.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libinput.so.10.7.3
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libxkbcommon.so.0.0.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libudev.so.1.6.4
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libEGL.so.1.0.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libQt5DBus.so.5.5.1
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libuuid.so.1.3.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libsystemd.so.0.9.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libxcb-util.so.1.0.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libmtdev.so.1.0.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libevdev.so.2.1.11
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libwacom.so.2.4.4
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libresolv-2.22.so
+--18097-- Reading syms from /usr/lib64/libdw-0.165.so
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libcap.so.2.24
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libgbm.so.1.0.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libwayland-client.so.0.3.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libwayland-server.so.0.1.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/liblzma.so.5.2.1
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libgcrypt.so.20.0.4
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libgpg-error.so.0.17.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libgudev-1.0.so.0.2.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libelf-0.165.so
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libattr.so.1.1.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libgio-2.0.so.0.4600.2
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libgmodule-2.0.so.0.4600.2
+--18097--    object doesn't have a symbol table
+--18097-- REDIR: 0x75a8400 (libc.so.6:__mempcpy_ssse3_back) redirected to 0x4c2fbf0 (mempcpy)
+--18097-- REDIR: 0x7563940 (libc.so.6:__strcpy_chk) redirected to 0x4c2fb50 (__strcpy_chk)
+--18097-- memcheck GC: 1000 nodes, 8 survivors (0.8%)
+--18097-- memcheck GC: 1000 nodes, 8 survivors (0.8%)
+--18097-- Reading syms from /usr/lib64/libXcursor.so.1.0.2
+--18097--    object doesn't have a symbol table
+--18097-- REDIR: 0x74dccd0 (libc.so.6:strnlen) redirected to 0x4c2bba0 (strnlen)
+--18097-- Reading syms from /usr/lib64/qt5/plugins/xcbglintegrations/libqxcb-glx-integration.so
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/qt5/plugins/platformthemes/KDEPlatformTheme.so
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libKF5KIOFileWidgets.so.5.19.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libKF5KIOWidgets.so.5.19.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libKF5Notifications.so.5.19.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libKF5KIOCore.so.5.19.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libKF5JobWidgets.so.5.19.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libKF5Service.so.5.19.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libKF5Completion.so.5.19.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libKF5Bookmarks.so.5.19.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libKF5XmlGui.so.5.19.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libKF5IconThemes.so.5.19.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libKF5ConfigWidgets.so.5.19.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libKF5ConfigGui.so.5.19.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libKF5Auth.so.5.19.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libKF5I18n.so.5.19.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libQt5Network.so.5.5.1
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libKF5WidgetsAddons.so.5.19.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libKF5ItemViews.so.5.19.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libKF5Solid.so.5.19.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libQt5Xml.so.5.5.1
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libKF5ConfigCore.so.5.19.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libQt5X11Extras.so.5.5.1
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libKF5Codecs.so.5.19.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libKF5CoreAddons.so.5.19.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libKF5WindowSystem.so.5.19.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libacl.so.1.1.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libphonon4qt5experimental.so.4.8.3
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libdbusmenu-qt5.so.2.6.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libphonon4qt5.so.4.8.3
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libQt5Concurrent.so.5.5.1
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libKF5DBusAddons.so.5.19.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libQt5PrintSupport.so.5.5.1
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libKF5TextWidgets.so.5.19.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libKF5Attica.so.5.19.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libKF5GlobalAccel.so.5.19.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libKF5SonnetUi.so.5.19.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libQt5Svg.so.5.5.1
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libKF5GuiAddons.so.5.19.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libssl.so.1.0.2g
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libcrypto.so.1.0.2g
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libpulse.so.0.18.2
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libpulse-mainloop-glib.so.0.0.5
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libKF5SonnetCore.so.5.19.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libgssapi_krb5.so.2.2
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libkrb5.so.3.3
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libcom_err.so.2.1
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libk5crypto.so.3.1
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/pulseaudio/libpulsecommon-7.1.so
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libXtst.so.6.1.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libjson-c.so.2.0.1
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libwrap.so.0.7.6
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libsndfile.so.1.0.25
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libasyncns.so.0.3.1
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libkrb5support.so.0.1
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libkeyutils.so.1.5
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libnsl-2.22.so
+--18097-- Reading syms from /usr/lib64/libgsm.so.1.0.12
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libFLAC.so.8.3.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libvorbisenc.so.2.0.10
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libogg.so.0.8.2
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libvorbis.so.0.4.7
+--18097--    object doesn't have a symbol table
+--18097-- memcheck GC: 1000 nodes, 35 survivors (3.5%)
+--18097-- REDIR: 0x74e0010 (libc.so.6:__GI_memcmp) redirected to 0x4c2e870 (__GI_memcmp)
+--18097-- memcheck GC: 1000 nodes, 58 survivors (5.8%)
+--18097-- memcheck GC: 1000 nodes, 138 survivors (13.8%)
+--18097-- memcheck GC: 1000 nodes, 157 survivors (15.7%)
+--18097-- memcheck GC: 1014 new table size (driftup)
+--18097-- Reading syms from /usr/lib64/qt5/plugins/platforminputcontexts/libcomposeplatforminputcontextplugin.so
+--18097--    object doesn't have a symbol table
+--18097-- memcheck GC: 1014 nodes, 143 survivors (14.1%)
+--18097-- memcheck GC: 1014 nodes, 165 survivors (16.3%)
+--18097-- memcheck GC: 1029 new table size (driftup)
+--18097-- Reading syms from /usr/lib64/qt5/plugins/styles/breeze.so
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libKF5Style.so.5.19.0
+--18097--    object doesn't have a symbol table
+--18097-- memcheck GC: 1029 nodes, 199 survivors (19.3%)
+--18097-- memcheck GC: 1044 new table size (driftup)
+--18097-- REDIR: 0x74f0820 (libc.so.6:__GI_strncpy) redirected to 0x4c2bfd0 (__GI_strncpy)
+--18097-- memcheck GC: 1044 nodes, 241 survivors (23.1%)
+--18097-- memcheck GC: 1059 new table size (driftup)
+--18097-- memcheck GC: 1059 nodes, 243 survivors (22.9%)
+--18097-- memcheck GC: 1074 new table size (driftup)
+--18097-- memcheck GC: 1074 nodes, 307 survivors (28.6%)
+--18097-- memcheck GC: 1090 new table size (driftup)
+--18097-- memcheck GC: 1090 nodes, 364 survivors (33.4%)
+--18097-- memcheck GC: 1106 new table size (driftup)
+--18097-- memcheck GC: 1106 nodes, 351 survivors (31.7%)
+--18097-- memcheck GC: 1122 new table size (driftup)
+--18097-- memcheck GC: 1122 nodes, 351 survivors (31.3%)
+--18097-- memcheck GC: 1138 new table size (driftup)
+--18097-- memcheck GC: 1138 nodes, 353 survivors (31.0%)
+--18097-- memcheck GC: 1155 new table size (driftup)
+--18097-- memcheck GC: 1155 nodes, 356 survivors (30.8%)
+--18097-- memcheck GC: 1172 new table size (driftup)
+--18097-- memcheck GC: 1172 nodes, 355 survivors (30.3%)
+--18097-- memcheck GC: 1189 new table size (driftup)
+--18097-- memcheck GC: 1189 nodes, 357 survivors (30.0%)
+--18097-- memcheck GC: 1206 new table size (driftup)
+--18097-- memcheck GC: 1206 nodes, 358 survivors (29.7%)
+--18097-- memcheck GC: 1224 new table size (driftup)
+--18097-- memcheck GC: 1224 nodes, 357 survivors (29.2%)
+--18097-- memcheck GC: 1242 new table size (driftup)
+--18097-- memcheck GC: 1242 nodes, 357 survivors (28.7%)
+--18097-- memcheck GC: 1260 new table size (driftup)
+--18097-- memcheck GC: 1260 nodes, 356 survivors (28.3%)
+--18097-- memcheck GC: 1278 new table size (driftup)
+--18097-- memcheck GC: 1278 nodes, 358 survivors (28.0%)
+--18097-- memcheck GC: 1297 new table size (driftup)
+--18097-- memcheck GC: 1297 nodes, 357 survivors (27.5%)
+--18097-- memcheck GC: 1316 new table size (driftup)
+--18097-- memcheck GC: 1316 nodes, 357 survivors (27.1%)
+--18097-- memcheck GC: 1335 new table size (driftup)
+--18097-- REDIR: 0x74e7930 (libc.so.6:rawmemchr) redirected to 0x4c2fb10 (rawmemchr)
+--18097-- REDIR: 0x74f6da0 (libc.so.6:__stpcpy_sse2_unaligned) redirected to 0x4c2ee00 (__stpcpy_sse2_unaligned)
+--18097-- REDIR: 0x74f5790 (libc.so.6:__strcpy_sse2_unaligned) redirected to 0x4c2bd00 (strcpy)
+--18097-- memcheck GC: 1335 nodes, 529 survivors (39.6%)
+--18097-- memcheck GC: 1355 new table size (driftup)
+--18097-- memcheck GC: 1355 nodes, 682 survivors (50.3%)
+--18097-- memcheck GC: 1916 new table size (stepup)
+--18097-- memcheck GC: 1916 nodes, 764 survivors (39.9%)
+--18097-- memcheck GC: 1944 new table size (driftup)
+--18097-- memcheck GC: 1944 nodes, 900 survivors (46.3%)
+--18097-- memcheck GC: 1973 new table size (driftup)
+--18097-- memcheck GC: 1973 nodes, 1054 survivors (53.4%)
+--18097-- memcheck GC: 2790 new table size (stepup)
+--18097-- Reading syms from /usr/lib64/qt5/plugins/imageformats/libqdds.so
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/qt5/plugins/imageformats/libqgif.so
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/qt5/plugins/imageformats/libqicns.so
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/qt5/plugins/imageformats/libqico.so
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/qt5/plugins/imageformats/libqjp2.so
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libjasper.so.1.0.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libjpeg.so.62.1.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/qt5/plugins/imageformats/libqjpeg.so
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/qt5/plugins/imageformats/libqmng.so
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libmng.so.2.0.2
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/liblcms2.so.2.0.7
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/qt5/plugins/imageformats/libqsvg.so
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/qt5/plugins/imageformats/libqtga.so
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/qt5/plugins/imageformats/libqtiff.so
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libtiff.so.5.2.2
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libjbig.so.2.1
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/qt5/plugins/imageformats/libqwbmp.so
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/qt5/plugins/imageformats/libqwebp.so
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libwebp.so.5.0.4
+--18097--    object doesn't have a symbol table
+--18097-- memcheck GC: 2790 nodes, 1222 survivors (43.8%)
+--18097-- memcheck GC: 2831 new table size (driftup)
+--18097-- REDIR: 0x74e0c70 (libc.so.6:__GI_stpcpy) redirected to 0x4c2ec60 (__GI_stpcpy)
+--18097-- memcheck GC: 2831 nodes, 1495 survivors (52.8%)
+--18097-- memcheck GC: 4003 new table size (stepup)
+options file read error ..\data\URL_LIST.txt
+--18097-- REDIR: 0x74d61e0 (libc.so.6:memalign) redirected to 0x4c2aeb4 (memalign)
+--18097-- Reading syms from /usr/lib64/dri/vmwgfx_dri.so
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libdrm_intel.so.1.0.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libdrm_nouveau.so.2.0.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libdrm_radeon.so.1.0.1
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libdrm_amdgpu.so.1.0.0
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/llvm/libLLVM-3.7.so
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libpciaccess.so.0.11.1
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libedit.so.0.0.53
+--18097--    object doesn't have a symbol table
+--18097-- Reading syms from /usr/lib64/libtinfo.so.5.9
+--18097--    object doesn't have a symbol table
+--18097-- REDIR: 0x2c0d3410 (libLLVM-3.7.so:operator new(unsigned long)) redirected to 0x4c2929f (operator new(unsigned long))
+--18097-- REDIR: 0x2c0ddbf0 (libLLVM-3.7.so:operator delete(void*)) redirected to 0x4c2a229 (operator delete(void*))
+--18097-- REDIR: 0x75972d0 (libc.so.6:__strspn_sse42) redirected to 0x4c303b0 (strspn)
+--18097-- REDIR: 0x74e0e50 (libc.so.6:__GI___strcasecmp_l) redirected to 0x4c2c8c0 (__GI___strcasecmp_l)
+--18097-- REDIR: 0x6c450e0 (libstdc++.so.6:operator new(unsigned long)) redirected to 0x4c2929f (operator new(unsigned long))
+--18097-- REDIR: 0x6c43190 (libstdc++.so.6:operator delete(void*)) redirected to 0x4c2a229 (operator delete(void*))
+--18097-- REDIR: 0x6c45190 (libstdc++.so.6:operator new[](unsigned long)) redirected to 0x4c29944 (operator new[](unsigned long))
+--18097-- REDIR: 0x6c431c0 (libstdc++.so.6:operator delete[](void*)) redirected to 0x4c2a6d9 (operator delete[](void*))
+--18097-- memcheck GC: 4003 nodes, 1674 survivors (41.8%)
+--18097-- memcheck GC: 4063 new table size (driftup)
+--18097-- memcheck GC: 4063 nodes, 1927 survivors (47.4%)
+--18097-- memcheck GC: 4123 new table size (driftup)
+--18097-- memcheck GC: 4123 nodes, 2159 survivors (52.4%)
+--18097-- memcheck GC: 5830 new table size (stepup)
+--18097-- REDIR: 0x7598a60 (libc.so.6:__strncasecmp_avx) redirected to 0x4c2c600 (strncasecmp)
+--18097-- Reading syms from /usr/lib64/libnss_files-2.22.so
+--18097-- REDIR: 0x74dc590 (libc.so.6:__GI_strcpy) redirected to 0x4c2bdd0 (__GI_strcpy)
+--18097-- memcheck GC: 5830 nodes, 2254 survivors (38.7%)
+--18097-- memcheck GC: 5917 new table size (driftup)
+--18097-- memcheck GC: 5917 nodes, 2238 survivors (37.8%)
+--18097-- memcheck GC: 6005 new table size (driftup)
+--18097-- memcheck GC: 6005 nodes, 2244 survivors (37.4%)
+--18097-- memcheck GC: 6095 new table size (driftup)
+--18097-- memcheck GC: 6095 nodes, 2238 survivors (36.7%)
+--18097-- memcheck GC: 6186 new table size (driftup)
+--18097-- memcheck GC: 6186 nodes, 2673 survivors (43.2%)
+--18097-- memcheck GC: 6278 new table size (driftup)
+==18097== Syscall param writev(vector[...]) points to uninitialised byte(s)
+==18097==    at 0x754A7BD: ??? (in /usr/lib64/libc-2.22.so)
+==18097==    by 0xD2CD538: ??? (in /usr/lib64/libxcb.so.1.1.0)
+==18097==    by 0xD2CD92C: ??? (in /usr/lib64/libxcb.so.1.1.0)
+==18097==    by 0xD2CE086: ??? (in /usr/lib64/libxcb.so.1.1.0)
+==18097==    by 0xD2CECB2: ??? (in /usr/lib64/libxcb.so.1.1.0)
+==18097==    by 0xD2CED30: xcb_wait_for_reply (in /usr/lib64/libxcb.so.1.1.0)
+==18097==    by 0x1575A659: QXcbConnection::sync() (in /usr/lib64/libQt5XcbQpa.so.5.5.1)
+==18097==    by 0x15778B9E: QXcbWindow::requestActivateWindow() (in /usr/lib64/libQt5XcbQpa.so.5.5.1)
+==18097==    by 0x15770EA8: QXcbWindow::handleMapNotifyEvent(xcb_map_notify_event_t const*) (in /usr/lib64/libQt5XcbQpa.so.5.5.1)
+==18097==    by 0x1575D8F4: QXcbConnection::handleXcbEvent(xcb_generic_event_t*) (in /usr/lib64/libQt5XcbQpa.so.5.5.1)
+==18097==    by 0x1575E432: QXcbConnection::processXcbEvents() (in /usr/lib64/libQt5XcbQpa.so.5.5.1)
+==18097==    by 0x62E5160: QObject::event(QEvent*) (in /usr/lib64/libQt5Core.so.5.5.1)
+==18097==  Address 0xe6c111e is 4,558 bytes inside a block of size 21,152 alloc'd
+==18097==    at 0x4C2AA98: calloc (vg_replace_malloc.c:711)
+==18097==    by 0xD2CCEEB: xcb_connect_to_fd (in /usr/lib64/libxcb.so.1.1.0)
+==18097==    by 0xD2D0C20: xcb_connect_to_display_with_auth_info (in /usr/lib64/libxcb.so.1.1.0)
+==18097==    by 0x8207F59: _XConnectXCB (in /usr/lib64/libX11.so.6.3.0)
+==18097==    by 0x81F8AF1: XOpenDisplay (in /usr/lib64/libX11.so.6.3.0)
+==18097==    by 0x1575F748: QXcbConnection::QXcbConnection(QXcbNativeInterface*, bool, unsigned int, char const*) (in /usr/lib64/libQt5XcbQpa.so.5.5.1)
+==18097==    by 0x15762EFC: QXcbIntegration::QXcbIntegration(QStringList const&, int&, char**) (in /usr/lib64/libQt5XcbQpa.so.5.5.1)
+==18097==    by 0x1552046C: ??? (in /usr/lib64/qt5/plugins/platforms/libqxcb.so)
+==18097==    by 0x59CA741: QPlatformIntegrationFactory::create(QString const&, QStringList const&, int&, char**, QString const&) (in /usr/lib64/libQt5Gui.so.5.5.1)
+==18097==    by 0x59D6931: QGuiApplicationPrivate::createPlatformIntegration() (in /usr/lib64/libQt5Gui.so.5.5.1)
+==18097==    by 0x59D784C: QGuiApplicationPrivate::createEventDispatcher() (in /usr/lib64/libQt5Gui.so.5.5.1)
+==18097==    by 0x62B9B95: QCoreApplication::init() (in /usr/lib64/libQt5Core.so.5.5.1)
+==18097== 
+--18097-- memcheck GC: 6278 nodes, 2661 survivors (42.4%)
+--18097-- memcheck GC: 6372 new table size (driftup)
+--18097-- memcheck GC: 6372 nodes, 2664 survivors (41.8%)
+--18097-- memcheck GC: 6467 new table size (driftup)
+--18097-- memcheck GC: 6467 nodes, 2650 survivors (41.0%)
+--18097-- memcheck GC: 6564 new table size (driftup)
+--18097-- memcheck GC: 6564 nodes, 3061 survivors (46.6%)
+--18097-- memcheck GC: 6662 new table size (driftup)
+--18097-- memcheck GC: 6662 nodes, 3085 survivors (46.3%)
+--18097-- memcheck GC: 6761 new table size (driftup)
+--18097-- memcheck GC: 6761 nodes, 3106 survivors (45.9%)
+--18097-- memcheck GC: 6862 new table size (driftup)
+--18097-- memcheck GC: 6862 nodes, 3124 survivors (45.5%)
+--18097-- memcheck GC: 6964 new table size (driftup)
+--18097-- memcheck GC: 6964 nodes, 3143 survivors (45.1%)
+--18097-- memcheck GC: 7068 new table size (driftup)
+--18097-- memcheck GC: 7068 nodes, 3166 survivors (44.8%)
+--18097-- memcheck GC: 7174 new table size (driftup)
+==18097== Invalid read of size 1
+==18097==    at 0x754BE54: getmntent_r (in /usr/lib64/libc-2.22.so)
+==18097==    by 0x1E342595: ??? (in /usr/lib64/libKF5Solid.so.5.19.0)
+==18097==    by 0x1E343FE9: ??? (in /usr/lib64/libKF5Solid.so.5.19.0)
+==18097==    by 0x1E33CBA9: ??? (in /usr/lib64/libKF5Solid.so.5.19.0)
+==18097==    by 0x1E2CDAEF: ??? (in /usr/lib64/libKF5Solid.so.5.19.0)
+==18097==    by 0x1E2D3C1E: ??? (in /usr/lib64/libKF5Solid.so.5.19.0)
+==18097==    by 0x1E2D3EC4: Solid::DeviceNotifier::instance() (in /usr/lib64/libKF5Solid.so.5.19.0)
+==18097==    by 0x1E2D2AD7: Solid::Device::Device(QString const&) (in /usr/lib64/libKF5Solid.so.5.19.0)
+==18097==    by 0x1B682372: KFilePlacesModel::deviceForIndex(QModelIndex const&) const (in /usr/lib64/libKF5KIOFileWidgets.so.5.19.0)
+==18097==    by 0x1B6842F1: KFilePlacesModel::teardownActionForIndex(QModelIndex const&) const (in /usr/lib64/libKF5KIOFileWidgets.so.5.19.0)
+==18097==    by 0x1B6ADEA3: ??? (in /usr/lib64/libKF5KIOFileWidgets.so.5.19.0)
+==18097==    by 0x1B6AE097: ??? (in /usr/lib64/libKF5KIOFileWidgets.so.5.19.0)
+==18097==  Address 0x25ba87af is 1 bytes before a block of size 4,096 alloc'd
+==18097==    at 0x4C28D06: malloc (vg_replace_malloc.c:299)
+==18097==    by 0x754BBED: allocate (in /usr/lib64/libc-2.22.so)
+==18097==    by 0x69A80E8: __pthread_once_slow (in /usr/lib64/libpthread-2.22.so)
+==18097==    by 0x754BC63: getmntent (in /usr/lib64/libc-2.22.so)
+==18097==    by 0x1E342595: ??? (in /usr/lib64/libKF5Solid.so.5.19.0)
+==18097==    by 0x1E343FE9: ??? (in /usr/lib64/libKF5Solid.so.5.19.0)
+==18097==    by 0x1E33CBA9: ??? (in /usr/lib64/libKF5Solid.so.5.19.0)
+==18097==    by 0x1E2CDAEF: ??? (in /usr/lib64/libKF5Solid.so.5.19.0)
+==18097==    by 0x1E2D3C1E: ??? (in /usr/lib64/libKF5Solid.so.5.19.0)
+==18097==    by 0x1E2D3EC4: Solid::DeviceNotifier::instance() (in /usr/lib64/libKF5Solid.so.5.19.0)
+==18097==    by 0x1E2D2AD7: Solid::Device::Device(QString const&) (in /usr/lib64/libKF5Solid.so.5.19.0)
+==18097==    by 0x1B682372: KFilePlacesModel::deviceForIndex(QModelIndex const&) const (in /usr/lib64/libKF5KIOFileWidgets.so.5.19.0)
+==18097== 
+--18097-- memcheck GC: 7174 nodes, 3317 survivors (46.2%)
+--18097-- memcheck GC: 7281 new table size (driftup)
+--18097-- REDIR: 0x748aed0 (libc.so.6:putenv) redirected to 0x4c306a0 (putenv)
+--18097-- memcheck GC: 7281 nodes, 3434 survivors (47.2%)
+--18097-- memcheck GC: 7390 new table size (driftup)
+--18097-- REDIR: 0x6c431b0 (libstdc++.so.6:operator delete(void*, std::nothrow_t const&)) redirected to 0x4c2a3eb (operator delete(void*, std::nothrow_t const&))
+--18097-- memcheck GC: 7390 nodes, 3630 survivors (49.1%)
+--18097-- memcheck GC: 7500 new table size (driftup)
+--18097-- memcheck GC: 7500 nodes, 3821 survivors (50.9%)
+--18097-- memcheck GC: 10606 new table size (stepup)
+--18097-- memcheck GC: 10606 nodes, 4454 survivors (42.0%)
+--18097-- memcheck GC: 10765 new table size (driftup)
+--18097-- memcheck GC: 10765 nodes, 5238 survivors (48.7%)
+--18097-- memcheck GC: 10926 new table size (driftup)
+--18097-- memcheck GC: 10926 nodes, 5238 survivors (47.9%)
+--18097-- memcheck GC: 11089 new table size (driftup)
+--18097-- memcheck GC: 11089 nodes, 5268 survivors (47.5%)
+--18097-- memcheck GC: 11255 new table size (driftup)
+--18097-- memcheck GC: 11255 nodes, 5272 survivors (46.8%)
+--18097-- memcheck GC: 11423 new table size (driftup)
+--18097-- memcheck GC: 11423 nodes, 5315 survivors (46.5%)
+--18097-- memcheck GC: 11594 new table size (driftup)
+--18097-- memcheck GC: 11594 nodes, 5346 survivors (46.1%)
+--18097-- memcheck GC: 11767 new table size (driftup)
+--18097-- memcheck GC: 11767 nodes, 5302 survivors (45.1%)
+--18097-- memcheck GC: 11943 new table size (driftup)
+--18097-- memcheck GC: 11943 nodes, 5213 survivors (43.6%)
+--18097-- memcheck GC: 12122 new table size (driftup)
+--18097-- memcheck GC: 12122 nodes, 5464 survivors (45.1%)
+--18097-- memcheck GC: 12303 new table size (driftup)
+--18097-- memcheck GC: 12303 nodes, 5471 survivors (44.5%)
+--18097-- memcheck GC: 12487 new table size (driftup)
+--18097-- memcheck GC: 12487 nodes, 5454 survivors (43.7%)
+--18097-- memcheck GC: 12674 new table size (driftup)
+--18097-- REDIR: 0x6c45140 (libstdc++.so.6:operator new(unsigned long, std::nothrow_t const&)) redirected to 0x4c294f2 (operator new(unsigned long, std::nothrow_t const&))
+--18097-- memcheck GC: 12674 nodes, 5521 survivors (43.6%)
+--18097-- memcheck GC: 12864 new table size (driftup)
+--18097-- memcheck GC: 12864 nodes, 5544 survivors (43.1%)
+--18097-- memcheck GC: 13056 new table size (driftup)
+--18097-- memcheck GC: 13056 nodes, 5542 survivors (42.4%)
+--18097-- memcheck GC: 13251 new table size (driftup)
+--18097-- memcheck GC: 13251 nodes, 5549 survivors (41.9%)
+--18097-- memcheck GC: 13449 new table size (driftup)
+--18097-- memcheck GC: 13449 nodes, 5537 survivors (41.2%)
+--18097-- memcheck GC: 13650 new table size (driftup)
+--18097-- memcheck GC: 13650 nodes, 5537 survivors (40.6%)
+--18097-- memcheck GC: 13854 new table size (driftup)
+--18097-- memcheck GC: 13854 nodes, 5538 survivors (40.0%)
+--18097-- memcheck GC: 14061 new table size (driftup)
+--18097-- memcheck GC: 14061 nodes, 5538 survivors (39.4%)
+--18097-- memcheck GC: 14271 new table size (driftup)
+--18097-- memcheck GC: 14271 nodes, 5537 survivors (38.8%)
+--18097-- memcheck GC: 14485 new table size (driftup)
+--18097-- memcheck GC: 14485 nodes, 5530 survivors (38.2%)
+--18097-- memcheck GC: 14702 new table size (driftup)
+--18097-- memcheck GC: 14702 nodes, 5537 survivors (37.7%)
+--18097-- memcheck GC: 14922 new table size (driftup)
+--18097-- memcheck GC: 14922 nodes, 5537 survivors (37.1%)
+--18097-- memcheck GC: 15145 new table size (driftup)
+--18097-- memcheck GC: 15145 nodes, 5575 survivors (36.8%)
+--18097-- memcheck GC: 15372 new table size (driftup)
+--18097-- memcheck GC: 15372 nodes, 5537 survivors (36.0%)
+--18097-- memcheck GC: 15602 new table size (driftup)
+--18097-- memcheck GC: 15602 nodes, 5544 survivors (35.5%)
+--18097-- memcheck GC: 15836 new table size (driftup)
+--18097-- memcheck GC: 15836 nodes, 5566 survivors (35.1%)
+--18097-- memcheck GC: 16073 new table size (driftup)
+--18097-- memcheck GC: 16073 nodes, 5552 survivors (34.5%)
+--18097-- memcheck GC: 16314 new table size (driftup)
+--18097-- memcheck GC: 16314 nodes, 5565 survivors (34.1%)
+--18097-- memcheck GC: 16558 new table size (driftup)
+--18097-- memcheck GC: 16558 nodes, 5563 survivors (33.6%)
+--18097-- memcheck GC: 16806 new table size (driftup)
+--18097-- memcheck GC: 16806 nodes, 5567 survivors (33.1%)
+--18097-- memcheck GC: 17058 new table size (driftup)
+--18097-- memcheck GC: 17058 nodes, 5552 survivors (32.5%)
+--18097-- memcheck GC: 17313 new table size (driftup)
+==18097== Invalid read of size 1
+==18097==    at 0x754BE54: getmntent_r (in /usr/lib64/libc-2.22.so)
+==18097==    by 0x1BF8D318: KMountPoint::possibleMountPoints(QFlags<KMountPoint::DetailsNeededFlag>) (in /usr/lib64/libKF5KIOCore.so.5.19.0)
+==18097==    by 0x1BF968BA: ??? (in /usr/lib64/libKF5KIOCore.so.5.19.0)
+==18097==    by 0x1BF96C93: ??? (in /usr/lib64/libKF5KIOCore.so.5.19.0)
+==18097==    by 0x1BF9B7BE: ??? (in /usr/lib64/libKF5KIOCore.so.5.19.0)
+==18097==    by 0x1B65D55F: KDirOperator::Private::openUrl(QUrl const&, QFlags<KCoreDirLister::OpenUrlFlag>) (in /usr/lib64/libKF5KIOFileWidgets.so.5.19.0)
+==18097==    by 0x1B662EF5: KDirOperator::setUrl(QUrl const&, bool) (in /usr/lib64/libKF5KIOFileWidgets.so.5.19.0)
+==18097==    by 0x1B6728B3: ??? (in /usr/lib64/libKF5KIOFileWidgets.so.5.19.0)
+==18097==    by 0x62E4299: QMetaObject::activate(QObject*, int, int, void**) (in /usr/lib64/libQt5Core.so.5.5.1)
+==18097==    by 0x1B6B3D04: KUrlNavigator::urlChanged(QUrl const&) (in /usr/lib64/libKF5KIOFileWidgets.so.5.19.0)
+==18097==    by 0x1B6B8030: KUrlNavigator::setLocationUrl(QUrl const&) (in /usr/lib64/libKF5KIOFileWidgets.so.5.19.0)
+==18097==    by 0x62E4299: QMetaObject::activate(QObject*, int, int, void**) (in /usr/lib64/libQt5Core.so.5.5.1)
+==18097==  Address 0x25ba87af is 1 bytes before a block of size 4,096 alloc'd
+==18097==    at 0x4C28D06: malloc (vg_replace_malloc.c:299)
+==18097==    by 0x754BBED: allocate (in /usr/lib64/libc-2.22.so)
+==18097==    by 0x69A80E8: __pthread_once_slow (in /usr/lib64/libpthread-2.22.so)
+==18097==    by 0x754BC63: getmntent (in /usr/lib64/libc-2.22.so)
+==18097==    by 0x1E342595: ??? (in /usr/lib64/libKF5Solid.so.5.19.0)
+==18097==    by 0x1E343FE9: ??? (in /usr/lib64/libKF5Solid.so.5.19.0)
+==18097==    by 0x1E33CBA9: ??? (in /usr/lib64/libKF5Solid.so.5.19.0)
+==18097==    by 0x1E2CDAEF: ??? (in /usr/lib64/libKF5Solid.so.5.19.0)
+==18097==    by 0x1E2D3C1E: ??? (in /usr/lib64/libKF5Solid.so.5.19.0)
+==18097==    by 0x1E2D3EC4: Solid::DeviceNotifier::instance() (in /usr/lib64/libKF5Solid.so.5.19.0)
+==18097==    by 0x1E2D2AD7: Solid::Device::Device(QString const&) (in /usr/lib64/libKF5Solid.so.5.19.0)
+==18097==    by 0x1B682372: KFilePlacesModel::deviceForIndex(QModelIndex const&) const (in /usr/lib64/libKF5KIOFileWidgets.so.5.19.0)
+==18097== 
+We got some errors while running testparm "Load smb config files from /etc/samba/smb.conf\nLoaded services file OK.\nERROR: lock directory /var/lib/samba/lock does not exist\n\n"
+--18097-- memcheck GC: 17313 nodes, 5486 survivors (31.7%)
+--18097-- memcheck GC: 17572 new table size (driftup)
+--18097-- memcheck GC: 17572 nodes, 5535 survivors (31.5%)
+--18097-- memcheck GC: 17835 new table size (driftup)
+--18097-- memcheck GC: 17835 nodes, 5489 survivors (30.8%)
+--18097-- memcheck GC: 18102 new table size (driftup)
+--18097-- memcheck GC: 18102 nodes, 4049 survivors (22.4%)
+--18097-- memcheck GC: 18373 new table size (driftup)
+--18097-- memcheck GC: 18373 nodes, 5159 survivors (28.1%)
+--18097-- memcheck GC: 18648 new table size (driftup)
+--18097-- memcheck GC: 18648 nodes, 5419 survivors (29.1%)
+--18097-- memcheck GC: 18927 new table size (driftup)
+--18097-- memcheck GC: 18927 nodes, 5580 survivors (29.5%)
+--18097-- memcheck GC: 19210 new table size (driftup)
+--18097-- memcheck GC: 19210 nodes, 5599 survivors (29.1%)
+--18097-- memcheck GC: 19498 new table size (driftup)
+--18097-- memcheck GC: 19498 nodes, 5599 survivors (28.7%)
+--18097-- memcheck GC: 19790 new table size (driftup)
+--18097-- memcheck GC: 19790 nodes, 5597 survivors (28.3%)
+--18097-- memcheck GC: 20086 new table size (driftup)
+--18097-- memcheck GC: 20086 nodes, 5589 survivors (27.8%)
+--18097-- memcheck GC: 20387 new table size (driftup)
+--18097-- memcheck GC: 20387 nodes, 5604 survivors (27.5%)
+--18097-- memcheck GC: 20692 new table size (driftup)
+--18097-- memcheck GC: 20692 nodes, 5594 survivors (27.0%)
+--18097-- memcheck GC: 21002 new table size (driftup)
+--18097-- memcheck GC: 21002 nodes, 5611 survivors (26.7%)
+--18097-- memcheck GC: 21317 new table size (driftup)
+--18097-- memcheck GC: 21317 nodes, 5574 survivors (26.1%)
+--18097-- memcheck GC: 21636 new table size (driftup)
+--18097-- memcheck GC: 21636 nodes, 5641 survivors (26.1%)
+--18097-- memcheck GC: 21960 new table size (driftup)
+--18097-- memcheck GC: 21960 nodes, 5643 survivors (25.7%)
+--18097-- memcheck GC: 22289 new table size (driftup)
+--18097-- memcheck GC: 22289 nodes, 4129 survivors (18.5%)
+--18097-- memcheck GC: 22623 new table size (driftup)
+--18097-- memcheck GC: 22623 nodes, 3713 survivors (16.4%)
+--18097-- memcheck GC: 22962 new table size (driftup)
+--18097-- memcheck GC: 22962 nodes, 3719 survivors (16.2%)
+--18097-- memcheck GC: 23306 new table size (driftup)
+--18097-- memcheck GC: 23306 nodes, 3733 survivors (16.0%)
+--18097-- memcheck GC: 23655 new table size (driftup)
+QXcbClipboard: SelectionRequest too old
+QXcbClipboard: SelectionRequest too old
+--18097-- REDIR: 0x75973f0 (libc.so.6:__strcasecmp_avx) redirected to 0x4c2c520 (strcasecmp)
+QXcbClipboard: SelectionRequest too old
+QXcbClipboard: SelectionRequest too old
+--18097-- memcheck GC: 23655 nodes, 3725 survivors (15.7%)
+--18097-- memcheck GC: 24009 new table size (driftup)
+--18097-- memcheck GC: 24009 nodes, 3715 survivors (15.5%)
+--18097-- memcheck GC: 24369 new table size (driftup)
+--18097-- memcheck GC: 24369 nodes, 3723 survivors (15.3%)
+--18097-- memcheck GC: 24734 new table size (driftup)
+--18097-- memcheck GC: 24734 nodes, 3754 survivors (15.2%)
+--18097-- memcheck GC: 25105 new table size (driftup)
+--18097-- memcheck GC: 25105 nodes, 3724 survivors (14.8%)
+--18097-- Discarding syms at 0x26758fb0-0x2675ee70 in /usr/lib64/qt5/plugins/imageformats/libqdds.so due to munmap()
+--18097-- Discarding syms at 0x26963f30-0x26966daa in /usr/lib64/qt5/plugins/imageformats/libqgif.so due to munmap()
+--18097-- Discarding syms at 0x26b6bcb0-0x26b6ffd1 in /usr/lib64/qt5/plugins/imageformats/libqicns.so due to munmap()
+--18097-- Discarding syms at 0x26d75830-0x26d77eaa in /usr/lib64/qt5/plugins/imageformats/libqico.so due to munmap()
+--18097-- Discarding syms at 0x26f7dcd0-0x26f80f6e in /usr/lib64/qt5/plugins/imageformats/libqjp2.so due to munmap()
+--18097-- Discarding syms at 0x271cbaf0-0x271ff619 in /usr/lib64/libjasper.so.1.0.0 due to munmap()
+--18097-- Discarding syms at 0x27676240-0x2767a81a in /usr/lib64/qt5/plugins/imageformats/libqjpeg.so due to munmap()
+--18097-- Discarding syms at 0x2787fc30-0x27881260 in /usr/lib64/qt5/plugins/imageformats/libqmng.so due to munmap()
+--18097-- Discarding syms at 0x27a9c560-0x27ae011f in /usr/lib64/libmng.so.2.0.2 due to munmap()
+--18097-- Discarding syms at 0x27d02190-0x27d356c9 in /usr/lib64/liblcms2.so.2.0.7 due to munmap()
+--18097-- Discarding syms at 0x27f528e0-0x27f53e2e in /usr/lib64/qt5/plugins/imageformats/libqsvg.so due to munmap()
+--18097-- Discarding syms at 0x28158170-0x281595a0 in /usr/lib64/qt5/plugins/imageformats/libqtga.so due to munmap()
+--18097-- Discarding syms at 0x2835ea80-0x28361efa in /usr/lib64/qt5/plugins/imageformats/libqtiff.so due to munmap()
+--18097-- Discarding syms at 0x2856d2f0-0x285a9052 in /usr/lib64/libtiff.so.5.2.2 due to munmap()
+--18097-- Discarding syms at 0x2741cc90-0x27456ab0 in /usr/lib64/libjpeg.so.62.1.0 due to munmap()
+--18097-- Discarding syms at 0x287d9060-0x287dfb72 in /usr/lib64/libjbig.so.2.1 due to munmap()
+--18097-- Discarding syms at 0x289e6300-0x289e7610 in /usr/lib64/qt5/plugins/imageformats/libqwbmp.so due to munmap()
+--18097-- Discarding syms at 0x28bec470-0x28bed51c in /usr/lib64/qt5/plugins/imageformats/libqwebp.so due to munmap()
+--18097-- Discarding syms at 0x28df9040-0x28e36254 in /usr/lib64/libwebp.so.5.0.4 due to munmap()
+--18097-- Discarding syms at 0x247b3be0-0x248063c6 in /usr/lib64/qt5/plugins/styles/breeze.so due to munmap()
+--18097-- Discarding syms at 0x24a5ea70-0x24a624a5 in /usr/lib64/libKF5Style.so.5.19.0 due to munmap()
+--18097-- Discarding syms at 0x245940b0-0x24598f55 in /usr/lib64/qt5/plugins/platforminputcontexts/libcomposeplatforminputcontextplugin.so due to munmap()
+--18097-- Discarding syms at 0x1b1d8630-0x1b1dd8b3 in /usr/lib64/qt5/plugins/xcbglintegrations/libqxcb-glx-integration.so due to munmap()
+--18097-- Discarding syms at 0x15520310-0x155206da in /usr/lib64/qt5/plugins/platforms/libqxcb.so due to munmap()
+--18097-- Discarding syms at 0x15755050-0x157d632b in /usr/lib64/libQt5XcbQpa.so.5.5.1 due to munmap()
+--18097-- Discarding syms at 0x15c1b600-0x15c1c4c6 in /usr/lib64/libxcb-render-util.so.0.0.0 due to munmap()
+--18097-- Discarding syms at 0x16494210-0x16495a03 in /usr/lib64/libxcb-image.so.0.0.0 due to munmap()
+--18097-- Discarding syms at 0x1669a0a0-0x1669afe9 in /usr/lib64/libxcb-icccm.so.4.0.0 due to munmap()
+--18097-- Discarding syms at 0x1689ddf0-0x1689e903 in /usr/lib64/libxcb-shm.so.0.0.0 due to munmap()
+--18097-- Discarding syms at 0x16ec2880-0x16ec52fd in /usr/lib64/libxkbcommon-x11.so.0.0.0 due to munmap()
+--18097-- Discarding syms at 0x16cad950-0x16cb91e5 in /usr/lib64/libxcb-xkb.so.1.0.0 due to munmap()
+--18097-- Discarding syms at 0x170cede0-0x170ee0aa in /usr/lib64/libfontconfig.so.1.9.0 due to munmap()
+--18097-- Discarding syms at 0x1751e300-0x175345fa in /usr/lib64/libinput.so.10.7.3 due to munmap()
+--18097-- Discarding syms at 0x177453a0-0x1775fee5 in /usr/lib64/libxkbcommon.so.0.0.0 due to munmap()
+--18097-- Discarding syms at 0x17988710-0x179a03d9 in /usr/lib64/libEGL.so.1.0.0 due to munmap()
+--18097-- Discarding syms at 0x180335b0-0x1803435c in /usr/lib64/libxcb-util.so.1.0.0 due to munmap()
+--18097-- Discarding syms at 0x18237ff0-0x1823a560 in /usr/lib64/libmtdev.so.1.0.0 due to munmap()
+--18097-- Discarding syms at 0x18447270-0x1844c5e5 in /usr/lib64/libevdev.so.2.1.11 due to munmap()
+--18097-- Discarding syms at 0x1865a100-0x1865de28 in /usr/lib64/libwacom.so.2.4.4 due to munmap()
+--18097-- Discarding syms at 0x18ecd850-0x18ed2db5 in /usr/lib64/libgbm.so.1.0.0 due to munmap()
+--18097-- Discarding syms at 0x192ed220-0x192f2c27 in /usr/lib64/libwayland-server.so.0.1.0 due to munmap()
+--18097-- Discarding syms at 0x190ddfc0-0x190e24a7 in /usr/lib64/libwayland-client.so.0.3.0 due to munmap()
+--18097-- Discarding syms at 0x19c1ba10-0x19c1eae2 in /usr/lib64/libgudev-1.0.so.0.2.0 due to munmap()
+--18097-- Discarding syms at 0x2e5541d0-0x2e55a211 in /usr/lib64/libnss_files-2.22.so due to munmap()
+==18097== 
+==18097== HEAP SUMMARY:
+==18097==     in use at exit: 885,212 bytes in 10,936 blocks
+==18097==   total heap usage: 1,218,534 allocs, 1,207,598 frees, 286,612,463 bytes allocated
+==18097== 
+==18097== Searching for pointers to 10,936 not-freed blocks
+==18097== Checked 3,750,000 bytes
+==18097== 
+==18097== LEAK SUMMARY:
+==18097==    definitely lost: 68,444 bytes in 4,117 blocks
+==18097==    indirectly lost: 170,078 bytes in 4,315 blocks
+==18097==      possibly lost: 1,352 bytes in 18 blocks
+==18097==    still reachable: 645,338 bytes in 2,486 blocks
+==18097==                       of which reachable via heuristic:
+==18097==                         newarray           : 8,688 bytes in 17 blocks
+==18097==         suppressed: 0 bytes in 0 blocks
+==18097== Rerun with --leak-check=full to see details of leaked memory
+==18097== 
+==18097== Use --track-origins=yes to see where uninitialised values come from
+==18097== ERROR SUMMARY: 25 errors from 3 contexts (suppressed: 0 from 0)
+==18097== 
+==18097== 1 errors in context 1 of 3:
+==18097== Invalid read of size 1
+==18097==    at 0x754BE54: getmntent_r (in /usr/lib64/libc-2.22.so)
+==18097==    by 0x1E342595: ??? (in /usr/lib64/libKF5Solid.so.5.19.0)
+==18097==    by 0x1E343FE9: ??? (in /usr/lib64/libKF5Solid.so.5.19.0)
+==18097==    by 0x1E33CBA9: ??? (in /usr/lib64/libKF5Solid.so.5.19.0)
+==18097==    by 0x1E2CDAEF: ??? (in /usr/lib64/libKF5Solid.so.5.19.0)
+==18097==    by 0x1E2D3C1E: ??? (in /usr/lib64/libKF5Solid.so.5.19.0)
+==18097==    by 0x1E2D3EC4: Solid::DeviceNotifier::instance() (in /usr/lib64/libKF5Solid.so.5.19.0)
+==18097==    by 0x1E2D2AD7: Solid::Device::Device(QString const&) (in /usr/lib64/libKF5Solid.so.5.19.0)
+==18097==    by 0x1B682372: KFilePlacesModel::deviceForIndex(QModelIndex const&) const (in /usr/lib64/libKF5KIOFileWidgets.so.5.19.0)
+==18097==    by 0x1B6842F1: KFilePlacesModel::teardownActionForIndex(QModelIndex const&) const (in /usr/lib64/libKF5KIOFileWidgets.so.5.19.0)
+==18097==    by 0x1B6ADEA3: ??? (in /usr/lib64/libKF5KIOFileWidgets.so.5.19.0)
+==18097==    by 0x1B6AE097: ??? (in /usr/lib64/libKF5KIOFileWidgets.so.5.19.0)
+==18097==  Address 0x25ba87af is 1 bytes before a block of size 4,096 alloc'd
+==18097==    at 0x4C28D06: malloc (vg_replace_malloc.c:299)
+==18097==    by 0x754BBED: allocate (in /usr/lib64/libc-2.22.so)
+==18097==    by 0x69A80E8: __pthread_once_slow (in /usr/lib64/libpthread-2.22.so)
+==18097==    by 0x754BC63: getmntent (in /usr/lib64/libc-2.22.so)
+==18097==    by 0x1E342595: ??? (in /usr/lib64/libKF5Solid.so.5.19.0)
+==18097==    by 0x1E343FE9: ??? (in /usr/lib64/libKF5Solid.so.5.19.0)
+==18097==    by 0x1E33CBA9: ??? (in /usr/lib64/libKF5Solid.so.5.19.0)
+==18097==    by 0x1E2CDAEF: ??? (in /usr/lib64/libKF5Solid.so.5.19.0)
+==18097==    by 0x1E2D3C1E: ??? (in /usr/lib64/libKF5Solid.so.5.19.0)
+==18097==    by 0x1E2D3EC4: Solid::DeviceNotifier::instance() (in /usr/lib64/libKF5Solid.so.5.19.0)
+==18097==    by 0x1E2D2AD7: Solid::Device::Device(QString const&) (in /usr/lib64/libKF5Solid.so.5.19.0)
+==18097==    by 0x1B682372: KFilePlacesModel::deviceForIndex(QModelIndex const&) const (in /usr/lib64/libKF5KIOFileWidgets.so.5.19.0)
+==18097== 
+==18097== 
+==18097== 5 errors in context 2 of 3:
+==18097== Invalid read of size 1
+==18097==    at 0x754BE54: getmntent_r (in /usr/lib64/libc-2.22.so)
+==18097==    by 0x1BF8D318: KMountPoint::possibleMountPoints(QFlags<KMountPoint::DetailsNeededFlag>) (in /usr/lib64/libKF5KIOCore.so.5.19.0)
+==18097==    by 0x1BF968BA: ??? (in /usr/lib64/libKF5KIOCore.so.5.19.0)
+==18097==    by 0x1BF96C93: ??? (in /usr/lib64/libKF5KIOCore.so.5.19.0)
+==18097==    by 0x1BF9B7BE: ??? (in /usr/lib64/libKF5KIOCore.so.5.19.0)
+==18097==    by 0x1B65D55F: KDirOperator::Private::openUrl(QUrl const&, QFlags<KCoreDirLister::OpenUrlFlag>) (in /usr/lib64/libKF5KIOFileWidgets.so.5.19.0)
+==18097==    by 0x1B662EF5: KDirOperator::setUrl(QUrl const&, bool) (in /usr/lib64/libKF5KIOFileWidgets.so.5.19.0)
+==18097==    by 0x1B6728B3: ??? (in /usr/lib64/libKF5KIOFileWidgets.so.5.19.0)
+==18097==    by 0x62E4299: QMetaObject::activate(QObject*, int, int, void**) (in /usr/lib64/libQt5Core.so.5.5.1)
+==18097==    by 0x1B6B3D04: KUrlNavigator::urlChanged(QUrl const&) (in /usr/lib64/libKF5KIOFileWidgets.so.5.19.0)
+==18097==    by 0x1B6B8030: KUrlNavigator::setLocationUrl(QUrl const&) (in /usr/lib64/libKF5KIOFileWidgets.so.5.19.0)
+==18097==    by 0x62E4299: QMetaObject::activate(QObject*, int, int, void**) (in /usr/lib64/libQt5Core.so.5.5.1)
+==18097==  Address 0x25ba87af is 1 bytes before a block of size 4,096 alloc'd
+==18097==    at 0x4C28D06: malloc (vg_replace_malloc.c:299)
+==18097==    by 0x754BBED: allocate (in /usr/lib64/libc-2.22.so)
+==18097==    by 0x69A80E8: __pthread_once_slow (in /usr/lib64/libpthread-2.22.so)
+==18097==    by 0x754BC63: getmntent (in /usr/lib64/libc-2.22.so)
+==18097==    by 0x1E342595: ??? (in /usr/lib64/libKF5Solid.so.5.19.0)
+==18097==    by 0x1E343FE9: ??? (in /usr/lib64/libKF5Solid.so.5.19.0)
+==18097==    by 0x1E33CBA9: ??? (in /usr/lib64/libKF5Solid.so.5.19.0)
+==18097==    by 0x1E2CDAEF: ??? (in /usr/lib64/libKF5Solid.so.5.19.0)
+==18097==    by 0x1E2D3C1E: ??? (in /usr/lib64/libKF5Solid.so.5.19.0)
+==18097==    by 0x1E2D3EC4: Solid::DeviceNotifier::instance() (in /usr/lib64/libKF5Solid.so.5.19.0)
+==18097==    by 0x1E2D2AD7: Solid::Device::Device(QString const&) (in /usr/lib64/libKF5Solid.so.5.19.0)
+==18097==    by 0x1B682372: KFilePlacesModel::deviceForIndex(QModelIndex const&) const (in /usr/lib64/libKF5KIOFileWidgets.so.5.19.0)
+==18097== 
+==18097== 
+==18097== 19 errors in context 3 of 3:
+==18097== Syscall param writev(vector[...]) points to uninitialised byte(s)
+==18097==    at 0x754A7BD: ??? (in /usr/lib64/libc-2.22.so)
+==18097==    by 0xD2CD538: ??? (in /usr/lib64/libxcb.so.1.1.0)
+==18097==    by 0xD2CD92C: ??? (in /usr/lib64/libxcb.so.1.1.0)
+==18097==    by 0xD2CE086: ??? (in /usr/lib64/libxcb.so.1.1.0)
+==18097==    by 0xD2CECB2: ??? (in /usr/lib64/libxcb.so.1.1.0)
+==18097==    by 0xD2CED30: xcb_wait_for_reply (in /usr/lib64/libxcb.so.1.1.0)
+==18097==    by 0x1575A659: ???
+==18097==    by 0x15778B9E: ???
+==18097==    by 0x15770EA8: ???
+==18097==    by 0x1575D8F4: ???
+==18097==    by 0x1575E432: ???
+==18097==    by 0x62E5160: QObject::event(QEvent*) (in /usr/lib64/libQt5Core.so.5.5.1)
+==18097==  Address 0xe6c111e is 4,558 bytes inside a block of size 21,152 alloc'd
+==18097==    at 0x4C2AA98: calloc (vg_replace_malloc.c:711)
+==18097==    by 0xD2CCEEB: xcb_connect_to_fd (in /usr/lib64/libxcb.so.1.1.0)
+==18097==    by 0xD2D0C20: xcb_connect_to_display_with_auth_info (in /usr/lib64/libxcb.so.1.1.0)
+==18097==    by 0x8207F59: _XConnectXCB (in /usr/lib64/libX11.so.6.3.0)
+==18097==    by 0x81F8AF1: XOpenDisplay (in /usr/lib64/libX11.so.6.3.0)
+==18097==    by 0x1575F748: ???
+==18097==    by 0x15762EFC: ???
+==18097==    by 0x1552046C: ???
+==18097==    by 0x59CA741: QPlatformIntegrationFactory::create(QString const&, QStringList const&, int&, char**, QString const&) (in /usr/lib64/libQt5Gui.so.5.5.1)
+==18097==    by 0x59D6931: QGuiApplicationPrivate::createPlatformIntegration() (in /usr/lib64/libQt5Gui.so.5.5.1)
+==18097==    by 0x59D784C: QGuiApplicationPrivate::createEventDispatcher() (in /usr/lib64/libQt5Gui.so.5.5.1)
+==18097==    by 0x62B9B95: QCoreApplication::init() (in /usr/lib64/libQt5Core.so.5.5.1)
+==18097== 
+==18097== ERROR SUMMARY: 25 errors from 3 contexts (suppressed: 0 from 0)

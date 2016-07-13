@@ -314,13 +314,16 @@ static int decode_measepoch(raw_t *raw){
         else if ((prn>=38)&&(prn<=61)){
             sys = SYS_GLO;                      /* navigation system: GLONASS */
             sat = prn - 37;}
+        else if ((prn>=63)&&(prn<=68)){
+            sys = SYS_GLO;                      /* navigation system: GLONASS */
+            sat = prn - 38;}
         else if ((prn>=71)&&(prn<=102)){
             sys = SYS_GAL;                      /* navigation system: Galileo */
             sat = prn - 70;}
         else if ((prn>=120)&&(prn<=140)){
             sys = SYS_SBS;                      /* navigation system: SBAS    */
             sat = prn;}
-        else if ((prn>=141)&&(prn<=172)){
+        else if ((prn>=141)&&(prn<=177)){
             sys = SYS_CMP;                      /* navigation system: BeiDou  */
             sat = prn - 140;}
         else if ((prn>=181)&&(prn<=187)){
@@ -411,8 +414,9 @@ static int decode_measepoch(raw_t *raw){
             else SNR2_DBHZ=(((double)U1(p+2))*0.25)+10;
 
             offsetMSB = U1(p+3);
-            CodeOffsetMSB=((offsetMSB&0x4)==0x4)?offsetMSB| ~0x7:offsetMSB&0x7;                 /* bit[0-2] */
-            DopplerOffsetMSB=((offsetMSB&0x80)==0x80)?(offsetMSB>>3)| ~0x1f:(offsetMSB>>3)&0x1f;/* bit[3-7] */
+            CodeOffsetMSB=~((int32_t)0x03);
+            CodeOffsetMSB=((offsetMSB&0x04)==0x04)?offsetMSB| ~((int32_t)0x03):offsetMSB&0x03;                 /* bit[0-2] */
+            DopplerOffsetMSB=((offsetMSB&0x80)==0x80)?(offsetMSB>>3)| ~((int32_t)0x1f):(offsetMSB>>3)&0x1f;/* bit[3-7] */
 
             CarrierMSB = I1(p+4);
 
@@ -561,7 +565,7 @@ static gtime_t adjweek(gtime_t time, double tow)
 
 /* return the Septentrio signal type -----------------------------------------*/
 static int getSignalCode(int signType){
-    int _code;
+    int _code=-1;
 
     switch (signType)
     {
@@ -1170,7 +1174,7 @@ static int decode_rawnav(raw_t *raw, int sys){
 
     /* get GPS satellite number */
     prn=U1(p+8);
-    if (sat==SYS_QZS) prn-=180;
+    if (sys==SYS_QZS) prn-=180;
 
     sat=satno(sys,prn);
     if (sat == 0) return -1;
@@ -1279,7 +1283,7 @@ static int decode_georaw(raw_t *raw){
     raw->time=gpst2time(raw->sbsmsg.week,raw->sbsmsg.tow);
 
     crc=(buff[31])+(buff[30]<<8)+(buff[29]<<16);
-    if (crc!=crc24q(buff,29)) return 0;
+    if (crc!=rtk_crc24q(buff,29)) return 0;
 
     for (i=0;i<29;i++) raw->sbsmsg.msg[i]=buff[i];
     raw->sbsmsg.msg[28]&=0xC0;
@@ -1337,12 +1341,12 @@ static int decode_galrawinav(raw_t *raw){
     }
     /* test crc */
     for (i=0,j=  4;i<49;i++,j+=4) setbitu(crc_buff,j,4,getbitu(buff,i*4,4));
-    if (crc24q(crc_buff,25)!=getbitu(buff,196,24)) {
+    if (rtk_crc24q(crc_buff,25)!=getbitu(buff,196,24)) {
         trace(2,"decode_galrawinav gal page crc error: sat=%2d\n",sat);
         return -1;
     }
 
-    if ((U4(p+14)&0x80)!=0x8) /* E5b-I */
+    if ((U4(p+14)&0x80)!=0x80) /* E5b-I */
     {
         int pos,i;
         type=getbitu(buff,2,6);
