@@ -23,7 +23,7 @@ RefDialog::RefDialog(QWidget* parent)
 
     for (int i=0;i<7;i++)
         for (int j=0;j<2;j++)
-            StaList->setItem(i,j,new QTableWidgetItem());
+            StaList->setItem(i,j,new QTableWidgetItem(""));
 
     connect(StaList,SIGNAL(cellDoubleClicked(int,int)),this,SLOT(StaListDblClick(int,int)));
     connect(BtnOK,SIGNAL(clicked(bool)),this,SLOT(BtnOKClick()));

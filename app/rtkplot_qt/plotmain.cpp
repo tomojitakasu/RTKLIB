@@ -70,7 +70,7 @@
 #define YLIM_AGE    10.0            // ylimit of age of differential
 #define YLIM_RATIO  20.0            // ylimit of raito factor
 
-static int RefreshTime=200; // update only every 200ms
+static int RefreshTime=10; // update only every 200ms
 
 extern QString color2String(const QColor &c);
 
@@ -321,6 +321,7 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
     MenuPlotGM->setEnabled(state);
 
     Disp->setAttribute(Qt::WA_TransparentForMouseEvents);
+    Disp->setAttribute(Qt::WA_OpaquePaintEvent);
     widget->setAttribute(Qt::WA_TransparentForMouseEvents);
     centralwidget->setAttribute(Qt::WA_TransparentForMouseEvents);
     setMouseTracking(true);
@@ -1273,13 +1274,6 @@ void Plot::TimeScrollChange()
         ObsIndex=TimeScroll->value();
     }
     UpdatePlot();
-}
-// callback on paint --------------------------------------------------------
-void Plot::DispPaint()
-{
-    trace(3,"DispPaint\n");
-    
-    UpdateDisp();
 }
 // callback on mouse-down event ---------------------------------------------
 void Plot::mousePressEvent(QMouseEvent *event)

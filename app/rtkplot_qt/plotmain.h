@@ -188,8 +188,6 @@ public slots:
 
         void  TimerTimer			();
 	
-        void  DispPaint			();
-
         void  MenuFileSelClick();
         void  MenuSaveDopClick();
         void  MenuSaveImageClick();

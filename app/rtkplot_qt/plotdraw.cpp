@@ -31,7 +31,8 @@ void Plot::Refresh(void)
     trace(3,"Refresh\n");
     
     Flush=1;
-    Disp->repaint();
+    UpdateDisp();
+    Disp->update();
 }
 // draw plot ----------------------------------------------------------------
 void Plot::UpdateDisp(void)

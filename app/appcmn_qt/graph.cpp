@@ -61,7 +61,7 @@ int Graph::ToPoint(double x, double y, QPoint &p)
 	x=X+(Width-1)/2.0+(x-XCent)/XScale;
 	y=Y+(Height-1)/2.0-(y-YCent)/YScale;
     p.setX((int)floor(x+0.5)); p.setY((int)floor(y+0.5));
-	return X-xt<x&&x<X+Width-1+xt&&Y-xt<y&&y<Y+Height-1+xt;
+    return (X-xt<x)&&(x<X+Width-1+xt)&&(Y-xt<y)&&(y<Y+Height-1+xt);
 }
 //---------------------------------------------------------------------------
 void Graph::resize()
@@ -634,7 +634,8 @@ void Graph::DrawPoly(QPainter &c,QPoint *p, int n, const QColor &color, int styl
     Qt::PenStyle ps[]={Qt::SolidLine,Qt::DotLine,Qt::DashLine,Qt::DashDotLine,Qt::DashDotDotLine};
     QPen pen=c.pen();
     pen.setColor(color);
-    pen.setStyle(ps[style]);c.setPen(pen);
+    pen.setStyle(ps[style]);
+    c.setPen(pen);
     c.setBrush(Qt::NoBrush);
 
 	int i,j,area0=11,area1;
