@@ -596,7 +596,9 @@ int Graph::OnAxis(const QPoint &p)
 int Graph::ClipPoint(QPoint *p0, int area, QPoint *p1)
 {
 	int x,y,xmin=X,xmax=X+Width-1,ymin=Y,ymax=Y+Height-1;
-	if (area&1) { // left
+    if ((p1->x()-p0->x())==0) return 0;
+    if ((p1->y()-p0->y())==0) return 0;
+    if (area&1) { // left
         y=p0->y()+(p1->y()-p0->y())*(xmin-p0->x())/(p1->x()-p0->x());
         if (ymin<=y&&y<=ymax) {p0->setX(xmin); p0->setY(y); return 1;}
 	}

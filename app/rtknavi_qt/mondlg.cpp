@@ -803,7 +803,12 @@ void MonitorDialog::ShowEst(void)
 		memcpy(P ,rtksvr.rtk.P ,sizeof(double)*nx*nx);
 		memcpy(xa,rtksvr.rtk.xa,sizeof(double)*na);
 		memcpy(Pa,rtksvr.rtk.Pa,sizeof(double)*na*na);
-	}
+    } else
+    {
+        rtksvrunlock(&rtksvr);
+        free(x); free(P); free(xa); free(Pa);
+        return;
+    }
 	rtksvrunlock(&rtksvr);
 	
     for (i=0,n=0;i<nx;i++) {
@@ -812,6 +817,7 @@ void MonitorDialog::ShowEst(void)
 	}
 	if (n<2) {
         Console->setRowCount(0);
+        free(x); free(P); free(xa); free(Pa);
 		return;
 	}
     Console->setRowCount(n);
@@ -862,7 +868,12 @@ void MonitorDialog::ShowCov(void)
 	    (P =(double *)malloc(sizeof(double)*nx*nx))) {
 		memcpy(x ,rtksvr.rtk.x ,sizeof(double)*nx);
 		memcpy(P ,rtksvr.rtk.P ,sizeof(double)*nx*nx);
-	}
+    } else
+    {
+        free(x); free(P);
+        rtksvrunlock(&rtksvr);
+        return;
+    }
 	rtksvrunlock(&rtksvr);
 	
     for (i=0,n=0;i<nx;i++) {

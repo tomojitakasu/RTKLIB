@@ -213,6 +213,7 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
     aboutDialog = new AboutDialog(this);
     pntDialog = new PntDialog(this);
     fileSelDialog = new FileSelDialog(this);
+    viewer=new TextViewer(this);
 
     BtnConnect->setDefaultAction(MenuConnect);
     BtnReload->setDefaultAction(MenuReload);
@@ -819,7 +820,6 @@ void Plot::MenuMapLayerClick()
 // callback on menu-solution-source -----------------------------------------
 void Plot::MenuSrcSolClick()
 {
-    TextViewer *viewer=new TextViewer(this);
     int sel=!BtnSol1->isChecked()&&BtnSol2->isChecked();
     
     trace(3,"MenuSrcSolClick\n");
@@ -1194,7 +1194,7 @@ void Plot::RangeListClick()
     trace(3,"RangeListClick\n");
     
     RangeList->setVisible(false);
-    if ((i=RangeList->currentItem())!=NULL) return;
+    if ((i=RangeList->currentItem())==NULL) return;
     
     strcpy(file,qPrintable(i->text()));
     
@@ -1880,6 +1880,7 @@ void Plot::UpdateSize(void)
     for (i=n=0;i<3;i++) if (btn[i]->isChecked()) n++;
     for (i=0;i<3;i++) {
         if (!btn[i]->isChecked()) continue;
+        if (n==0) break;
         h=(Disp->height()-tmargin-bmargin)/n;
         p2.ry()+=h;
         GraphG[i]->SetPos(p1,p2);
@@ -1889,6 +1890,7 @@ void Plot::UpdateSize(void)
     for (i=n=0;i<2;i++) if (btn[i]->isChecked()) n++;
     for (i=0;i<2;i++) {
         if (!btn[i]->isChecked()) continue;
+        if (n==0) break;
         h=(Disp->height()-tmargin-bmargin)/n;
         p2.ry()+=h;
         GraphE[i]->SetPos(p1,p2);

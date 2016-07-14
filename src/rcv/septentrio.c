@@ -414,7 +414,6 @@ static int decode_measepoch(raw_t *raw){
             else SNR2_DBHZ=(((double)U1(p+2))*0.25)+10;
 
             offsetMSB = U1(p+3);
-            CodeOffsetMSB=~((int32_t)0x03);
             CodeOffsetMSB=((offsetMSB&0x04)==0x04)?offsetMSB| ~((int32_t)0x03):offsetMSB&0x03;                 /* bit[0-2] */
             DopplerOffsetMSB=((offsetMSB&0x80)==0x80)?(offsetMSB>>3)| ~((int32_t)0x1f):(offsetMSB>>3)&0x1f;/* bit[3-7] */
 

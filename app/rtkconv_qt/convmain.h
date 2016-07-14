@@ -18,6 +18,7 @@ class TimeDialog;
 class KeyDialog;
 class AboutDialog;
 class StartDialog;
+class TextViewer;
 
 //Helper Class ------------------------------------------------------------------
 
@@ -125,6 +126,7 @@ private:
     KeyDialog* keyDialog;
     AboutDialog* aboutDialog;
     StartDialog* startDialog;
+    TextViewer *viewer;
 public:
 	gtime_t RnxTime;
     QString RunBy,Marker,MarkerNo,MarkerType,Name[2],Rec[3],Ant[3];

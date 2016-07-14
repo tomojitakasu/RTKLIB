@@ -90,6 +90,7 @@ MainWindow::MainWindow(QWidget *parent)
     keyDialog = new KeyDialog(this);
     aboutDialog = new AboutDialog(this);
     startDialog = new StartDialog(this);
+    viewer=new TextViewer(this);
 
     Format->clear();
     Format->addItem(tr("Auto"));
@@ -488,7 +489,6 @@ void MainWindow::BtnOutFile7Click()
 // callback on button-view-input-file ----------------------------------------
 void MainWindow::BtnInFileViewClick()
 {
-    TextViewer *viewer=new TextViewer(this);
     QString InFile_Text=InFile->currentText();
     QString ext=QFileInfo(InFile_Text).suffix();
     if (ext.length()<4) return;

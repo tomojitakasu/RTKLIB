@@ -1467,6 +1467,7 @@ void Plot::DrawSnr(QPainter &c,int level)
             GraphG[j]->SetCent(xp-off,yc);
         }
     }
+    j=0;
     for (i=0;i<3;i++) if (btn[i]->isChecked()) j=i;
     for (i=0;i<3;i++) {
         if (!btn[i]->isChecked()) continue;
@@ -1599,6 +1600,7 @@ void Plot::DrawSnrE(QPainter &c,int level)
     
     yl[1][0]=-MaxMP; yl[1][1]=MaxMP;
     
+    j=0;
     for (i=0;i<2;i++) if (btn[i]->isChecked()) j=i;
     for (i=0;i<2;i++) {
         if (!btn[i]->isChecked()) continue;
