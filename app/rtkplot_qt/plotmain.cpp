@@ -414,7 +414,7 @@ void Plot::showEvent (QShowEvent *event)
         Connect();
     }
     else if (OpenFiles.count()<=0) {
-        setWindowTitle(Title!=""?Title:QString(tr("%1 ver.%2 %3")).arg(PRGNAME).arg(VER_RTKLIB).arg(PATCH_LEVEL));
+        setWindowTitle(Title!=""?Title:QString(tr("%1 ver. %2 %3")).arg(PRGNAME).arg(VER_RTKLIB).arg(PATCH_LEVEL));
     }
     if (Trace>0) {
         traceopen(TRACEFILE);
