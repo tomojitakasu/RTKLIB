@@ -21,7 +21,7 @@
 *                            add selection precise for pos1-pospot3
 *           2015/11/26  1.7  modify pos1-frequency 4:l1+l2+l5+l6 -> l1+l5
 *           2015/12/05  1.8  add misc-pppopt
-*           2016/06/10  1.9  add ant2-maxaveep
+*           2016/06/10  1.9  add ant2-maxaveep,ant2-initrst
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -56,7 +56,7 @@ static char snrmask_[NFREQ][1024];
 #define STAOPT  "0:all,1:single"
 #define STSOPT  "0:off,1:state,2:residual"
 #define ARMOPT  "0:off,1:continuous,2:instantaneous,3:fix-and-hold"
-#define POSOPT  "0:llh,1:xyz,2:single,3:posfile,4:rinexhead,5:rtcm"
+#define POSOPT  "0:llh,1:xyz,2:single,3:posfile,4:rinexhead,5:rtcm,6:raw"
 #define TIDEOPT "0:off,1:on,2:otl"
 #define PHWOPT  "0:off,1:on,2:precise"
 
@@ -157,6 +157,7 @@ EXPORT opt_t sysopts[]={
     {"ant2-antdeln",    1,  (void *)&prcopt_.antdel[1][1],"m"   },
     {"ant2-antdelu",    1,  (void *)&prcopt_.antdel[1][2],"m"   },
     {"ant2-maxaveep",   0,  (void *)&prcopt_.maxaveep    ,""    },
+    {"ant2-initrst",    3,  (void *)&prcopt_.initrst,    SWTOPT },
     
     {"misc-timeinterp", 3,  (void *)&prcopt_.intpref,    SWTOPT },
     {"misc-sbasatsel",  0,  (void *)&prcopt_.sbassatsel, "0:all"},

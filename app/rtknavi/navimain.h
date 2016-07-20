@@ -241,7 +241,7 @@ public:
 	solopt_t SolOpt;
 	TFont *PosFont;
 	int DebugTraceF,DebugStatusF,OutputGeoidF,BaselineC;
-	int RovPosTypeF,RefPosTypeF,RovAntPcvF,RefAntPcvF,InitRestart;
+	int RovPosTypeF,RefPosTypeF,RovAntPcvF,RefAntPcvF;
 	AnsiString RovAntF,RefAntF,SatPcvFileF,AntPcvFileF;
 	double RovAntDel[3],RefAntDel[3],RovPos[3],RefPos[3],NmeaPos[2];
 	double Baseline[2];

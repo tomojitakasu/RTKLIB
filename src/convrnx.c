@@ -26,6 +26,7 @@
 *           2014/05/24 1.8  support beidou B1
 *           2014/08/26 1.9  support input format rt17
 *           2015/05/24 1.10 fix bug on setting antenna delta in rtcm2opt()
+*           2015/07/04 1.11 support IRNSS
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -50,7 +51,7 @@ typedef struct {                /* stream file type */
 
 /* global variables ----------------------------------------------------------*/
 static const int navsys[]={     /* system codes */
-    SYS_GPS,SYS_GLO,SYS_GAL,SYS_QZS,SYS_SBS,SYS_CMP,0
+    SYS_GPS,SYS_GLO,SYS_GAL,SYS_QZS,SYS_SBS,SYS_CMP,SYS_IRN,0
 };
 /* convert rinex obs type ver.3 -> ver.2 -------------------------------------*/
 static void convcode(double ver, int sys, char *type)
@@ -184,6 +185,53 @@ static void rtcm2opt(const rtcm_t *rtcm, rnxopt_t *opt)
         opt->antdel[2]=0.0;
     }
 }
+/* set raw antenna and receiver info to options ------------------------------*/
+static void raw2opt(const raw_t *raw, rnxopt_t *opt)
+{
+    double pos[3],enu[3];
+    int i;
+    
+    trace(3,"raw2opt:\n");
+    
+    /* receiver and antenna info */
+    if (!*opt->rec[0]&&!*opt->rec[1]&&!*opt->rec[2]) {
+        strcpy(opt->rec[0],raw->sta.recsno);
+        strcpy(opt->rec[1],raw->sta.rectype);
+        strcpy(opt->rec[2],raw->sta.recver);
+    }
+    if (!*opt->ant[0]&&!*opt->ant[1]&&!*opt->ant[2]) {
+        strcpy(opt->ant[0],raw->sta.antsno);
+        strcpy(opt->ant[1],raw->sta.antdes);
+        if (raw->sta.antsetup) {
+            sprintf(opt->ant[2],"%d",raw->sta.antsetup);
+        }
+        else *opt->ant[2]='\0';
+    }
+    /* antenna approx position */
+    if (!opt->autopos&&norm(raw->sta.pos,3)>0.0) {
+        for (i=0;i<3;i++) opt->apppos[i]=raw->sta.pos[i];
+    }
+    /* antenna delta */
+    if (norm(raw->sta.del,3)>0.0) {
+        if (!raw->sta.deltype&&norm(raw->sta.del,3)>0.0) { /* enu */
+            opt->antdel[0]=raw->sta.del[2]; /* h */
+            opt->antdel[1]=raw->sta.del[0]; /* e */
+            opt->antdel[2]=raw->sta.del[1]; /* n */
+        }
+        else if (norm(raw->sta.pos,3)>0.0) { /* xyz */
+            ecef2pos(raw->sta.pos,pos);
+            ecef2enu(pos,raw->sta.del,enu);
+            opt->antdel[0]=enu[2]; /* h */
+            opt->antdel[1]=enu[0]; /* e */
+            opt->antdel[2]=enu[1]; /* n */
+        }
+    }
+    else {
+        opt->antdel[0]=raw->sta.hgt;
+        opt->antdel[1]=0.0;
+        opt->antdel[2]=0.0;
+    }
+}
 /* generate stream file ------------------------------------------------------*/
 static strfile_t *gen_strfile(int format, const char *opt, gtime_t time)
 {
@@ -191,7 +239,7 @@ static strfile_t *gen_strfile(int format, const char *opt, gtime_t time)
     
     trace(3,"init_strfile:\n");
     
-    if (!(str=(strfile_t *)malloc(sizeof(strfile_t)))) return NULL;
+    if (!(str=(strfile_t *)calloc(sizeof(strfile_t),1))) return NULL;
     
     if (format==STRFMT_RTCM2||format==STRFMT_RTCM3) {
         if (!init_rtcm(&str->rtcm)) {
@@ -204,7 +252,7 @@ static strfile_t *gen_strfile(int format, const char *opt, gtime_t time)
         strcpy(str->rtcm.opt,opt);
     }
     else if (format<=MAXRCVFMT) {
-        if (!init_raw(&str->raw)) {
+        if (!init_raw(&str->raw,format)) {
             showmsg("init raw error");
             return 0;
         }
@@ -399,10 +447,10 @@ static int scan_obstype(int format, const char *file, rnxopt_t *opt,
                         gtime_t *time)
 {
     strfile_t *str;
-    unsigned char codes[6][33]={{0}};
-    unsigned char types[6][33]={{0}};
+    unsigned char codes[7][33]={{0}};
+    unsigned char types[7][33]={{0}};
     char msg[128];
-    int i,j,k,l,c=0,type,sys,abort=0,n[6]={0};
+    int i,j,k,l,c=0,type,sys,abort=0,n[7]={0};
     
     trace(3,"scan_obstype: file=%s, opt=%s\n",file,opt);
     
@@ -447,9 +495,9 @@ static int scan_obstype(int format, const char *file, rnxopt_t *opt,
         
         if (++c%11) continue;
         
-        sprintf(msg,"scanning: %s %s%s%s%s%s%s",time_str(str->time,0),
+        sprintf(msg,"scanning: %s %s%s%s%s%s%s%s",time_str(str->time,0),
                 n[0]?"G":"",n[1]?"R":"",n[2]?"E":"",n[3]?"J":"",
-                n[4]?"S":"",n[5]?"C":"");
+                n[4]?"S":"",n[5]?"C":"",n[6]?"I":"");
         if ((abort=showmsg(msg))) break;
     }
     showmsg("");
@@ -461,10 +509,10 @@ static int scan_obstype(int format, const char *file, rnxopt_t *opt,
         trace(2,"aborted in scan\n");
         return 0;
     }
-    for (i=0;i<6;i++) for (j=0;j<n[i];j++) {
+    for (i=0;i<7;i++) for (j=0;j<n[i];j++) {
         trace(2,"scan_obstype: sys=%d code=%s type=%d\n",i,code2obs(codes[i][j],NULL),types[i][j]);
     }
-    for (i=0;i<6;i++) {
+    for (i=0;i<7;i++) {
         
         /* sort codes */
         sort_codes(codes[i],types[i],n[i]);
@@ -482,39 +530,39 @@ static int scan_obstype(int format, const char *file, rnxopt_t *opt,
 static void set_obstype(int format, rnxopt_t *opt)
 {
     /* supported codes by rtcm2 */
-    const unsigned char codes_rtcm2[6][8]={
+    const unsigned char codes_rtcm2[7][8]={
         {CODE_L1C,CODE_L1P,CODE_L2C,CODE_L2P},
         {CODE_L1C,CODE_L1P,CODE_L2C,CODE_L2P}
     };
     /* supported codes by rtcm3 */
-    const unsigned char codes_rtcm3[6][8]={
+    const unsigned char codes_rtcm3[7][8]={
         {CODE_L1C,CODE_L1W,CODE_L2W,CODE_L2X,CODE_L5X},
         {CODE_L1C,CODE_L1P,CODE_L2C,CODE_L2P},
         {CODE_L1X,CODE_L5X,CODE_L7X,CODE_L8X},
         {CODE_L1C,CODE_L2X,CODE_L5X},
         {CODE_L1C,CODE_L5X},
-        {CODE_L1C,CODE_L2C,CODE_L7I}
+        {CODE_L1C,CODE_L2C,CODE_L7I},{0}
     };
     /* supported codes by novatel oem3 */
-    const unsigned char codes_oem3[6][8]={
+    const unsigned char codes_oem3[7][8]={
         {CODE_L1C,CODE_L2P},{0},{0},{0},{CODE_L1C}
     };
     /* supported codes by novatel oem4 */
-    const unsigned char codes_oem4[6][8]={
+    const unsigned char codes_oem4[7][8]={
         {CODE_L1C,CODE_L2P,CODE_L2D,CODE_L2X,CODE_L5Q},
         {CODE_L1C,CODE_L2C,CODE_L2P},
         {CODE_L1B,CODE_L1C,CODE_L5Q,CODE_L7Q,CODE_L8Q},
         {CODE_L1C,CODE_L2X,CODE_L5Q},
-        {CODE_L1C,CODE_L5I}
+        {CODE_L1C,CODE_L5I},{0}
     };
     /* supported codes by hemisphere */
-    const unsigned char codes_cres[6][8]={
+    const unsigned char codes_cres[7][8]={
         {CODE_L1C,CODE_L2P},
         {CODE_L1C,CODE_L2P},
-        {0},{0},{CODE_L1C}
+        {0},{0},{CODE_L1C},{0}
     };
     /* supported codes by javad */
-    const unsigned char codes_javad[6][8]={
+    const unsigned char codes_javad[7][8]={
         {CODE_L1C,CODE_L1W,CODE_L1X,CODE_L2X,CODE_L2W,CODE_L5X},
         {CODE_L1C,CODE_L1P,CODE_L2C,CODE_L2P},
         {CODE_L1X,CODE_L5X,CODE_L7X,CODE_L8X},
@@ -523,7 +571,7 @@ static void set_obstype(int format, rnxopt_t *opt)
         {CODE_L1I,CODE_L2C,CODE_L7I}
     };
     /* supported codes by rinex and binex */
-    const unsigned char codes_rinex[6][32]={
+    const unsigned char codes_rinex[7][32]={
         {CODE_L1C,CODE_L1P,CODE_L1W,CODE_L1Y,CODE_L1M,CODE_L1N,CODE_L1S,CODE_L1L,
          CODE_L2C,CODE_L2D,CODE_L2S,CODE_L2L,CODE_L2X,CODE_L2P,CODE_L2W,CODE_L2Y,
          CODE_L2M,CODE_L2N,CODE_L5I,CODE_L5Q,CODE_L5X},
@@ -535,14 +583,20 @@ static void set_obstype(int format, rnxopt_t *opt)
          CODE_L5I,CODE_L5Q,CODE_L5X,CODE_L6S,CODE_L6L,CODE_L6X},
         {CODE_L1C,CODE_L5I,CODE_L5Q,CODE_L5X},
         {CODE_L1I,CODE_L1Q,CODE_L1X,CODE_L7I,CODE_L7Q,CODE_L7X,CODE_L6I,CODE_L6Q,
-         CODE_L6X}
+         CODE_L6X},
+        {CODE_L5A,CODE_L5B,CODE_L5C,CODE_L5X,CODE_L9A,CODE_L9B,CODE_L9C,CODE_L9X}
     };
     /* supported codes by rt17 */
-    const unsigned char codes_rt17[6][8]={
-        {CODE_L1C,CODE_L2W}
+    const unsigned char codes_rt17[7][8]={
+        {CODE_L1C,CODE_L1P,CODE_L2C,CODE_L2P,CODE_L2W}
+    };
+    /* supported codes by cmr */
+    const unsigned char codes_cmr[7][8]={
+        {CODE_L1C,CODE_L1P,CODE_L2C,CODE_L2P,CODE_L2W},
+        {CODE_L1C,CODE_L1P,CODE_L2C,CODE_L2P}
     };
     /* supported codes by others */
-    const unsigned char codes_other[6][8]={
+    const unsigned char codes_other[7][8]={
         {CODE_L1C},{CODE_L1C},{CODE_L1C},{CODE_L1C},{CODE_L1C},{CODE_L1I}
     };
     const unsigned char *codes;
@@ -550,7 +604,7 @@ static void set_obstype(int format, rnxopt_t *opt)
     
     trace(3,"set_obstype: format=%d\n",format);
     
-    for (i=0;i<6;i++) {
+    for (i=0;i<7;i++) {
         switch (format) {
             case STRFMT_RTCM2: codes=codes_rtcm2[i]; break;
             case STRFMT_RTCM3: codes=codes_rtcm3[i]; break;
@@ -560,6 +614,7 @@ static void set_obstype(int format, rnxopt_t *opt)
             case STRFMT_JAVAD: codes=codes_javad[i]; break;
             case STRFMT_BINEX: codes=codes_rinex[i]; break;
             case STRFMT_RT17 : codes=codes_rt17 [i]; break;
+            case STRFMT_CMR  : codes=codes_cmr  [i]; break;
             case STRFMT_RINEX: codes=codes_rinex[i]; break;
             default:           codes=codes_other[i]; break;
         }
@@ -779,6 +834,16 @@ static void convnav(FILE **ofp, rnxopt_t *opt, strfile_t *str, int *n)
             n[1]++;
         }
     }
+    else if (sys==SYS_IRN) {
+        if (opt->exsats[str->sat-1]==1||!screent(str->time,ts1,te1,0.0)) return;
+        
+        if (ofp[1]&&opt->rnxver>2.99) {
+            
+            /* output rinex nav */
+            outrnxnavb(ofp[1],opt,str->nav->eph+str->sat-1);
+            n[1]++;
+        }
+    }
 }
 /* convert sbas message ------------------------------------------------------*/
 static void convsbs(FILE **ofp, rnxopt_t *opt, strfile_t *str, int *n)
@@ -911,7 +976,7 @@ static int convrnx_s(int sess, int format, rnxopt_t *opt, const char *file,
     }
     nf=expath(path,epath,MAXEXFILE);
     
-    if (format==STRFMT_RTCM2||format==STRFMT_RTCM3||format==STRFMT_RT17) {
+    if (format==STRFMT_RTCM2||format==STRFMT_RTCM3) {
         time=opt->trtcm;
     }
     if (opt->scanobs) {
@@ -985,6 +1050,9 @@ static int convrnx_s(int sess, int format, rnxopt_t *opt, const char *file,
     }
     else if (format==STRFMT_RINEX) {
         rnx2opt(&str->rnx,opt);
+    }
+    else if (format==STRFMT_CMR) {
+        raw2opt(&str->raw,opt);
     }
     /* close output files */
     closefile(ofp,opt,str->nav);

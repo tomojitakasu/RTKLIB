@@ -4,6 +4,8 @@
 #include "rtklib.h"
 #include "plotmain.h"
 
+#define SQR(x)  ((x)*(x))
+
 //---------------------------------------------------------------------------
 extern "C" {
 int showmsg(char *format,...) {return 0;}
@@ -16,7 +18,7 @@ const char *PTypes[]={
 // show message in status-bar -----------------------------------------------
 void __fastcall TPlot::ShowMsg(AnsiString msg)
 {
-    Message1->Caption=A2U(msg);
+    Message1->Caption=msg;
     Panel21->Repaint();
 }
 // execute command ----------------------------------------------------------
@@ -97,19 +99,23 @@ int __fastcall TPlot::GetCurrentPos(double *rr)
 // get center position of plot ----------------------------------------------
 int __fastcall TPlot::GetCenterPos(double *rr)
 {
-    double xc,yc,pos[3],enu[3]={0},dr[3];
-    int i;
+    double xc,yc,opos[3],pos[3],enu[3]={0},dr[3];
+    int i,j;
     
     trace(3,"GetCenterPos\n");
     
     if (PLOT_OBS<=PlotType&&PlotType<=PLOT_DOP&&PlotType!=PLOT_TRK) return 0;
     if (norm(OPos,3)<=0.0) return 0;
     GraphT->GetCent(xc,yc);
-    ecef2pos(OPos,pos);
+    ecef2pos(OPos,opos);
     enu[0]=xc;
     enu[1]=yc;
-    enu2ecef(pos,enu,dr);
-    for (int i=0;i<3;i++) rr[i]=OPos[i]+dr[i];
+    for (i=0;i<6;i++) {
+        enu2ecef(opos,enu,dr);
+        for (j=0;j<3;j++) rr[j]=OPos[j]+dr[j];
+        ecef2pos(rr,pos);
+        enu[2]-=pos[2];
+    }
     return 1;
 }
 // get position, velocity or accel from solutions ---------------------------
@@ -451,13 +457,13 @@ AnsiString __fastcall TPlot::LatLonStr(const double *pos, int ndec)
     }
     return s;
 }
-// convert unicode to ansistring --------------------------------------------
+// convert unicode to UTF-8 ansistring --------------------------------------
 AnsiString __fastcall TPlot::U2A(UnicodeString str)
 {
     AnsiString a_str(str);
     return a_str;
 }
-// convert ansi to unicodestring --------------------------------------------
+// convert UTF-8 ansi to unicodestring --------------------------------------
 UnicodeString __fastcall TPlot::A2U(AnsiString str)
 {
     wchar_t buff[256]={0};

@@ -437,6 +437,15 @@ object OptDialog: TOptDialog
         Caption = 'DBCorr'
         TabOrder = 15
       end
+      object NavSys7: TCheckBox
+        Left = 328
+        Top = 208
+        Width = 61
+        Height = 17
+        Caption = 'IRNSS'
+        TabOrder = 23
+        OnClick = NavSys6Click
+      end
     end
     object TabSheet2: TTabSheet
       Caption = 'Setting&2'
@@ -711,6 +720,10 @@ object OptDialog: TOptDialog
     object TabSheet3: TTabSheet
       Caption = 'O&utput'
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object LabelSolFormat: TLabel
         Left = 24
         Top = 9
@@ -1158,10 +1171,6 @@ object OptDialog: TOptDialog
     object TabSheet5: TTabSheet
       Caption = '&Positions'
       ImageIndex = 4
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 426
-      ExplicitHeight = 0
       object Label4: TLabel
         Left = 12
         Top = 12
@@ -2024,14 +2033,14 @@ object OptDialog: TOptDialog
       '(*.blq)|*.blq|Ionosphere Data File (*.*i,*stec)|*.*i;*.stec'
     Options = [ofHideReadOnly, ofNoChangeDir, ofEnableSizing]
     Title = 'Load File'
-    Left = 264
-    Top = 230
+    Left = 75
+    Top = 238
   end
   object SaveDialog: TSaveDialog
     Filter = 'All (*.*)|*.*|Options File (*.conf)|*.conf'
     Options = [ofHideReadOnly, ofNoChangeDir, ofEnableSizing]
     Title = 'Save File'
-    Left = 175
-    Top = 230
+    Left = 47
+    Top = 240
   end
 end

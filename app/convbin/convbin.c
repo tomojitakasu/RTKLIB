@@ -30,6 +30,7 @@
 *           2016/05/25 1.13 fix bug on initializing output file paths in
 *                           convbin()
 *           2016/06/09 1.14 fix bug on output file with -v 3.02
+*           2016/07/01 1.15 support log format CMR/CMR+
 *-----------------------------------------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>
@@ -73,6 +74,7 @@ static const char *help[]={
 "                         0x01-01,0x01-02,0x01-03,0x01-04,0x01-06,0x7f-05",
 " Trimble               : RT17",
 " Septentrio            : SBF",
+" CMR                   : CMR Type 0, 1, 2, 3, 4, CMR+ Type 1, 2, 3",
 " RINEX                 : OBS, NAV, GNAV, HNAV, LNAV, QNAV",
 "",
 " Options [default]",
@@ -80,7 +82,7 @@ static const char *help[]={
 "     file         input receiver binary log file",
 "     -ts y/m/d h:m:s  start time [all]",
 "     -te y/m/d h:m:s  end time [all]",
-"     -tr y/m/d h:m:s  approximated time for rtcm messages",
+"     -tr y/m/d h:m:s  approximated time for RTCM/CMR/CMR+ messages",
 "     -ti tint     observation data interval (s) [all]",
 "     -span span   time span (h) [all]",
 "     -r format    log format type",
@@ -88,7 +90,7 @@ static const char *help[]={
 "                  rtcm3= RTCM 3",
 "                  nov  = NovAtel OEMV/4/6,OEMStar",
 "                  oem3 = NovAtel OEM3",
-"                  ubx  = ublox LEA-4T/5T/6T",
+"                  ubx  = ublox LEA-4T/5T/6T/7T/M8T",
 "                  ss2  = NovAtel Superstar II",
 "                  hemis= Hemisphere Eclipse/Crescent",
 "                  stq  = SkyTraq S1315F",
@@ -97,6 +99,7 @@ static const char *help[]={
 "                  binex= BINEX",
 "                  rt17 = Trimble RT17",
 "                  sbf  = Septentrio SBF",
+"                  cmr  = CMR/CMR+",
 "                  rinex= RINEX",
 "     -ro opt      receiver options",
 "     -f freq      number of frequencies [2]",
@@ -116,10 +119,10 @@ static const char *help[]={
 "     -ot          include time correction in rinex nav header [off]",
 "     -ol          include leap seconds in rinex nav header [off]",
 "     -scan        scan input file [off]",
-"     -mask   [sig[,...]] signal mask(s) (sig={G|R|E|J|S|C}L{1C|1P|1W|...})",
+"     -mask   [sig[,...]] signal mask(s) (sig={G|R|E|J|S|C|I}L{1C|1P|1W|...})",
 "     -nomask [sig[,...]] signal no mask (same as above)",
 "     -x sat       exclude satellite",
-"     -y sys       exclude systems (G:GPS,R:GLONASS,E:Galileo,J:QZSS,S:SBAS,C:BeiDou)",
+"     -y sys       exclude systems (G:GPS,R:GLO,E:GAL,J:QZS,S:SBS,C:BDS,I:IRN)",
 "     -d dir       output directory [same as input file]",
 "     -c staid     use RINEX file name convention with staid [off]",
 "     -o ofile     output RINEX OBS file",
@@ -140,7 +143,7 @@ static const char *help[]={
 "     *.rtcm2       RTCM 2",
 "     *.rtcm3       RTCM 3",
 "     *.gps         NovAtel OEMV/4/6,OEMStar",
-"     *.ubx         u-blox LEA-4T/5T/6T",
+"     *.ubx         u-blox LEA-4T/5T/6T/7T/M8T",
 "     *.log         NovAtel Superstar II",
 "     *.bin         Hemisphere Eclipse/Crescent",
 "     *.stq         SkyTraq S1315F",
@@ -148,6 +151,7 @@ static const char *help[]={
 "     *.bnx,*binex  BINEX",
 "     *.rt17        Trimble RT17",
 "     *.sbf         Septentrio SBF",
+"     *.cmr         CMR/CMR+",
 "     *.obs,*.*o    RINEX OBS"
 };
 /* print help ----------------------------------------------------------------*/
@@ -282,6 +286,7 @@ static void setmask(const char *argv, rnxopt_t *opt, int mask)
         else if (p[0]=='J') i=3;
         else if (p[0]=='S') i=4;
         else if (p[0]=='C') i=5;
+        else if (p[0]=='I') i=6;
         else continue;
         if ((code=obs2code(p+2,NULL))) {
             opt->mask[i][code-1]=mask?'1':'0';
@@ -410,6 +415,7 @@ static int cmdopts(int argc, char **argv, rnxopt_t *opt, char **ifile,
             else if (!strcmp(sys,"J")) opt->navsys&=~SYS_QZS;
             else if (!strcmp(sys,"S")) opt->navsys&=~SYS_SBS;
             else if (!strcmp(sys,"C")) opt->navsys&=~SYS_CMP;
+            else if (!strcmp(sys,"I")) opt->navsys&=~SYS_IRN;
         }
         else if (!strcmp(argv[i],"-d" )&&i+1<argc) {
             *dir=argv[++i];
@@ -440,6 +446,7 @@ static int cmdopts(int argc, char **argv, rnxopt_t *opt, char **ifile,
     if (nf>=4) opt->freqtype|=FREQTYPE_L6;
     if (nf>=5) opt->freqtype|=FREQTYPE_L7;
     if (nf>=6) opt->freqtype|=FREQTYPE_L8;
+    if (nf>=7) opt->freqtype|=FREQTYPE_L9;
     
     if (*fmt) {
         if      (!strcmp(fmt,"rtcm2")) format=STRFMT_RTCM2;
@@ -455,6 +462,7 @@ static int cmdopts(int argc, char **argv, rnxopt_t *opt, char **ifile,
         else if (!strcmp(fmt,"binex")) format=STRFMT_BINEX;
         else if (!strcmp(fmt,"rt17" )) format=STRFMT_RT17;
         else if (!strcmp(fmt,"sbf"  )) format=STRFMT_SEPT;
+        else if (!strcmp(fmt,"cmr"  )) format=STRFMT_CMR;
         else if (!strcmp(fmt,"rinex")) format=STRFMT_RINEX;
     }
     else {
@@ -472,6 +480,7 @@ static int cmdopts(int argc, char **argv, rnxopt_t *opt, char **ifile,
         else if (!strcmp(p,".binex"))  format=STRFMT_BINEX;
         else if (!strcmp(p,".rt17" ))  format=STRFMT_RT17;
         else if (!strcmp(p,".sbf"  ))  format=STRFMT_SEPT;
+        else if (!strcmp(p,".cmr"  ))  format=STRFMT_CMR;
         else if (!strcmp(p,".obs"  ))  format=STRFMT_RINEX;
         else if (!strcmp(p+3,"o"   ))  format=STRFMT_RINEX;
         else if (!strcmp(p+3,"O"   ))  format=STRFMT_RINEX;

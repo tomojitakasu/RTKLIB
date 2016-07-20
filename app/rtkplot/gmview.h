@@ -40,6 +40,8 @@ private:
     void __fastcall ExecFunc(AnsiString func);
 
 public:
+	int FixCent;
+	
 	__fastcall TGoogleMapView(TComponent* Owner);
     int  __fastcall GetState(void);
     void __fastcall SetView(double lat, double lon, int zoom);

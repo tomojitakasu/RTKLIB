@@ -129,8 +129,8 @@ __published:
 	TSpeedButton *BtnFixVert;
 	TSpeedButton *BtnShowTrack;
 	TSpeedButton *BtnShowSkyplot;
+	TSpeedButton *BtnShowImg;
 	TSpeedButton *BtnShowMap;
-	TSpeedButton *BtnShowPoint;
 	TSpeedButton *BtnAnimate;
 	TSpeedButton *BtnClear;
 	TSpeedButton *BtnReload;
@@ -184,8 +184,8 @@ __published:
 	TMenuItem *MenuShowTrack;
 	TMenuItem *MenuFixHoriz;
 	TMenuItem *MenuFixVert;
+	TMenuItem *MenuShowImg;
 	TMenuItem *MenuShowMap;
-	TMenuItem *MenuShowPoint;
 	TMenuItem *MenuAnimStart;
 	TMenuItem *MenuAnimStop;
 	
@@ -293,8 +293,8 @@ __published:
 	void __fastcall MenuShowTrackClick	(TObject *Sender);
 	void __fastcall MenuFixHorizClick	(TObject *Sender);
 	void __fastcall MenuFixVertClick	(TObject *Sender);
+	void __fastcall MenuShowImgClick	(TObject *Sender);
 	void __fastcall MenuShowMapClick	(TObject *Sender);
-	void __fastcall MenuShowPointClick	(TObject *Sender);
 	void __fastcall MenuAnimStartClick	(TObject *Sender);
 	void __fastcall MenuAnimStopClick	(TObject *Sender);
 	void __fastcall MenuAboutClick		(TObject *Sender);
@@ -305,7 +305,7 @@ __published:
 	void __fastcall BtnSol12Click		(TObject *Sender);
 	void __fastcall BtnSol1DblClick		(TObject *Sender);
 	void __fastcall BtnSol2DblClick		(TObject *Sender);
-	void __fastcall BtnShowMapClick		(TObject *Sender);
+	void __fastcall BtnShowImgClick		(TObject *Sender);
 	void __fastcall BtnOn1Click			(TObject *Sender);
 	void __fastcall BtnOn2Click			(TObject *Sender);
 	void __fastcall BtnOn3Click			(TObject *Sender);
@@ -317,7 +317,7 @@ __published:
 	void __fastcall BtnShowTrackClick	(TObject *Sender);
 	void __fastcall BtnFixHorizClick	(TObject *Sender);
 	void __fastcall BtnFixVertClick		(TObject *Sender);
-	void __fastcall BtnShowPointClick	(TObject *Sender);
+	void __fastcall BtnShowMapClick	(TObject *Sender);
 	void __fastcall BtnAnimateClick		(TObject *Sender);
 	void __fastcall BtnClearClick		(TObject *Sender);
 	void __fastcall BtnReloadClick		(TObject *Sender);
@@ -369,6 +369,7 @@ __published:
 	void __fastcall BtnMessage2Click(TObject *Sender);
 	void __fastcall MenuOpenWaypointClick(TObject *Sender);
 	void __fastcall MenuSaveWaypointClick(TObject *Sender);
+	void __fastcall DispDblClick(TObject *Sender);
 
 
 protected:
@@ -410,6 +411,7 @@ private:
     
     int Drag,Xn,Yn;
     double X0,Y0,Xc,Yc,Xs,Ys,Xcent,Xcent0;
+    unsigned int MouseDownTick;
     
     int GEState,GEDataState[2];
     double GEHeading;
@@ -635,6 +637,7 @@ public:
     void __fastcall ReadElMaskData(AnsiString file);
     int __fastcall GetCurrentPos(double *rr);
     int __fastcall GetCenterPos(double *rr);
+    void __fastcall SetTrkCent(double lat, double lon);
     void __fastcall UpdatePlot(void);
     void __fastcall Refresh_GEView(void);
 	void __fastcall Refresh_GMView(void);

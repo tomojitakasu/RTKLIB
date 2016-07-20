@@ -46,7 +46,7 @@ static char proxyaddr[MAXSTR]="";       /* proxy address */
 #define FLGOPT  "0:off,1:std+2:age/ratio/ns"
 #define ISTOPT  "0:off,1:serial,2:file,3:tcpsvr,4:tcpcli,7:ntripcli,8:ftp,9:http"
 #define OSTOPT  "0:off,1:serial,2:file,3:tcpsvr,4:tcpcli,6:ntripsvr"
-#define FMTOPT  "0:rtcm2,1:rtcm3,2:oem4,3:oem3,4:ubx,5:ss2,6:hemis,7:skytraq,8:gw10,9:javad,10:nvs,11:binex,12:rt17,15:sp3"
+#define FMTOPT  "0:rtcm2,1:rtcm3,2:oem4,3:oem3,4:ubx,5:ss2,6:hemis,7:skytraq,8:gw10,9:javad,10:nvs,11:binex,12:rt17,13:sbf,14:cmr,17:sp3"
 #define NMEOPT  "0:off,1:latlon,2:single"
 #define SOLOPT  "0:llh,1:xyz,2:enu,3:nmea"
 #define MSGOPT  "0:all,1:rover,2:base,3:corr"
@@ -93,8 +93,8 @@ __fastcall TOptDialog::TOptDialog(TComponent* Owner)
 	: TForm(Owner)
 {
 	AnsiString label,s;
-	int freq[]={1,2,5,6,7,8},nglo=MAXPRNGLO,ngal=MAXPRNGAL,nqzs=MAXPRNQZS;
-	int ncmp=MAXPRNCMP;
+	int freq[]={1,2,5,6,7,8,9},nglo=MAXPRNGLO,ngal=MAXPRNGAL,nqzs=MAXPRNQZS;
+	int ncmp=MAXPRNCMP,nirn=MAXPRNIRN;
 	PrcOpt=prcopt_default;
 	SolOpt=solopt_default;
 	UpdateEnable();
@@ -109,6 +109,7 @@ __fastcall TOptDialog::TOptDialog(TComponent* Owner)
 	if (ngal<=0) NavSys3->Enabled=false;
 	if (nqzs<=0) NavSys4->Enabled=false;
 	if (ncmp<=0) NavSys6->Enabled=false;
+	if (nirn<=0) NavSys7->Enabled=false;
 	UpdateEnable();
 }
 //---------------------------------------------------------------------------
@@ -434,6 +435,7 @@ void __fastcall TOptDialog::GetOpt(void)
 	NavSys4		 ->Checked  =PrcOpt.navsys&SYS_QZS;
 	NavSys5		 ->Checked  =PrcOpt.navsys&SYS_SBS;
 	NavSys6		 ->Checked  =PrcOpt.navsys&SYS_CMP;
+	NavSys7		 ->Checked  =PrcOpt.navsys&SYS_IRN;
 	PosOpt1		 ->Checked  =PrcOpt.posopt[0];
 	PosOpt2		 ->Checked  =PrcOpt.posopt[1];
 	PosOpt3		 ->Checked  =PrcOpt.posopt[2];
@@ -472,6 +474,7 @@ void __fastcall TOptDialog::GetOpt(void)
 	PrNoise5	 ->Text     =s.sprintf("%.2E",PrcOpt.prn[4]);
 	SatClkStab	 ->Text     =s.sprintf("%.2E",PrcOpt.sclkstab);
 	MaxAveEp	 ->Text		=s.sprintf("%d",PrcOpt.maxaveep);
+	ChkInitRestart->Checked =PrcOpt.initrst;
 	
 	RovPosTypeP	 ->ItemIndex=RovPosTypeF;
 	RefPosTypeP	 ->ItemIndex=RefPosTypeF;
@@ -487,7 +490,6 @@ void __fastcall TOptDialog::GetOpt(void)
 	RefAntU		 ->Text     =s.sprintf("%.4f",RefAntDel[2]);
 	SetPos(RovPosTypeP->ItemIndex,editu,RovPos);
 	SetPos(RefPosTypeP->ItemIndex,editr,RefPos);
-	ChkInitRestart->Checked =InitRestart;
 	
 	SatPcvFile	 ->Text     =SatPcvFileF;
 	AntPcvFile	 ->Text     =AntPcvFileF;
@@ -558,6 +560,7 @@ void __fastcall TOptDialog::SetOpt(void)
 	if (NavSys4->Checked) PrcOpt.navsys|=SYS_QZS;
 	if (NavSys5->Checked) PrcOpt.navsys|=SYS_SBS;
 	if (NavSys6->Checked) PrcOpt.navsys|=SYS_CMP;
+	if (NavSys7->Checked) PrcOpt.navsys|=SYS_IRN;
 	PrcOpt.posopt[0] =PosOpt1   ->Checked;
 	PrcOpt.posopt[1] =PosOpt2   ->Checked;
 	PrcOpt.posopt[2] =PosOpt3   ->Checked;
@@ -598,6 +601,7 @@ void __fastcall TOptDialog::SetOpt(void)
 	PrcOpt.prn[4]    =str2dbl(PrNoise5  ->Text);
 	PrcOpt.sclkstab  =str2dbl(SatClkStab->Text);
 	PrcOpt.maxaveep  =MaxAveEp->Text.ToInt();
+	PrcOpt.initrst   =ChkInitRestart->Checked;
 	
 	RovPosTypeF      =RovPosTypeP ->ItemIndex;
 	RefPosTypeF      =RefPosTypeP ->ItemIndex;
@@ -613,7 +617,6 @@ void __fastcall TOptDialog::SetOpt(void)
 	RefAntDel[2]     =str2dbl(RefAntU   ->Text);
 	GetPos(RovPosTypeP->ItemIndex,editu,RovPos);
 	GetPos(RefPosTypeP->ItemIndex,editr,RefPos);
-	InitRestart      =ChkInitRestart->Checked;
 	
 	SatPcvFileF      =SatPcvFile  ->Text;
 	AntPcvFileF      =AntPcvFile  ->Text;
@@ -712,6 +715,7 @@ void __fastcall TOptDialog::LoadOpt(AnsiString file)
 	NavSys4	     ->Checked		=prcopt.navsys&SYS_QZS;
 	NavSys5	     ->Checked		=prcopt.navsys&SYS_SBS;
 	NavSys6	     ->Checked		=prcopt.navsys&SYS_CMP;
+	NavSys7	     ->Checked		=prcopt.navsys&SYS_IRN;
 	PosOpt1		 ->Checked		=prcopt.posopt[0];
 	PosOpt2		 ->Checked		=prcopt.posopt[1];
 	PosOpt3		 ->Checked		=prcopt.posopt[2];
@@ -778,10 +782,14 @@ void __fastcall TOptDialog::LoadOpt(AnsiString file)
 	RefAntN		 ->Text			=s.sprintf("%.4f",prcopt.antdel[1][1]);
 	RefAntU		 ->Text			=s.sprintf("%.4f",prcopt.antdel[1][2]);
 	MaxAveEp	 ->Text			=s.sprintf("%d",prcopt.maxaveep);
+	ChkInitRestart->Checked		=prcopt.initrst;
 	
-	RovPosTypeP	 ->ItemIndex	=prcopt.rovpos==0?0:(prcopt.rovpos==4?3:4);
-	RefPosTypeP	 ->ItemIndex	=prcopt.refpos==0?0:(prcopt.refpos==4?3:4);
-
+	RovPosTypeP	 ->ItemIndex	=0;
+	RefPosTypeP	 ->ItemIndex	=0;
+	if      (prcopt.refpos==POSOPT_RTCM  ) RefPosTypeP->ItemIndex=3;
+	else if (prcopt.refpos==POSOPT_RAW   ) RefPosTypeP->ItemIndex=4;
+	else if (prcopt.refpos==POSOPT_SINGLE) RefPosTypeP->ItemIndex=5;
+	
 	RovPosTypeF					=RovPosTypeP->ItemIndex;
 	RefPosTypeF					=RefPosTypeP->ItemIndex;
 	SetPos(RovPosTypeP->ItemIndex,editu,prcopt.ru);
@@ -877,7 +885,8 @@ void __fastcall TOptDialog::SaveOpt(AnsiString file)
 					  (NavSys3->Checked?SYS_GAL:0)|
 					  (NavSys4->Checked?SYS_QZS:0)|
 					  (NavSys5->Checked?SYS_SBS:0)|
-					  (NavSys6->Checked?SYS_CMP:0);
+					  (NavSys6->Checked?SYS_CMP:0)|
+					  (NavSys7->Checked?SYS_IRN:0);
 	prcopt.posopt[0]=PosOpt1->Checked;
 	prcopt.posopt[1]=PosOpt2->Checked;
 	prcopt.posopt[2]=PosOpt3->Checked;
@@ -943,12 +952,16 @@ void __fastcall TOptDialog::SaveOpt(AnsiString file)
 	prcopt.antdel[1][1]=str2dbl(RefAntN->Text);
 	prcopt.antdel[1][2]=str2dbl(RefAntU->Text);
 	prcopt.maxaveep=MaxAveEp->Text.ToInt();
+	prcopt.initrst=ChkInitRestart->Checked;
 	
-	prcopt.rovpos=RovPosTypeP->ItemIndex<3?0:4;
-	prcopt.refpos=RefPosTypeP->ItemIndex<3?0:(RefPosTypeP->ItemIndex<4?4:1);
+	prcopt.rovpos=POSOPT_POS;
+	prcopt.refpos=POSOPT_POS;
+	if      (RefPosTypeP->ItemIndex==3) prcopt.refpos=POSOPT_RTCM;
+	else if (RefPosTypeP->ItemIndex==4) prcopt.refpos=POSOPT_RAW;
+	else if (RefPosTypeP->ItemIndex==5) prcopt.refpos=POSOPT_SINGLE;
 	
-	if (prcopt.rovpos==0) GetPos(RovPosTypeP->ItemIndex,editu,prcopt.ru);
-	if (prcopt.refpos==0) GetPos(RefPosTypeP->ItemIndex,editr,prcopt.rb);
+	if (prcopt.rovpos==POSOPT_POS) GetPos(RovPosTypeP->ItemIndex,editu,prcopt.ru);
+	if (prcopt.refpos==POSOPT_POS) GetPos(RefPosTypeP->ItemIndex,editr,prcopt.rb);
 	
 	strcpy(filopt.satantp,SatPcvFile_Text.c_str());
 	strcpy(filopt.rcvantp,AntPcvFile_Text.c_str());
@@ -1037,9 +1050,9 @@ void __fastcall TOptDialog::UpdateEnable(void)
 	RefPos3        ->Enabled=RefPosTypeP->Enabled&&RefPosTypeP->ItemIndex<=2;
 	BtnRefPos      ->Enabled=RefPosTypeP->Enabled&&RefPosTypeP->ItemIndex<=2;
 	
-	LabelMaxAveEp  ->Visible=RefPosTypeP->ItemIndex==4;
-	MaxAveEp       ->Visible=RefPosTypeP->ItemIndex==4;
-	ChkInitRestart ->Visible=RefPosTypeP->ItemIndex==4;
+	LabelMaxAveEp  ->Visible=RefPosTypeP->ItemIndex==5;
+	MaxAveEp       ->Visible=RefPosTypeP->ItemIndex==5;
+	ChkInitRestart ->Visible=RefPosTypeP->ItemIndex==5;
 	
 //	SbasSatE       ->Enabled=PosMode->ItemIndex==0;
 }
@@ -1125,7 +1138,6 @@ void __fastcall TOptDialog::ReadAntList(void)
 	free(pcvs.pcv);
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TOptDialog::NavSys6Click(TObject *Sender)
 {
 	UpdateEnable();

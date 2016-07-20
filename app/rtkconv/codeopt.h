@@ -93,6 +93,15 @@ __published:
 	TCheckBox *R44;
 	TCheckBox *R46;
 	TCheckBox *R45;
+	TGroupBox *GroupBox7;
+	TCheckBox *I49;
+	TCheckBox *I54;
+	TCheckBox *I26;
+	TCheckBox *I52;
+	TCheckBox *I53;
+	TCheckBox *I50;
+	TCheckBox *I51;
+	TCheckBox *I55;
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall BtnOkClick(TObject *Sender);
 	void __fastcall BtnSetAllClick(TObject *Sender);

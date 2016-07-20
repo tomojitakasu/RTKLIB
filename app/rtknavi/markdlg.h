@@ -21,6 +21,7 @@ __published:
 	TComboBox *MarkerName;
 	TCheckBox *ChkMarkerName;
 	TEdit *CommentText;
+	TLabel *Label1;
 	void __fastcall BtnCancelClick(TObject *Sender);
 	void __fastcall BtnOkClick(TObject *Sender);
 	void __fastcall ChkMarkerNameClick(TObject *Sender);
@@ -29,7 +30,7 @@ private:
 	void __fastcall UpdateEnable(void);
 public:
 	UnicodeString Marker,Comment;
-	int PosMode;
+	int PosMode,NMark;
 	
 	__fastcall TMarkDialog(TComponent* Owner);
 	

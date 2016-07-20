@@ -17,11 +17,8 @@ void __fastcall TPlot::UpdatePlot(void)
 {
     trace(3,"UpdatePlot\n");
     
-    UpdateEnable();
     UpdateInfo();
     Refresh();
-    Refresh_GEView();
-    Refresh_GMView();
 }
 // refresh plot -------------------------------------------------------------
 void __fastcall TPlot::Refresh(void)
@@ -78,7 +75,7 @@ void __fastcall TPlot::DrawTrk(int level)
     sol_t *sol;
     TPoint p1,p2;
     TColor color;
-    double xt,yt,sx,sy,opos[3],pnt[3],rr[3];
+    double xt,yt,sx,sy,opos[3],pnt[3],rr[3],enu[3],cent[3];
     int i,j,index,sel=!BtnSol1->Down&&BtnSol2->Down?1:0,p=0;
     
     trace(3,"DrawTrk: level=%d\n",level);
@@ -99,10 +96,10 @@ void __fastcall TPlot::DrawTrk(int level)
             delete pos2;
         }
     }
-    if (!BtnSol12->Down&&BtnShowMap->Down) { // image
+    if (!BtnSol12->Down&&BtnShowImg->Down) { // image
         DrawTrkImage(level);
     }
-    if (BtnShowPoint->Down) { // map
+    if (BtnShowMap->Down) { // map
         DrawTrkMap(level);
     }
     if (level) { // center +
@@ -126,7 +123,7 @@ void __fastcall TPlot::DrawTrk(int level)
     if (BtnSol1->Down) {
         pos=SolToPos(SolData,-1,QFlag->ItemIndex,0);
         DrawTrkPnt(pos,level,0);
-        if (BtnShowPoint->Down) {
+        if (BtnShowMap->Down) {
             DrawTrkPos(SolData[0].rb,0,8,CColor[2],"Base Station 1");
         }
         DrawTrkStat(pos,header,p++);
@@ -136,7 +133,7 @@ void __fastcall TPlot::DrawTrk(int level)
     if (BtnSol2->Down) {
         pos=SolToPos(SolData+1,-1,QFlag->ItemIndex,0);
         DrawTrkPnt(pos,level,1);
-        if (BtnShowPoint->Down) {
+        if (BtnShowMap->Down) {
             DrawTrkPos(SolData[1].rb,0,8,CColor[2],"Base Station 2");
         }
         DrawTrkStat(pos,header,p++);
@@ -216,7 +213,7 @@ void __fastcall TPlot::DrawTrk(int level)
         delete pos1;
         delete pos2;
     }
-    if (BtnShowPoint->Down) {
+    if (BtnShowMap->Down) {
         for (i=0;i<NWayPnt;i++) {
             pnt[0]=PntPos[i][0]*D2R;
             pnt[1]=PntPos[i][1]*D2R;
@@ -251,11 +248,24 @@ void __fastcall TPlot::DrawTrk(int level)
         DrawLabel(GraphT,p2,label,0,1);
     }
     if (!level) { // center +
-        GraphT->GetPos(p1,p2);
-        p1.x=(p1.x+p2.x)/2;
-        p1.y=(p1.y+p2.y)/2;
+        GraphT->GetCent(xt,yt);
+        GraphT->ToPoint(xt,yt,p1);
         DrawMark(GraphT,p1,5,CColor[2],20,0);
     }
+    // update geview and gmview center
+    if (level&&norm(OPos,3)>0.0) {
+        GraphT->GetCent(xt,yt);
+        GraphT->ToPoint(xt,yt,p1);
+        GraphT->ToPos(p1,enu[0],enu[1]);
+        ecef2pos(OPos,opos);
+        enu2ecef(opos,enu,rr);
+        for (i=0;i<3;i++) rr[i]+=OPos[i];
+        ecef2pos(rr,cent);
+        
+        GoogleEarthView->SetCent(cent[0]*R2D,cent[1]*R2D);
+        GoogleMapView->SetCent(cent[0]*R2D,cent[1]*R2D);
+    }
+    Refresh_GEView();
 }
 // draw map-image on track-plot ---------------------------------------------
 void __fastcall TPlot::DrawTrkImage(int level)
@@ -361,7 +371,7 @@ void __fastcall TPlot::DrawTrkPnt(const TIMEPOS *pos, int level, int style)
     }
     if (level&&PlotStyle<2) {
         color=new TColor [pos->n];
-        if (BtnShowMap->Down) {
+        if (BtnShowImg->Down) {
             for (i=0;i<pos->n;i++) color[i]=CColor[0];
             GraphT->DrawMarks(pos->x,pos->y,color,pos->n,0,MarkSize+2,0);
         }
@@ -1079,7 +1089,7 @@ void __fastcall TPlot::DrawSky(int level)
     GraphS->GetLim(xl,yl);
     r=(xl[1]-xl[0]<yl[1]-yl[0]?xl[1]-xl[0]:yl[1]-yl[0])*0.45;
     
-    if (BtnShowMap->Down) {
+    if (BtnShowImg->Down) {
         DrawSkyImage(level);
     }
     if (BtnShowSkyplot->Down) {
@@ -1735,7 +1745,7 @@ void __fastcall TPlot::DrawMpS(int level)
     GraphS->GetLim(xl,yl);
     r=(xl[1]-xl[0]<yl[1]-yl[0]?xl[1]-xl[0]:yl[1]-yl[0])*0.45;
     
-    if (BtnShowMap->Down) {
+    if (BtnShowImg->Down) {
         DrawSkyImage(level);
     }
     if (BtnShowSkyplot->Down) {
@@ -1971,11 +1981,12 @@ void __fastcall TPlot::DrawMark(TGraph *g, TPoint p, int mark, TColor color,
 {
     g->DrawMark(p,mark,color,CColor[0],size,rot);
 }
-// refresh google earth view --------------------------------------------------
+// refresh google earth/map view --------------------------------------------
 void __fastcall TPlot::Refresh_GEView(void)
 {
     AnsiString func;
     TIMEPOS *vel;
+    TPoint p;
     sol_t *sol;
     double pos[3]={0},heading,ddeg;
     int i,opts[12],sel=!BtnSol1->Down&&BtnSol2->Down?1:0;
@@ -2059,7 +2070,7 @@ void __fastcall TPlot::Refresh_GEView(void)
         GoogleEarthView->HideTrack(2);
     }
     // update points
-    if (BtnShowPoint->Down) {
+    if (BtnShowMap->Down) {
         GoogleEarthView->ShowPoint();
     }
     else {

@@ -132,6 +132,7 @@ __published:
 	TSpeedButton *BtnTLESatView;
 	TLabel *Label37;
 	TComboBox *MaxMP;
+	TCheckBox *NavSys7;
 	void __fastcall BtnOKClick(TObject *Sender);
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall BtnColor1Click(TObject *Sender);

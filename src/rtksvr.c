@@ -28,6 +28,7 @@
 *           2015/04/29  1.10 fix probram on ssr orbit/clock inconsistency
 *           2015/07/31  1.11 add phase bias (fcb) correction
 *           2015/12/05  1.12 support opt->pppopt=-DIS_FCB
+*           2016/07/01  1.13 support averaging single pos as base position
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -212,7 +213,7 @@ static void updatesvr(rtksvr_t *svr, int ret, obs_t *obs, nav_t *nav, int sat,
         svr->nmsg[index][2]++;
     }
     else if (ret==5) { /* antenna postion parameters */
-        if (svr->rtk.opt.refpos==4&&index==1) {
+        if (svr->rtk.opt.refpos==POSOPT_RTCM&&index==1) {
             for (i=0;i<3;i++) {
                 svr->rtk.rb[i]=svr->rtcm[1].sta.pos[i];
             }
@@ -227,6 +228,26 @@ static void updatesvr(rtksvr_t *svr, int ret, obs_t *obs, nav_t *nav, int sat,
             }
             else { /* enu */
                 enu2ecef(pos,svr->rtcm[1].sta.del,dr);
+                for (i=0;i<3;i++) {
+                    svr->rtk.rb[i]+=dr[i];
+                }
+            }
+        }
+        else if (svr->rtk.opt.refpos==POSOPT_RAW&&index==1) {
+            for (i=0;i<3;i++) {
+                svr->rtk.rb[i]=svr->raw[1].sta.pos[i];
+            }
+            /* antenna delta */
+            ecef2pos(svr->rtk.rb,pos);
+            if (svr->raw[1].sta.deltype) { /* xyz */
+                del[2]=svr->raw[1].sta.hgt;
+                enu2ecef(pos,del,dr);
+                for (i=0;i<3;i++) {
+                    svr->rtk.rb[i]+=svr->raw[1].sta.del[i]+dr[i];
+                }
+            }
+            else { /* enu */
+                enu2ecef(pos,svr->raw[1].sta.del,dr);
                 for (i=0;i<3;i++) {
                     svr->rtk.rb[i]+=dr[i];
                 }
@@ -313,6 +334,15 @@ static int decoderaw(rtksvr_t *svr, int index)
         if (ret==1) {
             trace(0,"%d %10d T=%s NS=%2d\n",index,tickget(),
                   time_str(obs->data[0].time,0),obs->n);
+        }
+#endif
+
+#if 1 /* 2.4.3 b13 */
+        
+        /* update cmr rover observations cache */
+        if (svr->format[0]==STRFMT_CMR&svr->format[1]==STRFMT_CMR&&
+            index==0&&ret==1) {
+            update_cmr(&svr->raw[1],svr,obs);
         }
 #endif
         /* update rtk server */
@@ -414,9 +444,11 @@ static void *rtksvrthread(void *arg)
     rtksvr_t *svr=(rtksvr_t *)arg;
     obs_t obs;
     obsd_t data[MAXOBS*2];
+    sol_t sol={{0}};
     double tt;
     unsigned int tick,ticknmea;
     unsigned char *p,*q;
+    char msg[128];
     int i,j,n,fobs[3]={0},cycle,cputime;
     
     tracet(3,"rtksvrthread:\n");
@@ -455,6 +487,18 @@ static void *rtksvrthread(void *arg)
                 /* decode receiver raw/rtcm data */
                 fobs[i]=decoderaw(svr,i);
             }
+        }
+        /* averaging single base pos */
+        if (fobs[1]>0&&svr->rtk.opt.refpos==POSOPT_SINGLE) {
+            if ((svr->rtk.opt.maxaveep<=0||svr->nave<svr->rtk.opt.maxaveep)&&
+                pntpos(svr->obs[1][0].data,svr->obs[1][0].n,&svr->nav,
+                       &svr->rtk.opt,&sol,NULL,NULL,msg)) {
+                svr->nave++;
+                for (i=0;i<3;i++) {
+                    svr->rb_ave[i]+=(sol.rr[i]-svr->rb_ave[i])/svr->nave;
+                }
+            }
+            for (i=0;i<3;i++) svr->rtk.rb[i]=svr->rb_ave[i];
         }
         for (i=0;i<fobs[0];i++) { /* for each rover observation data */
             obs.n=0;
@@ -561,7 +605,8 @@ extern int rtksvrinit(rtksvr_t *svr)
     svr->moni=NULL;
     svr->tick=0;
     svr->thread=0;
-    svr->cputime=svr->prcout=0;
+    svr->cputime=svr->prcout=svr->nave=0;
+    for (i=0;i<3;i++) svr->rb_ave[i]=0.0;
     
     if (!(svr->nav.eph =(eph_t  *)malloc(sizeof(eph_t )*MAXSAT *2))||
         !(svr->nav.geph=(geph_t *)malloc(sizeof(geph_t)*NSATGLO*2))||
@@ -683,6 +728,10 @@ extern int rtksvrstart(rtksvr_t *svr, int cycle, int buffsize, int *strs,
     rtkfree(&svr->rtk);
     rtkinit(&svr->rtk,prcopt);
     
+    if (prcopt->initrst) { /* init averaging pos by restart */
+        svr->nave=0;
+        for (i=0;i<3;i++) svr->rb_ave[i]=0.0;
+    }
     for (i=0;i<3;i++) { /* input/log streams */
         svr->nb[i]=svr->npb[i]=0;
         if (!(svr->buff[i]=(unsigned char *)malloc(buffsize))||
@@ -694,7 +743,7 @@ extern int rtksvrstart(rtksvr_t *svr, int cycle, int buffsize, int *strs,
         for (j=0;j<MAXOBSBUF;j++) svr->obs[i][j].n=0;
         
         /* initialize receiver raw and rtcm control */
-        init_raw (svr->raw +i);
+        init_raw(svr->raw+i,formats[i]);
         init_rtcm(svr->rtcm+i);
         
         /* set receiver and rtcm option */
@@ -715,8 +764,10 @@ extern int rtksvrstart(rtksvr_t *svr, int cycle, int buffsize, int *strs,
         svr->solopt[i]=solopt[i];
     }
     /* set base station position */
-    for (i=0;i<6;i++) {
-        svr->rtk.rb[i]=i<3?prcopt->rb[i]:0.0;
+    if (prcopt->refpos!=POSOPT_SINGLE) {
+        for (i=0;i<6;i++) {
+            svr->rtk.rb[i]=i<3?prcopt->rb[i]:0.0;
+        }
     }
     /* update navigation data */
     for (i=0;i<MAXSAT *2;i++) svr->nav.eph [i].ttr=time0;
@@ -919,4 +970,46 @@ extern void rtksvrsstat(rtksvr_t *svr, int *sstat, char *msg)
         if (*s) p+=sprintf(p,"(%d) %s ",i+1,s);
     }
     rtksvrunlock(svr);
+}
+/* mark current position -------------------------------------------------------
+* open output/log stream
+* args   : rtksvr_t *svr    IO rtk server
+*          char    *name    I  marker name
+*          char    *comment I  comment string
+* return : status (1:ok 0:error)
+*-----------------------------------------------------------------------------*/
+extern int rtksvrmark(rtksvr_t *svr, const char *name, const char *comment)
+{
+    char buff[MAXSOLMSG+1],*p,*q;
+    int i,sum;
+    
+    tracet(4,"rtksvrmark:name=%s comment=%s\n",name,comment);
+    
+    if (!svr->state) return 0;
+    
+    rtksvrlock(svr);
+    
+    for (i=0;i<2;i++) {
+        p=buff;
+        if (svr->solopt[i].posf==SOLF_STAT) {
+            p+=sprintf(p,"$MARK,%s,%s\n",name,comment);
+        }
+        else if (svr->solopt[i].posf==SOLF_NMEA) {
+            p+=sprintf(p,"$GPTXT,01,01,02,MARK:%s,%s",name,comment);
+            for (q=(char *)buff+1,sum=0;*q;q++) sum^=*q; /* check-sum */
+            p+=sprintf(p,"*%02X%c%c",sum,0x0D,0x0A);
+        }
+        else {
+            p+=sprintf(p,"%s MARK: %s,%s\n",COMMENTH,name,comment);
+        }
+        strwrite(svr->stream+i+3,(unsigned char *)buff,p-buff);
+        saveoutbuf(svr,(unsigned char *)buff,p-buff,i);
+    }
+    if (svr->moni) {
+        p=buff;
+        p+=sprintf(p,"%s MARK: %s,%s\n",COMMENTH,name,comment);
+        strwrite(svr->moni,(unsigned char *)buff,p-buff);
+    }
+    rtksvrunlock(svr);
+    return 1;
 }

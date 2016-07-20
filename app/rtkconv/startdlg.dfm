@@ -43,13 +43,12 @@ object StartDialog: TStartDialog
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 2
-    ExplicitWidth = 224
     object Label1: TLabel
       Left = 10
       Top = 8
-      Width = 224
+      Width = 227
       Height = 13
-      Caption = 'Input Approx. Log Start Time (GPST) for RTCM'
+      Caption = 'Input Approx. Log Start Time (GPST)'
     end
     object TimeY1: TEdit
       Left = 10

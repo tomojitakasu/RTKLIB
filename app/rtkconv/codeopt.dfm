@@ -3,7 +3,7 @@ object CodeOptDialog: TCodeOptDialog
   Top = 0
   BorderStyle = bsDialog
   Caption = 'Signal Mask'
-  ClientHeight = 295
+  ClientHeight = 333
   ClientWidth = 397
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -18,7 +18,7 @@ object CodeOptDialog: TCodeOptDialog
   TextHeight = 13
   object GroupBox5: TGroupBox
     Left = 0
-    Top = 261
+    Top = 296
     Width = 166
     Height = 34
     Caption = 'SBAS'
@@ -57,20 +57,20 @@ object CodeOptDialog: TCodeOptDialog
     end
   end
   object BtnOk: TButton
-    Left = 254
-    Top = 271
+    Left = 253
+    Top = 301
     Width = 71
-    Height = 23
+    Height = 29
     Caption = 'OK'
     ModalResult = 1
     TabOrder = 0
     OnClick = BtnOkClick
   end
   object BtnCancel: TButton
-    Left = 325
-    Top = 271
+    Left = 324
+    Top = 301
     Width = 71
-    Height = 23
+    Height = 29
     Cancel = True
     Caption = 'Cancel'
     ModalResult = 2
@@ -597,10 +597,10 @@ object CodeOptDialog: TCodeOptDialog
     end
   end
   object BtnSetAll: TButton
-    Left = 179
-    Top = 271
+    Left = 180
+    Top = 301
     Width = 61
-    Height = 23
+    Height = 29
     Caption = 'Set All'
     TabOrder = 7
     OnClick = BtnSetAllClick
@@ -617,7 +617,7 @@ object CodeOptDialog: TCodeOptDialog
       Top = 14
       Width = 35
       Height = 16
-      Caption = '1I'
+      Caption = '2I'
       Enabled = False
       TabOrder = 2
     end
@@ -662,7 +662,7 @@ object CodeOptDialog: TCodeOptDialog
       Top = 14
       Width = 34
       Height = 16
-      Caption = '1Q'
+      Caption = '2Q'
       Enabled = False
       TabOrder = 5
     end
@@ -671,7 +671,7 @@ object CodeOptDialog: TCodeOptDialog
       Top = 14
       Width = 34
       Height = 16
-      Caption = '1X'
+      Caption = '2X'
       Enabled = False
       TabOrder = 6
     end
@@ -692,6 +692,86 @@ object CodeOptDialog: TCodeOptDialog
       Caption = '6X'
       Enabled = False
       TabOrder = 8
+    end
+  end
+  object GroupBox7: TGroupBox
+    Left = 0
+    Top = 262
+    Width = 393
+    Height = 34
+    Caption = 'IRNSS'
+    TabOrder = 9
+    object I49: TCheckBox
+      Left = 10
+      Top = 14
+      Width = 35
+      Height = 16
+      Caption = '5A'
+      Enabled = False
+      TabOrder = 2
+    end
+    object I54: TCheckBox
+      Left = 238
+      Top = 14
+      Width = 32
+      Height = 16
+      Caption = '9C'
+      Enabled = False
+      TabOrder = 0
+    end
+    object I26: TCheckBox
+      Left = 124
+      Top = 14
+      Width = 34
+      Height = 16
+      Caption = '5X'
+      Enabled = False
+      TabOrder = 3
+    end
+    object I52: TCheckBox
+      Left = 162
+      Top = 14
+      Width = 44
+      Height = 16
+      Caption = '9A'
+      Enabled = False
+      TabOrder = 4
+    end
+    object I53: TCheckBox
+      Left = 201
+      Top = 14
+      Width = 34
+      Height = 16
+      Caption = '9B'
+      Enabled = False
+      TabOrder = 1
+    end
+    object I50: TCheckBox
+      Left = 48
+      Top = 14
+      Width = 34
+      Height = 16
+      Caption = '5B'
+      Enabled = False
+      TabOrder = 5
+    end
+    object I51: TCheckBox
+      Left = 86
+      Top = 14
+      Width = 34
+      Height = 16
+      Caption = '5C'
+      Enabled = False
+      TabOrder = 6
+    end
+    object I55: TCheckBox
+      Left = 276
+      Top = 14
+      Width = 32
+      Height = 16
+      Caption = '9X'
+      Enabled = False
+      TabOrder = 7
     end
   end
 end

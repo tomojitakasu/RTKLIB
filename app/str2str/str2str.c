@@ -20,6 +20,7 @@
 *           2016/01/23  1.10 enable septentrio
 *           2016/01/26  1.11 fix bug on station position by -p option (#126)
 *                            add option -px
+*           2016/07/01  1.12 support CMR/CMR+
 *-----------------------------------------------------------------------------*/
 #include <signal.h>
 #include <unistd.h>
@@ -79,6 +80,7 @@ static const char *help[]={
 "    binex        : BINEX (only in)",
 "    rt17         : Trimble RT17 (only in)",
 "    sbf          : Septentrio SBF (only in)",
+"    cmr          : CMR/CMR+ (only in)",
 "",
 " -msg \"type[(tint)][,type[(tint)]...]\"",
 "                   rtcm message types and output intervals (s)",
@@ -133,6 +135,7 @@ static void decodefmt(char *path, int *fmt)
         else if (!strcmp(p,"#binex")) *fmt=STRFMT_BINEX;
         else if (!strcmp(p,"#rt17" )) *fmt=STRFMT_RT17;
         else if (!strcmp(p,"#sbf"  )) *fmt=STRFMT_SEPT;
+        else if (!strcmp(p,"#cmr"  )) *fmt=STRFMT_CMR;
         else return;
         *p='\0';
     }

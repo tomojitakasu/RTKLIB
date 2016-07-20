@@ -82,7 +82,7 @@
 		<PropertyGroup Condition="'$(Base_Win32)'!=''">
 			<BRCC_Defines>_RTLDLL;WIN32;TRACE;MKL;ENAGLO;ENAQZS;ENAGAL;NFREQ=3;$(BRCC_Defines)</BRCC_Defines>
 			<TASM_Defines>_RTLDLL;WIN32;TRACE;MKL;ENAGLO;ENAQZS;ENAGAL;NFREQ=3;$(TASM_Defines)</TASM_Defines>
-			<BCC_Defines>_RTLDLL;WIN32;TRACE;MKL;ENAGLO;ENAQZS;ENAGAL;ENACMP;NFREQ=3;NEXOBS=3;$(BCC_Defines)</BCC_Defines>
+			<BCC_Defines>_RTLDLL;WIN32;TRACE;MKL;ENAGLO;ENAQZS;ENAGAL;ENACMP;ENAIRN;NFREQ=3;$(BCC_Defines)</BCC_Defines>
 			<BCC_UserSuppliedOptions> -tWM -AT -xp</BCC_UserSuppliedOptions>
 			<ILINK_LibraryPath>..\..\lib\omf;$(ILINK_LibraryPath)</ILINK_LibraryPath>
 			<DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
@@ -306,14 +306,14 @@
 			</CppCompile>
 			<FormResources Include="..\appcmn\viewer.dfm"/>
 			<FormResources Include="..\appcmn\timedlg.dfm"/>
-			<FormResources Include="..\rtkpost\extopt.dfm"/>
 			<FormResources Include="..\appcmn\vieweropt.dfm"/>
-			<FormResources Include="..\appcmn\refdlg.dfm"/>
+			<FormResources Include="..\rtkpost\kmzconv.dfm"/>
+			<FormResources Include="..\rtkpost\extopt.dfm"/>
 			<FormResources Include="..\appcmn\confdlg.dfm"/>
 			<FormResources Include="..\appcmn\aboutdlg.dfm"/>
-			<FormResources Include="..\appcmn\maskoptdlg.dfm"/>
 			<FormResources Include="..\appcmn\keydlg.dfm"/>
-			<FormResources Include="..\rtkpost\kmzconv.dfm"/>
+			<FormResources Include="..\appcmn\refdlg.dfm"/>
+			<FormResources Include="..\appcmn\maskoptdlg.dfm"/>
 			<FormResources Include="..\rtkpost\postopt.dfm"/>
 			<FormResources Include="..\rtkpost\postmain.dfm"/>
 			<BuildConfiguration Include="Release">

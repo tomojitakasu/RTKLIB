@@ -3,7 +3,7 @@
 BINDIR  = /usr/local/bin
 SRC     = ../../../src
 
-OPTS    = -DTRACE -DENAGLO -DENAQZS -DENAGAL -DNFREQ=3
+OPTS    = -DTRACE -DENAGLO -DENAQZS -DENAGAL -DENACMP -DENAIRN -DNFREQ=3
 
 # for no lapack
 CFLAGS  = -Wall -O3 -ansi -pedantic -Wno-unused-but-set-variable -I$(SRC) $(OPTS) -g

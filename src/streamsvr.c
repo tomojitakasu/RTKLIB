@@ -46,8 +46,8 @@ static int is_tint(gtime_t time, double tint)
 }
 /* new stream converter --------------------------------------------------------
 * generate new stream converter
-* args   : int    itype     I   input stream type  (STR_???)
-*          int    otype     I   output stream type (STR_???)
+* args   : int    itype     I   input stream type  (STRFMT_???)
+*          int    otype     I   output stream type (STRFMT_???)
 *          char   *msgs     I   output message type and interval (, separated)
 *          int    staid     I   station id
 *          int    stasel    I   station info selection (0:remote,1:local)
@@ -86,7 +86,7 @@ extern strconv_t *strconvnew(int itype, int otype, const char *msgs, int staid,
         free(conv);
         return NULL;
     }
-    if (!init_raw(&conv->raw)) {
+    if (!init_raw(&conv->raw,itype)) {
         free_rtcm(&conv->rtcm);
         free_rtcm(&conv->out);
         free(conv);

@@ -23,6 +23,7 @@
 
 
 
+
 USEFORM("..\appcmn\tcpoptdlg.cpp", TcpOptDialog);
 USEFORM("..\appcmn\serioptdlg.cpp", SerialOptDialog);
 USEFORM("..\appcmn\refdlg.cpp", RefDialog);
@@ -36,12 +37,12 @@ USEFORM("..\appcmn\aboutdlg.cpp", AboutDialog);
 USEFORM("..\appcmn\confdlg.cpp", ConfDialog);
 USEFORM("..\appcmn\keydlg.cpp", KeyDialog);
 USEFORM("..\appcmn\ftpoptdlg.cpp", FtpOptDialog);
+USEFORM("..\rtknavi\markdlg.cpp", MarkDialog);
 USEFORM("..\rtknavi\naviopt.cpp", OptDialog);
 USEFORM("..\rtknavi\navimain.cpp", MainForm);
 USEFORM("..\rtknavi\mondlg.cpp", MonitorDialog);
 USEFORM("..\rtknavi\outstrdlg.cpp", OutputStrDialog);
 USEFORM("..\rtknavi\rcvoptdlg.cpp", RcvOptDialog);
-USEFORM("..\rtknavi\markdlg.cpp", MarkDialog);
 //---------------------------------------------------------------------------
 WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {

@@ -55,3 +55,9 @@ UPDATE HISTORY
                       add menu Map Layer of RTKPLOT
                       support solution status format as input of RTKPLOT
                       support solution status format as output of RTKNAVI
+2016/07/19  2.4.3 b13 support IRNSS
+                      support RINEX 3.03
+                      add src/rcv/cmr.c
+                      add half-cycle vaild check for ublox ubx-trk-meas
+                      add leap second before 2017/1/1 00:00:00
+                      support averaging single pos as base position

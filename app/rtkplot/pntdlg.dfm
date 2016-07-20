@@ -27,7 +27,6 @@ object PntDialog: TPntDialog
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 0
-    ExplicitWidth = 380
     object Label2: TLabel
       Left = 213
       Top = 2
@@ -60,7 +59,6 @@ object PntDialog: TPntDialog
     BevelOuter = bvNone
     Caption = 'Panel2'
     TabOrder = 1
-    ExplicitWidth = 380
     object PntList: TStringGrid
       Left = 1
       Top = 1
@@ -80,8 +78,8 @@ object PntDialog: TPntDialog
       ScrollBars = ssVertical
       TabOrder = 0
       OnClick = PntListClick
+      OnDblClick = PntListDblClick
       OnSetEditText = PntListSetEditText
-      ExplicitWidth = 378
       ColWidths = (
         89
         95
@@ -96,10 +94,6 @@ object PntDialog: TPntDialog
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 2
-    ExplicitLeft = 161
-    ExplicitTop = 316
-    ExplicitWidth = 185
-    ExplicitHeight = 41
     object BtnAdd: TButton
       Left = 1
       Top = 6

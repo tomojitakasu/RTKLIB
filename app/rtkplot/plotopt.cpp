@@ -83,6 +83,7 @@ void __fastcall TPlotOptDialog::FormShow(TObject *Sender)
     NavSys4->Checked=Plot->NavSys&SYS_QZS;
     NavSys5->Checked=Plot->NavSys&SYS_SBS;
     NavSys6->Checked=Plot->NavSys&SYS_CMP;
+    NavSys7->Checked=Plot->NavSys&SYS_IRN;
     AnimCycle->Text=s.sprintf("%d",Plot->AnimCycle);
     RefCycle ->Text=s.sprintf("%d",Plot->RefCycle );
     HideLowSat->ItemIndex=Plot->HideLowSat;
@@ -149,7 +150,8 @@ void __fastcall TPlotOptDialog::BtnOKClick(TObject *Sender)
                  (NavSys3->Checked?SYS_GAL:0)|
                  (NavSys4->Checked?SYS_QZS:0)|
                  (NavSys5->Checked?SYS_SBS:0)|
-                 (NavSys6->Checked?SYS_CMP:0);
+                 (NavSys6->Checked?SYS_CMP:0)|
+                 (NavSys7->Checked?SYS_IRN:0);
     Plot->AnimCycle=AnimCycle->Text.ToInt();
     Plot->RefCycle =RefCycle ->Text.ToInt();
     Plot->HideLowSat=HideLowSat->ItemIndex;

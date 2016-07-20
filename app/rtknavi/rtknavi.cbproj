@@ -60,7 +60,7 @@
 			<TASM_Defines>_RTLDLL;NO_STRICT;WIN32;TRACE;ENAGLO;ENAQZS;ENAGAL;NFREQ=3;$(TASM_Defines)</TASM_Defines>
 			<BRCC_Defines>_RTLDLL;NO_STRICT;WIN32;TRACE;ENAGLO;ENAQZS;ENAGAL;NFREQ=3;$(BRCC_Defines)</BRCC_Defines>
 			<ILINK_AppType>Windows</ILINK_AppType>
-			<BCC_Defines>_RTLDLL;NO_STRICT;WIN32;TRACE;ENAGLO;ENAQZS;ENAGAL;ENACMP;NFREQ=3;NEXOBS=3;ENALEX;$(BCC_Defines)</BCC_Defines>
+			<BCC_Defines>_RTLDLL;NO_STRICT;WIN32;TRACE;ENAGLO;ENAQZS;ENAGAL;ENAIRN;ENACMP;NFREQ=3;NEXOBS=3;ENALEX;$(BCC_Defines)</BCC_Defines>
 			<BRCC_IncludePath>..\..\..\rtklib_extlex;..\..\extlex;..\..\src\rcv;..\appcmn;..\..\src;$(BDS)\include;$(BDS)\include\dinkumware;$(BDS)\include\vcl;$(BRCC_IncludePath)</BRCC_IncludePath>
 			<BCC_PCHWithExternalTypeFiles>false</BCC_PCHWithExternalTypeFiles>
 			<BCC_UserSuppliedOptions> -tWM</BCC_UserSuppliedOptions>
@@ -295,6 +295,9 @@
 			<CppCompile Include="..\..\src\rcv\binex.c">
 				<BuildOrder>48</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="..\..\src\rcv\cmr.c">
+				<BuildOrder>61</BuildOrder>
+			</CppCompile>
 			<CppCompile Include="..\..\src\rcv\crescent.c">
 				<BuildOrder>49</BuildOrder>
 			</CppCompile>
@@ -380,12 +383,12 @@
 			<FormResources Include="..\appcmn\confdlg.dfm"/>
 			<FormResources Include="..\appcmn\keydlg.dfm"/>
 			<FormResources Include="..\appcmn\ftpoptdlg.dfm"/>
-			<FormResources Include="navimain.dfm"/>
-			<FormResources Include="mondlg.dfm"/>
 			<FormResources Include="markdlg.dfm"/>
 			<FormResources Include="naviopt.dfm"/>
-			<FormResources Include="rcvoptdlg.dfm"/>
+			<FormResources Include="navimain.dfm"/>
+			<FormResources Include="mondlg.dfm"/>
 			<FormResources Include="outstrdlg.dfm"/>
+			<FormResources Include="rcvoptdlg.dfm"/>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>
 				<CfgParent>Base</CfgParent>

@@ -432,8 +432,10 @@ void TGraph::DrawText(TPoint p, AnsiString str, TColor color, int ha, int va,
 	// va  = vertical alignment   (0: center, 1: bottom, 2: top  )
 	// rot = rotation angle (deg)
 
-	UnicodeString u_str(str);
-	
+    wchar_t buff[1024]={0};
+    ::MultiByteToWideChar(CP_UTF8,0,str.c_str(),-1,buff,2048);
+    UnicodeString u_str(buff);
+    
 	TCanvas *c=Canvas;
 	AnsiString Font_Name=c->Font->Name;
 	LOGFONT lf={0};

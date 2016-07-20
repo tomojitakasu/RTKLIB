@@ -249,6 +249,9 @@
 			<CppCompile Include="..\..\src\rcv\binex.c">
 				<BuildOrder>36</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="..\..\src\rcv\cmr.c">
+				<BuildOrder>38</BuildOrder>
+			</CppCompile>
 			<CppCompile Include="..\..\src\rcv\crescent.c">
 				<BuildOrder>27</BuildOrder>
 			</CppCompile>

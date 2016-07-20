@@ -398,7 +398,7 @@ void __fastcall TMainForm::BtnPlotClick(TObject *Sender)
 // callback on button-options -----------------------------------------------
 void __fastcall TMainForm::BtnOptClick(TObject *Sender)
 {
-    int i,chgmoni=0;
+    int i,chgmoni=0,panelstack=PanelStack;
     
     trace(3,"BtnOptClick\n");
     
@@ -426,7 +426,6 @@ void __fastcall TMainForm::BtnOptClick(TObject *Sender)
     OptDialog->TLEFileF   =TLEFileF;
     OptDialog->TLESatFileF=TLESatFileF;
     OptDialog->LocalDirectory=LocalDirectory;
-    OptDialog->InitRestart=InitRestart;
     
     OptDialog->SvrCycle   =SvrCycle;
     OptDialog->TimeoutTime=TimeoutTime;
@@ -478,7 +477,6 @@ void __fastcall TMainForm::BtnOptClick(TObject *Sender)
     TLEFileF   =OptDialog->TLEFileF;
     TLESatFileF=OptDialog->TLESatFileF;
     LocalDirectory=OptDialog->LocalDirectory;
-    InitRestart=OptDialog->InitRestart;
     
     SvrCycle   =OptDialog->SvrCycle;
     TimeoutTime=OptDialog->TimeoutTime;
@@ -495,11 +493,14 @@ void __fastcall TMainForm::BtnOptClick(TObject *Sender)
     if (MoniPort!=OptDialog->MoniPort) chgmoni=1;
     MoniPort   =OptDialog->MoniPort;
     PanelStack =OptDialog->PanelStack;
-    
     PosFont->Assign(OptDialog->PosFont);
     UpdateFont();
+    if (panelstack==0&&PanelStack==1) {
+        Panel21->Width=170;
+        Panel221->Width=170;
+        Panel222->Width=170;
+    }
     UpdatePanel();
-    
     if (SolBuffSize!=OptDialog->SolBuffSize) {
         SolBuffSize=OptDialog->SolBuffSize;
         InitSolBuff();
@@ -2299,6 +2300,7 @@ void __fastcall TMainForm::LoadOpt(void)
     PrcOpt.posopt[4]=ini->ReadInteger("prcopt", "posopt5",         0);
     PrcOpt.posopt[5]=ini->ReadInteger("prcopt", "posopt6",         0);
     PrcOpt.maxaveep =ini->ReadInteger("prcopt", "maxaveep",     3600);
+    PrcOpt.initrst  =ini->ReadInteger("prcopt", "initrst",         1);
     
     BaselineC       =ini->ReadInteger("prcopt", "baselinec",       0);
     Baseline[0]     =ini->ReadFloat  ("prcopt", "baseline1",     0.0);
@@ -2336,7 +2338,6 @@ void __fastcall TMainForm::LoadOpt(void)
     TLEFileF        =ini->ReadString ("setting","tlefile",        "");
     TLESatFileF     =ini->ReadString ("setting","tlesatfile",     "");
     LocalDirectory  =ini->ReadString ("setting","localdirectory","C:\\Temp");
-    InitRestart     =ini->ReadInteger("setting","initrestart",     0);
     
     SvrCycle        =ini->ReadInteger("setting","svrcycle",       10);
     TimeoutTime     =ini->ReadInteger("setting","timeouttime", 10000);
@@ -2514,6 +2515,7 @@ void __fastcall TMainForm::SaveOpt(void)
     ini->WriteInteger("prcopt", "posopt5",    PrcOpt.posopt[4]   );
     ini->WriteInteger("prcopt", "posopt6",    PrcOpt.posopt[5]   );
     ini->WriteInteger("prcopt", "maxaveep",   PrcOpt.maxaveep    );
+    ini->WriteInteger("prcopt", "initrst",    PrcOpt.initrst     );
     
     ini->WriteFloat  ("prcopt", "baselinec",  BaselineC          );
     ini->WriteFloat  ("prcopt", "baseline1",  Baseline[0]        );
@@ -2550,7 +2552,6 @@ void __fastcall TMainForm::SaveOpt(void)
     ini->WriteString ("setting","tlefile",    TLEFileF           );
     ini->WriteString ("setting","tlesatfile", TLESatFileF        );
     ini->WriteString ("setting","localdirectory",LocalDirectory  );
-    ini->WriteInteger("setting","initrestart",InitRestart        );
     
     ini->WriteInteger("setting","svrcycle",   SvrCycle           );
     ini->WriteInteger("setting","timeouttime",TimeoutTime        );

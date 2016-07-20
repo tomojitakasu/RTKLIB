@@ -227,6 +227,7 @@ __published:
 	TLabel *LabelMaxAveEp;
 	TEdit *MaxAveEp;
 	TCheckBox *ChkInitRestart;
+	TCheckBox *NavSys7;
 	void __fastcall BtnOkClick(TObject *Sender);
 	void __fastcall RovAntPcvClick(TObject *Sender);
 	void __fastcall FormShow(TObject *Sender);
@@ -282,7 +283,7 @@ public:
 	int NmeaReq,NmeaCycle,TimeoutTime,ReconTime,DgpsCorr,SbasCorr;
 	int DebugTraceF,DebugStatusF;
 	int RovPosTypeF,RefPosTypeF,RovAntPcvF,RefAntPcvF,BaselineC;
-	int MoniPort,FileSwapMargin,PanelStack,InitRestart;
+	int MoniPort,FileSwapMargin,PanelStack;
 	AnsiString ExSats,LocalDirectory;
 	AnsiString RovAntF,RefAntF,SatPcvFileF,AntPcvFileF,StaPosFileF;
 	AnsiString GeoidDataFileF,DCBFileF,EOPFileF,TLEFileF,TLESatFileF;

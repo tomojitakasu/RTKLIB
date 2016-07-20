@@ -146,6 +146,7 @@ object VecMapDialog: TVecMapDialog
           Width = 19
           Height = 17
           TabOrder = 2
+          OnClick = Vis1Click
         end
         object Layer1: TRadioButton
           Left = 32
@@ -685,6 +686,7 @@ object VecMapDialog: TVecMapDialog
           Width = 19
           Height = 17
           TabOrder = 2
+          OnClick = Vis1Click
         end
         object Layer11: TRadioButton
           Left = 32
@@ -738,6 +740,7 @@ object VecMapDialog: TVecMapDialog
           Width = 19
           Height = 17
           TabOrder = 2
+          OnClick = Vis1Click
         end
         object Layer12: TRadioButton
           Left = 32

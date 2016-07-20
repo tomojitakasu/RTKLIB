@@ -74,11 +74,12 @@ __published:
 	void __fastcall Panel2Gesture(TObject *Sender, const TGestureEventInfo &EventInfo,
           bool &Handled);
 	void __fastcall BtnOptClick(TObject *Sender);
+	void __fastcall FormResize(TObject *Sender);
 
 
 private:
     int State,Expand,Rotate,MarkVis[2],TrackVis[2];
-    double Lat,Lon,Range,Heading,LatSet,LonSet,RangeSet,HeadingSet;
+    double Lat,Lon,Range,Heading;
     double MarkPos[2][2];
     
     void __fastcall UpdateOpts (void);
@@ -86,7 +87,10 @@ private:
     void __fastcall ExecFunc   (AnsiString func);
 
 public:
+	int FixCent;
+	
 	__fastcall TGoogleEarthView(TComponent* Owner);
+    int __fastcall  GetState   (void);
     void __fastcall Init       (void);
     void __fastcall Clear      (void);
 	void __fastcall SetView    (double lat, double lon, double range, double heading);
