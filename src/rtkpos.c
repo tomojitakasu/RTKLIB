@@ -35,6 +35,7 @@
 *           2014/11/08 1.17 fix bug on ar-degradation by unhealthy satellites
 *           2015/03/23 1.18 residuals referenced to reference satellite
 *           2015/05/20 1.19 no output solution status file with Q=0
+*           2015/07/22 1.20 fix bug on base station position setting
 *-----------------------------------------------------------------------------*/
 #include <stdarg.h>
 #include "rtklib.h"
@@ -1812,6 +1813,11 @@ extern int rtkpos(rtk_t *rtk, const obsd_t *obs, int n, const nav_t *nav)
     trace(4,"obs=\n"); traceobs(4,obs,n);
     /*trace(5,"nav=\n"); tracenav(5,nav);*/
     
+    /* set base staion position */
+    if (opt->refpos<=POSOPT_RINEX&&opt->mode!=PMODE_SINGLE&&
+        opt->mode!=PMODE_MOVEB) {
+        for (i=0;i<6;i++) rtk->rb[i]=i<3?opt->rb[i]:0.0;
+    }
     /* count rover/base station observations */
     for (nu=0;nu   <n&&obs[nu   ].rcv==1;nu++) ;
     for (nr=0;nu+nr<n&&obs[nu+nr].rcv==2;nr++) ;
