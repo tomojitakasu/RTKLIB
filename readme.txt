@@ -61,4 +61,4 @@ UPDATE HISTORY
                       add half-cycle vaild check for ublox ubx-trk-meas
                       add leap second before 2017/1/1 00:00:00
                       support averaging single pos as base position
-2016/07/22  2.4.3 b14 fix a faital bug for baseline analysis
+2016/07/22  2.4.3 b14 fix a fatal bug for baseline analysis
