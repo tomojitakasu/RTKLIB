@@ -2379,6 +2379,8 @@ void __fastcall TMainForm::LoadOpt(void)
     TrkScale2       =ini->ReadInteger("setting","trkscale2",       5);
     BLMode1         =ini->ReadInteger("setting","blmode1",         0);
     BLMode2         =ini->ReadInteger("setting","blmode2",         0);
+    MarkerName      =ini->ReadString ("setting","markername",     "");
+    MarkerComment   =ini->ReadString ("setting","markercomment",  "");
     
     for (i=0;i<3;i++) {
         RovAntDel[i]=ini->ReadFloat("setting",s.sprintf("rovantdel_%d",i),0.0);
@@ -2593,6 +2595,8 @@ void __fastcall TMainForm::SaveOpt(void)
     ini->WriteInteger("setting","trkscale2",  TrkScale2          );
     ini->WriteInteger("setting","blmode1",    BLMode1            );
     ini->WriteInteger("setting","blmode2",    BLMode2            );
+    ini->WriteString ("setting","markername", MarkerName         );
+    ini->WriteString ("setting","markercomment",MarkerComment    );
     
     for (i=0;i<3;i++) {
         ini->WriteFloat("setting",s.sprintf("rovantdel_%d",i),RovAntDel[i]);
@@ -2644,8 +2648,12 @@ void __fastcall TMainForm::SaveOpt(void)
 void __fastcall TMainForm::BtnMarkClick(TObject *Sender)
 {
 	MarkDialog->PosMode=rtksvr.rtk.opt.mode;
+	MarkDialog->Marker=MarkerName;
+	MarkDialog->Comment=MarkerComment;
 	if (MarkDialog->ShowModal()!=mrOk) return;
 	rtksvr.rtk.opt.mode=MarkDialog->PosMode;
+	MarkerName=MarkDialog->Marker;
+	MarkerComment=MarkDialog->Comment;
 }
 //---------------------------------------------------------------------------
 

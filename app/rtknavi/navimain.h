@@ -252,6 +252,8 @@ public:
 	double PntPos[MAXMAPPNT][3];
 	int NMapPnt;
 	
+	AnsiString MarkerName,MarkerComment;
+	
 	__fastcall TMainForm(TComponent* Owner);
 };
 //---------------------------------------------------------------------------

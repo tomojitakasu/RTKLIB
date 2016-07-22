@@ -4,6 +4,7 @@
 #pragma hdrstop
 
 #include "rtklib.h"
+#include "keydlg.h"
 #include "markdlg.h"
 
 //---------------------------------------------------------------------------
@@ -31,7 +32,7 @@ void __fastcall TMarkDialog::BtnOkClick(TObject *Sender)
 {
 	AnsiString s;
 	AnsiString marker=MarkerName->Text;
-	AnsiString comment=CommentText->Text;
+	AnsiString comment=MarkerComment->Text;
 	char str1[32],str2[1024];
 	
 	if (RadioGo->Checked) {
@@ -57,6 +58,8 @@ void __fastcall TMarkDialog::BtnOkClick(TObject *Sender)
 		NMark++;
 		Label1->Caption=s.sprintf("%%r=%03d",NMark);
 	}
+	Marker=marker;
+	Comment=comment;
 }
 //---------------------------------------------------------------------------
 void __fastcall TMarkDialog::ChkMarkerNameClick(TObject *Sender)
@@ -66,6 +69,9 @@ void __fastcall TMarkDialog::ChkMarkerNameClick(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TMarkDialog::FormShow(TObject *Sender)
 {
+	MarkerName->Text=Marker;
+	MarkerComment->Text=Comment;
+	
 	if (PosMode==PMODE_STATIC||PosMode==PMODE_PPP_STATIC) {
 		RadioStop->Checked=true;
 	}
@@ -88,3 +94,11 @@ void __fastcall TMarkDialog::UpdateEnable(void)
 	LabelPosMode->Enabled=ena;
 	MarkerName->Enabled=ChkMarkerName->Checked;
 }
+//---------------------------------------------------------------------------
+void __fastcall TMarkDialog::BtnRepDlgClick(TObject *Sender)
+{
+	KeyDialog->Caption="Keyword Replacement in Marker Name";
+	KeyDialog->ShowModal();
+}
+//---------------------------------------------------------------------------
+
