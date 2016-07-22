@@ -498,7 +498,7 @@ static void *rtksvrthread(void *arg)
                     svr->rb_ave[i]+=(sol.rr[i]-svr->rb_ave[i])/svr->nave;
                 }
             }
-            for (i=0;i<3;i++) svr->rtk.rb[i]=svr->rb_ave[i];
+            for (i=0;i<3;i++) svr->rtk.opt.rb[i]=svr->rb_ave[i];
         }
         for (i=0;i<fobs[0];i++) { /* for each rover observation data */
             obs.n=0;
@@ -980,8 +980,9 @@ extern void rtksvrsstat(rtksvr_t *svr, int *sstat, char *msg)
 *-----------------------------------------------------------------------------*/
 extern int rtksvrmark(rtksvr_t *svr, const char *name, const char *comment)
 {
-    char buff[MAXSOLMSG+1],*p,*q;
-    int i,sum;
+    char buff[MAXSOLMSG+1],tstr[32],*p,*q;
+    double tow,pos[3];
+    int i,sum,week,qstat;
     
     tracet(4,"rtksvrmark:name=%s comment=%s\n",name,comment);
     
@@ -989,25 +990,37 @@ extern int rtksvrmark(rtksvr_t *svr, const char *name, const char *comment)
     
     rtksvrlock(svr);
     
+    time2str(svr->rtk.sol.time,tstr,3);
+    tow=time2gpst(svr->rtk.sol.time,&week);
+    ecef2pos(svr->rtk.sol.rr,pos);
+    
     for (i=0;i<2;i++) {
         p=buff;
         if (svr->solopt[i].posf==SOLF_STAT) {
-            p+=sprintf(p,"$MARK,%s,%s\n",name,comment);
+            p+=sprintf(p,"$MARK,%d,%.3f,%d,%.4f,%.4f,%.4f,%s,%s\n",week,tow,
+                       svr->rtk.sol.stat,svr->rtk.sol.rr[0],svr->rtk.sol.rr[1],
+                       svr->rtk.sol.rr[2],name,comment);
         }
         else if (svr->solopt[i].posf==SOLF_NMEA) {
-            p+=sprintf(p,"$GPTXT,01,01,02,MARK:%s,%s",name,comment);
+            p+=sprintf(p,"$GPTXT,01,01,02,MARK:%s,%s,%.9f,%.9f,%.4f,%d,%s",
+                       name,tstr,pos[0]*R2D,pos[1]*R2D,pos[2],svr->rtk.sol.stat,
+                       comment);
             for (q=(char *)buff+1,sum=0;*q;q++) sum^=*q; /* check-sum */
             p+=sprintf(p,"*%02X%c%c",sum,0x0D,0x0A);
         }
         else {
-            p+=sprintf(p,"%s MARK: %s,%s\n",COMMENTH,name,comment);
+            p+=sprintf(p,"%s MARK: %s,%s,%.9f,%.9f,%.4f,%d,%s\n",COMMENTH,
+                       name,tstr,pos[0]*R2D,pos[1]*R2D,pos[2],svr->rtk.sol.stat,
+                       comment);
         }
         strwrite(svr->stream+i+3,(unsigned char *)buff,p-buff);
         saveoutbuf(svr,(unsigned char *)buff,p-buff,i);
     }
     if (svr->moni) {
         p=buff;
-        p+=sprintf(p,"%s MARK: %s,%s\n",COMMENTH,name,comment);
+        p+=sprintf(p,"%s MARK: %s,%s,%.9f,%.9f,%.4f,%d,%s\n",COMMENTH,
+                   name,tstr,pos[0]*R2D,pos[1]*R2D,pos[2],svr->rtk.sol.stat,
+                   comment);
         strwrite(svr->moni,(unsigned char *)buff,p-buff);
     }
     rtksvrunlock(svr);
