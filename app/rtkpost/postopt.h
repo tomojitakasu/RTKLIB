@@ -222,6 +222,7 @@ __published:
 	TCheckBox *PosOpt6;
 	TLabel *Label23;
 	TEdit *PPPOpts;
+	TCheckBox *NavSys7;
 	void __fastcall BtnOkClick(TObject *Sender);
 	void __fastcall RovAntPcvClick(TObject *Sender);
 	void __fastcall FormShow(TObject *Sender);

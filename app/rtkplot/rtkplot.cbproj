@@ -90,7 +90,7 @@
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base_Win32)'!=''">
 			<TASM_Defines>_RTLDLL;WIN32;TRACE;ENAGLO;ENAGAL;ENAQZS;NFREQ=3;$(TASM_Defines)</TASM_Defines>
-			<BCC_Defines>_RTLDLL;WIN32;TRACE;ENAGLO;ENAGAL;ENAQZS;ENACMP;NEXOBS=3;NFREQ=3;$(BCC_Defines)</BCC_Defines>
+			<BCC_Defines>_RTLDLL;WIN32;TRACE;ENAGLO;ENAGAL;ENAQZS;ENACMP;ENAIRN;NEXOBS=3;NFREQ=3;$(BCC_Defines)</BCC_Defines>
 			<BRCC_Defines>_RTLDLL;WIN32;TRACE;ENAGLO;ENAGAL;ENAQZS;NFREQ=3;$(BRCC_Defines)</BRCC_Defines>
 			<BCC_UserSuppliedOptions> -tWM</BCC_UserSuppliedOptions>
 			<DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
@@ -352,6 +352,9 @@
 			</CppCompile>
 			<CppCompile Include="..\..\src\rcv\binex.c">
 				<BuildOrder>50</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\src\rcv\cmr.c">
+				<BuildOrder>61</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\..\src\rcv\crescent.c">
 				<BuildOrder>37</BuildOrder>

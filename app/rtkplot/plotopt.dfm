@@ -825,7 +825,7 @@ object PlotOptDialog: TPlotOptDialog
       Caption = 'Satellite System'
       TabOrder = 11
       object NavSys1: TCheckBox
-        Left = 13
+        Left = 8
         Top = 19
         Width = 45
         Height = 17
@@ -835,7 +835,7 @@ object PlotOptDialog: TPlotOptDialog
         TabOrder = 0
       end
       object NavSys2: TCheckBox
-        Left = 65
+        Left = 49
         Top = 19
         Width = 69
         Height = 17
@@ -843,36 +843,44 @@ object PlotOptDialog: TPlotOptDialog
         TabOrder = 1
       end
       object NavSys5: TCheckBox
-        Left = 65
-        Top = 38
+        Left = 8
+        Top = 41
         Width = 57
         Height = 17
-        Caption = 'SBAS'
+        Caption = 'SBS'
         TabOrder = 4
       end
       object NavSys3: TCheckBox
-        Left = 117
+        Left = 90
         Top = 19
         Width = 57
         Height = 17
-        Caption = 'Galileo'
+        Caption = 'GAL'
         TabOrder = 2
       end
       object NavSys4: TCheckBox
-        Left = 13
-        Top = 38
+        Left = 131
+        Top = 19
         Width = 47
         Height = 17
-        Caption = 'QZSS'
+        Caption = 'QZS'
         TabOrder = 3
       end
       object NavSys6: TCheckBox
-        Left = 117
-        Top = 38
+        Left = 49
+        Top = 41
         Width = 57
         Height = 17
-        Caption = 'BeiDou'
+        Caption = 'BDS'
         TabOrder = 5
+      end
+      object NavSys7: TCheckBox
+        Left = 90
+        Top = 41
+        Width = 57
+        Height = 17
+        Caption = 'IRN'
+        TabOrder = 6
       end
     end
     object ElMask: TComboBox
@@ -1235,8 +1243,8 @@ object PlotOptDialog: TPlotOptDialog
     Font.Name = 'Tahoma'
     Font.Style = []
     Options = []
-    Left = 177
-    Top = 348
+    Left = 175
+    Top = 349
   end
   object OpenDialog: TOpenDialog
     Filter = 
@@ -1244,6 +1252,6 @@ object PlotOptDialog: TPlotOptDialog
       'All File (*.*)|*.*'
     Options = [ofHideReadOnly, ofNoChangeDir, ofEnableSizing]
     Left = 148
-    Top = 352
+    Top = 350
   end
 end

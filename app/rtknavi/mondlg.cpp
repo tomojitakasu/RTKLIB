@@ -36,7 +36,7 @@ __fastcall TMonitorDialog::TMonitorDialog(TComponent* Owner)
 	
 	ScrollPos=0;
 	ObsMode=0;
-	ConFmt=0;
+	ConFmt=-1;
 	ConBuff=new TStringList;
 	ConBuff->Add("");
 	DoubleBuffered=true;
@@ -45,7 +45,7 @@ __fastcall TMonitorDialog::TMonitorDialog(TComponent* Owner)
 		SelFmt->Items->Add(formatstrs[i]);
 	}
 	init_rtcm(&rtcm);
-	init_raw(&raw);
+	init_raw(&raw,-1);
 }
 //---------------------------------------------------------------------------
 void __fastcall TMonitorDialog::FormShow(TObject *Sender)
@@ -93,7 +93,15 @@ void __fastcall TMonitorDialog::TypeChange(TObject *Sender)
 void __fastcall TMonitorDialog::SelFmtChange(TObject *Sender)
 {
 	AddConsole("\n",1,1);
-	ConFmt=SelFmt->ItemIndex;
+    
+    if (ConFmt>=3&&ConFmt<17) {
+        free_raw(&raw);
+    }
+    ConFmt=SelFmt->ItemIndex;
+    
+    if (ConFmt>=3&&ConFmt<17) {
+        init_raw(&raw,ConFmt-2);
+    }
 }
 //---------------------------------------------------------------------------
 void __fastcall TMonitorDialog::Timer1Timer(TObject *Sender)
@@ -242,7 +250,7 @@ void __fastcall TMonitorDialog::Timer2Timer(TObject *Sender)
 			}
 	    }
 	}
-	else if (ConFmt<16) {
+	else if (ConFmt<17) {
 		for (i=0;i<len;i++) {
 			input_raw(&raw,ConFmt-2,msg[i]);
 			if (raw.msgtype[0]) {
@@ -361,7 +369,7 @@ void __fastcall TMonitorDialog::ShowRtk(void)
 	AnsiString freq[]={"-","L1","L1+L2","L1+L2+L5","L1+L2+L5+L6","L1+L2+L5+L6+L7","L1+L2+L5+L6+L7+L8",""};
 	double *del,*off1,*off2,runtime,rt[3]={0},dop[4]={0};
 	double azel[MAXSAT*2],pos[3],vel[3];
-	int i,j,k,thread,cycle,state,rtkstat,nsat0,nsat1,prcout;
+	int i,j,k,thread,cycle,state,rtkstat,nsat0,nsat1,prcout,nave;
 	int cputime,nb[3]={0},nmsg[3][10]={{0}},ne;
 	char tstr[64],*ant,id[32],s1[64]="-",s2[64]="-",s3[64]="-";
 	char file[1024]="";
@@ -380,6 +388,7 @@ void __fastcall TMonitorDialog::ShowRtk(void)
 	nsat1=rtksvr.obs[1][0].n;
 	cputime=rtksvr.cputime;
 	prcout =rtksvr.prcout;
+	nave=rtksvr.nave;
 	for (i=0;i<3;i++) nb[i]=rtksvr.nb[i];
 	for (i=0;i<3;i++) for (j=0;j<10;j++) {
 		nmsg[i][j]=rtksvr.nmsg[i][j];
@@ -515,9 +524,9 @@ void __fastcall TMonitorDialog::ShowRtk(void)
 	Tbl->Cells[0][i  ] ="Time of Receiver Clock Rover";
 	Tbl->Cells[1][i++]=rtk.sol.time.time?tstr:"-";
 	
-	Tbl->Cells[0][i  ] ="Time Sytem Offset/Receiver Bias (GLO-GPS,GAL-GPS,BDS-GPS) (ns)";
-	Tbl->Cells[1][i++]=s.sprintf("%.3f,%.3f,%.3f",rtk.sol.dtr[1]*1E9,rtk.sol.dtr[2]*1E9,
-                                 rtk.sol.dtr[3]*1E9);
+	Tbl->Cells[0][i  ] ="Time Sytem Offset/Receiver Bias (GLO-GPS,GAL-GPS,BDS-GPS,IRN-GPS) (ns)";
+	Tbl->Cells[1][i++]=s.sprintf("%.3f,%.3f,%.3f,%.3f",rtk.sol.dtr[1]*1E9,rtk.sol.dtr[2]*1E9,
+                                 rtk.sol.dtr[3]*1E9,rtk.sol.dtr[4]*1E9);
 	
 	Tbl->Cells[0][i  ]="Solution Interval (s)";
 	Tbl->Cells[1][i++]=s.sprintf("%.3f",rtk.tt);
@@ -583,6 +592,9 @@ void __fastcall TMonitorDialog::ShowRtk(void)
 	ecef2enu(pos,rtk.rb+3,vel);
 	Tbl->Cells[0][i  ]="Vel E/N/U (m/s) Base/NRTK Station";
 	Tbl->Cells[1][i++]=s.sprintf("%.3f,%.3f,%.3f",vel[0],vel[1],vel[2]);
+	
+	Tbl->Cells[0][i  ]="# of Averaging Single Pos Base/NRTK Station";
+	Tbl->Cells[1][i++]=s.sprintf("%d",nave);
 	
 	Tbl->Cells[0][i  ]="Antenna Type Rover";
 	Tbl->Cells[1][i++]=rtk.opt.pcvr[0].type;

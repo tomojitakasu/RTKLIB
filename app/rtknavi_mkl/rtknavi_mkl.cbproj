@@ -97,7 +97,7 @@
 		<PropertyGroup Condition="'$(Base_Win32)'!=''">
 			<BRCC_Defines>_RTLDLL;WIN32;TRACE;ENAGLO;ENAQZS;ENAGAL;NFREQ=3;$(BRCC_Defines)</BRCC_Defines>
 			<TASM_Defines>_RTLDLL;WIN32;TRACE;ENAGLO;ENAQZS;ENAGAL;NFREQ=3;$(TASM_Defines)</TASM_Defines>
-			<BCC_Defines>_RTLDLL;WIN32;TRACE;ENAGLO;ENAQZS;ENAGAL;ENACMP;NFREQ=3;NEXOBS=3;MKL;$(BCC_Defines)</BCC_Defines>
+			<BCC_Defines>_RTLDLL;WIN32;TRACE;ENAGLO;ENAQZS;ENAGAL;ENACMP;ENAIRN;NFREQ=3;NEXOBS=3;MKL;$(BCC_Defines)</BCC_Defines>
 			<BCC_UserSuppliedOptions> -tWM</BCC_UserSuppliedOptions>
 			<ILINK_LibraryPath>..\..\lib\omf\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
 			<DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
@@ -340,6 +340,9 @@
 			<CppCompile Include="..\..\src\rcv\binex.c">
 				<BuildOrder>56</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="..\..\src\rcv\cmr.c">
+				<BuildOrder>62</BuildOrder>
+			</CppCompile>
 			<CppCompile Include="..\..\src\rcv\crescent.c">
 				<BuildOrder>9</BuildOrder>
 				<BuildOrder>30</BuildOrder>
@@ -439,12 +442,12 @@
 			<FormResources Include="..\appcmn\confdlg.dfm"/>
 			<FormResources Include="..\appcmn\keydlg.dfm"/>
 			<FormResources Include="..\appcmn\ftpoptdlg.dfm"/>
+			<FormResources Include="..\rtknavi\markdlg.dfm"/>
 			<FormResources Include="..\rtknavi\naviopt.dfm"/>
 			<FormResources Include="..\rtknavi\navimain.dfm"/>
 			<FormResources Include="..\rtknavi\mondlg.dfm"/>
 			<FormResources Include="..\rtknavi\outstrdlg.dfm"/>
 			<FormResources Include="..\rtknavi\rcvoptdlg.dfm"/>
-			<FormResources Include="..\rtknavi\markdlg.dfm"/>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>
 				<CfgParent>Base</CfgParent>

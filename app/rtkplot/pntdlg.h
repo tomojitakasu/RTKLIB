@@ -32,6 +32,7 @@ __published:
 	void __fastcall BtnUpdateClick(TObject *Sender);
 	void __fastcall PntListSetEditText(TObject *Sender, int ACol, int ARow, const UnicodeString Value);
 	void __fastcall PntListClick(TObject *Sender);
+	void __fastcall PntListDblClick(TObject *Sender);
 
 
 private:

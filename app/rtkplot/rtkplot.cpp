@@ -40,6 +40,8 @@
 
 
 
+
+USEFORM("vmapdlg.cpp", VecMapDialog);
 USEFORM("skydlg.cpp", SkyImgDialog);
 USEFORM("..\appcmn\tcpoptdlg.cpp", TcpOptDialog);
 USEFORM("..\appcmn\serioptdlg.cpp", SerialOptDialog);
@@ -64,7 +66,6 @@ USEFORM("fileseldlg.cpp", FileSelDialog);
 USEFORM("conndlg.cpp", ConnectDialog);
 USEFORM("gmview.cpp", GoogleMapView);
 USEFORM("mapdlg.cpp", MapAreaDialog);
-USEFORM("vmapdlg.cpp", VecMapDialog);
 //---------------------------------------------------------------------------
 WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {

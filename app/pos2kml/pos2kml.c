@@ -40,7 +40,7 @@ static const char *help[]={
 " -tu       output time stamp of utc [gpst]",
 " -i tint   output time interval (s) (0:all) [0]",
 " -q qflg   output q-flags (0:all) [0]",
-" -f n e h  add north/east/height offset to position (m) [0 0 0]"
+" -f n e h  add north/east/height offset to position (m) [0 0 0]",
 " -gpx      output GPX file"
 };
 /* print help ----------------------------------------------------------------*/

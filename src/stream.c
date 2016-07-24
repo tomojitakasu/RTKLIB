@@ -640,7 +640,8 @@ static int readfile(file_t *file, unsigned char *buff, int nmax, char *msg)
 {
     struct timeval tv={0};
     fd_set rs;
-    unsigned int nr=0,t,tick;
+    unsigned int t,tick;
+    int nr=0;
     size_t fpos;
     
     tracet(4,"readfile: fp=%d nmax=%d\n",file->fp,nmax);
@@ -652,7 +653,7 @@ static int readfile(file_t *file, unsigned char *buff, int nmax, char *msg)
         /* input from stdin */
         FD_ZERO(&rs); FD_SET(0,&rs);
         if (!select(1,&rs,NULL,NULL,&tv)) return 0;
-        if ((nr=read(0,buff,nmax))<0) return 0;
+        if ((nr=(int)read(0,buff,nmax))<0) return 0;
         return nr;
 #else
         return 0;
@@ -693,19 +694,19 @@ static int readfile(file_t *file, unsigned char *buff, int nmax, char *msg)
         }
     }
     if (nmax>0) {
-        nr=fread(buff,1,nmax,file->fp);
+        nr=(int)fread(buff,1,nmax,file->fp);
         file->fpos+=nr;
         if (nr<=0) sprintf(msg,"end");
     }
     tracet(5,"readfile: fp=%d nr=%d fpos=%d\n",file->fp,nr,file->fpos);
-    return (int)nr;
+    return nr;
 }
 /* write file ----------------------------------------------------------------*/
 static int writefile(file_t *file, unsigned char *buff, int n, char *msg)
 {
     gtime_t wtime;
-    unsigned int ns,tick=tickget();
-    int week1,week2;
+    unsigned int tick=tickget();
+    int week1,week2,ns;
     double tow1,tow2,intv;
     size_t fpos,fpos_tmp;
     
@@ -733,7 +734,7 @@ static int writefile(file_t *file, unsigned char *buff, int n, char *msg)
     }
     if (!file->fp) return 0;
     
-    ns=fwrite(buff,1,n,file->fp);
+    ns=(int)fwrite(buff,1,n,file->fp);
     fpos=ftell(file->fp);
     fflush(file->fp);
     file->wtime=wtime;
@@ -757,7 +758,7 @@ static int writefile(file_t *file, unsigned char *buff, int n, char *msg)
     }
     tracet(5,"writefile: fp=%d ns=%d tick=%5d fpos=%d\n",file->fp,ns,tick,fpos);
     
-    return (int)ns;
+    return ns;
 }
 /* sync files by time-tag ----------------------------------------------------*/
 static void syncfile(file_t *file1, file_t *file2)

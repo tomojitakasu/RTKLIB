@@ -104,9 +104,11 @@ void __fastcall TPntDialog::SetPoint(void)
 	AnsiString s;
 	
 	for (int i=0;i<Plot->NWayPnt;i++) {
+        wchar_t buff[256];
+        ::MultiByteToWideChar(CP_UTF8,0,Plot->PntName[i].c_str(),-1,buff,512);
 		PntList->Cells[0][i]=s.sprintf("%.9f",Plot->PntPos[i][0]);
 		PntList->Cells[1][i]=s.sprintf("%.9f",Plot->PntPos[i][1]);
-		PntList->Cells[2][i]=Plot->PntName[i];
+		PntList->Cells[2][i]=buff;
 	}
 }
 //---------------------------------------------------------------------------
@@ -115,6 +117,13 @@ void __fastcall TPntDialog::PntListClick(TObject *Sender)
 	int sel=PntList->Selection.Top;
 	Plot->SelWayPnt=sel<Plot->NWayPnt?sel:-1;
 	Plot->UpdatePlot();
+}
+//---------------------------------------------------------------------------
+void __fastcall TPntDialog::PntListDblClick(TObject *Sender)
+{
+	int sel=PntList->Selection.Top;
+	if (sel>=Plot->NWayPnt) return;
+	Plot->SetTrkCent(Plot->PntPos[sel][0],Plot->PntPos[sel][1]);
 }
 //---------------------------------------------------------------------------
 

@@ -33,11 +33,9 @@ TGoogleEarthView *GoogleEarthView;
 __fastcall TGoogleEarthView::TGoogleEarthView(TComponent* Owner)
     : TForm(Owner)
 {
-    State=0;
-    Expand=Rotate=0;
-    Lat=Lon=LatSet=LonSet=0.0;
-    Range=RangeSet=0.0;
-    Heading=HeadingSet=0.0;
+    State=Expand=Rotate=0;
+    Lat=Lon=Range=Heading=0.0;
+    FixCent=1;
     Clear();
 }
 //---------------------------------------------------------------------------
@@ -54,47 +52,17 @@ void __fastcall TGoogleEarthView::FormCreate(TObject *Sender)
     url=L"file://"+dir+L"\\"+RTKPLOT_GE_FILE;
     
     WebBrowser->Navigate(url.c_str());
+    
+    Timer1->Enabled=true;
 }
 //---------------------------------------------------------------------------
 void __fastcall TGoogleEarthView::Timer1Timer(TObject *Sender)
 {
-    IHTMLDocument3 *doc=NULL;
-    IHTMLElement *ele1=NULL,*ele2=NULL;
-    VARIANT var;
-    double lat,lon,range,heading;
-    int state;
+    if (!GetState()) return;
     
-    if (!WebBrowser->Document) return;
-    WebBrowser->Document->QueryInterface(IID_IHTMLDocument3,(void **)&doc);
-    if (!doc) return;
-    doc->getElementById(L"state",&ele1);
-    doc->getElementById(L"view", &ele2);
-    doc->Release();
-    if (!ele1||!ele2) return;
-    
-    VariantInit(&var);
-    if (ele1->getAttribute(L"value",0,&var)!=S_OK||
-        swscanf(var.bstrVal,L"%d",&state)<1||
-        ele2->getAttribute(L"value",0,&var)!=S_OK||
-        swscanf(var.bstrVal,L"%lf,%lf,%lf,%lf",&lat,&lon,&range,&heading)<4) {
-        VariantClear(&var);
-        return;
-    }
-    VariantClear(&var);
-    
-    Lat=lat;
-    Lon=lon;
-    Range=range;
-    Heading=heading;
-    
-    if (!State&&state) {
-        State=state;
-        UpdateOpts();
-        if (LatSet!=0.0||LonSet!=0.0) {
-            SetView(LatSet,LonSet,RangeSet,HeadingSet);
-            Plot->Refresh_GEView();
-        }
-    }
+    State=1;
+    SetView(Lat,Lon,Range,Heading);
+    Timer1->Enabled=false;
 }
 //---------------------------------------------------------------------------
 void __fastcall TGoogleEarthView::BtnCloseClick(TObject *Sender)
@@ -115,7 +83,8 @@ void __fastcall TGoogleEarthView::BtnHeadingClick(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TGoogleEarthView::BtnFixCentClick(TObject *Sender)
 {
-    Plot->Refresh_GEView();
+    FixCent=BtnFixCent->Down;
+    if (FixCent) SetCent(Lat,Lon);
 }
 //---------------------------------------------------------------------------
 void __fastcall TGoogleEarthView::BtnEnaAltClick(TObject *Sender)
@@ -138,7 +107,6 @@ void __fastcall TGoogleEarthView::BtnGETiltClick(TObject *Sender)
 void __fastcall TGoogleEarthView::BtnShrinkMouseDown(TObject *Sender, TMouseButton Button,
           TShiftState Shift, int X, int Y)
 {
-    Timer1->Enabled=false;
     Timer2->Enabled=true;
     Expand=1;
 }
@@ -147,7 +115,6 @@ void __fastcall TGoogleEarthView::BtnShrinkMouseUp(TObject *Sender, TMouseButton
           TShiftState Shift, int X, int Y)
 {
     Expand=0;
-    Timer1->Enabled=true;
     Timer2->Enabled=false;
     ExecFunc("UpdateState()");
 }
@@ -155,7 +122,6 @@ void __fastcall TGoogleEarthView::BtnShrinkMouseUp(TObject *Sender, TMouseButton
 void __fastcall TGoogleEarthView::BtnExpandMouseDown(TObject *Sender, TMouseButton Button,
           TShiftState Shift, int X, int Y)
 {
-    Timer1->Enabled=false;
     Timer2->Enabled=true;
     Expand=-1;
 }
@@ -164,7 +130,6 @@ void __fastcall TGoogleEarthView::BtnExpandMouseUp(TObject *Sender, TMouseButton
           TShiftState Shift, int X, int Y)
 {
     Expand=0;
-    Timer1->Enabled=true;
     Timer2->Enabled=false;
     ExecFunc("UpdateState()");
 }
@@ -172,7 +137,6 @@ void __fastcall TGoogleEarthView::BtnExpandMouseUp(TObject *Sender, TMouseButton
 void __fastcall TGoogleEarthView::BtnRotLMouseDown(TObject *Sender, TMouseButton Button,
           TShiftState Shift, int X, int Y)
 {
-    Timer1->Enabled=false;
     Timer2->Enabled=true;
     Rotate=1;
 }
@@ -181,7 +145,6 @@ void __fastcall TGoogleEarthView::BtnRotLMouseUp(TObject *Sender, TMouseButton B
           TShiftState Shift, int X, int Y)
 {
     Rotate=0;
-    Timer1->Enabled=true;
     Timer2->Enabled=false;
     ExecFunc("UpdateState()");
 }
@@ -189,7 +152,6 @@ void __fastcall TGoogleEarthView::BtnRotLMouseUp(TObject *Sender, TMouseButton B
 void __fastcall TGoogleEarthView::BtnRotRMouseDown(TObject *Sender, TMouseButton Button,
           TShiftState Shift, int X, int Y)
 {
-    Timer1->Enabled=false;
     Timer2->Enabled=true;
     Rotate=-1;
 }
@@ -198,9 +160,24 @@ void __fastcall TGoogleEarthView::BtnRotRMouseUp(TObject *Sender, TMouseButton B
           TShiftState Shift, int X, int Y)
 {
     Rotate=0;
-    Timer1->Enabled=true;
     Timer2->Enabled=false;
     ExecFunc("UpdateState()");
+}
+//---------------------------------------------------------------------------
+void __fastcall TGoogleEarthView::Panel2Gesture(TObject *Sender,
+	const TGestureEventInfo &EventInfo, bool &Handled)
+{
+	;
+}
+//---------------------------------------------------------------------------
+void __fastcall TGoogleEarthView::BtnOptClick(TObject *Sender)
+{
+	Panel8->Visible=!Panel8->Visible;
+}
+//---------------------------------------------------------------------------
+void __fastcall TGoogleEarthView::FormResize(TObject *Sender)
+{
+	if (FixCent) SetCent(Lat,Lon);
 }
 //---------------------------------------------------------------------------
 void __fastcall TGoogleEarthView::Timer2Timer(TObject *Sender)
@@ -234,26 +211,34 @@ void __fastcall TGoogleEarthView::SetView(double lat, double lon, double range,
     double heading)
 {
     AnsiString f;
-    if (range<=0.0) range=RangeSet<=0.0?INIT_RANGE:RangeSet;
-    LatSet=lat; LonSet=lon; RangeSet=range; HeadingSet=heading;
+    if (range<=0.0) range=INIT_RANGE;
+    Lat=lat;
+    Lon=lon;
+    Range=range;
+    Heading=heading;
     ExecFunc(f.sprintf("SetView(%.9f,%.9f,%.3f,%.1f)",lat,lon,range,heading));
 }
 // --------------------------------------------------------------------------
 void __fastcall TGoogleEarthView::SetCent(double lat, double lon)
 {
     AnsiString f;
-    ExecFunc(f.sprintf("SetCent(%.9f,%.9f)",lat,lon));
+    Lat=lat;
+    Lon=lon;
+    if (FixCent) ExecFunc(f.sprintf("SetCent(%.9f,%.9f)",lat,lon));
 }
 // --------------------------------------------------------------------------
 void __fastcall TGoogleEarthView::SetRange(double range)
 {
     AnsiString f;
+    if (range<=0.0) range=INIT_RANGE;
+    Range=range;
     ExecFunc(f.sprintf("SetRange(%.3f)",range));
 }
 /// --------------------------------------------------------------------------
 void __fastcall TGoogleEarthView::SetHeading(double angle)
 {
     AnsiString f;
+    Heading=angle;
     ExecFunc(f.sprintf("SetHeading(%.2f)",angle));
 }
 // --------------------------------------------------------------------------
@@ -265,10 +250,6 @@ void __fastcall TGoogleEarthView::SetMark(int index, const double *pos)
     MarkPos[index-1][1]=pos[1]*R2D;
     ExecFunc(f.sprintf("SetMark(%d,%.9f,%.9f,%.3f)",index,pos[0]*R2D,
              pos[1]*R2D,pos[2]));
-    
-    if (BtnFixCent->Down) {
-        SetCent(pos[0]*R2D,pos[1]*R2D);
-    }
 }
 // --------------------------------------------------------------------------
 void __fastcall TGoogleEarthView::ShowMark(int index)
@@ -405,10 +386,33 @@ void __fastcall TGoogleEarthView::UpdateOpts(void)
 //---------------------------------------------------------------------------
 void __fastcall TGoogleEarthView::UpdateEnable(void)
 {
-    BtnFixCent->Enabled=MarkVis[0]||MarkVis[1];
     BtnEnaAlt ->Enabled=MarkVis[0]||MarkVis[1];
     BtnRotR   ->Enabled=!BtnHeading->Down;
     BtnRotL   ->Enabled=!BtnHeading->Down;
+}
+//---------------------------------------------------------------------------
+int __fastcall TGoogleEarthView::GetState(void)
+{
+    IHTMLDocument3 *doc=NULL;
+    IHTMLElement *ele1=NULL;
+    VARIANT var;
+    int state=0;
+    
+    if (!WebBrowser->Document) return 0;
+    WebBrowser->Document->QueryInterface(IID_IHTMLDocument3,(void **)&doc);
+    if (!doc) return 0;
+    doc->getElementById(L"state",&ele1);
+    doc->Release();
+    if (!ele1) return 0;
+    
+    VariantInit(&var);
+    if (ele1->getAttribute(L"value",0,&var)!=S_OK) {
+        VariantClear(&var);
+        return 0;
+    }
+    swscanf(var.bstrVal,L"%d",&state);
+    VariantClear(&var);
+    return state;
 }
 //---------------------------------------------------------------------------
 void __fastcall TGoogleEarthView::ExecFunc(AnsiString func)
@@ -419,7 +423,7 @@ void __fastcall TGoogleEarthView::ExecFunc(AnsiString func)
     HRESULT hr;
     wchar_t func_w[256]={0};
     
-    if (State!=1||!WebBrowser->Document) return;
+    if (!State||!WebBrowser->Document) return;
     WebBrowser->Document->QueryInterface(IID_IHTMLDocument2,(void **)&doc);
     if (!doc) return;
     hr=doc->get_parentWindow(&win);
@@ -430,17 +434,6 @@ void __fastcall TGoogleEarthView::ExecFunc(AnsiString func)
     ::MultiByteToWideChar(CP_UTF8,0,func.c_str(),-1,func_w,512);
     hr=win->execScript(func_w,L"javascript",&var);
     VariantClear(&var);
-}
-//---------------------------------------------------------------------------
-void __fastcall TGoogleEarthView::Panel2Gesture(TObject *Sender,
-	const TGestureEventInfo &EventInfo, bool &Handled)
-{
-	;
-}
-//---------------------------------------------------------------------------
-void __fastcall TGoogleEarthView::BtnOptClick(TObject *Sender)
-{
-	Panel8->Visible=!Panel8->Visible;
 }
 //---------------------------------------------------------------------------
 

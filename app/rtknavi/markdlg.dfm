@@ -30,6 +30,22 @@ object MarkDialog: TMarkDialog
     Height = 13
     Caption = 'Switch Positioning Mode'
   end
+  object Label1: TLabel
+    Left = 288
+    Top = 9
+    Width = 41
+    Height = 13
+    Caption = '%r=001'
+  end
+  object BtnRepDlg: TSpeedButton
+    Left = 236
+    Top = 6
+    Width = 36
+    Height = 19
+    Caption = '?'
+    Flat = True
+    OnClick = BtnRepDlgClick
+  end
   object BtnOk: TButton
     Left = 112
     Top = 171
@@ -83,7 +99,7 @@ object MarkDialog: TMarkDialog
     TabOrder = 2
     OnClick = ChkMarkerNameClick
   end
-  object CommentText: TEdit
+  object MarkerComment: TEdit
     Left = 12
     Top = 69
     Width = 321

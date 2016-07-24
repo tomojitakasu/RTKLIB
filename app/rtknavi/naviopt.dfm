@@ -62,6 +62,10 @@ object OptDialog: TOptDialog
     TabOrder = 4
     object TabSheet1: TTabSheet
       Caption = 'Setting&1'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label3: TLabel
         Left = 24
         Top = 73
@@ -389,10 +393,23 @@ object OptDialog: TOptDialog
         Caption = 'DBCorr'
         TabOrder = 21
       end
+      object NavSys7: TCheckBox
+        Left = 322
+        Top = 204
+        Width = 69
+        Height = 19
+        Caption = 'IRNSS'
+        TabOrder = 23
+        OnClick = NavSys6Click
+      end
     end
     object TabSheet2: TTabSheet
       Caption = 'Setting&2'
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label25: TLabel
         Left = 24
         Top = 7
@@ -656,6 +673,10 @@ object OptDialog: TOptDialog
     object TabSheet3: TTabSheet
       Caption = 'O&utput'
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object LabelSolFormat: TLabel
         Left = 24
         Top = 7
@@ -1104,6 +1125,10 @@ object OptDialog: TOptDialog
     object TabSheet5: TTabSheet
       Caption = '&Positions'
       ImageIndex = 4
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label4: TLabel
         Left = 12
         Top = 12
@@ -1253,13 +1278,16 @@ object OptDialog: TOptDialog
           Width = 137
           Height = 21
           Style = csDropDownList
+          ItemIndex = 0
           TabOrder = 0
+          Text = 'Lat/Lon/Height (deg/m)'
           OnChange = RefPosTypePChange
           Items.Strings = (
             'Lat/Lon/Height (deg/m)'
             'Lat/Lon/Height (dms/m)'
             'X/Y/Z-ECEF (m)'
             'RTCM Antenna Position'
+            'Raw Antenna Position'
             'Average of Single Position')
         end
         object MaxAveEp: TEdit
@@ -1759,6 +1787,10 @@ object OptDialog: TOptDialog
     object TabSheet8: TTabSheet
       Caption = '&Misc'
       ImageIndex = 6
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label19: TLabel
         Left = 32
         Top = 7

@@ -25,8 +25,9 @@ __fastcall TOptDialog::TOptDialog(TComponent* Owner)
     : TForm(Owner)
 {
     AnsiString label,s;
-    int freq[]={1,2,5,6,7,8};
+    int freq[]={1,2,5,6,7,8,9};
     int nglo=MAXPRNGLO,ngal=MAXPRNGAL,nqzs=MAXPRNQZS,ncmp=MAXPRNCMP;
+    int nirn=MAXPRNIRN;
     
 #if 0
     Freq->Items->Clear();
@@ -39,6 +40,7 @@ __fastcall TOptDialog::TOptDialog(TComponent* Owner)
     if (ngal<=0) NavSys3->Enabled=false;
     if (nqzs<=0) NavSys4->Enabled=false;
     if (ncmp<=0) NavSys6->Enabled=false;
+    if (nirn<=0) NavSys7->Enabled=false;
     UpdateEnable();
 }
 //---------------------------------------------------------------------------
@@ -621,6 +623,7 @@ void __fastcall TOptDialog::LoadOpt(AnsiString file)
 	NavSys4	     ->Checked		=prcopt.navsys&SYS_QZS;
 	NavSys5	     ->Checked		=prcopt.navsys&SYS_SBS;
 	NavSys6	     ->Checked		=prcopt.navsys&SYS_CMP;
+	NavSys7	     ->Checked		=prcopt.navsys&SYS_IRN;
 	PosOpt1	     ->Checked		=prcopt.posopt[0];
 	PosOpt2	     ->Checked		=prcopt.posopt[1];
 	PosOpt3	     ->Checked		=prcopt.posopt[2];
@@ -762,7 +765,8 @@ void __fastcall TOptDialog::SaveOpt(AnsiString file)
 					  (NavSys3->Checked?SYS_GAL:0)|
 					  (NavSys4->Checked?SYS_QZS:0)|
 					  (NavSys5->Checked?SYS_SBS:0)|
-					  (NavSys6->Checked?SYS_CMP:0);
+					  (NavSys6->Checked?SYS_CMP:0)|
+					  (NavSys7->Checked?SYS_IRN:0);
 	prcopt.posopt[0]=PosOpt1	->Checked;
 	prcopt.posopt[1]=PosOpt2	->Checked;
 	prcopt.posopt[2]=PosOpt3	->Checked;

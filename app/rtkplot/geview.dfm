@@ -17,6 +17,7 @@ object GoogleEarthView: TGoogleEarthView
   OldCreateOrder = True
   Touch.InteractiveGestures = [igZoom, igPan, igRotate]
   OnCreate = FormCreate
+  OnResize = FormResize
   PixelsPerInch = 96
   TextHeight = 13
   object Panel1: TPanel
@@ -181,15 +182,15 @@ object GoogleEarthView: TGoogleEarthView
       ParentShowHint = False
       ShowHint = True
       OnClick = BtnHeadingClick
-      ExplicitLeft = 458
+      ExplicitHeight = 27
     end
     object BtnFixCent: TSpeedButton
       AlignWithMargins = True
-      Left = 35
+      Left = 2
       Top = 1
       Width = 25
       Height = 25
-      Hint = 'Fix Track Center'
+      Hint = 'Fix Plot Center'
       Margins.Left = 1
       Margins.Top = 0
       Margins.Right = 1
@@ -198,7 +199,6 @@ object GoogleEarthView: TGoogleEarthView
       AllowAllUp = True
       GroupIndex = 10
       Down = True
-      Enabled = False
       Flat = True
       Glyph.Data = {
         3E020000424D3E0200000000000036000000280000000D0000000D0000000100
@@ -224,7 +224,8 @@ object GoogleEarthView: TGoogleEarthView
       ShowHint = True
       Spacing = 1
       OnClick = BtnFixCentClick
-      ExplicitLeft = 242
+      ExplicitLeft = 12
+      ExplicitTop = -4
     end
     object Debug: TLabel
       Left = 291
@@ -370,7 +371,7 @@ object GoogleEarthView: TGoogleEarthView
     end
     object BtnOpt: TSpeedButton
       AlignWithMargins = True
-      Left = 2
+      Left = 35
       Top = 1
       Width = 25
       Height = 25
@@ -406,7 +407,8 @@ object GoogleEarthView: TGoogleEarthView
       ParentShowHint = False
       ShowHint = True
       OnClick = BtnOptClick
-      ExplicitLeft = 1
+      ExplicitLeft = 44
+      ExplicitTop = 0
     end
     object Panel3: TPanel
       AlignWithMargins = True
@@ -502,8 +504,8 @@ object GoogleEarthView: TGoogleEarthView
     end
   end
   object Panel8: TPanel
-    Left = 1
-    Top = 28
+    Left = 2
+    Top = 29
     Width = 85
     Height = 81
     AutoSize = True
@@ -808,6 +810,7 @@ object GoogleEarthView: TGoogleEarthView
     end
   end
   object Timer1: TTimer
+    Enabled = False
     Interval = 250
     OnTimer = Timer1Timer
     Left = 456

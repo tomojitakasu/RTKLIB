@@ -77,6 +77,8 @@ __published:
 	TCheckBox *OutLeaps;
 	TCheckBox *AutoPos;
 	TButton *BtnMask;
+	TCheckBox *Nav7;
+	TCheckBox *Freq7;
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall BtnOkClick(TObject *Sender);
 	void __fastcall RnxFileClick(TObject *Sender);

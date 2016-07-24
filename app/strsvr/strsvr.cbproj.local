@@ -3,5 +3,6 @@
 	<Transactions>
     <Transaction>2014/08/26 09:32:29.000.219,=D:\proj\RTKLIB\src\rcv\rt17.c</Transaction>
     <Transaction>2016/01/23 12:02:38.000.380,=D:\proj\RTKLIB\src\rcv\septentrio.c</Transaction>
+    <Transaction>2016/07/05 15:25:56.000.277,=D:\proj\RTKLIB\src\rcv\cmr.c</Transaction>
   </Transactions>
 </BorlandProject>

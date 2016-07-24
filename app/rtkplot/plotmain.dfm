@@ -3,7 +3,7 @@ object Plot: TPlot
   Top = 0
   Caption = 'RTKPLOT'
   ClientHeight = 485
-  ClientWidth = 664
+  ClientWidth = 633
   Color = clBtnFace
   Constraints.MinHeight = 150
   Constraints.MinWidth = 150
@@ -25,16 +25,47 @@ object Plot: TPlot
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
+  object Panel3: TPanel
+    Left = 0
+    Top = 25
+    Width = 633
+    Height = 442
+    Align = alClient
+    BevelOuter = bvNone
+    Color = clWhite
+    ParentBackground = False
+    TabOrder = 3
+    object Disp: TPaintBox
+      Left = 0
+      Top = 0
+      Width = 633
+      Height = 442
+      Align = alClient
+      Color = clGray
+      ParentColor = False
+      Touch.InteractiveGestures = [igZoom, igPressAndTap]
+      OnDblClick = DispDblClick
+      OnGesture = DispGesture
+      OnMouseDown = DispMouseDown
+      OnMouseLeave = DispMouseLeave
+      OnMouseMove = DispMouseMove
+      OnMouseUp = DispMouseUp
+      OnPaint = DispPaint
+      ExplicitLeft = -1
+      ExplicitTop = -11
+      ExplicitWidth = 664
+    end
+  end
   object Panel2: TPanel
     Left = 0
     Top = 467
-    Width = 664
+    Width = 633
     Height = 18
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 0
     object BtnMessage2: TSpeedButton
-      Left = 648
+      Left = 617
       Top = 0
       Width = 16
       Height = 18
@@ -54,7 +85,7 @@ object Plot: TPlot
       ExplicitTop = -1
     end
     object Panel22: TPanel
-      Left = 470
+      Left = 439
       Top = 0
       Width = 178
       Height = 18
@@ -85,7 +116,7 @@ object Plot: TPlot
     object Panel21: TPanel
       Left = 0
       Top = 0
-      Width = 470
+      Width = 439
       Height = 18
       Align = alClient
       AutoSize = True
@@ -190,7 +221,7 @@ object Plot: TPlot
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 664
+    Width = 633
     Height = 25
     Margins.Left = 1
     Margins.Top = 1
@@ -200,16 +231,17 @@ object Plot: TPlot
     BevelOuter = bvNone
     TabOrder = 1
     object Panel11: TPanel
-      Left = 460
+      Left = 567
       Top = 0
-      Width = 204
+      Width = 66
       Height = 25
       Align = alRight
+      AutoSize = True
       BevelOuter = bvNone
       TabOrder = 0
       TabStop = True
       object BtnReload: TSpeedButton
-        Left = 160
+        Left = 25
         Top = 0
         Width = 21
         Height = 24
@@ -231,7 +263,7 @@ object Plot: TPlot
         OnClick = BtnReloadClick
       end
       object ConnectMsg: TLabel
-        Left = 135
+        Left = 0
         Top = 4
         Width = 3
         Height = 13
@@ -244,7 +276,7 @@ object Plot: TPlot
         ParentFont = False
       end
       object BtnClear: TSpeedButton
-        Left = 140
+        Left = 5
         Top = 0
         Width = 21
         Height = 24
@@ -277,7 +309,7 @@ object Plot: TPlot
         OnClick = BtnClearClick
       end
       object BtnOptions: TSpeedButton
-        Left = 180
+        Left = 45
         Top = 0
         Width = 21
         Height = 24
@@ -309,10 +341,10 @@ object Plot: TPlot
         OnClick = BtnOptionsClick
       end
       object StrStatus1: TPanel
-        Left = 162
-        Top = 6
+        Left = 27
+        Top = 4
         Width = 8
-        Height = 12
+        Height = 16
         BevelInner = bvRaised
         BevelOuter = bvLowered
         Color = clWhite
@@ -320,10 +352,10 @@ object Plot: TPlot
         TabOrder = 0
       end
       object StrStatus2: TPanel
-        Left = 170
-        Top = 6
+        Left = 35
+        Top = 4
         Width = 8
-        Height = 12
+        Height = 16
         BevelInner = bvRaised
         BevelOuter = bvLowered
         Color = clWhite
@@ -758,16 +790,15 @@ object Plot: TPlot
         OnClick = BtnFixVertClick
         ExplicitLeft = 335
       end
-      object BtnShowPoint: TSpeedButton
-        Left = 449
+      object BtnShowMap: TSpeedButton
+        Left = 426
         Top = 0
         Width = 23
         Height = 25
-        Hint = 'Show Map/Waypoints'
+        Hint = 'Show Map/Waypoint'
         Align = alLeft
         AllowAllUp = True
         GroupIndex = 14
-        Down = True
         Flat = True
         Glyph.Data = {
           3E020000424D3E0200000000000036000000280000000D0000000D0000000100
@@ -792,12 +823,12 @@ object Plot: TPlot
         ParentShowHint = False
         ShowHint = True
         Spacing = 1
-        OnClick = BtnShowPointClick
+        OnClick = BtnShowMapClick
         ExplicitLeft = 397
         ExplicitTop = 1
       end
-      object BtnShowMap: TSpeedButton
-        Left = 426
+      object BtnShowImg: TSpeedButton
+        Left = 449
         Top = 0
         Width = 23
         Height = 25
@@ -805,7 +836,6 @@ object Plot: TPlot
         Align = alLeft
         AllowAllUp = True
         GroupIndex = 15
-        Down = True
         Flat = True
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBtnText
@@ -836,8 +866,9 @@ object Plot: TPlot
         ParentShowHint = False
         ShowHint = True
         Spacing = 1
-        OnClick = BtnShowMapClick
-        ExplicitLeft = 439
+        OnClick = BtnShowImgClick
+        ExplicitLeft = 459
+        ExplicitTop = -1
       end
       object BtnGE: TSpeedButton
         Left = 472
@@ -1153,7 +1184,6 @@ object Plot: TPlot
           ShowHint = True
           TabOrder = 1
           Text = 'L1'
-          Visible = False
           OnChange = ObsTypeChange
           Items.Strings = (
             'L1'
@@ -1451,8 +1481,8 @@ object Plot: TPlot
     end
   end
   object RangeList: TListBox
-    Left = 222
-    Top = 25
+    Left = 226
+    Top = 26
     Width = 44
     Height = 253
     AutoComplete = False
@@ -1484,41 +1514,6 @@ object Plot: TPlot
     TabOrder = 2
     Visible = False
     OnClick = RangeListClick
-  end
-  object Panel3: TPanel
-    Left = 0
-    Top = 25
-    Width = 664
-    Height = 442
-    Align = alClient
-    BevelOuter = bvNone
-    Color = clWhite
-    UseDockManager = False
-    DoubleBuffered = True
-    FullRepaint = False
-    ParentBackground = False
-    ParentDoubleBuffered = False
-    ShowCaption = False
-    TabOrder = 3
-    object Disp: TPaintBox
-      Left = 0
-      Top = 0
-      Width = 664
-      Height = 442
-      Align = alClient
-      Color = clGray
-      ParentColor = False
-      Touch.InteractiveGestures = [igZoom, igPressAndTap]
-      OnGesture = DispGesture
-      OnMouseDown = DispMouseDown
-      OnMouseLeave = DispMouseLeave
-      OnMouseMove = DispMouseMove
-      OnMouseUp = DispMouseUp
-      OnPaint = DispPaint
-      ExplicitLeft = 1
-      ExplicitTop = 24
-      ExplicitWidth = 657
-    end
   end
   object OpenSolDialog: TOpenDialog
     Filter = 
@@ -1788,13 +1783,13 @@ object Plot: TPlot
         Caption = 'Show Sky&plot'
         OnClick = MenuShowSkyplotClick
       end
-      object MenuShowMap: TMenuItem
+      object MenuShowImg: TMenuItem
         Caption = 'Show &Image'
-        OnClick = MenuShowMapClick
+        OnClick = MenuShowImgClick
       end
-      object MenuShowPoint: TMenuItem
-        Caption = 'Show Map/&Waypoints'
-        OnClick = MenuShowPointClick
+      object MenuShowMap: TMenuItem
+        Caption = 'Show Map/&Waypoint'
+        OnClick = MenuShowMapClick
       end
       object N6: TMenuItem
         Caption = '-'

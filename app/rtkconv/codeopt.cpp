@@ -17,9 +17,9 @@ __fastcall TCodeOptDialog::TCodeOptDialog(TComponent* Owner)
 //---------------------------------------------------------------------------
 void __fastcall TCodeOptDialog::FormShow(TObject *Sender)
 {
-	char mask[6][64]={""};
+	char mask[7][64]={""};
 	
-	for (int i=0;i<6;i++) strcpy(mask[i],ConvOptDialog->CodeMask[i].c_str());
+	for (int i=0;i<7;i++) strcpy(mask[i],ConvOptDialog->CodeMask[i].c_str());
 	G01->Checked=mask[0][ 0]=='1';
 	G02->Checked=mask[0][ 1]=='1';
 	G03->Checked=mask[0][ 2]=='1';
@@ -90,6 +90,14 @@ void __fastcall TCodeOptDialog::FormShow(TObject *Sender)
 	C42->Checked=mask[5][41]=='1';
 	C43->Checked=mask[5][42]=='1';
 	C33->Checked=mask[5][32]=='1';
+	I49->Checked=mask[6][48]=='1';
+	I50->Checked=mask[6][49]=='1';
+	I51->Checked=mask[6][50]=='1';
+	I26->Checked=mask[6][25]=='1';
+	I52->Checked=mask[6][51]=='1';
+	I53->Checked=mask[6][52]=='1';
+	I54->Checked=mask[6][53]=='1';
+	I55->Checked=mask[6][54]=='1';
 	S01->Checked=mask[4][ 0]=='1';
 	S24->Checked=mask[4][23]=='1';
 	S25->Checked=mask[4][24]=='1';
@@ -100,9 +108,9 @@ void __fastcall TCodeOptDialog::FormShow(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TCodeOptDialog::BtnOkClick(TObject *Sender)
 {
-	char mask[6][64]={""};
+	char mask[7][64]={""};
 	
-	for (int i=0;i<6;i++) for (int j=0;j<MAXCODE;j++) mask[i][j]='0';
+	for (int i=0;i<7;i++) for (int j=0;j<MAXCODE;j++) mask[i][j]='0';
 	if (G01->Checked) mask[0][ 0]='1';
 	if (G02->Checked) mask[0][ 1]='1';
 	if (G03->Checked) mask[0][ 2]='1';
@@ -173,6 +181,14 @@ void __fastcall TCodeOptDialog::BtnOkClick(TObject *Sender)
 	if (C42->Checked) mask[5][41]='1';
 	if (C43->Checked) mask[5][42]='1';
 	if (C33->Checked) mask[5][32]='1';
+	if (I49->Checked) mask[6][48]='1';
+	if (I50->Checked) mask[6][49]='1';
+	if (I51->Checked) mask[6][50]='1';
+	if (I26->Checked) mask[6][25]='1';
+	if (I52->Checked) mask[6][51]='1';
+	if (I53->Checked) mask[6][52]='1';
+	if (I54->Checked) mask[6][53]='1';
+	if (I55->Checked) mask[6][54]='1';
 	if (S01->Checked) mask[4][ 0]='1';
 	if (S24->Checked) mask[4][23]='1';
 	if (S25->Checked) mask[4][24]='1';
@@ -254,6 +270,14 @@ void __fastcall TCodeOptDialog::BtnSetAllClick(TObject *Sender)
 	C42->Checked=set;
 	C43->Checked=set;
 	C33->Checked=set;
+	I49->Checked=set;
+	I50->Checked=set;
+	I51->Checked=set;
+	I26->Checked=set;
+	I52->Checked=set;
+	I53->Checked=set;
+	I54->Checked=set;
+	I55->Checked=set;
 	S01->Checked=set;
 	S24->Checked=set;
 	S25->Checked=set;
@@ -324,15 +348,23 @@ void __fastcall TCodeOptDialog::UpdateEnable(void)
 	J35->Enabled=(NavSys&SYS_QZS)&&(FreqType&FREQTYPE_L6);
 	J36->Enabled=(NavSys&SYS_QZS)&&(FreqType&FREQTYPE_L6);
 	J33->Enabled=(NavSys&SYS_QZS)&&(FreqType&FREQTYPE_L6);
-	C47->Enabled=(NavSys&SYS_CMP)&&(FreqType&FREQTYPE_L1);
-	C48->Enabled=(NavSys&SYS_CMP)&&(FreqType&FREQTYPE_L1);
-	C12->Enabled=(NavSys&SYS_CMP)&&(FreqType&FREQTYPE_L1);
+	C47->Enabled=(NavSys&SYS_CMP)&&(FreqType&FREQTYPE_L2);
+	C48->Enabled=(NavSys&SYS_CMP)&&(FreqType&FREQTYPE_L2);
+	C12->Enabled=(NavSys&SYS_CMP)&&(FreqType&FREQTYPE_L2);
 	C27->Enabled=(NavSys&SYS_CMP)&&(FreqType&FREQTYPE_L7);
 	C28->Enabled=(NavSys&SYS_CMP)&&(FreqType&FREQTYPE_L7);
 	C29->Enabled=(NavSys&SYS_CMP)&&(FreqType&FREQTYPE_L7);
 	C42->Enabled=(NavSys&SYS_CMP)&&(FreqType&FREQTYPE_L6);
 	C43->Enabled=(NavSys&SYS_CMP)&&(FreqType&FREQTYPE_L6);
 	C33->Enabled=(NavSys&SYS_CMP)&&(FreqType&FREQTYPE_L6);
+	I49->Enabled=(NavSys&SYS_IRN)&&(FreqType&FREQTYPE_L5);
+	I50->Enabled=(NavSys&SYS_IRN)&&(FreqType&FREQTYPE_L5);
+	I51->Enabled=(NavSys&SYS_IRN)&&(FreqType&FREQTYPE_L5);
+	I26->Enabled=(NavSys&SYS_IRN)&&(FreqType&FREQTYPE_L5);
+	I52->Enabled=(NavSys&SYS_IRN)&&(FreqType&FREQTYPE_L9);
+	I53->Enabled=(NavSys&SYS_IRN)&&(FreqType&FREQTYPE_L9);
+	I54->Enabled=(NavSys&SYS_IRN)&&(FreqType&FREQTYPE_L9);
+	I55->Enabled=(NavSys&SYS_IRN)&&(FreqType&FREQTYPE_L9);
 	S01->Enabled=(NavSys&SYS_SBS)&&(FreqType&FREQTYPE_L1);
 	S24->Enabled=(NavSys&SYS_SBS)&&(FreqType&FREQTYPE_L5);
 	S25->Enabled=(NavSys&SYS_SBS)&&(FreqType&FREQTYPE_L5);
