@@ -1282,7 +1282,7 @@ static int decode_georaw(raw_t *raw){
     raw->time=gpst2time(raw->sbsmsg.week,raw->sbsmsg.tow);
 
     crc=(buff[31])+(buff[30]<<8)+(buff[29]<<16);
-    if (crc!=rtk_crc24q(buff,29)) return 0;
+    if (crc!=crc24q(buff,29)) return 0;
 
     for (i=0;i<29;i++) raw->sbsmsg.msg[i]=buff[i];
     raw->sbsmsg.msg[28]&=0xC0;
@@ -1340,7 +1340,7 @@ static int decode_galrawinav(raw_t *raw){
     }
     /* test crc */
     for (i=0,j=  4;i<49;i++,j+=4) setbitu(crc_buff,j,4,getbitu(buff,i*4,4));
-    if (rtk_crc24q(crc_buff,25)!=getbitu(buff,196,24)) {
+    if (crc24q(crc_buff,25)!=getbitu(buff,196,24)) {
         trace(2,"decode_galrawinav gal page crc error: sat=%2d\n",sat);
         return -1;
     }

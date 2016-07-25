@@ -1141,7 +1141,7 @@ static int decode_bnx(raw_t *raw)
     }
     else {
         cs1=U2(raw->buff+raw->len);
-        cs2=rtk_crc16(raw->buff+1,raw->len-1);
+        cs2=crc16(raw->buff+1,raw->len-1);
     }
     if (cs1!=cs2) {
         trace(2,"binex 0x%02X parity error CS=%X %X\n",rec,cs1,cs2);

@@ -459,8 +459,7 @@ int  GoogleEarthView::GetState(void)
     state=ele1.attribute("value").toInt();
 
 
-    return state;
-    }
+    return state;    
 #else
  #ifdef QWEBENGINE
     QStringList tokens=pageState->getView().split(',');

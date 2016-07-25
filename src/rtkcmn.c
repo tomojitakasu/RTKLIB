@@ -710,7 +710,7 @@ extern unsigned int rtk_crc32(const unsigned char *buff, int len)
 * return : crc-24Q parity
 * notes  : see reference [2] A.4.3.3 Parity
 *-----------------------------------------------------------------------------*/
-extern unsigned int rtk_crc24q(const unsigned char *buff, int len)
+extern unsigned int crc24q(const unsigned char *buff, int len)
 {
     unsigned int crc=0;
     int i;
@@ -727,7 +727,7 @@ extern unsigned int rtk_crc24q(const unsigned char *buff, int len)
 * return : crc-16 parity
 * notes  : see reference [10] A.3.
 *-----------------------------------------------------------------------------*/
-extern unsigned short rtk_crc16(const unsigned char *buff, int len)
+extern unsigned short crc16(const unsigned char *buff, int len)
 {
     unsigned short crc=0;
     int i;
