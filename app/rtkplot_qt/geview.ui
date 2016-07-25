@@ -33,7 +33,7 @@
      <string/>
     </property>
     <property name="icon">
-     <iconset resource="rtkplot_qt.qrc">
+     <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
       <normaloff>:/buttons/expand.bmp</normaloff>:/buttons/expand.bmp</iconset>
     </property>
     <property name="flat" stdset="0">
@@ -59,7 +59,7 @@
      <string/>
     </property>
     <property name="icon">
-     <iconset resource="rtkplot_qt.qrc">
+     <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
       <normaloff>:/buttons/headup.bmp</normaloff>:/buttons/headup.bmp</iconset>
     </property>
     <property name="checkable">
@@ -82,13 +82,13 @@
      </rect>
     </property>
     <property name="toolTip">
-     <string>Fix Track Center</string>
+     <string>Fix Plot Center</string>
     </property>
     <property name="text">
      <string/>
     </property>
     <property name="icon">
-     <iconset resource="rtkplot_qt.qrc">
+     <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
       <normaloff>:/buttons/point.bmp</normaloff>:/buttons/point.bmp</iconset>
     </property>
     <property name="flat" stdset="0">
@@ -114,7 +114,7 @@
      <string/>
     </property>
     <property name="icon">
-     <iconset resource="rtkplot_qt.qrc">
+     <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
       <normaloff>:/buttons/tilt.bmp</normaloff>:/buttons/tilt.bmp</iconset>
     </property>
     <property name="flat" stdset="0">
@@ -140,7 +140,7 @@
      <string/>
     </property>
     <property name="icon">
-     <iconset resource="rtkplot_qt.qrc">
+     <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
       <normaloff>:/buttons/navctr.bmp</normaloff>:/buttons/navctr.bmp</iconset>
     </property>
     <property name="flat" stdset="0">
@@ -166,7 +166,7 @@
      <string/>
     </property>
     <property name="icon">
-     <iconset resource="rtkplot_qt.qrc">
+     <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
       <normaloff>:/buttons/norm.bmp</normaloff>:/buttons/norm.bmp</iconset>
     </property>
     <property name="flat" stdset="0">
@@ -192,7 +192,7 @@
      <string/>
     </property>
     <property name="icon">
-     <iconset resource="rtkplot_qt.qrc">
+     <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
       <normaloff>:/buttons/rotl.bmp</normaloff>:/buttons/rotl.bmp</iconset>
     </property>
     <property name="flat" stdset="0">
@@ -247,7 +247,7 @@
      <string/>
     </property>
     <property name="icon">
-     <iconset resource="rtkplot_qt.qrc">
+     <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
       <normaloff>:/buttons/shrink.bmp</normaloff>:/buttons/shrink.bmp</iconset>
     </property>
     <property name="flat" stdset="0">
@@ -273,7 +273,7 @@
      <string/>
     </property>
     <property name="icon">
-     <iconset resource="rtkplot_qt.qrc">
+     <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
       <normaloff>:/buttons/rotr.bmp</normaloff>:/buttons/rotr.bmp</iconset>
     </property>
     <property name="flat" stdset="0">
@@ -359,240 +359,6 @@
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout_2"/>
    </widget>
-   <widget class="QToolButton" name="BtnOpt8">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>80</y>
-      <width>30</width>
-      <height>32</height>
-     </rect>
-    </property>
-    <property name="toolTip">
-     <string>Layer Loads</string>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="icon">
-     <iconset resource="rtkplot_qt.qrc">
-      <normaloff>:/buttons/building.bmp</normaloff>:/buttons/building.bmp</iconset>
-    </property>
-    <property name="flat" stdset="0">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QToolButton" name="BtnOpt1">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>360</x>
-      <y>70</y>
-      <width>30</width>
-      <height>32</height>
-     </rect>
-    </property>
-    <property name="toolTip">
-     <string>Layer Borders</string>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="icon">
-     <iconset resource="rtkplot_qt.qrc">
-      <normaloff>:/buttons/navctr.bmp</normaloff>:/buttons/navctr.bmp</iconset>
-    </property>
-    <property name="flat" stdset="0">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QToolButton" name="BtnOpt6">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>240</x>
-      <y>50</y>
-      <width>30</width>
-      <height>32</height>
-     </rect>
-    </property>
-    <property name="toolTip">
-     <string>Show Status Bar</string>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="icon">
-     <iconset resource="rtkplot_qt.qrc">
-      <normaloff>:/buttons/undu.bmp</normaloff>:/buttons/undu.bmp</iconset>
-    </property>
-    <property name="flat" stdset="0">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QToolButton" name="BtnOpt7">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>420</x>
-      <y>0</y>
-      <width>30</width>
-      <height>32</height>
-     </rect>
-    </property>
-    <property name="toolTip">
-     <string>Layer Terrain</string>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="icon">
-     <iconset resource="rtkplot_qt.qrc">
-      <normaloff>:/buttons/road.bmp</normaloff>:/buttons/road.bmp</iconset>
-    </property>
-    <property name="flat" stdset="0">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QToolButton" name="BtnOpt5">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>60</x>
-      <y>70</y>
-      <width>30</width>
-      <height>32</height>
-     </rect>
-    </property>
-    <property name="toolTip">
-     <string>Show Lat/Long Grid</string>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="icon">
-     <iconset resource="rtkplot_qt.qrc">
-      <normaloff>:/buttons/status.bmp</normaloff>:/buttons/status.bmp</iconset>
-    </property>
-    <property name="flat" stdset="0">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QToolButton" name="BtnOpt3">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>300</x>
-      <y>60</y>
-      <width>30</width>
-      <height>32</height>
-     </rect>
-    </property>
-    <property name="toolTip">
-     <string>Show Scale Legend</string>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="icon">
-     <iconset resource="rtkplot_qt.qrc">
-      <normaloff>:/buttons/scale.bmp</normaloff>:/buttons/scale.bmp</iconset>
-    </property>
-    <property name="flat" stdset="0">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QToolButton" name="BtnOpt2">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>130</x>
-      <y>90</y>
-      <width>30</width>
-      <height>32</height>
-     </rect>
-    </property>
-    <property name="toolTip">
-     <string>Show Navigation Control</string>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="icon">
-     <iconset resource="rtkplot_qt.qrc">
-      <normaloff>:/buttons/grid.bmp</normaloff>:/buttons/grid.bmp</iconset>
-    </property>
-    <property name="flat" stdset="0">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QToolButton" name="BtnOpt9">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>200</x>
-      <y>100</y>
-      <width>30</width>
-      <height>32</height>
-     </rect>
-    </property>
-    <property name="toolTip">
-     <string>Layer Buildings</string>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="icon">
-     <iconset resource="rtkplot_qt.qrc">
-      <normaloff>:/buttons/border.bmp</normaloff>:/buttons/border.bmp</iconset>
-    </property>
-    <property name="flat" stdset="0">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QToolButton" name="BtnOpt4">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>480</x>
-      <y>0</y>
-      <width>30</width>
-      <height>32</height>
-     </rect>
-    </property>
-    <property name="toolTip">
-     <string>Show Overview Map</string>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="icon">
-     <iconset resource="rtkplot_qt.qrc">
-      <normaloff>:/buttons/vmap.bmp</normaloff>:/buttons/vmap.bmp</iconset>
-    </property>
-    <property name="flat" stdset="0">
-     <bool>true</bool>
-    </property>
-   </widget>
    <widget class="QPushButton" name="BtnClose">
     <property name="enabled">
      <bool>true</bool>
@@ -614,6 +380,198 @@
     <property name="flat">
      <bool>false</bool>
     </property>
+   </widget>
+   <widget class="QWidget" name="Panel8" native="true">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>310</y>
+      <width>348</width>
+      <height>44</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QToolButton" name="BtnOpt1">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="toolTip">
+        <string>Layer Borders</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+         <normaloff>:/buttons/navctr.bmp</normaloff>:/buttons/navctr.bmp</iconset>
+       </property>
+       <property name="flat" stdset="0">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="BtnOpt2">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="toolTip">
+        <string>Show Navigation Control</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+         <normaloff>:/buttons/grid.bmp</normaloff>:/buttons/grid.bmp</iconset>
+       </property>
+       <property name="flat" stdset="0">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="BtnOpt3">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="toolTip">
+        <string>Show Scale Legend</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+         <normaloff>:/buttons/scale.bmp</normaloff>:/buttons/scale.bmp</iconset>
+       </property>
+       <property name="flat" stdset="0">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="BtnOpt4">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="toolTip">
+        <string>Show Overview Map</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+         <normaloff>:/buttons/vmap.bmp</normaloff>:/buttons/vmap.bmp</iconset>
+       </property>
+       <property name="flat" stdset="0">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="BtnOpt5">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="toolTip">
+        <string>Show Lat/Long Grid</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+         <normaloff>:/buttons/status.bmp</normaloff>:/buttons/status.bmp</iconset>
+       </property>
+       <property name="flat" stdset="0">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="BtnOpt6">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="toolTip">
+        <string>Show Status Bar</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+         <normaloff>:/buttons/undu.bmp</normaloff>:/buttons/undu.bmp</iconset>
+       </property>
+       <property name="flat" stdset="0">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="BtnOpt7">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="toolTip">
+        <string>Layer Terrain</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+         <normaloff>:/buttons/road.bmp</normaloff>:/buttons/road.bmp</iconset>
+       </property>
+       <property name="flat" stdset="0">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="BtnOpt8">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="toolTip">
+        <string>Layer Loads</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+         <normaloff>:/buttons/building.bmp</normaloff>:/buttons/building.bmp</iconset>
+       </property>
+       <property name="flat" stdset="0">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="BtnOpt9">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="toolTip">
+        <string>Layer Buildings</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+         <normaloff>:/buttons/border.bmp</normaloff>:/buttons/border.bmp</iconset>
+       </property>
+       <property name="flat" stdset="0">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -642,6 +600,7 @@
   </widget>
  </widget>
  <resources>
+  <include location="../rtkconv_qt/rtkconv_qt.qrc"/>
   <include location="rtkplot_qt.qrc"/>
  </resources>
  <connections/>

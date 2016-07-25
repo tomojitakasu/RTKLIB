@@ -64,7 +64,7 @@
 #include "geview.h"
 #include "gmview.h"
 #include "viewer.h"
-//#include "vmapdlg.h"//FIXME
+#include "vmapdlg.h"
 #include "fileseldlg.h"
 
 #define YLIM_AGE    10.0            // ylimit of age of differential
@@ -125,6 +125,7 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
     SimObs=0;
     
     X0=Y0=Xc=Yc=Xs=Ys=Xcent=0.0;
+    MouseDownTick=0;
     GEState=GEDataState[0]=GEDataState[1]=0;
     GEHeading=0.0;
     OEpoch=t0;
@@ -229,7 +230,7 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
     BtnFixHoriz->setDefaultAction(MenuFixHoriz);
     BtnFixVert->setDefaultAction(MenuFixVert);
     BtnShowMap->setDefaultAction(MenuShowMap);
-    BtnShowPoint->setDefaultAction(MenuShowPoint);
+    BtnShowImg->setDefaultAction(MenuShowImg);
     BtnShowSkyplot->setDefaultAction(MenuShowSkyplot);
     MenuShowSkyplot->setChecked(true);
 
@@ -281,7 +282,7 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
     connect(MenuSaveImage,SIGNAL(triggered(bool)),this,SLOT(MenuSaveImageClick()));
     connect(MenuSaveSnrMp,SIGNAL(triggered(bool)),this,SLOT(MenuSaveSnrMpClick()));
     connect(MenuShowMap,SIGNAL(triggered(bool)),this,SLOT(MenuShowMapClick()));
-    connect(MenuShowPoint,SIGNAL(triggered(bool)),this,SLOT(MenuShowPointClick()));
+    connect(MenuShowImg,SIGNAL(triggered(bool)),this,SLOT(MenuShowImgClick()));
     connect(MenuShowSkyplot,SIGNAL(triggered(bool)),this,SLOT(MenuShowSkyplotClick()));
     connect(MenuShowTrack,SIGNAL(triggered(bool)),this,SLOT(MenuShowTrackClick()));
     connect(MenuSkyImg,SIGNAL(triggered(bool)),this,SLOT(MenuSkyImgClick()));
@@ -405,7 +406,6 @@ void Plot::showEvent (QShowEvent *event)
     UpdateColor();
     UpdateSatMask();
     UpdateOrigin();
-    UpdateEnable();
     UpdateSize();
     
     if (path1!=""||path2!="") {
@@ -428,6 +428,7 @@ void Plot::showEvent (QShowEvent *event)
     }
     Timer.start(RefCycle);
     UpdatePlot();
+    UpdateEnable();
 
     if (OpenFiles.count()>0) {
         if (CheckObs(OpenFiles.at(0))||OpenRaw) ReadObs(OpenFiles);
@@ -810,13 +811,14 @@ void Plot::MenuMapLayerClick()
 {
     trace(3,"MenuMapLayerClick\n");
 
-/*    vecMapDialog= new VecMapDialog(this);FIXME
-    vecMapDialog.exec();
+    vecMapDialog= new VecMapDialog(this);
+    vecMapDialog->exec();
     if (vecMapDialog->result()!=QDialog::Accepted) return;
 
-    delete vecMapDialog;*/
+    delete vecMapDialog;
 
     UpdatePlot();
+    UpdateEnable();
 }
 // callback on menu-solution-source -----------------------------------------
 void Plot::MenuSrcSolClick()
@@ -1028,13 +1030,15 @@ void Plot::MenuShowSkyplotClick()
     trace(3,"MenuShowSkyplotClick\n");
     
     UpdatePlot();
+    UpdateEnable();
 }
 // callback on menu-show-map-image ------------------------------------------
-void Plot::MenuShowMapClick()
+void Plot::MenuShowImgClick()
 {
     trace(3,"MenuShowMapClick\n");
     
     UpdatePlot();
+    UpdateEnable();
 }
 // callback on menu-show-track-points ---------------------------------------
 void Plot::MenuShowTrackClick()
@@ -1046,6 +1050,7 @@ void Plot::MenuShowTrackClick()
         MenuFixVert ->setChecked(false);
     }
     UpdatePlot();
+    UpdateEnable();
 }
 // callback on menu-fix-center ----------------------------------------------
 void Plot::MenuFixCentClick()
@@ -1053,6 +1058,7 @@ void Plot::MenuFixCentClick()
     trace(3,"MenuFixCentClick\n");
     
     UpdatePlot();
+    UpdateEnable();
 }
 // callback on menu-fix-horizontal ------------------------------------------
 void Plot::MenuFixHorizClick()
@@ -1061,6 +1067,7 @@ void Plot::MenuFixHorizClick()
     
     Xcent=0.0;
     UpdatePlot();
+    UpdateEnable();
 }
 // callback on menu-fix-vertical --------------------------------------------
 void Plot::MenuFixVertClick()
@@ -1068,17 +1075,110 @@ void Plot::MenuFixVertClick()
     trace(3,"MenuFixVertClick\n");
     
     UpdatePlot();
+    UpdateEnable();
 }
-// callback on menu-show-waypoints ------------------------------------------
-void Plot::MenuShowPointClick()
+// callback on menu-show-map -------------------------------------------------
+void Plot::MenuShowMapClick()
 {
-    trace(3,"MenuShowPointClick\n");
+    trace(3,"MenuShowMapClick\n");
 
 #if 0
-    if (BtnShowPoint->isChecked()) UpdatePntsGE();
+    if (BtnShowMap->isChecked()) UpdatePntsGE();
 #endif
     UpdatePlot();
+    UpdateEnable();
 }
+// callback on menu-windows-maximize ----------------------------------------
+void Plot::MenuMaxClick()
+{
+    QScreen *scr=QApplication::screens().at(0);
+    QRect rect = scr->availableGeometry();
+    QSize thisDecoration=this->frameSize()-this->size();
+    this->move(rect.x(),rect.y());
+    this->resize(rect.width()-thisDecoration.width(),rect.height()-thisDecoration.height());
+}
+// callback on menu-windows-plot-ge -----------------------------------------
+void Plot::MenuPlotGEClick()
+{
+    QScreen *scr=QApplication::screens().at(0);
+    QRect rect = scr->availableGeometry();
+    QSize thisDecoration=this->frameSize()-this->size();
+    this->move(rect.x(),rect.y());
+    this->resize(rect.width()/2-thisDecoration.width(),rect.height()-thisDecoration.height());
+
+    QSize GEDecoration=googleEarthView->frameSize()-googleEarthView->size();
+    googleEarthView->move(rect.x(),rect.y());
+    googleEarthView->resize(rect.width()-GEDecoration.width(),rect.height()-GEDecoration.height());
+    googleEarthView->setVisible(true);
+    googleMapView->setVisible(false);
+}
+// callback on menu-windows-plot-gm -----------------------------------------
+void Plot::MenuPlotGMClick()
+{
+    QScreen *scr=QApplication::screens().at(0);
+    QRect rect = scr->availableGeometry();
+    QSize thisDecoration=this->frameSize()-this->size();
+    this->move(rect.x(),rect.y());
+    this->resize(rect.width()/2-thisDecoration.width(),rect.height()-thisDecoration.height());
+
+    QSize GMDecoration=googleMapView->frameSize()-googleMapView->size();
+    googleMapView->move(rect.x()+rect.width()/2,rect.y());
+    googleMapView->resize(rect.width()/2-GMDecoration.width(),rect.height()-GMDecoration.height());
+    googleEarthView->setVisible(false);;
+    googleMapView->setVisible(true);
+}
+// callback on menu-windows-plot-ge/gm --------------------------------------
+void Plot::MenuPlotGEGMClick()
+{
+    QScreen *scr=QApplication::screens().at(0);
+    QRect rect = scr->availableGeometry();
+    QSize thisDecoration=this->frameSize()-this->size();
+    this->move(rect.x(),rect.y());
+    this->resize(rect.width()/2-thisDecoration.width(),rect.height()-thisDecoration.height());
+
+    QSize GMDecoration=googleMapView->frameSize()-googleMapView->size();
+    googleMapView->move(rect.x()+rect.width()/2,rect.y());
+    googleMapView->resize(rect.width()/2-GMDecoration.width(),rect.height()-GMDecoration.height());
+    googleEarthView->setVisible(true);
+    googleMapView->setVisible(true);
+
+    QSize GEDecoration=googleEarthView->frameSize()-googleEarthView->size();
+    googleEarthView->move(rect.x()+rect.width()/2,rect.y());
+    googleEarthView->resize(rect.width()/2-GEDecoration.width(),rect.height()/2-GEDecoration.height());
+    googleMapView->move(rect.x()+rect.width()/2,rect.y()+rect.height()/2);
+    googleMapView->resize(rect.width()/2-GMDecoration.width(),rect.height()/2-GMDecoration.height());
+
+}
+//---------------------------------------------------------------------------
+#if 0
+void Plot::DispGesture()
+{
+    AnsiString s;
+    int b,e;
+
+    b=EventInfo.Flags.Contains(gfBegin);
+    e=EventInfo.Flags.Contains(gfEnd);
+
+    if (EventInfo.GestureID==Controls::igiZoom) {
+        s.sprintf("zoom: Location=%d,%d,Flag=%d,%d,Angle=%.1f,Disnance=%d",
+                  EventInfo.Location.X,EventInfo.Location.Y,b,e,
+                  EventInfo.Angle,EventInfo.Distance);
+        Message1->Caption=s;
+    }
+    else if (EventInfo.GestureID==Controls::igiPan) {
+        s.sprintf("pan: Location=%d,%d,Flag=%d,%d,Angle=%.1f,Disnance=%d",
+                  EventInfo.Location.X,EventInfo.Location.Y,b,e,
+                  EventInfo.Angle,EventInfo.Distance);
+        Message1->Caption=s;
+    }
+    else if (EventInfo.GestureID==Controls::igiRotate) {
+        s.sprintf("rotate: Location=%d,%d,Flag=%d,%d,Angle=%.1f,Disnance=%d",
+                  EventInfo.Location.X,EventInfo.Location.Y,b,e,
+                  EventInfo.Angle,EventInfo.Distance);
+        Message1->Caption=s;
+    }
+}
+#endif
 // callback on menu-animation-start -----------------------------------------
 void Plot::MenuAnimStartClick()
 {
@@ -1114,6 +1214,7 @@ void Plot::BtnSol1Click()
     BtnSol12->setChecked(false);
     UpdateTime();
     UpdatePlot();
+    UpdateEnable();
 }
 // callback on button-solution-2 --------------------------------------------
 void Plot::BtnSol2Click()
@@ -1122,7 +1223,8 @@ void Plot::BtnSol2Click()
     
     BtnSol12->setChecked(false);
     UpdateTime();
-    UpdatePlot(); 
+    UpdatePlot();
+    UpdateEnable();
 }
 // callback on button-solution-1-2 ------------------------------------------
 void Plot::BtnSol12Click()
@@ -1133,6 +1235,7 @@ void Plot::BtnSol12Click()
     BtnSol2->setChecked(false);
     UpdateTime();
     UpdatePlot(); 
+    UpdateEnable();
 }
 // callback on button-solution-1 double-click -------------------------------
 void Plot::BtnSol1DblClick()
@@ -1204,6 +1307,7 @@ void Plot::RangeListClick()
     YRange=range;
     SetRange(0,YRange);
     UpdatePlot();
+    UpdateEnable();
 }
 
 // callback on button-animation ---------------------------------------------
@@ -1230,6 +1334,7 @@ void Plot::PlotTypeSChange()
     }
     UpdateTime();
     UpdatePlot();
+    UpdateEnable();
 }
 // callback on quality-flag selection change --------------------------------
 void Plot::QFlagChange()
@@ -1237,6 +1342,7 @@ void Plot::QFlagChange()
     trace(3,"QFlagChange\n");
     
     UpdatePlot();
+    UpdateEnable();
 }
 // callback on obs-type selection change ------------------------------------
 void Plot::ObsTypeChange()
@@ -1244,6 +1350,7 @@ void Plot::ObsTypeChange()
     trace(3,"ObsTypeChange\n");
     
     UpdatePlot();
+    UpdateEnable();
 }
 // callback on dop-type selection change ------------------------------------
 void Plot::DopTypeChange()
@@ -1251,6 +1358,7 @@ void Plot::DopTypeChange()
     trace(3,"DopTypeChange\n");
     
     UpdatePlot();
+    UpdateEnable();
 }
 // callback on satellite-list selection change ------------------------------
 void Plot::SatListChange()
@@ -1259,6 +1367,7 @@ void Plot::SatListChange()
     
     UpdateSatSel();
     UpdatePlot();
+    UpdateEnable();
 }
 // callback on time scroll-bar change ---------------------------------------
 void Plot::TimeScrollChange()
@@ -1335,6 +1444,36 @@ void Plot::mouseReleaseEvent(QMouseEvent *event)
     Drag=0;
     setCursor(Qt::ArrowCursor);
     Refresh();
+    Refresh_GEView();
+ }
+ // callback on mouse-double-click -------------------------------------------
+ void Plot::mouseDoubleClickEvent(QMouseEvent *event)
+ {
+     QPoint p((int)X0,(int)Y0);
+     double x,y;
+
+     if (event->button() != Qt::LeftButton) return;
+
+     trace(3,"DispDblClick X=%d Y=%d\n",p.x(),p.y());
+
+     if (BtnFixHoriz->isChecked()) return;
+
+     if (PlotType==PLOT_TRK) {
+         GraphT->ToPos(p,x,y);
+         GraphT->SetCent(x,y);
+         Refresh();
+         Refresh_GEView();
+     }
+     else if (PlotType<=PLOT_NSAT||PlotType==PLOT_RES||PlotType==PLOT_SNR) {
+         GraphG[0]->ToPos(p,x,y);
+         SetCentX(x);
+         Refresh();
+     }
+     else if (PlotType==PLOT_OBS||PlotType==PLOT_DOP) {
+         GraphR->ToPos(p,x,y);
+         SetCentX(x);
+         Refresh();
+     }
 }
 // callback on mouse-leave event --------------------------------------------
 void Plot::leaveEvent(QEvent*)
@@ -2105,53 +2244,72 @@ void Plot::UpdateEnable(void)
     
     MenuConnect     ->setChecked(ConnectState);
     BtnSol2        ->setEnabled(PlotType<=PLOT_NSAT||PlotType==PLOT_RES);
-    BtnSol12       ->setVisible(!ConnectState&&PlotType<=PLOT_SOLA&&SolData[0].n>0&&SolData[1].n>0);
+    BtnSol12       ->setEnabled(!ConnectState&&PlotType<=PLOT_SOLA&&SolData[0].n>0&&SolData[1].n>0);
     
-    QFlag          ->setVisible(PlotType<=PLOT_NSAT);
-    ObsType        ->setEnabled(!SimObs);
-    ObsType2       ->setEnabled(!SimObs);
+    QFlag          ->setVisible(PlotType==PLOT_TRK ||PlotType==PLOT_SOLP||
+                                PlotType==PLOT_SOLV||PlotType==PLOT_SOLA||
+                                PlotType==PLOT_NSAT);
     ObsType        ->setVisible(PlotType==PLOT_OBS||PlotType<=PLOT_SKY);
     ObsType2       ->setVisible(PlotType==PLOT_SNR||PlotType==PLOT_SNRE||PlotType==PLOT_MPS);
 
     FrqType        ->setVisible(PlotType==PLOT_RES);
     DopType        ->setVisible(PlotType==PLOT_DOP);
-    SatList        ->setVisible(PlotType>=PLOT_OBS||PlotType==PLOT_RES);
-    SatList        ->setEnabled(PlotType>=PLOT_OBS||PlotType==PLOT_SKY||
-                             PlotType==PLOT_DOP||PlotType==PLOT_SNR||
-                             PlotType==PLOT_RES);
+    SatList        ->setVisible(PlotType==PLOT_RES||PlotType>=PLOT_OBS||
+                                PlotType==PLOT_SKY||PlotType==PLOT_DOP||
+                                PlotType==PLOT_SNR||PlotType==PLOT_SNRE||
+                                PlotType==PLOT_MPS);
+    QFlag          ->setEnabled(data);
+    ObsType        ->setEnabled(data&&!SimObs);
+    ObsType2       ->setEnabled(data&&!SimObs);
     
     BtnOn1         ->setEnabled(plot||PlotType==PLOT_SNR||PlotType==PLOT_RES||PlotType==PLOT_SNRE);
     BtnOn2         ->setEnabled(plot||PlotType==PLOT_SNR||PlotType==PLOT_RES||PlotType==PLOT_SNRE);
     BtnOn3         ->setEnabled(plot||PlotType==PLOT_SNR||PlotType==PLOT_RES);
     
-    MenuCenterOri   ->setVisible(PlotType<=PLOT_RES);
-    MenuCenterOri   ->setEnabled(plot||PlotType==PLOT_TRK);
-    BtnRangeList   ->setVisible(MenuCenterOri->isVisible());
-    BtnRangeList   ->setEnabled(MenuCenterOri->isEnabled());
+    BtnCenterOri   ->setVisible(PlotType==PLOT_TRK ||PlotType==PLOT_SOLP||
+                                PlotType==PLOT_SOLV||PlotType==PLOT_SOLA||
+                                PlotType==PLOT_NSAT);
+    BtnRangeList   ->setVisible(PlotType==PLOT_TRK ||PlotType==PLOT_SOLP||
+                                PlotType==PLOT_SOLV||PlotType==PLOT_SOLA||
+                                PlotType==PLOT_NSAT);
+    BtnCenterOri   ->setEnabled(PlotType!=PLOT_NSAT);
+    BtnRangeList   ->setEnabled(PlotType!=PLOT_NSAT);
+
+
+    Panel102       ->setVisible(PlotType==PLOT_SOLP||PlotType==PLOT_SOLV||
+                                PlotType==PLOT_SOLA||PlotType==PLOT_NSAT||
+                                PlotType==PLOT_RES ||
+                                PlotType==PLOT_SNR ||PlotType==PLOT_SNRE);
+    BtnFitHoriz    ->setVisible(PlotType==PLOT_SOLP||PlotType==PLOT_SOLV||
+                                PlotType==PLOT_SOLA||PlotType==PLOT_NSAT||
+                                PlotType==PLOT_RES ||PlotType==PLOT_OBS ||
+                                PlotType==PLOT_DOP ||PlotType==PLOT_SNR ||
+                                PlotType==PLOT_SNRE);
+    BtnFitVert     ->setVisible(PlotType==PLOT_TRK ||PlotType==PLOT_SOLP||
+                                PlotType==PLOT_SOLV||PlotType==PLOT_SOLA);
+    BtnFitHoriz    ->setEnabled(data);
+    BtnFitVert     ->setEnabled(data);
     
     MenuShowTrack   ->setEnabled(data);
-    MenuFitHoriz    ->setEnabled(data&&PlotType!=PLOT_SKY&&PlotType!=PLOT_SNRE&&PlotType!=PLOT_TRK);
-    MenuFitVert     ->setEnabled(data&&PlotType<=PLOT_SOLA);
-    
-    MenuFixCent     ->setEnabled(data&&PlotType==PLOT_TRK);
-    MenuFixHoriz    ->setEnabled(data&&(PlotType==PLOT_SOLP||PlotType==PLOT_SOLV||
-                                    PlotType==PLOT_SOLA||PlotType==PLOT_OBS ||
-                                    PlotType==PLOT_DOP ||PlotType==PLOT_RES ||
-                                    PlotType==PLOT_SNR));
-    MenuFixVert     ->setEnabled(data&&plot&&PlotType!=PLOT_TRK&&PlotType!=PLOT_NSAT);
-    MenuShowPoint   ->setEnabled((PlotType==PLOT_TRK)&&!BtnSol12->isChecked());
-    
-    MenuShowSkyplot ->setVisible(PlotType==PLOT_SKY||PlotType==PLOT_MPS);
-    BtnShowSkyplot  ->setVisible(MenuShowSkyplot->isVisible());
-    MenuShowMap     ->setVisible((PlotType==PLOT_TRK&&MapImage.height()>0&&!BtnSol12->isChecked())||
-                             (PlotType==PLOT_SKY&&SkyImageI.height()>0)||
-                             (PlotType==PLOT_MPS&&SkyImageI.height()>0));
+    BtnFixCent     ->setVisible(PlotType==PLOT_TRK);
+    BtnFixHoriz    ->setVisible(PlotType==PLOT_SOLP||PlotType==PLOT_SOLV||
+                                PlotType==PLOT_SOLA||PlotType==PLOT_NSAT||
+                                PlotType==PLOT_RES ||PlotType==PLOT_OBS ||
+                                PlotType==PLOT_DOP ||PlotType==PLOT_RES ||
+                                PlotType==PLOT_SNR);
+    BtnFixVert     ->setVisible(PlotType==PLOT_SOLP||PlotType==PLOT_SOLV||
+                                PlotType==PLOT_SOLA);
+    BtnFixCent     ->setEnabled(data);
+    BtnFixHoriz    ->setEnabled(data);
+    BtnFixVert     ->setEnabled(data);
+    BtnShowMap     ->setVisible(PlotType==PLOT_TRK);
+    BtnShowMap     ->setEnabled(!BtnSol12->isChecked());
     BtnAnimate     ->setVisible(data&&MenuShowTrack->isChecked());
     TimeScroll     ->setVisible(data&&MenuShowTrack->isChecked());
 
 #if defined(QWEBKIT) || defined(QWEBENGINE)
-    MenuGE          ->setEnabled(SolData[0].n>0||SolData[1].n>0);
-    MenuGM          ->setEnabled(SolData[0].n>0||SolData[1].n>0);
+    MenuGE          ->setVisible(PlotType==PLOT_TRK);
+    MenuGM          ->setVisible(PlotType==PLOT_TRK);
 #endif
     
     if (!MenuShowTrack->isChecked()) {
@@ -2173,6 +2331,8 @@ void Plot::UpdateEnable(void)
 
     MenuShowSkyplot->setEnabled(MenuShowSkyplot->isVisible());
     
+    BtnShowImg     ->setVisible(PlotType==PLOT_TRK||PlotType==PLOT_SKY||
+                                PlotType==PLOT_MPS);
     MenuAnimStart  ->setEnabled(!ConnectState&&BtnAnimate->isEnabled()&&!BtnAnimate->isChecked());
     MenuAnimStop   ->setEnabled(!ConnectState&&BtnAnimate->isEnabled()&& BtnAnimate->isChecked());
     TimeScroll     ->setEnabled(data&&MenuShowTrack->isChecked());
@@ -2277,13 +2437,11 @@ void Plot::SetRange(int all, double range)
         GraphT->SetLim(xl,yl);
         GraphT->GetScale(xs,ys);
         GraphT->SetScale(MAX(xs,ys),MAX(xs,ys));
-#if 1
         if (norm(OPos,3)>0.0) {
             ecef2pos(OPos,pos);
             googleEarthView->SetView(pos[0]*R2D,pos[1]*R2D,0.0,0.0);
             googleMapView->SetView(pos[0]*R2D,pos[1]*R2D,13);
         }
-#endif
     }
     if (PLOT_SOLP<=PlotType&&PlotType<=PLOT_SOLA) {
         GraphG[0]->GetLim(tl,xp);
@@ -2422,6 +2580,20 @@ void Plot::FitRange(int all)
             googleEarthView->SetView(lat,lon,0.0,0.0);
         }
     }
+}
+// set center of track plot -------------------------------------------------
+void Plot::SetTrkCent(double lat, double lon)
+{
+    gtime_t time={0};
+    double pos[3]={0},rr[3],xyz[3];
+
+    if (PlotType!=PLOT_TRK) return;
+    pos[0]=lat*D2R;
+    pos[1]=lon*D2R;
+    pos2ecef(pos,rr);
+    PosToXyz(time,rr,0,xyz);
+    GraphT->SetCent(xyz[0],xyz[1]);
+    UpdatePlot();
 }
 // load options from ini-file -----------------------------------------------
 void Plot::LoadOpt(void)
@@ -2679,11 +2851,8 @@ void Plot::SaveOpt(void)
     settings.setValue ("solbrows/dir",fileSelDialog->Dir);
     
 }
-//---------------------------------------------------------------------------
-
-void Plot::MenuPlotGEClick()
-{
-    QScreen *scr=QApplication::screens().at(0);
+#if 0
+QScreen *scr=QApplication::screens().at(0);
     QRect rect = scr->availableGeometry();
     QSize thisDecoration=this->frameSize()-this->size();
     this->move(rect.x(),rect.y());
@@ -2694,11 +2863,7 @@ void Plot::MenuPlotGEClick()
     googleEarthView->resize(rect.width()/2-GEDecoration.width(),rect.height()-GEDecoration.height());
     googleMapView->setVisible(false);
     googleEarthView->setVisible(true);
-}
-//---------------------------------------------------------------------------
 
-void Plot::MenuPlotGMClick()
-{
     QScreen *scr=QApplication::screens().at(0);
     QRect rect = scr->availableGeometry();
     QSize thisDecoration=this->frameSize()-this->size();
@@ -2710,11 +2875,7 @@ void Plot::MenuPlotGMClick()
     googleMapView->resize(rect.width()/2-GMDecoration.width(),rect.height()-GMDecoration.height());
     googleEarthView->setVisible(false);;
     googleMapView->setVisible(true);
-}
-//---------------------------------------------------------------------------
 
-void Plot::MenuPlotGEGMClick()
-{
     QScreen *scr=QApplication::screens().at(0);
     QRect rect = scr->availableGeometry();
     QSize thisDecoration=this->frameSize()-this->size();
@@ -2729,46 +2890,5 @@ void Plot::MenuPlotGEGMClick()
     googleMapView->resize(rect.width()/2-GMDecoration.width(),rect.height()/2-GMDecoration.height());
     googleEarthView->setVisible(true);
     googleMapView->setVisible(true);
-}
-//---------------------------------------------------------------------------
 
-void Plot::MenuMaxClick()
-{
-    setWindowState(Qt::WindowMaximized);
-    googleEarthView->setVisible(false);
-    googleMapView->setVisible(false);
-}
-//---------------------------------------------------------------------------
-
-/*void Plot::DispGesture(, const TGestureEventInfo &EventInfo,
-          bool &Handled)
-{
-#if 0
-    QString s;
-    int b,e;
-    
-    b=EventInfo.Flags.Contains(gfBegin);
-    e=EventInfo.Flags.Contains(gfEnd);
-    
-	if (EventInfo.GestureID==Controls::igiZoom) {
-        s.sprintf("zoom: Location=%d,%d,Flag=%d,%d,Angle=%.1f,Disnance=%d",
-                  EventInfo.Location.X,EventInfo.Location.Y,b,e,
-                  EventInfo.Angle,EventInfo.Distance);
-        Message1->Caption=s;
-    }
-	else if (EventInfo.GestureID==Controls::igiPan) {
-        s.sprintf("pan: Location=%d,%d,Flag=%d,%d,Angle=%.1f,Disnance=%d",
-                  EventInfo.Location.X,EventInfo.Location.Y,b,e,
-                  EventInfo.Angle,EventInfo.Distance);
-        Message1->Caption=s;
-    }
-	else if (EventInfo.GestureID==Controls::igiRotate) {
-        s.sprintf("rotate: Location=%d,%d,Flag=%d,%d,Angle=%.1f,Disnance=%d",
-                  EventInfo.Location.X,EventInfo.Location.Y,b,e,
-                  EventInfo.Angle,EventInfo.Distance);
-        Message1->Caption=s;
-    }
 #endif
-}*/
-//---------------------------------------------------------------------------
-

@@ -104,6 +104,7 @@ void Plot::ReadSol(const QStringList &files, int sel)
     
     UpdateTime();
     UpdatePlot();
+    UpdateEnable();
 }
 // read solution status -----------------------------------------------------
 void Plot::ReadSolStat(const QStringList &files, int sel)
@@ -191,6 +192,7 @@ void Plot::ReadObs(const QStringList &files)
     UpdateObsType();
     UpdateTime();
     UpdatePlot();
+    UpdateEnable();
 }
 // read observation data rinex ----------------------------------------------
 int Plot::ReadObsRnx(const QStringList &files, obs_t *obs, nav_t *nav,
@@ -308,6 +310,7 @@ void Plot::ReadNav(const QStringList &files)
     ReadWaitEnd();
     
     UpdatePlot();
+    UpdateEnable();
 }
 // read elevation mask data -------------------------------------------------
 void Plot::ReadElMaskData(const QString &file)
@@ -344,8 +347,9 @@ void Plot::ReadElMaskData(const QString &file)
         az0=az1; el0=el1;
     }
     UpdatePlot();
+    UpdateEnable();
 }
-// generate vsibility data ----------------------------------------------------
+// generate visibility data ----------------------------------------------------
 void Plot::GenVisData(void)
 {
     gtime_t time,ts,te;
@@ -420,6 +424,7 @@ void Plot::GenVisData(void)
     UpdateObsType();
     UpdateTime();
     UpdatePlot();
+    UpdateEnable();
 }
 // read map image data ------------------------------------------------------
 void Plot::ReadMapData(const QString &file)
@@ -427,6 +432,8 @@ void Plot::ReadMapData(const QString &file)
     QImage image;
     
     trace(3,"ReadMapData\n");
+
+    ShowMsg(QString("reading map image... %1").arg(file));
     
     if (!image.load(file)) {
         ShowMsg(QString(tr("map file read error: %1")).arg(file));
@@ -440,11 +447,13 @@ void Plot::ReadMapData(const QString &file)
     
     ReadMapTag(file);
     
-    BtnShowMap->setChecked(true);
+    BtnShowImg->setChecked(true);
     
     mapAreaDialog->UpdateField();
     UpdatePlot();
     UpdateOrigin();
+    UpdateEnable();
+    ShowMsg("");
 }
 // resample image pixel -----------------------------------------------------
 #define ResPixelNN(img1,x,y,b1,pix) {\
@@ -623,6 +632,8 @@ void Plot::ReadSkyData(const QString &file)
     
     trace(3,"ReadSkyData\n");
     
+    ShowMsg(QString("reading sky data... %1").arg(file));
+
     if (!image.load(file)) {
         ShowMsg(QString(tr("sky image file read error: %1")).arg(file));
         ShowLegend(NULL);
@@ -648,7 +659,8 @@ void Plot::ReadSkyData(const QString &file)
     
     ReadSkyTag(file+".tag");
     
-    BtnShowMap->setChecked(true);
+    ShowMsg("");
+    BtnShowImg->setChecked(true);
     
     UpdateSky();
 }
@@ -686,11 +698,13 @@ void Plot::ReadShapeFile(const QStringList &files)
     char path[1024];
     QString name;
     
+    ReadWaitStart();
     
     gis_free(&Gis);
 
     for (i=0;i<files.count()&&i<MAXMAPLAYER;i++) {
         strcpy(path,qPrintable(files.at(i)));
+        ShowMsg(QString("reading shapefile... %1").arg(path));
         gis_read(path,&Gis,i);
 
         name=files.at(i);
@@ -703,10 +717,13 @@ void Plot::ReadShapeFile(const QStringList &files)
         strcpy(Gis.name[i],qPrintable(name));
     }
     
-    BtnShowPoint->setChecked(true);
+    ReadWaitEnd();
+    ShowMsg("");
+    BtnShowMap->setChecked(true);
     
     UpdateOrigin();
     UpdatePlot();
+    UpdateEnable();
 
 }
 // read waypoint ------------------------------------------------------------
@@ -718,6 +735,9 @@ void Plot::ReadWaypoint(const QString &file)
     double pos[3]={0};
 
     if (!fp.open(QIODevice::ReadOnly|QIODevice::Text)) return;
+
+    ReadWaitStart();
+    ShowMsg(QString("reading waypoint... %1").arg(file));
 
     NWayPnt=0;
 
@@ -750,7 +770,15 @@ void Plot::ReadWaypoint(const QString &file)
             }
         }
     }
+
+    ReadWaitEnd();
+    ShowMsg("");
+
+    BtnShowMap->setChecked(true);
+
     UpdatePlot();
+    UpdateEnable();
+
     pntDialog->SetPoint();
 }
 // save waypoint ------------------------------------------------------------
@@ -1012,6 +1040,7 @@ void Plot::Connect(void)
     UpdateEnable();
     UpdateTime();
     UpdatePlot();
+    UpdateEnable();
 }
 // disconnect from external sources -----------------------------------------
 void Plot::Disconnect(void)
@@ -1043,6 +1072,7 @@ void Plot::Disconnect(void)
 
     UpdateTime();
     UpdatePlot();
+    UpdateEnable();
 }
 // check observation data types ---------------------------------------------
 int Plot::CheckObs(const QString &file)
@@ -1337,6 +1367,7 @@ void Plot::Clear(void)
     
     UpdateTime();
     UpdatePlot();
+    UpdateEnable();
 }
 // reload data --------------------------------------------------------------
 void Plot::Reload(void)

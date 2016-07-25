@@ -1801,7 +1801,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtkpost_qt/rtkpost_qt.qrc">
+         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
           <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
         </property>
         <property name="flat">
@@ -1880,7 +1880,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtkpost_qt/rtkpost_qt.qrc">
+         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
           <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
         </property>
         <property name="flat">
@@ -2259,7 +2259,7 @@
             <string/>
            </property>
            <property name="text">
-            <string>Galileo</string>
+            <string>GAL</string>
            </property>
            <property name="checked">
             <bool>false</bool>
@@ -2272,7 +2272,7 @@
             <string/>
            </property>
            <property name="text">
-            <string>QZSS</string>
+            <string>QZS</string>
            </property>
            <property name="checked">
             <bool>false</bool>
@@ -2285,7 +2285,7 @@
             <string/>
            </property>
            <property name="text">
-            <string>SBAS</string>
+            <string>SBS</string>
            </property>
            <property name="checked">
             <bool>false</bool>
@@ -2298,10 +2298,17 @@
             <string/>
            </property>
            <property name="text">
-            <string>BeiDou</string>
+            <string>BDS</string>
            </property>
            <property name="checked">
             <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="3">
+          <widget class="QCheckBox" name="NavSys7">
+           <property name="text">
+            <string>IRN</string>
            </property>
           </widget>
          </item>
@@ -2487,7 +2494,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../rtkpost_qt/rtkpost_qt.qrc"/>
+  <include location="../rtkconv_qt/rtkconv_qt.qrc"/>
  </resources>
  <connections/>
 </ui>

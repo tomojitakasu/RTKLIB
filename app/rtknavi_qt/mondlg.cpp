@@ -40,14 +40,14 @@ MonitorDialog::MonitorDialog(QWidget* parent)
 
     ScrollPos=0;
 	ObsMode=0;
-	ConFmt=0;
+    ConFmt=-1;
 	
 	for (i=0;i<=MAXRCVFMT;i++) {
         SelFmt->addItem(formatstrs[i]);
 	}
 
 	init_rtcm(&rtcm);
-	init_raw(&raw);
+    init_raw(&raw,-1);
 
     connect(BtnClear,SIGNAL(clicked(bool)),this,SLOT(BtnClearClick()));
     connect(BtnClose,SIGNAL(clicked(bool)),this,SLOT(BtnCloseClick()));
@@ -110,7 +110,15 @@ void MonitorDialog::SelFmtChange(int)
 {
     char c[2]="\n";
     AddConsole((unsigned char*)c,1,1);
+
+    if (ConFmt>=3&&ConFmt<17) {
+        free_raw(&raw);
+    }
     ConFmt=SelFmt->currentIndex();
+
+    if (ConFmt>=3&&ConFmt<17) {
+        init_raw(&raw,ConFmt-2);
+    }
 }
 //---------------------------------------------------------------------------
 void MonitorDialog::Timer1Timer()
@@ -256,7 +264,7 @@ void MonitorDialog::Timer2Timer()
 			}
 	    }
 	}
-	else if (ConFmt<16) {
+    else if (ConFmt<17) {
 		for (i=0;i<len;i++) {
 			input_raw(&raw,ConFmt-2,msg[i]);
 			if (raw.msgtype[0]) {
@@ -350,7 +358,7 @@ void MonitorDialog::ShowRtk(void)
     QString freq[]={tr("-"),tr("L1"),tr("L1+L2"),tr("L1+L2+L5"),tr("L1+L2+L5+L6"),tr("L1+L2+L5+L6+L7"),tr("L1+L2+L5+L6+L7+L8"),""};
     double *del,*off1,*off2,rt[3]={0},dop[4]={0};
 	double azel[MAXSAT*2],pos[3],vel[3];
-    int i,j,k,cycle,state,rtkstat,nsat0,nsat1,prcout;
+    int i,j,k,cycle,state,rtkstat,nsat0,nsat1,prcout,nave;
     unsigned long thread;
 	int cputime,nb[3]={0},nmsg[3][10]={{0}},ne;
     char tstr[64],id[32],s1[64]="-",s2[64]="-",s3[64]="-";
@@ -370,6 +378,7 @@ void MonitorDialog::ShowRtk(void)
 	nsat1=rtksvr.obs[1][0].n;
 	cputime=rtksvr.cputime;
 	prcout =rtksvr.prcout;
+    nave=rtksvr.nave;
 
 	for (i=0;i<3;i++) nb[i]=rtksvr.nb[i];
 
@@ -406,7 +415,8 @@ void MonitorDialog::ShowRtk(void)
     if (rtk.opt.navsys&SYS_QZS) navsys=navsys+tr("QZSS ");
     if (rtk.opt.navsys&SYS_SBS) navsys=navsys+tr("SBAS ");
     if (rtk.opt.navsys&SYS_CMP) navsys=navsys+tr("BeiDou ");
-	
+    if (rtk.opt.navsys&SYS_IRN) navsys=navsys+tr("IRNSS ");
+
     Label->setText("");
     if (Console->rowCount()!=55) return;
     Console->setHorizontalHeaderLabels(header);
@@ -510,9 +520,9 @@ void MonitorDialog::ShowRtk(void)
     Console->setItem(i,0, new QTableWidgetItem(tr("Time of Receiver Clock Rover")));
     Console->setItem(i++,1, new QTableWidgetItem(rtk.sol.time.time?tstr:"-"));
 	
-    Console->setItem(i,0, new QTableWidgetItem(tr("Time Sytem Offset/Receiver Bias (GLO-GPS,GAL-GPS,BDS-GPS) (ns)")));
-    Console->setItem(i++,1, new QTableWidgetItem(QString("%1,%2,%3").arg(rtk.sol.dtr[1]*1E9,0,'f',3).arg(rtk.sol.dtr[2]*1E9,0,'f',3)
-                                 .arg(rtk.sol.dtr[3]*1E9,0,'f',3)));
+    Console->setItem(i,0, new QTableWidgetItem(tr("Time Sytem Offset/Receiver Bias (GLO-GPS,GAL-GPS,BDS-GPS,IRN-GPS) (ns)")));
+    Console->setItem(i++,1, new QTableWidgetItem(QString("%1,%2,%3,$f").arg(rtk.sol.dtr[1]*1E9,0,'f',3).arg(rtk.sol.dtr[2]*1E9,0,'f',3).arg(rtk.sol.dtr[3]*1E9,0,'f',3)
+                                 .arg(rtk.sol.dtr[4]*1E9,0,'f',3)));
 	
     Console->setItem(i,0, new QTableWidgetItem(tr("Solution Interval (s)")));
     Console->setItem(i++,1, new QTableWidgetItem(QString::number(rtk.tt,'f',3)));
@@ -578,7 +588,10 @@ void MonitorDialog::ShowRtk(void)
 	ecef2enu(pos,rtk.rb+3,vel);
     Console->setItem(i,0, new QTableWidgetItem(tr("Vel E/N/U (m/s) Base/NRTK Station")));
     Console->setItem(i++,1, new QTableWidgetItem(QString("%1,%2,%3").arg(vel[0],0,'f',3).arg(vel[1],0,'f',3).arg(vel[2],0,'f',3)));
-	
+
+    Console->setItem(i,0, new QTableWidgetItem(tr("# of Averaging Single Pos Base/NRTK Station")));
+    Console->setItem(i++,1, new QTableWidgetItem(QString("%1").arg(nave)));
+
     Console->setItem(i,0, new QTableWidgetItem(tr("Antenna Type Rover")));
     Console->setItem(i++,1, new QTableWidgetItem(rtk.opt.pcvr[0].type));
 	

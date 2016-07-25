@@ -686,7 +686,7 @@ void MainWindow::ConvertFile(void)
     QString OutFile7_Text=OutFile7->text();
     int i;
     char *p;
-    double RNXVER[]={2.10,2.11,2.12,3.00,3.01,3.02};
+    double RNXVER[]={2.10,2.11,2.12,3.00,3.01,3.02,3.03};
     
     conversionThread= new ConversionThread(this);
 
@@ -704,6 +704,7 @@ void MainWindow::ConvertFile(void)
         else if (fi.completeSuffix()=="bnx"  ) conversionThread->format=STRFMT_BINEX;
         else if (fi.completeSuffix()=="binex") conversionThread->format=STRFMT_BINEX;
         else if (fi.completeSuffix()=="rt17" ) conversionThread->format=STRFMT_RT17;
+        else if (fi.completeSuffix()=="cmr"  ) conversionThread->format=STRFMT_CMR;
         else if (fi.completeSuffix().toLower()=="obs"  ) conversionThread->format=STRFMT_RINEX;
         else if (fi.completeSuffix().toLower().contains( "nav" )) conversionThread->format=STRFMT_RINEX;
         else if (fi.completeSuffix().at(2)=='o'   ) conversionThread->format=STRFMT_RINEX;
@@ -733,9 +734,10 @@ void MainWindow::ConvertFile(void)
     }
     conversionThread->rnxopt.rnxver=RNXVER[RnxVer];
     
-    if (conversionThread->format==STRFMT_RTCM2||conversionThread->format==STRFMT_RTCM3||conversionThread->format==STRFMT_RT17) {
+    if (conversionThread->format==STRFMT_RTCM2||conversionThread->format==STRFMT_RTCM3||conversionThread->format==STRFMT_RT17
+            ||conversionThread->format==STRFMT_CMR) {
         
-        // input start date/time for rtcm 2 ro rtcm 3
+        // input start date/time for rtcm 2, rtcm 3, RT17 or CMR
         startDialog->exec();
         if (startDialog->result()!=QDialog::Accepted) return;
         conversionThread->rnxopt.trtcm=startDialog->Time;

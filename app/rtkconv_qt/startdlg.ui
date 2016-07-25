@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>315</width>
+    <width>324</width>
     <height>115</height>
    </rect>
   </property>
@@ -41,7 +41,7 @@
          <string/>
         </property>
         <property name="text">
-         <string>Input Approx. Log Start Time (GPST) for RTCM</string>
+         <string>Input Approx. Log Start Time (GPST)</string>
         </property>
        </widget>
       </item>

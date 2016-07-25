@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>415</width>
-    <height>186</height>
+    <height>207</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,19 +17,6 @@
    <string/>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
-    <widget class="QCheckBox" name="ChkMarkerName">
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>Marker Name</string>
-     </property>
-     <property name="checked">
-      <bool>false</bool>
-     </property>
-    </widget>
-   </item>
    <item row="1" column="0" colspan="5">
     <widget class="QComboBox" name="MarkerName">
      <property name="enabled">
@@ -54,7 +41,7 @@
     </widget>
    </item>
    <item row="3" column="0" colspan="5">
-    <widget class="QLineEdit" name="CommentText">
+    <widget class="QLineEdit" name="MarkerComment">
      <property name="enabled">
       <bool>true</bool>
      </property>
@@ -110,14 +97,14 @@
       <enum>Qt::LeftToRight</enum>
      </property>
      <property name="text">
-      <string>STOP (Static)</string>
+      <string>STOP (Stati&amp;c)</string>
      </property>
      <property name="checked">
       <bool>false</bool>
      </property>
     </widget>
    </item>
-   <item row="5" column="1" colspan="2">
+   <item row="6" column="1" colspan="2">
     <widget class="QPushButton" name="BtnOk">
      <property name="enabled">
       <bool>true</bool>
@@ -136,7 +123,7 @@
      </property>
     </widget>
    </item>
-   <item row="5" column="3" colspan="2">
+   <item row="6" column="3" colspan="2">
     <widget class="QPushButton" name="BtnCancel">
      <property name="enabled">
       <bool>true</bool>
@@ -146,6 +133,36 @@
      </property>
      <property name="text">
       <string>&amp;Cancel</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QCheckBox" name="ChkMarkerName">
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text">
+      <string>Marker Name</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0">
+    <widget class="QLabel" name="Label1">
+     <property name="text">
+      <string>%r=001</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="0">
+    <widget class="QPushButton" name="BtnRepDlg">
+     <property name="text">
+      <string>?</string>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
      </property>
     </widget>
    </item>

@@ -75,7 +75,8 @@ SOURCES += \
     ../appcmn_qt/console.cpp \
     ../appcmn_qt/tspandlg.cpp \
     fileseldlg.cpp \
-    ../appcmn_qt/gmview.cpp
+    ../appcmn_qt/gmview.cpp \
+    vmapdlg.cpp
 
 HEADERS  += \
     ../appcmn_qt/aboutdlg.h \
@@ -99,7 +100,8 @@ HEADERS  += \
     ../appcmn_qt/console.h \
     ../appcmn_qt/tspandlg.h \
     fileseldlg.h \
-    ../appcmn_qt/gmview.h
+    ../appcmn_qt/gmview.h \
+    vmapdlg.h
 
 FORMS    += \
     ../appcmn_qt/aboutdlg.ui \
@@ -122,7 +124,8 @@ FORMS    += \
     ../appcmn_qt/console.ui \
     ../appcmn_qt/tspandlg.ui \
     fileseldlg.ui \
-    ../appcmn_qt/gmview.ui
+    ../appcmn_qt/gmview.ui \
+    vmapdlg.ui
 
 RESOURCES += \
     rtkplot_qt.qrc

@@ -32,6 +32,7 @@ PntDialog::PntDialog(QWidget* parent)
     connect(BtnAdd,SIGNAL(clicked(bool)),this,SLOT(BtnAddClick()));
     connect(PntList,SIGNAL(itemChanged(QTableWidgetItem*)),this,SLOT(PntListSetEditText()));
     connect(PntList,SIGNAL(itemSelectionChanged()),this,SLOT(PntListClick()));
+    connect(PntList,SIGNAL(itemDoubleClicked(QTableWidgetItem*)),this,SLOT(PntListDblClick(QTableWidgetItem*)));
 
 }
 //---------------------------------------------------------------------------
@@ -138,5 +139,12 @@ void PntDialog::PntListClick()
     int sel=PntList->row(item);
     plot->SelWayPnt=sel<plot->NWayPnt?sel:-1;
     plot->UpdatePlot();
+}
+//---------------------------------------------------------------------------
+void PntDialog::PntListDblClick(QTableWidgetItem *w)
+{
+    int sel=PntList->row(w);
+    if (sel>=plot->NWayPnt) return;
+    plot->SetTrkCent(plot->PntPos[sel][0],plot->PntPos[sel][1]);
 }
 //---------------------------------------------------------------------------

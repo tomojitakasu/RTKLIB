@@ -330,7 +330,7 @@ static int decode_measepoch(raw_t *raw){
             sys = SYS_QZS;                      /* navigation system: QZSS    */
             sat = prn - 180;}
         else if ((prn>=191)&&(prn<=197)){
-            sys = SYS_NONE;                     /* navigation system: IRNSS, TODO  */
+            sys = SYS_IRN;                      /* navigation system: IRNSS  */
             sat = prn - 190;}
         else if ((prn>=198)&&(prn<=215)){
             sys = SYS_SBS;                      /* navigation system: SBAS, */
@@ -605,7 +605,7 @@ static int getSignalCode(int signType){
         _code=CODE_L3Q;
         break;
     case 15:                                                       /* IRNSSL5  */
-/*        _code=CODE_L5A;*/
+        _code=CODE_L5A;
         break;
     case 16:                                                       /* GALE1A  */
         _code=CODE_L1A;

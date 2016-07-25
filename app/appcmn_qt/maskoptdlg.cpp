@@ -37,9 +37,11 @@ void  MaskOptDialog::showEvent(QShowEvent *event)
     MaskEna2->setChecked(Mask.ena[1]);
 
     for (int i=0;i<3;i++)
+    {
         for (int j=0;j<9;j++) {
             mask[i][j]->setValidator(new QDoubleValidator(-90,90,1));
             mask[i][j]->setText(QString::number(Mask.mask[i][j]));
+        }
 	}
 
 	UpdateEnable();

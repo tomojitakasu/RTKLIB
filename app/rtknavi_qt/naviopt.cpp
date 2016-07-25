@@ -42,7 +42,7 @@ static char proxyaddr[MAXSTR]="";       /* proxy address */
 #define FLGOPT  "0:off,1:std+2:age/ratio/ns"
 #define ISTOPT  "0:off,1:serial,2:file,3:tcpsvr,4:tcpcli,7:ntripcli,8:ftp,9:http"
 #define OSTOPT  "0:off,1:serial,2:file,3:tcpsvr,4:tcpcli,6:ntripsvr"
-#define FMTOPT  "0:rtcm2,1:rtcm3,2:oem4,3:oem3,4:ubx,5:ss2,6:hemis,7:skytraq,8:gw10,9:javad,10:nvs,11:binex,12:rt17,15:sp3"
+#define FMTOPT  "0:rtcm2,1:rtcm3,2:oem4,3:oem3,4:ubx,5:ss2,6:hemis,7:skytraq,8:gw10,9:javad,10:nvs,11:binex,12:rt17,13:sbf,14:cmr,17:sp3"
 #define NMEOPT  "0:off,1:latlon,2:single"
 #define SOLOPT  "0:llh,1:xyz,2:enu,3:nmea"
 #define MSGOPT  "0:all,1:rover,2:base,3:corr"
@@ -89,8 +89,8 @@ OptDialog::OptDialog(QWidget* parent)
     : QDialog(parent)
 {
     QString label;
-	int freq[]={1,2,5,6,7,8},nglo=MAXPRNGLO,ngal=MAXPRNGAL,nqzs=MAXPRNQZS;
-	int ncmp=MAXPRNCMP;
+    int freq[]={1,2,5,6,7,8,9},nglo=MAXPRNGLO,ngal=MAXPRNGAL,nqzs=MAXPRNQZS;
+    int ncmp=MAXPRNCMP,nirn=MAXPRNIRN;
 
     setupUi(this);
 
@@ -110,7 +110,7 @@ OptDialog::OptDialog(QWidget* parent)
     if (ngal<=0) NavSys3->setEnabled(false);
     if (nqzs<=0) NavSys4->setEnabled(false);
     if (ncmp<=0) NavSys6->setEnabled(false);
-
+    if (nirn<=0) NavSys7->setEnabled(false);
 
     QCompleter *fileCompleter=new QCompleter(this);
     QFileSystemModel *fileModel=new QFileSystemModel(fileCompleter);
@@ -472,6 +472,7 @@ void OptDialog::GetOpt(void)
     NavSys4		 ->setChecked(PrcOpt.navsys&SYS_QZS);
     NavSys5		 ->setChecked(PrcOpt.navsys&SYS_SBS);
     NavSys6		 ->setChecked(PrcOpt.navsys&SYS_CMP);
+    NavSys7		 ->setChecked(PrcOpt.navsys&SYS_IRN);
     PosOpt1		 ->setChecked(PrcOpt.posopt[0]);
     PosOpt2		 ->setChecked(PrcOpt.posopt[1]);
     PosOpt3		 ->setChecked(PrcOpt.posopt[2]);
@@ -510,6 +511,7 @@ void OptDialog::GetOpt(void)
     PrNoise5	 ->setText(QString::number(PrcOpt.prn[4]));
     SatClkStab	 ->setText(QString::number(PrcOpt.sclkstab));
     MaxAveEp	 ->setValue(PrcOpt.maxaveep);
+    ChkInitRestart->setChecked(PrcOpt.initrst);
 	
     RovPosTypeP	 ->setCurrentIndex(RovPosTypeF);
     RefPosTypeP	 ->setCurrentIndex(RefPosTypeF);
@@ -523,7 +525,6 @@ void OptDialog::GetOpt(void)
     RefAntU		 ->setText(QString::number(RefAntDel[2]));
     SetPos(RovPosTypeP->currentIndex(),editu,RovPos);
     SetPos(RefPosTypeP->currentIndex(),editr,RefPos);
-    ChkInitRestart->setChecked(InitRestart);
 	
     SatPcvFile	 ->setText(SatPcvFileF);
     AntPcvFile	 ->setText(AntPcvFileF);
@@ -598,6 +599,7 @@ void OptDialog::SetOpt(void)
     if (NavSys4->isChecked()) PrcOpt.navsys|=SYS_QZS;
     if (NavSys5->isChecked()) PrcOpt.navsys|=SYS_SBS;
     if (NavSys6->isChecked()) PrcOpt.navsys|=SYS_CMP;
+    if (NavSys7->isChecked()) PrcOpt.navsys|=SYS_IRN;
     PrcOpt.posopt[0] =PosOpt1   ->isChecked();
     PrcOpt.posopt[1] =PosOpt2   ->isChecked();
     PrcOpt.posopt[2] =PosOpt3   ->isChecked();
@@ -637,6 +639,7 @@ void OptDialog::SetOpt(void)
     PrcOpt.prn[4]    =PrNoise5  ->text().toDouble();
     PrcOpt.sclkstab  =SatClkStab->text().toDouble();
     PrcOpt.maxaveep  =MaxAveEp  ->text().toInt();
+    PrcOpt.initrst   =ChkInitRestart->isChecked();
 	
     RovPosTypeF      =RovPosTypeP ->currentIndex();
     RefPosTypeF      =RefPosTypeP ->currentIndex();
@@ -652,7 +655,6 @@ void OptDialog::SetOpt(void)
     RefAntDel[2]     =RefAntU   ->text().toDouble();
     GetPos(RovPosTypeP->currentIndex(),editu,RovPos);
     GetPos(RefPosTypeP->currentIndex(),editr,RefPos);
-    InitRestart      =ChkInitRestart->isChecked();
 	
     SatPcvFileF      =SatPcvFile  ->text();
     AntPcvFileF      =AntPcvFile  ->text();
@@ -753,6 +755,7 @@ void OptDialog::LoadOpt(const QString &file)
     NavSys4	     ->setChecked(prcopt.navsys&SYS_QZS);
     NavSys5	     ->setChecked(prcopt.navsys&SYS_SBS);
     NavSys6	     ->setChecked(prcopt.navsys&SYS_CMP);
+    NavSys7	     ->setChecked(prcopt.navsys&SYS_IRN);
     PosOpt1		 ->setChecked(prcopt.posopt[0]);
     PosOpt2		 ->setChecked(prcopt.posopt[1]);
     PosOpt3		 ->setChecked(prcopt.posopt[2]);
@@ -818,9 +821,14 @@ void OptDialog::LoadOpt(const QString &file)
     RefAntU		 ->setText(QString::number(prcopt.antdel[1][2],'f',4));
     MaxAveEp	 ->setValue(prcopt.maxaveep);
 	
-    RovPosTypeP	 ->setCurrentIndex(prcopt.rovpos==0?0:(prcopt.rovpos==4?3:4));
-    RefPosTypeP	 ->setCurrentIndex(prcopt.refpos==0?0:(prcopt.rovpos==4?3:4));
-	
+    ChkInitRestart->setChecked(prcopt.initrst);
+
+    RovPosTypeP	 ->setCurrentIndex(0);
+    RefPosTypeP	 ->setCurrentIndex(0);
+    if      (prcopt.refpos==POSOPT_RTCM  ) RefPosTypeP->setCurrentIndex(3);
+    else if (prcopt.refpos==POSOPT_RAW   ) RefPosTypeP->setCurrentIndex(4);
+    else if (prcopt.refpos==POSOPT_SINGLE) RefPosTypeP->setCurrentIndex(5);
+
     RovPosTypeF					=RovPosTypeP->currentIndex();
     RefPosTypeF					=RefPosTypeP->currentIndex();
     SetPos(RovPosTypeP->currentIndex(),editu,prcopt.ru);
@@ -918,7 +926,8 @@ void OptDialog::SaveOpt(const QString &file)
                       (NavSys3->isChecked()?SYS_GAL:0)|
                       (NavSys4->isChecked()?SYS_QZS:0)|
                       (NavSys5->isChecked()?SYS_SBS:0)|
-                      (NavSys6->isChecked()?SYS_CMP:0);
+                      (NavSys6->isChecked()?SYS_CMP:0)|
+                      (NavSys7->isChecked()?SYS_IRN:0);
     prcopt.posopt[0]=PosOpt1->isChecked();
     prcopt.posopt[1]=PosOpt2->isChecked();
     prcopt.posopt[2]=PosOpt3->isChecked();
@@ -982,12 +991,16 @@ void OptDialog::SaveOpt(const QString &file)
     prcopt.antdel[1][1]=RefAntN->text().toDouble();
     prcopt.antdel[1][2]=RefAntU->text().toDouble();
     prcopt.maxaveep=MaxAveEp->text().toInt();
+    prcopt.initrst=ChkInitRestart->isChecked();
 	
-    prcopt.rovpos=RovPosTypeP->currentIndex()<3?0:4;
-    prcopt.refpos=RefPosTypeP->currentIndex()<3?0:(RefPosTypeP->currentIndex()<4?4:1);
+    prcopt.rovpos=POSOPT_POS;
+    prcopt.refpos=POSOPT_POS;
+    if      (RefPosTypeP->currentIndex()==3) prcopt.refpos=POSOPT_RTCM;
+    else if (RefPosTypeP->currentIndex()==4) prcopt.refpos=POSOPT_RAW;
+    else if (RefPosTypeP->currentIndex()==5) prcopt.refpos=POSOPT_SINGLE;
 	
-    if (prcopt.rovpos==0) GetPos(RovPosTypeP->currentIndex(),editu,prcopt.ru);
-    if (prcopt.refpos==0) GetPos(RefPosTypeP->currentIndex(),editr,prcopt.rb);
+    if (prcopt.rovpos==POSOPT_POS) GetPos(RovPosTypeP->currentIndex(),editu,prcopt.ru);
+    if (prcopt.refpos==POSOPT_POS) GetPos(RefPosTypeP->currentIndex(),editr,prcopt.rb);
 	
     strcpy(filopt.satantp,qPrintable(SatPcvFile_Text));
     strcpy(filopt.rcvantp,qPrintable(AntPcvFile_Text));
@@ -1074,9 +1087,9 @@ void OptDialog::UpdateEnable(void)
     RefPos3        ->setEnabled(RefPosTypeP->isEnabled()&&RefPosTypeP->currentIndex()<=2);
     BtnRefPos      ->setEnabled(RefPosTypeP->isEnabled()&&RefPosTypeP->currentIndex()<=2);
 	
-    LabelMaxAveEp  ->setVisible(RefPosTypeP->currentIndex()==4);
-    MaxAveEp       ->setVisible(RefPosTypeP->currentIndex()==4);
-    ChkInitRestart ->setVisible(RefPosTypeP->currentIndex()==4);
+    LabelMaxAveEp  ->setVisible(RefPosTypeP->currentIndex()==5);
+    MaxAveEp       ->setVisible(RefPosTypeP->currentIndex()==5);
+    ChkInitRestart ->setVisible(RefPosTypeP->currentIndex()==5);
 
     SbasSatE       ->setEnabled(PosMode->currentIndex()==0);
 }

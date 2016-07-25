@@ -60,6 +60,8 @@ private:
     void ExecFunc(const QString &func);
 
 public:
+    int FixCent;
+
     explicit GoogleMapView(QWidget *parent=NULL);
     int  GetState(void);
     void SetView(double lat, double lon, int zoom);

@@ -3,13 +3,25 @@
 #include <QShowEvent>
 
 #include "rtklib.h"
+#include "keydlg.h"
 #include "markdlg.h"
+
+extern rtksvr_t rtksvr;
 
 //---------------------------------------------------------------------------
 QMarkDialog::QMarkDialog(QWidget* parent)
     : QDialog(parent)
 {
     setupUi(this);
+    NMark=1;
+    Label1->setText(QString("%%r=%1").arg(NMark,3,10,QLatin1Char('0')));
+
+    connect(BtnRepDlg,SIGNAL(clicked(bool)),this,SLOT(BtnRepDlgClick()));
+    connect(BtnOk,SIGNAL(clicked(bool)),this,SLOT(BtnOkClick()));
+    connect(BtnCancel,SIGNAL(clicked(bool)),this,SLOT(BtnCancelClick()));
+    connect(ChkMarkerName,SIGNAL(clicked(bool)),this,SLOT(ChkMarkerNameClick()));
+
+    keyDialog=new KeyDialog(this);
 }
 //---------------------------------------------------------------------------
 void QMarkDialog::BtnCancelClick()
@@ -19,8 +31,9 @@ void QMarkDialog::BtnCancelClick()
 //---------------------------------------------------------------------------
 void QMarkDialog::BtnOkClick()
 {
-    Marker=MarkerName->currentText();
-    Comment=CommentText->text();
+    QString marker=MarkerName->currentText();
+    QString comment=MarkerComment->text();
+    char str1[32],str2[1024];
 	
     if (RadioGo->isChecked()) {
 		if (PosMode==PMODE_STATIC) {
@@ -38,6 +51,15 @@ void QMarkDialog::BtnOkClick()
 			PosMode=PMODE_PPP_STATIC;
 		}
 	}
+    if (ChkMarkerName->isChecked()) {
+        sprintf(str1,"%03d",NMark);
+        reppath(qPrintable(marker),str2,utc2gpst(timeget()),str1,"");
+        rtksvrmark(&rtksvr,str2,qPrintable(comment));
+        NMark++;
+        Label1->setText(QString("%%r=%1").arg(NMark,3,10,QLatin1Char('0')));
+    }
+    Marker=marker;
+    Comment=comment;
 }
 //---------------------------------------------------------------------------
 
@@ -63,7 +85,6 @@ void QMarkDialog::showEvent(QShowEvent *event)
 	UpdateEnable();
 }
 //---------------------------------------------------------------------------
-
 void QMarkDialog::UpdateEnable(void)
 {
 	bool ena=PosMode==PMODE_STATIC||PosMode==PMODE_PPP_STATIC||
@@ -72,4 +93,10 @@ void QMarkDialog::UpdateEnable(void)
     RadioGo  ->setEnabled(ena);
     LabelPosMode->setEnabled(ena);
     MarkerName->setEnabled(ChkMarkerName->isChecked());
+}
+//---------------------------------------------------------------------------
+void QMarkDialog::BtnRepDlgClick()
+{
+    keyDialog->setWindowTitle(tr("Key Replacement in Marker Name"));
+    keyDialog->show();
 }

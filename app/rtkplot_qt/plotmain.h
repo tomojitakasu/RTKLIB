@@ -80,6 +80,7 @@ class AboutDialog;
 class PntDialog;
 class FileSelDialog;
 class TextViewer;
+class VecMapDialog;
 
 class QEvent;
 class QMouseEvent;
@@ -116,6 +117,7 @@ protected:
         void  mouseMoveEvent		(QMouseEvent*);
         void  mousePressEvent		(QMouseEvent*);
         void  mouseReleaseEvent		(QMouseEvent*);
+        void  mouseDoubleClickEvent (QMouseEvent*);
         void  wheelEvent			(QWheelEvent*);
         void  closeEvent            (QCloseEvent*);
         void  keyPressEvent			(QKeyEvent *);
@@ -161,7 +163,7 @@ public slots:
         void  MenuFixHorizClick	();
         void  MenuFixVertClick	();
         void  MenuShowMapClick	();
-        void  MenuShowPointClick	();
+        void  MenuShowImgClick	();
         void  MenuAnimStartClick	();
         void  MenuAnimStopClick	();
         void  MenuAboutClick		();
@@ -231,7 +233,6 @@ private:
     obs_t Obs;
     nav_t Nav;
     sta_t Sta;
-    gis_t Gis;
     double *Az,*El,*Mp[NFREQ+NEXOBS];
     QTimer Timer;
     QTime updateTime;
@@ -248,6 +249,7 @@ private:
     
     int Drag,Xn,Yn;
     double X0,Y0,Xc,Yc,Xs,Ys,Xcent,Xcent0;
+    unsigned int MouseDownTick;
     
     int GEState,GEDataState[2];
     double GEHeading;
@@ -373,6 +375,7 @@ private:
     PntDialog *pntDialog;
     FileSelDialog *fileSelDialog;
     TextViewer *viewer;
+    VecMapDialog *vecMapDialog;
 public:
     QImage SkyImageR;
     QString IniFile;
@@ -381,6 +384,7 @@ public:
     QString RnxOpts;
     tle_t TLEData;
     QFont Font;
+    gis_t Gis;
 
     // connection settings
     int RtStream[2];
@@ -473,6 +477,7 @@ public:
     void  ReadElMaskData(const QString &file);
     int  GetCurrentPos(double *rr);
     int  GetCenterPos(double *rr);
+    void SetTrkCent(double lat, double lon);
     void  UpdatePlot(void);
     void  Refresh_GEView(void);
     void  Refresh_GMView(void);

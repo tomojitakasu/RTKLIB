@@ -50,6 +50,7 @@ GoogleMapView::GoogleMapView(QWidget *parent)
 	State=0;
 	Lat=Lon=0.0;
 	Zoom=2;
+    FixCent=1;
 
     QTimer::singleShot(0,this,SLOT(FormCreate()));
 }
@@ -100,6 +101,8 @@ void GoogleMapView::Timer1Timer()
 {
 	if (!GetState()) return;
 	
+    State=1;
+
 	SetView(Lat,Lon,Zoom);
 	
 	AddMark(0.0,0.0,"SOL1","SOLUTION 1");
@@ -113,6 +116,27 @@ void GoogleMapView::Timer1Timer()
     Timer1.stop();
 }
 //---------------------------------------------------------------------------
+void GoogleMapView::BtnShrinkClick()
+{
+    SetZoom(Zoom-1);
+}
+//---------------------------------------------------------------------------
+void GoogleMapView::BtnExpandClick()
+{
+    SetZoom(Zoom+1);
+}
+//---------------------------------------------------------------------------
+void GoogleMapView::BtnFixCentClick()
+{
+    FixCent=BtnFixCent->isChecked();
+    if (FixCent) SetCent(Lat,Lon);
+}
+//---------------------------------------------------------------------------
+void GoogleMapView::resizeEvent(QResizeEvent *)
+{
+    if (FixCent) SetCent(Lat,Lon);
+}
+//---------------------------------------------------------------------------
 void GoogleMapView::SetView(double lat, double lon, int zoom)
 {
 	Lat=lat; Lon=lon; Zoom=zoom;
@@ -122,7 +146,7 @@ void GoogleMapView::SetView(double lat, double lon, int zoom)
 void GoogleMapView::SetCent(double lat, double lon)
 {
 	Lat=lat; Lon=lon;
-    ExecFunc(QString("SetCent(%1,%2)").arg(lat,0,'f',9).arg(lon,0,'f',9));
+    if (FixCent) ExecFunc(QString("SetCent(%1,%2)").arg(lat,0,'f',9).arg(lon,0,'f',9));
 }
 //---------------------------------------------------------------------------
 void GoogleMapView::SetZoom(int zoom)
@@ -149,9 +173,6 @@ void GoogleMapView::SetMark(int index, const double *pos)
     title=QString("SOL%1").arg(index);
     ExecFunc(QString("PosMark(%1,%2,\"%3\")").arg(pos[0]*R2D,0,'f',9).arg(pos[1]*R2D,0,'f',9).arg(title));
 	
-    if (BtnFixCent->isChecked()) {
-		SetCent(pos[0]*R2D,pos[1]*R2D);
-    }
 	MarkPos[index-1][0]=pos[0]*R2D;
 	MarkPos[index-1][1]=pos[1]*R2D;
 }
@@ -174,7 +195,7 @@ int GoogleMapView::GetState(void)
 {
 #ifdef QWEBKIT
     QWebElement ele;
-    int state;
+    int state=0;
 
     if (!WebBrowser->page()) return 0;
     if (!WebBrowser->page()->mainFrame()) return 0;
@@ -220,31 +241,6 @@ void GoogleMapView::ExecFunc(const QString &func)
     Q_UNUSED(func)
  #endif
 #endif
-}
-//---------------------------------------------------------------------------
-void GoogleMapView::BtnShrinkClick()
-{
-	SetZoom(Zoom-1);
-}
-//---------------------------------------------------------------------------
-
-void GoogleMapView::BtnExpandClick()
-{
-	SetZoom(Zoom+1);
-}
-//---------------------------------------------------------------------------
-void GoogleMapView::BtnFixCentClick()
-{
-    if (BtnFixCent->isChecked()&&MarkPos[0][0]!=0.0&&MarkPos[0][1]!=0.0) {
-		SetCent(MarkPos[0][0],MarkPos[0][1]);
-	}
-}
-//---------------------------------------------------------------------------
-void GoogleMapView::resizeEvent(QResizeEvent *)
-{
-    if (BtnFixCent->isChecked()&&MarkPos[0][0]!=0.0&&MarkPos[0][1]!=0.0) {
-		SetCent(MarkPos[0][0],MarkPos[0][1]);
-	}
 }
 //---------------------------------------------------------------------------
 void GoogleMapView::HighlightMark(const QString &title)

@@ -59,9 +59,12 @@ public slots:
     void Timer2Timer();
     void PageLoaded(bool);
 
+protected:
+    void resizeEvent(QResizeEvent * );
+
 private:
     int State,Expand,Rotate,MarkVis[2],TrackVis[2];
-    double Lat,Lon,Range,Heading,LatSet,LonSet,RangeSet,HeadingSet;
+    double Lat,Lon,Range,Heading;
     double MarkPos[2][2];
     QTimer Timer1,Timer2;
     bool loaded;
@@ -79,6 +82,7 @@ private:
 public:
     explicit GoogleEarthView(QWidget *parent=NULL);
 
+    int  GetState   (void);
     void Init       (void);
     void Clear      (void);
     void SetView    (double lat, double lon, double range, double heading);
@@ -97,6 +101,8 @@ public:
     void HidePoint  (void);
     void SetOpts    (const int *opts);
     void GetOpts    (int *opts);
+
+    int FixCent;
 };
 //---------------------------------------------------------------------------
 #endif

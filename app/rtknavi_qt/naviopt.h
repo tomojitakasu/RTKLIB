@@ -67,7 +67,7 @@ public:
 	int NmeaReq,NmeaCycle,TimeoutTime,ReconTime,DgpsCorr,SbasCorr;
 	int DebugTraceF,DebugStatusF;
 	int RovPosTypeF,RefPosTypeF,RovAntPcvF,RefAntPcvF,BaselineC;
-    int MoniPort,FileSwapMargin,PanelStack,InitRestart;
+    int MoniPort,FileSwapMargin,PanelStack;
 
     QString ExSats,LocalDirectory;
     QString RovAntF,RefAntF,SatPcvFileF,AntPcvFileF,StaPosFileF;

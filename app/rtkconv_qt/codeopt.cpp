@@ -20,9 +20,9 @@ void CodeOptDialog::showEvent(QShowEvent* event)
 {
     if (event->spontaneous()) return;
 
-	char mask[6][64]={""};
+    char mask[7][64]={""};
 	
-    for (int i=0;i<6;i++) strcpy(mask[i],qPrintable(convOptDialog->CodeMask[i]));
+    for (int i=0;i<7;i++) strcpy(mask[i],qPrintable(convOptDialog->CodeMask[i]));
     G01->setChecked(mask[0][ 0]=='1');
     G02->setChecked(mask[0][ 1]=='1');
     G03->setChecked(mask[0][ 2]=='1');
@@ -93,6 +93,14 @@ void CodeOptDialog::showEvent(QShowEvent* event)
     C42->setChecked(mask[5][41]=='1');
     C43->setChecked(mask[5][42]=='1');
     C33->setChecked(mask[5][32]=='1');
+    I49->setChecked(mask[6][48]=='1');
+    I50->setChecked(mask[6][49]=='1');
+    I51->setChecked(mask[6][50]=='1');
+    I26->setChecked(mask[6][25]=='1');
+    I52->setChecked(mask[6][51]=='1');
+    I53->setChecked(mask[6][52]=='1');
+    I54->setChecked(mask[6][53]=='1');
+    I55->setChecked(mask[6][54]=='1');
     S01->setChecked(mask[4][ 0]=='1');
     S24->setChecked(mask[4][23]=='1');
     S25->setChecked(mask[4][24]=='1');
@@ -103,9 +111,10 @@ void CodeOptDialog::showEvent(QShowEvent* event)
 //---------------------------------------------------------------------------
 void CodeOptDialog::BtnOkClick()
 {
-	char mask[6][64]={""};
+    char mask[7][64]={""};
 	
-	for (int i=0;i<6;i++) for (int j=0;j<MAXCODE;j++) mask[i][j]='0';
+    for (int i=0;i<7;i++)
+        for (int j=0;j<MAXCODE;j++) mask[i][j]='0';
     if (G01->isChecked()) mask[0][ 0]='1';
     if (G02->isChecked()) mask[0][ 1]='1';
     if (G03->isChecked()) mask[0][ 2]='1';
@@ -176,6 +185,14 @@ void CodeOptDialog::BtnOkClick()
     if (C42->isChecked()) mask[5][41]='1';
     if (C43->isChecked()) mask[5][42]='1';
     if (C33->isChecked()) mask[5][32]='1';
+    if (I49->isChecked()) mask[3][48]='1';
+    if (I50->isChecked()) mask[3][49]='1';
+    if (I51->isChecked()) mask[3][50]='1';
+    if (I26->isChecked()) mask[3][25]='1';
+    if (I52->isChecked()) mask[3][51]='1';
+    if (I53->isChecked()) mask[3][52]='1';
+    if (I54->isChecked()) mask[3][53]='1';
+    if (I55->isChecked()) mask[3][54]='1';
     if (S01->isChecked()) mask[4][ 0]='1';
     if (S24->isChecked()) mask[4][23]='1';
     if (S25->isChecked()) mask[4][24]='1';
@@ -260,6 +277,14 @@ void CodeOptDialog::BtnSetAllClick()
     C42->setChecked(set);
     C43->setChecked(set);
     C33->setChecked(set);
+    I49->setChecked(set);
+    I50->setChecked(set);
+    I26->setChecked(set);
+    I51->setChecked(set);
+    I52->setChecked(set);
+    I53->setChecked(set);
+    I54->setChecked(set);
+    I55->setChecked(set);
     S01->setChecked(set);
     S24->setChecked(set);
     S25->setChecked(set);
@@ -330,15 +355,23 @@ void CodeOptDialog::UpdateEnable(void)
     J35->setEnabled((NavSys&SYS_QZS)&&(FreqType&FREQTYPE_L6));
     J36->setEnabled((NavSys&SYS_QZS)&&(FreqType&FREQTYPE_L6));
     J33->setEnabled((NavSys&SYS_QZS)&&(FreqType&FREQTYPE_L6));
-    C47->setEnabled((NavSys&SYS_CMP)&&(FreqType&FREQTYPE_L1));
-    C48->setEnabled((NavSys&SYS_CMP)&&(FreqType&FREQTYPE_L1));
-    C12->setEnabled((NavSys&SYS_CMP)&&(FreqType&FREQTYPE_L1));
+    C47->setEnabled((NavSys&SYS_CMP)&&(FreqType&FREQTYPE_L2));
+    C48->setEnabled((NavSys&SYS_CMP)&&(FreqType&FREQTYPE_L2));
+    C12->setEnabled((NavSys&SYS_CMP)&&(FreqType&FREQTYPE_L2));
     C27->setEnabled((NavSys&SYS_CMP)&&(FreqType&FREQTYPE_L7));
     C28->setEnabled((NavSys&SYS_CMP)&&(FreqType&FREQTYPE_L7));
     C29->setEnabled((NavSys&SYS_CMP)&&(FreqType&FREQTYPE_L7));
     C42->setEnabled((NavSys&SYS_CMP)&&(FreqType&FREQTYPE_L6));
     C43->setEnabled((NavSys&SYS_CMP)&&(FreqType&FREQTYPE_L6));
     C33->setEnabled((NavSys&SYS_CMP)&&(FreqType&FREQTYPE_L6));
+    I49->setEnabled((NavSys&SYS_CMP)&&(FreqType&FREQTYPE_L5));
+    I50->setEnabled((NavSys&SYS_CMP)&&(FreqType&FREQTYPE_L5));
+    I26->setEnabled((NavSys&SYS_CMP)&&(FreqType&FREQTYPE_L5));
+    I51->setEnabled((NavSys&SYS_CMP)&&(FreqType&FREQTYPE_L5));
+    I52->setEnabled((NavSys&SYS_CMP)&&(FreqType&FREQTYPE_L9));
+    I53->setEnabled((NavSys&SYS_CMP)&&(FreqType&FREQTYPE_L9));
+    I54->setEnabled((NavSys&SYS_CMP)&&(FreqType&FREQTYPE_L9));
+    I55->setEnabled((NavSys&SYS_CMP)&&(FreqType&FREQTYPE_L9));
     S01->setEnabled((NavSys&SYS_SBS)&&(FreqType&FREQTYPE_L1));
     S24->setEnabled((NavSys&SYS_SBS)&&(FreqType&FREQTYPE_L5));
     S25->setEnabled((NavSys&SYS_SBS)&&(FreqType&FREQTYPE_L5));

@@ -156,7 +156,7 @@ public:
     QFont PosFont;
 
 	int DebugTraceF,DebugStatusF,OutputGeoidF,BaselineC;
-    int RovPosTypeF,RefPosTypeF,RovAntPcvF,RefAntPcvF,InitRestart;
+    int RovPosTypeF,RefPosTypeF,RovAntPcvF,RefAntPcvF;
     QString RovAntF,RefAntF,SatPcvFileF,AntPcvFileF;
 	double RovAntDel[3],RefAntDel[3],RovPos[3],RefPos[3],NmeaPos[2];
 	double Baseline[2];
@@ -170,6 +170,8 @@ public:
 
 	double PntPos[MAXMAPPNT][3];
 	int NMapPnt;
+
+    QString MarkerName, MarkerComment;
 };
 
 extern MainWindow *mainForm;

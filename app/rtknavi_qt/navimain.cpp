@@ -388,7 +388,6 @@ void  MainWindow::BtnOptClick()
     optDialog->TLEFileF   =TLEFileF;
     optDialog->TLESatFileF=TLESatFileF;
     optDialog->LocalDirectory=LocalDirectory;
-    optDialog->InitRestart=InitRestart;
     
     optDialog->SvrCycle   =SvrCycle;
     optDialog->TimeoutTime=TimeoutTime;
@@ -443,7 +442,6 @@ void  MainWindow::BtnOptClick()
     TLEFileF   =optDialog->TLEFileF;
     TLESatFileF=optDialog->TLESatFileF;
     LocalDirectory=optDialog->LocalDirectory;
-    InitRestart=optDialog->InitRestart;
 
     SvrCycle   =optDialog->SvrCycle;
     TimeoutTime=optDialog->TimeoutTime;
@@ -2289,6 +2287,7 @@ void  MainWindow::LoadOpt(void)
     PrcOpt.posopt[4]=settings.value("prcopt/posopt5",         0).toInt();
     PrcOpt.posopt[5]=settings.value("prcopt/posopt6",         0).toInt();
     PrcOpt.maxaveep =settings.value("prcopt/maxaveep",     3600).toInt();
+    PrcOpt.initrst  =settings.value("prcopt/initrst",         1).toInt();
 
     BaselineC       =settings.value("prcopt/baselinec",       0).toInt();
     Baseline[0]     =settings.value("prcopt/baseline1",     0.0).toDouble();
@@ -2326,7 +2325,6 @@ void  MainWindow::LoadOpt(void)
     TLEFileF        =settings.value("setting/tlefile",        "").toString();
     TLESatFileF     =settings.value("setting/tlesatfile",     "").toString();
     LocalDirectory  =settings.value("setting/localdirectory","C:\\Temp").toString();
-    InitRestart     =settings.value("setting/initrestart",     0).toInt();
     
     SvrCycle        =settings.value("setting/svrcycle",       10).toInt();
     TimeoutTime     =settings.value("setting/timeouttime", 10000).toInt();
@@ -2368,6 +2366,8 @@ void  MainWindow::LoadOpt(void)
     TrkScale2       =settings.value("setting/trkscale2",       5).toInt();
     BLMode1         =settings.value("setting/blmode1",         0).toInt();
     BLMode2         =settings.value("setting/blmode2",         0).toInt();
+    MarkerName      =settings.value("setting/markername",     "").toString();
+    MarkerComment   =settings.value("setting/markercomment",  "").toString();
 
     for (i=0;i<3;i++) {
         RovAntDel[i]=settings.value(QString("setting/rovantdel_%1").arg(i),0.0).toDouble();
@@ -2487,6 +2487,7 @@ void  MainWindow::SaveOpt(void)
     settings.setValue("prcopt/posopt5",    PrcOpt.posopt[4]   );
     settings.setValue("prcopt/posopt6",    PrcOpt.posopt[5]   );
     settings.setValue("prcopt/maxaveep",   PrcOpt.maxaveep    );
+    settings.setValue("prcopt/initrst",    PrcOpt.initrst     );
 
     settings.setValue("prcopt/baselinec",  BaselineC          );
     settings.setValue("prcopt/baseline1",  Baseline[0]        );
@@ -2523,7 +2524,6 @@ void  MainWindow::SaveOpt(void)
     settings.setValue("setting/tlefile",    TLEFileF           );
     settings.setValue("setting/tlesatfile", TLESatFileF        );
     settings.setValue("setting/localdirectory",LocalDirectory  );
-    settings.setValue("setting/initrestart",InitRestart        );
     
     settings.setValue("setting/svrcycle",   SvrCycle           );
     settings.setValue("setting/timeouttime",TimeoutTime        );
@@ -2565,7 +2565,9 @@ void  MainWindow::SaveOpt(void)
     settings.setValue("setting/trkscale2",  TrkScale2          );
     settings.setValue("setting/blmode1",    BLMode1            );
     settings.setValue("setting/blmode2",    BLMode2            );
-    
+    settings.setValue("setting/markername", MarkerName         );
+    settings.setValue("setting/markercomment",MarkerComment    );
+
     for (i=0;i<3;i++) {
         settings.setValue(QString("setting/rovantdel_%1").arg(i),RovAntDel[i]);
         settings.setValue(QString("setting/refantdel_%1").arg(i),RefAntDel[i]);
@@ -2606,8 +2608,13 @@ void MainWindow::BtnMarkClick()
 {
     QMarkDialog *markDialog=new QMarkDialog(this);
     markDialog->PosMode=rtksvr.rtk.opt.mode;
+    markDialog->Marker=MarkerName;
+    markDialog->Comment=MarkerComment;
+
     if (markDialog->exec()!=QDialog::Accepted) return;
     rtksvr.rtk.opt.mode=markDialog->PosMode;
+    MarkerName=markDialog->Marker;
+    MarkerComment=markDialog->Comment;
 
     delete markDialog;
 }

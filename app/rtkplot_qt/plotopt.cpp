@@ -126,6 +126,7 @@ void PlotOptDialog::showEvent(QShowEvent *event)
     NavSys4->setChecked(plot->NavSys&SYS_QZS);
     NavSys5->setChecked(plot->NavSys&SYS_SBS);
     NavSys6->setChecked(plot->NavSys&SYS_CMP);
+    NavSys7->setChecked(plot->NavSys&SYS_IRN);
     AnimCycle->setCurrentText(QString::number(plot->AnimCycle));
     RefCycle ->setText(QString::number(plot->RefCycle ));
     HideLowSat->setCurrentIndex(plot->HideLowSat);
@@ -181,7 +182,8 @@ void PlotOptDialog::BtnOKClick()
                  (NavSys3->isChecked()?SYS_GAL:0)|
                  (NavSys4->isChecked()?SYS_QZS:0)|
                  (NavSys5->isChecked()?SYS_SBS:0)|
-                 (NavSys6->isChecked()?SYS_CMP:0);
+                 (NavSys6->isChecked()?SYS_CMP:0)|
+                 (NavSys7->isChecked()?SYS_IRN:0);
     plot->AnimCycle=AnimCycle->currentText().toInt();
     plot->RefCycle =RefCycle ->text().toInt();
     plot->HideLowSat=HideLowSat->currentIndex();

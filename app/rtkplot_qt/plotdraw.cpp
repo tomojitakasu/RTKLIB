@@ -19,11 +19,8 @@ void Plot::UpdatePlot(void)
 {
     trace(3,"UpdatePlot\n");
     
-    UpdateEnable();
     UpdateInfo();
     Refresh();
-    Refresh_GEView();
-    Refresh_GMView();
 }
 // refresh plot -------------------------------------------------------------
 void Plot::Refresh(void)
@@ -80,7 +77,7 @@ void Plot::DrawTrk(QPainter &c,int level)
     gtime_t time1={0,0},time2={0,0};
     sol_t *sol;
     QPoint p1,p2;
-    double xt,yt,sx,sy,opos[3],pnt[3],rr[3];;
+    double xt,yt,sx,sy,opos[3],pnt[3],rr[3],enu[3],cent[3];
     int i,sel=!BtnSol1->isChecked()&&BtnSol2->isChecked()?1:0,p=0;
     
     trace(3,"DrawTrk: level=%d\n",level);
@@ -101,10 +98,10 @@ void Plot::DrawTrk(QPainter &c,int level)
             delete pos2;
         }
     }
-    if (!BtnSol12->isChecked()&&BtnShowMap->isChecked()) {// image
+    if (!BtnSol12->isChecked()&&BtnShowImg->isChecked()) {// image
         DrawTrkImage(c,level);
     }
-    if (BtnShowPoint->isChecked()) {// map
+    if (BtnShowMap->isChecked()) {// map
         DrawTrkMap(c,level);
     }
     if (level) { // center +
@@ -129,7 +126,7 @@ void Plot::DrawTrk(QPainter &c,int level)
     if (BtnSol1->isChecked()) {
         pos=SolToPos(SolData,-1,QFlag->currentIndex(),0);
         DrawTrkPnt(c,pos,level,0);
-        if (BtnShowPoint->isChecked()) {
+        if (BtnShowMap->isChecked()) {
             DrawTrkPos(c,SolData[0].rb,0,8,CColor[2],tr("Base Station 1"));
         }
         DrawTrkStat(c,pos,header,p++);
@@ -139,7 +136,7 @@ void Plot::DrawTrk(QPainter &c,int level)
     if (BtnSol2->isChecked()) {
         pos=SolToPos(SolData+1,-1,QFlag->currentIndex(),0);
         DrawTrkPnt(c,pos,level,1);
-        if (BtnShowPoint->isChecked()) {
+        if (BtnShowMap->isChecked()) {
             DrawTrkPos(c,SolData[1].rb,0,8,CColor[2],tr("Base Station 2"));
         }
         DrawTrkStat(c,pos,header,p++);
@@ -219,7 +216,7 @@ void Plot::DrawTrk(QPainter &c,int level)
         delete pos1;
         delete pos2;
     }
-    if (BtnShowPoint->isChecked()) {
+    if (BtnShowMap->isChecked()) {
         for (i=0;i<NWayPnt;i++) {
             pnt[0]=PntPos[i][0]*D2R;
             pnt[1]=PntPos[i][1]*D2R;
@@ -256,11 +253,24 @@ void Plot::DrawTrk(QPainter &c,int level)
     }
 
     if (!level) { // center +
-        GraphT->GetPos(p1,p2);
-        p1.setX((p1.x()+p2.x())/2);
-        p1.setY((p1.y()+p2.y())/2);
+        GraphT->GetCent(xt,yt);
+        GraphT->ToPoint(xt,yt,p1);
         DrawMark(GraphT,c,p1,5,CColor[2],20,0);
     }
+    // update geview and gmview center
+    if (level&&norm(OPos,3)>0.0) {
+        GraphT->GetCent(xt,yt);
+        GraphT->ToPoint(xt,yt,p1);
+        GraphT->ToPos(p1,enu[0],enu[1]);
+        ecef2pos(OPos,opos);
+        enu2ecef(opos,enu,rr);
+        for (i=0;i<3;i++) rr[i]+=OPos[i];
+        ecef2pos(rr,cent);
+
+        googleEarthView->SetCent(cent[0]*R2D,cent[1]*R2D);
+        googleMapView->SetCent(cent[0]*R2D,cent[1]*R2D);
+    }
+    Refresh_GEView();
 }
 // draw map-image on track-plot ---------------------------------------------
 void Plot::DrawTrkImage(QPainter &c,int level)
@@ -364,7 +374,7 @@ void Plot::DrawTrkPnt(QPainter &c,const TIMEPOS *pos, int level, int style)
         GraphT->DrawPoly(c,pos->x,pos->y,pos->n,CColor[3],style);
     }
     if (level&&PlotStyle<2) {
-        if (BtnShowMap->isChecked()) {
+        if (BtnShowImg->isChecked()) {
             for (i=0;i<pos->n;i++) color.append(CColor[0]);
             GraphT->DrawMarks(c,pos->x,pos->y,color,pos->n,0,MarkSize+2,0);
         }
@@ -1080,7 +1090,7 @@ void Plot::DrawSky(QPainter &c,int level)
     GraphS->GetLim(xl,yl);
     r=(xl[1]-xl[0]<yl[1]-yl[0]?xl[1]-xl[0]:yl[1]-yl[0])*0.45;
     
-    if (BtnShowMap->isChecked()) {
+    if (BtnShowImg->isChecked()) {
         DrawSkyImage(c,level);
     }
     if (BtnShowSkyplot->isChecked()) {
@@ -1744,7 +1754,7 @@ void Plot::DrawMpS(QPainter &c,int level)
     GraphS->GetLim(xl,yl);
     r=(xl[1]-xl[0]<yl[1]-yl[0]?xl[1]-xl[0]:yl[1]-yl[0])*0.45;
     
-    if (BtnShowMap->isChecked()) {
+    if (BtnShowImg->isChecked()) {
         DrawSkyImage(c,level);
     }
     if (BtnShowSkyplot->isChecked()) {
@@ -1979,7 +1989,7 @@ void Plot::DrawMark(Graph *g,QPainter &c, const QPoint &p, int mark, const QColo
 {
     g->DrawMark(c,p,mark,color,CColor[0],size,rot);
 }
-// refresh google earth view --------------------------------------------------
+// refresh google earth/map view --------------------------------------------------
 void Plot::Refresh_GEView(void)
 {
     TIMEPOS *vel;
@@ -2066,7 +2076,7 @@ void Plot::Refresh_GEView(void)
         googleEarthView->HideTrack(2);
     }
     // update points
-    if (BtnShowPoint->isChecked()) {
+    if (BtnShowMap->isChecked()) {
         googleEarthView->ShowPoint();
     }
     else {

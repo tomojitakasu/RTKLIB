@@ -23,6 +23,7 @@ OptDialog::OptDialog(QWidget *parent)
     widget->setVisible(false);
 
     int nglo=MAXPRNGLO,ngal=MAXPRNGAL,nqzs=MAXPRNQZS,ncmp=MAXPRNCMP;
+    int nirn=MAXPRNIRN;
     
 #if 0
     QString label,s;
@@ -45,8 +46,6 @@ OptDialog::OptDialog(QWidget *parent)
     EOPFile->setCompleter(fileCompleter);
     BLQFile->setCompleter(fileCompleter);
     IonoFile->setCompleter(fileCompleter);
-
-
 
     connect(BtnOk,SIGNAL(clicked(bool)),this,SLOT(BtnOkClick()));
     connect(RovAntPcv,SIGNAL(clicked(bool)),this,SLOT(RovAntPcvClick()));
@@ -99,6 +98,7 @@ OptDialog::OptDialog(QWidget *parent)
     if (ngal<=0) NavSys3->setEnabled(false);
     if (nqzs<=0) NavSys4->setEnabled(false);
     if (ncmp<=0) NavSys6->setEnabled(false);
+    if (nirn<=0) NavSys7->setEnabled(false);
 
     UpdateEnable();        
 }
@@ -432,6 +432,7 @@ void OptDialog::GetOpt(void)
     NavSys4	     ->setChecked(mainForm->NavSys&SYS_QZS);
     NavSys5	     ->setChecked(mainForm->NavSys&SYS_SBS);
     NavSys6	     ->setChecked(mainForm->NavSys&SYS_CMP);
+    NavSys7	     ->setChecked(mainForm->NavSys&SYS_IRN);
     PosOpt1	     ->setChecked(mainForm->PosOpt[0]);
     PosOpt2	     ->setChecked(mainForm->PosOpt[1]);
     PosOpt3	     ->setChecked(mainForm->PosOpt[2]);
@@ -553,6 +554,7 @@ void OptDialog::SetOpt(void)
     if (NavSys4->isChecked()) mainForm->NavSys|=SYS_QZS;
     if (NavSys5->isChecked()) mainForm->NavSys|=SYS_SBS;
     if (NavSys6->isChecked()) mainForm->NavSys|=SYS_CMP;
+    if (NavSys7->isChecked()) mainForm->NavSys|=SYS_IRN;
     mainForm->PosOpt[0]	  	=PosOpt1	->isChecked();
     mainForm->PosOpt[1]	  	=PosOpt2	->isChecked();
     mainForm->PosOpt[2]	  	=PosOpt3	->isChecked();

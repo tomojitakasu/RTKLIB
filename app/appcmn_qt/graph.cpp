@@ -78,7 +78,8 @@ void Graph::ToPos(const QPoint &p, double &x, double &y)
 void Graph::SetPos(const QPoint &p1, const QPoint &p2)
 {
     int w=p2.x()-p1.x()+1,h=p2.y()-p1.y()+1;
-	if (w<MINSIZE) w=MINSIZE; if (h<MINSIZE) h=MINSIZE;
+    if (w<MINSIZE) w=MINSIZE;
+    if (h<MINSIZE) h=MINSIZE;
 	if (Fit) {
 		XScale*=(double)(Width-1)/(w-1);
 		YScale*=(double)(Height-1)/(h-1);

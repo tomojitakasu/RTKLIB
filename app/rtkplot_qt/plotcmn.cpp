@@ -11,6 +11,8 @@
 
 #include "rtklib.h"
 
+#define SQR(x)  ((x)*(x))
+
 QString color2String(const QColor &c){
     return QString("rgb(%1,%2,%3)").arg(c.red()).arg(c.green()).arg(c.blue());
 }
@@ -105,7 +107,8 @@ int Plot::GetCurrentPos(double *rr)
 // get center position of plot ----------------------------------------------
 int Plot::GetCenterPos(double *rr)
 {
-    double xc,yc,pos[3],enu[3]={0},dr[3];
+    double xc,yc,opos[3],pos[3],enu[3]={0},dr[3];
+    int i,j;
     
     trace(3,"GetCenterPos\n");
     
@@ -113,12 +116,16 @@ int Plot::GetCenterPos(double *rr)
     if (norm(OPos,3)<=0.0) return 0;
 
     GraphT->GetCent(xc,yc);
-    ecef2pos(OPos,pos);
+    ecef2pos(OPos,opos);
     enu[0]=xc;
     enu[1]=yc;
-    enu2ecef(pos,enu,dr);
 
-    for (int i=0;i<3;i++) rr[i]=OPos[i]+dr[i];
+    for (i=0;i<6;i++) {
+        enu2ecef(opos,enu,dr);
+        for (j=0;j<3;j++) rr[j]=OPos[j]+dr[j];
+        ecef2pos(rr,pos);
+        enu[2]-=pos[2];
+    }
 
     return 1;
 }

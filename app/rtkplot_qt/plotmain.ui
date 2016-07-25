@@ -123,7 +123,7 @@
                 <string/>
                </property>
                <property name="icon">
-                <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+                <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
                  <normaloff>:/buttons/connect1.bmp</normaloff>
                  <normalon>:/buttons/connect2.bmp</normalon>:/buttons/connect1.bmp</iconset>
                </property>
@@ -150,7 +150,7 @@
                 <string/>
                </property>
                <property name="icon">
-                <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+                <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
                  <normaloff>:/buttons/data1.bmp</normaloff>:/buttons/data1.bmp</iconset>
                </property>
                <property name="checkable">
@@ -176,7 +176,7 @@
                 <string/>
                </property>
                <property name="icon">
-                <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+                <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
                  <normaloff>:/buttons/data2.bmp</normaloff>:/buttons/data2.bmp</iconset>
                </property>
                <property name="checkable">
@@ -202,7 +202,7 @@
                 <string/>
                </property>
                <property name="icon">
-                <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+                <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
                  <normaloff>:/buttons/data12.bmp</normaloff>:/buttons/data12.bmp</iconset>
                </property>
                <property name="checkable">
@@ -601,7 +601,7 @@
                    <string/>
                   </property>
                   <property name="icon">
-                   <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+                   <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
                     <normaloff>:/buttons/trackc.bmp</normaloff>:/buttons/trackc.bmp</iconset>
                   </property>
                  </widget>
@@ -624,7 +624,7 @@
                    <string/>
                   </property>
                   <property name="icon">
-                   <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+                   <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
                     <normaloff>:/buttons/down.bmp</normaloff>:/buttons/down.bmp</iconset>
                   </property>
                  </widget>
@@ -671,7 +671,7 @@
                 <string/>
                </property>
                <property name="icon">
-                <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+                <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
                  <normaloff>:/buttons/fith.bmp</normaloff>:/buttons/fith.bmp</iconset>
                </property>
               </widget>
@@ -694,7 +694,7 @@
                 <string/>
                </property>
                <property name="icon">
-                <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+                <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
                  <normaloff>:/buttons/fitv.bmp</normaloff>:/buttons/fitv.bmp</iconset>
                </property>
               </widget>
@@ -717,7 +717,7 @@
                 <string/>
                </property>
                <property name="icon">
-                <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+                <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
                  <normaloff>:/buttons/point.bmp</normaloff>:/buttons/point.bmp</iconset>
                </property>
                <property name="checkable">
@@ -743,7 +743,7 @@
                 <string/>
                </property>
                <property name="icon">
-                <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+                <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
                  <normaloff>:/buttons/trackc.bmp</normaloff>:/buttons/trackc.bmp</iconset>
                </property>
                <property name="checkable">
@@ -755,7 +755,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QToolButton" name="BtnShowMap">
+              <widget class="QToolButton" name="BtnShowImg">
                <property name="enabled">
                 <bool>true</bool>
                </property>
@@ -772,7 +772,7 @@
                 <string/>
                </property>
                <property name="icon">
-                <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+                <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
                  <normaloff>:/buttons/map.bmp</normaloff>:/buttons/map.bmp</iconset>
                </property>
                <property name="checkable">
@@ -798,7 +798,7 @@
                 <string/>
                </property>
                <property name="icon">
-                <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+                <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
                  <normaloff>:/buttons/trackc.bmp</normaloff>:/buttons/trackc.bmp</iconset>
                </property>
                <property name="checkable">
@@ -824,7 +824,7 @@
                 <string/>
                </property>
                <property name="icon">
-                <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+                <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
                  <normaloff>:/buttons/track.bmp</normaloff>:/buttons/track.bmp</iconset>
                </property>
                <property name="checkable">
@@ -850,7 +850,7 @@
                 <string/>
                </property>
                <property name="icon">
-                <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+                <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
                  <normaloff>:/buttons/track.bmp</normaloff>:/buttons/track.bmp</iconset>
                </property>
                <property name="checkable">
@@ -859,7 +859,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QToolButton" name="BtnShowPoint">
+              <widget class="QToolButton" name="BtnShowMap">
                <property name="enabled">
                 <bool>true</bool>
                </property>
@@ -870,13 +870,13 @@
                 </size>
                </property>
                <property name="toolTip">
-                <string>Show Map Path/Waypoints</string>
+                <string>Show Map/Waypoint</string>
                </property>
                <property name="text">
                 <string/>
                </property>
                <property name="icon">
-                <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+                <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
                  <normaloff>:/buttons/showp.bmp</normaloff>:/buttons/showp.bmp</iconset>
                </property>
                <property name="checkable">
@@ -902,7 +902,7 @@
                 <string/>
                </property>
                <property name="icon">
-                <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+                <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
                  <normaloff>:/buttons/ge.bmp</normaloff>:/buttons/ge.bmp</iconset>
                </property>
               </widget>
@@ -925,7 +925,7 @@
                 <string/>
                </property>
                <property name="icon">
-                <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+                <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
                  <normaloff>:/buttons/gm.bmp</normaloff>:/buttons/gm.bmp</iconset>
                </property>
               </widget>
@@ -984,7 +984,7 @@
                 <string/>
                </property>
                <property name="icon">
-                <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+                <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
                  <normaloff>:/buttons/anim1.bmp</normaloff>
                  <normalon>:/buttons/anim2.bmp</normalon>:/buttons/anim1.bmp</iconset>
                </property>
@@ -1104,7 +1104,7 @@
                    <string/>
                   </property>
                   <property name="icon">
-                   <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+                   <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
                     <normaloff>:/buttons/del.bmp</normaloff>:/buttons/del.bmp</iconset>
                   </property>
                  </widget>
@@ -1127,7 +1127,7 @@
                    <string/>
                   </property>
                   <property name="icon">
-                   <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+                   <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
                     <normaloff>:/buttons/reload.bmp</normaloff>:/buttons/reload.bmp</iconset>
                   </property>
                  </widget>
@@ -1200,7 +1200,7 @@
                    <string/>
                   </property>
                   <property name="icon">
-                   <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+                   <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
                     <normaloff>:/buttons/toolbmp</normaloff>:/buttons/toolbmp</iconset>
                   </property>
                  </widget>
@@ -1445,8 +1445,8 @@
     <addaction name="MenuFixVert"/>
     <addaction name="separator"/>
     <addaction name="MenuShowSkyplot"/>
+    <addaction name="MenuShowImg"/>
     <addaction name="MenuShowMap"/>
-    <addaction name="MenuShowPoint"/>
     <addaction name="separator"/>
     <addaction name="MenuAnimStart"/>
     <addaction name="MenuAnimStop"/>
@@ -1459,7 +1459,7 @@
      <string/>
     </property>
     <property name="title">
-     <string>&amp;Windows</string>
+     <string>Wi&amp;ndows</string>
     </property>
     <addaction name="MenuMax"/>
     <addaction name="separator"/>
@@ -1731,7 +1731,7 @@
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+        <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
          <normaloff>:/buttons/showp.bmp</normaloff>:/buttons/showp.bmp</iconset>
        </property>
       </widget>
@@ -1752,7 +1752,7 @@
   </widget>
   <action name="MenuOpenSol1">
    <property name="icon">
-    <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
      <normaloff>:/buttons/data1.bmp</normaloff>:/buttons/data1.bmp</iconset>
    </property>
    <property name="text">
@@ -1764,7 +1764,7 @@
   </action>
   <action name="MenuOpenSol2">
    <property name="icon">
-    <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
      <normaloff>:/buttons/data2.bmp</normaloff>:/buttons/data2.bmp</iconset>
    </property>
    <property name="text">
@@ -1845,7 +1845,7 @@
   </action>
   <action name="MenuConnect">
    <property name="icon">
-    <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
      <normaloff>:/buttons/connect1.bmp</normaloff>:/buttons/connect1.bmp</iconset>
    </property>
    <property name="text">
@@ -1857,7 +1857,7 @@
   </action>
   <action name="MenuDisconnect">
    <property name="icon">
-    <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
      <normaloff>:/buttons/connect2.bmp</normaloff>:/buttons/connect2.bmp</iconset>
    </property>
    <property name="text">
@@ -1871,7 +1871,7 @@
   </action>
   <action name="MenuReload">
    <property name="icon">
-    <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
      <normaloff>:/buttons/reload.bmp</normaloff>:/buttons/reload.bmp</iconset>
    </property>
    <property name="text">
@@ -1883,7 +1883,7 @@
   </action>
   <action name="MenuClear">
    <property name="icon">
-    <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
      <normaloff>:/buttons/del.bmp</normaloff>:/buttons/del.bmp</iconset>
    </property>
    <property name="text">
@@ -1908,7 +1908,7 @@
   </action>
   <action name="MenuMapImg">
    <property name="icon">
-    <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
      <normaloff>:/buttons/map.bmp</normaloff>:/buttons/map.bmp</iconset>
    </property>
    <property name="text">
@@ -1953,7 +1953,7 @@
   </action>
   <action name="MenuOptions">
    <property name="icon">
-    <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
      <normaloff>:/buttons/toolbmp</normaloff>:/buttons/toolbmp</iconset>
    </property>
    <property name="text">
@@ -1987,7 +1987,7 @@
   </action>
   <action name="MenuGE">
    <property name="icon">
-    <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
      <normaloff>:/buttons/ge.bmp</normaloff>:/buttons/ge.bmp</iconset>
    </property>
    <property name="text">
@@ -1996,7 +1996,7 @@
   </action>
   <action name="MenuGM">
    <property name="icon">
-    <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
      <normaloff>:/buttons/gm.bmp</normaloff>:/buttons/gm.bmp</iconset>
    </property>
    <property name="text">
@@ -2015,7 +2015,7 @@
   </action>
   <action name="MenuCenterOri">
    <property name="icon">
-    <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
      <normaloff>:/buttons/ori.bmp</normaloff>:/buttons/ori.bmp</iconset>
    </property>
    <property name="text">
@@ -2024,7 +2024,7 @@
   </action>
   <action name="MenuFitHoriz">
    <property name="icon">
-    <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
      <normaloff>:/buttons/fith.bmp</normaloff>:/buttons/fith.bmp</iconset>
    </property>
    <property name="text">
@@ -2036,7 +2036,7 @@
   </action>
   <action name="MenuFitVert">
    <property name="icon">
-    <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
      <normaloff>:/buttons/fitv.bmp</normaloff>:/buttons/fitv.bmp</iconset>
    </property>
    <property name="text">
@@ -2051,7 +2051,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
      <normaloff>:/buttons/point.bmp</normaloff>:/buttons/point.bmp</iconset>
    </property>
    <property name="text">
@@ -2063,7 +2063,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
      <normaloff>:/buttons/trackc.bmp</normaloff>:/buttons/trackc.bmp</iconset>
    </property>
    <property name="text">
@@ -2075,7 +2075,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
      <normaloff>:/buttons/track.bmp</normaloff>:/buttons/track.bmp</iconset>
    </property>
    <property name="text">
@@ -2090,7 +2090,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
      <normaloff>:/buttons/trackl.bmp</normaloff>:/buttons/trackl.bmp</iconset>
    </property>
    <property name="text">
@@ -2102,11 +2102,23 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
      <normaloff>:/buttons/graph.bmp</normaloff>:/buttons/graph.bmp</iconset>
    </property>
    <property name="text">
     <string>Sh&amp;ow Skyplot</string>
+   </property>
+  </action>
+  <action name="MenuShowImg">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+     <normaloff>:/buttons/map.bmp</normaloff>:/buttons/map.bmp</iconset>
+   </property>
+   <property name="text">
+    <string>Show &amp;Image</string>
    </property>
   </action>
   <action name="MenuShowMap">
@@ -2114,28 +2126,19 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
-     <normaloff>:/buttons/map.bmp</normaloff>:/buttons/map.bmp</iconset>
-   </property>
-   <property name="text">
-    <string>Show &amp;Image</string>
-   </property>
-  </action>
-  <action name="MenuShowPoint">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
      <normaloff>:/buttons/showp.bmp</normaloff>:/buttons/showp.bmp</iconset>
    </property>
    <property name="text">
-    <string>Show Map/&amp;Waypoints</string>
+    <string>Show Map/&amp;Waypoint</string>
+   </property>
+   <property name="toolTip">
+    <string>Show Map/Waypoint</string>
    </property>
   </action>
   <action name="MenuAnimStart">
    <property name="icon">
-    <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
      <normaloff>:/buttons/anim1.bmp</normaloff>:/buttons/anim1.bmp</iconset>
    </property>
    <property name="text">
@@ -2144,7 +2147,7 @@
   </action>
   <action name="MenuAnimStop">
    <property name="icon">
-    <iconset resource="../rtklaunch_qt/rtklaunch_qt.qrc">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
      <normaloff>:/buttons/anim2.bmp</normaloff>:/buttons/anim2.bmp</iconset>
    </property>
    <property name="text">
@@ -2198,7 +2201,7 @@
   </action>
  </widget>
  <resources>
-  <include location="../rtklaunch_qt/rtklaunch_qt.qrc"/>
+  <include location="../rtkconv_qt/rtkconv_qt.qrc"/>
  </resources>
  <connections/>
 </ui>

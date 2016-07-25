@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>590</width>
-    <height>562</height>
+    <width>636</width>
+    <height>559</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -645,7 +645,7 @@
             <string/>
            </property>
            <property name="text">
-            <string>Galileo</string>
+            <string>GAL</string>
            </property>
            <property name="checked">
             <bool>false</bool>
@@ -658,7 +658,7 @@
             <string/>
            </property>
            <property name="text">
-            <string>QZSS</string>
+            <string>QZS</string>
            </property>
            <property name="checked">
             <bool>false</bool>
@@ -671,7 +671,7 @@
             <string/>
            </property>
            <property name="text">
-            <string>SBAS</string>
+            <string>SBS</string>
            </property>
            <property name="checked">
             <bool>false</bool>
@@ -684,10 +684,17 @@
             <string/>
            </property>
            <property name="text">
-            <string>BeiDou</string>
+            <string>BDS</string>
            </property>
            <property name="checked">
             <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="Nav7">
+           <property name="text">
+            <string>IRN</string>
            </property>
           </widget>
          </item>
@@ -878,6 +885,13 @@
            </property>
            <property name="checked">
             <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="Freq7">
+           <property name="text">
+            <string>L9</string>
            </property>
           </widget>
          </item>

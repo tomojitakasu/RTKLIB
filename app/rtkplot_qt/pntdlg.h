@@ -20,6 +20,7 @@ public slots:
     void BtnUpdateClick();
     void PntListSetEditText();
     void PntListClick();
+    void PntListDblClick(QTableWidgetItem *w);
 private:
     void UpdatePoint(void);
 public:

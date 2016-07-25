@@ -147,7 +147,8 @@ void Plot::UpdateInfoObs(void)
     if (BtnSol1->isChecked()) {
         for (i=0;i<Obs.n;i++) {
             t=Obs.data[i].time;
-            if (ts.time==0) ts=t; te=t;
+            if (ts.time==0) ts=t;
+            te=t;
             if (tp.time==0||timediff(t,tp)>TTOL) ne++; 
             n++; tp=t; 
         }
@@ -200,7 +201,8 @@ void Plot::UpdateInfoSol(void)
     }
     if (pos) {
         for (i=0;i<pos->n;i++) {
-            if (ts.time==0) ts=pos->t[i]; te=pos->t[i];
+            if (ts.time==0) ts=pos->t[i];
+            te=pos->t[i];
             nq[pos->q[i]]++;
             n++; 
         }
