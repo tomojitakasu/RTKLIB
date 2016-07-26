@@ -33,7 +33,7 @@ void QMarkDialog::BtnOkClick()
 {
     QString marker=MarkerName->currentText();
     QString comment=MarkerComment->text();
-    char str1[32],str2[1024];
+    char str2[1024];
 	
     if (RadioGo->isChecked()) {
 		if (PosMode==PMODE_STATIC) {
@@ -52,8 +52,7 @@ void QMarkDialog::BtnOkClick()
 		}
 	}
     if (ChkMarkerName->isChecked()) {
-        sprintf(str1,"%03d",NMark);
-        reppath(qPrintable(marker),str2,utc2gpst(timeget()),str1,"");
+        reppath(qPrintable(marker),str2,utc2gpst(timeget()),qPrintable(QString("%1").arg(NMark,3,10,QChar('0'))),"");
         rtksvrmark(&rtksvr,str2,qPrintable(comment));
         NMark++;
         Label1->setText(QString("%%r=%1").arg(NMark,3,10,QLatin1Char('0')));

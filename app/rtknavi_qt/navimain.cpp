@@ -82,7 +82,7 @@ const QChar degreeChar(0260);           // character code of degree (UTF-8)
 //---------------------------------------------------------------------------
 
 rtksvr_t rtksvr;                        // rtk server struct
-stream_t monistr;                       // monitor stream
+static stream_t monistr;                       // monitor stream
 
 // show message in message area ---------------------------------------------
 #if 0
@@ -1309,7 +1309,7 @@ void  MainWindow::UpdateTime(void)
         if (!(t=localtime(&time.time))) str="2000/01/01 00:00:00.0";
         else str=QString("%1/%2/%3 %4:%5:%6.%7").arg(t->tm_year+1900,4,10,QChar('0'))
                      .arg(t->tm_mon+1,2,10,QChar('0')).arg(t->tm_mday,2,10,QChar('0')).arg(t->tm_hour,2,10,QChar('0')).arg(t->tm_min,2,10,QChar('0'))
-                     .arg(t->tm_sec,2,10,QChar('0')).arg((int)(time.sec*10));
+                     .arg(t->tm_sec,2,10,QChar('0')).arg(static_cast<int>(time.sec*10));
     }
     else if (TimeSys==3) {
         tow=time2gpst(time,&week);
@@ -1595,12 +1595,13 @@ QColor  MainWindow::SnrColor(int snr)
     if (snr<27) return color[4];
     if (snr>47) return color[0];
     a=(snr-27.5)/5.0;
-    i=(int)a; a-=i;
+    i=static_cast<int>(a);
+    a-=i;
     c1=color[3-i];
     c2=color[4-i];
-    r1=(unsigned int)(a*c1.red()+(1.0-a)*c2.red())&0xFF;
-    g1=(unsigned int)(a*c1.green()+(1.0-a)*c2.green())&0xFF;
-    b1=(unsigned int)(a*c1.blue()+(1.0-a)*c2.blue())&0xFF;
+    r1=static_cast<unsigned int>(a*c1.red()  +(1.0-a)*c2.red())&0xFF;
+    g1=static_cast<unsigned int>(a*c1.green()+(1.0-a)*c2.green())&0xFF;
+    b1=static_cast<unsigned int>(a*c1.blue() +(1.0-a)*c2.blue())&0xFF;
     
     return QColor(r1,g1,b1);
 }
@@ -1702,8 +1703,8 @@ void  MainWindow::DrawSat(QPainter *c, int w, int h, int x0, int y0,
         }
         satno2id(Sat[index][k],id);
         l=(q=strchr(sys,id[0]))?(int)(q-sys):5;
-        x[i]=(int)(p.x()+r*(90-El[index][k]*R2D)/90*sin(Az[index][k]))+x0;
-        y[i]=(int)(p.y()-r*(90-El[index][k]*R2D)/90*cos(Az[index][k]))+y0;
+        x[i]=static_cast<int>(p.x()+r*(90-El[index][k]*R2D)/90*sin(Az[index][k]))+x0;
+        y[i]=static_cast<int>(p.y()-r*(90-El[index][k]*R2D)/90*cos(Az[index][k]))+y0;
         c->setPen(Qt::gray);
         d=SATSIZE/2;
         c->setBrush(!Vsat[index][k]?QColor(0xc0,0xc0,0xc0):
@@ -1747,17 +1748,17 @@ void  MainWindow::DrawBL(QPainter *c,QLabel *disp, int w, int h)
     }
     if (len>=MINBLLEN) {
         cp =cos(pitch);
-        cy =(int)((r-d1-d2/2)*cp*cos(yaw-az));
-        sy =(int)((r-d1-d2/2)*cp*sin(yaw-az));
-        cya=(int)(((r-d1-d2/2)*cp-d2/2-4)*cos(yaw-az));
-        sya=(int)(((r-d1-d2/2)*cp-d2/2-4)*sin(yaw-az));
+        cy =static_cast<int>((r-d1-d2/2)*cp*cos(yaw-az));
+        sy =static_cast<int>((r-d1-d2/2)*cp*sin(yaw-az));
+        cya=static_cast<int>(((r-d1-d2/2)*cp-d2/2-4)*cos(yaw-az));
+        sya=static_cast<int>(((r-d1-d2/2)*cp-d2/2-4)*sin(yaw-az));
     }
     p1.setX(p.x()-sy); p1.setY(p.y()+cy); // base
     p2.setX(p.x()+sy); p2.setY(p.y()-cy); // rover
     
     c->setPen(Qt::gray);
     c->drawEllipse(p.x()-r,p.y()-r,2*r+1,2*r+1);
-    r1=(int)(r-d1/2);
+    r1=static_cast<int>(r-d1/2);
     c->drawEllipse(p.x()-r1,p.y()-r1,2*r1+1,2*r1+1);
     
     pp=pitch<0.0?p2:p1;
@@ -1766,16 +1767,16 @@ void  MainWindow::DrawBL(QPainter *c,QLabel *disp, int w, int h)
     if (pitch<0.0) {
         c->setBrush(Qt::white);
         c->drawEllipse(pp.x()-d2/2,pp.y()-d2/2,d2+1,d2+1);
-        DrawArrow(c,p.x()+sya,p.y()-cya,d3,(int)((yaw-az)*R2D),QColor(0xc0,0xc0,0xc0));
+        DrawArrow(c,p.x()+sya,p.y()-cya,d3,static_cast<int>((yaw-az)*R2D),QColor(0xc0,0xc0,0xc0));
     }
     c->setBrush(col);
     c->drawEllipse(pp.x()-d2/2+2,pp.y()-d2/2+2,d2-1,d2-1);
     for (a=0;a<360;a+=5) {
         q=a%90==0?0:(a%30==0?r-d1*3:(a%10==0?r-d1*2:r-d1));
-        x1=(int)(r*sin(a*D2R-az));
-        y1=(int)(r*cos(a*D2R-az));
-        x2=(int)(q*sin(a*D2R-az));
-        y2=(int)(q*cos(a*D2R-az));
+        x1=static_cast<int>(r*sin(a*D2R-az));
+        y1=static_cast<int>(r*cos(a*D2R-az));
+        x2=static_cast<int>(q*sin(a*D2R-az));
+        y2=static_cast<int>(q*cos(a*D2R-az));
         c->setPen(QColor(0xc0,0xc0,0xc0));
         c->drawLine(p.x()+x1,p.y()-y1,p.x()+x2,p.y()-y2);
         c->setBrush(Qt::white);
@@ -1783,9 +1784,9 @@ void  MainWindow::DrawBL(QPainter *c,QLabel *disp, int w, int h)
             DrawText(c,p.x()+x1,p.y()-y1,label[a/90],Qt::gray,1);
         }
         if (a==0) {
-            x1=(int)((r-d1*3/2)*sin(a*D2R-az));
-            y1=(int)((r-d1*3/2)*cos(a*D2R-az));
-            DrawArrow(c,p.x()+x1,p.y()-y1,d3,-(int)(az*R2D),QColor(0xc0,0xc0,0xc0));
+            x1=static_cast<int>((r-d1*3/2)*sin(a*D2R-az));
+            y1=static_cast<int>((r-d1*3/2)*cos(a*D2R-az));
+            DrawArrow(c,p.x()+x1,p.y()-y1,d3,-static_cast<int>(az*R2D),QColor(0xc0,0xc0,0xc0));
         }
     }
     pp=pitch>=0.0?p2:p1;
@@ -1794,7 +1795,7 @@ void  MainWindow::DrawBL(QPainter *c,QLabel *disp, int w, int h)
     if (pitch>=0.0) {
         c->setBrush(Qt::white);
         c->drawEllipse(pp.x()-d2/2,pp.y()-d2/2,d2,d2);
-        DrawArrow(c,p.x()+sya,p.y()-cya,d3,(int)((yaw-az)*R2D),Qt::gray);
+        DrawArrow(c,p.x()+sya,p.y()-cya,d3,static_cast<int>((yaw-az)*R2D),Qt::gray);
     }
     c->setBrush(col);
     c->drawEllipse(pp.x()-d2/2+2,pp.y()-d2/2+2,d2-4,d2-4);
@@ -1886,7 +1887,7 @@ void MainWindow::DrawTrk(QPainter *c, QLabel *disp, QPixmap &buff)
     graph->GetScale(sx,sy);
     p2.rx()=p2.x()-35;
     p2.ry()=p2.y()-12;
-    graph->DrawMark(*c,p2,11,Qt::gray,(int)(xt/sx+0.5),0);
+    graph->DrawMark(*c,p2,11,Qt::gray,static_cast<int>(xt/sx+0.5),0);
     p2.ry()=p2.y()-2;
     if      (xt<0.01  ) label.sprintf("%.0f mm",xt*1000.0);
     else if (xt<1.0   ) label.sprintf("%.0f cm",xt*100.0);
@@ -1915,13 +1916,13 @@ void  MainWindow::DrawSky(QPainter *c, int w, int h, int x0, int y0)
     
     c->setBrush(Qt::white);
     for (e=0;e<90;e+=30) {
-        d=(int)(r*(90-e)/90);
+        d=static_cast<int>(r*(90-e)/90);
         c->setPen(e==0?Qt::gray:QColor(0xc0,0xc0,0xc0));
         c->drawEllipse(p.x()-d,p.y()-d,2*d+1,2*d+1);
     }
     for (a=0;a<360;a+=45) {
-        x=(int)(r*sin(a*D2R));
-        y=(int)(r*cos(a*D2R));
+        x=static_cast<int>(r*sin(a*D2R));
+        y=static_cast<int>(r*cos(a*D2R));
         c->setPen(QColor(0xc0,0xc0,0xc0));
         c->drawLine(p.x(),p.y(),p.x()+x,p.y()-y);
         if (a%90==0) DrawText(c,p.x()+x,p.y()-y,label[a/90],Qt::gray,1);
@@ -1957,8 +1958,8 @@ void  MainWindow::DrawArrow(QPainter *c, int x, int y, int siz,
     p1[0].setY(siz/2); p1[1].setY(-siz/2);p1[2].setY(-siz/2); p1[3].setY(siz/2);
     
     for (i=0;i<4;i++) {
-        p2[i].setX(x+(int)(p1[i].x()*cos(-ang*D2R)-p1[i].y()*sin(-ang*D2R)+0.5));
-        p2[i].setY(y-(int)(p1[i].x()*sin(-ang*D2R)+p1[i].y()*cos(-ang*D2R)+0.5));
+        p2[i].setX(x+static_cast<int>(p1[i].x()*cos(-ang*D2R)-p1[i].y()*sin(-ang*D2R)+0.5));
+        p2[i].setY(y-static_cast<int>(p1[i].x()*sin(-ang*D2R)+p1[i].y()*cos(-ang*D2R)+0.5));
     }
     c->setBrush(QBrush(color,Qt::SolidPattern));
     c->setPen(color);
@@ -2161,9 +2162,9 @@ void  MainWindow::SaveNav(nav_t *nav)
         str=str+QString("%1,").arg(nav->eph[i].iodc);
         str=str+QString("%1,").arg(nav->eph[i].sva);
         str=str+QString("%1,").arg(nav->eph[i].svh);
-        str=str+QString("%1,").arg((int)nav->eph[i].toe.time);
-        str=str+QString("%1,").arg((int)nav->eph[i].toc.time);
-        str=str+QString("%1,").arg((int)nav->eph[i].ttr.time);
+        str=str+QString("%1,").arg(static_cast<int>(nav->eph[i].toe.time));
+        str=str+QString("%1,").arg(static_cast<int>(nav->eph[i].toc.time));
+        str=str+QString("%1,").arg(static_cast<int>(nav->eph[i].ttr.time));
         str=str+QString("%1,").arg(nav->eph[i].A,0,'E',14);
         str=str+QString("%1,").arg(nav->eph[i].e,0,'E',14);
         str=str+QString("%1,").arg(nav->eph[i].i0,0,'E',14);
@@ -2394,8 +2395,8 @@ void  MainWindow::LoadOpt(void)
     if (settings.value("setting/posfontbold",  0).toInt()) PosFont.setBold(true);
     if (settings.value("setting/posfontitalic",0).toInt()) PosFont.setItalic(true);;
     
-    TextViewer::Color1=QColor(settings.value("viewer/color1",(int)Qt::black).toInt());
-    TextViewer::Color2=QColor(settings.value("viewer/color2",(int)Qt::white).toInt());
+    TextViewer::Color1=QColor(static_cast<QRgb>(settings.value("viewer/color1",static_cast<int>(Qt::black)).toInt()));
+    TextViewer::Color2=QColor(static_cast<QRgb>(settings.value("viewer/color2",static_cast<int>(Qt::white)).toInt()));
     TextViewer::FontD.setFamily(settings.value("viewer/fontname","Courier New").toString());
     TextViewer::FontD.setPointSize(settings.value("viewer/fontsize",9).toInt());
     
@@ -2592,8 +2593,8 @@ void  MainWindow::SaveOpt(void)
     settings.setValue("setting/posfontbold",  PosFont.bold());
     settings.setValue("setting/posfontitalic",PosFont.italic());
 
-    settings.setValue("viewer/color1",  (int)TextViewer::Color1.rgb());
-    settings.setValue("viewer/color2",  (int)TextViewer::Color2.rgb());
+    settings.setValue("viewer/color1",  static_cast<int>(TextViewer::Color1.rgb()));
+    settings.setValue("viewer/color2",  static_cast<int>(TextViewer::Color2.rgb()));
     settings.setValue("viewer/fontname",TextViewer::FontD.family());
     settings.setValue("viewer/fontsize",TextViewer::FontD.pointSize());
     

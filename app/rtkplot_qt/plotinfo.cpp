@@ -42,7 +42,7 @@ void Plot::UpdateTimeObs(void)
         for (i=IndexObs[ind];i<Obs.n&&i<IndexObs[ind+1];i++,no++) {
             if (SatMask[Obs.data[i].sat-1]||!SatSel[Obs.data[i].sat-1]) continue;
             if (El[i]<ElMask*D2R) continue;
-            if (ElMaskP&&El[i]<ElMaskData[(int)(Az[i]*R2D+0.5)]) continue;
+            if (ElMaskP&&El[i]<ElMaskData[static_cast<int>(Az[i]*R2D+0.5)]) continue;
             azel[  ns*2]=Az[i];
             azel[1+ns*2]=El[i];
             ns++;
@@ -237,7 +237,7 @@ void Plot::UpdateInfoSol(void)
         
         for (i=1;i<=6;i++) {
             if (nq[i]<=0) continue;
-            msgs[i-1]=QString("%1:%2(%3%) ").arg(i).arg(nq[i]).arg((double)nq[i]/n*100.0,0,'f',1);
+            msgs[i-1]=QString("%1:%2(%3%) ").arg(i).arg(nq[i]).arg(static_cast<double>(nq[i])/n*100.0,0,'f',1);
         }
     }
     ShowMsg(msg);
@@ -335,9 +335,9 @@ void Plot::UpdateObsType(void)
     for (i=0;i<Obs.n;i++) for (j=0;j<NFREQ+NEXOBS;j++) {
         cmask[Obs.data[i].code[j]]=1;
     }
-    for (i=1;i<=MAXCODE;i++) {
-        if (!cmask[i]) continue;
-        codes[n++]=code2obs(i,&j);
+    for (unsigned char c=1;c<=MAXCODE;c++) {
+        if (!cmask[c]) continue;
+        codes[n++]=code2obs(c,&j);
         fmask[j-1]=1;
     }
     ObsType ->clear();

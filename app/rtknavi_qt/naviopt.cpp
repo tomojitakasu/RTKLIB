@@ -609,7 +609,7 @@ void OptDialog::SetOpt(void)
     SolOpt.posf      =SolFormat   ->currentIndex();
     SolOpt.timef     =TimeFormat->currentIndex()==0?0:1;
     SolOpt.times     =TimeFormat->currentIndex()==0?0:TimeFormat->currentIndex()-1;
-    SolOpt.timeu     =(int)(TimeDecimal->text().toDouble());
+    SolOpt.timeu     =static_cast<int>(TimeDecimal->text().toDouble());
     SolOpt.degf      =LatLonFormat->currentIndex();
     strcpy(SolOpt.sep,qPrintable(FieldSep_Text));
     SolOpt.outhead   =OutputHead  ->currentIndex();
@@ -938,16 +938,16 @@ void OptDialog::SaveOpt(const QString &file)
     prcopt.glomodear=GloAmbRes	->currentIndex();
     prcopt.bdsmodear=BdsAmbRes	->currentIndex();
     prcopt.thresar[0]=ValidThresAR->text().toDouble();
-    prcopt.maxout	=OutCntResetAmb->text().toDouble();
-    prcopt.minfix	=FixCntHoldAmb->text().toDouble();
-    prcopt.minlock	=LockCntFixAmb->text().toDouble();
+    prcopt.maxout	=OutCntResetAmb->text().toInt();
+    prcopt.minfix	=FixCntHoldAmb->text().toInt();
+    prcopt.minlock	=LockCntFixAmb->text().toInt();
     prcopt.elmaskar	=ElMaskAR	->text().toDouble()*D2R;
     prcopt.elmaskhold=ElMaskHold->text().toDouble()*D2R;
     prcopt.maxtdiff	=MaxAgeDiff	->text().toDouble();
     prcopt.maxgdop	=RejectGdop ->text().toDouble();
     prcopt.maxinno	=RejectThres->text().toDouble();
     prcopt.thresslip=SlipThres	->text().toDouble();
-    prcopt.niter	=NumIter	->text().toDouble();
+    prcopt.niter	=NumIter	->text().toInt();
     prcopt.syncsol	=SyncSol->currentIndex();
     if (prcopt.mode==PMODE_MOVEB&&BaselineConst->isChecked()) {
         prcopt.baseline[0]=BaselineLen->text().toDouble();
@@ -956,7 +956,7 @@ void OptDialog::SaveOpt(const QString &file)
     solopt.posf		=SolFormat	->currentIndex();
     solopt.timef	=TimeFormat	->currentIndex()==0?0:1;
     solopt.times	=TimeFormat	->currentIndex()==0?0:TimeFormat->currentIndex()-1;
-    solopt.timeu	=TimeDecimal ->text().toDouble();
+    solopt.timeu	=TimeDecimal ->text().toInt();
     solopt.degf		=LatLonFormat->currentIndex();
     strcpy(solopt.sep,qPrintable(FieldSep_Text));
     solopt.outhead	=OutputHead	 ->currentIndex();

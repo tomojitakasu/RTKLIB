@@ -3,10 +3,9 @@
 #ifndef vmapdlgH
 #define vmapdlgH
 //---------------------------------------------------------------------------
-#include "rtklib.h"
-
 #include <QDialog>
 
+#include "rtklib.h"
 #include "ui_vmapdlg.h"
 
 //---------------------------------------------------------------------------

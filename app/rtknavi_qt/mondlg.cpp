@@ -26,8 +26,8 @@
 
 //---------------------------------------------------------------------------
 
-extern rtksvr_t rtksvr;		// rtk server struct
-extern stream_t monistr;	// monitor stream
+static rtksvr_t rtksvr;		// rtk server struct
+static stream_t monistr;	// monitor stream
 
 //---------------------------------------------------------------------------
 MonitorDialog::MonitorDialog(QWidget* parent)
@@ -209,7 +209,7 @@ void MonitorDialog::ClearTable(void)
 //---------------------------------------------------------------------------
 void MonitorDialog::Timer2Timer()
 {
-	unsigned char *msg;
+    unsigned char *msg=0;
     int i,len,index=TypeF-NMONITEM;
 	
 	if (index<0||6<=index) return;
@@ -387,7 +387,7 @@ void MonitorDialog::ShowRtk(void)
 	}
 	if (rtksvr.state) {
         double runtime;
-		runtime=(double)(tickget()-rtksvr.tick)/1000.0;
+        runtime=static_cast<double>(tickget()-rtksvr.tick)/1000.0;
 		rt[0]=floor(runtime/3600.0); runtime-=rt[0]*3600.0;
 		rt[1]=floor(runtime/60.0); rt[2]=runtime-rt[1]*60.0;
 	}
@@ -445,21 +445,21 @@ void MonitorDialog::ShowRtk(void)
     Console->setItem(i++,1, new QTableWidgetItem(QString::number(rtk.opt.elmin*R2D,'f',0)));
 	
     Console->setItem(i,0, new QTableWidgetItem(tr("SNR Mask L1 (dBHz)")));
-    Console->setItem(i++,1, new QTableWidgetItem(!rtk.opt.snrmask.ena?"":
+    Console->setItem(i++,1, new QTableWidgetItem(!rtk.opt.snrmask.ena[0]?"":
         QString("%1,%2,%3,%4,%5,%6,%7,%8,%9")
                   .arg(rtk.opt.snrmask.mask[0][0],0).arg(rtk.opt.snrmask.mask[0][1],0).arg(rtk.opt.snrmask.mask[0][2],0)
                   .arg(rtk.opt.snrmask.mask[0][3],0).arg(rtk.opt.snrmask.mask[0][4],0).arg(rtk.opt.snrmask.mask[0][5],0)
                   .arg(rtk.opt.snrmask.mask[0][6],0).arg(rtk.opt.snrmask.mask[0][7],0).arg(rtk.opt.snrmask.mask[0][8],0)));
 	
     Console->setItem(i,0, new QTableWidgetItem(tr("SNR Mask L2 (dBHz)")));
-    Console->setItem(i++,1, new QTableWidgetItem(!rtk.opt.snrmask.ena?"":
+    Console->setItem(i++,1, new QTableWidgetItem(!rtk.opt.snrmask.ena[0]?"":
         QString("%1,%2,%3,%4,%5,%6,%7,%8,%9")
                   .arg(rtk.opt.snrmask.mask[1][0],0).arg(rtk.opt.snrmask.mask[1][1],0).arg(rtk.opt.snrmask.mask[1][2],0)
                   .arg(rtk.opt.snrmask.mask[1][3],0).arg(rtk.opt.snrmask.mask[1][4],0).arg(rtk.opt.snrmask.mask[1][5],0)
                   .arg(rtk.opt.snrmask.mask[1][6],0).arg(rtk.opt.snrmask.mask[1][7],0).arg(rtk.opt.snrmask.mask[1][8],0)));
 	
     Console->setItem(i,0, new QTableWidgetItem(tr("SNR Mask L5 (dBHz)")));
-    Console->setItem(i++,1, new QTableWidgetItem(!rtk.opt.snrmask.ena?"":
+    Console->setItem(i++,1, new QTableWidgetItem(!rtk.opt.snrmask.ena[0]?"":
         QString("%1,%2,%3,%4,%5,%6,%7,%8,%9")
                   .arg(rtk.opt.snrmask.mask[2][0],0).arg(rtk.opt.snrmask.mask[2][1],0).arg(rtk.opt.snrmask.mask[2][2],0)
                   .arg(rtk.opt.snrmask.mask[2][3],0).arg(rtk.opt.snrmask.mask[2][4],0).arg(rtk.opt.snrmask.mask[2][5],0)
@@ -844,8 +844,8 @@ void MonitorDialog::ShowEst(void)
         Console->setItem(i,j++, new QTableWidgetItem(QString(tr("X_%1")).arg(i+1)));
         Console->setItem(i,j++, new QTableWidgetItem(x[i]==0.0?s0:QString::number(x[i],'f',3)));
         Console->setItem(i,j++, new QTableWidgetItem(P[i+i*nx]==0.0?s0:QString::number(SQRT(P[i+i*nx]),'f',3)));
-        Console->setItem(i,j++, new QTableWidgetItem(i>=na||xa[i]==0?s0:QString::number(xa[i],'f',3)));
-        Console->setItem(i,j++, new QTableWidgetItem(i>=na||Pa[i+i*na]==0.0?s0:QString::number(SQRT(Pa[i+i*na]),'f',3)));
+        Console->setItem(i,j++, new QTableWidgetItem((i>=na||qFuzzyCompare(xa[i],0))?s0:QString::number(xa[i],'f',3)));
+        Console->setItem(i,j++, new QTableWidgetItem((i>=na||Pa[i+i*na]==0.0)?s0:QString::number(SQRT(Pa[i+i*na]),'f',3)));
 		n++;
 	}
 	free(x); free(P); free(xa); free(Pa);
@@ -1214,9 +1214,13 @@ void MonitorDialog::ShowSbsNav(void)
     int i,n,valid,prn,off=SelEph->currentIndex()?NSATSBS:0;
 	char tstr[64],id[32];
 
-    for (int i=0;i<MAXPRNSBS-MINPRNSBS+1; i++) seph[i].sat=seph[i].t0.time=seph[i].t0.sec=seph[i].tof.time=seph[i].tof.sec=seph[i].sva=seph[i].svh=
-                seph[i].pos[0]=seph[i].pos[1]=seph[i].pos[2]=seph[i].vel[0]=seph[i].vel[1]=seph[i].vel[2]=seph[i].acc[0]=seph[i].acc[1]=seph[i].acc[2]=
-                seph[i].af0=seph[i].af1;
+    for (int i=0;i<MAXPRNSBS-MINPRNSBS+1; i++)
+    {
+        seph[i].sat=seph[i].sva=seph[i].svh=0;
+        seph[i].t0.time=seph[i].tof.time=0;
+        seph[i].t0.sec=seph[i].tof.sec=0;
+        seph[i].pos[0]=seph[i].pos[1]=seph[i].pos[2]=seph[i].vel[0]=seph[i].vel[1]=seph[i].vel[2]=seph[i].acc[0]=seph[i].acc[1]=seph[i].acc[2]=seph[i].af0=seph[i].af1=0;
+    };
 	
 	rtksvrlock(&rtksvr); // lock
 	time=rtksvr.rtk.sol.time;
@@ -1228,7 +1232,7 @@ void MonitorDialog::ShowSbsNav(void)
     Label->setText("");
 	
     for (i=0,n=0;i<NSATSBS;i++) {
-		valid=fabs(timediff(time,seph[i].t0)<=MAXDTOE_SBS)&&
+        valid=fabs(timediff(time,seph[i].t0))<=MAXDTOE_SBS&&
 			  seph[i].t0.time&&!seph[i].svh;
         if (SelSat->currentIndex()==1&&!valid) continue;
 		n++;
@@ -1242,7 +1246,7 @@ void MonitorDialog::ShowSbsNav(void)
 
     for (i=0,n=0;i<NSATSBS;i++) {
         int j=0;
-		valid=fabs(timediff(time,seph[i].t0)<=MAXDTOE_SBS)&&
+        valid=fabs(timediff(time,seph[i].t0))<=MAXDTOE_SBS&&
 			  seph[i].t0.time&&!seph[i].svh;
         if (SelSat->currentIndex()==1&&!valid) continue;
 		prn=MINPRNSBS+i;
@@ -1650,7 +1654,7 @@ void MonitorDialog::ShowSbsFast(void)
     for (i=0;i<Console->rowCount();i++) {
         int j=0;
         sbssatp_t *satp=sbssat.sat+i;
-        bool valid=fabs(timediff(time,satp->fcorr.t0)<=MAXSBSAGEF)&&satp->fcorr.t0.time&&
+        bool valid=fabs(timediff(time,satp->fcorr.t0))<=MAXSBSAGEF&&satp->fcorr.t0.time&&
 			  0<=satp->fcorr.udre-1&&satp->fcorr.udre-1<14;
 		satno2id(satp->sat,id);
         Console->setItem(i,j++, new QTableWidgetItem(id));

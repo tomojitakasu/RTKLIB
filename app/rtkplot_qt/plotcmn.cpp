@@ -333,7 +333,7 @@ QColor Plot::ObsColor(const obsd_t *obs, double az, double el)
         if (i>=NFREQ+NEXOBS) return Qt::black;
     }
     else {
-        if      (obs->L[0]!=0.0&&obs->L[1]!=0.0&&obs->L[2]) color=MColor[0][4];
+        if      (obs->L[0]!=0.0&&obs->L[1]!=0.0&&obs->L[2]!=0.0) color=MColor[0][4];
         else if (obs->L[0]!=0.0&&obs->L[1]!=0.0) color=MColor[0][1];
         else if (obs->L[0]!=0.0&&obs->L[2]!=0.0) color=MColor[0][5];
         else if (obs->L[0]!=0.0) color=MColor[0][2];
@@ -341,7 +341,7 @@ QColor Plot::ObsColor(const obsd_t *obs, double az, double el)
         else if (obs->P[2]!=0.0) color=MColor[0][6];
         else return Qt::black;
     }
-    if (el<ElMask*D2R||(ElMaskP&&el<ElMaskData[(int)(az*R2D+0.5)])) {
+    if (el<ElMask*D2R||(ElMaskP&&el<ElMaskData[static_cast<int>(az*R2D+0.5)])) {
         return HideLowSat?Qt::black:MColor[0][0];
     }
     return color;
@@ -358,12 +358,13 @@ QColor Plot::SnrColor(double snr)
     if (snr<27.5) return MColor[0][5];
     if (snr>47.5) return MColor[0][1];
     a=(snr-27.5)/5.0;
-    i=(int)a; a-=i;
+    i=static_cast<int>(a);
+    a-=i;
     c1=MColor[0][4-i];
     c2=MColor[0][5-i];
-    r1=(unsigned int)(a*c1.red()+(1.0-a)*c2.red())&0xFF;
-    g1=(unsigned int)(a*c1.green()+(1.0-a)*c2.green())&0xFF;
-    b1=(unsigned int)(a*c1.blue()+(1.0-a)*c2.blue())&0xFF;
+    r1=static_cast<unsigned int>(a*c1.red()+(1.0-a)*c2.red())&0xFF;
+    g1=static_cast<unsigned int>(a*c1.green()+(1.0-a)*c2.green())&0xFF;
+    b1=static_cast<unsigned int>(a*c1.blue()+(1.0-a)*c2.blue())&0xFF;
     
     return QColor(r1,g1,b1);
 }
@@ -385,12 +386,13 @@ QColor Plot::MpColor(double mp)
     if (mp>= 0.6) return colors[4];
     if (mp<=-0.6) return colors[0];
     a=mp/0.4+0.6;
-    i=(int)a; a-=i;
+    i=static_cast<int>(a);
+    a-=i;
     c1=colors[i  ];
     c2=colors[i+1];
-    r1=(unsigned int)(a*c1.red()+(1.0-a)*c2.red())&0xFF;
-    g1=(unsigned int)(a*c1.green()+(1.0-a)*c2.green())&0xFF;
-    b1=(unsigned int)(a*c1.blue()+(1.0-a)*c2.blue())&0xFF;
+    r1=static_cast<unsigned int>(a*c1.red()+(1.0-a)*c2.red())&0xFF;
+    g1=static_cast<unsigned int>(a*c1.green()+(1.0-a)*c2.green())&0xFF;
+    b1=static_cast<unsigned int>(a*c1.blue()+(1.0-a)*c2.blue())&0xFF;
 
     return QColor(r1,g1,b1);
 }
@@ -444,9 +446,9 @@ void Plot::TimeStr(gtime_t time, int n, int tsys, QString &str)
     else { // lt
         time=gpst2utc(time);
         if (!(t=localtime(&time.time))) strcpy(tstr,"2000/01/01 00:00:00.0");
-        else strcpy(tstr,qPrintable(QString("%1/%2/%3 %4:%5:%6.%7").arg(t->tm_year+1900,4,QChar('0'))
-                     .arg(t->tm_mon+1,2,QChar('0')).arg(t->tm_mday,2,QChar('0')).arg(t->tm_hour,2,QChar('0')).arg(t->tm_min,2,QChar('0'))
-                     .arg(t->tm_sec,2,QChar('0')).arg((int)(time.sec*pow(10.0,n)),n)));
+        else strcpy(tstr,qPrintable(QString("%1/%2/%3 %4:%5:%6.%7").arg(t->tm_year+1900,4,10,QChar('0'))
+                     .arg(t->tm_mon+1,2,10,QChar('0')).arg(t->tm_mday,2,10,QChar('0')).arg(t->tm_hour,2,10,QChar('0')).arg(t->tm_min,2,10,QChar('0'))
+                     .arg(t->tm_sec,2,10,QChar('0')).arg(static_cast<int>(time.sec*pow(10.0,n)),n,10)));
         label=" LT";
     }
     str=tstr+label;

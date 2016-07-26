@@ -56,6 +56,7 @@ VecMapDialog::VecMapDialog(QWidget *parent)
     connect(BtnOk,SIGNAL(clicked(bool)),this,SLOT(BtnOkClick()));
     connect(BtnUp,SIGNAL(clicked(bool)),this,SLOT(BtnUpClick()));
     connect(BtnDown,SIGNAL(clicked(bool)),this,SLOT(BtnDownClick()));
+    connect(BtnCancel,SIGNAL(clicked(bool)),this,SLOT(reject()));
 
 }
 //---------------------------------------------------------------------------
@@ -67,7 +68,7 @@ void VecMapDialog::BtnColor1Click()
 
     if (dialog.exec()!=QDialog::Accepted) return;
 
-    Color1->setStyleSheet(QString("QLabel {background-color: %1;}").arg(color2String(dialog.currentColor())));
+    Color1->setStyleSheet(QString("QFrame {background-color: %1;}").arg(color2String(dialog.currentColor())));
     Colors[0]=dialog.currentColor();
 }
 //---------------------------------------------------------------------------
@@ -79,7 +80,7 @@ void VecMapDialog::BtnColor2Click()
 
     if (dialog.exec()!=QDialog::Accepted) return;
 
-    Color2->setStyleSheet(QString("QLabel {background-color: %1;}").arg(color2String(dialog.currentColor())));
+    Color2->setStyleSheet(QString("QFrame {background-color: %1;}").arg(color2String(dialog.currentColor())));
     Colors[1]=dialog.currentColor();
 }
 //---------------------------------------------------------------------------
@@ -91,7 +92,7 @@ void VecMapDialog::BtnColor3Click()
 
     if (dialog.exec()!=QDialog::Accepted) return;
 
-    Color3->setStyleSheet(QString("QLabel {background-color: %1;}").arg(color2String(dialog.currentColor())));
+    Color3->setStyleSheet(QString("QFrame {background-color: %1;}").arg(color2String(dialog.currentColor())));
     Colors[2]=dialog.currentColor();
 }
 //---------------------------------------------------------------------------
@@ -103,7 +104,7 @@ void VecMapDialog::BtnColor4Click()
 
     if (dialog.exec()!=QDialog::Accepted) return;
 
-    Color4->setStyleSheet(QString("QLabel {background-color: %1;}").arg(color2String(dialog.currentColor())));
+    Color4->setStyleSheet(QString("QFrame {background-color: %1;}").arg(color2String(dialog.currentColor())));
     Colors[3]=dialog.currentColor();
 }
 //---------------------------------------------------------------------------
@@ -115,7 +116,7 @@ void VecMapDialog::BtnColor5Click()
 
     if (dialog.exec()!=QDialog::Accepted) return;
 
-    Color5->setStyleSheet(QString("QLabel {background-color: %1;}").arg(color2String(dialog.currentColor())));
+    Color5->setStyleSheet(QString("QFrame {background-color: %1;}").arg(color2String(dialog.currentColor())));
     Colors[4]=dialog.currentColor();
 }
 //---------------------------------------------------------------------------
@@ -127,7 +128,7 @@ void VecMapDialog::BtnColor6Click()
 
     if (dialog.exec()!=QDialog::Accepted) return;
 
-    Color6->setStyleSheet(QString("QLabel {background-color: %1;}").arg(color2String(dialog.currentColor())));
+    Color6->setStyleSheet(QString("QFrame {background-color: %1;}").arg(color2String(dialog.currentColor())));
     Colors[5]=dialog.currentColor();
 }
 //---------------------------------------------------------------------------
@@ -139,7 +140,7 @@ void VecMapDialog::BtnColor7Click()
 
     if (dialog.exec()!=QDialog::Accepted) return;
 
-    Color7->setStyleSheet(QString("QLabel {background-color: %1;}").arg(color2String(dialog.currentColor())));
+    Color7->setStyleSheet(QString("QFrame {background-color: %1;}").arg(color2String(dialog.currentColor())));
     Colors[6]=dialog.currentColor();
 }
 //---------------------------------------------------------------------------
@@ -151,7 +152,7 @@ void VecMapDialog::BtnColor8Click()
 
     if (dialog.exec()!=QDialog::Accepted) return;
 
-    Color8->setStyleSheet(QString("QLabel {background-color: %1;}").arg(color2String(dialog.currentColor())));
+    Color8->setStyleSheet(QString("QFrame {background-color: %1;}").arg(color2String(dialog.currentColor())));
     Colors[7]=dialog.currentColor();
 }
 //---------------------------------------------------------------------------
@@ -163,7 +164,7 @@ void VecMapDialog::BtnColor9Click()
 
     if (dialog.exec()!=QDialog::Accepted) return;
 
-    Color9->setStyleSheet(QString("QLabel {background-color: %1;}").arg(color2String(dialog.currentColor())));
+    Color9->setStyleSheet(QString("QFrame {background-color: %1;}").arg(color2String(dialog.currentColor())));
     Colors[8]=dialog.currentColor();
 }
 //---------------------------------------------------------------------------
@@ -175,7 +176,7 @@ void VecMapDialog::BtnColor10Click()
 
     if (dialog.exec()!=QDialog::Accepted) return;
 
-    Color10->setStyleSheet(QString("QLabel {background-color: %1;}").arg(color2String(dialog.currentColor())));
+    Color10->setStyleSheet(QString("QFrame {background-color: %1;}").arg(color2String(dialog.currentColor())));
     Colors[9]=dialog.currentColor();
 }
 //---------------------------------------------------------------------------
@@ -187,7 +188,7 @@ void VecMapDialog::BtnColor11Click()
 
     if (dialog.exec()!=QDialog::Accepted) return;
 
-    Color11->setStyleSheet(QString("QLabel {background-color: %1;}").arg(color2String(dialog.currentColor())));
+    Color11->setStyleSheet(QString("QFrame {background-color: %1;}").arg(color2String(dialog.currentColor())));
     Colors[10]=dialog.currentColor();
 }
 //---------------------------------------------------------------------------
@@ -199,7 +200,7 @@ void VecMapDialog::BtnColor12Click()
 
     if (dialog.exec()!=QDialog::Accepted) return;
 
-    Color12->setStyleSheet(QString("QLabel {background-color: %1;}").arg(color2String(dialog.currentColor())));
+    Color12->setStyleSheet(QString("QFrame {background-color: %1;}").arg(color2String(dialog.currentColor())));
     Colors[11]=dialog.currentColor();
 }
 //---------------------------------------------------------------------------
@@ -311,7 +312,7 @@ void VecMapDialog::showEvent (QShowEvent *event)
     Gis=plot->Gis;
 	for (int i=0;i<MAXMAPLAYER;i++) {
         layer[i]->setChecked(false);
-        color[i]->setStyleSheet(QString("QLabel {background-color: %1;}").arg(color2String(plot->MapColor[i])));
+        color[i]->setStyleSheet(QString("QFrame {background-color: %1;}").arg(color2String(plot->MapColor[i])));
 	}
 	UpdateLayer();
 }
@@ -323,6 +324,8 @@ void VecMapDialog::BtnOkClick()
 	}
 
     plot->Gis=Gis;
+
+    accept();
 }
 //---------------------------------------------------------------------------
 void VecMapDialog::UpdateLayer(void)

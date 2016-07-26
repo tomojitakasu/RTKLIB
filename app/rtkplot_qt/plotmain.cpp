@@ -40,6 +40,8 @@
 #include <QDebug>
 #include <QToolBar>
 #include <QScreen>
+#include <QtGlobal>
+#include <QFileInfo>
 
 #include <QFileInfo>
 #include <QCommandLineParser>
@@ -92,7 +94,7 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
     nav_t nav0;
     obs_t obs0={0,0,NULL};
     sta_t sta0;
-    gis_t gis0={0};
+    gis_t gis0;
     solstatbuf_t solstat0={0,0,0};
     double ep[]={2000,1,1,0,0,0},xl[2],yl[2];
     double xs[]={-DEFTSPAN/2,DEFTSPAN/2};
@@ -159,7 +161,8 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
     NWayPnt=0;
     SelWayPnt=-1;
     
-    SkySize[0]=SkySize[1]=SkyCent[0]=SkyCent[1]=0;
+    SkySize[0]=SkySize[1]=0;
+    SkyCent[0]=SkyCent[1]=0;
     SkyScale=SkyScaleR=240.0;
     SkyFov[0]=SkyFov[1]=SkyFov[2]=0.0;
     SkyElMask=1;
@@ -535,7 +538,11 @@ void Plot::MenuOpenShapeClick()
 {
     trace(3,"MenuOpenShapePath\n");
     
-    ReadShapeFile(QStringList(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Open Shape File"),QString(),tr("Shape File (*.shp);;All (*.*)")))));
+    QStringList files=QFileDialog::getOpenFileNames(this,tr("Open Shape File"),QString(),tr("Shape File (*.shp);;All (*.*)"));
+    for (int i=0;i<files.size();i++)
+        files[i]=QDir::toNativeSeparators(files.at(i));
+
+    ReadShapeFile(files);
 }
 // callback on menu-open-sky-image ------------------------------------------
 void Plot::MenuOpenSkyImageClick()
@@ -781,7 +788,7 @@ void Plot::MenuTimeClick()
         TimeEna[2]!=spanDialog->TimeEna[2]||
         timediff(TimeStart,spanDialog->TimeStart)!=0.0||
         timediff(TimeEnd,spanDialog->TimeEnd)!=0.0||
-        TimeInt!=spanDialog->TimeInt) {
+        !qFuzzyCompare(TimeInt,spanDialog->TimeInt)) {
         
         for (i=0;i<3;i++) TimeEna[i]=spanDialog->TimeEna[i];
         
@@ -893,7 +900,6 @@ void Plot::MenuOptionsClick()
 {
     QString tlefile=TLEFile,tlesatfile=TLESatFile;
     double oopos[3],range;
-    char file[1024];
     
     trace(3,"MenuOptionsClick\n");
     
@@ -935,9 +941,10 @@ void Plot::MenuOptionsClick()
     Timer.start(RefCycle);
     
     for (i=0;i<RangeList->count();i++) {
-        strcpy(file,qPrintable(RangeList->item(i)->text()));
+        bool okay;
+        range=RangeList->item(i)->text().toDouble(&okay);
         
-        if (sscanf(file,"%lf",&range)&&range==YRange) {
+        if (okay&&(qFuzzyCompare(range,YRange))) {
             RangeList->item(i)->setSelected(true);
         }
     }
@@ -1292,17 +1299,16 @@ void Plot::BtnRangeListClick()
 void Plot::RangeListClick()
 {
     double range;
-    char file[1024];
+    bool okay;
     QListWidgetItem *i;
     
     trace(3,"RangeListClick\n");
     
     RangeList->setVisible(false);
     if ((i=RangeList->currentItem())==NULL) return;
-    
-    strcpy(file,qPrintable(i->text()));
-    
-    if (!sscanf(file,"%lf",&range)) return;
+        
+    range=i->text().toDouble(&okay);
+    if (!okay) return;
     
     YRange=range;
     SetRange(0,YRange);
@@ -1449,7 +1455,7 @@ void Plot::mouseReleaseEvent(QMouseEvent *event)
  // callback on mouse-double-click -------------------------------------------
  void Plot::mouseDoubleClickEvent(QMouseEvent *event)
  {
-     QPoint p((int)X0,(int)Y0);
+     QPoint p(static_cast<int>(X0),static_cast<int>(Y0));
      double x,y;
 
      if (event->button() != Qt::LeftButton) return;
@@ -1988,7 +1994,7 @@ void Plot::UpdateSize(void)
     trace(3,"UpdateSize\n");
     
     tmargin=5;                                     // top margin
-    bmargin=(int)(Disp->font().pointSize()*1.5)+3; // bottom
+    bmargin=static_cast<int>(Disp->font().pointSize()*1.5)+3; // bottom
     rmargin=8;                                     // right
     lmargin=Disp->font().pointSize()*3+15;         // left
     
@@ -2113,7 +2119,7 @@ void Plot::UpdateOrigin(void)
     sol_t *sol;
     double opos[3]={0},pos[3],ovel[3]={0};
     int i,j,n=0,sel=!BtnSol1->isChecked()&&BtnSol2->isChecked()?1:0;
-    char file[1024],sta[16]="",*p;
+    QString sta;
     
     trace(3,"UpdateOrigin\n");
     
@@ -2151,15 +2157,9 @@ void Plot::UpdateOrigin(void)
     else if (Origin==ORG_AUTOPOS) {
         if (SolFiles[sel].count()>0) {
             
-            strcpy(file,qPrintable(SolFiles[sel].at(0)));
+            QFileInfo fi(SolFiles[sel].at(0));
             
-            if ((p=strrchr(file,'\\'))) strncpy(sta,p+1,4);
-            else strncpy(sta,file,4);
-            for (p=sta;*p;p++) *p=(char)toupper(*p);
-            
-            strcpy(file,qPrintable(plotOptDialog->refDialog->StaPosFile));
-            
-            ReadStaPos(file,sta,opos);
+            ReadStaPos(fi.baseName().left(4).toUpper(),sta,opos);
         }
     }
     else if (Origin==ORG_IMGPOS) {
@@ -2406,7 +2406,7 @@ void Plot::FitTime(void)
     if (TimeEna[0]) tl[0]=TimePos(TimeStart);
     if (TimeEna[1]) tl[1]=TimePos(TimeEnd  );
     
-    if (tl[0]==tl[1]) {
+    if (qFuzzyCompare(tl[0],tl[1])) {
         tl[0]=tl[0]-DEFTSPAN/2.0;
         tl[1]=tl[0]+DEFTSPAN/2.0;
     }
@@ -2584,7 +2584,7 @@ void Plot::FitRange(int all)
 // set center of track plot -------------------------------------------------
 void Plot::SetTrkCent(double lat, double lon)
 {
-    gtime_t time={0};
+    gtime_t time={0,0};
     double pos[3]={0},rr[3],xyz[3];
 
     if (PlotType!=PLOT_TRK) return;
@@ -2599,9 +2599,7 @@ void Plot::SetTrkCent(double lat, double lon)
 void Plot::LoadOpt(void)
 {
     QSettings settings(IniFile,QSettings::IniFormat);
-    QString s1;
     double range;
-    char rangelist[64];
     int i,geopts[12];
     
     trace(3,"LoadOpt\n");
@@ -2720,11 +2718,12 @@ void Plot::LoadOpt(void)
     
     fileSelDialog->Dir=settings.value("solbrows/dir","").toString();
     
-    for (i=0;i<RangeList->count();i++) {
+    for (i=0;i<RangeList->count();i++)
+    {
+        bool okay;
+        range=RangeList->item(i)->text().toDouble(&okay);
         
-        strcpy(rangelist,qPrintable(RangeList->item(i)->text()));
-        
-        if (sscanf(rangelist,"%lf",&range)&&range==YRange) {
+        if (okay&&qFuzzyCompare(range,YRange)) {
             RangeList->item(i)->setSelected(true);
         }
     }

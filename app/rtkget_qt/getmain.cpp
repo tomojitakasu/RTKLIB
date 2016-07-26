@@ -27,6 +27,7 @@
 #include <QThread>
 #include <QCompleter>
 #include <QFileSystemModel>
+#include <QStringList>
 
 //---------------------------------------------------------------------------
 #include "rtklib.h"
@@ -37,6 +38,8 @@
 #include "staoptdlg.h"
 #include "timedlg.h"
 #include "viewer.h"
+
+#include <cstdio>
 
 #define PRGNAME     "RTKGET-QT"  // program name
 
@@ -95,8 +98,8 @@ public:
     double ti;
     char *stas[MAX_STA],dir[1024],msg[1024],path[1024];
     int nsta,nurl,seqnos,seqnoe,opts;
-    bool test,append;
     QString LogFile;
+    bool test,append;
 
     explicit DownloadThread(QObject *parent, const QString lf, bool a, bool t):QThread(parent){
         seqnos=0;seqnoe=0;opts=0;
@@ -327,7 +330,15 @@ void MainForm::BtnDownloadClick()
     GetTime(&thread->ts,&thread->te,&thread->ti);
     
     str=Number->text();
-    if (sscanf(qPrintable(str),"%d-%d",&thread->seqnos,&thread->seqnoe)==1) thread->seqnoe=thread->seqnos;
+    QStringList tokens=str.split('-');
+    if (tokens.size()==2)
+    {
+        thread->seqnos=tokens.at(0).toInt();
+        thread->seqnoe=tokens.at(1).toInt();
+    } else  if (tokens.size()==1)
+    {
+        thread->seqnos=thread->seqnoe=tokens.at(0).toInt();
+    } else return;
     
     thread->nurl=SelectUrl(thread->urls);
     if (timediff(thread->ts,thread->te)>0.0||thread->nurl<=0) {
@@ -429,7 +440,7 @@ void MainForm::BtnTime1Click()
 {
     QDateTime time(TimeY1->date(),TimeH1->time());
     gtime_t t1;
-    t1.time=time.toTime_t();t1.sec=time.time().msec()/1000;
+    t1.time=static_cast<time_t>(time.toTime_t());t1.sec=time.time().msec()/1000;
     timeDialog->Time=t1;
     timeDialog->exec();
 }
@@ -438,7 +449,7 @@ void MainForm::BtnTime2Click()
 {
     QDateTime time(TimeY2->date(),TimeH2->time());
     gtime_t t2;
-    t2.time=time.toTime_t();t2.sec=time.time().msec()/1000;
+    t2.time=static_cast<time_t>(time.toTime_t());t2.sec=time.time().msec()/1000;
     timeDialog->Time=t2;
     timeDialog->exec();
 }
@@ -750,7 +761,7 @@ int MainForm::SelectSta(char **stas)
         len=str.length();
         if (str.indexOf(' ')!=-1) len=str.indexOf(' ');
         if (len>15) len=15;
-        strncpy(stas[nsta],qPrintable(str),len);
+        strncpy(stas[nsta],qPrintable(str),static_cast<unsigned int>(len));
         stas[nsta++][len]='\0';
     }
     return nsta;

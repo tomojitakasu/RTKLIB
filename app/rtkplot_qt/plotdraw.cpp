@@ -243,7 +243,7 @@ void Plot::DrawTrk(QPainter &c,int level)
         GraphT->GetScale(sx,sy);
         p2.rx()-=70;
         p2.ry()-=25;
-        DrawMark(GraphT,c,p2,11,CColor[2],(int)(xt/sx+0.5),0);
+        DrawMark(GraphT,c,p2,11,CColor[2],static_cast<int>(xt/sx+0.5),0);
         p2.ry()-=3;
         if      (xt<0.01  ) label=QString("%1 mm").arg(xt*1000.0,0,'f',0);
         else if (xt<1.0   ) label=QString("%1 cm").arg(xt*100.0,0,'f',0);
@@ -314,18 +314,18 @@ void Plot::DrawTrkMap(QPainter &c,int level)
         for (data=Gis.data[i];data;data=data->next) {
 
             if (data->type==1) { // point
-                PosToXyz(time,((gis_pnt_t *)data->data)->pos,0,xyz);
+                PosToXyz(time,(static_cast<gis_pnt_t *>(data->data))->pos,0,xyz);
                 GraphT->ToPoint(xyz[0],xyz[1],p1);
                 DrawMark(GraphT,c,p1,1,CColor[2],6,0);
                 DrawMark(GraphT,c,p1,0,CColor[2],2,0);
             }
             else if (level&&data->type==2) { // polyline
-                if ((n=((gis_poly_t *)data->data)->npnt)<=0) {
+                if ((n=(static_cast<gis_poly_t *>(data->data))->npnt)<=0) {
                     continue;
                 }
                 p=new QPoint [n];
                 for (j=m=0;j<n;j++) {
-                    PosToXyz(time,((gis_poly_t *)data->data)->pos+j*3,0,xyz);
+                    PosToXyz(time,(static_cast<gis_poly_t *>(data->data))->pos+j*3,0,xyz);
                     GraphT->ToPoint(xyz[0],xyz[1],p1);
                     if (m==0||p1.x()!=p[m-1].x()||p1.y()!=p[m-1].y()) {
                         p[m++]=p1;
@@ -335,12 +335,12 @@ void Plot::DrawTrkMap(QPainter &c,int level)
                 delete [] p;
             }
             else if (level&&data->type==3) { // polygon
-                if ((n=((gis_polygon_t *)data->data)->npnt)<=0) {
+                if ((n=(static_cast<gis_polygon_t *>(data->data))->npnt)<=0) {
                     continue;
                 }
                 p=new QPoint [n];
                 for (j=m=0;j<n;j++) {
-                    PosToXyz(time,((gis_polygon_t *)data->data)->pos+j*3,0,xyz);
+                    PosToXyz(time,(static_cast<gis_polygon_t *>(data->data))->pos+j*3,0,xyz);
                     GraphT->ToPoint(xyz[0],xyz[1],p1);
                     if (m==0||p1.x()!=p[m-1].x()||p1.y()!=p[m-1].y()) {
                         p[m++]=p1;
@@ -348,7 +348,7 @@ void Plot::DrawTrkMap(QPainter &c,int level)
                 }
                 // judge hole
                 for (j=0,S=0.0;j<m-1;j++) {
-                    S+=(double)p[j].x()*p[j+1].y()-(double)p[j+1].x()*p[j].y();
+                    S+=static_cast<double>(p[j].x()*p[j+1].y()-p[j+1].x()*p[j].y());
                 }
                 color=S<0.0?CColor[0]:MapColor[i];
                 GraphT->DrawPatch(c,p,m,color,color,0);
@@ -410,7 +410,7 @@ void Plot::DrawTrkStat(QPainter &c,const TIMEPOS *pos, const QString &header, in
     QString s[6];
     QPoint p1,p2;
     double *d,ave[4],std[4],rms[4];
-    int i,n=0,fonth=(int)(Disp->font().pointSize()*1.5);
+    int i,n=0,fonth=static_cast<int>(Disp->font().pointSize()*1.5);
     
     trace(3,"DrawTrkStat: p=%d\n",p);
     
@@ -494,9 +494,9 @@ void Plot::DrawTrkArrow(QPainter &c,const TIMEPOS *pos)
         if (vel<0.5||fmod(tt+0.005,INTARROW)>=0.01) continue;
         
         GraphT->ToPoint(pos->x[i],pos->y[i],p);
-        p.rx()-=(int)(off*d[1]/dist);
-        p.ry()-=(int)(off*d[0]/dist);
-        DrawMark(GraphT,c,p,10,CColor[3],15,(int)(ATAN2(d[1],d[0])*R2D));
+        p.rx()-=static_cast<int>(off*d[1]/dist);
+        p.ry()-=static_cast<int>(off*d[0]/dist);
+        DrawMark(GraphT,c,p,10,CColor[3],15,static_cast<int>(ATAN2(d[1],d[0])*R2D));
     }
 }
 // draw velocity-indicator on track-plot ------------------------------------
@@ -521,7 +521,7 @@ void Plot::DrawTrkVel(QPainter &c,const TIMEPOS *vel)
     label=QString("%1 km/h").arg(v*3600.0/1000.0,0,'f',0);
     DrawLabel(GraphT,c,p1,label,0,2);
     p1.ry()-=SIZE_VELC/2;
-    if (v>=1.0) DrawMark(GraphT,c,p1,10,CColor[2],SIZE_VELC,90-(int)dir);
+    if (v>=1.0) DrawMark(GraphT,c,p1,10,CColor[2],SIZE_VELC,90-static_cast<int>(dir));
     DrawMark(GraphT,c,p1,0,CColor[0],8,0);
     DrawMark(GraphT,c,p1,1,CColor[2],8,0);
 }
@@ -677,7 +677,7 @@ void Plot::DrawSolPnt(QPainter &c,const TIMEPOS *pos, int level, int style)
             
             if (ShowErr==1) {
                 for (j=0;j<pos->n;j++) {
-                    GraphG[i]->DrawMark(c,x[j],y[j],12,CColor[1],(int)(SQRT(s[j])*2.0/ys),0);
+                    GraphG[i]->DrawMark(c,x[j],y[j],12,CColor[1],static_cast<int>(SQRT(s[j])*2.0/ys),0);
                 }
             }
             else {
@@ -706,7 +706,7 @@ void Plot::DrawSolStat(QPainter &c,const TIMEPOS *pos, const QString &unit, int 
     QPushButton *btn[]={BtnOn1,BtnOn2,BtnOn3};
     QPoint p1,p2;
     double ave,std,rms,*y,opos[3];
-    int i,j=0,k=0,fonth=(int)(Disp->font().pointSize()*1.5);
+    int i,j=0,k=0,fonth=static_cast<int>(Disp->font().pointSize()*1.5);
     QString label,s;
     
     trace(3,"DrawSolStat: p=%d\n",p);
@@ -870,7 +870,7 @@ void Plot::DrawObs(QPainter &c,int level)
     for (i=0,j=0;i<MAXSAT;i++) {
         if (!sats[i]) continue;
         p.setX(p1.x());
-        p.setY(p1.y()+(int)((p2.y()-p1.y()))*(j+0.5)/m);
+        p.setY(p1.y()+static_cast<int>((p2.y()-p1.y())*(j+0.5)/m));
         yp[i]=m-(j++);
         satno2id(i+1,id);
         label=id;
@@ -939,7 +939,7 @@ void Plot::DrawObsSlip(QPainter &c,double *yp)
     
     for (i=0;i<Obs.n;i++) {
         if (El[i]<ElMask*D2R) continue;
-        if (ElMaskP&&El[i]<ElMaskData[(int)(Az[i]*R2D+0.5)]) continue;
+        if (ElMaskP&&El[i]<ElMaskData[static_cast<int>(Az[i]*R2D+0.5)]) continue;
         obs=&Obs.data[i];
         if (!SatSel[obs->sat-1]) continue;
             
@@ -1079,7 +1079,7 @@ void Plot::DrawSky(QPainter &c,int level)
     double p[MAXSAT][2]={{0}},gfp[MAXSAT]={0},p0[MAXSAT][2]={{0}};
     double x,y,xp,yp,xs,ys,dt,dx,dy,xl[2],yl[2],r,gf;
     int i,j,ind=ObsIndex;
-    int hh=(int)(Disp->font().pointSize()*1.5),slip;
+    int hh=static_cast<int>(Disp->font().pointSize()*1.5),slip;
     char code[32];
     char id[16];
     
@@ -1169,9 +1169,9 @@ void Plot::DrawSky(QPainter &c,int level)
             p[obs->sat-1][1]=y;
             if (fabs(dt)>300.0) continue;
             if (El[i]<ElMask*D2R) continue;
-            if (ElMaskP&&El[i]<ElMaskData[(int)(Az[i]*R2D+0.5)]) continue;
+            if (ElMaskP&&El[i]<ElMaskData[static_cast<int>(Az[i]*R2D+0.5)]) continue;
             if (slip) {
-                GraphS->DrawMark(c,x,y,4,MColor[0][5],MarkSize*3+2,ATAN2(dy,dx)*R2D+90);
+                GraphS->DrawMark(c,x,y,4,MColor[0][5],MarkSize*3+2,static_cast<int>(ATAN2(dy,dx)*R2D+90));
             }
         }
     }
@@ -1227,7 +1227,7 @@ void Plot::DrawSky(QPainter &c,int level)
             obs=&Obs.data[i];
             if (SatMask[obs->sat-1]||!SatSel[obs->sat-1]) continue;
             if (HideLowSat&&El[i]<ElMask*D2R) continue;
-            if (HideLowSat&&ElMaskP&&El[i]<ElMaskData[(int)(Az[i]*R2D+0.5)]) continue;
+            if (HideLowSat&&ElMaskP&&El[i]<ElMaskData[static_cast<int>(Az[i]*R2D+0.5)]) continue;
             
             satno2id(obs->sat,id);
             s=QString("%1: ").arg(id,3,QChar('-'));
@@ -1317,7 +1317,7 @@ void Plot::DrawDop(QPainter &c,int level)
         for (j=IndexObs[i];j<Obs.n&&j<IndexObs[i+1];j++) {
             if (SatMask[Obs.data[j].sat-1]||!SatSel[Obs.data[j].sat-1]) continue;
             if (El[j]<ElMask*D2R) continue;
-            if (ElMaskP&&El[j]<ElMaskData[(int)(Az[j]*R2D+0.5)]) continue;
+            if (ElMaskP&&El[j]<ElMaskData[static_cast<int>(Az[j]*R2D+0.5)]) continue;
             azel[  ns[n]*2]=Az[j];
             azel[1+ns[n]*2]=El[j];
             ns[n]++;
@@ -1362,7 +1362,7 @@ void Plot::DrawDop(QPainter &c,int level)
         for (i=IndexObs[ind];i<Obs.n&&i<IndexObs[ind+1];i++) {
             if (SatMask[Obs.data[i].sat-1]||!SatSel[Obs.data[i].sat-1]) continue;
             if (El[i]<ElMask*D2R) continue;
-            if (ElMaskP&&El[i]<ElMaskData[(int)(Az[i]*R2D+0.5)]) continue;
+            if (ElMaskP&&El[i]<ElMaskData[static_cast<int>(Az[i]*R2D+0.5)]) continue;
             azel[  ns[0]*2]=Az[i];
             azel[1+ns[0]*2]=El[i];
             ns[0]++;
@@ -1402,7 +1402,7 @@ void Plot::DrawDopStat(QPainter &c,double *dop, int *ns, int n)
     QPoint p1,p2,p3;
     double ave[4]={0};
     int i,j,m=0;
-    int ndop[4]={0},nsat[MAXOBS]={0},fonth=(int)(Disp->font().pointSize()*1.5);
+    int ndop[4]={0},nsat[MAXOBS]={0},fonth=static_cast<int>(Disp->font().pointSize()*1.5);
     
     trace(3,"DrawDopStat: n=%d\n",n);
     
@@ -1602,7 +1602,7 @@ void Plot::DrawSnrE(QPainter &c,int level)
     double *x[2],*y[2],xl[2]={-0.001,90.0},yl[2][2]={{10.0,65.0},{-10.0,10.0}};
     double xp[2][MAXSAT],yp[2][MAXSAT],ave=0.0,rms=0.0;
     char code[32];
-    int i,j,k,n[2],np[2]={0},sat,ind=ObsIndex,hh=(int)(Disp->font().pointSize()*1.5);
+    int i,j,k,n[2],np[2]={0},sat,ind=ObsIndex,hh=static_cast<int>(Disp->font().pointSize()*1.5);
     int nrms=0;
 
     strncpy(code,qPrintable(ObsTypeText.mid(1)),32);

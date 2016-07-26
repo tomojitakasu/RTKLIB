@@ -469,9 +469,10 @@ int  GoogleEarthView::GetState(void)
     int state=pageState->getText().toInt();
 
     return state;
+ #else
+    return 0;
  #endif
 #endif
-    return 0;
 }
 //---------------------------------------------------------------------------
 void  GoogleEarthView::ExecFunc(const QString &func)

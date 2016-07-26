@@ -341,7 +341,7 @@ void Plot::ReadElMaskData(const QString &file)
         
         if (az0<az1&&az1<=360.0&&0.0<=el1&&el1<=90.0) {
             
-            for (j=(int)az0;j<(int)az1;j++) ElMaskData[j]=el0*D2R;
+            for (j=static_cast<int>(az0);j<static_cast<int>(az1);j++) ElMaskData[j]=el0*D2R;
             ElMaskData[j]=el1*D2R;
         }
         az0=az1; el0=el1;
@@ -355,7 +355,8 @@ void Plot::GenVisData(void)
     gtime_t time,ts,te;
     obsd_t data;
     double tint,pos[3],rr[3],rs[6],e[3],azel[2];
-    int i,j,nobs=0;
+    unsigned char i,j;
+    int nobs=0;
     char name[16];
     
     trace(3,"GenVisData\n");
@@ -384,7 +385,7 @@ void Plot::GenVisData(void)
             if (satazel(pos,e,azel)<=0.0) continue;
             if (Obs.n>=Obs.nmax) {
                 Obs.nmax=Obs.nmax<=0?4096:Obs.nmax*2;
-                Obs.data=(obsd_t *)realloc(Obs.data,sizeof(obsd_t)*Obs.nmax);
+                Obs.data=static_cast<obsd_t *>(realloc(Obs.data,sizeof(obsd_t)*Obs.nmax));
                 if (!Obs.data) {
                     Obs.n=Obs.nmax=0;
                     break;
@@ -457,18 +458,18 @@ void Plot::ReadMapData(const QString &file)
 }
 // resample image pixel -----------------------------------------------------
 #define ResPixelNN(img1,x,y,b1,pix) {\
-    int ix=(int)((x)+0.5),iy=(int)((y)+0.5);\
+    int ix=static_cast<int>((x)+0.5),iy=static_cast<int>((y)+0.5);\
     pix=img1.pixel(ix,iy);\
 }
 #define ResPixelBL(img1,x,y,b1,pix) {\
-    int ix=(int)(x),iy=(int)(y);\
+    int ix=static_cast<int>(x),iy=static_cast<int>(y);\
     double dx1=(x)-ix,dy1=(y)-iy,dx2=1.0-dx1,dy2=1.0-dy1;\
     double a1=dx2*dy2,a2=dx2*dy1,a3=dx1*dy2,a4=dx1*dy1;\
     QRgb p1=img1.pixel(ix,iy); \
     QRgb p2=img1.pixel(ix,iy+1); \
-    pix=qRgb((quint8)(a1*qRed(p1)+a2*qRed(p2)+a3*qRed(p1)+qRed(a4*p2)),\
-             (quint8)(a1*qRed(p1)+a2*qGreen(p2)+a3*qGreen(p1)+a4*qGreen(p2)),\
-             (quint8)(a1*qRed(p1)+a2*qBlue(p2)+a3*qBlue(p1)+a4*qBlue(p2)));\
+    pix=qRgb(static_cast<quint8>(a1*qRed(p1)+a2*qRed(p2)  +a3*qRed(p1)  +a4*qRed(p2)),\
+             static_cast<quint8>(a1*qRed(p1)+a2*qGreen(p2)+a3*qGreen(p1)+a4*qGreen(p2)),\
+             static_cast<quint8>(a1*qRed(p1)+a2*qBlue(p2) +a3*qBlue(p1) +a4*qBlue(p2)));\
 }
 // rotate coordintates roll-pitch-yaw ---------------------------------------
 static void RPY(const double *rpy, double *R)
@@ -553,7 +554,8 @@ void Plot::UpdateSky(void)
         // correct lense distortion
         if (SkyDestCorr) {
             if (r<=0.0||r>=1.0) continue;
-            k=(int)(r*9.0); dr=r*9.0-k;
+            k=static_cast<int>(r*9.0);
+            dr=r*9.0-k;
             dist=k>8?SkyDest[9]:(1.0-dr)*SkyDest[k]+dr*SkyDest[k+1];
             xp*=dist/r;
             yp*=dist/r;
@@ -610,10 +612,10 @@ void Plot::ReadSkyTag(const QString &file)
         else if (tokens.at(0)=="roll")   SkyFov[0]=tokens.at(1).toDouble();
         else if (tokens.at(0)=="pitch")  SkyFov[1]=tokens.at(1).toDouble();
         else if (tokens.at(0)=="yaw")    SkyFov[2]=tokens.at(1).toDouble();
-        else if (tokens.at(0)=="destcorr")SkyDestCorr=tokens.at(1).toDouble();
-        else if (tokens.at(0)=="elmask")   SkyElMask=tokens.at(1).toDouble();
-        else if (tokens.at(0)=="resample")   SkyRes=tokens.at(1).toDouble();
-        else if (tokens.at(0)=="flip")   SkyFlip=tokens.at(1).toDouble();
+        else if (tokens.at(0)=="destcorr")SkyDestCorr=tokens.at(1).toInt();
+        else if (tokens.at(0)=="elmask")   SkyElMask=tokens.at(1).toInt();
+        else if (tokens.at(0)=="resample")   SkyRes=tokens.at(1).toInt();
+        else if (tokens.at(0)=="flip")   SkyFlip=tokens.at(1).toInt();
         else if (tokens.at(0)=="dest") {
             QList<QByteArray> t=tokens.at(1).split(' ');
             if (t.size()==9)
@@ -686,7 +688,7 @@ void Plot::ReadMapTag(const QString &file)
 
         if      (tokens.at(0)=="scalex")  MapScaleX=tokens.at(1).toDouble();
         else if (tokens.at(0)=="scaley")  MapScaleY=tokens.at(1).toDouble();
-        else if (tokens.at(0)=="scaleeq") MapScaleEq=tokens.at(1).toDouble();
+        else if (tokens.at(0)=="scaleeq") MapScaleEq=tokens.at(1).toInt();
         else if (tokens.at(0)=="lat")     MapLat=tokens.at(1).toDouble();
         else if (tokens.at(0)=="lon")     MapLon=tokens.at(1).toDouble();
     }
@@ -694,9 +696,8 @@ void Plot::ReadMapTag(const QString &file)
 // read shapefile -----------------------------------------------------------
 void Plot::ReadShapeFile(const QStringList &files)
 {
-    int i,j;
+    int i;
     char path[1024];
-    QString name;
     
     ReadWaitStart();
     
@@ -707,14 +708,9 @@ void Plot::ReadShapeFile(const QStringList &files)
         ShowMsg(QString("reading shapefile... %1").arg(path));
         gis_read(path,&Gis,i);
 
-        name=files.at(i);
-        while ((j=name.indexOf("\\"))) {
-            name=name.mid(j+1,name.length()-j);
-        }
-        if ((j=name.indexOf("."))) {
-            name=name.mid(1,j-1);
-        }
-        strcpy(Gis.name[i],qPrintable(name));
+        QFileInfo fi(files.at(i));
+
+        strcpy(Gis.name[i],qPrintable(fi.baseName()));
     }
     
     ReadWaitEnd();
@@ -877,7 +873,7 @@ void Plot::SaveDop(const QString &file)
         for (j=IndexObs[i];j<Obs.n&&j<IndexObs[i+1];j++) {
             if (SatMask[Obs.data[j].sat-1]) continue;
             if (El[j]<ElMask*D2R) continue;
-            if (ElMaskP&&El[j]<ElMaskData[(int)(Az[j]*R2D+0.5)]) continue;
+            if (ElMaskP&&El[j]<ElMaskData[static_cast<int>(Az[j]*R2D+0.5)]) continue;
             azel[  ns*2]=Az[j];
             azel[1+ns*2]=El[j];
             ns++;
@@ -978,8 +974,8 @@ void Plot::SaveElMask(const QString &file)
     
     for (az=0;az<=360;az++) {
         el=floor(ElMaskData[az]*R2D/0.1+0.5)*0.1;
-        if (el==el0) continue;
-        data=QString("%1 %2\n").arg((double)az,9,'f',1).arg(el,6,'f',1);
+        if (qFuzzyCompare(el,el0)) continue;
+        data=QString("%1 %2\n").arg(static_cast<double>(az),9,'f',1).arg(el,6,'f',1);
         fp.write(data.toLatin1());
         el0=el;
     }
@@ -1214,7 +1210,7 @@ void Plot::UpdateMp(void)
             lam2=satwavelen(data->sat,f2-1,&Nav);
             if (lam1==0.0||lam2==0.0) continue;
             
-            if (data->P[j]!=0.0&&data->L[j]!=0.0&&data->L[f2-1]) {
+            if (data->P[j]!=0.0&&data->L[j]!=0.0&&data->L[f2-1]!=0.0) {
                 C=SQR(lam1)/(SQR(lam1)-SQR(lam2));
                 I=lam1*data->L[j]-lam2*data->L[f2-1];
                 Mp[j][i]=data->P[j]-lam1*data->L[j]+2.0*C*I;

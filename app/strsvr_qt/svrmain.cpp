@@ -641,7 +641,7 @@ void MainForm::SvrStop(void)
 // callback on interval timer for stream monitor ----------------------------
 void MainForm::Timer2Timer()
 {
-    unsigned char *msg;
+    unsigned char *msg=0;
     int len;
     
     lock(&strsvr.lock);
