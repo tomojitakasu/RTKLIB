@@ -82,7 +82,7 @@ const QChar degreeChar(0260);           // character code of degree (UTF-8)
 //---------------------------------------------------------------------------
 
 rtksvr_t rtksvr;                        // rtk server struct
-static stream_t monistr;                       // monitor stream
+stream_t monistr;                       // monitor stream
 
 // show message in message area ---------------------------------------------
 #if 0
@@ -221,6 +221,7 @@ void  MainWindow::showEvent(QShowEvent *event)
     connect(BtnSolType2,SIGNAL(clicked(bool)),this,SLOT(BtnSolTypeClick()));
     connect(BtnTaskTray,SIGNAL(clicked(bool)),this,SLOT(BtnTaskTrayClick()));
     connect(BtnTimeSys,SIGNAL(clicked(bool)),this,SLOT(BtnTimeSysClick()));
+    connect(BtnMark,SIGNAL(clicked(bool)),this,SLOT(BtnMarkClick()));
     connect(ScbSol,SIGNAL(valueChanged(int)),this,SLOT(ScbSolChange()));
     connect(&Timer,SIGNAL(timeout()),this,SLOT(TimerTimer()));
 

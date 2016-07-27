@@ -48,7 +48,7 @@
 
 #define MIN(x,y)    ((x)<(y)?(x):(y))
 
-static strsvr_t strsvr;
+strsvr_t strsvr;
 
 
 QString color2String(const QColor &c){
@@ -535,7 +535,7 @@ void MainForm::SvrStart(void)
     int ip[]={0,1,1,1,2,3,3},strs[4]={0},opt[7]={0},n;
     char *paths[4],filepath[1024],buff[1024];
     char cmd[1024];
-    char *ant[3]={"","",""},*rcv[3]={"","",""},*p;
+    char *ant[3]={0},*rcv[3]={0},*p;
     FILE *fp;
     
     if (TraceLevel>0) {

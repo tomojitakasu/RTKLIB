@@ -26,7 +26,7 @@ void StartDialog::showEvent(QShowEvent *event)
 		Time=utc2gpst(timeget());
 	}
 
-    QDateTime date=QDateTime::fromTime_t(Time.time); date.addSecs(Time.sec);
+    QDateTime date=QDateTime::fromTime_t(Time.time); date=date.addSecs(Time.sec);
     TimeY1->setDate(date.date());
     TimeH1->setTime(date.time());
 }

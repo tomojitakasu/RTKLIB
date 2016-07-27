@@ -1157,14 +1157,14 @@ gtime_t MainForm::GetTime2(void)
 // set time to time-1 -------------------------------------------------------
 void MainForm::SetTime1(gtime_t time)
 {
-    QDateTime t=QDateTime::fromTime_t(time.time); t.addSecs(time.sec);
+    QDateTime t=QDateTime::fromTime_t(time.time); t=t.addSecs(time.sec);
     TimeY1->setTime(t.time());
     TimeH1->setDate(t.date());
 }
 // set time to time-2 -------------------------------------------------------
 void MainForm::SetTime2(gtime_t time)
 {
-    QDateTime t=QDateTime::fromTime_t(time.time); t.addSecs(time.sec);
+    QDateTime t=QDateTime::fromTime_t(time.time); t=t.addSecs(time.sec);
     TimeY2->setTime(t.time());
     TimeH2->setDate(t.date());
 }

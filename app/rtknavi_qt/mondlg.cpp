@@ -26,8 +26,8 @@
 
 //---------------------------------------------------------------------------
 
-static rtksvr_t rtksvr;		// rtk server struct
-static stream_t monistr;	// monitor stream
+extern rtksvr_t rtksvr;		// rtk server struct
+extern stream_t monistr;	// monitor stream
 
 //---------------------------------------------------------------------------
 MonitorDialog::MonitorDialog(QWidget* parent)

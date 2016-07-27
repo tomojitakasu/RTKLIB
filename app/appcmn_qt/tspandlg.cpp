@@ -32,8 +32,8 @@ void SpanDialog::showEvent(QShowEvent* event)
     TimeEndF  ->setChecked(TimeEna[1]);
     TimeIntF  ->setChecked(TimeEna[2]);
 
-    QDateTime start=QDateTime::fromTime_t(TimeStart.time); start.addSecs(TimeStart.sec);
-    QDateTime end=QDateTime::fromTime_t(TimeEnd.time); start.addSecs(TimeEnd.sec);
+    QDateTime start=QDateTime::fromTime_t(TimeStart.time); start=start.addSecs(TimeStart.sec);
+    QDateTime end=QDateTime::fromTime_t(TimeEnd.time); start=start.addSecs(TimeEnd.sec);
 
     TimeY1->setTime(start.time());
     TimeH1->setDate(start.date());
