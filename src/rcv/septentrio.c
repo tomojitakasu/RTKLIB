@@ -57,29 +57,31 @@ static unsigned char locktime[255][32];
 #define ID_GPSRAWCA     4017    /* SBF message id: GPS raw navigation page or frame */
 #define ID_GPSRAWL2C    4018    /* SBF message id: GPS raw navigation page or frame */
 #define ID_GPSRAWL5     4019    /* SBF message id: GPS raw navigation page or frame */
-#define ID_GLORAWCA     4026    /* SBF message id: GLONASS raw navigation page or frame */
-#define ID_GALRAWFNAV   4022    /* SBF message id: Galileo raw navigation page or frame */
-#define ID_GALRAWINAV   4023    /* SBF message id: Galileo raw navigation page or frame */
 #define ID_GEORAWL1     4020    /* SBF message id: SBAS raw navigation page or frame */
 #define ID_GEORAWL5     4021    /* SBF message id: SBAS raw navigation page or frame */
+#define ID_GALRAWFNAV   4022    /* SBF message id: Galileo raw navigation page or frame */
+#define ID_GALRAWINAV   4023    /* SBF message id: Galileo raw navigation page or frame */
+#define ID_GALRAWCNAV   4024    /* SBF message id: Galileo raw navigation page or frame */
+#define ID_GLORAWCA     4026    /* SBF message id: GLONASS raw navigation page or frame */
 #define ID_COMPRAW      4047    /* SBF message id: Compass raw navigation page or frame */
 #define ID_QZSSL1CA     4066    /* SBF message id: QZSS raw navigation page or frame */
 #define ID_QZSSL2C      4067    /* SBF message id: QZSS raw navigation page or frame */
 #define ID_QZSSL5       4068    /* SBF message id: QZSS raw navigation page or frame */
+#define ID_IRNSSRAW     4093    /* SBF message id: IRNSS raw navigation page or frame */
 
+#define ID_GEONAV                   5896 /* SBF message id:  SBAS navigation message */
+#define ID_GEOALM                   5897 /* SBF message id:  SBAS satellite almanac */
+#define ID_GEOSERVICELEVEL          5917 /* SBF message id:  SBAS Service Message */
+#define ID_GEONETWORKTIME           5918 /* SBF message id:  SBAS Network Time/UTC offset parameters */
 #define ID_GEOMT00                  5925 /* SBF message id:  SBAS: Don't use for safety application */
 #define ID_GEOPRNMASK               5926 /* SBF message id:  PRN Mask assignments */
 #define ID_GEOFASTCORR              5927 /* SBF message id:  Fast Corrections */
 #define ID_GEOINTEGRITY             5928 /* SBF message id:  Integrity information */
 #define ID_GEOFASTCORRDEGR          5929 /* SBF message id:  fast correction degradation factor */
-#define ID_GEONAV                   5896 /* SBF message id:  SBAS navigation message */
 #define ID_GEODEGRFACTORS           5930 /* SBF message id:  Degration factors */
-#define ID_GEONETWORKTIME           5918 /* SBF message id:  SBAS Network Time/UTC offset parameters */
-#define ID_GEOALM                   5897 /* SBF message id:  SBAS satellite almanac */
 #define ID_GEOIGPMASK               5931 /* SBF message id:  Ionospheric grid point mask */
 #define ID_GEOLONGTERMCOR           5932 /* SBF message id:  Long term satellite error corrections */
 #define ID_GEOIONODELAY             5933 /* SBF message id:  Inospheric delay correction */
-#define ID_GEOSERVICELEVEL          5917 /* SBF message id:  SBAS Service Message */
 #define ID_GEOCLOCKEPHCOVMATRIX     5934 /* SBF message id:  Clock-Ephemeris Covariance Matrix l*/
 
 
@@ -220,7 +222,7 @@ static int decode_measepoch(raw_t *raw){
     int SB1length,SB2length;
     uint8_t signType1, signType2;
     uint32_t codeLSB, SB2Num, sys;
-    uint8_t codeMSB;
+    uint8_t codeMSB, CommonFlags;
     int pri;
 
     /* signals for type2 sub-block */
@@ -253,6 +255,10 @@ static int decode_measepoch(raw_t *raw){
     /* additional block information */
     SB1length=U1(p+7);                              /* Type1 sub-block length */
     SB2length=U1(p+8);                              /* Type2 sub-block length */
+
+    CommonFlags = U1 (p+9);
+
+    if ((CommonFlags & 0x80)==0x80) return 0;         /* data is ccrambled and not valid */
 
     /* set the pointer from TOW to the beginning of type1 sub-block */
     p = p + 12;
