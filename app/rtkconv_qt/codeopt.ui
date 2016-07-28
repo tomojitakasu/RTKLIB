@@ -1,0 +1,1291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CodeOptDialog</class>
+ <widget class="QWidget" name="CodeOptDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>507</width>
+    <height>431</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Signal Mask</string>
+  </property>
+  <property name="toolTip">
+   <string/>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="QGroupBox" name="GroupBox1">
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="title">
+      <string>GPS</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="G01">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>1C</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QCheckBox" name="G02">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>1P</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QCheckBox" name="G03">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>1W</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="5">
+       <widget class="QCheckBox" name="G06">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>1N</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QCheckBox" name="G04">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>1Y</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="4">
+       <widget class="QCheckBox" name="G05">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>1M</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="6">
+       <widget class="QCheckBox" name="G07">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>1S</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="7" colspan="2">
+       <widget class="QCheckBox" name="G08">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>1L</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="G14">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>2C</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QCheckBox" name="G15">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>2D</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QCheckBox" name="G16">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>2S</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="QCheckBox" name="G17">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>2L</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="4">
+       <widget class="QCheckBox" name="G18">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>2X</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="5">
+       <widget class="QCheckBox" name="G19">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>2P</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="6">
+       <widget class="QCheckBox" name="G20">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>2W</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="7">
+       <widget class="QCheckBox" name="G21">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>2Y</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="8">
+       <widget class="QCheckBox" name="G22">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>2M</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="9">
+       <widget class="QCheckBox" name="G23">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>2N</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QCheckBox" name="G24">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>5I</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QCheckBox" name="G25">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>5Q</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2" colspan="2">
+       <widget class="QCheckBox" name="G26">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>5X</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="GroupBox2">
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="title">
+      <string>GLONASS</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="R01">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>1C</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QCheckBox" name="R02">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>1P</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QCheckBox" name="R14">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>2C</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QCheckBox" name="R19">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>2P</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="4">
+       <widget class="QCheckBox" name="R44">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>3I</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="5">
+       <widget class="QCheckBox" name="R45">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>3Q</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="6">
+       <widget class="QCheckBox" name="R46">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>3X</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="GroupBox3">
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="title">
+      <string>Galileo</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_3">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="E01">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>1C</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QCheckBox" name="E10">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>1A</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QCheckBox" name="E11">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>1B</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QCheckBox" name="E12">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>1X</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="4" colspan="2">
+       <widget class="QCheckBox" name="E13">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>1Z</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="E24">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>5I</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QCheckBox" name="E25">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>5Q</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QCheckBox" name="E26">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>5X</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="QCheckBox" name="E30">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>6A</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="4">
+       <widget class="QCheckBox" name="E31">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>6B</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="5">
+       <widget class="QCheckBox" name="E32">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>6C</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="6">
+       <widget class="QCheckBox" name="E33">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>6X</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="7">
+       <widget class="QCheckBox" name="E34">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>6Z</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QCheckBox" name="E27">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>7I</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QCheckBox" name="E28">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>7Q</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QCheckBox" name="E29">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>7X</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="3">
+       <widget class="QCheckBox" name="E37">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>8I</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="4">
+       <widget class="QCheckBox" name="E38">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>8Q</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="5" colspan="2">
+       <widget class="QCheckBox" name="E39">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>8X</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="GroupBox4">
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="title">
+      <string>QZSS</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_4">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="J01">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>1C</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QCheckBox" name="J07">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>1S</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QCheckBox" name="J08">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>1L</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QCheckBox" name="J12">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>1X</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="4">
+       <widget class="QCheckBox" name="J13">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>1Z</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="5">
+       <widget class="QCheckBox" name="J16">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>2S</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="6">
+       <widget class="QCheckBox" name="J17">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>2L</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="7">
+       <widget class="QCheckBox" name="J18">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>2X</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="J24">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>5I</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QCheckBox" name="J25">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>5Q</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QCheckBox" name="J26">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>5X</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="QCheckBox" name="J35">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>6S</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="4">
+       <widget class="QCheckBox" name="J36">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>6L</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="5" colspan="2">
+       <widget class="QCheckBox" name="J33">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>6X</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="GroupBox6">
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="title">
+      <string>BeiDou</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_6">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="C47">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>1I</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QCheckBox" name="C48">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>1Q</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QCheckBox" name="C12">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>1X</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QCheckBox" name="C27">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>7I</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="4">
+       <widget class="QCheckBox" name="C28">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>7Q</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="5">
+       <widget class="QCheckBox" name="C29">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>7X</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="6">
+       <widget class="QCheckBox" name="C42">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>6I</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="7">
+       <widget class="QCheckBox" name="C43">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>6Q</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="8">
+       <widget class="QCheckBox" name="C33">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>6X</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox7">
+     <property name="title">
+      <string>IRNSS</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_7">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <item row="1" column="5">
+       <widget class="QCheckBox" name="I53">
+        <property name="text">
+         <string>9B</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QCheckBox" name="I50">
+        <property name="text">
+         <string>5B</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="QCheckBox" name="I26">
+        <property name="text">
+         <string>5X</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QCheckBox" name="I51">
+        <property name="text">
+         <string>5C</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="4">
+       <widget class="QCheckBox" name="I52">
+        <property name="text">
+         <string>9A</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="6">
+       <widget class="QCheckBox" name="I54">
+        <property name="text">
+         <string>9C</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="I49">
+        <property name="text">
+         <string>5A</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="7">
+       <widget class="QCheckBox" name="I55">
+        <property name="text">
+         <string>9X</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="GroupBox5">
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="title">
+      <string>SBAS</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_5">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <item row="0" column="1">
+       <widget class="QCheckBox" name="S24">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>5I</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="S01">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>1C</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QCheckBox" name="S25">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>5Q</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QCheckBox" name="S26">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>5X</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="widget" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QPushButton" name="BtnSetAll">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>&amp;Set All</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="BtnOk">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>&amp;OK</string>
+        </property>
+        <property name="autoDefault">
+         <bool>true</bool>
+        </property>
+        <property name="default">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="BtnCancel">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>&amp;Cancel</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

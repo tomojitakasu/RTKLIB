@@ -1,0 +1,2207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Plot</class>
+ <widget class="QMainWindow" name="Plot">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1124</width>
+    <height>662</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Plot</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <item>
+     <widget class="QWidget" name="widget" native="true">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QWidget" name="Panel1" native="true">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="text" stdset="0">
+          <string/>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_8">
+          <property name="spacing">
+           <number>0</number>
+          </property>
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QWidget" name="Panel10" native="true">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="toolTip">
+             <string/>
+            </property>
+            <property name="text" stdset="0">
+             <string/>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QToolButton" name="BtnConnect">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>25</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Connect/Disconnect</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+                 <normaloff>:/buttons/connect1.bmp</normaloff>
+                 <normalon>:/buttons/connect2.bmp</normalon>:/buttons/connect1.bmp</iconset>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QToolButton" name="BtnSol1">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>25</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Data 1</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+                 <normaloff>:/buttons/data1.bmp</normaloff>:/buttons/data1.bmp</iconset>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QToolButton" name="BtnSol2">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>25</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Data 2</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+                 <normaloff>:/buttons/data2.bmp</normaloff>:/buttons/data2.bmp</iconset>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QToolButton" name="BtnSol12">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>25</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Data 1-2</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+                 <normaloff>:/buttons/data12.bmp</normaloff>:/buttons/data12.bmp</iconset>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QWidget" name="Panel101" native="true">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="toolTip">
+                <string/>
+               </property>
+               <property name="text" stdset="0">
+                <string/>
+               </property>
+               <layout class="QHBoxLayout" name="horizontalLayout_2">
+                <property name="spacing">
+                 <number>0</number>
+                </property>
+                <property name="leftMargin">
+                 <number>0</number>
+                </property>
+                <property name="topMargin">
+                 <number>0</number>
+                </property>
+                <property name="rightMargin">
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>0</number>
+                </property>
+                <item>
+                 <widget class="QComboBox" name="PlotTypeS">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="toolTip">
+                   <string/>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <widget class="QWidget" name="Panel102" native="true">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>30</width>
+                 <height>30</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string/>
+               </property>
+               <property name="text" stdset="0">
+                <string/>
+               </property>
+               <layout class="QVBoxLayout" name="verticalLayout">
+                <property name="spacing">
+                 <number>0</number>
+                </property>
+                <property name="leftMargin">
+                 <number>0</number>
+                </property>
+                <property name="topMargin">
+                 <number>0</number>
+                </property>
+                <property name="rightMargin">
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>0</number>
+                </property>
+                <item>
+                 <widget class="QPushButton" name="BtnOn1">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="toolTip">
+                   <string>Plot1</string>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="checkable">
+                   <bool>true</bool>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="BtnOn2">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="toolTip">
+                   <string>Plot2</string>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="checkable">
+                   <bool>true</bool>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="BtnOn3">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="toolTip">
+                   <string>Plot3</string>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="checkable">
+                   <bool>true</bool>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <widget class="QWidget" name="Panel103" native="true">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="toolTip">
+                <string/>
+               </property>
+               <property name="text" stdset="0">
+                <string/>
+               </property>
+               <layout class="QHBoxLayout" name="horizontalLayout_3">
+                <property name="spacing">
+                 <number>0</number>
+                </property>
+                <property name="leftMargin">
+                 <number>0</number>
+                </property>
+                <property name="topMargin">
+                 <number>0</number>
+                </property>
+                <property name="rightMargin">
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>0</number>
+                </property>
+                <item>
+                 <widget class="QComboBox" name="QFlag">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="toolTip">
+                   <string>Quality Flag</string>
+                  </property>
+                  <item>
+                   <property name="text">
+                    <string>ALL</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Q=1</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Q=2</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Q=3</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Q=4</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Q=5</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Q=6</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="ObsType2">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="toolTip">
+                   <string>Freq Type</string>
+                  </property>
+                  <item>
+                   <property name="text">
+                    <string>L1</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>L2</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="ObsType">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="toolTip">
+                   <string>Obs Type</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="FrqType">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="toolTip">
+                   <string>Freq Type</string>
+                  </property>
+                  <item>
+                   <property name="text">
+                    <string>L1</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>L2</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="DopType">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="toolTip">
+                   <string>Dop Type</string>
+                  </property>
+                  <item>
+                   <property name="text">
+                    <string>ALL</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>NSAT</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>GDOP</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>PDOP</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>HDOP</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>VDOP</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <widget class="QWidget" name="Panel104" native="true">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="toolTip">
+                <string/>
+               </property>
+               <property name="text" stdset="0">
+                <string/>
+               </property>
+               <layout class="QHBoxLayout" name="horizontalLayout_4">
+                <property name="spacing">
+                 <number>0</number>
+                </property>
+                <property name="leftMargin">
+                 <number>0</number>
+                </property>
+                <property name="topMargin">
+                 <number>0</number>
+                </property>
+                <property name="rightMargin">
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>0</number>
+                </property>
+                <item>
+                 <widget class="QToolButton" name="BtnCenterOri">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>25</width>
+                    <height>25</height>
+                   </size>
+                  </property>
+                  <property name="toolTip">
+                   <string>Center Origin</string>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="icon">
+                   <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+                    <normaloff>:/buttons/trackc.bmp</normaloff>:/buttons/trackc.bmp</iconset>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QToolButton" name="BtnRangeList">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>25</width>
+                    <height>25</height>
+                   </size>
+                  </property>
+                  <property name="toolTip">
+                   <string/>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="icon">
+                   <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+                    <normaloff>:/buttons/down.bmp</normaloff>:/buttons/down.bmp</iconset>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="SatList">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="toolTip">
+                   <string>Satllite List</string>
+                  </property>
+                  <item>
+                   <property name="text">
+                    <string>ALL</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <widget class="QToolButton" name="BtnFitHoriz">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>25</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Fit Horizontal</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+                 <normaloff>:/buttons/fith.bmp</normaloff>:/buttons/fith.bmp</iconset>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QToolButton" name="BtnFitVert">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>25</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Fit Vertical</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+                 <normaloff>:/buttons/fitv.bmp</normaloff>:/buttons/fitv.bmp</iconset>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QToolButton" name="BtnShowTrack">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>25</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Show Track Point</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+                 <normaloff>:/buttons/point.bmp</normaloff>:/buttons/point.bmp</iconset>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QToolButton" name="BtnShowSkyplot">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>25</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Show Skyplot</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+                 <normaloff>:/buttons/trackc.bmp</normaloff>:/buttons/trackc.bmp</iconset>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QToolButton" name="BtnShowImg">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>25</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Map/Sky Image</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+                 <normaloff>:/buttons/map.bmp</normaloff>:/buttons/map.bmp</iconset>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QToolButton" name="BtnFixCent">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>25</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Fix Track Center</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+                 <normaloff>:/buttons/trackc.bmp</normaloff>:/buttons/trackc.bmp</iconset>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QToolButton" name="BtnFixHoriz">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>25</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Fix Track Horizotal</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+                 <normaloff>:/buttons/track.bmp</normaloff>:/buttons/track.bmp</iconset>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QToolButton" name="BtnFixVert">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>25</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Fix Track Vertical</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+                 <normaloff>:/buttons/track.bmp</normaloff>:/buttons/track.bmp</iconset>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QToolButton" name="BtnShowMap">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>25</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Show Map/Waypoint</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+                 <normaloff>:/buttons/showp.bmp</normaloff>:/buttons/showp.bmp</iconset>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QToolButton" name="BtnGE">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>25</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Google Earth View</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+                 <normaloff>:/buttons/ge.bmp</normaloff>:/buttons/ge.bmp</iconset>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QToolButton" name="BtnGM">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>25</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Google Map View</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+                 <normaloff>:/buttons/gm.bmp</normaloff>:/buttons/gm.bmp</iconset>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QWidget" name="Panel12" native="true">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="toolTip">
+             <string/>
+            </property>
+            <property name="text" stdset="0">
+             <string/>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_7">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QToolButton" name="BtnAnimate">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>25</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Animation</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+                 <normaloff>:/buttons/anim1.bmp</normaloff>
+                 <normalon>:/buttons/anim2.bmp</normalon>:/buttons/anim1.bmp</iconset>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+               <property name="flat" stdset="0">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QScrollBar" name="TimeScroll">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="toolTip">
+                <string>Time Scroll</string>
+               </property>
+               <property name="minimum">
+                <number>0</number>
+               </property>
+               <property name="maximum">
+                <number>0</number>
+               </property>
+               <property name="singleStep">
+                <number>1</number>
+               </property>
+               <property name="value">
+                <number>0</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QWidget" name="Panel11" native="true">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="toolTip">
+                <string/>
+               </property>
+               <property name="text" stdset="0">
+                <string/>
+               </property>
+               <layout class="QHBoxLayout" name="horizontalLayout_6">
+                <property name="spacing">
+                 <number>0</number>
+                </property>
+                <property name="leftMargin">
+                 <number>0</number>
+                </property>
+                <property name="topMargin">
+                 <number>0</number>
+                </property>
+                <property name="rightMargin">
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>0</number>
+                </property>
+                <item>
+                 <spacer name="horizontalSpacer_2">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <widget class="QLabel" name="ConnectMsg">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="toolTip">
+                   <string/>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QToolButton" name="BtnClear">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>25</width>
+                    <height>25</height>
+                   </size>
+                  </property>
+                  <property name="toolTip">
+                   <string>Clear</string>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="icon">
+                   <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+                    <normaloff>:/buttons/del.bmp</normaloff>:/buttons/del.bmp</iconset>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QToolButton" name="BtnReload">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>25</width>
+                    <height>25</height>
+                   </size>
+                  </property>
+                  <property name="toolTip">
+                   <string>Reload</string>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="icon">
+                   <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+                    <normaloff>:/buttons/reload.bmp</normaloff>:/buttons/reload.bmp</iconset>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="StrStatus1">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>25</width>
+                    <height>25</height>
+                   </size>
+                  </property>
+                  <property name="toolTip">
+                   <string/>
+                  </property>
+                  <property name="frameShape">
+                   <enum>QFrame::Box</enum>
+                  </property>
+                  <property name="frameShadow">
+                   <enum>QFrame::Sunken</enum>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="StrStatus2">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>25</width>
+                    <height>25</height>
+                   </size>
+                  </property>
+                  <property name="toolTip">
+                   <string/>
+                  </property>
+                  <property name="frameShape">
+                   <enum>QFrame::Box</enum>
+                  </property>
+                  <property name="frameShadow">
+                   <enum>QFrame::Sunken</enum>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QToolButton" name="BtnOptions">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>25</width>
+                    <height>25</height>
+                   </size>
+                  </property>
+                  <property name="toolTip">
+                   <string>Options</string>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="icon">
+                   <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+                    <normaloff>:/buttons/toolbmp</normaloff>:/buttons/toolbmp</iconset>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="Disp">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QListWidget" name="RangeList">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="toolTip">
+          <string/>
+         </property>
+         <item>
+          <property name="text">
+           <string>0.05</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>0.1</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>0.2</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>0.5</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>1</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>2</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>5</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>10</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>20</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>50</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>100</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>200</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>500</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>1000</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>2000</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>5000</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>10000</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>50000</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>100000</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1124</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="MenuFile">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="toolTip">
+     <string/>
+    </property>
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <addaction name="MenuOpenSol1"/>
+    <addaction name="MenuOpenSol2"/>
+    <addaction name="MenuOpenMapImage"/>
+    <addaction name="MenuOpenSkyImage"/>
+    <addaction name="MenuOpenShape"/>
+    <addaction name="MenuOpenWaypoint"/>
+    <addaction name="separator"/>
+    <addaction name="MenuFileSel"/>
+    <addaction name="separator"/>
+    <addaction name="MenuOpenObs"/>
+    <addaction name="MenuOpenNav"/>
+    <addaction name="MenuOpenElevMask"/>
+    <addaction name="separator"/>
+    <addaction name="MenuVisAna"/>
+    <addaction name="separator"/>
+    <addaction name="MenuSaveImage"/>
+    <addaction name="MenuSaveWaypoint"/>
+    <addaction name="MenuSaveDop"/>
+    <addaction name="MenuSaveSnrMp"/>
+    <addaction name="MenuSaveElMask"/>
+    <addaction name="separator"/>
+    <addaction name="MenuConnect"/>
+    <addaction name="MenuDisconnect"/>
+    <addaction name="MenuPort"/>
+    <addaction name="separator"/>
+    <addaction name="MenuReload"/>
+    <addaction name="MenuClear"/>
+    <addaction name="separator"/>
+    <addaction name="MenuQuit"/>
+   </widget>
+   <widget class="QMenu" name="MenuEdit">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="toolTip">
+     <string/>
+    </property>
+    <property name="title">
+     <string>&amp;Edit</string>
+    </property>
+    <addaction name="MenuTime"/>
+    <addaction name="MenuMapImg"/>
+    <addaction name="MenuSkyImg"/>
+    <addaction name="MenuMapLayer"/>
+    <addaction name="MenuWaypnt"/>
+    <addaction name="separator"/>
+    <addaction name="MenuSrcSol"/>
+    <addaction name="MenuSrcObs"/>
+    <addaction name="MenuQcObs"/>
+    <addaction name="separator"/>
+    <addaction name="MenyCopy"/>
+    <addaction name="separator"/>
+    <addaction name="MenuOptions"/>
+   </widget>
+   <widget class="QMenu" name="MenuView">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="toolTip">
+     <string/>
+    </property>
+    <property name="title">
+     <string>&amp;View</string>
+    </property>
+    <addaction name="MenuToolBar"/>
+    <addaction name="MenuStatusBar"/>
+    <addaction name="separator"/>
+    <addaction name="MenuGE"/>
+    <addaction name="MenuGM"/>
+    <addaction name="separator"/>
+    <addaction name="MenuMonitor1"/>
+    <addaction name="MenuMonitor2"/>
+    <addaction name="separator"/>
+    <addaction name="MenuCenterOri"/>
+    <addaction name="MenuFitHoriz"/>
+    <addaction name="MenuFitVert"/>
+    <addaction name="separator"/>
+    <addaction name="MenuShowTrack"/>
+    <addaction name="MenuFixCent"/>
+    <addaction name="MenuFixHoriz"/>
+    <addaction name="MenuFixVert"/>
+    <addaction name="separator"/>
+    <addaction name="MenuShowSkyplot"/>
+    <addaction name="MenuShowImg"/>
+    <addaction name="MenuShowMap"/>
+    <addaction name="separator"/>
+    <addaction name="MenuAnimStart"/>
+    <addaction name="MenuAnimStop"/>
+   </widget>
+   <widget class="QMenu" name="Windows1">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="toolTip">
+     <string/>
+    </property>
+    <property name="title">
+     <string>Wi&amp;ndows</string>
+    </property>
+    <addaction name="MenuMax"/>
+    <addaction name="separator"/>
+    <addaction name="MenuPlotGE"/>
+    <addaction name="MenuPlotGM"/>
+    <addaction name="MenuPlotGEGM"/>
+   </widget>
+   <widget class="QMenu" name="MenuHelp">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="toolTip">
+     <string/>
+    </property>
+    <property name="title">
+     <string>&amp;Help</string>
+    </property>
+    <addaction name="MenuAbout"/>
+   </widget>
+   <addaction name="MenuFile"/>
+   <addaction name="MenuEdit"/>
+   <addaction name="MenuView"/>
+   <addaction name="Windows1"/>
+   <addaction name="MenuHelp"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <widget class="QWidget" name="Panel21" native="true">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>1081</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="toolTip">
+     <string/>
+    </property>
+    <property name="text" stdset="0">
+     <string/>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_9">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QLabel" name="Message1">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string/>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="QL1">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string/>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="QL2">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string/>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="QL3">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string/>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="QL4">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string/>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="QL5">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string/>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="QL6">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string/>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="QL7">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string/>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QLabel" name="Message2">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string/>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="BtnMessage2">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16</width>
+         <height>16</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+         <normaloff>:/buttons/showp.bmp</normaloff>:/buttons/showp.bmp</iconset>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <action name="MenuOpenSol1">
+   <property name="icon">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+     <normaloff>:/buttons/data1.bmp</normaloff>:/buttons/data1.bmp</iconset>
+   </property>
+   <property name="text">
+    <string>Open Solution-&amp;1...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="MenuOpenSol2">
+   <property name="icon">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+     <normaloff>:/buttons/data2.bmp</normaloff>:/buttons/data2.bmp</iconset>
+   </property>
+   <property name="text">
+    <string>Open Solution-&amp;2...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+S</string>
+   </property>
+  </action>
+  <action name="MenuOpenMapImage">
+   <property name="text">
+    <string>Open &amp;Map Image...</string>
+   </property>
+  </action>
+  <action name="MenuOpenShape">
+   <property name="text">
+    <string>Open &amp;Shapefile</string>
+   </property>
+  </action>
+  <action name="MenuOpenSkyImage">
+   <property name="text">
+    <string>Open S&amp;ky Image...</string>
+   </property>
+  </action>
+  <action name="MenuFileSel">
+   <property name="text">
+    <string>&amp;Browse Solutions...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+B</string>
+   </property>
+  </action>
+  <action name="MenuOpenObs">
+   <property name="text">
+    <string>Open &amp;Obs Data...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="MenuOpenNav">
+   <property name="text">
+    <string>Open &amp;Nav Data...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="MenuOpenElevMask">
+   <property name="text">
+    <string>O&amp;pen Elev Mask...</string>
+   </property>
+  </action>
+  <action name="MenuVisAna">
+   <property name="text">
+    <string>&amp;Visibility Analysis...</string>
+   </property>
+  </action>
+  <action name="MenuSaveImage">
+   <property name="text">
+    <string>Save &amp;Image...</string>
+   </property>
+  </action>
+  <action name="MenuSaveDop">
+   <property name="text">
+    <string>Save # o&amp;f Sats/DOP...</string>
+   </property>
+  </action>
+  <action name="MenuSaveSnrMp">
+   <property name="text">
+    <string>Save A&amp;Z/EL/SNR/MP...</string>
+   </property>
+  </action>
+  <action name="MenuSaveElMask">
+   <property name="text">
+    <string>S&amp;ave Elev Mask...</string>
+   </property>
+  </action>
+  <action name="MenuConnect">
+   <property name="icon">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+     <normaloff>:/buttons/connect1.bmp</normaloff>:/buttons/connect1.bmp</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Connect</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+T</string>
+   </property>
+  </action>
+  <action name="MenuDisconnect">
+   <property name="icon">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+     <normaloff>:/buttons/connect2.bmp</normaloff>:/buttons/connect2.bmp</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Disconnect</string>
+   </property>
+  </action>
+  <action name="MenuPort">
+   <property name="text">
+    <string>Connection Settin&amp;gs...</string>
+   </property>
+  </action>
+  <action name="MenuReload">
+   <property name="icon">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+     <normaloff>:/buttons/reload.bmp</normaloff>:/buttons/reload.bmp</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Reload</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="MenuClear">
+   <property name="icon">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+     <normaloff>:/buttons/del.bmp</normaloff>:/buttons/del.bmp</iconset>
+   </property>
+   <property name="text">
+    <string>C&amp;lear</string>
+   </property>
+  </action>
+  <action name="MenuQuit">
+   <property name="text">
+    <string>&amp;Exit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="MenuTime">
+   <property name="text">
+    <string>&amp;Time Span/Interval...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+W</string>
+   </property>
+  </action>
+  <action name="MenuMapImg">
+   <property name="icon">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+     <normaloff>:/buttons/map.bmp</normaloff>:/buttons/map.bmp</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Map Image...</string>
+   </property>
+  </action>
+  <action name="MenuSkyImg">
+   <property name="text">
+    <string>&amp;Sky Image...</string>
+   </property>
+  </action>
+  <action name="MenuWaypnt">
+   <property name="text">
+    <string>&amp;Waypoint...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+W</string>
+   </property>
+  </action>
+  <action name="MenuSrcSol">
+   <property name="text">
+    <string>So&amp;lution Source...</string>
+   </property>
+  </action>
+  <action name="MenuSrcObs">
+   <property name="text">
+    <string>Obs &amp;Data Source...</string>
+   </property>
+  </action>
+  <action name="MenuQcObs">
+   <property name="text">
+    <string>Obs Data &amp;QC...</string>
+   </property>
+  </action>
+  <action name="MenyCopy">
+   <property name="text">
+    <string>&amp;Copy To Clipboard</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
+   </property>
+  </action>
+  <action name="MenuOptions">
+   <property name="icon">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+     <normaloff>:/buttons/toolbmp</normaloff>:/buttons/toolbmp</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Options...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="MenuToolBar">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show &amp;Tool Bar</string>
+   </property>
+  </action>
+  <action name="MenuStatusBar">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show &amp;Status Bar</string>
+   </property>
+  </action>
+  <action name="MenuGE">
+   <property name="icon">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+     <normaloff>:/buttons/ge.bmp</normaloff>:/buttons/ge.bmp</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Google Earth View...</string>
+   </property>
+  </action>
+  <action name="MenuGM">
+   <property name="icon">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+     <normaloff>:/buttons/gm.bmp</normaloff>:/buttons/gm.bmp</iconset>
+   </property>
+   <property name="text">
+    <string>Google &amp;Map View...</string>
+   </property>
+  </action>
+  <action name="MenuMonitor1">
+   <property name="text">
+    <string>Input Monitor &amp;1...</string>
+   </property>
+  </action>
+  <action name="MenuMonitor2">
+   <property name="text">
+    <string>Input Monitor &amp;2...</string>
+   </property>
+  </action>
+  <action name="MenuCenterOri">
+   <property name="icon">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+     <normaloff>:/buttons/ori.bmp</normaloff>:/buttons/ori.bmp</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Center Origin</string>
+   </property>
+  </action>
+  <action name="MenuFitHoriz">
+   <property name="icon">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+     <normaloff>:/buttons/fith.bmp</normaloff>:/buttons/fith.bmp</iconset>
+   </property>
+   <property name="text">
+    <string>Fit &amp;Horizontal</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+H</string>
+   </property>
+  </action>
+  <action name="MenuFitVert">
+   <property name="icon">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+     <normaloff>:/buttons/fitv.bmp</normaloff>:/buttons/fitv.bmp</iconset>
+   </property>
+   <property name="text">
+    <string>Fit &amp;Vertical</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+V</string>
+   </property>
+  </action>
+  <action name="MenuShowTrack">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+     <normaloff>:/buttons/point.bmp</normaloff>:/buttons/point.bmp</iconset>
+   </property>
+   <property name="text">
+    <string>Show Track &amp;Point</string>
+   </property>
+  </action>
+  <action name="MenuFixCent">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+     <normaloff>:/buttons/trackc.bmp</normaloff>:/buttons/trackc.bmp</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Fix Track Center</string>
+   </property>
+  </action>
+  <action name="MenuFixHoriz">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+     <normaloff>:/buttons/track.bmp</normaloff>:/buttons/track.bmp</iconset>
+   </property>
+   <property name="text">
+    <string>Fi&amp;x Track Horizontal</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+V</string>
+   </property>
+  </action>
+  <action name="MenuFixVert">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+     <normaloff>:/buttons/trackl.bmp</normaloff>:/buttons/trackl.bmp</iconset>
+   </property>
+   <property name="text">
+    <string>Fix T&amp;rack Vertical</string>
+   </property>
+  </action>
+  <action name="MenuShowSkyplot">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+     <normaloff>:/buttons/graph.bmp</normaloff>:/buttons/graph.bmp</iconset>
+   </property>
+   <property name="text">
+    <string>Sh&amp;ow Skyplot</string>
+   </property>
+  </action>
+  <action name="MenuShowImg">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+     <normaloff>:/buttons/map.bmp</normaloff>:/buttons/map.bmp</iconset>
+   </property>
+   <property name="text">
+    <string>Show &amp;Image</string>
+   </property>
+  </action>
+  <action name="MenuShowMap">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+     <normaloff>:/buttons/showp.bmp</normaloff>:/buttons/showp.bmp</iconset>
+   </property>
+   <property name="text">
+    <string>Show Map/&amp;Waypoint</string>
+   </property>
+   <property name="toolTip">
+    <string>Show Map/Waypoint</string>
+   </property>
+  </action>
+  <action name="MenuAnimStart">
+   <property name="icon">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+     <normaloff>:/buttons/anim1.bmp</normaloff>:/buttons/anim1.bmp</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Animation Start</string>
+   </property>
+  </action>
+  <action name="MenuAnimStop">
+   <property name="icon">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+     <normaloff>:/buttons/anim2.bmp</normaloff>:/buttons/anim2.bmp</iconset>
+   </property>
+   <property name="text">
+    <string>A&amp;nimation Stop</string>
+   </property>
+  </action>
+  <action name="MenuOverlap">
+   <property name="text">
+    <string>&amp;Overlapped</string>
+   </property>
+  </action>
+  <action name="MenuMax">
+   <property name="text">
+    <string>&amp;Maximized</string>
+   </property>
+  </action>
+  <action name="MenuPlotGE">
+   <property name="text">
+    <string>Plot - &amp;GE View Horizontal</string>
+   </property>
+  </action>
+  <action name="MenuPlotGM">
+   <property name="text">
+    <string>Plot - GM &amp;View Horizontal</string>
+   </property>
+  </action>
+  <action name="MenuPlotGEGM">
+   <property name="text">
+    <string>Plot - GE/GM Views &amp;Horizontal</string>
+   </property>
+  </action>
+  <action name="MenuAbout">
+   <property name="text">
+    <string>&amp;About...</string>
+   </property>
+  </action>
+  <action name="MenuOpenWaypoint">
+   <property name="text">
+    <string>Open &amp;Waypoint...</string>
+   </property>
+  </action>
+  <action name="MenuSaveWaypoint">
+   <property name="text">
+    <string>Save Wa&amp;ypoint...</string>
+   </property>
+  </action>
+  <action name="MenuMapLayer">
+   <property name="text">
+    <string>Ma&amp;p Layer...</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="../rtkconv_qt/rtkconv_qt.qrc"/>
+ </resources>
+ <connections/>
+</ui>

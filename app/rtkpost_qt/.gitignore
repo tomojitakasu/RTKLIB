@@ -1,0 +1,10 @@
+ui_*.h
+moc_*.cpp
+moc_*.h
+qrc*.cpp
+*.pro.user*
+Makefile*
+*.res
+rtkpost_qt
+rtkpost_qt.exe
+object_script*

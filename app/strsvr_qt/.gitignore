@@ -1,0 +1,10 @@
+ui_*.h
+moc_*.cpp
+moc_*.h
+qrc*.cpp
+*.pro.user*
+Makefile*
+*.res
+strsvr_qt
+strsvr_qt.exe
+object_script*

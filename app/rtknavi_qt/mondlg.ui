@@ -1,0 +1,518 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MonitorDialog</class>
+ <widget class="QWidget" name="MonitorDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>950</width>
+    <height>502</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>RTK Monitor</string>
+  </property>
+  <property name="toolTip">
+   <string/>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QWidget" name="Panel1" native="true">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Maximum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text" stdset="0">
+      <string/>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QComboBox" name="Type">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <item>
+         <property name="text">
+          <string>RTK</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Obs Data</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Nav GPS</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Nav GLONASS</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Nav Galileo</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Nav QZSS</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Nav BeiDou</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Nav GEO</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Time/Iono</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Streams</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Sat GPS</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Sat GLONASS</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Sat Galileo</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Sat QZSS</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Sat BeiDou</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Sat GEO</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>States</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Covariance</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>SBAS Msgs</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>SBAS Long</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>SBAS Iono</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>SBAS Fast</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>RTCM Msgs</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>RTCM DGPS</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>RTCM SSR</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>LEX Msgs</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>LEX Eph/Clock</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>LEX Iono</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Iono Correction</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>1 Rover</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>2 Base Station</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>3 Correction</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>4 Solution1</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>5 Solution2</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Error/Warning</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="SelObs">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string>Stream</string>
+        </property>
+        <item>
+         <property name="text">
+          <string>Normal</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Extended</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="SelIon">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string>Stream</string>
+        </property>
+        <item>
+         <property name="text">
+          <string>OFF</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Broadcast</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>SBAS</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Dual-Freq</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Estimate STEC</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>IONEX TEC</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>QZS Broadcast</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>QZS LEX</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="SelSat">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string>Stream</string>
+        </property>
+        <item>
+         <property name="text">
+          <string>All</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Only OK</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="BtnClose">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>&amp;Close</string>
+        </property>
+        <property name="autoDefault">
+         <bool>true</bool>
+        </property>
+        <property name="default">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QComboBox" name="SelStr">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string>Stream</string>
+        </property>
+        <item>
+         <property name="text">
+          <string>1 Rover</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>2 Base Station</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>3 Correction</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>0 Combined</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="BtnClear">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string>Clear</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="../rtkget_qt/rtkget_qt.qrc">
+          <normaloff>:/buttons/del.bmp</normaloff>:/buttons/del.bmp</iconset>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="BtnPause">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string>Pause</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="../rtkget_qt/rtkget_qt.qrc">
+          <normaloff>:/buttons/pause.bmp</normaloff>:/buttons/pause.bmp</iconset>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="BtnDown">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string>Scroll Down</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="../rtkget_qt/rtkget_qt.qrc">
+          <normaloff>:/buttons/fitd.bmp</normaloff>:/buttons/fitd.bmp</iconset>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="SelEph">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string>Stream</string>
+        </property>
+        <item>
+         <property name="text">
+          <string>Current</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Previous</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="SelFmt">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string>Stream</string>
+        </property>
+        <item>
+         <property name="text">
+          <string>HEX</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>ASCII</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="Label">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTableWidget" name="Console"/>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="../rtkget_qt/rtkget_qt.qrc"/>
+ </resources>
+ <connections/>
+</ui>
