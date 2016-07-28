@@ -688,7 +688,7 @@ extern void setbits(unsigned char *buff, int pos, int len, int data)
 * return : crc-32 parity
 * notes  : see NovAtel OEMV firmware manual 1.7 32-bit CRC
 *-----------------------------------------------------------------------------*/
-extern unsigned int crc32(const unsigned char *buff, int len)
+extern unsigned int rtk_crc32(const unsigned char *buff, int len)
 {
     unsigned int crc=0;
     int i,j;
@@ -3773,7 +3773,7 @@ extern void csmooth(obs_t *obs, int ns)
 * note   : creates uncompressed file in tempolary directory
 *          gzip and crx2rnx commands have to be installed in commands path
 *-----------------------------------------------------------------------------*/
-extern int uncompress(const char *file, char *uncfile)
+extern int rtk_uncompress(const char *file, char *uncfile)
 {
     int stat=0;
     char *p,cmd[2048]="",tmpfile[1024]="",buff[1024],*fname,*dir="";

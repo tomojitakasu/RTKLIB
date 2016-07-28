@@ -1,0 +1,693 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>InputStrDialog</class>
+ <widget class="QWidget" name="InputStrDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>662</width>
+    <height>339</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Input Streams</string>
+  </property>
+  <property name="toolTip">
+   <string/>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0" colspan="2">
+    <widget class="QLabel" name="Label10">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text">
+      <string>Input Stream</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="5" colspan="2">
+    <widget class="QLabel" name="Label5">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text">
+      <string>Type</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="7" colspan="2">
+    <widget class="QLabel" name="Label6">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text">
+      <string>Opt</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="9" colspan="2">
+    <widget class="QLabel" name="Label11">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text">
+      <string>Cmd</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="12">
+    <widget class="QLabel" name="Label7">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text">
+      <string>Format</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="13">
+    <widget class="QLabel" name="Label1">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text">
+      <string>Opt</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="4">
+    <widget class="QCheckBox" name="StreamC1">
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text">
+      <string>(1) Rover</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="4" colspan="4">
+    <widget class="QComboBox" name="Stream1">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <item>
+      <property name="text">
+       <string>Serial</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>TCP Client</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>TCP Server</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>NTRIP Client</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>File</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="1" column="8">
+    <widget class="QPushButton" name="BtnStr1">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text">
+      <string>...</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="9" colspan="2">
+    <widget class="QPushButton" name="BtnCmd1">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text">
+      <string>...</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="11" colspan="2">
+    <widget class="QComboBox" name="Format1">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="13">
+    <widget class="QPushButton" name="BtnRcvOpt1">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text">
+      <string>...</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="4">
+    <widget class="QCheckBox" name="StreamC2">
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text">
+      <string>(2) Base Station</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="4" colspan="4">
+    <widget class="QComboBox" name="Stream2">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <item>
+      <property name="text">
+       <string>Serial</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>TCP Client</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>TCP Server</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>NTRIP Client</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>File</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="2" column="8">
+    <widget class="QPushButton" name="BtnStr2">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text">
+      <string>...</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="9" colspan="2">
+    <widget class="QPushButton" name="BtnCmd2">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text">
+      <string>...</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="11" colspan="2">
+    <widget class="QComboBox" name="Format2">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="13">
+    <widget class="QPushButton" name="BtnRcvOpt2">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text">
+      <string>...</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0" colspan="4">
+    <widget class="QCheckBox" name="StreamC3">
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text">
+      <string>(3) Correction</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="4" colspan="4">
+    <widget class="QComboBox" name="Stream3">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <item>
+      <property name="text">
+       <string>Serial</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>TCP Client</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>TCP Server</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>NTRIP Client</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>File</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>FTP</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>HTTP</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="3" column="8">
+    <widget class="QPushButton" name="BtnStr3">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text">
+      <string>...</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="9" colspan="2">
+    <widget class="QPushButton" name="BtnCmd3">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text">
+      <string>...</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="11" colspan="2">
+    <widget class="QComboBox" name="Format3">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="13">
+    <widget class="QPushButton" name="BtnRcvOpt3">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text">
+      <string>...</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0" colspan="7">
+    <widget class="QLabel" name="LabelNmea">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text">
+      <string>Transmit NMEA GPGGA to Base Station</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0" colspan="4">
+    <widget class="QComboBox" name="NmeaReqL">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <item>
+      <property name="text">
+       <string>OFF</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Latitude/Longitude</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Single Solution</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="5" column="4" colspan="6">
+    <widget class="QLineEdit" name="NmeaPos1">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text">
+      <string>0.000000000</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="10" colspan="3">
+    <widget class="QLineEdit" name="NmeaPos2">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text">
+      <string>0.000000000</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="13">
+    <widget class="QPushButton" name="BtnPos">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text">
+      <string>...</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="0" colspan="2">
+    <widget class="QLabel" name="LabelF1">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text">
+      <string>Input File Paths</string>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="0" colspan="13">
+    <widget class="QLineEdit" name="FilePath1">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="13">
+    <widget class="QPushButton" name="BtnFile1">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text">
+      <string>...</string>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="0" colspan="13">
+    <widget class="QLineEdit" name="FilePath2">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="13">
+    <widget class="QPushButton" name="BtnFile2">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text">
+      <string>...</string>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="0" colspan="13">
+    <widget class="QLineEdit" name="FilePath3">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="13">
+    <widget class="QPushButton" name="BtnFile3">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text">
+      <string>...</string>
+     </property>
+    </widget>
+   </item>
+   <item row="10" column="0">
+    <widget class="QCheckBox" name="TimeTagC">
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text">
+      <string>Time</string>
+     </property>
+    </widget>
+   </item>
+   <item row="10" column="1">
+    <widget class="QComboBox" name="TimeSpeedL">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <item>
+      <property name="text">
+       <string/>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>x0.1</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>x0.2</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>x0.5</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>x1</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>x2</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>x5</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>x10</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="10" column="2">
+    <widget class="QLabel" name="LabelF3">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text">
+      <string>+</string>
+     </property>
+    </widget>
+   </item>
+   <item row="10" column="3" colspan="2">
+    <widget class="QLineEdit" name="TimeStartE">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text">
+      <string>0</string>
+     </property>
+    </widget>
+   </item>
+   <item row="10" column="5">
+    <widget class="QLabel" name="LabelF2">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text">
+      <string>s</string>
+     </property>
+    </widget>
+   </item>
+   <item row="10" column="7" colspan="5">
+    <widget class="QPushButton" name="BtnOk">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text">
+      <string>&amp;OK</string>
+     </property>
+     <property name="autoDefault">
+      <bool>true</bool>
+     </property>
+     <property name="default">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="10" column="12" colspan="2">
+    <widget class="QPushButton" name="BtnCancel">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text">
+      <string>&amp;Cancel</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
