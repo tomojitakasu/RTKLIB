@@ -32,8 +32,8 @@
       <string/>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
-      <item row="2" column="1">
-       <widget class="QLabel" name="Label15">
+      <item row="5" column="1">
+       <widget class="QLabel" name="Label16">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -41,25 +41,12 @@
          <string/>
         </property>
         <property name="text">
-         <string>Lat/Lon Format</string>
+         <string>Parity Unknown</string>
         </property>
        </widget>
       </item>
-      <item row="3" column="1">
-       <widget class="QLabel" name="Label9">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Show Statistics</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="3">
-       <widget class="QComboBox" name="LatLonFmt">
+      <item row="9" column="3">
+       <widget class="QComboBox" name="HideLowSat">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -68,14 +55,184 @@
         </property>
         <item>
          <property name="text">
-          <string>ddd.ddddd</string>
+          <string>OFF</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>ddd mm ss.ss</string>
+          <string>ON</string>
          </property>
         </item>
+       </widget>
+      </item>
+      <item row="3" column="12" colspan="6">
+       <widget class="QLabel" name="Color4">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="layoutDirection">
+         <enum>Qt::LeftToRight</enum>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::Box</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Sunken</enum>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="14" column="19">
+       <widget class="QPushButton" name="BtnRefPos">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="palette">
+         <palette>
+          <active>
+           <colorrole role="WindowText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </active>
+          <inactive>
+           <colorrole role="WindowText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </inactive>
+          <disabled>
+           <colorrole role="WindowText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </disabled>
+         </palette>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>...</string>
+        </property>
+        <property name="flat">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="14" column="1" colspan="2">
+       <widget class="QLabel" name="Label31">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Receiver Position</string>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="4" colspan="3">
+       <widget class="QLabel" name="Label8">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Y-Range (+/-)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="19" column="1">
+       <widget class="QLabel" name="Label36">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>(+Sn: Included)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="17" column="19">
+       <widget class="QPushButton" name="BtnTLEFile">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="palette">
+         <palette>
+          <active>
+           <colorrole role="WindowText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </active>
+          <inactive>
+           <colorrole role="WindowText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </inactive>
+          <disabled>
+           <colorrole role="WindowText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </disabled>
+         </palette>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>...</string>
+        </property>
+        <property name="flat">
+         <bool>false</bool>
+        </property>
        </widget>
       </item>
       <item row="1" column="4" colspan="3">
@@ -91,8 +248,28 @@
         </property>
        </widget>
       </item>
-      <item row="17" column="6" colspan="12">
-       <widget class="QLineEdit" name="TLESatFile">
+      <item row="7" column="7" colspan="3">
+       <widget class="QComboBox" name="AutoScale">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <item>
+         <property name="text">
+          <string>OFF</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>ON</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="8" column="10">
+       <widget class="QLabel" name="Label10">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -100,12 +277,12 @@
          <string/>
         </property>
         <property name="text">
-         <string/>
+         <string>Mark Size</string>
         </property>
        </widget>
       </item>
-      <item row="15" column="6" colspan="15">
-       <widget class="QLineEdit" name="RnxOpts">
+      <item row="9" column="1" colspan="2">
+       <widget class="QLabel" name="Label25">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -113,12 +290,12 @@
          <string/>
         </property>
         <property name="text">
-         <string/>
+         <string>Hide Low Satellite</string>
         </property>
        </widget>
       </item>
-      <item row="10" column="7" rowspan="2" colspan="3">
-       <widget class="QComboBox" name="Origin">
+      <item row="14" column="3">
+       <widget class="QComboBox" name="RcvPos">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -127,27 +304,7 @@
         </property>
         <item>
          <property name="text">
-          <string>Start Pos</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>End Pos</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Average Pos</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Linear Fit Pos</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Base Station</string>
+          <string>Single Solution</string>
          </property>
         </item>
         <item>
@@ -157,336 +314,9 @@
         </item>
         <item>
          <property name="text">
-          <string>Auto Input</string>
+          <string>RINEX Header</string>
          </property>
         </item>
-        <item>
-         <property name="text">
-          <string>Image Center</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Map Center</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Waypnt1</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Waypnt2</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Waypnt3</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Waypnt4</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Waypnt5</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Waypnt6</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Waypnt7</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Waypnt8</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Waypnt9</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Waypnt10</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="11" column="1">
-       <widget class="QLabel" name="Label28">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Max NSAT/DOP</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="3">
-       <widget class="QComboBox" name="ShowStats">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <item>
-         <property name="text">
-          <string>OFF</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>ON</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="6" column="10" colspan="2">
-       <widget class="QLabel" name="Label1">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Background Color</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="3">
-       <widget class="QComboBox" name="ShowHalfC">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <item>
-         <property name="text">
-          <string>OFF</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>ON</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="5" column="7" colspan="3">
-       <widget class="QComboBox" name="ShowCompass">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <item>
-         <property name="text">
-          <string>OFF</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>ON</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="3" column="4" colspan="2">
-       <widget class="QLabel" name="Label20">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Graph Label</string>
-        </property>
-       </widget>
-      </item>
-      <item row="11" column="10" colspan="2">
-       <widget class="QLabel" name="Label11">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Animation Interval</string>
-        </property>
-       </widget>
-      </item>
-      <item row="12" column="3">
-       <widget class="QComboBox" name="MaxMP">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <item>
-         <property name="text">
-          <string>1</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>2</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>3</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>5</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>10</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>20</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>30</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="12" column="10" colspan="2">
-       <widget class="QLabel" name="Label27">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Update Cycle (ms)</string>
-        </property>
-       </widget>
-      </item>
-      <item row="12" column="12" colspan="9">
-       <widget class="QLineEdit" name="RefCycle">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>100</string>
-        </property>
-       </widget>
-      </item>
-      <item row="13" column="6" colspan="2">
-       <widget class="QLineEdit" name="RefPos1">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>0</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="3">
-       <widget class="QComboBox" name="ShowSlip">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <item>
-         <property name="text">
-          <string>OFF</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>LG Jump</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>LLI Flag</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="8" column="3">
-       <widget class="QComboBox" name="ElMaskP">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <item>
-         <property name="text">
-          <string>OFF</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>ON</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="9" column="4" colspan="3">
-       <widget class="QLabel" name="Label29">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>RT Buffer Size</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="4" colspan="3">
-       <widget class="QLabel" name="Label21">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Grid/Grid Label</string>
-        </property>
        </widget>
       </item>
       <item row="6" column="7" colspan="3">
@@ -507,45 +337,6 @@
           <string>ON</string>
          </property>
         </item>
-       </widget>
-      </item>
-      <item row="7" column="4">
-       <widget class="QLabel" name="Label13">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Auto Fit</string>
-        </property>
-       </widget>
-      </item>
-      <item row="13" column="4" colspan="2">
-       <widget class="QLabel" name="LabelRefPos">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Lat/Lon/Hgt</string>
-        </property>
-       </widget>
-      </item>
-      <item row="12" column="1">
-       <widget class="QLabel" name="Label37">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Max Multipath</string>
-        </property>
        </widget>
       </item>
       <item row="8" column="7" colspan="3">
@@ -633,8 +424,8 @@
         </item>
        </widget>
       </item>
-      <item row="4" column="1">
-       <widget class="QLabel" name="Label17">
+      <item row="6" column="1">
+       <widget class="QLabel" name="Label24">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -642,12 +433,25 @@
          <string/>
         </property>
         <property name="text">
-         <string>Cycle-Slip</string>
+         <string>Ephemeris</string>
         </property>
        </widget>
       </item>
-      <item row="3" column="12" colspan="6">
-       <widget class="QLabel" name="Color4">
+      <item row="14" column="8" colspan="3">
+       <widget class="QLineEdit" name="RefPos2">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>0</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="12" colspan="6">
+       <widget class="QLabel" name="Color1">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -671,8 +475,8 @@
         </property>
        </widget>
       </item>
-      <item row="13" column="1" colspan="2">
-       <widget class="QLabel" name="Label31">
+      <item row="14" column="11" colspan="7">
+       <widget class="QLineEdit" name="RefPos3">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -680,12 +484,12 @@
          <string/>
         </property>
         <property name="text">
-         <string>Receiver Position</string>
+         <string>0</string>
         </property>
        </widget>
       </item>
-      <item row="7" column="1" colspan="2">
-       <widget class="QLabel" name="Label18">
+      <item row="18" column="1">
+       <widget class="QLabel" name="LabelExSats">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -693,12 +497,65 @@
          <string/>
         </property>
         <property name="text">
-         <string>Elevation Mask (°)</string>
+         <string>Excluded Sats</string>
         </property>
        </widget>
       </item>
-      <item row="5" column="1">
-       <widget class="QLabel" name="Label16">
+      <item row="18" column="19">
+       <widget class="QPushButton" name="BtnTLESatFile">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="palette">
+         <palette>
+          <active>
+           <colorrole role="WindowText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </active>
+          <inactive>
+           <colorrole role="WindowText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </inactive>
+          <disabled>
+           <colorrole role="WindowText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </disabled>
+         </palette>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>...</string>
+        </property>
+        <property name="flat">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="10" colspan="2">
+       <widget class="QLabel" name="Label1">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -706,8 +563,81 @@
          <string/>
         </property>
         <property name="text">
-         <string>Parity Unknown</string>
+         <string>Background Color</string>
         </property>
+       </widget>
+      </item>
+      <item row="5" column="19">
+       <widget class="QPushButton" name="BtnColor2">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="palette">
+         <palette>
+          <active>
+           <colorrole role="WindowText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </active>
+          <inactive>
+           <colorrole role="WindowText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </inactive>
+          <disabled>
+           <colorrole role="WindowText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </disabled>
+         </palette>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>...</string>
+        </property>
+        <property name="flat">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="3">
+       <widget class="QComboBox" name="ElMaskP">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <item>
+         <property name="text">
+          <string>OFF</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>ON</string>
+         </property>
+        </item>
        </widget>
       </item>
       <item row="4" column="7" colspan="3">
@@ -745,238 +675,6 @@
         </item>
        </widget>
       </item>
-      <item row="4" column="10">
-       <widget class="QLabel" name="Label6">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Text Color</string>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="4">
-       <widget class="QLabel" name="Label22">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Scale</string>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="12" colspan="6">
-       <widget class="QLabel" name="Color1">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="layoutDirection">
-         <enum>Qt::LeftToRight</enum>
-        </property>
-        <property name="frameShape">
-         <enum>QFrame::Box</enum>
-        </property>
-        <property name="frameShadow">
-         <enum>QFrame::Sunken</enum>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="12" colspan="6">
-       <widget class="QLabel" name="Color3">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="layoutDirection">
-         <enum>Qt::LeftToRight</enum>
-        </property>
-        <property name="frameShape">
-         <enum>QFrame::Box</enum>
-        </property>
-        <property name="frameShadow">
-         <enum>QFrame::Sunken</enum>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="7" column="7" colspan="3">
-       <widget class="QComboBox" name="AutoScale">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <item>
-         <property name="text">
-          <string>OFF</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>ON</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="2" column="4" colspan="3">
-       <widget class="QLabel" name="Label4">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Direction Arrow</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="10">
-       <widget class="QLabel" name="Label7">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Line Color</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="12" colspan="6">
-       <widget class="QLabel" name="Color2">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="layoutDirection">
-         <enum>Qt::LeftToRight</enum>
-        </property>
-        <property name="frameShape">
-         <enum>QFrame::Box</enum>
-        </property>
-        <property name="frameShadow">
-         <enum>QFrame::Sunken</enum>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="8" column="10">
-       <widget class="QLabel" name="Label10">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Mark Size</string>
-        </property>
-       </widget>
-      </item>
-      <item row="7" column="10">
-       <widget class="QLabel" name="Label2">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Plot Style</string>
-        </property>
-       </widget>
-      </item>
-      <item row="9" column="7" colspan="2">
-       <widget class="QLineEdit" name="BuffSize">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>10800</string>
-        </property>
-       </widget>
-      </item>
-      <item row="9" column="3">
-       <widget class="QComboBox" name="HideLowSat">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <item>
-         <property name="text">
-          <string>OFF</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>ON</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="9" column="1" colspan="2">
-       <widget class="QLabel" name="Label25">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Hide Low Satellite</string>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="1">
-       <widget class="QLabel" name="Label24">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Ephemeris</string>
-        </property>
-       </widget>
-      </item>
       <item row="3" column="7" colspan="3">
        <widget class="QComboBox" name="ShowLabel">
         <property name="enabled">
@@ -995,6 +693,19 @@
           <string>ON</string>
          </property>
         </item>
+       </widget>
+      </item>
+      <item row="13" column="10" colspan="2">
+       <widget class="QLabel" name="Label27">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Update Cycle (ms)</string>
+        </property>
        </widget>
       </item>
       <item row="1" column="3">
@@ -1023,6 +734,117 @@
         <item>
          <property name="text">
           <string>h:m:s LT</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="4" column="10">
+       <widget class="QLabel" name="Label6">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Text Color</string>
+        </property>
+       </widget>
+      </item>
+      <item row="9" column="12" colspan="7">
+       <widget class="QLabel" name="FontLabel">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Font Name</string>
+        </property>
+       </widget>
+      </item>
+      <item row="17" column="4">
+       <widget class="QLabel" name="Label34">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>TLE Data</string>
+        </property>
+       </widget>
+      </item>
+      <item row="16" column="4">
+       <widget class="QLabel" name="Label33">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>RINEX Opt</string>
+        </property>
+       </widget>
+      </item>
+      <item row="9" column="10">
+       <widget class="QLabel" name="LabelFont">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Font</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="4" colspan="2">
+       <widget class="QLabel" name="Label23">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Compass</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="10">
+       <widget class="QLabel" name="Label7">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Line Color</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="3">
+       <widget class="QComboBox" name="ShowEph">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <item>
+         <property name="text">
+          <string>OFF</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>ON</string>
          </property>
         </item>
        </widget>
@@ -1087,6 +909,208 @@
         </item>
        </widget>
       </item>
+      <item row="8" column="12" colspan="8">
+       <widget class="QComboBox" name="MarkSize">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <item>
+         <property name="text">
+          <string>1</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>2</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>3</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>4</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>5</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>10</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>15</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>20</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="16" column="6" colspan="15">
+       <widget class="QLineEdit" name="RnxOpts">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="10">
+       <widget class="QLabel" name="Label5">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Grid Color</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="19">
+       <widget class="QPushButton" name="BtnColor1">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="palette">
+         <palette>
+          <active>
+           <colorrole role="WindowText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </active>
+          <inactive>
+           <colorrole role="WindowText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </inactive>
+          <disabled>
+           <colorrole role="WindowText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </disabled>
+         </palette>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>...</string>
+        </property>
+        <property name="flat">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="9" column="19">
+       <widget class="QPushButton" name="BtnFont">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="palette">
+         <palette>
+          <active>
+           <colorrole role="WindowText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </active>
+          <inactive>
+           <colorrole role="WindowText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </inactive>
+          <disabled>
+           <colorrole role="WindowText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </disabled>
+         </palette>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>...</string>
+        </property>
+        <property name="flat">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="3">
+       <widget class="QComboBox" name="LatLonFmt">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <item>
+         <property name="text">
+          <string>ddd.ddddd</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>ddd mm ss.ss</string>
+         </property>
+        </item>
+       </widget>
+      </item>
       <item row="2" column="7" colspan="3">
        <widget class="QComboBox" name="ShowArrow">
         <property name="enabled">
@@ -1107,53 +1131,8 @@
         </item>
        </widget>
       </item>
-      <item row="13" column="3">
-       <widget class="QComboBox" name="RcvPos">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <item>
-         <property name="text">
-          <string>Single Solution</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Lat/Lon/Hgt</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>RINEX Header</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="6" column="3">
-       <widget class="QComboBox" name="ShowEph">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <item>
-         <property name="text">
-          <string>OFF</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>ON</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="5" column="10">
-       <widget class="QLabel" name="Label5">
+      <item row="2" column="1">
+       <widget class="QLabel" name="Label15">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -1161,33 +1140,7 @@
          <string/>
         </property>
         <property name="text">
-         <string>Grid Color</string>
-        </property>
-       </widget>
-      </item>
-      <item row="8" column="4" colspan="3">
-       <widget class="QLabel" name="Label8">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Y-Range (+/-)</string>
-        </property>
-       </widget>
-      </item>
-      <item row="8" column="1" colspan="2">
-       <widget class="QLabel" name="Label26">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Elev Mask Pattern</string>
+         <string>Lat/Lon Format</string>
         </property>
        </widget>
       </item>
@@ -1204,48 +1157,8 @@
         </property>
        </widget>
       </item>
-      <item row="10" column="3" rowspan="2">
-       <widget class="QComboBox" name="MaxDop">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <item>
-         <property name="text">
-          <string>10</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>30</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>50</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>100</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>200</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>500</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="13" column="8" colspan="3">
-       <widget class="QLineEdit" name="RefPos2">
+      <item row="14" column="4" colspan="2">
+       <widget class="QLabel" name="LabelRefPos">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -1253,12 +1166,37 @@
          <string/>
         </property>
         <property name="text">
-         <string>0</string>
+         <string>Lat/Lon/Hgt</string>
         </property>
        </widget>
       </item>
-      <item row="13" column="11" colspan="7">
-       <widget class="QLineEdit" name="RefPos3">
+      <item row="4" column="12" colspan="6">
+       <widget class="QLabel" name="Color3">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="layoutDirection">
+         <enum>Qt::LeftToRight</enum>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::Box</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Sunken</enum>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="13" column="1">
+       <widget class="QLabel" name="Label37">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -1266,12 +1204,109 @@
          <string/>
         </property>
         <property name="text">
-         <string>0</string>
+         <string>Max Multipath</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="7" colspan="3">
-       <widget class="QComboBox" name="ShowErr">
+      <item row="15" column="0" rowspan="3" colspan="4">
+       <widget class="QGroupBox" name="GroupBox1">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="title">
+         <string>Satellite System</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="0" column="0">
+          <widget class="QCheckBox" name="NavSys1">
+           <property name="toolTip">
+            <string/>
+           </property>
+           <property name="text">
+            <string>GPS</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QCheckBox" name="NavSys2">
+           <property name="toolTip">
+            <string/>
+           </property>
+           <property name="text">
+            <string>GLO</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QCheckBox" name="NavSys3">
+           <property name="toolTip">
+            <string/>
+           </property>
+           <property name="text">
+            <string>GAL</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QCheckBox" name="NavSys4">
+           <property name="toolTip">
+            <string/>
+           </property>
+           <property name="text">
+            <string>QZS</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QCheckBox" name="NavSys5">
+           <property name="toolTip">
+            <string/>
+           </property>
+           <property name="text">
+            <string>SBS</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="QCheckBox" name="NavSys6">
+           <property name="toolTip">
+            <string/>
+           </property>
+           <property name="text">
+            <string>BDS</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="3">
+          <widget class="QCheckBox" name="NavSys7">
+           <property name="text">
+            <string>IRN</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="5" column="3">
+       <widget class="QComboBox" name="ShowHalfC">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -1285,122 +1320,7 @@
         </item>
         <item>
          <property name="text">
-          <string>Bar/Circle</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Dots</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="11" column="4" colspan="3">
-       <widget class="QLabel" name="Label3">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Coordinate Origin</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="4" colspan="2">
-       <widget class="QLabel" name="Label23">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Compass</string>
-        </property>
-       </widget>
-      </item>
-      <item row="14" column="4">
-       <widget class="QLabel" name="Label30">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>QC Cmd</string>
-        </property>
-       </widget>
-      </item>
-      <item row="14" column="6" colspan="15">
-       <widget class="QLineEdit" name="QcCmd">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>teqc</string>
-        </property>
-       </widget>
-      </item>
-      <item row="15" column="4">
-       <widget class="QLabel" name="Label33">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>RINEX Opt</string>
-        </property>
-       </widget>
-      </item>
-      <item row="10" column="12" rowspan="2" colspan="8">
-       <widget class="QComboBox" name="AnimCycle">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <item>
-         <property name="text">
-          <string>1</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>2</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>5</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>10</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>20</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>50</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>100</string>
+          <string>ON</string>
          </property>
         </item>
        </widget>
@@ -1435,109 +1355,215 @@
         </item>
        </widget>
       </item>
-      <item row="17" column="19">
-       <widget class="QPushButton" name="BtnTLESatFile">
+      <item row="8" column="1" colspan="2">
+       <widget class="QLabel" name="Label26">
         <property name="enabled">
          <bool>true</bool>
-        </property>
-        <property name="palette">
-         <palette>
-          <active>
-           <colorrole role="WindowText">
-            <brush brushstyle="SolidPattern">
-             <color alpha="255">
-              <red>0</red>
-              <green>0</green>
-              <blue>0</blue>
-             </color>
-            </brush>
-           </colorrole>
-          </active>
-          <inactive>
-           <colorrole role="WindowText">
-            <brush brushstyle="SolidPattern">
-             <color alpha="255">
-              <red>0</red>
-              <green>0</green>
-              <blue>0</blue>
-             </color>
-            </brush>
-           </colorrole>
-          </inactive>
-          <disabled>
-           <colorrole role="WindowText">
-            <brush brushstyle="SolidPattern">
-             <color alpha="255">
-              <red>0</red>
-              <green>0</green>
-              <blue>0</blue>
-             </color>
-            </brush>
-           </colorrole>
-          </disabled>
-         </palette>
         </property>
         <property name="toolTip">
          <string/>
         </property>
         <property name="text">
-         <string>...</string>
-        </property>
-        <property name="flat">
-         <bool>false</bool>
+         <string>Elev Mask Pattern</string>
         </property>
        </widget>
       </item>
-      <item row="13" column="19">
-       <widget class="QPushButton" name="BtnRefPos">
+      <item row="2" column="4" colspan="3">
+       <widget class="QLabel" name="Label4">
         <property name="enabled">
          <bool>true</bool>
-        </property>
-        <property name="palette">
-         <palette>
-          <active>
-           <colorrole role="WindowText">
-            <brush brushstyle="SolidPattern">
-             <color alpha="255">
-              <red>0</red>
-              <green>0</green>
-              <blue>0</blue>
-             </color>
-            </brush>
-           </colorrole>
-          </active>
-          <inactive>
-           <colorrole role="WindowText">
-            <brush brushstyle="SolidPattern">
-             <color alpha="255">
-              <red>0</red>
-              <green>0</green>
-              <blue>0</blue>
-             </color>
-            </brush>
-           </colorrole>
-          </inactive>
-          <disabled>
-           <colorrole role="WindowText">
-            <brush brushstyle="SolidPattern">
-             <color alpha="255">
-              <red>0</red>
-              <green>0</green>
-              <blue>0</blue>
-             </color>
-            </brush>
-           </colorrole>
-          </disabled>
-         </palette>
         </property>
         <property name="toolTip">
          <string/>
         </property>
         <property name="text">
-         <string>...</string>
+         <string>Direction Arrow</string>
         </property>
-        <property name="flat">
-         <bool>false</bool>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QLabel" name="Label17">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Cycle-Slip</string>
+        </property>
+       </widget>
+      </item>
+      <item row="13" column="3">
+       <widget class="QComboBox" name="MaxMP">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <item>
+         <property name="text">
+          <string>1</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>2</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>3</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>5</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>10</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>20</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>30</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="15" column="4">
+       <widget class="QLabel" name="Label30">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>QC Cmd</string>
+        </property>
+       </widget>
+      </item>
+      <item row="18" column="6" colspan="12">
+       <widget class="QLineEdit" name="TLESatFile">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="4">
+       <widget class="QLabel" name="Label13">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Auto Fit</string>
+        </property>
+       </widget>
+      </item>
+      <item row="9" column="4" colspan="3">
+       <widget class="QLabel" name="Label29">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>RT Buffer Size</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="10">
+       <widget class="QLabel" name="Label2">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Plot Style</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="3">
+       <widget class="QComboBox" name="ShowSlip">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <item>
+         <property name="text">
+          <string>OFF</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>LG Jump</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>LLI Flag</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="1" column="7" colspan="3">
+       <widget class="QComboBox" name="ShowErr">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <item>
+         <property name="text">
+          <string>OFF</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Bar/Circle</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Dots</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="7" column="1" colspan="2">
+       <widget class="QLabel" name="Label18">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Elevation Mask (°)</string>
         </property>
        </widget>
       </item>
@@ -1783,166 +1809,60 @@
         </layout>
        </widget>
       </item>
-      <item row="16" column="18">
-       <widget class="QPushButton" name="BtnTLEView">
+      <item row="4" column="4" colspan="3">
+       <widget class="QLabel" name="Label21">
         <property name="enabled">
          <bool>true</bool>
-        </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
         </property>
         <property name="toolTip">
          <string/>
         </property>
         <property name="text">
-         <string/>
-        </property>
-        <property name="icon">
-         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
-          <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
+         <string>Grid/Grid Label</string>
         </property>
        </widget>
       </item>
-      <item row="16" column="19">
-       <widget class="QPushButton" name="BtnTLEFile">
+      <item row="18" column="3">
+       <widget class="QLineEdit" name="ExSats">
         <property name="enabled">
          <bool>true</bool>
-        </property>
-        <property name="palette">
-         <palette>
-          <active>
-           <colorrole role="WindowText">
-            <brush brushstyle="SolidPattern">
-             <color alpha="255">
-              <red>0</red>
-              <green>0</green>
-              <blue>0</blue>
-             </color>
-            </brush>
-           </colorrole>
-          </active>
-          <inactive>
-           <colorrole role="WindowText">
-            <brush brushstyle="SolidPattern">
-             <color alpha="255">
-              <red>0</red>
-              <green>0</green>
-              <blue>0</blue>
-             </color>
-            </brush>
-           </colorrole>
-          </inactive>
-          <disabled>
-           <colorrole role="WindowText">
-            <brush brushstyle="SolidPattern">
-             <color alpha="255">
-              <red>0</red>
-              <green>0</green>
-              <blue>0</blue>
-             </color>
-            </brush>
-           </colorrole>
-          </disabled>
-         </palette>
         </property>
         <property name="toolTip">
          <string/>
         </property>
         <property name="text">
-         <string>...</string>
-        </property>
-        <property name="flat">
-         <bool>false</bool>
+         <string/>
         </property>
        </widget>
       </item>
-      <item row="17" column="18">
-       <widget class="QPushButton" name="BtnTLESatView">
+      <item row="11" column="1">
+       <widget class="QLabel" name="Label28">
         <property name="enabled">
          <bool>true</bool>
-        </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
         </property>
         <property name="toolTip">
          <string/>
         </property>
         <property name="text">
-         <string/>
-        </property>
-        <property name="icon">
-         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
-          <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
+         <string>Max NSAT/DOP</string>
         </property>
        </widget>
       </item>
-      <item row="9" column="19">
-       <widget class="QPushButton" name="BtnFont">
+      <item row="17" column="6" colspan="12">
+       <widget class="QLineEdit" name="TLEFile">
         <property name="enabled">
          <bool>true</bool>
-        </property>
-        <property name="palette">
-         <palette>
-          <active>
-           <colorrole role="WindowText">
-            <brush brushstyle="SolidPattern">
-             <color alpha="255">
-              <red>0</red>
-              <green>0</green>
-              <blue>0</blue>
-             </color>
-            </brush>
-           </colorrole>
-          </active>
-          <inactive>
-           <colorrole role="WindowText">
-            <brush brushstyle="SolidPattern">
-             <color alpha="255">
-              <red>0</red>
-              <green>0</green>
-              <blue>0</blue>
-             </color>
-            </brush>
-           </colorrole>
-          </inactive>
-          <disabled>
-           <colorrole role="WindowText">
-            <brush brushstyle="SolidPattern">
-             <color alpha="255">
-              <red>0</red>
-              <green>0</green>
-              <blue>0</blue>
-             </color>
-            </brush>
-           </colorrole>
-          </disabled>
-         </palette>
         </property>
         <property name="toolTip">
          <string/>
         </property>
         <property name="text">
-         <string>...</string>
-        </property>
-        <property name="flat">
-         <bool>false</bool>
+         <string/>
         </property>
        </widget>
       </item>
-      <item row="16" column="4">
-       <widget class="QLabel" name="Label34">
+      <item row="9" column="7" colspan="2">
+       <widget class="QLineEdit" name="BuffSize">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -1950,113 +1870,32 @@
          <string/>
         </property>
         <property name="text">
-         <string>TLE Data</string>
+         <string>10800</string>
         </property>
        </widget>
       </item>
-      <item row="5" column="19">
-       <widget class="QPushButton" name="BtnColor2">
+      <item row="5" column="12" colspan="6">
+       <widget class="QLabel" name="Color2">
         <property name="enabled">
          <bool>true</bool>
-        </property>
-        <property name="palette">
-         <palette>
-          <active>
-           <colorrole role="WindowText">
-            <brush brushstyle="SolidPattern">
-             <color alpha="255">
-              <red>0</red>
-              <green>0</green>
-              <blue>0</blue>
-             </color>
-            </brush>
-           </colorrole>
-          </active>
-          <inactive>
-           <colorrole role="WindowText">
-            <brush brushstyle="SolidPattern">
-             <color alpha="255">
-              <red>0</red>
-              <green>0</green>
-              <blue>0</blue>
-             </color>
-            </brush>
-           </colorrole>
-          </inactive>
-          <disabled>
-           <colorrole role="WindowText">
-            <brush brushstyle="SolidPattern">
-             <color alpha="255">
-              <red>0</red>
-              <green>0</green>
-              <blue>0</blue>
-             </color>
-            </brush>
-           </colorrole>
-          </disabled>
-         </palette>
         </property>
         <property name="toolTip">
          <string/>
         </property>
+        <property name="layoutDirection">
+         <enum>Qt::LeftToRight</enum>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::Box</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Sunken</enum>
+        </property>
         <property name="text">
-         <string>...</string>
-        </property>
-        <property name="flat">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="19">
-       <widget class="QPushButton" name="BtnColor1">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="palette">
-         <palette>
-          <active>
-           <colorrole role="WindowText">
-            <brush brushstyle="SolidPattern">
-             <color alpha="255">
-              <red>0</red>
-              <green>0</green>
-              <blue>0</blue>
-             </color>
-            </brush>
-           </colorrole>
-          </active>
-          <inactive>
-           <colorrole role="WindowText">
-            <brush brushstyle="SolidPattern">
-             <color alpha="255">
-              <red>0</red>
-              <green>0</green>
-              <blue>0</blue>
-             </color>
-            </brush>
-           </colorrole>
-          </inactive>
-          <disabled>
-           <colorrole role="WindowText">
-            <brush brushstyle="SolidPattern">
-             <color alpha="255">
-              <red>0</red>
-              <green>0</green>
-              <blue>0</blue>
-             </color>
-            </brush>
-           </colorrole>
-          </disabled>
-         </palette>
-        </property>
-        <property name="toolTip">
          <string/>
         </property>
-        <property name="text">
-         <string>...</string>
-        </property>
-        <property name="flat">
-         <bool>false</bool>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
         </property>
        </widget>
       </item>
@@ -2113,6 +1952,137 @@
         </property>
        </widget>
       </item>
+      <item row="6" column="4">
+       <widget class="QLabel" name="Label22">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Scale</string>
+        </property>
+       </widget>
+      </item>
+      <item row="18" column="18">
+       <widget class="QPushButton" name="BtnTLESatView">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="../rtkget_qt/rtkget_qt.qrc">
+          <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="17" column="18">
+       <widget class="QPushButton" name="BtnTLEView">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="../rtkget_qt/rtkget_qt.qrc">
+          <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="7" colspan="3">
+       <widget class="QComboBox" name="ShowCompass">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <item>
+         <property name="text">
+          <string>OFF</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>ON</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="15" column="6" colspan="15">
+       <widget class="QLineEdit" name="QcCmd">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>teqc</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="3">
+       <widget class="QComboBox" name="ShowStats">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <item>
+         <property name="text">
+          <string>OFF</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>ON</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="3" column="4" colspan="2">
+       <widget class="QLabel" name="Label20">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Graph Label</string>
+        </property>
+       </widget>
+      </item>
       <item row="3" column="19">
        <widget class="QPushButton" name="BtnColor4">
         <property name="enabled">
@@ -2166,8 +2136,8 @@
         </property>
        </widget>
       </item>
-      <item row="16" column="6" colspan="12">
-       <widget class="QLineEdit" name="TLEFile">
+      <item row="13" column="12" colspan="9">
+       <widget class="QLineEdit" name="RefCycle">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -2175,12 +2145,12 @@
          <string/>
         </property>
         <property name="text">
-         <string/>
+         <string>100</string>
         </property>
        </widget>
       </item>
-      <item row="17" column="3">
-       <widget class="QLineEdit" name="ExSats">
+      <item row="14" column="6" colspan="2">
+       <widget class="QLineEdit" name="RefPos1">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -2188,11 +2158,11 @@
          <string/>
         </property>
         <property name="text">
-         <string/>
+         <string>0</string>
         </property>
        </widget>
       </item>
-      <item row="17" column="4">
+      <item row="18" column="4">
        <widget class="QLabel" name="Label35">
         <property name="enabled">
          <bool>true</bool>
@@ -2205,8 +2175,8 @@
         </property>
        </widget>
       </item>
-      <item row="17" column="1">
-       <widget class="QLabel" name="LabelExSats">
+      <item row="3" column="1">
+       <widget class="QLabel" name="Label9">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -2214,109 +2184,183 @@
          <string/>
         </property>
         <property name="text">
-         <string>Excluded Sats</string>
+         <string>Show Statistics</string>
         </property>
        </widget>
       </item>
-      <item row="14" column="0" rowspan="3" colspan="4">
-       <widget class="QGroupBox" name="GroupBox1">
+      <item row="11" column="3">
+       <widget class="QComboBox" name="MaxDop">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="toolTip">
          <string/>
         </property>
-        <property name="title">
-         <string>Satellite System</string>
-        </property>
-        <layout class="QGridLayout" name="gridLayout">
-         <item row="0" column="0">
-          <widget class="QCheckBox" name="NavSys1">
-           <property name="toolTip">
-            <string/>
-           </property>
-           <property name="text">
-            <string>GPS</string>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QCheckBox" name="NavSys2">
-           <property name="toolTip">
-            <string/>
-           </property>
-           <property name="text">
-            <string>GLO</string>
-           </property>
-           <property name="checked">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="2">
-          <widget class="QCheckBox" name="NavSys3">
-           <property name="toolTip">
-            <string/>
-           </property>
-           <property name="text">
-            <string>GAL</string>
-           </property>
-           <property name="checked">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QCheckBox" name="NavSys4">
-           <property name="toolTip">
-            <string/>
-           </property>
-           <property name="text">
-            <string>QZS</string>
-           </property>
-           <property name="checked">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QCheckBox" name="NavSys5">
-           <property name="toolTip">
-            <string/>
-           </property>
-           <property name="text">
-            <string>SBS</string>
-           </property>
-           <property name="checked">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="2">
-          <widget class="QCheckBox" name="NavSys6">
-           <property name="toolTip">
-            <string/>
-           </property>
-           <property name="text">
-            <string>BDS</string>
-           </property>
-           <property name="checked">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="3">
-          <widget class="QCheckBox" name="NavSys7">
-           <property name="text">
-            <string>IRN</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
+        <item>
+         <property name="text">
+          <string>10</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>30</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>50</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>100</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>200</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>500</string>
+         </property>
+        </item>
        </widget>
       </item>
-      <item row="8" column="12" colspan="8">
-       <widget class="QComboBox" name="MarkSize">
+      <item row="11" column="4">
+       <widget class="QLabel" name="Label3">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Coordinate Origin</string>
+        </property>
+       </widget>
+      </item>
+      <item row="11" column="7">
+       <widget class="QComboBox" name="Origin">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <item>
+         <property name="text">
+          <string>Start Pos</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>End Pos</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Average Pos</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Linear Fit Pos</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Base Station</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Lat/Lon/Hgt</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Auto Input</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Image Center</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Map Center</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Waypnt1</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Waypnt2</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Waypnt3</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Waypnt4</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Waypnt5</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Waypnt6</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Waypnt7</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Waypnt8</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Waypnt9</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Waypnt10</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="11" column="10">
+       <widget class="QLabel" name="Label11">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Animation Interval</string>
+        </property>
+       </widget>
+      </item>
+      <item row="11" column="12" colspan="8">
+       <widget class="QComboBox" name="AnimCycle">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -2335,16 +2379,6 @@
         </item>
         <item>
          <property name="text">
-          <string>3</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>4</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
           <string>5</string>
          </property>
         </item>
@@ -2355,53 +2389,19 @@
         </item>
         <item>
          <property name="text">
-          <string>15</string>
+          <string>20</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>20</string>
+          <string>50</string>
          </property>
         </item>
-       </widget>
-      </item>
-      <item row="18" column="1">
-       <widget class="QLabel" name="Label36">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>(+Sn: Included)</string>
-        </property>
-       </widget>
-      </item>
-      <item row="9" column="10">
-       <widget class="QLabel" name="LabelFont">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Font</string>
-        </property>
-       </widget>
-      </item>
-      <item row="9" column="12" colspan="7">
-       <widget class="QLabel" name="FontLabel">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Font Name</string>
-        </property>
+        <item>
+         <property name="text">
+          <string>100</string>
+         </property>
+        </item>
        </widget>
       </item>
      </layout>
@@ -2494,7 +2494,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../rtkconv_qt/rtkconv_qt.qrc"/>
+  <include location="../rtkget_qt/rtkget_qt.qrc"/>
  </resources>
  <connections/>
 </ui>

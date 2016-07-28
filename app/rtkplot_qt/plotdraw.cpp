@@ -262,6 +262,7 @@ void Plot::DrawTrk(QPainter &c,int level)
         GraphT->GetCent(xt,yt);
         GraphT->ToPoint(xt,yt,p1);
         GraphT->ToPos(p1,enu[0],enu[1]);
+        enu[2]=0;
         ecef2pos(OPos,opos);
         enu2ecef(opos,enu,rr);
         for (i=0;i<3;i++) rr[i]+=OPos[i];

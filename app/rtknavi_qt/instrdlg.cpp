@@ -47,8 +47,8 @@ InputStrDialog::InputStrDialog(QWidget* parent)
     tcpOptDialog = new TcpOptDialog(this);
     ftpOptDialog = new FtpOptDialog(this);
 
-    NmeaPos1->setValidator(new QDoubleValidator());
-    NmeaPos2->setValidator(new QDoubleValidator());
+    NmeaPos1->setValidator(new QDoubleValidator(this));
+    NmeaPos2->setValidator(new QDoubleValidator(this));
 
     QCompleter *fileCompleter=new QCompleter(this);
     QFileSystemModel *fileModel=new QFileSystemModel(fileCompleter);

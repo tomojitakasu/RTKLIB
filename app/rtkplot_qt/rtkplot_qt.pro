@@ -16,15 +16,15 @@ lessThan(QT_MAJOR_VERSION, 5) {
     DEFINES += QEXTSERIALPORT
 }
 
-#qtHaveModule(webenginewidgets) {
-#    QT+= webenginewidgets
-#    DEFINES+=QWEBENGINE
-#} else {
+qtHaveModule(webenginewidgets) {
+    QT+= webenginewidgets
+    DEFINES+=QWEBENGINE
+} else {
     qtHaveModule(webkitwidgets) {
         QT+= webkitwidgets
         DEFINES+= QWEBKIT
     }
-#}
+}
 include(../../RTKLib.pri)
 
 TARGET = rtkplot_qt

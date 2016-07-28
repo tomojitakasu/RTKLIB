@@ -121,6 +121,8 @@ MainWindow::MainWindow(QWidget *parent)
     dirCompleter->setModel(dirModel);
     OutDir->setCompleter(dirCompleter);
 
+    BtnAbort->setVisible(false);
+
     connect(BtnPlot,SIGNAL(clicked(bool)),this,SLOT(BtnPlotClick()));
     connect(BtnConvert,SIGNAL(clicked(bool)),this,SLOT(BtnConvertClick()));
     connect(BtnOptions,SIGNAL(clicked(bool)),this,SLOT(BtnOptionsClick()));

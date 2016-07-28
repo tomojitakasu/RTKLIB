@@ -169,11 +169,14 @@ MainWindow::MainWindow(QWidget *parent)
 
     SetTrayIcon(1);
 
-    trayMenu=new QMenu();
+    trayMenu=new QMenu(this);
 }
 
 MainWindow::~MainWindow()
 {
+    delete [] Time;   delete [] SolStat; delete [] Nvsat;  delete [] SolRov;
+    delete [] SolRef; delete [] Qr;      delete [] VelRov; delete [] Age;
+    delete [] Ratio;
 }
 
 // callback on form create --------------------------------------------------
@@ -1091,14 +1094,14 @@ void  MainWindow::SvrStart(void)
                      cmds,rcvopts,NmeaCycle,NmeaReq,nmeapos,&PrcOpt,solopt,
                      &monistr)) {
         traceclose();
-        for (i=0;i<8;i++) delete paths[i];
-        for (i=0;i<3;i++) delete rcvopts[i];
-        for (i=0;i<3;i++) delete cmds[i];
+        for (i=0;i<8;i++) delete[] paths[i];
+        for (i=0;i<3;i++) delete[] rcvopts[i];
+        for (i=0;i<3;i++) delete[] cmds[i];
         return;
     }
-    for (i=0;i<8;i++) delete paths[i];
-    for (i=0;i<3;i++) delete rcvopts[i];
-    for (i=0;i<3;i++) delete cmds[i];
+    for (i=0;i<8;i++) delete[] paths[i];
+    for (i=0;i<3;i++) delete[] rcvopts[i];
+    for (i=0;i<3;i++) delete[] cmds[i];
     PSol=PSolS=PSolE=0;
     SolStat[0]=Nvsat[0]=0;
     for (i=0;i<3;i++) SolRov[i]=SolRef[i]=VelRov[i]=0.0;
@@ -1140,7 +1143,7 @@ void  MainWindow::SvrStop(void)
         }
     }
     rtksvrstop(&rtksvr,cmds);
-    for (i=0;i<3;i++) delete cmds[i];
+    for (i=0;i<3;i++) delete[] cmds[i];
     
     BtnStart    ->setVisible(true);
     BtnOpt      ->setEnabled(true);
@@ -1165,7 +1168,7 @@ void  MainWindow::SvrStop(void)
     
     if (DebugTraceF>0) traceclose();
     if (DebugStatusF>0) rtkclosestat();
-    if (OutputGeoidF>0&&GeoidDataFileF!="") closegeoid();
+    if (SolOpt.geoid>0&&GeoidDataFileF!="") closegeoid();
 }
 // callback on interval timer -----------------------------------------------
 void  MainWindow::TimerTimer()

@@ -23,10 +23,10 @@
      connect(BtnKey,SIGNAL(clicked(bool)),this,SLOT(BtnKeyClick()));
      connect(BtnCancel,SIGNAL(clicked(bool)),this,SLOT(reject()));
 
-     PathOffset->setValidator(new QIntValidator());
-     Interval->setValidator(new QIntValidator());
-     Offset->setValidator(new QIntValidator());
-     RetryInterval->setValidator(new QIntValidator());
+     PathOffset->setValidator(new QIntValidator(this));
+     Interval->setValidator(new QIntValidator(this));
+     Offset->setValidator(new QIntValidator(this));
+     RetryInterval->setValidator(new QIntValidator(this));
 }
 //---------------------------------------------------------------------------
 void  FtpOptDialog::showEvent(QShowEvent *event)

@@ -29,7 +29,7 @@
      connect(BtnNtrip,SIGNAL(clicked(bool)),this,SLOT(BtnNtripClick()));
      connect(BtnCancel,SIGNAL(clicked(bool)),this,SLOT(reject()));
 
-     Port->setValidator(new QIntValidator);
+     Port->setValidator(new QIntValidator(this));
 }
 //---------------------------------------------------------------------------
 void  TcpOptDialog::showEvent(QShowEvent* event)

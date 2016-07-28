@@ -78,7 +78,7 @@ extern Plot *plot;
     MarkVis[0]=MarkVis[1]=TrackVis[0]=TrackVis[1]=0;
     MarkPos[0][0]=MarkPos[0][1]=0.0;
     MarkPos[1][0]=MarkPos[1][1]=0.0;
-
+    FixCent=BtnFixCent->isChecked();
 
     connect(BtnClose,SIGNAL(clicked(bool)),this,SLOT(BtnCloseClick()));
     connect(BtnEnaAlt,SIGNAL(clicked(bool)),this,SLOT(BtnEnaAltClick()));

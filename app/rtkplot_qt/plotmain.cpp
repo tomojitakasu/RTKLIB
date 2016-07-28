@@ -94,7 +94,7 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
     nav_t nav0;
     obs_t obs0={0,0,NULL};
     sta_t sta0;
-    gis_t gis0;
+    gis_t gis0={0};
     solstatbuf_t solstat0={0,0,0};
     double ep[]={2000,1,1,0,0,0},xl[2],yl[2];
     double xs[]={-DEFTSPAN/2,DEFTSPAN/2};
@@ -112,6 +112,7 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
     FormWidth=FormHeight=0;
     Drag=0; Xn=Yn=-1; NObs=0;
     IndexObs=NULL;
+    Az=NULL;El=NULL;
     Week=Flush=PlotType=0;
     AnimCycle=1;
     for (i=0;i<2;i++) {
@@ -149,6 +150,7 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
         GraphE[i]=new Graph(Disp);
     }
     GraphS=new Graph(Disp);
+
     GraphR->GetLim(xl,yl);
     GraphR->SetLim(xs,yl);
     
@@ -329,11 +331,29 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
     widget->setAttribute(Qt::WA_TransparentForMouseEvents);
     centralwidget->setAttribute(Qt::WA_TransparentForMouseEvents);
     setMouseTracking(true);
+
+    LoadOpt();
+
     updateTime.start();
 }
 // destructor ---------------------------------------------------------------
 Plot::~Plot()
 {
+    delete [] IndexObs;
+    delete [] Az;
+    delete [] El;
+
+    for (int i=0;i<NFREQ+NEXOBS;i++) delete Mp[i];
+
+    delete GraphT;
+    delete GraphR;
+    delete GraphS;
+    for (int i=0;i<2;i++) {
+        delete GraphE[i];
+    }
+    for (int i=0;i<3;i++) {
+         delete GraphG[i];
+    }
     delete RangeList;
 }
 // callback on form-show ----------------------------------------------------
@@ -343,8 +363,6 @@ void Plot::showEvent (QShowEvent *event)
     QString path1="",path2="";
 
     trace(3,"FormShow\n");
-
-    LoadOpt();
 
 #ifdef QT5
     QCommandLineParser parser;

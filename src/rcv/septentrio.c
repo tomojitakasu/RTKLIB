@@ -63,7 +63,7 @@ static unsigned char locktime[255][32];
 #define ID_GALRAWINAV   4023    /* SBF message id: Galileo raw navigation page or frame */
 #define ID_GALRAWCNAV   4024    /* SBF message id: Galileo raw navigation page or frame */
 #define ID_GLORAWCA     4026    /* SBF message id: GLONASS raw navigation page or frame */
-#define ID_COMPRAW      4047    /* SBF message id: Compass raw navigation page or frame */
+#define ID_CMPRAW       4047    /* SBF message id: Compass raw navigation page or frame */
 #define ID_QZSSL1CA     4066    /* SBF message id: QZSS raw navigation page or frame */
 #define ID_QZSSL2C      4067    /* SBF message id: QZSS raw navigation page or frame */
 #define ID_QZSSL5       4068    /* SBF message id: QZSS raw navigation page or frame */
@@ -196,6 +196,17 @@ static void adj_utcweek(gtime_t time, double *utc)
     utc[3]+=week/256*256;
     if      (utc[3]<week-128) utc[3]+=256.0;
     else if (utc[3]>week+128) utc[3]-=256.0;
+}
+/* adjust daily rollover of time ---------------------------------------------*/
+static gtime_t adjday(gtime_t time, double tod)
+{
+    double ep[6],tod_p;
+    time2epoch(time,ep);
+    tod_p=ep[3]*3600.0+ep[4]*60.0+ep[5];
+    if      (tod<tod_p-43200.0) tod+=86400.0;
+    else if (tod>tod_p+43200.0) tod-=86400.0;
+    ep[3]=ep[4]=ep[5]=0.0;
+    return timeadd(epoch2time(ep),tod);
 }
 
 /* decode SBF measurements message (observables) -----------------------------*/
@@ -831,7 +842,8 @@ static int decode_galnav(raw_t *raw){
     eph_t eph={0};
     double toc;
     int prn, sat;
-    uint16_t week;
+    uint16_t week_oe, week_oc;
+    uint32_t tow;
 
     trace(4,"SBF decode_galnav: len=%d\n",raw->len);
 
@@ -850,6 +862,8 @@ static int decode_galnav(raw_t *raw){
         return -1;
     }
 
+    tow        = U4(puiTmp +  2);
+    eph.week   = U2(puiTmp +  6); /* GAL week number */
     eph.code   = U1(puiTmp +  9)==2?0:1; /* 0:INAV,1:FNAV */
     eph.A      = pow(R8(puiTmp +  10), 2);
     eph.M0     = R8(puiTmp +  18) * PI;
@@ -871,18 +885,28 @@ static int decode_galnav(raw_t *raw){
     eph.f2     = R4(puiTmp + 102);
     eph.f1     = R4(puiTmp + 106);
     eph.f0     = R8(puiTmp + 110);
-    week       = U2(puiTmp + 118); /* WNt_oc */
-    eph.iode   = U2(puiTmp + 122);
-    eph.sva    = U2(puiTmp + 124);
+    week_oe    = U2(puiTmp + 118); /* WNt_oc */
+    week_oc    = U2(puiTmp + 120);
+    eph.iode   =
+    eph.iodc   = U2(puiTmp + 122);
+    if (eph.code==0) /* INAV */
+    {
+        eph.sva    = U1(puiTmp + 128);
+        eph.svh    = (U2(puiTmp + 124)& 0x00ff)^0x0011;
+    } else { /* FNAV */
+        eph.sva    = U1(puiTmp + 127);
+        eph.svh    = (U2(puiTmp + 124)& 0x0f0f)^0x0101;
+    }
+
     eph.tgd[0] = R4(puiTmp + 130);
     eph.tgd[1] = R4(puiTmp + 134);
-    eph.iodc   = eph.iode;
     eph.fit    = 0;
 
-    eph.week=adjgpsweek(week);
-    eph.toe=gpst2time(eph.week,eph.toes);
-    eph.toc=gpst2time(eph.week,toc);
-    eph.ttr=raw->time;
+    week_oe=adjgpsweek(week_oe);
+    week_oc=adjgpsweek(week_oc);
+    eph.toe=gpst2time(week_oe,eph.toes);
+    eph.toc=gpst2time(week_oc,toc);
+    eph.ttr=gpst2time(eph.week,tow/1000);
 
     if (!strstr(raw->opt,"-EPHALL")) {
         if (eph.iode==raw->nav.eph[sat-1].iode) return 0;
@@ -940,7 +964,7 @@ static int decode_glonav(raw_t *raw){
     eph.tof    = raw->time;
     eph.age    = U1(puiTmp +  78);
     eph.svh    = U1(puiTmp +  79);
-    eph.iode   = U2(puiTmp +  80)/15;
+    eph.iode   = U2(puiTmp +  80);
     eph.sva    = U2(puiTmp +  88);
 
     if (!strstr(raw->opt,"-EPHALL")) {
@@ -961,6 +985,7 @@ static int decode_sbasnav(raw_t *raw){
     seph_t eph={0};
     int prn, sat;
     uint16_t week;
+    uint32_t tod,tow;
 
     trace(4,"SBF decode_sbasnav: len=%d\n",raw->len);
 
@@ -978,11 +1003,13 @@ static int decode_sbasnav(raw_t *raw){
 
     if (sat == 0) return -1;
 
-    eph.svh = 0;
     week       = U2(puiTmp +   6);
+    tow        = U4(puiTmp +  2)/1000;
+    tod        = U4(puiTmp +  14);
+    eph.tof    = gpst2time(adjgpsweek(week),tow);
+    eph.t0     = adjday(eph.tof,tod);
     eph.sva    = U2(puiTmp +  12);
-    eph.t0     = gpst2time(week, U4(puiTmp +  14));
-    eph.tof    = adjweek(eph.t0,U4(puiTmp +  2)/1000);
+    eph.svh    = eph.sva==15?1:0;
     eph.pos[0] = R8(puiTmp +  18);
     eph.pos[1] = R8(puiTmp +  26);
     eph.pos[2] = R8(puiTmp +  34);
@@ -1038,6 +1065,7 @@ static int decode_cmpnav(raw_t *raw){
 
     eph.code   = 0;
     eph.sva    = U1(puiTmp + 12);
+    eph.svh    = U1(puiTmp + 13);
     eph.iodc   = U1(puiTmp + 14);
     eph.iode   = U1(puiTmp + 15);
     eph.tgd[0] = R4(puiTmp + 18);
@@ -1360,8 +1388,7 @@ static int decode_galrawinav(raw_t *raw){
 
         pos=type*16;
 
-        for (i=0,j=2;i<14;i++,j+=8) raw->subfrm[sat-1][pos++]=getbitu(buff,j,8);
-        for (i=0,j=116;i<2;i++,j+=8) raw->subfrm[sat-1][pos++]=getbitu(buff,j,8);
+        for (i=0,j=2;i<16;i++,j+=8) raw->subfrm[sat-1][pos++]=getbitu(buff,j,8);
     } else
     { /* E1-B */
         int pos,i;
@@ -1372,8 +1399,7 @@ static int decode_galrawinav(raw_t *raw){
 
         pos=type*16;
 
-        for (i=0,j=116;i<14;i++,j+=8) raw->subfrm[sat-1][pos++]=getbitu(buff,j,8);
-        for (i=0,j=2;i<2;i++,j+=8) raw->subfrm[sat-1][pos++]=getbitu(buff,j,8);
+        for (i=0,j=2;i<16;i++,j+=8) raw->subfrm[sat-1][pos++]=getbitu(buff,j,8);
     };
 
     /* decode galileo inav ephemeris */
@@ -1464,6 +1490,94 @@ static int decode_glorawcanav(raw_t *raw){
     return 2;
 }
 
+/* decode SBF raw nav message (raw navigation data) for COMPASS ---------*/
+static int decode_cmpraw(raw_t *raw){
+    eph_t eph={0};
+    unsigned int words[10];
+    uint8_t *p;
+    int sat,prn;
+    int i,id,pgn;
+
+    p=(raw->buff)+6;
+    prn=U1(p+8)-140;
+    sat=satno(SYS_CMP,prn);
+    if (sat == 0) return -1;
+
+    if (raw->len<60) {
+        trace(2,"SBF decode_cmprawinav length error: sat=%d len=%d\n",sat,raw->len);
+        return -1;
+    }
+
+    if (U1(p+9)!=1) /* CRC test failed */
+    {
+        return -1;
+    }
+    for (i=0;i<10;i++) words[i]=U4(p+12+i*4)&0x3FFFFFFF; /* 30 bits */
+
+    satsys(sat,&prn);
+    id=(words[0]>>12)&0x07; /* subframe id (3bit) */
+    if (id<1||5<id) {
+        trace(2,"SBF decode_cmprawinav length error: sat=%2d\n",sat);
+        return -1;
+    }
+    if (prn>=5) { /* IGSO/MEO */
+
+        for (i=0;i<10;i++) {
+            setbitu(raw->subfrm[sat-1]+(id-1)*38,i*30,30,words[i]);
+        }
+        if (id!=3) return 0;
+
+        /* decode beidou D1 ephemeris */
+        if (!decode_bds_d1(raw->subfrm[sat-1],&eph)) return 0;
+    }
+    else { /* GEO */
+        if (id!=1) return 0;
+
+        /* subframe 1 */
+        pgn=(words[1]>>14)&0x0F; /* page number (4bit) */
+        if (pgn<1||10<pgn) {
+            trace(2,"ubx rawsfrbx page number error: sat=%2d\n",sat);
+            return -1;
+        }
+        for (i=0;i<10;i++) {
+            setbitu(raw->subfrm[sat-1]+(pgn-1)*38,i*30,30,words[i]);
+                }
+                if (pgn!=10) return 0;
+
+                /* decode beidou D2 ephemeris */
+                if (!decode_bds_d2(raw->subfrm[sat-1],&eph)) return 0;
+            }
+            if (!strstr(raw->opt,"-EPHALL")) {
+                if (timediff(eph.toe,raw->nav.eph[sat-1].toe)==0.0) return 0; /* unchanged */
+            }
+            eph.sat=sat;
+            raw->nav.eph[sat-1]=eph;
+            raw->ephsat=sat;
+            return 2;
+}
+
+
+/* decode SBF gloutc --------------------------------------------------------*/
+static int decode_gloutc(raw_t *raw)
+{
+    uint8_t *p=(raw->buff)+8;                 /* points at TOW location */
+
+    trace(4,"SBF decode_gloutc: len=%d\n", raw->len);
+
+    if (raw->len<40)
+    {
+        trace(1,"SBF decode_gloutc: Block too short\n");
+        return -1;
+    }
+
+    /* GPS delta-UTC parameters */
+    raw->nav.utc_glo[0] = R8(p + 16);                                 /*  tau_c */
+    raw->nav.utc_glo[1] = U4(p + 24);                                 /*  B1 */
+    raw->nav.utc_glo[2] = R4(p + 28);                                 /*  B2 */
+    raw->nav.utc_glo[3] = R4(p + 12);                                 /*  tau_GPS */
+
+    return 9;
+}
 /* decode SBF gpsion --------------------------------------------------------*/
 static int decode_gpsion(raw_t *raw){
     uint8_t *p=(raw->buff)+8;            /* points at TOW location */
@@ -1551,7 +1665,7 @@ static int decode_gpsalm(raw_t *raw)
     alm.sat =   satno(SYS_GPS,U1(p + 6));
     alm.e     = R4(p + 8);
     alm.toas  = U4(p + 12);
-    alm.i0    = R4(p + 16) + 0.3;
+    alm.i0    = R4(p + 16);
     alm.OMGd  = R4(p + 20);
     alm.A     = pow(R4(p + 24),2);
     alm.OMG0  = R4(p + 28);
@@ -1993,9 +2107,9 @@ static int decode_sbf(raw_t *raw)
         case ID_GPSION:         return decode_gpsion(raw);
         case ID_GPSUTC:         return decode_gpsutc(raw);
         case ID_GPSALM:         return decode_gpsalm(raw);
-        case ID_GPSRAWCA:       return decode_rawnav(raw,SYS_GPS);
+        case ID_GPSRAWCA:
         case ID_GPSRAWL2C:
-        case ID_GPSRAWL5:       return 0;
+        case ID_GPSRAWL5:       return decode_rawnav(raw,SYS_GPS);
 
         case ID_GEONAV:         return decode_sbasnav(raw);
         case ID_GEORAWL1:
@@ -2004,6 +2118,7 @@ static int decode_sbf(raw_t *raw)
 #ifdef ENAGLO
         case ID_GLONAV:         return decode_glonav(raw);
         case ID_GLORAWCA:       return decode_glorawcanav(raw);
+        case ID_GLOTIME:        return decode_gloutc(raw);
 #endif
 
 #ifdef ENAGAL
@@ -2016,14 +2131,14 @@ static int decode_sbf(raw_t *raw)
 
 #ifdef TESTING /* not tested */
 #ifdef ENAQZS
-        case ID_QZSSL1CA:       return decode_rawnav(raw, SYS_QZS);
+        case ID_QZSSL1CA:
         case ID_QZSSL2C:
-        case ID_QZSSL5:         return 0;
+        case ID_QZSSL5:         return decode_rawnav(raw, SYS_QZS);l
         case ID_QZSS_NAV:       return decode_qzssnav(raw);
 #endif
 
 #ifdef ENACMP
-        case ID_COMPRAW:        return 0; /* TODO */
+        case ID_CMPRAW:         return decode_cmpraw(raw);
         case ID_CMPNAV:         return decode_cmpnav(raw);
 #endif
 #endif
@@ -2040,12 +2155,8 @@ static int decode_sbf(raw_t *raw)
 #endif
 
 #if 0 /* unused */
-        case ID_GALRAWFNAV:
-        case ID_GALRAWINAV:
-        case ID_GALRAWFNAV:     return decode_galrawfnav(raw);
-        case ID_GEORAW:
+        case ID_GALRAWFNAV:     return decode_galrawfnav(raw); /* not yet supported in RTKLIB */
         case ID_GLOALM:         return decode_glosalm(raw); /* not yet supported in RTKLIB */
-        case ID_GLOTime:        return decode_glotime(raw); /* not yet supported in RTKLIB */
 
         case ID_PVTGEOD:        return decode_pvtgeod(raw);
         case ID_RXSETUP:        return decode_rxsetup(raw);

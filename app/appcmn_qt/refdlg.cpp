@@ -19,11 +19,7 @@ RefDialog::RefDialog(QWidget* parent)
 {
     setupUi(this);
 
-	Pos[0]=Pos[1]=Pos[2]=RovPos[0]=RovPos[1]=RovPos[2]=0.0;
-
-    for (int i=0;i<7;i++)
-        for (int j=0;j<2;j++)
-            StaList->setItem(i,j,new QTableWidgetItem(""));
+    Pos[0]=Pos[1]=Pos[2]=RovPos[0]=RovPos[1]=RovPos[2]=0.0;
 
     connect(StaList,SIGNAL(cellDoubleClicked(int,int)),this,SLOT(StaListDblClick(int,int)));
     connect(BtnOK,SIGNAL(clicked(bool)),this,SLOT(BtnOKClick()));
@@ -42,11 +38,17 @@ void  RefDialog::showEvent(QShowEvent* event)
     QStringList columns;
     columns<<tr("No")<<tr("Latitude(%1)").arg(degreeChar)<<tr("Longitude(%1)").arg(degreeChar)<<tr("Height(m)")<<tr("Id")<<tr("Name")<<tr("Dist(km)");
     StaList->setColumnCount(columns.size());
+    StaList->setRowCount(2);
 
-    FontScale=2*physicalDpiX();
-	for (int i=0;i<7;i++) {
+    for (int i=0;i<columns.size();i++)
+        for (int j=0;j<2;j++)
+            StaList->setItem(i,j,new QTableWidgetItem(""));
+
+    FontScale=2*physicalDpiX();    
+    for (int i=0;i<columns.size();i++) {
         StaList->setColumnWidth(i,width[i]*FontScale/96);
-	}
+    }
+
     StaList->setHorizontalHeaderLabels(columns);
 
     LoadList();

@@ -42,7 +42,7 @@ OutputStrDialog::OutputStrDialog(QWidget* parent)
     connect(Stream1C,SIGNAL(clicked(bool)),this,SLOT(Stream1CClick()));
     connect(Stream2C,SIGNAL(clicked(bool)),this,SLOT(Stream2CClick()));
 
-    SwapIntv->setValidator(new QDoubleValidator());
+    SwapIntv->setValidator(new QDoubleValidator(this));
 }
 //---------------------------------------------------------------------------
 void OutputStrDialog::showEvent(QShowEvent *event)

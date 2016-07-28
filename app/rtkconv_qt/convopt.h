@@ -25,7 +25,7 @@ private:
 
     CodeOptDialog *codeOptDialog;
 public:
-    QString CodeMask[6];
+    QString CodeMask[7];
 	
     explicit ConvOptDialog(QWidget *parent);
 };

@@ -58,6 +58,8 @@ MonitorDialog::MonitorDialog(QWidget* parent)
     connect(&timer1,SIGNAL(timeout()),this,SLOT(Timer1Timer()));
     connect(&timer2,SIGNAL(timeout()),this,SLOT(Timer2Timer()));
 
+    TypeF=Type->currentIndex();
+
     timer1.start(1000);
     timer2.start(1000);
 }
@@ -66,7 +68,6 @@ void MonitorDialog::showEvent(QShowEvent *event)
 {
     if (event->spontaneous()) return;
 
-    TypeF=Type->currentIndex();
     Label->setText("");
 
     ClearTable();
@@ -339,7 +340,7 @@ void MonitorDialog::SetRtk(void)
     int width[]={220,380};
 	
     Console->setColumnCount(2);
-    Console->setRowCount(55);
+    Console->setRowCount(56);
     Console->setHorizontalHeaderLabels(header);
 
     for (int i=0;i<Console->columnCount();i++) {
@@ -418,7 +419,7 @@ void MonitorDialog::ShowRtk(void)
     if (rtk.opt.navsys&SYS_IRN) navsys=navsys+tr("IRNSS ");
 
     Label->setText("");
-    if (Console->rowCount()!=55) return;
+    if (Console->rowCount()<56) return;
     Console->setHorizontalHeaderLabels(header);
 
     i=0;
@@ -521,7 +522,7 @@ void MonitorDialog::ShowRtk(void)
     Console->setItem(i++,1, new QTableWidgetItem(rtk.sol.time.time?tstr:"-"));
 	
     Console->setItem(i,0, new QTableWidgetItem(tr("Time Sytem Offset/Receiver Bias (GLO-GPS,GAL-GPS,BDS-GPS,IRN-GPS) (ns)")));
-    Console->setItem(i++,1, new QTableWidgetItem(QString("%1,%2,%3,$f").arg(rtk.sol.dtr[1]*1E9,0,'f',3).arg(rtk.sol.dtr[2]*1E9,0,'f',3).arg(rtk.sol.dtr[3]*1E9,0,'f',3)
+    Console->setItem(i++,1, new QTableWidgetItem(QString("%1,%2,%3,%4").arg(rtk.sol.dtr[1]*1E9,0,'f',3).arg(rtk.sol.dtr[2]*1E9,0,'f',3).arg(rtk.sol.dtr[3]*1E9,0,'f',3)
                                  .arg(rtk.sol.dtr[4]*1E9,0,'f',3)));
 	
     Console->setItem(i,0, new QTableWidgetItem(tr("Solution Interval (s)")));

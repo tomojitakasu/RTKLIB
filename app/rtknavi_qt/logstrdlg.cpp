@@ -47,7 +47,7 @@ LogStrDialog::LogStrDialog(QWidget* parent)
     connect(Stream2C,SIGNAL(clicked(bool)),this,SLOT(Stream2CClick()));
     connect(Stream3C,SIGNAL(clicked(bool)),this,SLOT(Stream3CClick()));
 
-    SwapIntv->setValidator(new QDoubleValidator());
+    SwapIntv->setValidator(new QDoubleValidator(this));
 }
 //---------------------------------------------------------------------------
 void LogStrDialog::showEvent(QShowEvent *event)
