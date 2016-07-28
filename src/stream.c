@@ -49,6 +49,7 @@
 *           2016/06/09 1.17 fix bug on !BRATE rcv command always failed
 *                           fix program on struct alignment in time tag header
 *           2016/06/21 1.18 reverse time-tag handler of file to previous
+*           2016/07/23 1.19 add output of received stream to tcp port for serial
 *-----------------------------------------------------------------------------*/
 #include <ctype.h>
 #include "rtklib.h"
@@ -109,18 +110,6 @@ typedef int socklen_t;
 
 /* type definition -----------------------------------------------------------*/
 
-typedef struct {            /* serial control type */
-    dev_t dev;              /* serial device */
-    int error;              /* error state */
-#ifdef WIN32
-    int state,wp,rp;        /* state,write/read pointer */
-    int buffsize;           /* write buffer size (bytes) */
-    HANDLE thread;          /* write thread */
-    lock_t lock;            /* lock flag */
-    unsigned char *buff;    /* write buffer */
-#endif
-} serial_t;
-
 typedef struct {            /* file control type */
     FILE *fp;               /* file pointer */
     FILE *fp_tag;           /* file pointer of tag file */
@@ -154,7 +143,7 @@ typedef struct {            /* tcp control type */
     unsigned int tdis;      /* disconnect tick */
 } tcp_t;
 
-typedef struct {            /* tcp server type */
+typedef struct tcpsvr_tag { /* tcp server type */
     tcp_t svr;              /* tcp server control */
     tcp_t cli[MAXCLI];      /* tcp client controls */
 } tcpsvr_t;
@@ -164,6 +153,19 @@ typedef struct {            /* tcp cilent type */
     int toinact;            /* inactive timeout (ms) (0:no timeout) */
     int tirecon;            /* reconnect interval (ms) (0:no reconnect) */
 } tcpcli_t;
+
+typedef struct {            /* serial control type */
+    dev_t dev;              /* serial device */
+    int error;              /* error state */
+#ifdef WIN32
+    int state,wp,rp;        /* state,write/read pointer */
+    int buffsize;           /* write buffer size (bytes) */
+    HANDLE thread;          /* write thread */
+    lock_t lock;            /* lock flag */
+    unsigned char *buff;    /* write buffer */
+#endif
+    tcpsvr_t *tcpsvr;       /* tcp server for received stream */
+} serial_t;
 
 typedef struct {            /* ntrip control type */
     int state;              /* state (0:close,1:wait,2:connect) */
@@ -192,6 +194,12 @@ typedef struct {            /* ftp download control type */
     gtime_t tnext;          /* next retry time (gpst) */
     thread_t thread;        /* download thread */
 } ftp_t;
+
+/* proto types for static functions ------------------------------------------*/
+
+static tcpsvr_t *opentcpsvr(const char *path, char *msg);
+static void closetcpsvr(tcpsvr_t *tcpsvr);
+static int writetcpsvr(tcpsvr_t *tcpsvr, unsigned char *buff, int n, char *msg);
 
 /* global options ------------------------------------------------------------*/
 
@@ -277,8 +285,8 @@ static serial_t *openserial(const char *path, int mode, char *msg)
         300,600,1200,2400,4800,9600,19200,38400,57600,115200,230400
     };
     serial_t *serial;
-    int i,brate=9600,bsize=8,stopb=1;
-    char *p,parity='N',dev[128],port[128],fctr[64]="";
+    int i,brate=9600,bsize=8,stopb=1,tcp_port=0;
+    char *p,parity='N',dev[128],port[128],fctr[64]="",path_tcp[32],msg_tcp[128];
 #ifdef WIN32
     DWORD error,rw=0,siz=sizeof(COMMCONFIG);
     COMMCONFIG cc={0};
@@ -301,6 +309,9 @@ static serial_t *openserial(const char *path, int mode, char *msg)
     }
     else strcpy(port,path);
     
+    if ((p=strchr(path,'#'))) {
+        sscanf(p,"#%d",&tcp_port);
+    }
     for (i=0;i<11;i++) if (br[i]==brate) break;
     if (i>=12) {
         sprintf(msg,"bitrate error (%d)",brate);
@@ -362,7 +373,6 @@ static serial_t *openserial(const char *path, int mode, char *msg)
         return NULL;
     }
     sprintf(msg,"%s",port);
-    return serial;
 #else
     sprintf(dev,"/dev/%s",port);
     
@@ -391,8 +401,15 @@ static serial_t *openserial(const char *path, int mode, char *msg)
     tcsetattr(serial->dev,TCSANOW,&ios);
     tcflush(serial->dev,TCIOFLUSH);
     sprintf(msg,"%s",dev);
-    return serial;
 #endif
+    serial->tcpsvr=NULL;
+    
+    /* open tcp sever to output received stream */
+    if (tcp_port>0) {
+        sprintf(path_tcp,":%d",tcp_port);
+        serial->tcpsvr=opentcpsvr(path_tcp,msg_tcp);
+    }
+    return serial;
 }
 /* close serial --------------------------------------------------------------*/
 static void closeserial(serial_t *serial)
@@ -408,11 +425,15 @@ static void closeserial(serial_t *serial)
 #else
     close(serial->dev);
 #endif
+    if (serial->tcpsvr) {
+        closetcpsvr(serial->tcpsvr);
+    }
     free(serial);
 }
 /* read serial ---------------------------------------------------------------*/
 static int readserial(serial_t *serial, unsigned char *buff, int n, char *msg)
 {
+    char msg_tcp[128];
 #ifdef WIN32
     DWORD nr;
 #else
@@ -426,6 +447,11 @@ static int readserial(serial_t *serial, unsigned char *buff, int n, char *msg)
     if ((nr=read(serial->dev,buff,n))<0) return 0;
 #endif
     tracet(5,"readserial: exit dev=%d nr=%d\n",serial->dev,nr);
+    
+    /* write received stream to tcp server port */
+    if (serial->tcpsvr&&nr>0) {
+        writetcpsvr(serial->tcpsvr,buff,(int)nr,msg_tcp);
+    }
     return nr;
 }
 /* write serial --------------------------------------------------------------*/
@@ -1813,7 +1839,7 @@ extern void strinit(stream_t *stream)
     stream->mode=0;
     stream->state=0;
     stream->inb=stream->inr=stream->outb=stream->outr=0;
-    stream->tick=stream->tact=stream->inbt=stream->outbt=0;
+    stream->tick_i=stream->tick_o=stream->tact=stream->inbt=stream->outbt=0;
     initlock(&stream->lock);
     stream->port=NULL;
     stream->path[0]='\0';
@@ -1831,13 +1857,14 @@ extern void strinit(stream_t *stream)
 *
 * stream path ([] options):
 *
-*   STR_SERIAL   port[:brate[:bsize[:parity[:stopb[:fctr]]]]]
+*   STR_SERIAL   port[:brate[:bsize[:parity[:stopb[:fctr[#port]]]]]]
 *                    port  = COM?? (windows), tty??? (linuex, omit /dev/)
 *                    brate = bit rate     (bps)
 *                    bsize = bit size     (7|8)
 *                    parity= parity       (n|o|e)
 *                    stopb = stop bits    (1|2)
 *                    fctr  = flow control (off|rts)
+*                    port  = tcp server port to output received stream
 *   STR_FILE     file_path[::T][::+start][::xseppd][::S=swap]
 *                    ::T   = enable time tag
 *                    start = replay start offset (s)
@@ -1862,7 +1889,7 @@ extern int stropen(stream_t *stream, int type, int mode, const char *path)
     stream->mode=mode;
     strcpy(stream->path,path);
     stream->inb=stream->inr=stream->outb=stream->outr=0;
-    stream->tick=tickget();
+    stream->tick_i=stream->tick_o=tickget();
     stream->inbt=stream->outbt=0;
     stream->msg[0]='\0';
     stream->port=NULL;
@@ -1970,9 +1997,9 @@ extern int strread(stream_t *stream, unsigned char *buff, int n)
     stream->inb+=nr;
     tick=tickget(); if (nr>0) stream->tact=tick;
     
-    if ((int)(tick-stream->tick)>=tirate) {
-        stream->inr=(stream->inb-stream->inbt)*8000/(tick-stream->tick);
-        stream->tick=tick; stream->inbt=stream->inb;
+    if ((int)(tick-stream->tick_i)>=tirate) {
+        stream->inr=(stream->inb-stream->inbt)*8000/(tick-stream->tick_i);
+        stream->tick_i=tick; stream->inbt=stream->inb;
     }
     strunlock(stream);
     return nr;
@@ -2013,9 +2040,9 @@ extern int strwrite(stream_t *stream, unsigned char *buff, int n)
     stream->outb+=ns;
     tick=tickget(); if (ns>0) stream->tact=tick;
     
-    if ((int)(tick-stream->tick)>tirate) {
-        stream->outr=(stream->outb-stream->outbt)*8000/(tick-stream->tick);
-        stream->tick=tick; stream->outbt=stream->outb;
+    if ((int)(tick-stream->tick_o)>tirate) {
+        stream->outr=(stream->outb-stream->outbt)*8000/(tick-stream->tick_o);
+        stream->tick_o=tick; stream->outbt=stream->outb;
     }
     strunlock(stream);
     return ns;
