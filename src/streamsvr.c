@@ -14,6 +14,8 @@
 *           2013/05/08 1.4  fix bug on 1 s offset for javad -> rtcm conversion
 *           2014/10/16 1.5  support input from stdout
 *           2015/12/05 1.6  support rtcm 3 mt 63 beidou ephemeris
+*           2016/07/23 1.7  change api strsvrstart(),strsvrstop()
+*                           support command for output streams
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -363,6 +365,7 @@ static void *strsvrthread(void *arg)
 {
     strsvr_t *svr=(strsvr_t *)arg;
     unsigned int tick,ticknmea;
+    unsigned char buff[1024];
     int i,n;
     
     tracet(3,"strsvrthread:\n");
@@ -384,6 +387,12 @@ static void *strsvrthread(void *arg)
             }
             else {
                 strwrite(svr->stream+i,svr->buff,n);
+            }
+        }
+        /* read data from output streams */
+        for (i=1;i<svr->nstr;i++) {
+            while (strread(svr->stream+i,buff,(int)sizeof(buff))>0) {
+                ;
             }
         }
         /* write nmea messages to input stream */
@@ -457,12 +466,16 @@ extern void strsvrinit(strsvr_t *svr, int nout)
 *              conv[0]= output stream 1 converter
 *              conv[1]= output stream 2 converter
 *              conv[2]= output stream 3 converter
-*          char   *cmd      I   input stream start command (NULL: no cmd)
+*          char   **cmds    I   start commands (NULL: no cmd)
+*              cmds[0]= input stream command
+*              cmds[1]= output stream 1 command
+*              cmds[2]= output stream 2 command
+*              cmds[3]= output stream 3 command
 *          double *nmeapos  I   nmea request position (ecef) (m) (NULL: no)
 * return : status (0:error,1:ok)
 *-----------------------------------------------------------------------------*/
 extern int strsvrstart(strsvr_t *svr, int *opts, int *strs, char **paths,
-                       strconv_t **conv, const char *cmd, const double *nmeapos)
+                       strconv_t **conv, char **cmds, const double *nmeapos)
 {
     int i,rw,stropt[5]={0};
     char file1[MAXSTRPATH],file2[MAXSTRPATH],*p;
@@ -499,13 +512,17 @@ extern int strsvrstart(strsvr_t *svr, int *opts, int *strs, char **paths,
         }
         rw=i==0?STR_MODE_R:STR_MODE_W;
         if (strs[i]!=STR_FILE) rw|=STR_MODE_W;
+        if (strs[i]==STR_SERIAL&&strstr(paths[i],"#")) {
+            rw|=STR_MODE_R;
+        }
         if (stropen(svr->stream+i,strs[i],rw,paths[i])) continue;
         for (i--;i>=0;i--) strclose(svr->stream+i);
         return 0;
     }
-    /* write start command to input stream */
-    if (cmd) strsendcmd(svr->stream,cmd);
-    
+    /* write start commands to input streams */
+    for (i=0;i<svr->nstr;i++) {
+        if (cmds[i]) strsendcmd(svr->stream+i,cmds[i]);
+    }
     /* create stream server thread */
 #ifdef WIN32
     if (!(svr->thread=CreateThread(NULL,0,strsvrthread,svr,0,NULL))) {
@@ -520,15 +537,22 @@ extern int strsvrstart(strsvr_t *svr, int *opts, int *strs, char **paths,
 /* stop stream server ----------------------------------------------------------
 * start stream server
 * args   : strsvr_t *svr    IO  stream server struct
-*          char  *cmd       I   input stop command (NULL: no cmd)
+*          char  **cmds     I   stop commands (NULL: no cmd)
+*              cmds[0]= input stream command
+*              cmds[1]= output stream 1 command
+*              cmds[2]= output stream 2 command
+*              cmds[3]= output stream 3 command
 * return : none
 *-----------------------------------------------------------------------------*/
-extern void strsvrstop(strsvr_t *svr, const char *cmd)
+extern void strsvrstop(strsvr_t *svr, char **cmds)
 {
+    int i;
+    
     tracet(3,"strsvrstop:\n");
     
-    if (cmd) strsendcmd(svr->stream,cmd);
-    
+    for (i=0;i<svr->nstr;i++) {
+        if (cmds[i]) strsendcmd(svr->stream+i,cmds[i]);
+    }
     svr->state=0;
     
 #ifdef WIN32
@@ -550,7 +574,7 @@ extern void strsvrstop(strsvr_t *svr, const char *cmd)
 extern void strsvrstat(strsvr_t *svr, int *stat, int *byte, int *bps, char *msg)
 {
     char s[MAXSTRMSG]="",*p=msg;
-    int i;
+    int i,bps_in;
     
     tracet(4,"strsvrstat:\n");
     
@@ -560,7 +584,7 @@ extern void strsvrstat(strsvr_t *svr, int *stat, int *byte, int *bps, char *msg)
             stat[i]=strstat(svr->stream,s);
         }
         else {
-            strsum(svr->stream+i,NULL,NULL,byte+i,bps+i);
+            strsum(svr->stream+i,NULL,&bps_in,byte+i,bps+i);
             stat[i]=strstat(svr->stream+i,s);
         }
         if (*s) p+=sprintf(p,"(%d) %s ",i,s);

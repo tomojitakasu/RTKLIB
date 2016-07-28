@@ -82,6 +82,9 @@ __published:
 	TBitBtn *BtnStop;
 	TBitBtn *BtnOpt;
 	TBitBtn *BtnExit;
+	TButton *BtnCmd1;
+	TButton *BtnCmd2;
+	TButton *BtnCmd3;
 	void __fastcall BtnExitClick(TObject *Sender);
 	void __fastcall BtnInputClick(TObject *Sender);
 	void __fastcall BtnOutput1Click(TObject *Sender);
@@ -118,13 +121,13 @@ __published:
           int X, int Y);
 private:
 	AnsiString IniFile;
-	AnsiString Paths[4][4],Cmds[2],CmdsTcp[2];
+	AnsiString Paths[4][4],Cmds[4][2],CmdsTcp[4][2];
 	AnsiString TcpHistory[MAXHIST],TcpMntpHist[MAXHIST];
 	AnsiString StaPosFile,ExeDirectory,LocalDirectory,SwapInterval;
 	AnsiString ProxyAddress;
 	AnsiString ConvMsg[3],ConvOpt[3],AntType,RcvType;
 	int ConvEna[3],ConvInp[3],ConvOut[3],StaId,StaSel;
-	int TraceLevel,SvrOpt[6],CmdEna[2],CmdEnaTcp[2],NmeaReq,FileSwapMargin;
+	int TraceLevel,SvrOpt[6],CmdEna[4][2],CmdEnaTcp[4][2],NmeaReq,FileSwapMargin;
 	double AntPos[3],AntOff[3];
 	gtime_t StartTime,EndTime;
 	

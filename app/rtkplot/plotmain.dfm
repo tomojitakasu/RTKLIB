@@ -264,7 +264,7 @@ object Plot: TPlot
       end
       object ConnectMsg: TLabel
         Left = 0
-        Top = 4
+        Top = 5
         Width = 3
         Height = 13
         Alignment = taRightJustify
@@ -342,9 +342,9 @@ object Plot: TPlot
       end
       object StrStatus1: TPanel
         Left = 27
-        Top = 4
+        Top = 7
         Width = 8
-        Height = 16
+        Height = 12
         BevelInner = bvRaised
         BevelOuter = bvLowered
         Color = clWhite
@@ -353,9 +353,9 @@ object Plot: TPlot
       end
       object StrStatus2: TPanel
         Left = 35
-        Top = 4
+        Top = 7
         Width = 8
-        Height = 16
+        Height = 12
         BevelInner = bvRaised
         BevelOuter = bvLowered
         Color = clWhite

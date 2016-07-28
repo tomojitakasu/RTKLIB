@@ -122,7 +122,7 @@ void __fastcall TPlot::UpdateTimeSol(void)
             msgs[data->stat-1]=s.sprintf("%d:%s",data->stat,sol[data->stat]);
         }
     }
-    ShowMsg(msg);
+    ShowMsg(A2U(msg));
     ShowLegend(msgs);
 }
 // update statistics-information for observation-data plot ------------------
@@ -364,13 +364,13 @@ void __fastcall TPlot::UpdatePoint(int x, int y)
         GraphT->ToPos(p,enu[0],enu[1]);
         
         if (PointType==1||norm(OPos,3)<=0.0) {
-            msg.sprintf("E:%+.3f m N:%+.3f m",enu[0],enu[1]);
+            msg.sprintf("E:%+.4f m N:%+.4f m",enu[0],enu[1]);
         }
         else if (PointType==2) {
             r=norm(enu,2);
             az=r<=0.0?0.0:ATAN2(enu[0],enu[1])*R2D;
             if (az<0.0) az+=360.0;
-            msg.sprintf("R:%.3f m D:%5.1f" CHARDEG,r,az);
+            msg.sprintf("R:%.4f m D:%5.1f" CHARDEG,r,az);
         }
         else {
             ecef2pos(OPos,pos);

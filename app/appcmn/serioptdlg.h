@@ -25,11 +25,15 @@ __published:
 	TLabel *Label8;
 	TComboBox *FlowCtr;
 	TButton *BtnCmd;
+	TCheckBox *OutTcpPort;
+	TEdit *TcpPort;
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall BtnOkClick(TObject *Sender);
 	void __fastcall BtnCmdClick(TObject *Sender);
+	void __fastcall OutTcpPortClick(TObject *Sender);
 private:
 	void __fastcall UpdatePortList(void);
+	void __fastcall UpdateEnable(void);
 public:
 	AnsiString Path,Cmds[2];
 	int Opt,CmdEna[2];

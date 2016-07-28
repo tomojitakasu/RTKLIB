@@ -118,12 +118,13 @@ void __fastcall TPlot::DrawTrk(int level)
     }
     if (norm(OPos,3)>0.0) {
         ecef2pos(OPos,opos);
-        header="ORI="+LatLonStr(opos,9)+s.sprintf(" %.4fm",opos[2]);
+        header="ORI="+LatLonStr(opos,9);
+        header+=s.sprintf(" %.4fm",opos[2]);
     }
     if (BtnSol1->Down) {
         pos=SolToPos(SolData,-1,QFlag->ItemIndex,0);
         DrawTrkPnt(pos,level,0);
-        if (BtnShowMap->Down) {
+        if (BtnShowMap->Down&&norm(SolData[0].rb,3)>1E-3) {
             DrawTrkPos(SolData[0].rb,0,8,CColor[2],"Base Station 1");
         }
         DrawTrkStat(pos,header,p++);
@@ -133,7 +134,7 @@ void __fastcall TPlot::DrawTrk(int level)
     if (BtnSol2->Down) {
         pos=SolToPos(SolData+1,-1,QFlag->ItemIndex,0);
         DrawTrkPnt(pos,level,1);
-        if (BtnShowMap->Down) {
+        if (BtnShowMap->Down&&norm(SolData[1].rb,3)>1E-3) {
             DrawTrkPos(SolData[1].rb,0,8,CColor[2],"Base Station 2");
         }
         DrawTrkStat(pos,header,p++);
@@ -1545,7 +1546,7 @@ void __fastcall TPlot::DrawSnr(int level)
             }
             if (level&&i==1&&nrms[i]>0&&ShowStats&&!BtnShowTrack->Down) {
                 ave[i]=ave[i]/nrms[i];
-                rms[i]=sqrt(rms[i]/nrms[i]);
+                rms[i]=SQRT(rms[i]/nrms[i]);
                 GraphG[i]->GetPos(p1,p2);
                 p1.x=p2.x-8; p1.y+=3;
                 DrawLabel(GraphG[i],p1,s.sprintf("AVE=%.4fm RMS=%.4fm",ave[i],
@@ -1723,7 +1724,7 @@ void __fastcall TPlot::DrawSnrE(int level)
         }
         if (btn[1]->Down&&nrms>0&&!BtnShowTrack->Down) {
             ave=ave/nrms;
-            rms=sqrt(rms/nrms);
+            rms=SQRT(rms/nrms);
             GraphE[1]->GetPos(p1,p2);
             p1.x=p2.x-8; p1.y+=6;
             DrawLabel(GraphE[1],p1,s.sprintf("AVE=%.4fm RMS=%.4fm",ave,rms),2,2);

@@ -24,7 +24,7 @@ object ConnectDialog: TConnectDialog
     Caption = 'Stream Type'
   end
   object Label2: TLabel
-    Left = 112
+    Left = 117
     Top = 6
     Width = 18
     Height = 13
@@ -38,7 +38,7 @@ object ConnectDialog: TConnectDialog
     Caption = 'Solution Format'
   end
   object Label4: TLabel
-    Left = 134
+    Left = 140
     Top = 6
     Width = 21
     Height = 13
@@ -125,9 +125,9 @@ object ConnectDialog: TConnectDialog
   end
   object BtnOpt1: TButton
     Left = 114
-    Top = 22
-    Width = 19
-    Height = 19
+    Top = 21
+    Width = 25
+    Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -156,10 +156,10 @@ object ConnectDialog: TConnectDialog
       'Solution Status')
   end
   object BtnCmd1: TButton
-    Left = 134
-    Top = 22
-    Width = 19
-    Height = 19
+    Left = 138
+    Top = 21
+    Width = 25
+    Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -242,9 +242,9 @@ object ConnectDialog: TConnectDialog
   end
   object BtnOpt2: TButton
     Left = 114
-    Top = 46
-    Width = 19
-    Height = 19
+    Top = 45
+    Width = 25
+    Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -256,10 +256,10 @@ object ConnectDialog: TConnectDialog
     OnClick = BtnOpt2Click
   end
   object BtnCmd2: TButton
-    Left = 134
-    Top = 46
-    Width = 19
-    Height = 19
+    Left = 138
+    Top = 45
+    Width = 25
+    Height = 23
     Caption = '...'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText

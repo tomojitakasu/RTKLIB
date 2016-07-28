@@ -570,17 +570,17 @@ static int decode_sol(char *buff, const solopt_t *opt, sol_t *sol, double *rb)
     
     trace(4,"decode_sol: buff=%s\n",buff);
     
-    if (!strncmp(buff,COMMENTH,1)) { /* reference position */
-        if (!strstr(buff,"ref pos")&&!strstr(buff,"slave pos")) return 0;
-        if (!(p=strchr(buff,':'))) return 0;
-        decode_refpos(p+1,opt,rb);
-        return 0;
-    }
     if (test_nmea(buff)) { /* decode nmea */
         return decode_nmea(buff,sol);
     }
     else if (test_solstat(buff)) { /* decode solution status */
         return decode_solsss(buff,sol);
+    }
+    if (!strncmp(buff,COMMENTH,1)) { /* reference position */
+        if (!strstr(buff,"ref pos")&&!strstr(buff,"slave pos")) return 0;
+        if (!(p=strchr(buff,':'))) return 0;
+        decode_refpos(p+1,opt,rb);
+        return 0;
     }
     /* decode position record */
     return decode_solpos(buff,opt,sol);
@@ -840,13 +840,17 @@ extern sol_t *getsol(solbuf_t *solbuf, int index)
 extern void initsolbuf(solbuf_t *solbuf, int cyclic, int nmax)
 {
     gtime_t time0={0};
+    int i;
     
     trace(3,"initsolbuf: cyclic=%d nmax=%d\n",cyclic,nmax);
     
-    solbuf->n=solbuf->nmax=solbuf->start=solbuf->end=0;
+    solbuf->n=solbuf->nmax=solbuf->start=solbuf->end=solbuf->nb=0;
     solbuf->cyclic=cyclic;
     solbuf->time=time0;
     solbuf->data=NULL;
+    for (i=0;i<3;i++) {
+        solbuf->rb[i]=0.0;
+    }
     if (cyclic) {
         if (nmax<=2) nmax=2;
         if (!(solbuf->data=malloc(sizeof(sol_t)*nmax))) {

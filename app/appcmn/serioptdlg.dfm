@@ -4,7 +4,7 @@ object SerialOptDialog: TSerialOptDialog
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Serial Options'
-  ClientHeight = 117
+  ClientHeight = 139
   ClientWidth = 310
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -60,8 +60,8 @@ object SerialOptDialog: TSerialOptDialog
     Caption = 'Flow Control'
   end
   object BtnOk: TButton
-    Left = 126
-    Top = 88
+    Left = 127
+    Top = 109
     Width = 87
     Height = 27
     Caption = '&OK'
@@ -70,8 +70,8 @@ object SerialOptDialog: TSerialOptDialog
     OnClick = BtnOkClick
   end
   object BtnCancel: TButton
-    Left = 216
-    Top = 88
+    Left = 217
+    Top = 109
     Width = 87
     Height = 27
     Caption = '&Cancel'
@@ -84,9 +84,9 @@ object SerialOptDialog: TSerialOptDialog
     Width = 77
     Height = 21
     DropDownCount = 12
-    ItemIndex = 0
+    ItemIndex = 5
     TabOrder = 3
-    Text = '300'
+    Text = '9600'
     Items.Strings = (
       '300'
       '600'
@@ -166,13 +166,29 @@ object SerialOptDialog: TSerialOptDialog
       'RTS/CTS')
   end
   object BtnCmd: TButton
-    Left = 8
-    Top = 88
+    Left = 9
+    Top = 109
     Width = 87
     Height = 27
     Caption = '&Commands...'
     TabOrder = 8
     Visible = False
     OnClick = BtnCmdClick
+  end
+  object OutTcpPort: TCheckBox
+    Left = 10
+    Top = 84
+    Width = 195
+    Height = 17
+    Caption = 'Output Received Stream to  TCP Port :'
+    TabOrder = 9
+    OnClick = OutTcpPortClick
+  end
+  object TcpPort: TEdit
+    Left = 225
+    Top = 82
+    Width = 78
+    Height = 21
+    TabOrder = 10
   end
 end

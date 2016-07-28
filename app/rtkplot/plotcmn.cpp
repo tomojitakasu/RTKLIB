@@ -201,7 +201,7 @@ void __fastcall TPlot::PosToXyz(gtime_t time, const double *rr, int type,
     double opos[3],pos[3],r[3],enu[3];
     int i;
     
-    trace(4,"SolToXyz:\n");
+    trace(4,"PosToXyz:\n");
     
     if (type==0) { // xyz
         for (i=0;i<3;i++) {

@@ -45,6 +45,7 @@
 *           2016/05/25 1.18 fix bug on crc-buffer-overflow by decoding galileo
 *                           navigation data
 *           2016/07/04 1.19 add half-cycle vaild check for ubx-trk-meas
+*           2016/07/23 1.20 support RXM-CFG-TMODE3 (0x06 0x71) for M8P
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -1124,6 +1125,7 @@ extern int input_ubxf(raw_t *raw, FILE *fp)
 *            "CFG-RINV  flag data ..."
 *            "CFG-SMGR  ..."
 *            "CFG-TMODE2 ..."
+*            "CFG-TMODE3 ..."
 *            "CFG-TPS   ..."
 *            "CFG-TXSLOT ..."
 *          unsigned char *buff O binary message
@@ -1138,13 +1140,13 @@ extern int gen_ubx(const char *msg, unsigned char *buff)
         "PRT","USB","MSG","NMEA","RATE","CFG","TP","NAV2","DAT","INF",
         "RST","RXM","ANT","FXN","SBAS","LIC","TM","TM2","TMODE","EKF",
         "GNSS","ITFM","LOGFILTER","NAV5","NAVX5","ODO","PM2","PWR","RINV","SMGR",
-        "TMODE2","TPS","TXSLOT",""
+        "TMODE2","TMODE3","TPS","TXSLOT",""
     };
     const unsigned char id[]={
         0x00,0x1B,0x01,0x17,0x08,0x09,0x07,0x1A,0x06,0x02,
         0x04,0x11,0x13,0x0E,0x16,0x80,0x10,0x19,0x1D,0x12,
         0x3E,0x39,0x47,0x24,0x23,0x1E,0x3B,0x57,0x34,0x62,
-        0x36,0x31,0x53
+        0x36,0x71,0x31,0x53
     };
     const int prm[][32]={
         {FU1,FU1,FU2,FU4,FU4,FU2,FU2,FU2,FU2},    /* PRT */
@@ -1181,6 +1183,7 @@ extern int gen_ubx(const char *msg, unsigned char *buff)
         {FU1,FU1},                                /* RINV */
         {FU1,FU1,FU2,FU2,FU1,FU1,FU2,FU2,FU2,FU2,FU4}, /* SMGR */
         {FU1,FU1,FU2,FI4,FI4,FI4,FU4,FU4,FU4},    /* TMODE2 */
+        {FU1,FU1,FU2,FI4,FI4,FI4,FU4,FU4,FU4},    /* TMODE3 */
         {FU1,FU1,FU1,FU1,FI2,FI2,FU4,FU4,FU4,FU4,FI4,FU4}, /* TPS */
         {FU1,FU1,FU1,FU1,FU4,FU4,FU4,FU4,FU4}     /* TXSLOT */
     };
