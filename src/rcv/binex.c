@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * binex.c : binex dependent functions
 *
-*          Copyright (C) 2013 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2013-2016 by T.TAKASU, All rights reserved.
 *
 * reference :
 *     [1] UNAVCO, BINEX: Binary exchange format
@@ -13,6 +13,7 @@
 *           2013/05/18 1.2 fix bug on decoding obsflags in message 0x7f-05
 *           2014/04/27 1.3 fix bug on decoding iode for message 0x01-02
 *           2015/12/05 1.4 fix bug on decoding tgd for message 0x01-05
+*           2016/07/29 1.5 crc16() -> rtk_crc16()
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -1141,7 +1142,7 @@ static int decode_bnx(raw_t *raw)
     }
     else {
         cs1=U2(raw->buff+raw->len);
-        cs2=crc16(raw->buff+1,raw->len-1);
+        cs2=rtk_crc16(raw->buff+1,raw->len-1);
     }
     if (cs1!=cs2) {
         trace(2,"binex 0x%02X parity error CS=%X %X\n",rec,cs1,cs2);

@@ -115,6 +115,10 @@
 *           2016/06/11 1.35 delete trace() in reppath() to avoid deadlock
 *           2016/07/01 1.36 support IRNSS
 *                           add leap second before 2017/1/1 00:00:00
+*           2016/07/29 1.37 nename api compress() -> rtk_uncompress()
+*                           nename api crc16()    -> rtk_crc16()
+*                           nename api crc24q()   -> rtk_crc24q()
+*                           nename api crc32()    -> rtk_crc32()
 *-----------------------------------------------------------------------------*/
 #define _POSIX_C_SOURCE 199309
 #include <stdarg.h>
@@ -693,7 +697,7 @@ extern unsigned int rtk_crc32(const unsigned char *buff, int len)
     unsigned int crc=0;
     int i,j;
     
-    trace(4,"crc32: len=%d\n",len);
+    trace(4,"rtk_crc32: len=%d\n",len);
     
     for (i=0;i<len;i++) {
         crc^=buff[i];
@@ -710,12 +714,12 @@ extern unsigned int rtk_crc32(const unsigned char *buff, int len)
 * return : crc-24Q parity
 * notes  : see reference [2] A.4.3.3 Parity
 *-----------------------------------------------------------------------------*/
-extern unsigned int crc24q(const unsigned char *buff, int len)
+extern unsigned int rtk_crc24q(const unsigned char *buff, int len)
 {
     unsigned int crc=0;
     int i;
     
-    trace(4,"crc24q: len=%d\n",len);
+    trace(4,"rtk_crc24q: len=%d\n",len);
     
     for (i=0;i<len;i++) crc=((crc<<8)&0xFFFFFF)^tbl_CRC24Q[(crc>>16)^buff[i]];
     return crc;
@@ -727,12 +731,12 @@ extern unsigned int crc24q(const unsigned char *buff, int len)
 * return : crc-16 parity
 * notes  : see reference [10] A.3.
 *-----------------------------------------------------------------------------*/
-extern unsigned short crc16(const unsigned char *buff, int len)
+extern unsigned short rtk_crc16(const unsigned char *buff, int len)
 {
     unsigned short crc=0;
     int i;
     
-    trace(4,"crc16: len=%d\n",len);
+    trace(4,"rtk_crc16: len=%d\n",len);
     
     for (i=0;i<len;i++) {
         crc=(crc<<8)^tbl_CRC16[((crc>>8)^buff[i])&0xFF];
@@ -3778,7 +3782,7 @@ extern int rtk_uncompress(const char *file, char *uncfile)
     int stat=0;
     char *p,cmd[2048]="",tmpfile[1024]="",buff[1024],*fname,*dir="";
     
-    trace(3,"uncompress: file=%s\n",file);
+    trace(3,"rtk_uncompress: file=%s\n",file);
     
     strcpy(tmpfile,file);
     if (!(p=strrchr(tmpfile,'.'))) return 0;
@@ -3838,7 +3842,7 @@ extern int rtk_uncompress(const char *file, char *uncfile)
         if (stat) remove(tmpfile);
         stat=1;
     }
-    trace(3,"uncompress: stat=%d\n",stat);
+    trace(3,"rtk_uncompress: stat=%d\n",stat);
     return stat;
 }
 /* dummy application functions for shared library ----------------------------*/

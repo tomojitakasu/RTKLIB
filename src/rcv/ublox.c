@@ -45,7 +45,8 @@
 *           2016/05/25 1.18 fix bug on crc-buffer-overflow by decoding galileo
 *                           navigation data
 *           2016/07/04 1.19 add half-cycle vaild check for ubx-trk-meas
-*           2016/07/23 1.20 support RXM-CFG-TMODE3 (0x06 0x71) for M8P
+*           2016/07/29 1.20 support RXM-CFG-TMODE3 (0x06 0x71) for M8P
+*                           crc24q() -> rtk_crc24q()
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -743,7 +744,7 @@ static int decode_enav(raw_t *raw, int sat, int off)
     /* test crc (4(pad) + 114 + 82 bits) */
     for (i=0,j=  4;i<15;i++,j+=8) setbitu(crc_buff,j,8,getbitu(buff   ,i*8,8));
     for (i=0,j=118;i<11;i++,j+=8) setbitu(crc_buff,j,8,getbitu(buff+16,i*8,8));
-    if (crc24q(crc_buff,25)!=getbitu(buff+16,82,24)) {
+    if (rtk_crc24q(crc_buff,25)!=getbitu(buff+16,82,24)) {
         trace(2,"ubx rawsfrbx gal page crc error: sat=%2d\n",sat);
         return -1;
     }

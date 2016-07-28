@@ -62,3 +62,9 @@ UPDATE HISTORY
                       add leap second before 2017/1/1 00:00:00
                       support averaging single pos as base position
 2016/07/22  2.4.3 b14 fix a fatal bug for baseline analysis
+2016/07/29  2.4.3 b15 merge Qt port by JensReimann
+                      add output of received stream to tcp port for serial
+                      nename api compress() -> rtk_uncompress()
+                      nename api crc16()    -> rtk_crc16()
+                      nename api crc24q()   -> rtk_crc24q()
+                      nename api crc32()    -> rtk_crc32()

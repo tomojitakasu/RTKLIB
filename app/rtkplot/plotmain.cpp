@@ -701,7 +701,7 @@ void __fastcall TPlot::MenuSrcObsClick(TObject *Sender)
     if (ObsFiles->Count<=0) return;
     
     strcpy(file,U2A(ObsFiles->Strings[0]).c_str());
-    cstat=uncompress(file,tmpfile);
+    cstat=rtk_uncompress(file,tmpfile);
     viewer=new TTextViewer(Application);
     viewer->Caption=ObsFiles->Strings[0];
     viewer->Option=0;

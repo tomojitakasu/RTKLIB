@@ -1575,8 +1575,8 @@ EXPORT int          getbits(const unsigned char *buff, int pos, int len);
 EXPORT void setbitu(unsigned char *buff, int pos, int len, unsigned int data);
 EXPORT void setbits(unsigned char *buff, int pos, int len, int data);
 EXPORT unsigned int rtk_crc32  (const unsigned char *buff, int len);
-EXPORT unsigned int crc24q (const unsigned char *buff, int len);
-EXPORT unsigned short crc16(const unsigned char *buff, int len);
+EXPORT unsigned int rtk_crc24q (const unsigned char *buff, int len);
+EXPORT unsigned short rtk_crc16(const unsigned char *buff, int len);
 EXPORT int decode_word (unsigned int word, unsigned char *data);
 EXPORT int decode_frame(const unsigned char *buff, eph_t *eph, alm_t *alm,
                         double *ion, double *utc, int *leaps);
