@@ -22,6 +22,7 @@
 *           2016/07/16 1.3  modified by T.T
 *                           raw->strfmt -> raw->format
 *                           int free_rt17() -> void free_rt17()
+*           2016/07/29 1.4  suppress warning
 *-----------------------------------------------------------------------------*/
 
 /*
@@ -444,7 +445,7 @@ EXPORT void free_rt17(raw_t *Raw)
     if (Raw->format != STRFMT_RT17)
         return;
  
-    if (rt17 = (rt17_t*) Raw->rcv_data)
+    if ((rt17 = (rt17_t*) Raw->rcv_data))
     {
         if (rt17->MessageBuffer)
         {

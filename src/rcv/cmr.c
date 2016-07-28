@@ -11,6 +11,8 @@
 *           2016/07/16 1.3  modified by T.T
 *                           raw->strfmt -> raw->format
 *                           int free_cmr() -> void free_cmr()
+*           2016/07/29 1.4  fix typo
+*                           suppress warning
 *-----------------------------------------------------------------------------*/
 
 /*
@@ -1378,7 +1380,7 @@ EXPORT void free_cmr(raw_t *Raw)
     if (Raw->format != STRFMT_CMR)
        return;
    
-    if (Cmr = (cmr_t*) Raw->rcv_data)
+    if ((Cmr = (cmr_t*) Raw->rcv_data))
     {
         if (Cmr->Buffer)
         {
@@ -2119,7 +2121,6 @@ static int DecodeBuffer(raw_t *Raw)
 static int DecodeCmrType0(raw_t *Raw)
 {
     cmr_t *Cmr = (cmr_t*) Raw->rcv_data;
-    obsbd_t *t4 = (obsbd_t*) Cmr->T4Data;
     unsigned char *p = (unsigned char*) &Cmr->MessageBuffer[4];
     unsigned int L1Flags, L2Flags, nsat = ubitn(p+1,0,5), Slot, StationID = ubitn(p,0,5);
     gtime_t CmrTime = CmrTimeToGtime(ubitn(p+4,6,18));
@@ -2501,7 +2502,7 @@ static int ReferenceCmrObs(raw_t *Raw, gtime_t Time, unsigned char Type, double 
     rtksvr_t *Svr = Cmr->Svr;
     nav_t *Nav = (Svr) ? &Svr->nav : &Raw->nav;
     obsd_t *obs = &Raw->obs.data[Raw->obs.n];
-    double L0, L1WaveLength, L2WaveLength;
+    double L0, L1WaveLength = L1_WAVELENGTH, L2WaveLength = L2_WAVELENGTH;
 
     if (Type == CMR_TYPE_0)
     {

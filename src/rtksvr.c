@@ -336,15 +336,10 @@ static int decoderaw(rtksvr_t *svr, int index)
                   time_str(obs->data[0].time,0),obs->n);
         }
 #endif
-
-#if 1 /* 2.4.3 b13 */
-        
         /* update cmr rover observations cache */
-        if (svr->format[0]==STRFMT_CMR&svr->format[1]==STRFMT_CMR&&
-            index==0&&ret==1) {
+        if (svr->format[1]==STRFMT_CMR&&index==0&&ret==1) {
             update_cmr(&svr->raw[1],svr,obs);
         }
-#endif
         /* update rtk server */
         if (ret>0) updatesvr(svr,ret,obs,nav,sat,sbsmsg,index,fobs);
         
@@ -982,7 +977,7 @@ extern int rtksvrmark(rtksvr_t *svr, const char *name, const char *comment)
 {
     char buff[MAXSOLMSG+1],tstr[32],*p,*q;
     double tow,pos[3];
-    int i,sum,week,qstat;
+    int i,sum,week;
     
     tracet(4,"rtksvrmark:name=%s comment=%s\n",name,comment);
     
