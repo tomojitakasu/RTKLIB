@@ -58,7 +58,7 @@ extern "C" {
 
 #define VER_RTKLIB  "2.4.3"             /* library version */
 
-#define PATCH_LEVEL "b14"               /* patch level */
+#define PATCH_LEVEL "b15"               /* patch level */
 
 #define COPYRIGHT_RTKLIB \
             "Copyright (C) 2007-2016 by T.Takasu\nAll rights reserved."
@@ -1226,7 +1226,9 @@ typedef struct {        /* stream type */
     int state;          /* state (-1:error,0:close,1:open) */
     unsigned int inb,inr;   /* input bytes/rate */
     unsigned int outb,outr; /* output bytes/rate */
-    unsigned int tick,tact; /* tick/active tick */
+    unsigned int tick_i; /* input tick tick */
+    unsigned int tick_o; /* output tick */
+    unsigned int tact;  /* active tick */
     unsigned int inbt,outbt; /* input/output bytes at tick */
     lock_t lock;        /* lock flag */
     void *port;         /* type dependent port control struct */
@@ -1775,9 +1777,8 @@ EXPORT int postpos(gtime_t ts, gtime_t te, double ti, double tu,
 /* stream server functions ---------------------------------------------------*/
 EXPORT void strsvrinit (strsvr_t *svr, int nout);
 EXPORT int  strsvrstart(strsvr_t *svr, int *opts, int *strs, char **paths,
-                        strconv_t **conv, const char *cmd,
-                        const double *nmeapos);
-EXPORT void strsvrstop (strsvr_t *svr, const char *cmd);
+                        strconv_t **conv, char **cmds, const double *nmeapos);
+EXPORT void strsvrstop (strsvr_t *svr, char **cmds);
 EXPORT void strsvrstat (strsvr_t *svr, int *stat, int *byte, int *bps, char *msg);
 EXPORT strconv_t *strconvnew(int itype, int otype, const char *msgs, int staid,
                              int stasel, const char *opt);
