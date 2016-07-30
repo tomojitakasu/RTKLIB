@@ -373,13 +373,13 @@ void Plot::UpdatePoint(int x, int y)
         GraphT->ToPos(p,enu[0],enu[1]);
 
         if (PointType==1||norm(OPos,3)<=0.0) {
-            msg=QString("E:%1 m N:%2 m").arg(enu[0],0,'f',3).arg(enu[1],0,'f',3);
+            msg=QString("E:%1 m N:%2 m").arg(enu[0],0,'f',4).arg(enu[1],0,'f',4);
         }
         else if (PointType==2) {
             r=norm(enu,2);
             az=r<=0.0?0.0:ATAN2(enu[0],enu[1])*R2D;
             if (az<0.0) az+=360.0;
-            msg=QString("R:%1 m D:%2%3").arg(r,0,'f',3).arg(az,5,'f',5).arg(degreeChar);
+            msg=QString("R:%1 m D:%2%3").arg(r,0,'f',4).arg(az,5,'f',5).arg(degreeChar);
         }
         else {
             ecef2pos(OPos,pos);

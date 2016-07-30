@@ -27,6 +27,9 @@
     connect(BtnCmd,SIGNAL(clicked()),this,SLOT(BtnCmdClick()));
     connect(BtnOk,SIGNAL(clicked(bool)),this,SLOT(BtnOkClick()));
     connect(BtnCancel,SIGNAL(clicked(bool)),this,SLOT(reject()));
+    connect(OutTcpPort,SIGNAL(clicked(bool)),this,SLOT(OutTcpPortClick()));
+
+    UpdateEnable();
 }
 //---------------------------------------------------------------------------
 void  SerialOptDialog::showEvent(QShowEvent *event)
@@ -52,9 +55,28 @@ void  SerialOptDialog::showEvent(QShowEvent *event)
     StopBits->setCurrentIndex(tokens.at(4)=="1"?0:1);
 
     if (tokens.size()<6) return;
-    FlowCtr->setCurrentIndex(tokens.at(5)=="off"?0:tokens.at(5)=="rts"?1:2);
+    FlowCtr->setCurrentIndex(tokens.at(5).contains("off")?0:tokens.at(5).contains("rts")?1:2);
+
+    QStringList tokens2=tokens.at(5).split('#');
+    bool okay;
 
     BtnCmd->setVisible(Opt);
+
+    if (tokens2.size()==2) {
+        int port=tokens2.at(1).toInt(&okay);
+        if (okay) {
+            OutTcpPort->setChecked(true);
+            TcpPort->setValue(port);
+        }
+        UpdateEnable();
+
+        return;
+    };
+
+    OutTcpPort->setChecked(false);
+    TcpPort->setValue(-1);
+
+    UpdateEnable();
 }
 //---------------------------------------------------------------------------
 void  SerialOptDialog::BtnCmdClick()
@@ -82,6 +104,10 @@ void  SerialOptDialog::BtnOkClick()
             .arg(ByteSize->currentIndex()?8:7).arg(parity[Parity->currentIndex()])
             .arg(StopBits->currentIndex()?2:1).arg(fctr[FlowCtr->currentIndex()]);
 
+    if (OutTcpPort->isChecked()) {
+        Path+=QString("#%1").arg(TcpPort->value());
+    }
+
     accept();
 }
 //---------------------------------------------------------------------------
@@ -105,3 +131,12 @@ void  SerialOptDialog::UpdatePortList(void)
 #endif
 }
 //---------------------------------------------------------------------------
+void SerialOptDialog::UpdateEnable(void)
+{
+    TcpPort->setEnabled(OutTcpPort->isChecked());
+}
+//---------------------------------------------------------------------------
+void SerialOptDialog::OutTcpPortClick()
+{
+    UpdateEnable();
+}

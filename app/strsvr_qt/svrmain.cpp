@@ -111,6 +111,9 @@ MainForm::MainForm(QWidget *parent)
     connect(BtnStop,SIGNAL(clicked(bool)),this,SLOT(BtnStopClick()));
     connect(BtnOpt,SIGNAL(clicked(bool)),this,SLOT(BtnOptClick()));
     connect(BtnCmd,SIGNAL(clicked(bool)),this,SLOT(BtnCmdClick()));
+    connect(BtnCmd1,SIGNAL(clicked(bool)),this,SLOT(BtnCmdClick()));
+    connect(BtnCmd2,SIGNAL(clicked(bool)),this,SLOT(BtnCmdClick()));
+    connect(BtnCmd3,SIGNAL(clicked(bool)),this,SLOT(BtnCmdClick()));
     connect(BtnAbout,SIGNAL(clicked(bool)),this,SLOT(BtnAboutClick()));
     connect(BtnStrMon,SIGNAL(clicked(bool)),this,SLOT(BtnStrMonClick()));
     connect(BtnOutput1,SIGNAL(clicked(bool)),this,SLOT(BtnOutput1Click()));
@@ -275,33 +278,43 @@ void MainForm::BtnCmdClick()
 {
     CmdOptDialog *cmdOptDialog= new CmdOptDialog(this);
 
-    if (Input->currentIndex()==0) {
-        cmdOptDialog->Cmds[0]=Cmds[0];
-        cmdOptDialog->Cmds[1]=Cmds[1];
-        cmdOptDialog->CmdEna[0]=CmdEna[0];
-        cmdOptDialog->CmdEna[1]=CmdEna[1];
+
+    QPushButton *btn[]={BtnCmd,BtnCmd1,BtnCmd2,BtnCmd3};
+    QComboBox *type[]={Input,Output1,Output2,Output3};
+    int i;
+
+    for (i=0;i<4;i++) {
+        if (btn[i]==qobject_cast<QPushButton*>(sender())) break;
+    }
+    if (i>=4) return;
+
+    if (type[i]->currentText()==tr("Serial")) {
+        cmdOptDialog->Cmds[0]=Cmds[i][0];
+        cmdOptDialog->Cmds[1]=Cmds[i][1];
+        cmdOptDialog->CmdEna[0]=CmdEna[i][0];
+        cmdOptDialog->CmdEna[1]=CmdEna[i][1];
     }
     else {
-        cmdOptDialog->Cmds[0]=CmdsTcp[0];
-        cmdOptDialog->Cmds[1]=CmdsTcp[1];
-        cmdOptDialog->CmdEna[0]=CmdEnaTcp[0];
-        cmdOptDialog->CmdEna[1]=CmdEnaTcp[1];
+        cmdOptDialog->Cmds[0]=CmdsTcp[i][0];
+        cmdOptDialog->Cmds[1]=CmdsTcp[i][1];
+        cmdOptDialog->CmdEna[0]=CmdEnaTcp[i][0];
+        cmdOptDialog->CmdEna[1]=CmdEnaTcp[i][1];
     }
 
     cmdOptDialog->exec();
 
     if (cmdOptDialog->result()!=QDialog::Accepted) return;
-    if (Input->currentIndex()==0) {
-        Cmds[0]  =cmdOptDialog->Cmds[0];
-        Cmds[1]  =cmdOptDialog->Cmds[1];
-        CmdEna[0]=cmdOptDialog->CmdEna[0];
-        CmdEna[1]=cmdOptDialog->CmdEna[1];
+    if (type[i]->currentText()==tr("Serial")) {
+        Cmds[i][0]  =cmdOptDialog->Cmds[0];
+        Cmds[i][1]  =cmdOptDialog->Cmds[1];
+        CmdEna[i][0]=cmdOptDialog->CmdEna[0];
+        CmdEna[i][1]=cmdOptDialog->CmdEna[1];
     }
     else {
-        CmdsTcp[0]  =cmdOptDialog->Cmds[0];
-        CmdsTcp[1]  =cmdOptDialog->Cmds[1];
-        CmdEnaTcp[0]=cmdOptDialog->CmdEna[0];
-        CmdEnaTcp[1]=cmdOptDialog->CmdEna[1];
+        CmdsTcp[i][0]  =cmdOptDialog->Cmds[0];
+        CmdsTcp[i][1]  =cmdOptDialog->Cmds[1];
+        CmdEnaTcp[i][0]=cmdOptDialog->CmdEna[0];
+        CmdEnaTcp[i][1]=cmdOptDialog->CmdEna[1];
     }
 
     delete cmdOptDialog;
@@ -480,7 +493,7 @@ void MainForm::Output3Change()
 // callback on interval timer -----------------------------------------------
 void MainForm::Timer1Timer()
 {
-    QColor color[]={Qt::red,Qt::gray,CLORANGE,Qt::green,QColor(0x00,0xff,0x00)};
+    QColor color[]={Qt::red,Qt::gray,CLORANGE,Qt::green,QColor(0x00,0xff,0x00),QColor(0xff,0xff,0x00)};
     QLabel *e0[]={IndInput,IndOutput1,IndOutput2,IndOutput3};
     QLabel *e1[]={InputByte,Output1Byte,Output2Byte,Output3Byte};
     QLabel *e2[]={InputBps,Output1Bps,Output2Bps,Output3Bps};
@@ -534,7 +547,7 @@ void MainForm::SvrStart(void)
     };
     int ip[]={0,1,1,1,2,3,3},strs[4]={0},opt[7]={0},n;
     char *paths[4],filepath[1024],buff[1024];
-    char cmd[1024];
+    char *cmds[4];
     char *ant[3]={0},*rcv[3]={0},*p;
     FILE *fp;
     
@@ -554,11 +567,14 @@ void MainForm::SvrStart(void)
     strcpy(paths[2],!Output2->currentIndex()?"":qPrintable(Paths[2][ip[Output2->currentIndex()-1]]));
     strcpy(paths[3],!Output3->currentIndex()?"":qPrintable(Paths[3][ip[Output3->currentIndex()-1]]));
     
-    if (Input->currentIndex()==0) {
-        if (CmdEna[0]) strncpy(cmd,qPrintable(Cmds[0]),1024);
-    }
-    else if (Input->currentIndex()==1||Input->currentIndex()==3) {
-        if (CmdEnaTcp[0]) strncpy(cmd,qPrintable(CmdsTcp[0]),1024);
+    for (int i=0;i<4;i++) {
+        cmds[i]=new char[1024];
+        if (strs[i]==STR_SERIAL) {
+            if (CmdEna[i][0]) strncpy(cmds[i],qPrintable(Cmds[i][0]),1024);
+        }
+        else if (strs[i]==STR_TCPCLI||strs[i]==STR_NTRIPCLI) {
+            if (CmdEnaTcp[i][0]) strncpy(cmds[i],qPrintable(CmdsTcp[i][0]),1024);
+        }
     }
     for (int i=0;i<5;i++) {
         opt[i]=SvrOpt[i];
@@ -596,8 +612,10 @@ void MainForm::SvrStart(void)
         matcpy(conv[i]->out.sta.del,AntOff,3,1);
     }
     // stream server start
-    if (!strsvrstart(&strsvr,opt,strs,paths,conv,cmd,AntPos)) return;
+    if (!strsvrstart(&strsvr,opt,strs,paths,conv,cmds,AntPos)) return;
     
+    for (int i=0;i<4;i++) delete cmds[i];
+
     StartTime=utc2gpst(timeget());
     Panel1    ->setEnabled(false);
     BtnStart  ->setVisible(false);
@@ -612,15 +630,30 @@ void MainForm::SvrStart(void)
 // stop stream server -------------------------------------------------------
 void MainForm::SvrStop(void)
 {
-    char cmd[1024];
+    char *cmds[4];
+    int itype[]={
+        STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPCLI,STR_FILE,STR_FTP,STR_HTTP
+    };
+    int otype[]={
+        STR_NONE,STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPSVR,STR_FILE
+    };
+    int strs[4];
     
-    if (Input->currentIndex()==0) {
-        if (CmdEna[1]) strncpy(cmd,qPrintable(Cmds[1]),1024);
+    strs[0]=itype[Input->currentIndex()];
+    strs[1]=otype[Output1->currentIndex()];
+    strs[2]=otype[Output2->currentIndex()];
+    strs[3]=otype[Output3->currentIndex()];
+
+    for (int i=0;i<4;i++) {
+        cmds[i]=new char[1024];
+        if (strs[i]==STR_SERIAL) {
+            if (CmdEna[i][1]) strncpy(cmds[i],qPrintable(Cmds[i][1]),1024);
+        }
+        else if (strs[i]==STR_TCPCLI||strs[i]==STR_NTRIPCLI) {
+            if (CmdEnaTcp[i][1]) strncpy(cmds[i],qPrintable(CmdsTcp[i][1]),1024);
+        }
     }
-    else if (Input->currentIndex()==1||Input->currentIndex()==3) {
-        if (CmdEnaTcp[1]) strncpy(cmd,qPrintable(CmdsTcp[1]),1024);
-    }
-    strsvrstop(&strsvr,cmd);
+    strsvrstop(&strsvr,cmds);
     
     EndTime=utc2gpst(timeget());
     Panel1    ->setEnabled(true);
@@ -634,6 +667,7 @@ void MainForm::SvrStop(void)
     SetTrayIcon(0);
     
     for (int i=0;i<3;i++) {
+        delete cmds[i];
         if (ConvEna[i]) strconvfree(strsvr.conv[i]);
     }
     if (TraceLevel>0) traceclose();
@@ -723,6 +757,9 @@ void MainForm::UpdateEnable(void)
     BtnOutput1->setEnabled(Output1->currentIndex()>0);
     BtnOutput2->setEnabled(Output2->currentIndex()>0);
     BtnOutput3->setEnabled(Output3->currentIndex()>0);
+    BtnCmd1   ->setEnabled(BtnOutput1->isEnabled()&&(Output1->currentIndex()==1||Output1->currentIndex()==2));
+    BtnCmd2   ->setEnabled(BtnOutput2->isEnabled()&&(Output2->currentIndex()==1||Output2->currentIndex()==2));
+    BtnCmd3   ->setEnabled(BtnOutput3->isEnabled()&&(Output3->currentIndex()==1||Output3->currentIndex()==2));
     BtnConv1  ->setEnabled(BtnOutput1->isEnabled());
     BtnConv2  ->setEnabled(BtnOutput2->isEnabled());
     BtnConv3  ->setEnabled(BtnOutput3->isEnabled());
@@ -765,21 +802,24 @@ void MainForm::LoadOpt(void)
         ConvMsg[i]=settings.value (QString("conv/msg_%1").arg(i),"").toString();
         ConvOpt[i]=settings.value (QString("conv/opt_%1").arg(i),"").toString();
     }
-    for (int i=0;i<2;i++) {
-        CmdEna   [i]=settings.value(QString("serial/cmdena_%1").arg(i),1).toInt();
-        CmdEnaTcp[i]=settings.value(QString("tcpip/cmdena_%1").arg(i),1).toInt();
-    }
+    for (int i=0;i<4;i++)
+        for (int j=0;j<2;j++) {
+            CmdEna   [i][j]=settings.value(QString("serial/cmdena_%1_%2").arg(i).arg(j),1).toInt();
+            CmdEnaTcp[i][j]=settings.value(QString("tcpip/cmdena_%1_%2").arg(i).arg(j),1).toInt();
+        }
     for (int i=0;i<4;i++) for (int j=0;j<4;j++) {
         Paths[i][j]=settings.value(QString("path/path_%1_%2").arg(i).arg(j),"").toString();
     }
-    for (int i=0;i<2;i++) {
-        Cmds[i]=settings.value(QString("serial/cmd_%1").arg(i),"").toString();
-        Cmds[i]=Cmds[i].replace("@@","\n");
-    }
-    for (int i=0;i<2;i++) {
-        CmdsTcp[i]=settings.value(QString("tcpip/cmd_%1").arg(i),"").toString();
-        CmdsTcp[i]=CmdsTcp[i].replace("@@","\n");
-    }
+    for (int i=0;i<4;i++)
+        for (int j=0;j<2;j++) {
+            Cmds[i][j]=settings.value(QString("serial/cmd_%1_%2").arg(i).arg(j),"").toString();
+            Cmds[i][j]=Cmds[i][j].replace("@@","\n");
+        }
+    for (int i=0;i<4;i++)
+        for (int j=0;j<2;j++) {
+            CmdsTcp[i][j]=settings.value(QString("tcpip/cmd_%1_%2").arg(i).arg(j),"").toString();
+            CmdsTcp[i][j]=CmdsTcp[i][j].replace("@@","\n");
+        }
     for (int i=0;i<MAXHIST;i++) {
         TcpHistory[i]=settings.value(QString("tcpopt/history%1").arg(i),"").toString();
     }
@@ -824,21 +864,24 @@ void MainForm::SaveOpt(void)
         settings.setValue(QString("conv/msg_%1").arg(i),ConvMsg[i]);
         settings.setValue(QString("conv/opt_%1").arg(i),ConvOpt[i]);
     }
-    for (int i=0;i<2;i++) {
-        settings.setValue(QString("serial/cmdena_%1").arg(i),CmdEna   [i]);
-        settings.setValue(QString("tcpip/cmdena_%1").arg(i),CmdEnaTcp[i]);
-    }
+    for (int i=0;i<4;i++)
+        for (int j=0;j<2;j++) {
+            settings.setValue(QString("serial/cmdena_%1_%2").arg(i).arg(j),CmdEna  [i][j]);
+            settings.setValue(QString("tcpip/cmdena_%1_%2").arg(i).arg(j),CmdEnaTcp[i][j]);
+        }
     for (int i=0;i<4;i++) for (int j=0;j<4;j++) {
         settings.setValue(QString("path/path_%1_%2").arg(i).arg(j),Paths[i][j]);
     }
-    for (int i=0;i<2;i++) {
-        Cmds[i]=Cmds[i].replace("\n","@@");
-        settings.setValue(QString("serial/cmd_%1").arg(i),Cmds[i]);
-    }
-    for (int i=0;i<2;i++) {
-        CmdsTcp[i]=CmdsTcp[i].replace("\n","@@");
-        settings.setValue(QString("tcpip/cmd_%1").arg(i),CmdsTcp[i]);
-    }
+    for (int i=0;i<4;i++)
+        for (int j=0;j<2;j++) {
+            Cmds[j][i]=Cmds[j][i].replace("\n","@@");
+            settings.setValue(QString("serial/cmd_%1_%2").arg(i).arg(j),Cmds[i][j]);
+        }
+    for (int i=0;i<4;i++)
+        for (int j=0;j<2;j++) {
+            CmdsTcp[j][i]=CmdsTcp[j][i].replace("\n","@@");
+            settings.setValue(QString("tcpip/cmd_%1_%2").arg(i).arg(j),CmdsTcp[i][j]);
+        }
     for (int i=0;i<MAXHIST;i++) {
         settings.setValue(QString("tcpopt/history%1").arg(i),tcpOptDialog->History[i]);
     }

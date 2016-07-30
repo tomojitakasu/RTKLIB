@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>540</width>
-    <height>156</height>
+    <height>207</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -265,7 +265,7 @@
      </item>
     </widget>
    </item>
-   <item row="7" column="0" colspan="4">
+   <item row="8" column="0" colspan="4">
     <widget class="QWidget" name="widget" native="true">
      <layout class="QHBoxLayout" name="horizontalLayout">
       <property name="leftMargin">
@@ -326,6 +326,16 @@
        </widget>
       </item>
      </layout>
+    </widget>
+   </item>
+   <item row="7" column="3">
+    <widget class="QSpinBox" name="TcpPort"/>
+   </item>
+   <item row="7" column="0" colspan="3">
+    <widget class="QCheckBox" name="OutTcpPort">
+     <property name="text">
+      <string>Output Received Stream to  TCP Port :</string>
+     </property>
     </widget>
    </item>
   </layout>

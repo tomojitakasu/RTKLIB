@@ -126,14 +126,14 @@ void Plot::DrawTrk(QPainter &c,int level)
     if (BtnSol1->isChecked()) {
         pos=SolToPos(SolData,-1,QFlag->currentIndex(),0);
         DrawTrkPnt(c,pos,level,0);
-        if (BtnShowMap->isChecked()) {
+        if (BtnShowMap->isChecked()&&norm(SolData[0].rb,3)>1E-3) {
             DrawTrkPos(c,SolData[0].rb,0,8,CColor[2],tr("Base Station 1"));
         }
         DrawTrkStat(c,pos,header,p++);
         header="";
         delete pos;
     }
-    if (BtnSol2->isChecked()) {
+    if (BtnSol2->isChecked()&&norm(SolData[1].rb,3)>1E-3) {
         pos=SolToPos(SolData+1,-1,QFlag->currentIndex(),0);
         DrawTrkPnt(c,pos,level,1);
         if (BtnShowMap->isChecked()) {
@@ -510,7 +510,7 @@ void Plot::DrawTrkVel(QPainter &c,const TIMEPOS *vel)
     trace(3,"DrawTrkVel\n");
     
     if (vel&&vel->n>0) {
-        if ((v=sqrt(SQR(vel->x[0])+SQR(vel->y[0])))>1.0) {
+        if ((v=SQRT(SQR(vel->x[0])+SQR(vel->y[0])))>1.0) {
             dir=ATAN2(vel->x[0],vel->y[0])*R2D;
         }
     }
@@ -1549,7 +1549,7 @@ void Plot::DrawSnr(QPainter &c,int level)
             }
             if (level&&i==1&&nrms[i]>0&&ShowStats&&!BtnShowTrack->isChecked()) {
                 ave[i]=ave[i]/nrms[i];
-                rms[i]=sqrt(rms[i]/nrms[i]);
+                rms[i]=SQRT(rms[i]/nrms[i]);
                 GraphG[i]->GetPos(p1,p2);
                 p1.rx()=p2.x()-8; p1.ry()+=3;
                 DrawLabel(GraphG[i],c,p1,QString("AVE=%1m RMS=%2m").arg(ave[i],0,'f',4)
@@ -1730,7 +1730,7 @@ void Plot::DrawSnrE(QPainter &c,int level)
         }
         if (btn[1]->isChecked()&&nrms>0&&!BtnShowTrack->isChecked()) {
             ave=ave/nrms;
-            rms=sqrt(rms/nrms);
+            rms=SQRT(rms/nrms);
             GraphE[1]->GetPos(p1,p2);
             p1.setX(p2.x()-8); p1.ry()+=6;
             DrawLabel(GraphE[1],c,p1,QString("AVE=%1m RMS=%2m").arg(ave,0,'f',4).arg(rms,0,'f',4),2,2);
