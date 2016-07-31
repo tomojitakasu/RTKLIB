@@ -294,35 +294,67 @@ void __fastcall TPlot::DrawTrkImage(int level)
     TRect r(p1,p2);
     c->StretchDraw(r,MapImage);
 }
+// check in boundrary --------------------------------------------------------
+#define P_IN_B(pos,bound) \
+    (pos[0]>=bound[0]&&pos[0]<=bound[1]&&pos[1]>=bound[2]&&pos[1]<=bound[3])
+
+#define B_IN_B(bound1,bound2) \
+    (bound1[0]<=bound2[1]&&bound1[1]>=bound2[0]&&bound1[2]<=bound2[3]&&bound1[3]>=bound2[2])
+
 // draw gis-map on track-plot -----------------------------------------------
 void __fastcall TPlot::DrawTrkMap(int level)
 {
     gisd_t *data;
+    gis_pnt_t *pnt;
+    gis_poly_t *poly;
+    gis_polygon_t *polygon;
     gtime_t time={0};
     TColor color;
     TPoint *p,p1;
-    double xyz[3],S;
+    double xyz[3],S,xl[2],yl[2],enu[6][3]={{0}},opos[3],pos[3],rr[3];
+    double bound[4]={PI/2.0,-PI/2.0,PI,-PI};
     int i,j,n,m;
     
     trace(3,"DrawTrkMap: level=%d\n",level);
     
+    // get map boundary
+    GraphT->GetLim(xl,yl);
+    enu[0][0]=xl[0]; enu[0][1]=yl[0];
+    enu[1][0]=xl[1]; enu[1][1]=yl[0];
+    enu[2][0]=xl[0]; enu[2][1]=yl[1];
+    enu[3][0]=xl[1]; enu[3][1]=yl[1];
+    enu[4][0]=(xl[0]+xl[1])/2.0; enu[4][1]=yl[0];
+    enu[5][0]=(xl[0]+xl[1])/2.0; enu[5][1]=yl[1];
+    ecef2pos(OPos,opos);
+    for (i=0;i<6;i++) {
+        enu2ecef(opos,enu[i],rr);
+        for (j=0;j<3;j++) rr[j]+=OPos[j];
+        ecef2pos(rr,pos);
+        if (pos[0]<bound[0]) bound[0]=pos[0]; // min lat
+        if (pos[0]>bound[1]) bound[1]=pos[0]; // max lat
+        if (pos[1]<bound[2]) bound[2]=pos[1]; // min lon
+        if (pos[1]>bound[3]) bound[3]=pos[1]; // max lon
+    }
     for (i=MAXMAPLAYER-1;i>=0;i--) {
         if (!Gis.flag[i]) continue;
         
         for (data=Gis.data[i];data;data=data->next) {
             if (data->type==1) { // point
-                PosToXyz(time,((gis_pnt_t *)data->data)->pos,0,xyz);
+                pnt=(gis_pnt_t *)data->data;
+                if (!P_IN_B(pnt->pos,bound)) continue;
+                PosToXyz(time,pnt->pos,0,xyz);
                 GraphT->ToPoint(xyz[0],xyz[1],p1);
                 DrawMark(GraphT,p1,1,CColor[2],6,0);
                 DrawMark(GraphT,p1,0,CColor[2],2,0);
             }
             else if (level&&data->type==2) { // polyline
-                if ((n=((gis_poly_t *)data->data)->npnt)<=0) {
+                poly=(gis_poly_t *)data->data;
+                if ((n=poly->npnt)<=0||!B_IN_B(poly->bound,bound)) {
                     continue;
                 }
                 p=new TPoint [n];
                 for (j=m=0;j<n;j++) {
-                    PosToXyz(time,((gis_poly_t *)data->data)->pos+j*3,0,xyz);
+                    PosToXyz(time,poly->pos+j*3,0,xyz);
                     GraphT->ToPoint(xyz[0],xyz[1],p1);
                     if (m==0||p1.x!=p[m-1].x||p1.y!=p[m-1].y) {
                         p[m++]=p1;
@@ -332,12 +364,13 @@ void __fastcall TPlot::DrawTrkMap(int level)
                 delete [] p;
             }
             else if (level&&data->type==3) { // polygon
-                if ((n=((gis_polygon_t *)data->data)->npnt)<=0) {
+                polygon=(gis_polygon_t *)data->data;
+                if ((n=polygon->npnt)<=0||!B_IN_B(polygon->bound,bound)) {
                     continue;
                 }
                 p=new TPoint [n];
                 for (j=m=0;j<n;j++) {
-                    PosToXyz(time,((gis_polygon_t *)data->data)->pos+j*3,0,xyz);
+                    PosToXyz(time,polygon->pos+j*3,0,xyz);
                     GraphT->ToPoint(xyz[0],xyz[1],p1);
                     if (m==0||p1.x!=p[m-1].x||p1.y!=p[m-1].y) {
                         p[m++]=p1;

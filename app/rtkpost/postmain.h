@@ -186,7 +186,7 @@ public:
 	int OutCntResetAmb,FixCntHoldAmb,LockCntFixAmb,RovPosType,RefPosType;
 	int SatEphem,NavSys;
 	int RovAntPcv,RefAntPcv,AmbRes,GloAmbRes,BdsAmbRes;
-	int OutputHead,OutputOpt,OutputDatum;
+	int OutputHead,OutputOpt,OutputSingle,OutputDatum;
 	int OutputHeight,OutputGeoid,DebugTrace,DebugStatus,BaseLineConst;
 	int SolFormat,TimeFormat,LatLonFormat,IntpRefObs,NetRSCorr,SatClkCorr;
 	int SbasCorr,SbasCorr1,SbasCorr2,SbasCorr3,SbasCorr4,TimeDecimal;
@@ -199,6 +199,7 @@ public:
 	double ValidThresAR,ElMaskAR,ElMaskHold,SlipThres;
 	double ThresAR2,ThresAR3;
 	double RovPos[3],RefPos[3],BaseLine[2];
+	double MaxSolStd;
 	snrmask_t SnrMask;
 	exterr_t ExtErr;
 	

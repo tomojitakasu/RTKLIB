@@ -41,6 +41,7 @@
 *                            fix bug on satellite id of $GAGSA
 *           2016/01/17  1.14 support reading NMEA GxZDA
 *                            ignore NMEA talker ID
+*           2016/07/30  1.15 suppress output if std is over opt->maxsolstd
 *-----------------------------------------------------------------------------*/
 #include <ctype.h>
 #include "rtklib.h"
@@ -1477,6 +1478,14 @@ extern int outsolheads(unsigned char *buff, const solopt_t *opt)
     }
     return p-(char *)buff;
 }
+/* std-dev of soltuion -------------------------------------------------------*/
+static double sol_std(const sol_t *sol)
+{
+    /* approximate as max std-dev of 3-axis std-devs */
+    if (sol->qr[0]>sol->qr[1]&&sol->qr[0]>sol->qr[2]) return SQRT(sol->qr[0]);
+    if (sol->qr[1]>sol->qr[2]) return SQRT(sol->qr[1]);
+    return SQRT(sol->qr[2]);
+}
 /* output solution body --------------------------------------------------------
 * output solution body to buffer
 * args   : unsigned char *buff IO output buffer
@@ -1497,6 +1506,10 @@ extern int outsols(unsigned char *buff, const sol_t *sol, const double *rb,
     
     trace(3,"outsols :\n");
     
+    /* suppress output if std is over opt->maxsolstd */
+    if (opt->maxsolstd>0.0&&sol_std(sol)>opt->maxsolstd) {
+        return 0;
+    }
     if (opt->posf==SOLF_NMEA) {
         if (opt->nmeaintv[0]<0.0) return 0;
         if (!screent(sol->time,ts,ts,opt->nmeaintv[0])) return 0;
@@ -1545,6 +1558,10 @@ extern int outsolexs(unsigned char *buff, const sol_t *sol, const ssat_t *ssat,
     
     trace(3,"outsolexs:\n");
     
+    /* suppress output if std is over opt->maxsolstd */
+    if (opt->maxsolstd>0.0&&sol_std(sol)>opt->maxsolstd) {
+        return 0;
+    }
     if (opt->posf==SOLF_NMEA) {
         if (opt->nmeaintv[1]<0.0) return 0;
         if (!screent(sol->time,ts,ts,opt->nmeaintv[1])) return 0;

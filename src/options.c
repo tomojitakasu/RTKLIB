@@ -22,6 +22,7 @@
 *           2015/11/26  1.7  modify pos1-frequency 4:l1+l2+l5+l6 -> l1+l5
 *           2015/12/05  1.8  add misc-pppopt
 *           2016/06/10  1.9  add ant2-maxaveep,ant2-initrst
+*           2016/07/31  1.10 add out-outsingle,out-maxsolstd
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -115,6 +116,8 @@ EXPORT opt_t sysopts[]={
     {"out-timendec",    0,  (void *)&solopt_.timeu,      ""     },
     {"out-degform",     3,  (void *)&solopt_.degf,       DFTOPT },
     {"out-fieldsep",    2,  (void *) solopt_.sep,        ""     },
+    {"out-outsingle",   3,  (void *)&prcopt_.outsingle,  SWTOPT },
+    {"out-maxsolstd",   1,  (void *)&solopt_.maxsolstd,  "m"    },
     {"out-height",      3,  (void *)&solopt_.height,     HGTOPT },
     {"out-geoid",       3,  (void *)&solopt_.geoid,      GEOOPT },
     {"out-solstatic",   3,  (void *)&solopt_.solstatic,  STAOPT },

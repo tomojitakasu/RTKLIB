@@ -803,6 +803,7 @@ void __fastcall TMainWindow::ConvertFile(void)
     for (i=0;i<6;i++) strcpy(rnxopt.mask[i],CodeMask[i].c_str());
     rnxopt.autopos=AutoPos;
     rnxopt.scanobs=ScanObs;
+    rnxopt.halfcyc=HalfCyc;
     rnxopt.outiono=OutIono;
     rnxopt.outtime=OutTime;
     rnxopt.outleaps=OutLeaps;
@@ -917,6 +918,7 @@ void __fastcall TMainWindow::LoadOpt(void)
     CodeMask[5]         =ini->ReadString ("opt","codemask_6",mask);
     AutoPos             =ini->ReadInteger("opt","autopos",     0);
     ScanObs             =ini->ReadInteger("opt","scanobs",     0);
+    HalfCyc             =ini->ReadInteger("opt","halfcyc",     0);
     OutIono             =ini->ReadInteger("opt","outiono",     0);
     OutTime             =ini->ReadInteger("opt","outtime",     0);
     OutLeaps            =ini->ReadInteger("opt","outleaps",    0);
@@ -1007,6 +1009,7 @@ void __fastcall TMainWindow::SaveOpt(void)
     ini->WriteString ("opt","codemask_6", CodeMask[5]);
     ini->WriteInteger("opt","autopos",    AutoPos);
     ini->WriteInteger("opt","scanobs",    ScanObs);
+    ini->WriteInteger("opt","halfcyc",    HalfCyc);
     ini->WriteInteger("opt","outiono",    OutIono);
     ini->WriteInteger("opt","outtime",    OutTime);
     ini->WriteInteger("opt","outleaps",   OutLeaps);

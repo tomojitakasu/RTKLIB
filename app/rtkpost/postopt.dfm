@@ -452,7 +452,7 @@ object OptDialog: TOptDialog
       ImageIndex = 1
       ExplicitLeft = 0
       ExplicitTop = 0
-      ExplicitWidth = 426
+      ExplicitWidth = 0
       ExplicitHeight = 0
       object Label25: TLabel
         Left = 24
@@ -720,10 +720,6 @@ object OptDialog: TOptDialog
     object TabSheet3: TTabSheet
       Caption = 'O&utput'
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object LabelSolFormat: TLabel
         Left = 24
         Top = 9
@@ -741,23 +737,23 @@ object OptDialog: TOptDialog
       object LabelLatLonFormat: TLabel
         Left = 24
         Top = 75
-        Width = 133
+        Width = 209
         Height = 13
-        Caption = 'Latitude / Longitude Format'
+        Caption = 'Latitude Longitude Format / Field Separator'
       end
       object LabelFieldSep: TLabel
         Left = 24
         Top = 97
-        Width = 73
+        Width = 215
         Height = 13
-        Caption = 'Field Separator'
+        Caption = 'Output Single if Sol Outage / Max Sol Std (m)'
       end
       object Label2: TLabel
         Left = 24
         Top = 119
-        Width = 66
+        Width = 72
         Height = 13
-        Caption = 'Datum/Height'
+        Caption = 'Datum / Height'
       end
       object Label18: TLabel
         Left = 24
@@ -769,16 +765,16 @@ object OptDialog: TOptDialog
       object Label20: TLabel
         Left = 24
         Top = 31
-        Width = 167
+        Width = 210
         Height = 13
-        Caption = 'Output Header/Processing Options'
+        Caption = 'Output Header / Output Processing Options'
       end
       object Label36: TLabel
         Left = 24
         Top = 211
-        Width = 180
+        Width = 217
         Height = 13
-        Caption = 'Output Solution Status / Debug Trace'
+        Caption = 'Output Solution Status / Output Debug Trace'
       end
       object Label21: TLabel
         Left = 24
@@ -829,20 +825,20 @@ object OptDialog: TOptDialog
       object LatLonFormat: TComboBox
         Left = 260
         Top = 72
-        Width = 138
+        Width = 105
         Height = 21
         Style = csDropDownList
         ItemIndex = 0
         TabOrder = 4
-        Text = 'ddd.ddddddd'
+        Text = 'ddd.dddddd'
         Items.Strings = (
-          'ddd.ddddddd'
-          'ddd mm ss.sss')
+          'ddd.dddddd'
+          'ddd mm ss.ss')
       end
       object FieldSep: TEdit
-        Left = 260
-        Top = 94
-        Width = 138
+        Left = 368
+        Top = 72
+        Width = 31
         Height = 21
         TabOrder = 5
       end
@@ -948,7 +944,7 @@ object OptDialog: TOptDialog
       object TimeDecimal: TEdit
         Left = 368
         Top = 50
-        Width = 30
+        Width = 31
         Height = 21
         TabOrder = 11
         Text = '3'
@@ -983,6 +979,27 @@ object OptDialog: TOptDialog
         Items.Strings = (
           'All'
           'Single')
+      end
+      object OutputSingle: TComboBox
+        Left = 260
+        Top = 94
+        Width = 69
+        Height = 21
+        Style = csDropDownList
+        ItemIndex = 0
+        TabOrder = 15
+        Text = 'OFF'
+        Items.Strings = (
+          'OFF'
+          'ON')
+      end
+      object MaxSolStd: TEdit
+        Left = 331
+        Top = 94
+        Width = 68
+        Height = 21
+        TabOrder = 16
+        Text = '0'
       end
     end
     object TabSheet4: TTabSheet
@@ -1171,6 +1188,10 @@ object OptDialog: TOptDialog
     object TabSheet5: TTabSheet
       Caption = '&Positions'
       ImageIndex = 4
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label4: TLabel
         Left = 12
         Top = 12
@@ -1813,7 +1834,7 @@ object OptDialog: TOptDialog
       ImageIndex = 6
       ExplicitLeft = 0
       ExplicitTop = 0
-      ExplicitWidth = 426
+      ExplicitWidth = 0
       ExplicitHeight = 0
       object Label19: TLabel
         Left = 184

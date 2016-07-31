@@ -35,6 +35,7 @@
 *                            add *.stec and *.trp file for ppp correction
 *           2015/11/26  1.18 support opt->freqopt(disable L2)
 *           2016/01/12  1.19 add carrier-phase bias correction by ssr
+*           2016/07/31  1.20 fix error message problem in rnx2rtkp
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -660,12 +661,12 @@ static int readobsnav(gtime_t ts, gtime_t te, double ti, char **infile,
     }
     if (obs->n<=0) {
         checkbrk("error : no obs data");
-        trace(1,"no obs data\n");
+        trace(1,"\n");
         return 0;
     }
     if (nav->n<=0&&nav->ng<=0&&nav->ns<=0) {
         checkbrk("error : no nav data");
-        trace(1,"no nav data\n");
+        trace(1,"\n");
         return 0;
     }
     /* sort observation data */

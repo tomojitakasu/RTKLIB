@@ -850,6 +850,7 @@ int __fastcall TMainForm::GetOption(prcopt_t &prcopt, solopt_t &solopt,
     prcopt.maxtdiff =MaxAgeDiff;
     prcopt.maxgdop  =RejectGdop;
     prcopt.maxinno  =RejectThres;
+    prcopt.outsingle=OutputSingle;
     if (BaseLineConst) {
         prcopt.baseline[0]=BaseLine[0];
         prcopt.baseline[1]=BaseLine[1];
@@ -909,6 +910,7 @@ int __fastcall TMainForm::GetOption(prcopt_t &prcopt, solopt_t &solopt,
     solopt.degf     =LatLonFormat;
     solopt.outhead  =OutputHead;
     solopt.outopt   =OutputOpt;
+    solopt.maxsolstd=MaxSolStd;
     solopt.datum    =OutputDatum;
     solopt.height   =OutputHeight;
     solopt.geoid    =OutputGeoid;
@@ -1212,6 +1214,8 @@ void __fastcall TMainForm::LoadOpt(void)
     FieldSep           =ini->ReadString ("opt","fieldsep",      "");
     OutputHead         =ini->ReadInteger("opt","outputhead",     1);
     OutputOpt          =ini->ReadInteger("opt","outputopt",      1);
+    OutputSingle       =ini->ReadInteger("opt","outputsingle",   0);
+    MaxSolStd          =ini->ReadFloat  ("opt","maxsolstd",    0.0);
     OutputDatum        =ini->ReadInteger("opt","outputdatum",    0);
     OutputHeight       =ini->ReadInteger("opt","outputheight",   0);
     OutputGeoid        =ini->ReadInteger("opt","outputgeoid",    0);
@@ -1420,6 +1424,8 @@ void __fastcall TMainForm::SaveOpt(void)
     ini->WriteString ("opt","fieldsep",    FieldSep    );
     ini->WriteInteger("opt","outputhead",  OutputHead  );
     ini->WriteInteger("opt","outputopt",   OutputOpt   );
+    ini->WriteInteger("opt","outputsingle",OutputSingle);
+    ini->WriteFloat  ("opt","maxsolstd",   MaxSolStd   );
     ini->WriteInteger("opt","outputdatum", OutputDatum );
     ini->WriteInteger("opt","outputheight",OutputHeight);
     ini->WriteInteger("opt","outputgeoid", OutputGeoid );

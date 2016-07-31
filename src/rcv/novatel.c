@@ -46,6 +46,7 @@
 *           2014/10/20 1.11 fix bug on receiver option -GL*,-RL*,-EL*
 *           2016/01/28 1.12 precede I/NAV for galileo ephemeris
 *                           add option -GALINAV and -GALFNAV
+*           2016/07/31 1.13 add week number check to decode oem4 messages
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -1295,7 +1296,10 @@ static int decode_oem4(raw_t *raw)
         return -1;
     }
     msg =(U1(raw->buff+6)>>4)&0x3;
-    week=adjgpsweek(U2(raw->buff+14));
+    if (!(week=U2(raw->buff+14))) {
+        return -1;
+    }
+    week=adjgpsweek(week);
     tow =U4(raw->buff+16)*0.001;
     raw->time=gpst2time(week,tow);
     

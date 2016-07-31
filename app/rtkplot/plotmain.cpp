@@ -2168,9 +2168,9 @@ void __fastcall TPlot::UpdateOrigin(void)
         OPos[i]=opos[i];
         OVel[i]=ovel[i];
     }
-    ecef2pos(OPos,pos);
-    GoogleEarthView->SetView(pos[0]*R2D,pos[1]*R2D,0.0,0.0);
-    GoogleMapView->SetView(pos[0]*R2D,pos[1]*R2D,13);
+//    ecef2pos(OPos,pos);
+//    GoogleEarthView->SetCent(pos[0]*R2D,pos[1]*R2D);
+//    GoogleMapView->SetCent(pos[0]*R2D,pos[1]*R2D);
 }
 // update satellite mask ----------------------------------------------------
 void __fastcall TPlot::UpdateSatMask(void)

@@ -8,6 +8,7 @@
 *
 * version : $Revision:$ $Date:$
 * history : 2016/06/10 1.0  new
+*           2016/07/31 1.1  add boundary of polyline and polygon
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -54,6 +55,14 @@ static int read_shape_head(FILE *fp)
         return -1;
     }
     return I4_L(buff+32);
+}
+/* initialize boundary -------------------------------------------------------*/
+static void init_bound(double *bound)
+{
+    bound[0]= PI/2.0;
+    bound[1]=-PI/2.0;
+    bound[2]= PI;
+    bound[3]=-PI;
 }
 /* update boundary -----------------------------------------------------------*/
 static void update_bound(const double *pos, double *bound)
@@ -148,6 +157,8 @@ static int read_poly(FILE *fp, double *bound, gisd_t **p)
             free(part);
             return 0;
         }
+        init_bound(poly->bound);
+        
         for (j=n=0;j<nr;j++) {
             if (fread(buff,16,1,fp)!=1) {
                 free(poly->pos);
@@ -160,6 +171,7 @@ static int read_poly(FILE *fp, double *bound, gisd_t **p)
             if (pos[0]<-1E16||pos[1]<-1E16) {
                 continue;
             }
+            update_bound(pos,poly->bound);
             update_bound(pos,bound);
             pos2ecef(pos,poly->pos+n*3);
             n++;
@@ -208,6 +220,8 @@ static int read_polygon(FILE *fp, double *bound, gisd_t **p)
             free(part);
             return 0;
         }
+        init_bound(polygon->bound);
+        
         for (j=n=0;j<nr;j++) {
             if (fread(buff,16,1,fp)!=1) {
                 free(polygon->pos);
@@ -220,6 +234,7 @@ static int read_polygon(FILE *fp, double *bound, gisd_t **p)
             if (pos[0]<-1E16||pos[1]<-1E16) {
                 continue;
             }
+            update_bound(pos,polygon->bound);
             update_bound(pos,bound);
             pos2ecef(pos,polygon->pos+n*3);
             n++;
@@ -326,10 +341,7 @@ extern int gis_read(const char *file, gis_t *gis, int layer)
         fclose(fp_idx);
         return 0;
     }
-    gis->bound[0]= PI/2.0;
-    gis->bound[1]=-PI/2.0;
-    gis->bound[2]= PI;
-    gis->bound[3]=-PI;
+    init_bound(gis->bound);
     
     /* read records */
     if (!gis_read_record(fp,fp_idx,type1,gis->bound,gis->data+layer)) {

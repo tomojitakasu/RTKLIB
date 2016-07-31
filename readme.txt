@@ -68,3 +68,9 @@ UPDATE HISTORY
                       nename api crc16()    -> rtk_crc16()
                       nename api crc24q()   -> rtk_crc24q()
                       nename api crc32()    -> rtk_crc32()
+2016/07/31  2.4.3 b16 fix several bugs
+                      improve draw speed of gis data in rtkplot
+                      add tcp output option of input stream from serial output
+                      add command of serial output
+                      add out-outsingle, out-maxsolstd options
+                      add commands for u-blox M8P

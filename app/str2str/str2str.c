@@ -196,12 +196,12 @@ static void readcmd(const char *file, char *cmd, int type)
 /* str2str -------------------------------------------------------------------*/
 int main(int argc, char **argv)
 {
-    static char cmds[MAXSTR][MAXRCVCMD]={"","","","",""};
+    static char cmd_strs[MAXSTR][MAXRCVCMD]={"","","","",""};
     const char ss[]={'E','-','W','C','C'};
     strconv_t *conv[MAXSTR]={NULL};
     double pos[3],stapos[3]={0},stadel[3]={0};
     char *paths[MAXSTR],s[MAXSTR][MAXSTRPATH]={{0}};
-    char *cmdfile[MAXSTR]={"","","","",""};
+    char *cmdfile[MAXSTR]={"","","","",""},*cmds[MAXSTR];
     char *local="",*proxy="",*msg="1004,1019",*opt="",buff[256],*p;
     char strmsg[MAXSTRMSG]="",*antinfo="",*rcvinfo="";
     char *ant[]={"","",""},*rcv[]={"","",""};
@@ -209,8 +209,10 @@ int main(int argc, char **argv)
     int types[MAXSTR]={STR_FILE,STR_FILE},stat[MAXSTR]={0},byte[MAXSTR]={0};
     int bps[MAXSTR]={0},fmts[MAXSTR]={0},sta=0;
     
-    for (i=0;i<MAXSTR;i++) paths[i]=s[i];
-    
+    for (i=0;i<MAXSTR;i++) {
+        paths[i]=s[i];
+        cmds[i]=cmd_strs[i];
+    }
     for (i=1;i<argc;i++) {
         if (!strcmp(argv[i],"-in")&&i+1<argc) {
             if (!decodepath(argv[++i],types,paths[0],fmts)) return -1;
@@ -301,7 +303,7 @@ int main(int argc, char **argv)
     strsetproxy(proxy);
     
     for (i=0;i<MAXSTR;i++) {
-        if (*cmdfile[i]) readcmd(cmdfile[i],cmds+i,0);
+        if (*cmdfile[i]) readcmd(cmdfile[i],cmds[i],0);
     }
     /* start stream server */
     if (!strsvrstart(&strsvr,opts,types,paths,conv,cmds,stapos)) {
@@ -322,7 +324,7 @@ int main(int argc, char **argv)
         sleepms(dispint);
     }
     for (i=0;i<MAXSTR;i++) {
-        if (*cmdfile[i]) readcmd(cmdfile[i],cmds+i,1);
+        if (*cmdfile[i]) readcmd(cmdfile[i],cmds[i],1);
     }
     /* stop stream server */
     strsvrstop(&strsvr,cmds);

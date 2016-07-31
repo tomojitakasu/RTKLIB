@@ -181,7 +181,7 @@ public:
 	AnsiString CodeMask[6];
 	double AppPos[3],AntDel[3];
 	int RnxVer,RnxFile,NavSys,ObsType,FreqType,TraceLevel,EventEna;
-	int AutoPos,ScanObs,OutIono,OutTime,OutLeaps;
+	int AutoPos,ScanObs,HalfCyc,OutIono,OutTime,OutLeaps;
 	
 	__fastcall TMainWindow(TComponent* Owner);
 };

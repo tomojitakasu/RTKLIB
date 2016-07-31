@@ -1177,7 +1177,7 @@ void __fastcall TMainForm::SvrStop(void)
     ScbSol      ->Enabled=true;
     BtnStop     ->Visible=false;
     MenuStop    ->Enabled=false;
-    Svr->Color=clBtnFace;
+    Svr->Color=clWindow;
     SetTrayIcon(1);
     
     LabelTime->Font->Color=clGray;
@@ -1231,7 +1231,7 @@ void __fastcall TMainForm::TimerTimer(TObject *Sender)
     else {
         IndSol->Color=clWhite;
         Solution->Font->Color=clGray;
-        Svr->Color=rtksvr.state?clGreen:clBtnFace;
+        Svr->Color=rtksvr.state?clGreen:clWindow;
     }
     if (!(++n%5)) UpdatePlot();
     UpdateStr();
@@ -1436,7 +1436,7 @@ void __fastcall TMainForm::UpdatePos(void)
 // update stream status indicators ------------------------------------------
 void __fastcall TMainForm::UpdateStr(void)
 {
-    TColor color[]={clRed,clBtnFace,CLORANGE,clGreen,clLime};
+    TColor color[]={clRed,clWindow,CLORANGE,clGreen,clLime};
     TPanel *ind[MAXSTRRTK]={Str1,Str2,Str3,Str4,Str5,Str6,Str7,Str8};
     int i,sstat[MAXSTRRTK]={0};
     char msg[MAXSTRMSG]="";
@@ -2315,6 +2315,8 @@ void __fastcall TMainForm::LoadOpt(void)
     strcpy(SolOpt.sep,s.c_str());
     SolOpt.outhead  =ini->ReadInteger("solopt", "outhead",         0);
     SolOpt.outopt   =ini->ReadInteger("solopt", "outopt",          0);
+    PrcOpt.outsingle=ini->ReadInteger("prcopt", "outsingle",       0);
+    SolOpt.maxsolstd=ini->ReadFloat  ("solopt", "maxsolstd",     0.0);
     SolOpt.datum    =ini->ReadInteger("solopt", "datum",           0);
     SolOpt.height   =ini->ReadInteger("solopt", "height",          0);
     SolOpt.geoid    =ini->ReadInteger("solopt", "geoid",           0);
@@ -2531,6 +2533,8 @@ void __fastcall TMainForm::SaveOpt(void)
     ini->WriteString ("solopt", "sep",        SolOpt.sep         );
     ini->WriteInteger("solopt", "outhead",    SolOpt.outhead     );
     ini->WriteInteger("solopt", "outopt",     SolOpt.outopt      );
+    ini->WriteInteger("prcopt", "outsingle",  PrcOpt.outsingle   );
+    ini->WriteFloat  ("solopt", "maxsolstd",  SolOpt.maxsolstd   );
     ini->WriteInteger("solopt", "datum",      SolOpt.datum       );
     ini->WriteInteger("solopt", "height",     SolOpt.height      );
     ini->WriteInteger("solopt", "geoid",      SolOpt.geoid       );

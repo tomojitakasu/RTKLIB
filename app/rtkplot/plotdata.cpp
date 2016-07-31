@@ -403,6 +403,7 @@ void __fastcall TPlot::ReadMapData(AnsiString file)
 {
     TJPEGImage *image=new TJPEGImage;
     AnsiString s;
+    double pos[3];
     
     trace(3,"ReadMapData\n");
     
@@ -423,7 +424,12 @@ void __fastcall TPlot::ReadMapData(AnsiString file)
     delete image;
     
     ReadMapTag(file);
-    
+    if (norm(OPos,3)<=0.0&&(MapLat!=0.0||MapLon!=0.0)) {
+        pos[0]=MapLat*D2R;
+        pos[1]=MapLon*D2R;
+        pos[2]=0.0;
+        pos2ecef(pos,OPos);
+    }
     BtnShowImg->Down=true;
     
     MapAreaDialog->UpdateField();
@@ -680,6 +686,7 @@ void __fastcall TPlot::ReadShapeFile(TStrings *files)
 {
     UnicodeString name;
     AnsiString s;
+    double pos[3];
     char path[1024];
     int i,j;
     
@@ -706,6 +713,12 @@ void __fastcall TPlot::ReadShapeFile(TStrings *files)
     
     BtnShowMap->Down=true;
     
+    if (norm(OPos,3)<=0.0) {
+        pos[0]=(Gis.bound[0]+Gis.bound[1])/2.0;
+        pos[1]=(Gis.bound[2]+Gis.bound[3])/2.0;
+        pos[2]=0.0;
+        pos2ecef(pos,OPos);
+    }
     UpdateOrigin();
     UpdatePlot();
     UpdateEnable();

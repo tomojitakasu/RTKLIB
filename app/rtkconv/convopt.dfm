@@ -272,21 +272,13 @@ object ConvOptDialog: TConvOptDialog
       Height = 21
       TabOrder = 6
     end
-    object ScanObs: TCheckBox
-      Left = 10
-      Top = 183
-      Width = 97
-      Height = 18
-      Caption = 'Scan Obs Types'
-      TabOrder = 20
-    end
     object OutIono: TCheckBox
-      Left = 209
+      Left = 207
       Top = 183
       Width = 68
       Height = 18
       Caption = 'Iono Corr'
-      TabOrder = 21
+      TabOrder = 20
     end
     object OutTime: TCheckBox
       Left = 281
@@ -294,7 +286,7 @@ object ConvOptDialog: TConvOptDialog
       Width = 65
       Height = 18
       Caption = 'Time Corr'
-      TabOrder = 22
+      TabOrder = 21
     end
     object OutLeaps: TCheckBox
       Left = 351
@@ -302,15 +294,31 @@ object ConvOptDialog: TConvOptDialog
       Width = 62
       Height = 18
       Caption = 'Leap Sec'
-      TabOrder = 23
+      TabOrder = 22
     end
     object AutoPos: TCheckBox
       Left = 109
       Top = 137
       Width = 18
       Height = 18
-      TabOrder = 24
+      TabOrder = 23
       OnClick = AutoPosClick
+    end
+    object ScanObs: TCheckBox
+      Left = 10
+      Top = 184
+      Width = 107
+      Height = 18
+      Caption = 'Scan Obs Types'
+      TabOrder = 24
+    end
+    object HalfCyc: TCheckBox
+      Left = 111
+      Top = 184
+      Width = 82
+      Height = 18
+      Caption = 'Half Cyc Corr'
+      TabOrder = 25
     end
   end
   object GroupBox3: TGroupBox

@@ -29,6 +29,7 @@
 *           2015/07/31  1.11 add phase bias (fcb) correction
 *           2015/12/05  1.12 support opt->pppopt=-DIS_FCB
 *           2016/07/01  1.13 support averaging single pos as base position
+*           2016/07/31  1.14 fix bug on ion/utc parameters input
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -201,7 +202,7 @@ static void updatesvr(rtksvr_t *svr, int ret, obs_t *obs, nav_t *nav, int sat,
         svr->nmsg[index][3]++;
     }
     else if (ret==9) { /* ion/utc parameters */
-        if (svr->navsel==index||svr->navsel>=3) {
+        if (svr->navsel==0||svr->navsel==index+1) {
             for (i=0;i<8;i++) svr->nav.ion_gps[i]=nav->ion_gps[i];
             for (i=0;i<4;i++) svr->nav.utc_gps[i]=nav->utc_gps[i];
             for (i=0;i<4;i++) svr->nav.ion_gal[i]=nav->ion_gal[i];
