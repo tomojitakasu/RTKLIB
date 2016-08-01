@@ -221,11 +221,11 @@ void VecMapDialog::BtnUpClick()
 		Layer1,Layer2,Layer3,Layer4,Layer5,Layer6,Layer7,Layer8,Layer9,
 		Layer10,Layer11,Layer12
 	};
-    QFrame *color[]={
+/*    QFrame *color[]={
 		Color1,Color2,Color3,Color4,Color5,Color6,Color7,Color8,Color9,
 		Color10,Color11,Color12
 	};
-    QColor col;
+    QColor col;*/
 	gisd_t *data;
 	char name[256];
 	int i,flag;
@@ -257,11 +257,11 @@ void VecMapDialog::BtnDownClick()
 		Layer1,Layer2,Layer3,Layer4,Layer5,Layer6,Layer7,Layer8,Layer9,
 		Layer10,Layer11,Layer12
 	};
-    QFrame *color[]={
+    /*QFrame *color[]={
 		Color1,Color2,Color3,Color4,Color5,Color6,Color7,Color8,Color9,
 		Color10,Color11,Color12
 	};
-    QColor col;
+    QColor col;*/
 	gisd_t *data;
 	char name[256];
 	int i,flag;

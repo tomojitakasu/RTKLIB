@@ -54,7 +54,7 @@ static int abortf=0;
 
 // show message in message area ---------------------------------------------
 extern "C" {
-extern int showmsg(char *format,...)
+extern int showmsg(const char *format,...)
 {
     va_list arg;
     char buff[1024];

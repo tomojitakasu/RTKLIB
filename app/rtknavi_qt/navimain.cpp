@@ -88,7 +88,7 @@ stream_t monistr;                       // monitor stream
 // show message in message area ---------------------------------------------
 #if 0
 extern "C" {
-extern int showmsg(char *format,...) {return 0;}
+extern int showmsg(const char *format,...) {return 0;}
 }
 #endif
 // convert degree to deg-min-sec --------------------------------------------

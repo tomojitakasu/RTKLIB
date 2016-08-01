@@ -19,7 +19,7 @@ QString color2String(const QColor &c){
 
 //---------------------------------------------------------------------------
 extern "C" {
-int showmsg(char *format,...) {Q_UNUSED(format); return 0;}
+int showmsg(const char *format,...) {Q_UNUSED(format); return 0;}
 }
 //---------------------------------------------------------------------------
 const QString PTypes[]={

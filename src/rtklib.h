@@ -993,10 +993,10 @@ typedef struct {        /* download url type */
 } url_t;
 
 typedef struct {        /* option type */
-    char *name;         /* option name */
+    const char *name;         /* option name */
     int format;         /* option format (0:int,1:double,2:string,3:enum) */
     void *var;          /* pointer to option variable */
-    char *comment;      /* option comment/enum labels/unit */
+    const char *comment;      /* option comment/enum labels/unit */
 } opt_t;
 
 typedef struct {        /* extended receiver error model */
@@ -1847,7 +1847,7 @@ EXPORT int lexioncorr(gtime_t time, const nav_t *nav, const double *pos,
                       const double *azel, double *delay, double *var);
 
 /* application defined functions ---------------------------------------------*/
-extern int showmsg(char *format,...);
+extern int showmsg(const char *format,...);
 extern void settspan(gtime_t ts, gtime_t te);
 extern void settime(gtime_t time);
 

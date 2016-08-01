@@ -1000,7 +1000,7 @@ void Plot::SaveElMask(const QString &file)
 // connect to external sources ----------------------------------------------
 void Plot::Connect(void)
 {
-    char cmd[1024],path[1024],buff[MAXSTRPATH],*name[2]={"",""},*p;
+    char cmd[1024],path[1024],buff[MAXSTRPATH],*name[2]={0,0},*p;
     int i,mode=STR_MODE_R;
     
     trace(3,"Connect\n");
@@ -1045,8 +1045,8 @@ void Plot::Connect(void)
     else setWindowTitle(QString(tr("CONNECT %1 %2")).arg(name[0]).arg(name[1]));
     
     BtnConnect->setChecked(true);
-    BtnSol1   ->setChecked(*name[0]);
-    BtnSol2   ->setChecked(*name[1]);
+    BtnSol1   ->setChecked(name[0]);
+    BtnSol2   ->setChecked(name[1]);
     BtnSol12  ->setChecked(false);
     BtnShowTrack->setChecked(true);
     BtnFixHoriz->setChecked(true);

@@ -62,7 +62,7 @@ MainForm *mainForm;
 
 // show message in message area ---------------------------------------------
 extern "C" {
-extern int showmsg(char *format,...)
+extern int showmsg(const char *format,...)
 {
     va_list arg;
     QString str;
@@ -643,7 +643,7 @@ void MainForm::LoadUrl(QString file)
 {
     url_t *urls;
     QString subtype, basetype;
-    char *sel[]={"*"};
+    char sel[1][2]={"*"};
     int i,n;
     
     urls=new url_t [MAX_URL];
@@ -659,7 +659,7 @@ void MainForm::LoadUrl(QString file)
     
     if (file=="") file=URL_FILE; // default url
     
-    n=dl_readurls(qPrintable(file),sel,1,urls,MAX_URL);
+    n=dl_readurls(qPrintable(file),(char**)sel,1,urls,MAX_URL);
     
     for (i=0;i<n;i++) {
         int p;
