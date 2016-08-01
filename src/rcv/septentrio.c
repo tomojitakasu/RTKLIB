@@ -569,17 +569,6 @@ static double getSigFreq(int _signType, int freqNo){
     return FREQ1;
 }
 
-/* adjust weekly rollover of gps time ----------------------------------------*/
-static gtime_t adjweek(gtime_t time, double tow)
-{
-    double tow_p;
-    int week;
-    tow_p=time2gpst(time,&week);
-    if      (tow<tow_p-302400.0) tow+=604800.0;
-    else if (tow>tow_p+302400.0) tow-=604800.0;
-    return gpst2time(week,tow);
-}
-
 /* return the Septentrio signal type -----------------------------------------*/
 static int getSignalCode(int signType){
     int _code=-1;

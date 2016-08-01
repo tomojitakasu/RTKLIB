@@ -95,7 +95,7 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
     nav_t nav0;
     obs_t obs0={0,0,NULL};
     sta_t sta0;
-    gis_t gis0={0};
+    gis_t gis0={};
     solstatbuf_t solstat0={0,0,0};
     double ep[]={2000,1,1,0,0,0},xl[2],yl[2];
     double xs[]={-DEFTSPAN/2,DEFTSPAN/2};

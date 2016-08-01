@@ -2033,7 +2033,7 @@ void  MainWindow::SaveLog(void)
     QString fileName;
     int posf[]={SOLF_LLH,SOLF_LLH,SOLF_XYZ,SOLF_ENU,SOLF_ENU,SOLF_LLH};
     solopt_t opt;
-    sol_t sol={0};
+    sol_t sol={};
     double  ep[6],pos[3];
     QString fileTemplate;
     int i;
