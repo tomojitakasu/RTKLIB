@@ -431,6 +431,7 @@ void Plot::GenVisData(void)
 void Plot::ReadMapData(const QString &file)
 {
     QImage image;
+    double pos[3];
     
     trace(3,"ReadMapData\n");
 
@@ -447,7 +448,14 @@ void Plot::ReadMapData(const QString &file)
     MapSize[1]=MapImage.height();
     
     ReadMapTag(file);
-    
+
+    if (norm(OPos,3)<=0.0&&(MapLat!=0.0||MapLon!=0.0)) {
+        pos[0]=MapLat*D2R;
+        pos[1]=MapLon*D2R;
+        pos[2]=0.0;
+        pos2ecef(pos,OPos);
+    }
+
     BtnShowImg->setChecked(true);
     
     mapAreaDialog->UpdateField();
@@ -697,7 +705,8 @@ void Plot::ReadMapTag(const QString &file)
 void Plot::ReadShapeFile(const QStringList &files)
 {
     int i;
-    char path[1024];
+    double pos[3];
+    char path[1024];    
     
     ReadWaitStart();
     
@@ -716,6 +725,14 @@ void Plot::ReadShapeFile(const QStringList &files)
     ReadWaitEnd();
     ShowMsg("");
     BtnShowMap->setChecked(true);
+
+    if (norm(OPos,3)<=0.0) {
+        pos[0]=(Gis.bound[0]+Gis.bound[1])/2.0;
+        pos[1]=(Gis.bound[2]+Gis.bound[3])/2.0;
+        pos[2]=0.0;
+        pos2ecef(pos,OPos);
+    }
+
     
     UpdateOrigin();
     UpdatePlot();

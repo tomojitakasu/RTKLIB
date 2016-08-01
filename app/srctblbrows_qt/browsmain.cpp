@@ -1,5 +1,6 @@
 //---------------------------------------------------------------------------
 // Ported to Qt by Jens Reimann
+#include <clocale>
 
 #include <QCloseEvent>
 #include <QShowEvent>

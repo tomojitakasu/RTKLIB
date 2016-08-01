@@ -21,6 +21,7 @@
 //---------------------------------------------------------------------------
 #include <stdio.h>
 #include <math.h>
+#include <clocale>
 
 #include <QMessageBox>
 #include <QMainWindow>
@@ -2305,8 +2306,10 @@ void  MainWindow::LoadOpt(void)
     SolOpt.degf     =settings.value("solopt/degf",            0).toInt();
     s=settings.value("solopt/sep"," ").toString();
     strcpy(SolOpt.sep,qPrintable(s));
-    SolOpt.outhead  =settings.value("solop/outhead",         0).toInt();
+    SolOpt.outhead  =settings.value("solop/outhead",          0).toInt();
     SolOpt.outopt   =settings.value("solopt/outopt",          0).toInt();
+    PrcOpt.outsingle=settings.value("prcopt/outsingle",       0).toInt();
+    SolOpt.maxsolstd=settings.value("solopt/maxsolstd",       0).toInt();
     SolOpt.datum    =settings.value("solopt/datum",           0).toInt();
     SolOpt.height   =settings.value("solopt/height",          0).toInt();
     SolOpt.geoid    =settings.value("solopt/geoid",           0).toInt();
@@ -2506,6 +2509,8 @@ void  MainWindow::SaveOpt(void)
     settings.setValue("solopt/sep",        SolOpt.sep         );
     settings.setValue("solopt/outhead",    SolOpt.outhead     );
     settings.setValue("solopt/outopt",     SolOpt.outopt      );
+    settings.setValue("prcopt/outsingle",  PrcOpt.outsingle   );
+    settings.setValue("solopt/maxsolstd",  SolOpt.maxsolstd   );
     settings.setValue("solopt/datum",      SolOpt.datum       );
     settings.setValue("solopt/height",     SolOpt.height      );
     settings.setValue("solopt/geoid",      SolOpt.geoid       );

@@ -12,6 +12,8 @@
 // version : $Revision:$ $Date:$
 // history : 2012/12/28  1.0 new
 //---------------------------------------------------------------------------
+#include <clocale>
+
 #include <QShowEvent>
 #include <QDesktopServices>
 #include <QCloseEvent>

@@ -61,6 +61,7 @@ void ConvOptDialog::showEvent(QShowEvent *event)
     for (int i=0;i<6;i++) CodeMask[i]=mainWindow->CodeMask[i];
     AutoPos->setChecked(mainWindow->AutoPos);
     ScanObs->setChecked(mainWindow->ScanObs);
+    HalfCyc->setChecked(mainWindow->HalfCyc);
     OutIono->setChecked(mainWindow->OutIono);
     OutTime->setChecked(mainWindow->OutTime);
     OutLeaps->setChecked(mainWindow->OutLeaps);
@@ -118,6 +119,7 @@ void ConvOptDialog::BtnOkClick()
     for (int i=0;i<6;i++) mainWindow->CodeMask[i]=CodeMask[i];
     mainWindow->AutoPos=AutoPos->isChecked();
     mainWindow->ScanObs=ScanObs->isChecked();
+    mainWindow->HalfCyc=HalfCyc->isChecked();
     mainWindow->OutIono=OutIono->isChecked();
     mainWindow->OutTime=OutTime->isChecked();
     mainWindow->OutLeaps=OutLeaps->isChecked();

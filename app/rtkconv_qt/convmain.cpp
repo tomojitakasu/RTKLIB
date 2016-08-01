@@ -14,6 +14,8 @@
 //           2010/07/18  1.1 rtklib 2.4.0
 //           2011/06/10  1.2 rtklib 2.4.1
 //---------------------------------------------------------------------------
+#include <clocale>
+
 #include <QShowEvent>
 #include <QTimer>
 #include <QCommandLineParser>
@@ -784,6 +786,7 @@ void MainWindow::ConvertFile(void)
     for (i=0;i<6;i++) strcpy(conversionThread->rnxopt.mask[i],qPrintable(CodeMask[i]));
     conversionThread->rnxopt.autopos=AutoPos;
     conversionThread->rnxopt.scanobs=ScanObs;
+    conversionThread->rnxopt.halfcyc=HalfCyc;
     conversionThread->rnxopt.outiono=OutIono;
     conversionThread->rnxopt.outtime=OutTime;
     conversionThread->rnxopt.outleaps=OutLeaps;
@@ -912,6 +915,7 @@ void MainWindow::LoadOpt(void)
     CodeMask[5]         =ini.value ("opt/codemask_6",mask).toString();
     AutoPos             =ini.value ("opt/autopos",     0).toInt();
     ScanObs             =ini.value ("opt/scanobs",     0).toInt();
+    HalfCyc             =ini.value ("opt/halfcyc",     0).toInt();
     OutIono             =ini.value ("opt/outiono",     0).toInt();
     OutTime             =ini.value ("opt/outtime",     0).toInt();
     OutLeaps            =ini.value ("opt/outleaps",    0).toInt();
@@ -999,6 +1003,7 @@ void MainWindow::SaveOpt(void)
     ini.setValue ("opt/codemask_6", CodeMask[5]);
     ini.setValue ("opt/autopos",    AutoPos);
     ini.setValue ("opt/scanobs",    ScanObs);
+    ini.setValue ("opt/halfcyc",    HalfCyc);
     ini.setValue ("opt/outiono",    OutIono);
     ini.setValue ("opt/outtime",    OutTime);
     ini.setValue ("opt/outleaps",   OutLeaps);

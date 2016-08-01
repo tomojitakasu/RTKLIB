@@ -19,6 +19,8 @@
 //                       add stream conversion function
 //                       add option -auto and -tray
 //---------------------------------------------------------------------------
+#include <clocale>
+
 #include <QTimer>
 #include <QCommandLineParser>
 #include <QFileInfo>

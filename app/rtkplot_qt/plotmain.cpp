@@ -28,6 +28,7 @@
 //           2010/06/19  1.4 rtklib 2.4.1 p1
 //           2012/11/21  1.5 rtklib 2.4.2
 //---------------------------------------------------------------------------
+#include <clocale>
 
 #include <QShowEvent>
 #include <QCloseEvent>
@@ -2205,9 +2206,9 @@ void Plot::UpdateOrigin(void)
         OPos[i]=opos[i];
         OVel[i]=ovel[i];
     }
-    ecef2pos(OPos,pos);
-    googleEarthView->SetView(pos[0]*R2D,pos[1]*R2D,0.0,0.0);
-    googleMapView->SetView(pos[0]*R2D,pos[1]*R2D,13);
+//    ecef2pos(OPos,pos);
+//    googleEarthView->SetCent(pos[0]*R2D,pos[1]*R2D);
+//    googleMapView->SetCent(pos[0]*R2D,pos[1]*R2D);
 }
 // update satellite mask ----------------------------------------------------
 void Plot::UpdateSatMask(void)

@@ -16,20 +16,19 @@ include(../../RTKLib.pri)
 TARGET = rtkpost_qt
 TEMPLATE = app
 
-INCLUDEPATH += ../../src/ ../appcmn_qt 
+INCLUDEPATH += ../../src/ ../appcmn_qt
 
-linux{
-    RTKLIB =../../src/libRTKLib.a
-    LIBS += -lpng $${RTKLIB}
-}
-win32 {
+win32-g++ {
     CONFIG(debug) {
         RTKLIB = ../../src/debug/libRTKLib.a
     } else {
         RTKLIB =../../src/release/libRTKLib.a
     }
 
-    LIBS+= $${RTKLIB} -lWs2_32 -lwinmm
+    LIBS += $${RTKLIB} -lWs2_32 -lwinmm
+} else {
+    RTKLIB =../../src/libRTKLib.a
+    LIBS += -lpng $${RTKLIB}
 }
 
 PRE_TARGETDEPS = $${RTKLIB}

@@ -28,6 +28,7 @@
 //           2010/09/07  1.3 rtklib 2.4.1
 //           2011/04/03  1.4 rtklib 2.4.2
 //---------------------------------------------------------------------------
+#include <clocale>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -950,6 +951,7 @@ int MainForm::GetOption(prcopt_t &prcopt, solopt_t &solopt,
     prcopt.maxtdiff =MaxAgeDiff;
     prcopt.maxgdop  =RejectGdop;
     prcopt.maxinno  =RejectThres;
+    prcopt.outsingle=OutputSingle;
     if (BaseLineConst) {
         prcopt.baseline[0]=BaseLine[0];
         prcopt.baseline[1]=BaseLine[1];
@@ -1009,6 +1011,7 @@ int MainForm::GetOption(prcopt_t &prcopt, solopt_t &solopt,
     solopt.degf     =LatLonFormat;
     solopt.outhead  =OutputHead;
     solopt.outopt   =OutputOpt;
+    solopt.maxsolstd=MaxSolStd;
     solopt.datum    =OutputDatum;
     solopt.height   =OutputHeight;
     solopt.geoid    =OutputGeoid;
@@ -1284,6 +1287,8 @@ void MainForm::LoadOpt(void)
     FieldSep           =ini.value ("opt/fieldsep",      "").toString();
     OutputHead         =ini.value("opt/outputhead",     1).toInt();
     OutputOpt          =ini.value("opt/outputopt",      1).toInt();
+    OutputSingle       =ini.value("opt/outputsingle",   0).toInt();
+    MaxSolStd          =ini.value("opt/maxsolstd",    0.0).toInt();
     OutputDatum        =ini.value("opt/outputdatum",    0).toInt();
     OutputHeight       =ini.value("opt/outputheight",   0).toInt();
     OutputGeoid        =ini.value("opt/outputgeoid",    0).toInt();
@@ -1485,6 +1490,8 @@ void MainForm::SaveOpt(void)
     ini.setValue ("opt/fieldsep",    FieldSep    );
     ini.setValue("opt/outputhead",  OutputHead  );
     ini.setValue("opt/outputopt",   OutputOpt   );
+    ini.setValue("opt/outputsingle",OutputSingle);
+    ini.setValue("opt/maxsolstd",   MaxSolStd   );
     ini.setValue("opt/outputdatum", OutputDatum );
     ini.setValue("opt/outputheight",OutputHeight);
     ini.setValue("opt/outputgeoid", OutputGeoid );

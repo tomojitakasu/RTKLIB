@@ -19,10 +19,6 @@ TEMPLATE = app
 
 INCLUDEPATH += ../../src/  
 
-linux {
-LIBS += -lpng
-}
-
 SOURCES += \ 
     launchmain.cpp \
     main.cpp

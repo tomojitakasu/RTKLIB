@@ -469,6 +469,8 @@ void OptDialog::GetOpt(void)
     FieldSep	 ->setText(mainForm->FieldSep);
     OutputHead	 ->setCurrentIndex(mainForm->OutputHead);
     OutputOpt	 ->setCurrentIndex(mainForm->OutputOpt);
+    OutputSingle ->setCurrentIndex(mainForm->OutputSingle);
+    MaxSolStd	 ->setValue(mainForm->MaxSolStd);
     OutputDatum  ->setCurrentIndex(mainForm->OutputDatum);
     OutputHeight ->setCurrentIndex(mainForm->OutputHeight);
     OutputGeoid  ->setCurrentIndex(mainForm->OutputGeoid);
@@ -592,6 +594,8 @@ void OptDialog::SetOpt(void)
     mainForm->FieldSep	  	=FieldSep   ->text();
     mainForm->OutputHead  	=OutputHead ->currentIndex();
     mainForm->OutputOpt   	=OutputOpt  ->currentIndex();
+    mainForm->OutputSingle 	=OutputSingle->currentIndex();
+    mainForm->MaxSolStd   	=MaxSolStd   ->value();
     mainForm->OutputDatum 	=OutputDatum->currentIndex();
     mainForm->OutputHeight	=OutputHeight->currentIndex();
     mainForm->OutputGeoid 	=OutputGeoid->currentIndex();
@@ -726,6 +730,8 @@ void OptDialog::LoadOpt(const QString &file)
     FieldSep	 ->setText(solopt.sep);
     OutputHead	 ->setCurrentIndex(solopt.outhead);
     OutputOpt	 ->setCurrentIndex(solopt.outopt);
+    OutputSingle ->setCurrentIndex(prcopt.outsingle);
+    MaxSolStd	 ->setValue(solopt.maxsolstd);
     OutputDatum  ->setCurrentIndex(solopt.datum);
     OutputHeight ->setCurrentIndex(solopt.height);
     OutputGeoid  ->setCurrentIndex(solopt.geoid);
@@ -871,6 +877,8 @@ void OptDialog::SaveOpt(const QString &file)
     strcpy(solopt.sep,qPrintable(FieldSep_Text));
     solopt.outhead	=OutputHead	 ->currentIndex();
     solopt.outopt	=OutputOpt	 ->currentIndex();
+    prcopt.outsingle=OutputSingle->currentIndex();
+    solopt.maxsolstd=MaxSolStd	 ->value();
     solopt.datum	=OutputDatum ->currentIndex();
     solopt.height	=OutputHeight->currentIndex();
     solopt.geoid	=OutputGeoid ->currentIndex();
@@ -972,6 +980,7 @@ void OptDialog::UpdateEnable(void)
     TimeDecimal    ->setEnabled(SolFormat->currentIndex()<3);
     LatLonFormat   ->setEnabled(SolFormat->currentIndex()==0);
     FieldSep       ->setEnabled(SolFormat->currentIndex()<3);
+    OutputSingle   ->setEnabled(PosMode->currentIndex()!=0);
     OutputDatum    ->setEnabled(SolFormat->currentIndex()==0);
     OutputHeight   ->setEnabled(SolFormat->currentIndex()==0);
     OutputGeoid    ->setEnabled(SolFormat->currentIndex()==0&&OutputHeight->currentIndex()==1);

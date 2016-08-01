@@ -25,6 +25,7 @@ private:
     QString text;
 };
 #endif
+
 class QResizeEvent;
 class QShowEvent;
 //---------------------------------------------------------------------------

@@ -1421,7 +1421,7 @@
           <string/>
          </property>
          <property name="text">
-          <string>Output Header/Processing Options</string>
+          <string>Output Header / Output Processing Options</string>
          </property>
         </widget>
        </item>
@@ -1530,28 +1530,8 @@
           <string/>
          </property>
          <property name="text">
-          <string>Latitude / Longitude Format</string>
+          <string>Latitude Longitude Format / Field Separator</string>
          </property>
-        </widget>
-       </item>
-       <item row="3" column="1" colspan="3">
-        <widget class="QComboBox" name="LatLonFormat">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <item>
-          <property name="text">
-           <string>ddd.ddddddd</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>ddd mm ss.sss</string>
-          </property>
-         </item>
         </widget>
        </item>
        <item row="4" column="0">
@@ -1563,20 +1543,7 @@
           <string/>
          </property>
          <property name="text">
-          <string>Field Separator</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="1" colspan="3">
-        <widget class="QLineEdit" name="FieldSep">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string/>
+          <string>Output Single if Sol Outage / Max Sol Std (m)</string>
          </property>
         </widget>
        </item>
@@ -1589,7 +1556,7 @@
           <string/>
          </property>
          <property name="text">
-          <string>Datum/Height</string>
+          <string>Datum / Height</string>
          </property>
         </widget>
        </item>
@@ -1757,7 +1724,7 @@
           <string/>
          </property>
          <property name="text">
-          <string>Output Solution Status / Debug Trace</string>
+          <string>Output Solution Status / Output Debug Trace</string>
          </property>
         </widget>
        </item>
@@ -1825,6 +1792,59 @@
           </property>
          </item>
         </widget>
+       </item>
+       <item row="3" column="1" colspan="2">
+        <widget class="QComboBox" name="LatLonFormat">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="currentText">
+          <string>ddd.dddddd</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>ddd.dddddd</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>ddd mm ss.ss</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="3" column="3">
+        <widget class="QLineEdit" name="FieldSep">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QComboBox" name="OutputSingle">
+         <item>
+          <property name="text">
+           <string>OFF</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>ON</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="4" column="3">
+        <widget class="QDoubleSpinBox" name="MaxSolStd"/>
        </item>
       </layout>
      </widget>
@@ -2155,7 +2175,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+          <iconset resource="../rtkget_qt/rtkget_qt.qrc">
            <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
          </property>
          <property name="flat">
@@ -2672,7 +2692,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+          <iconset resource="../rtkget_qt/rtkget_qt.qrc">
            <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
          </property>
          <property name="flat">
@@ -2692,7 +2712,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+          <iconset resource="../rtkget_qt/rtkget_qt.qrc">
            <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
          </property>
          <property name="flat">
@@ -2812,7 +2832,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+          <iconset resource="../rtkget_qt/rtkget_qt.qrc">
            <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
          </property>
          <property name="flat">
@@ -2874,7 +2894,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+          <iconset resource="../rtkget_qt/rtkget_qt.qrc">
            <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
          </property>
          <property name="flat">
@@ -2936,7 +2956,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+          <iconset resource="../rtkget_qt/rtkget_qt.qrc">
            <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
          </property>
          <property name="flat">
@@ -3408,7 +3428,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../rtkconv_qt/rtkconv_qt.qrc"/>
+  <include location="../rtkget_qt/rtkget_qt.qrc"/>
  </resources>
  <connections/>
 </ui>
