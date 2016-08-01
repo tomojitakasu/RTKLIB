@@ -60,6 +60,7 @@ void __fastcall TConvOptDialog::FormShow(TObject *Sender)
 	for (int i=0;i<6;i++) CodeMask[i]=MainWindow->CodeMask[i];
 	AutoPos->Checked=MainWindow->AutoPos;
 	ScanObs->Checked=MainWindow->ScanObs;
+	HalfCyc->Checked=MainWindow->HalfCyc;
 	OutIono->Checked=MainWindow->OutIono;
 	OutTime->Checked=MainWindow->OutTime;
 	OutLeaps->Checked=MainWindow->OutLeaps;
@@ -117,6 +118,7 @@ void __fastcall TConvOptDialog::BtnOkClick(TObject *Sender)
 	for (int i=0;i<6;i++) MainWindow->CodeMask[i]=CodeMask[i];
 	MainWindow->AutoPos=AutoPos->Checked;
 	MainWindow->ScanObs=ScanObs->Checked;
+	MainWindow->HalfCyc=HalfCyc->Checked;
 	MainWindow->OutIono=OutIono->Checked;
 	MainWindow->OutTime=OutTime->Checked;
 	MainWindow->OutLeaps=OutLeaps->Checked;
@@ -193,4 +195,5 @@ void __fastcall TConvOptDialog::UpdateEnable(void)
 	AppPos2->Enabled=AutoPos->Checked;
 }
 //---------------------------------------------------------------------------
+
 

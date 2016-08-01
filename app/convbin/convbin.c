@@ -31,6 +31,7 @@
 *                           convbin()
 *           2016/06/09 1.14 fix bug on output file with -v 3.02
 *           2016/07/01 1.15 support log format CMR/CMR+
+*           2016/07/31 1.16 add option -halfc
 *-----------------------------------------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>
@@ -119,6 +120,7 @@ static const char *help[]={
 "     -ot          include time correction in rinex nav header [off]",
 "     -ol          include leap seconds in rinex nav header [off]",
 "     -scan        scan input file [off]",
+"     -halfc       half-cycle ambiguity correction [off]",
 "     -mask   [sig[,...]] signal mask(s) (sig={G|R|E|J|S|C|I}L{1C|1P|1W|...})",
 "     -nomask [sig[,...]] signal no mask (same as above)",
 "     -x sat       exclude satellite",
@@ -396,6 +398,9 @@ static int cmdopts(int argc, char **argv, rnxopt_t *opt, char **ifile,
         }
         else if (!strcmp(argv[i],"-scan")) {
             opt->scanobs=1;
+        }
+        else if (!strcmp(argv[i],"-halfc")) {
+            opt->halfcyc=1;
         }
         else if (!strcmp(argv[i],"-mask")&&i+1<argc) {
             for (j=0;j<6;j++) for (k=0;k<64;k++) opt->mask[j][k]='0';

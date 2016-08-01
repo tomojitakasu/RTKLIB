@@ -36,6 +36,8 @@
 *           2015/03/23 1.18 residuals referenced to reference satellite
 *           2015/05/20 1.19 no output solution status file with Q=0
 *           2015/07/22 1.20 fix bug on base station position setting
+*           2016/07/30 1.21 suppress single solution if !prcopt.outsingle
+*                           fix bug on slip detection of backward filter
 *-----------------------------------------------------------------------------*/
 #include <stdarg.h>
 #include "rtklib.h"
@@ -595,7 +597,7 @@ static void udrcvbias(rtk_t *rtk, double tt)
 /* detect cycle slip by LLI --------------------------------------------------*/
 static void detslp_ll(rtk_t *rtk, const obsd_t *obs, int i, int rcv)
 {
-    unsigned char slip,LLI1,LLI2,LLI;
+    unsigned int slip,LLI;
     int f,sat=obs[i].sat;
     
     trace(3,"detslp_ll: i=%d rcv=%d\n",i,rcv);
@@ -605,26 +607,37 @@ static void detslp_ll(rtk_t *rtk, const obsd_t *obs, int i, int rcv)
         if (obs[i].L[f]==0.0) continue;
         
         /* restore previous LLI */
-        LLI1=(rtk->ssat[sat-1].slip[f]>>6)&3;
-        LLI2=(rtk->ssat[sat-1].slip[f]>>4)&3;
-        LLI=rcv==1?LLI1:LLI2;
+        if (rcv==1) LLI=getbitu(&rtk->ssat[sat-1].slip[f],0,2); /* rover */
+        else        LLI=getbitu(&rtk->ssat[sat-1].slip[f],2,2); /* base  */
         
-        /* detect slip by cycle slip flag */
-        slip=(rtk->ssat[sat-1].slip[f]|obs[i].LLI[f])&3;
-        
-        if (obs[i].LLI[f]&1) {
-            errmsg(rtk,"slip detected (sat=%2d rcv=%d LLI%d=%x)\n",
-                   sat,rcv,f+1,obs[i].LLI[f]);
+        /* detect slip by cycle slip flag in LLI */
+        if (rtk->tt>=0.0) { /* forward */
+            if (obs[i].LLI[f]&1) {
+                errmsg(rtk,"slip detected forward (sat=%2d rcv=%d F=%d LLI=%x)\n",
+                       sat,rcv,f+1,obs[i].LLI[f]);
+            }
+            slip=obs[i].LLI[f];
         }
-        /* detect slip by parity unknown flag transition */
+        else { /* backward */
+            if (LLI&1) {
+                errmsg(rtk,"slip detected backward (sat=%2d rcv=%d F=%d LLI=%x)\n",
+                       sat,rcv,f+1,LLI);
+            }
+            slip=LLI;
+        }
+        /* detect slip by parity unknown flag transition in LLI */
         if (((LLI&2)&&!(obs[i].LLI[f]&2))||(!(LLI&2)&&(obs[i].LLI[f]&2))) {
-            errmsg(rtk,"slip detected (sat=%2d rcv=%d LLI%d=%x->%x)\n",
+            errmsg(rtk,"slip detected half-cyc (sat=%2d rcv=%d F=%d LLI=%x->%x)\n",
                    sat,rcv,f+1,LLI,obs[i].LLI[f]);
             slip|=1;
         }
-        /* save current LLI and slip flag */
-        if (rcv==1) rtk->ssat[sat-1].slip[f]=(obs[i].LLI[f]<<6)|(LLI2<<4)|slip;
-        else        rtk->ssat[sat-1].slip[f]=(obs[i].LLI[f]<<4)|(LLI1<<6)|slip;
+        /* save current LLI */
+        if (rcv==1) setbitu(&rtk->ssat[sat-1].slip[f],0,2,obs[i].LLI[f]);
+        else        setbitu(&rtk->ssat[sat-1].slip[f],2,2,obs[i].LLI[f]);
+        
+        /* save slip and half-cycle valid flag */
+        rtk->ssat[sat-1].slip[f]|=(unsigned char)slip;
+        rtk->ssat[sat-1].half[f]=(obs[i].LLI[f]&2)?0:1;
     }
 }
 /* detect cycle slip by L1-L2 geometry free phase jump -----------------------*/
@@ -726,6 +739,12 @@ static void udbias(rtk_t *rtk, double tt, const obsd_t *obs, const int *sat,
         /* detect cycle slip by doppler and phase difference */
         detslp_dop(rtk,obs,iu[i],1,nav);
         detslp_dop(rtk,obs,ir[i],2,nav);
+        
+        /* update half-cycle valid flag */
+        for (f=0;f<nf;f++) {
+            rtk->ssat[sat[i]-1].half[f]=
+                !((obs[iu[i]].LLI[f]&2)||(obs[ir[i]].LLI[f]&2));
+        }
     }
     for (f=0;f<nf;f++) {
         /* reset phase-bias if instantaneous AR or expire obs outage counter */
@@ -1285,8 +1304,13 @@ static int ddmat(rtk_t *rtk, double *D)
         for (f=0,k=na;f<nf;f++,k+=MAXSAT) {
             
             for (i=k;i<k+MAXSAT;i++) {
+#if 0
                 if (rtk->x[i]==0.0||!test_sys(rtk->ssat[i-k].sys,m)||
                     !rtk->ssat[i-k].vsat[f]) {
+#else
+                if (rtk->x[i]==0.0||!test_sys(rtk->ssat[i-k].sys,m)||
+                    !rtk->ssat[i-k].vsat[f]||!rtk->ssat[i-k].half[f]) {
+#endif
                     continue;
                 }
                 if (rtk->ssat[i-k].lock[f]>0&&!(rtk->ssat[i-k].slip[f]&2)&&
@@ -1839,6 +1863,10 @@ extern int rtkpos(rtk_t *rtk, const obsd_t *obs, int n, const nav_t *nav)
     if (opt->mode==PMODE_SINGLE) {
         outsolstat(rtk);
         return 1;
+    }
+    /* suppress output of single solution */
+    if (!opt->outsingle) {
+        rtk->sol.stat=SOLQ_NONE;
     }
     /* precise point positioning */
     if (opt->mode>=PMODE_PPP_KINEMA) {

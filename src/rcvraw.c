@@ -890,6 +890,7 @@ extern int init_raw(raw_t *raw, int format)
     raw->nav.alm  =NULL;
     raw->nav.geph =NULL;
     raw->nav.seph =NULL;
+    raw->half_cyc =NULL;
     raw->rcv_data =NULL;
     
     if (!(raw->obs.data =(obsd_t *)malloc(sizeof(obsd_t)*MAXOBS))||
@@ -945,6 +946,8 @@ extern int init_raw(raw_t *raw, int format)
 *-----------------------------------------------------------------------------*/
 extern void free_raw(raw_t *raw)
 {
+    half_cyc_t *p,*next;
+    
     trace(3,"free_raw:\n");
     
     free(raw->obs.data ); raw->obs.data =NULL; raw->obs.n =0;
@@ -953,6 +956,13 @@ extern void free_raw(raw_t *raw)
     free(raw->nav.alm  ); raw->nav.alm  =NULL; raw->nav.na=0;
     free(raw->nav.geph ); raw->nav.geph =NULL; raw->nav.ng=0;
     free(raw->nav.seph ); raw->nav.seph =NULL; raw->nav.ns=0;
+    
+    /* free half-cycle correction list */
+    for (p=raw->half_cyc;p;p=next) {
+        next=p->next;
+        free(p);
+    }
+    raw->half_cyc=NULL;
     
     /* free receiver dependent data */
     switch (raw->format) {

@@ -47,6 +47,7 @@
 *           2016/07/04 1.19 add half-cycle vaild check for ubx-trk-meas
 *           2016/07/29 1.20 support RXM-CFG-TMODE3 (0x06 0x71) for M8P
 *                           crc24q() -> rtk_crc24q()
+*                           check week number zero for ubx-rxm-raw and rawx
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -174,6 +175,10 @@ static int decode_rxmraw(raw_t *raw)
     week=U2(p+4);
     time=gpst2time(week,tow*0.001);
     
+    if (week==0) {
+        trace(2,"ubx rxmraw week=0 error: len=%d nsat=%d\n",raw->len,nsat);
+        return -1;
+    }
     /* time tag adjustment */
     if (tadj>0.0) {
         tn=time2gpst(time,&week)/tadj;
@@ -223,7 +228,7 @@ static int decode_rxmrawx(raw_t *raw)
 {
     gtime_t time;
     double tow,cp1,pr1,tadj=0.0,toff=0.0,freq,tn;
-    int i,j,sys,prn,sat,n=0,nsat,week,tstat,lockt,halfc,fcn;
+    int i,j,sys,prn,sat,n=0,nsat,week,tstat,lockt,slip,halfv,halfc,fcn;
     char *q;
     unsigned char *p=raw->buff+6;
     
@@ -238,6 +243,10 @@ static int decode_rxmrawx(raw_t *raw)
     week=U2(p+8);
     time=gpst2time(week,tow);
     
+    if (week==0) {
+        trace(2,"ubx rxmrawx week=0 error: len=%d nsat=%d\n",raw->len,nsat);
+        return -1;
+    }
     if (raw->outtype) {
         sprintf(raw->msgtype,"UBX RXM-RAWX  (%4d): time=%s nsat=%d",raw->len,
                 time_str(time,2),U1(p+11));
@@ -287,14 +296,16 @@ static int decode_rxmrawx(raw_t *raw)
             sys==SYS_CMP?CODE_L1I:(sys==SYS_GAL?CODE_L1X:CODE_L1C);
         
         lockt=U2(p+24);    /* lock time count (ms) */
+        slip=lockt==0||lockt<raw->lockt[sat-1][0]?1:0;
+        halfv=tstat&4?1:0; /* half cycle valid */
         halfc=tstat&8?1:0; /* half cycle subtracted from phase */
         
         if (cp1!=0.0) { /* carrier-phase valid */
             
             /* LLI: bit1=loss-of-lock,bit2=half-cycle-invalid */
-            raw->obs.data[n].LLI[0]|=lockt==0||lockt<raw->lockt[sat-1][0]?1:0;
+            raw->obs.data[n].LLI[0]|=slip;
             raw->obs.data[n].LLI[0]|=halfc!=raw->halfc[sat-1][0]?1:0;
-            raw->obs.data[n].LLI[0]|=tstat&4?0:2;
+            raw->obs.data[n].LLI[0]|=halfv?0:2;
             raw->lockt[sat-1][0]=lockt;
             raw->halfc[sat-1][0]=halfc;
         }

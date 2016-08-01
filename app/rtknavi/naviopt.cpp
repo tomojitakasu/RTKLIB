@@ -449,6 +449,8 @@ void __fastcall TOptDialog::GetOpt(void)
 	FieldSep	 ->Text     =SolOpt.sep;
 	OutputHead	 ->ItemIndex=SolOpt.outhead;
 	OutputOpt	 ->ItemIndex=SolOpt.outopt;
+	OutputSingle ->ItemIndex=PrcOpt.outsingle;
+	MaxSolStd	 ->Text		=s.sprintf("%.2g",SolOpt.maxsolstd);
 	OutputDatum  ->ItemIndex=SolOpt.datum;
 	OutputHeight ->ItemIndex=SolOpt.height;
 	OutputGeoid  ->ItemIndex=SolOpt.geoid;
@@ -576,6 +578,8 @@ void __fastcall TOptDialog::SetOpt(void)
 	strcpy(SolOpt.sep,FieldSep_Text.c_str());
 	SolOpt.outhead   =OutputHead  ->ItemIndex;
 	SolOpt.outopt    =OutputOpt   ->ItemIndex;
+	PrcOpt.outsingle =OutputSingle->ItemIndex;
+	SolOpt.maxsolstd =str2dbl(MaxSolStd->Text);
 	SolOpt.datum     =OutputDatum ->ItemIndex;
 	SolOpt.height    =OutputHeight->ItemIndex;
 	SolOpt.geoid     =OutputGeoid ->ItemIndex;
@@ -750,6 +754,8 @@ void __fastcall TOptDialog::LoadOpt(AnsiString file)
 	FieldSep	 ->Text			=solopt.sep;
 	OutputHead	 ->ItemIndex	=solopt.outhead;
 	OutputOpt	 ->ItemIndex	=solopt.outopt;
+	OutputSingle ->ItemIndex	=prcopt.outsingle;
+	MaxSolStd	 ->Text			=s.sprintf("%.2g",solopt.maxsolstd);
 	OutputDatum  ->ItemIndex	=solopt.datum;
 	OutputHeight ->ItemIndex	=solopt.height;
 	OutputGeoid  ->ItemIndex	=solopt.geoid;
@@ -922,6 +928,8 @@ void __fastcall TOptDialog::SaveOpt(AnsiString file)
 	strcpy(solopt.sep,FieldSep_Text.c_str());
 	solopt.outhead	=OutputHead	 ->ItemIndex;
 	solopt.outopt	=OutputOpt	 ->ItemIndex;
+	prcopt.outsingle=OutputSingle->ItemIndex;
+	solopt.maxsolstd=str2dbl(MaxSolStd->Text);
 	solopt.datum	=OutputDatum ->ItemIndex;
 	solopt.height	=OutputHeight->ItemIndex;
 	solopt.geoid	=OutputGeoid ->ItemIndex;
@@ -1021,6 +1029,7 @@ void __fastcall TOptDialog::UpdateEnable(void)
 	TimeDecimal    ->Enabled=SolFormat->ItemIndex!=3;
 	LatLonFormat   ->Enabled=SolFormat->ItemIndex==0;
 	FieldSep       ->Enabled=SolFormat->ItemIndex!=3;
+	OutputSingle   ->Enabled=PosMode->ItemIndex!=0;
 	OutputDatum    ->Enabled=SolFormat->ItemIndex==0;
 	OutputHeight   ->Enabled=SolFormat->ItemIndex==0;
 	OutputGeoid    ->Enabled=SolFormat->ItemIndex==0&&OutputHeight->ItemIndex==1;

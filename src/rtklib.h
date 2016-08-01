@@ -58,7 +58,7 @@ extern "C" {
 
 #define VER_RTKLIB  "2.4.3"             /* library version */
 
-#define PATCH_LEVEL "b15"               /* patch level */
+#define PATCH_LEVEL "b16"               /* patch level */
 
 #define COPYRIGHT_RTKLIB \
             "Copyright (C) 2007-2016 by T.Takasu\nAll rights reserved."
@@ -315,10 +315,10 @@ extern "C" {
 #define CODE_L8I    37                  /* obs code: E5(a+b)I   (GAL) */
 #define CODE_L8Q    38                  /* obs code: E5(a+b)Q   (GAL) */
 #define CODE_L8X    39                  /* obs code: E5(a+b)I+Q (GAL) */
-#define CODE_L2I    40                  /* obs code: B1I        (CMP) */
-#define CODE_L2Q    41                  /* obs code: B1Q        (CMP) */
-#define CODE_L6I    42                  /* obs code: B3I        (CMP) */
-#define CODE_L6Q    43                  /* obs code: B3Q        (CMP) */
+#define CODE_L2I    40                  /* obs code: B1I        (BDS) */
+#define CODE_L2Q    41                  /* obs code: B1Q        (BDS) */
+#define CODE_L6I    42                  /* obs code: B3I        (BDS) */
+#define CODE_L6Q    43                  /* obs code: B3Q        (BDS) */
 #define CODE_L3I    44                  /* obs code: G3I        (GLO) */
 #define CODE_L3Q    45                  /* obs code: G3Q        (GLO) */
 #define CODE_L3X    46                  /* obs code: G3I+Q      (GLO) */
@@ -1064,6 +1064,7 @@ typedef struct {        /* processing options type */
     unsigned char exsats[MAXSAT]; /* excluded satellites (1:excluded,2:included) */
     int  maxaveep;      /* max averaging epoches */
     int  initrst;       /* initialize by restart */
+    int  outsingle;     /* output single by dgps/float/fix/ppp outage */
     char rnxopt[2][256]; /* rinex options {rover,base} */
     int  posopt[6];     /* positioning options */
     int  syncsol;       /* solution sync mode (0:off,1:on) */
@@ -1091,6 +1092,7 @@ typedef struct {        /* solution options type */
                         /* nmeaintv[0]:gprmc,gpgga,nmeaintv[1]:gpgsv */
     char sep[64];       /* field separator */
     char prog[64];      /* program name */
+    double maxsolstd;   /* max std-dev for solution output (m) (0:all) */
 } solopt_t;
 
 typedef struct {        /* file options type */
@@ -1136,6 +1138,7 @@ typedef struct {        /* RINEX options type */
     int outtime;        /* output time system correction */
     int outleaps;       /* output leap seconds */
     int autopos;        /* auto approx position */
+    int halfcyc;        /* half cycle correction */
     gtime_t tstart;     /* first obs time */
     gtime_t tend;       /* last obs time */
     gtime_t trtcm;      /* approx log start time for rtcm */
@@ -1153,6 +1156,7 @@ typedef struct {        /* satellite status type */
     unsigned char snr [NFREQ]; /* signal strength (0.25 dBHz) */
     unsigned char fix [NFREQ]; /* ambiguity fix flag (1:fix,2:float,3:hold) */
     unsigned char slip[NFREQ]; /* cycle-slip flag */
+    unsigned char half[NFREQ]; /* half-cycle valid flag */
     int lock [NFREQ];   /* lock counter of phase */
     unsigned int outc [NFREQ]; /* obs outage counter of phase */
     unsigned int slipc[NFREQ]; /* cycle-slip counter */
@@ -1189,6 +1193,15 @@ typedef struct {        /* RTK control/result type */
     prcopt_t opt;       /* processing options */
 } rtk_t;
 
+typedef struct half_cyc_tag {  /* half-cycle correction list type */
+    unsigned char sat;  /* satellite number */
+    unsigned char freq; /* frequency number (0:L1,1:L2,2:L5) */
+    unsigned char valid; /* half-cycle valid flag */
+    char corr;          /* half-cycle corrected (x 0.5 cyc) */
+    gtime_t ts,te;      /* time start, time end */
+    struct half_cyc_tag *next; /* pointer to next correction */
+} half_cyc_t;
+
 typedef struct {        /* receiver raw data control type */
     gtime_t time;       /* message time */
     gtime_t tobs;       /* observation data time */
@@ -1215,6 +1228,7 @@ typedef struct {        /* receiver raw data control type */
     int outtype;        /* output message type */
     unsigned char buff[MAXRAWLEN]; /* message buffer */
     char opt[256];      /* receiver dependent options */
+    half_cyc_t *half_cyc; /* half-cycle correction list */
     
     int format;         /* receiver stream format */
     void *rcv_data;     /* receiver dependent data */
@@ -1311,11 +1325,13 @@ typedef struct {        /* gis data point type */
 
 typedef struct {        /* gis data polyline type */
     int npnt;           /* number of points */
+    double bound[4];    /* boundary {lat0,lat1,lon0,lon1} */
     double *pos;        /* position data (3 x npnt) */
 } gis_poly_t;
 
 typedef struct {        /* gis data polygon type */
     int npnt;           /* number of points */
+    double bound[4];    /* boundary {lat0,lat1,lon0,lon1} */
     double *pos;        /* position data (3 x npnt) */
 } gis_polygon_t;
 

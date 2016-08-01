@@ -406,6 +406,8 @@ void __fastcall TOptDialog::GetOpt(void)
 	FieldSep	 ->Text			=MainForm->FieldSep;
 	OutputHead	 ->ItemIndex	=MainForm->OutputHead;
 	OutputOpt	 ->ItemIndex	=MainForm->OutputOpt;
+	OutputSingle ->ItemIndex	=MainForm->OutputSingle;
+	MaxSolStd	 ->Text			=s.sprintf("%.2g",MainForm->MaxSolStd);
 	OutputDatum  ->ItemIndex	=MainForm->OutputDatum;
 	OutputHeight ->ItemIndex	=MainForm->OutputHeight;
 	OutputGeoid  ->ItemIndex	=MainForm->OutputGeoid;
@@ -527,6 +529,8 @@ void __fastcall TOptDialog::SetOpt(void)
 	MainForm->FieldSep	  	=FieldSep   ->Text;
 	MainForm->OutputHead  	=OutputHead ->ItemIndex;
 	MainForm->OutputOpt   	=OutputOpt  ->ItemIndex;
+	MainForm->OutputSingle 	=OutputSingle->ItemIndex;
+	MainForm->MaxSolStd 	=str2dbl(MaxSolStd->Text);
 	MainForm->OutputDatum 	=OutputDatum->ItemIndex;
 	MainForm->OutputHeight	=OutputHeight->ItemIndex;
 	MainForm->OutputGeoid 	=OutputGeoid->ItemIndex;
@@ -660,6 +664,8 @@ void __fastcall TOptDialog::LoadOpt(AnsiString file)
 	FieldSep	 ->Text			=solopt.sep;
 	OutputHead	 ->ItemIndex	=solopt.outhead;
 	OutputOpt	 ->ItemIndex	=solopt.outopt;
+	OutputSingle ->ItemIndex    =prcopt.outsingle;
+	MaxSolStd	 ->Text		    =s.sprintf("%.2g",solopt.maxsolstd);
 	OutputDatum  ->ItemIndex	=solopt.datum;
 	OutputHeight ->ItemIndex	=solopt.height;
 	OutputGeoid  ->ItemIndex	=solopt.geoid;
@@ -804,6 +810,8 @@ void __fastcall TOptDialog::SaveOpt(AnsiString file)
 	strcpy(solopt.sep,FieldSep_Text.c_str());
 	solopt.outhead	=OutputHead	 ->ItemIndex;
 	solopt.outopt	=OutputOpt	 ->ItemIndex;
+	prcopt.outsingle=OutputSingle->ItemIndex;
+	solopt.maxsolstd=str2dbl(MaxSolStd->Text);
 	solopt.datum	=OutputDatum ->ItemIndex;
 	solopt.height	=OutputHeight->ItemIndex;
 	solopt.geoid	=OutputGeoid ->ItemIndex;
@@ -905,6 +913,7 @@ void __fastcall TOptDialog::UpdateEnable(void)
 	TimeDecimal    ->Enabled=SolFormat->ItemIndex<3;
 	LatLonFormat   ->Enabled=SolFormat->ItemIndex==0;
 	FieldSep       ->Enabled=SolFormat->ItemIndex<3;
+	OutputSingle   ->Enabled=PosMode->ItemIndex!=0;
 	OutputDatum    ->Enabled=SolFormat->ItemIndex==0;
 	OutputHeight   ->Enabled=SolFormat->ItemIndex==0;
 	OutputGeoid    ->Enabled=SolFormat->ItemIndex==0&&OutputHeight->ItemIndex==1;

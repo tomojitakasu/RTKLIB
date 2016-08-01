@@ -6,7 +6,7 @@ object MainForm: TMainForm
   Caption = 'RTKPOST'
   ClientHeight = 337
   ClientWidth = 470
-  Color = clBtnFace
+  Color = clWindow
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
