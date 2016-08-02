@@ -197,19 +197,6 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="4">
-    <widget class="QLineEdit" name="Port">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-   </item>
    <item row="5" column="4">
     <widget class="QLineEdit" name="Passwd">
      <property name="enabled">
@@ -236,6 +223,13 @@
      </property>
      <property name="text">
       <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="4">
+    <widget class="QSpinBox" name="Port">
+     <property name="maximum">
+      <number>65535</number>
      </property>
     </widget>
    </item>

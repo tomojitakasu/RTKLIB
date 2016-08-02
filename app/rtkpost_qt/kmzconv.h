@@ -26,6 +26,7 @@ public slots:
     void BtnGoogleEarthFileClick();
     void FormatKMLClick();
     void FormatGPXClick();
+
 private:
     int ExecCmd(const QString &cmd);
     void UpdateEnable(void);
@@ -34,10 +35,12 @@ private:
 
 protected:
     void showEvent(QShowEvent*);
+
     TextViewer *viewer;
 
 public:
     explicit ConvDialog(QWidget *parent);
+
     void SetInput(const QString &File);
 };
 //---------------------------------------------------------------------------

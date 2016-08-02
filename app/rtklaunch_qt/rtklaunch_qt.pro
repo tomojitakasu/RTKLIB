@@ -4,13 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += widgets core gui
-
-greaterThan(QT_MAJOR_VERSION, 4) {
-    QT += widgets
-    DEFINES += QT5
-}
-
+QT       += widgets core gui widgets
 
 include(../../RTKLib.pri)
 

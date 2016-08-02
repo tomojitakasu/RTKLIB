@@ -2,6 +2,14 @@
 <ui version="4.0">
  <class>FileOptDialog</class>
  <widget class="QWidget" name="FileOptDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>428</width>
+    <height>96</height>
+   </rect>
+  </property>
   <property name="windowTitle">
    <string>File Options</string>
   </property>
@@ -9,19 +17,6 @@
    <string/>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="1" column="2">
-    <widget class="QLineEdit" name="TimeStart">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>0</string>
-     </property>
-    </widget>
-   </item>
    <item row="1" column="0">
     <widget class="QComboBox" name="TimeSpeed">
      <property name="enabled">
@@ -80,19 +75,6 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="5">
-    <widget class="QLabel" name="Label3">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>s</string>
-     </property>
-    </widget>
-   </item>
    <item row="2" column="5">
     <widget class="QPushButton" name="BtnFilePath">
      <property name="enabled">
@@ -135,9 +117,6 @@
       </sizepolicy>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout">
-      <property name="spacing">
-       <number>0</number>
-      </property>
       <property name="leftMargin">
        <number>0</number>
       </property>
@@ -293,6 +272,16 @@
        </widget>
       </item>
      </layout>
+    </widget>
+   </item>
+   <item row="1" column="2">
+    <widget class="QDoubleSpinBox" name="TimeStart">
+     <property name="suffix">
+      <string> s</string>
+     </property>
+     <property name="maximum">
+      <double>10000.000000000000000</double>
+     </property>
     </widget>
    </item>
   </layout>

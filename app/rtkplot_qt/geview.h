@@ -23,9 +23,11 @@ public:
     explicit GEPageState(QObject *parent=NULL): QObject(parent){}
     QString getText() {return text;}
     QString getView() {return view;}
+
 signals:
     void textChanged(const QString &text);
     void viewChanged(const QString &view);
+
 private:
     QString text;
     QString view;
@@ -75,10 +77,10 @@ private:
     QWebEngineView *WebBrowser;
     GEPageState *pageState;
 #endif
+
     void UpdateOpts (void);
     void UpdateEnable(void);
     void ExecFunc   (const QString &func);
-
 public:
     explicit GoogleEarthView(QWidget *parent=NULL);
 

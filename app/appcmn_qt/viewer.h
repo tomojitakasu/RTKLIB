@@ -18,6 +18,7 @@ protected:
     void showEvent(QShowEvent*);
 
     ViewerOptDialog *viewerOptDialog;
+
 public slots:
     void BtnCloseClick();
     void BtnReadClick();

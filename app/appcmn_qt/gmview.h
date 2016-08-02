@@ -64,6 +64,7 @@ public:
     int FixCent;
 
     explicit GoogleMapView(QWidget *parent=NULL);
+
     int  GetState(void);
     void SetView(double lat, double lon, int zoom);
     void SetCent(double lat, double lon);

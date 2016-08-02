@@ -23,6 +23,7 @@ class ConvDialog;
 class ProcessingThread : public QThread
 {
     Q_OBJECT
+
 public:
     prcopt_t prcopt;
     solopt_t solopt;
@@ -35,8 +36,10 @@ public:
 
     explicit ProcessingThread(QObject *parent);
     ~ProcessingThread();
+
     void addInput(const QString &);
     void addList(char * &sta, const QString & list);
+
 protected:
     void run();
 
@@ -93,6 +96,7 @@ public slots:
     void FormCreate          ();
     void ProcessingFinished  (int);
     void ShowMsg(const QString  &msg);
+
 protected:
     void showEvent           (QShowEvent*);
     void closeEvent          (QCloseEvent*);
@@ -100,7 +104,6 @@ protected:
     void  dropEvent             (QDropEvent *event);
 
 private:
-
     OptDialog	 *optDialog;
     ConvDialog *convDialog;
     TextViewer *textViewer;
@@ -159,6 +162,7 @@ public:
     QString RovList,BaseList;
 	
     void ViewFile(const QString &file);
+
     explicit MainForm(QWidget *parent=0);
 };
 

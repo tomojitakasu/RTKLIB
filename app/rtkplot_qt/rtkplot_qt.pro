@@ -4,17 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += widgets core gui xml
-
-greaterThan(QT_MAJOR_VERSION, 4) {
-    QT += widgets serialport
-    DEFINES += QT5
-}
-
-lessThan(QT_MAJOR_VERSION, 5) {
-    LIBS += -lqextserialport-1.2
-    DEFINES += QEXTSERIALPORT
-}
+QT       += widgets core gui xml serialport
 
 qtHaveModule(webenginewidgets) {
     QT += webenginewidgets

@@ -6,11 +6,6 @@
 
 QT       += widgets core gui
 
-greaterThan(QT_MAJOR_VERSION, 4) {
-    QT += widgets
-    DEFINES += QT5
-}
-
 include(../../RTKLib.pri)
 
 TARGET = rtkpost_qt

@@ -44,89 +44,7 @@
       <property name="bottomMargin">
        <number>0</number>
       </property>
-      <property name="spacing">
-       <number>0</number>
-      </property>
-      <item row="4" column="1">
-       <widget class="QComboBox" name="TraceLevel">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <item>
-         <property name="text">
-          <string>OFF</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Level 1</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Level 2</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Level 3</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Level 4</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Level 5</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="5" column="0">
-       <widget class="QLabel" name="Label3">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Proxy Address</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QLineEdit" name="NCol">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>35</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="Label6">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string># Columns for Test</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
+      <item row="4" column="0">
        <widget class="QLabel" name="Label5">
         <property name="enabled">
          <bool>true</bool>
@@ -139,59 +57,7 @@
         </property>
        </widget>
       </item>
-      <item row="5" column="1" colspan="2">
-       <widget class="QLineEdit" name="Proxy">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item row="9" column="0" colspan="3">
-       <widget class="QLineEdit" name="UrlFile">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="0">
-       <widget class="QLabel" name="Label4">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Download Log File</string>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="1">
-       <widget class="QCheckBox" name="LogAppend">
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Append</string>
-        </property>
-        <property name="checked">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="8" column="2">
+      <item row="9" column="2">
        <widget class="QPushButton" name="BtnUrlFile">
         <property name="enabled">
          <bool>true</bool>
@@ -233,8 +99,8 @@
         </property>
        </widget>
       </item>
-      <item row="7" column="0" colspan="3">
-       <widget class="QLineEdit" name="LogFile">
+      <item row="7" column="2">
+       <widget class="QPushButton" name="BtnLogFile">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -242,11 +108,14 @@
          <string/>
         </property>
         <property name="text">
-         <string/>
+         <string>...</string>
+        </property>
+        <property name="flat">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
-      <item row="8" column="0" colspan="2">
+      <item row="9" column="0" colspan="2">
        <widget class="QLabel" name="Label1">
         <property name="enabled">
          <bool>true</bool>
@@ -259,7 +128,33 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="1">
+      <item row="5" column="0">
+       <widget class="QLabel" name="Label2">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Output Debug Trace</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="Label6">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string># Columns for Test</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
        <widget class="QComboBox" name="DateFormat">
         <property name="enabled">
          <bool>true</bool>
@@ -284,8 +179,8 @@
         </item>
        </widget>
       </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="Label2">
+      <item row="10" column="0" colspan="3">
+       <widget class="QLineEdit" name="UrlFile">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -293,12 +188,12 @@
          <string/>
         </property>
         <property name="text">
-         <string>Output Debug Trace</string>
+         <string/>
         </property>
        </widget>
       </item>
-      <item row="6" column="2">
-       <widget class="QPushButton" name="BtnLogFile">
+      <item row="6" column="0">
+       <widget class="QLabel" name="Label3">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -306,10 +201,106 @@
          <string/>
         </property>
         <property name="text">
-         <string>...</string>
+         <string>Proxy Address</string>
         </property>
-        <property name="flat">
+       </widget>
+      </item>
+      <item row="7" column="0">
+       <widget class="QLabel" name="Label4">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Download Log File</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="1">
+       <widget class="QCheckBox" name="LogAppend">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Append</string>
+        </property>
+        <property name="checked">
          <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="0" colspan="3">
+       <widget class="QLineEdit" name="LogFile">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="QComboBox" name="TraceLevel">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <item>
+         <property name="text">
+          <string>OFF</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Level 1</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Level 2</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Level 3</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Level 4</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Level 5</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="6" column="1" colspan="2">
+       <widget class="QLineEdit" name="Proxy">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QSpinBox" name="NCol">
+        <property name="maximum">
+         <number>9999</number>
         </property>
        </widget>
       </item>

@@ -23,6 +23,7 @@ class FtpOptDialog;
 class MainForm : public QDialog, private Ui::MainForm
 {
     Q_OBJECT
+
 public slots:
     void BtnExitClick();
     void BtnInputClick();
@@ -51,6 +52,7 @@ public slots:
     void BtnConv1Click();
     void BtnConv2Click();
     void BtnConv3Click();
+
 protected:
     void closeEvent(QCloseEvent*);
 
@@ -85,6 +87,7 @@ private:
     void SetTrayIcon(int index);
     void LoadOpt(void);
     void SaveOpt(void);
+
 public:
     explicit MainForm(QWidget *parent=0);
 };

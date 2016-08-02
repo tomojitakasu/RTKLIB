@@ -21,8 +21,10 @@ public slots:
     void PntListSetEditText();
     void PntListClick();
     void PntListDblClick(QTableWidgetItem *w);
+
 private:
     void UpdatePoint(void);
+
 public:
 	double Pos[3];
 	int FontScale;

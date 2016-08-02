@@ -15,6 +15,7 @@ class QCloseEvent;
 class MainForm : public QDialog, private Ui::MainForm
 {
     Q_OBJECT
+
 protected:
     void showEvent(QShowEvent *);
     void closeEvent(QCloseEvent *);
@@ -38,6 +39,7 @@ private:
     int Tray;
 	
     int ExecCmd(const QString &cmd);
+
 public:
     explicit MainForm(QWidget *parent=0);
 };

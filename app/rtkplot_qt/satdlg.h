@@ -24,6 +24,7 @@ protected:
 
 public:
 	int ValidSat[36];
+
     explicit SatDialog(QWidget * parent=NULL);
 };
 //---------------------------------------------------------------------------

@@ -84,6 +84,7 @@ private:
     void ReadAntList(void);
     void UpdateEnable(void);
     void UpdateEnableExtErr(void);
+
 public:
 	exterr_t ExtErr;
 	

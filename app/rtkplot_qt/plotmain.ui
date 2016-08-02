@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1124</width>
-    <height>662</height>
+    <width>1195</width>
+    <height>664</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -90,9 +90,6 @@
              <string/>
             </property>
             <layout class="QHBoxLayout" name="horizontalLayout">
-             <property name="spacing">
-              <number>0</number>
-             </property>
              <property name="leftMargin">
               <number>0</number>
              </property>
@@ -222,9 +219,6 @@
                 <string/>
                </property>
                <layout class="QHBoxLayout" name="horizontalLayout_2">
-                <property name="spacing">
-                 <number>0</number>
-                </property>
                 <property name="leftMargin">
                  <number>0</number>
                 </property>
@@ -373,9 +367,6 @@
                 <string/>
                </property>
                <layout class="QHBoxLayout" name="horizontalLayout_3">
-                <property name="spacing">
-                 <number>0</number>
-                </property>
                 <property name="leftMargin">
                  <number>0</number>
                 </property>
@@ -568,9 +559,6 @@
                 <string/>
                </property>
                <layout class="QHBoxLayout" name="horizontalLayout_4">
-                <property name="spacing">
-                 <number>0</number>
-                </property>
                 <property name="leftMargin">
                  <number>0</number>
                 </property>
@@ -951,9 +939,6 @@
              <string/>
             </property>
             <layout class="QHBoxLayout" name="horizontalLayout_7">
-             <property name="spacing">
-              <number>0</number>
-             </property>
              <property name="leftMargin">
               <number>0</number>
              </property>
@@ -1045,9 +1030,6 @@
                 <string/>
                </property>
                <layout class="QHBoxLayout" name="horizontalLayout_6">
-                <property name="spacing">
-                 <number>0</number>
-                </property>
                 <property name="leftMargin">
                  <number>0</number>
                 </property>
@@ -1348,8 +1330,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1124</width>
-     <height>27</height>
+     <width>1195</width>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="MenuFile">

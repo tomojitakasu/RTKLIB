@@ -4,17 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += widgets core gui
-
-greaterThan(QT_MAJOR_VERSION, 4) {
-    QT += widgets serialport
-    DEFINES += QT5
-}
-
-lessThan(QT_MAJOR_VERSION, 5) {
-    LIBS += -lqextserialport-1.2
-    DEFINES += QEXTSERIALPORT
-}
+QT       += widgets core gui serialport
 
 include(../../RTKLib.pri)
 

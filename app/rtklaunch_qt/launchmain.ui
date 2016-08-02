@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>196</width>
-    <height>39</height>
+    <width>232</width>
+    <height>45</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -35,9 +35,6 @@
    <property name="bottomMargin">
     <number>0</number>
    </property>
-   <property name="spacing">
-    <number>0</number>
-   </property>
    <item row="0" column="2">
     <widget class="QPushButton" name="BtnStr">
      <property name="enabled">
@@ -50,7 +47,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../rtkget_qt/rtkget_qt.qrc">
+      <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
        <normaloff>:/icons/rtk6.bmp</normaloff>:/icons/rtk6.bmp</iconset>
      </property>
      <property name="flat">
@@ -70,7 +67,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../rtkget_qt/rtkget_qt.qrc">
+      <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
        <normaloff>:/icons/rtk5.bmp</normaloff>:/icons/rtk5.bmp</iconset>
      </property>
      <property name="flat">
@@ -90,7 +87,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../rtkget_qt/rtkget_qt.qrc">
+      <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
        <normaloff>:/icons/rtk3.bmp</normaloff>:/icons/rtk3.bmp</iconset>
      </property>
      <property name="flat">
@@ -110,7 +107,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../rtkget_qt/rtkget_qt.qrc">
+      <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
        <normaloff>:/icons/rtk2.bmp</normaloff>:/icons/rtk2.bmp</iconset>
      </property>
      <property name="flat">
@@ -130,7 +127,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../rtkget_qt/rtkget_qt.qrc">
+      <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
        <normaloff>:/icons/rtk1.bmp</normaloff>:/icons/rtk1.bmp</iconset>
      </property>
      <property name="flat">
@@ -150,7 +147,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../rtkget_qt/rtkget_qt.qrc">
+      <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
        <normaloff>:/icons/rtk7.bmp</normaloff>:/icons/rtk7.bmp</iconset>
      </property>
      <property name="flat">
@@ -170,7 +167,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../rtkget_qt/rtkget_qt.qrc">
+      <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
        <normaloff>:/icons/rtk8.bmp</normaloff>:/icons/rtk8.bmp</iconset>
      </property>
      <property name="flat">
@@ -202,7 +199,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../rtkget_qt/rtkget_qt.qrc">
+      <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
        <normaloff>:/buttons/sqr.bmp</normaloff>:/buttons/sqr.bmp</iconset>
      </property>
      <property name="flat">
@@ -213,7 +210,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../rtkget_qt/rtkget_qt.qrc"/>
+  <include location="../rtkconv_qt/rtkconv_qt.qrc"/>
  </resources>
  <connections/>
 </ui>

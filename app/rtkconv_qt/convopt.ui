@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>644</width>
-    <height>559</height>
+    <width>629</width>
+    <height>474</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,9 +20,6 @@
    <item>
     <widget class="QWidget" name="widget_2" native="true">
      <layout class="QHBoxLayout" name="horizontalLayout_5">
-      <property name="spacing">
-       <number>0</number>
-      </property>
       <property name="leftMargin">
        <number>0</number>
       </property>
@@ -141,6 +138,86 @@
       <string/>
      </property>
      <layout class="QGridLayout" name="gridLayout">
+      <item row="9" column="0" colspan="7">
+       <widget class="QWidget" name="options" native="true">
+        <layout class="QHBoxLayout" name="horizontalLayout_7">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QCheckBox" name="OutTime">
+           <property name="toolTip">
+            <string/>
+           </property>
+           <property name="text">
+            <string>Time Corr</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="ScanObs">
+           <property name="toolTip">
+            <string/>
+           </property>
+           <property name="text">
+            <string>Scan Obs Types</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="OutIono">
+           <property name="toolTip">
+            <string/>
+           </property>
+           <property name="text">
+            <string>Iono Corr</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="OutLeaps">
+           <property name="toolTip">
+            <string/>
+           </property>
+           <property name="text">
+            <string>Leap Sec</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="HalfCyc">
+           <property name="text">
+            <string>Half Cyc Corr</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
       <item row="3" column="5" colspan="2">
        <widget class="QLineEdit" name="MarkerType">
         <property name="enabled">
@@ -167,7 +244,7 @@
         </property>
        </widget>
       </item>
-      <item row="6" column="1">
+      <item row="7" column="1">
        <widget class="QCheckBox" name="AutoPos">
         <property name="toolTip">
          <string/>
@@ -193,7 +270,7 @@
         </property>
        </widget>
       </item>
-      <item row="6" column="0">
+      <item row="7" column="0">
        <widget class="QLabel" name="Label6">
         <property name="enabled">
          <bool>true</bool>
@@ -232,20 +309,7 @@
         </property>
        </widget>
       </item>
-      <item row="7" column="2">
-       <widget class="QLineEdit" name="AntDel0">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>0.0000</string>
-        </property>
-       </widget>
-      </item>
-      <item row="7" column="0">
+      <item row="8" column="0">
        <widget class="QLabel" name="Label7">
         <property name="enabled">
          <bool>true</bool>
@@ -268,19 +332,6 @@
         </property>
         <property name="text">
          <string/>
-        </property>
-       </widget>
-      </item>
-      <item row="7" column="5" colspan="2">
-       <widget class="QLineEdit" name="AntDel2">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>0.0000</string>
         </property>
        </widget>
       </item>
@@ -375,32 +426,6 @@
         </property>
        </widget>
       </item>
-      <item row="6" column="5" colspan="2">
-       <widget class="QLineEdit" name="AppPos2">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>0.0000</string>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="2">
-       <widget class="QLineEdit" name="AppPos0">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>0.0000</string>
-        </property>
-       </widget>
-      </item>
       <item row="3" column="0">
        <widget class="QLabel" name="Label1">
         <property name="enabled">
@@ -479,110 +504,73 @@
         </property>
        </widget>
       </item>
+      <item row="7" column="2">
+       <widget class="QDoubleSpinBox" name="AppPos0">
+        <property name="suffix">
+         <string> m</string>
+        </property>
+        <property name="decimals">
+         <number>4</number>
+        </property>
+        <property name="maximum">
+         <double>1000000.000000000000000</double>
+        </property>
+       </widget>
+      </item>
       <item row="7" column="3" colspan="2">
-       <widget class="QLineEdit" name="AntDel1">
-        <property name="enabled">
-         <bool>true</bool>
+       <widget class="QDoubleSpinBox" name="AppPos1">
+        <property name="suffix">
+         <string> m</string>
         </property>
-        <property name="toolTip">
-         <string/>
+        <property name="decimals">
+         <number>4</number>
         </property>
-        <property name="text">
-         <string>0.0000</string>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="3" colspan="2">
-       <widget class="QLineEdit" name="AppPos1">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>0.0000</string>
+        <property name="maximum">
+         <double>1000000.000000000000000</double>
         </property>
        </widget>
       </item>
-      <item row="8" column="0" colspan="7">
-       <widget class="QWidget" name="options" native="true">
-        <layout class="QHBoxLayout" name="horizontalLayout_7">
-         <property name="spacing">
-          <number>0</number>
-         </property>
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
-         <item>
-          <widget class="QCheckBox" name="OutTime">
-           <property name="toolTip">
-            <string/>
-           </property>
-           <property name="text">
-            <string>Time Corr</string>
-           </property>
-           <property name="checked">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="ScanObs">
-           <property name="toolTip">
-            <string/>
-           </property>
-           <property name="text">
-            <string>Scan Obs Types</string>
-           </property>
-           <property name="checked">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="OutIono">
-           <property name="toolTip">
-            <string/>
-           </property>
-           <property name="text">
-            <string>Iono Corr</string>
-           </property>
-           <property name="checked">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="OutLeaps">
-           <property name="toolTip">
-            <string/>
-           </property>
-           <property name="text">
-            <string>Leap Sec</string>
-           </property>
-           <property name="checked">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="HalfCyc">
-           <property name="text">
-            <string>Half Cyc Corr</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
+      <item row="7" column="5" colspan="2">
+       <widget class="QDoubleSpinBox" name="AppPos2">
+        <property name="suffix">
+         <string> m</string>
+        </property>
+        <property name="decimals">
+         <number>4</number>
+        </property>
+        <property name="maximum">
+         <double>1000000.000000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="2">
+       <widget class="QDoubleSpinBox" name="AntDel0">
+        <property name="suffix">
+         <string> m</string>
+        </property>
+        <property name="decimals">
+         <number>4</number>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="5" colspan="2">
+       <widget class="QDoubleSpinBox" name="AntDel2">
+        <property name="suffix">
+         <string> m</string>
+        </property>
+        <property name="decimals">
+         <number>4</number>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="3" colspan="2">
+       <widget class="QDoubleSpinBox" name="AntDel1">
+        <property name="suffix">
+         <string> m</string>
+        </property>
+        <property name="decimals">
+         <number>4</number>
+        </property>
        </widget>
       </item>
      </layout>
@@ -601,9 +589,6 @@
        <number>0</number>
       </property>
       <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <property name="spacing">
        <number>0</number>
       </property>
       <item row="2" column="2">
@@ -735,6 +720,21 @@
    <item>
     <widget class="QWidget" name="widget_4" native="true">
      <layout class="QHBoxLayout" name="horizontalLayout_6">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
       <item>
        <widget class="QGroupBox" name="GroupBox3">
         <property name="toolTip">
@@ -744,21 +744,6 @@
          <string>Observation Types</string>
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <property name="spacing">
-          <number>0</number>
-         </property>
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
          <item>
           <widget class="QCheckBox" name="Obs1">
            <property name="toolTip">
@@ -823,21 +808,6 @@
          <string>Frequencies</string>
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout_3">
-         <property name="spacing">
-          <number>0</number>
-         </property>
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
          <item>
           <widget class="QCheckBox" name="Freq1">
            <property name="toolTip">
@@ -945,6 +915,18 @@
    <item>
     <widget class="QWidget" name="widget" native="true">
      <layout class="QHBoxLayout" name="horizontalLayout_4">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
       <item>
        <widget class="QLabel" name="Label8">
         <property name="enabled">

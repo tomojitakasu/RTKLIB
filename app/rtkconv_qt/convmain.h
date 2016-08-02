@@ -56,11 +56,13 @@ protected:
 class MainWindow : public QMainWindow, public Ui::MainWindow
 {
     Q_OBJECT
+
 protected:
     void showEvent           (QShowEvent*);
     void closeEvent          (QCloseEvent*);
-    void dragEnterEvent      (QDragEnterEvent *event);
-    void dropEvent           (QDropEvent *event);
+    void dragEnterEvent      (QDragEnterEvent *);
+    void dropEvent           (QDropEvent *);
+
 public slots:
     void FormCreate          ();
 
@@ -106,8 +108,7 @@ public slots:
 private:
     QString IniFile,CmdPostExe;
     ConversionThread *conversionThread;
-//    void DropFiles(TWMDropFiles msg); // for files drop
-	
+
     void ReadList(QComboBox* combo, QSettings *ini, const QString &key);
     void WriteList(QSettings *ini, const QString &key, const QComboBox *combo);
     void AddHist(QComboBox *combo);

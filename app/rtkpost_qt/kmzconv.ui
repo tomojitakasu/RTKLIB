@@ -44,175 +44,7 @@
       <property name="bottomMargin">
        <number>0</number>
       </property>
-      <item row="1" column="0">
-       <widget class="QCheckBox" name="TimeSpan">
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Time Span</string>
-        </property>
-        <property name="checked">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="2" colspan="2">
-       <widget class="QComboBox" name="TrackColor">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <item>
-         <property name="text">
-          <string>OFF</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>White</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Green</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Orange</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Red</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Yellow</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="1" column="5">
-       <widget class="QDateEdit" name="TimeY2">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="4" colspan="2">
-       <widget class="QLabel" name="Label5">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Q-Flags</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="2" colspan="2">
-       <widget class="QLineEdit" name="TimeInt">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>1</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="Label2">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Output Waypoint</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="Label1">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Output Track</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="2" colspan="2">
-       <widget class="QComboBox" name="PointColor">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <item>
-         <property name="text">
-          <string>OFF</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>White</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Green</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Orange</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Red</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>By Q-Flag</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="6" column="0" colspan="3">
-       <widget class="QLabel" name="Label7">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Input/Output/GE Exe File</string>
-        </property>
-       </widget>
-      </item>
-      <item row="9" column="8">
+      <item row="11" column="8">
        <widget class="QPushButton" name="BtnGoogleEarthFile">
         <property name="enabled">
          <bool>true</bool>
@@ -265,46 +97,20 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="0" colspan="2">
+      <item row="4" column="0" colspan="2">
        <widget class="QCheckBox" name="TimeIntF">
         <property name="toolTip">
          <string/>
         </property>
         <property name="text">
-         <string>Interval (s)</string>
+         <string>Interval</string>
         </property>
         <property name="checked">
          <bool>false</bool>
         </property>
        </widget>
       </item>
-      <item row="5" column="5" colspan="2">
-       <widget class="QLineEdit" name="Offset2">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>0</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="7" colspan="2">
-       <widget class="QLineEdit" name="Offset3">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>0</string>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="7">
+      <item row="8" column="7">
        <widget class="QCheckBox" name="Compress">
         <property name="toolTip">
          <string/>
@@ -317,7 +123,7 @@
         </property>
        </widget>
       </item>
-      <item row="10" column="0" colspan="9">
+      <item row="12" column="0" colspan="9">
        <widget class="QLabel" name="Message">
         <property name="enabled">
          <bool>true</bool>
@@ -342,7 +148,7 @@
         </property>
        </widget>
       </item>
-      <item row="8" column="0" colspan="9">
+      <item row="10" column="0" colspan="9">
        <widget class="QLineEdit" name="OutputFile">
         <property name="enabled">
          <bool>true</bool>
@@ -355,20 +161,7 @@
         </property>
        </widget>
       </item>
-      <item row="5" column="3" colspan="2">
-       <widget class="QLineEdit" name="Offset1">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>0</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="6" colspan="3">
+      <item row="4" column="6" colspan="3">
        <widget class="QComboBox" name="QFlags">
         <property name="enabled">
          <bool>true</bool>
@@ -413,7 +206,7 @@
         </item>
        </widget>
       </item>
-      <item row="3" column="6" colspan="3">
+      <item row="5" column="6" colspan="3">
        <widget class="QComboBox" name="OutputAlt">
         <property name="enabled">
          <bool>true</bool>
@@ -438,44 +231,7 @@
         </item>
        </widget>
       </item>
-      <item row="1" column="3" colspan="2">
-       <widget class="QTimeEdit" name="TimeH1">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="7" colspan="2">
-       <widget class="QTimeEdit" name="TimeH2">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1" colspan="2">
-       <widget class="QDateEdit" name="TimeY1">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="date">
-         <date>
-          <year>2000</year>
-          <month>1</month>
-          <day>2</day>
-         </date>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="4" colspan="2">
+      <item row="6" column="4" colspan="2">
        <widget class="QLabel" name="Label4">
         <property name="enabled">
          <bool>true</bool>
@@ -488,7 +244,7 @@
         </property>
        </widget>
       </item>
-      <item row="7" column="0" colspan="9">
+      <item row="9" column="0" colspan="9">
        <widget class="QLineEdit" name="InputFile">
         <property name="enabled">
          <bool>true</bool>
@@ -501,7 +257,7 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="4" colspan="2">
+      <item row="5" column="4" colspan="2">
        <widget class="QLabel" name="Label3">
         <property name="enabled">
          <bool>true</bool>
@@ -514,7 +270,7 @@
         </property>
        </widget>
       </item>
-      <item row="9" column="0" colspan="8">
+      <item row="11" column="0" colspan="8">
        <widget class="QLineEdit" name="GoogleEarthFile">
         <property name="enabled">
          <bool>true</bool>
@@ -527,7 +283,7 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="6" colspan="3">
+      <item row="6" column="6" colspan="3">
        <widget class="QComboBox" name="OutputTime">
         <property name="enabled">
          <bool>true</bool>
@@ -557,7 +313,7 @@
         </item>
        </widget>
       </item>
-      <item row="6" column="8">
+      <item row="8" column="8">
        <widget class="QPushButton" name="BtnInputFile">
         <property name="enabled">
          <bool>true</bool>
@@ -610,13 +366,13 @@
         </property>
        </widget>
       </item>
-      <item row="5" column="0" colspan="3">
+      <item row="7" column="0" colspan="3">
        <widget class="QCheckBox" name="AddOffset">
         <property name="toolTip">
          <string/>
         </property>
         <property name="text">
-         <string>Add Offset E/N/U (m)</string>
+         <string>Add Offset E/N/U</string>
         </property>
         <property name="checked">
          <bool>false</bool>
@@ -641,6 +397,220 @@
        <widget class="QRadioButton" name="FormatGPX">
         <property name="text">
          <string>GP&amp;X</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2" colspan="3">
+       <widget class="QDateTimeEdit" name="dateTime1">
+        <property name="calendarPopup">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QCheckBox" name="TimeSpan">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Time Span</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="2" colspan="2">
+       <widget class="QComboBox" name="TrackColor">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <item>
+         <property name="text">
+          <string>OFF</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>White</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Green</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Orange</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Red</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Yellow</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="4" column="4" colspan="2">
+       <widget class="QLabel" name="Label5">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Q-Flags</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="Label2">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Output Waypoint</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLabel" name="Label1">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Output Track</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="2" colspan="2">
+       <widget class="QComboBox" name="PointColor">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <item>
+         <property name="text">
+          <string>OFF</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>White</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Green</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Orange</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Red</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>By Q-Flag</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="8" column="0" colspan="3">
+       <widget class="QLabel" name="Label7">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Input/Output/GE Exe File</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="5" colspan="4">
+       <widget class="QDateTimeEdit" name="dateTime2">
+        <property name="calendarPopup">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="2" colspan="2">
+       <widget class="QDoubleSpinBox" name="TimeInt">
+        <property name="suffix">
+         <string> s</string>
+        </property>
+        <property name="decimals">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <double>100000.000000000000000</double>
+        </property>
+        <property name="value">
+         <double>1.000000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="3" colspan="2">
+       <widget class="QDoubleSpinBox" name="Offset1">
+        <property name="suffix">
+         <string> m</string>
+        </property>
+        <property name="decimals">
+         <number>4</number>
+        </property>
+        <property name="maximum">
+         <double>1000.000000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="5" colspan="2">
+       <widget class="QDoubleSpinBox" name="Offset2">
+        <property name="suffix">
+         <string> m</string>
+        </property>
+        <property name="decimals">
+         <number>4</number>
+        </property>
+        <property name="maximum">
+         <double>10000.000000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="7" colspan="2">
+       <widget class="QDoubleSpinBox" name="Offset3">
+        <property name="suffix">
+         <string> m</string>
+        </property>
+        <property name="decimals">
+         <number>4</number>
+        </property>
+        <property name="maximum">
+         <double>10000.000000000000000</double>
         </property>
        </widget>
       </item>
@@ -674,7 +644,7 @@
          <string>&amp;View....</string>
         </property>
         <property name="icon">
-         <iconset resource="rtkpost_qt.qrc">
+         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
           <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
         </property>
        </widget>
@@ -717,7 +687,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="rtkpost_qt.qrc"/>
+  <include location="../rtkconv_qt/rtkconv_qt.qrc"/>
  </resources>
  <connections/>
 </ui>

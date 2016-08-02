@@ -273,7 +273,6 @@ void MainForm::showEvent(QShowEvent* event)
     QComboBox *ifile[]={InputFile3,InputFile4,InputFile5,InputFile6};
     int inputflag=0;
 
-#ifdef QT5
     QCommandLineParser parser;
     parser.setApplicationDescription("RTK post");
     parser.addHelpOption();
@@ -365,19 +364,11 @@ void MainForm::showEvent(QShowEvent* event)
     }
     if (parser.isSet(timeStartOption)) {
         TimeStart->setChecked(true);
-        QStringList dateTime=parser.value(timeStartOption).split(" ");
-        if (dateTime.size()!=2) {
-            TimeY1->setDate(QDate::fromString(dateTime.at(0),"yyyy/MM/dd"));
-            TimeH1->setTime(QTime::fromString(dateTime.at(0),"hh:mm:ss"));
-        };
+        dateTime1->setDateTime(QDateTime::fromString(parser.value(timeStartOption),"yyyy/MM/dd hh:mm:ss"));
     }
     if (parser.isSet(timeEndOption)) {
         TimeEnd->setChecked(true);
-        QStringList dateTime=parser.value(timeEndOption).split(" ");
-        if (dateTime.size()!=2) {
-            TimeY2->setDate(QDate::fromString(dateTime.at(0),"yyyy/MM/dd"));
-            TimeH2->setTime(QTime::fromString(dateTime.at(0),"hh:mm:ss"));
-        };
+        dateTime2->setDateTime(QDateTime::fromString(parser.value(timeEndOption),"yyyy/MM/dd hh:mm:ss"));
     }
     if (parser.isSet(timeIntervalOption)) {
         TimeIntF->setChecked(true);
@@ -387,7 +378,6 @@ void MainForm::showEvent(QShowEvent* event)
         TimeUnitF->setChecked(true);
         TimeUnit->setText(parser.value(timeUnitOption));
     }
-#endif /*TODO: alternative for QT4 */
 
     LoadOpt();
 
@@ -1140,7 +1130,7 @@ void MainForm::ShowMsg(const QString &msg)
 // get time from time-1 -----------------------------------------------------
 gtime_t MainForm::GetTime1(void)
 {
-    QDateTime time(TimeY1->date(),TimeH1->time());
+    QDateTime time(dateTime1->dateTime());
 
     gtime_t t;
     t.time=time.toTime_t();t.sec=time.time().msec()/1000;
@@ -1150,7 +1140,7 @@ gtime_t MainForm::GetTime1(void)
 // get time from time-2 -----------------------------------------------------
 gtime_t MainForm::GetTime2(void)
 {
-    QDateTime time(TimeY2->date(),TimeH2->time());
+    QDateTime time(dateTime2->dateTime());
 
     gtime_t t;
     t.time=time.toTime_t();t.sec=time.time().msec()/1000;
@@ -1161,15 +1151,13 @@ gtime_t MainForm::GetTime2(void)
 void MainForm::SetTime1(gtime_t time)
 {
     QDateTime t=QDateTime::fromTime_t(time.time); t=t.addSecs(time.sec);
-    TimeY1->setTime(t.time());
-    TimeH1->setDate(t.date());
+    dateTime1->setDateTime(t);
 }
 // set time to time-2 -------------------------------------------------------
 void MainForm::SetTime2(gtime_t time)
 {
     QDateTime t=QDateTime::fromTime_t(time.time); t=t.addSecs(time.sec);
-    TimeY2->setTime(t.time());
-    TimeH2->setDate(t.date());
+    dateTime2->setDateTime(t);
 }
 // update enable/disable of widgets -----------------------------------------
 void MainForm::UpdateEnable(void)
@@ -1184,11 +1172,9 @@ void MainForm::UpdateEnable(void)
     BtnOutputView1 ->setEnabled(DebugStatus>0);
     BtnOutputView2 ->setEnabled(DebugTrace >0);
     LabelInputFile3->setEnabled(moder);
-    TimeY1         ->setEnabled(TimeStart->isChecked());
-    TimeH1         ->setEnabled(TimeStart->isChecked());
+    dateTime1      ->setEnabled(TimeStart->isChecked());
     BtnTime1       ->setEnabled(TimeStart->isChecked());
-    TimeY2         ->setEnabled(TimeEnd  ->isChecked());
-    TimeH2         ->setEnabled(TimeEnd  ->isChecked());
+    dateTime2      ->setEnabled(TimeEnd  ->isChecked());
     BtnTime2       ->setEnabled(TimeEnd  ->isChecked());
     TimeInt        ->setEnabled(TimeIntF ->isChecked());
     LabelTimeInt   ->setEnabled(TimeIntF ->isChecked());
@@ -1206,10 +1192,10 @@ void MainForm::LoadOpt(void)
     
     TimeStart->setChecked(ini.value("set/timestart",   0).toBool());
     TimeEnd->setChecked(ini.value("set/timeend",     0).toBool());
-    TimeY1->setDate(ini.value ("set/timey1",      "2000/01/01").toDate());
-    TimeH1->setTime(ini.value ("set/timeh1",      "00:00:00").toTime());
-    TimeY2->setDate(ini.value ("set/timey2",      "2000/01/01").toDate());
-    TimeH2->setTime(ini.value ("set/timeh2",      "00:00:00").toTime());
+    dateTime1->setDate(ini.value ("set/timey1",      "2000/01/01").toDate());
+    dateTime1->setTime(ini.value ("set/timeh1",      "00:00:00").toTime());
+    dateTime2->setDate(ini.value ("set/timey2",      "2000/01/01").toDate());
+    dateTime2->setTime(ini.value ("set/timeh2",      "00:00:00").toTime());
     TimeIntF ->setChecked(ini.value("set/timeintf",    0).toBool());
     TimeInt->setCurrentText(ini.value ("set/timeint",     "0").toString());
     TimeUnitF->setChecked(ini.value("set/timeunitf",   0).toBool());
@@ -1381,19 +1367,19 @@ void MainForm::LoadOpt(void)
     
     convDialog->TimeSpan  ->setChecked(ini.value("conv/timespan",  0).toInt());
     convDialog->TimeIntF  ->setChecked(ini.value("conv/timeintf",  0).toInt());
-    convDialog->TimeY1    ->setDate(ini.value ("conv/timey1","2000/01/01").toDate());
-    convDialog->TimeH1    ->setTime(ini.value ("conv/timeh1","00:00:00"  ).toTime());
-    convDialog->TimeY2    ->setDate(ini.value ("conv/timey2","2000/01/01").toDate());
-    convDialog->TimeH2    ->setTime(ini.value ("conv/timeh2","00:00:00"  ).toTime());
-    convDialog->TimeInt   ->setText(ini.value ("conv/timeint", "0").toString());
+    convDialog->dateTime1 ->setDate(ini.value ("conv/timey1","2000/01/01").toDate());
+    convDialog->dateTime1 ->setTime(ini.value ("conv/timeh1","00:00:00"  ).toTime());
+    convDialog->dateTime2 ->setDate(ini.value ("conv/timey2","2000/01/01").toDate());
+    convDialog->dateTime2 ->setTime(ini.value ("conv/timeh2","00:00:00"  ).toTime());
+    convDialog->TimeInt   ->setValue(ini.value ("conv/timeint", 0.0).toDouble());
     convDialog->TrackColor->setCurrentIndex(ini.value("conv/trackcolor",5).toInt());
     convDialog->PointColor->setCurrentIndex(ini.value("conv/pointcolor",5).toInt());
     convDialog->OutputAlt ->setCurrentIndex(ini.value("conv/outputalt", 0).toInt());
     convDialog->OutputTime->setCurrentIndex(ini.value("conv/outputtime",0).toInt());
     convDialog->AddOffset ->setChecked(ini.value("conv/addoffset", 0).toInt());
-    convDialog->Offset1   ->setText(ini.value ("conv/offset1", "0").toString());
-    convDialog->Offset2   ->setText(ini.value ("conv/offset2", "0").toString());
-    convDialog->Offset3   ->setText(ini.value ("conv/offset3", "0").toString());
+    convDialog->Offset1   ->setValue(ini.value ("conv/offset1", "0").toDouble());
+    convDialog->Offset2   ->setValue(ini.value ("conv/offset2", "0").toDouble());
+    convDialog->Offset3   ->setValue(ini.value ("conv/offset3", "0").toDouble());
     convDialog->Compress  ->setChecked(ini.value("conv/compress",  0).toInt());
     convDialog->FormatKML ->setChecked(ini.value("conv/format",    0).toInt());
 
@@ -1407,15 +1393,15 @@ void MainForm::SaveOpt(void)
 {
     QSettings ini(IniFile,QSettings::IniFormat);
     
-    ini.setValue("set/timestart",   TimeStart ->isChecked()?1:0);
-    ini.setValue("set/timeend",     TimeEnd   ->isChecked()?1:0);
-    ini.setValue ("set/timey1",      TimeY1    ->text());
-    ini.setValue ("set/timeh1",      TimeH1    ->text());
-    ini.setValue ("set/timey2",      TimeY2    ->text());
-    ini.setValue ("set/timeh2",      TimeH2    ->text());
-    ini.setValue("set/timeintf",    TimeIntF  ->isChecked()?1:0);
+    ini.setValue ("set/timestart",   TimeStart ->isChecked()?1:0);
+    ini.setValue ("set/timeend",     TimeEnd   ->isChecked()?1:0);
+    ini.setValue ("set/timey1",      dateTime1    ->date());
+    ini.setValue ("set/timeh1",      dateTime1    ->time());
+    ini.setValue ("set/timey2",      dateTime2    ->date());
+    ini.setValue ("set/timeh2",      dateTime2    ->time());
+    ini.setValue ("set/timeintf",    TimeIntF  ->isChecked()?1:0);
     ini.setValue ("set/timeint",     TimeInt   ->currentText());
-    ini.setValue("set/timeunitf",   TimeUnitF ->isChecked()?1:0);
+    ini.setValue ("set/timeunitf",   TimeUnitF ->isChecked()?1:0);
     ini.setValue ("set/timeunit",    TimeUnit  ->text());
     ini.setValue ("set/inputfile1",  InputFile1->currentText());
     ini.setValue ("set/inputfile2",  InputFile2->currentText());
@@ -1423,7 +1409,7 @@ void MainForm::SaveOpt(void)
     ini.setValue ("set/inputfile4",  InputFile4->currentText());
     ini.setValue ("set/inputfile5",  InputFile5->currentText());
     ini.setValue ("set/inputfile6",  InputFile6->currentText());
-    ini.setValue("set/outputdirena",OutDirEna ->isChecked());
+    ini.setValue ("set/outputdirena",OutDirEna ->isChecked());
     ini.setValue ("set/outputdir",   OutDir    ->text());
     ini.setValue ("set/outputfile",  OutputFile->currentText());
     
@@ -1581,28 +1567,28 @@ void MainForm::SaveOpt(void)
     ini.setValue  ("opt/exterr_gpsglob0",ExtErr.gpsglob[0]);
     ini.setValue  ("opt/exterr_gpsglob1",ExtErr.gpsglob[1]);
     
-    ini.setValue("conv/timespan",   convDialog->TimeSpan  ->isChecked()  );
-    ini.setValue ("conv/timey1",     convDialog->TimeY1    ->text()     );
-    ini.setValue ("conv/timeh1",     convDialog->TimeH1    ->text()     );
-    ini.setValue ("conv/timey2",     convDialog->TimeY2    ->text()     );
-    ini.setValue ("conv/timeh2",     convDialog->TimeH2    ->text()     );
-    ini.setValue("conv/timeintf",   convDialog->TimeIntF  ->isChecked()  );
+    ini.setValue ("conv/timespan",   convDialog->TimeSpan  ->isChecked());
+    ini.setValue ("conv/timey1",     convDialog->dateTime1 ->date());
+    ini.setValue ("conv/timeh1",     convDialog->dateTime1 ->time());
+    ini.setValue ("conv/timey2",     convDialog->dateTime2 ->date());
+    ini.setValue ("conv/timeh2",     convDialog->dateTime2 ->time());
+    ini.setValue ("conv/timeintf",   convDialog->TimeIntF  ->isChecked()  );
     ini.setValue ("conv/timeint",    convDialog->TimeInt   ->text()     );
-    ini.setValue("conv/trackcolor", convDialog->TrackColor->currentIndex());
-    ini.setValue("conv/pointcolor", convDialog->PointColor->currentIndex());
-    ini.setValue("conv/outputalt",  convDialog->OutputAlt ->currentIndex());
-    ini.setValue("conv/outputtime", convDialog->OutputTime->currentIndex());
-    ini.setValue("conv/addoffset",  convDialog->AddOffset ->isChecked()  );
+    ini.setValue ("conv/trackcolor", convDialog->TrackColor->currentIndex());
+    ini.setValue ("conv/pointcolor", convDialog->PointColor->currentIndex());
+    ini.setValue ("conv/outputalt",  convDialog->OutputAlt ->currentIndex());
+    ini.setValue ("conv/outputtime", convDialog->OutputTime->currentIndex());
+    ini.setValue ("conv/addoffset",  convDialog->AddOffset ->isChecked()  );
     ini.setValue ("conv/offset1",    convDialog->Offset1   ->text()     );
     ini.setValue ("conv/offset2",    convDialog->Offset2   ->text()     );
     ini.setValue ("conv/offset3",    convDialog->Offset3   ->text()     );
-    ini.setValue("conv/compress",   convDialog->Compress  ->isChecked()  );
-    ini.setValue("conv/format",     convDialog->FormatKML ->isChecked()  );
+    ini.setValue ("conv/compress",   convDialog->Compress  ->isChecked()  );
+    ini.setValue ("conv/format",     convDialog->FormatKML ->isChecked()  );
 
-    ini.setValue("viewer/color1",textViewer->Color1  );
-    ini.setValue("viewer/color2",textViewer->Color2  );
-    ini.setValue("viewer/fontname",textViewer->FontD.family());
-    ini.setValue("viewer/fontsize",textViewer->FontD.pointSize());
+    ini.setValue ("viewer/color1",textViewer->Color1  );
+    ini.setValue ("viewer/color2",textViewer->Color2  );
+    ini.setValue ("viewer/fontname",textViewer->FontD.family());
+    ini.setValue ("viewer/fontsize",textViewer->FontD.pointSize());
 }
 //---------------------------------------------------------------------------
 

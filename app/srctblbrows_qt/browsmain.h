@@ -18,6 +18,7 @@ class QTimer;
 class MainForm : public QMainWindow, private Ui::MainForm
 {
     Q_OBJECT
+
 protected:
     void showEvent(QShowEvent*);
     void closeEvent(QCloseEvent*);

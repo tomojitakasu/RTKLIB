@@ -97,6 +97,7 @@ class TIMEPOS
 private:
     int nmax_;
     TIMEPOS(TIMEPOS &){}
+
 public:
     int n;
     gtime_t *t;
@@ -114,102 +115,102 @@ class Plot : public QMainWindow, public Ui::Plot
     Q_OBJECT
 
 protected:
-        void  mouseMoveEvent		(QMouseEvent*);
-        void  mousePressEvent		(QMouseEvent*);
-        void  mouseReleaseEvent		(QMouseEvent*);
-        void  mouseDoubleClickEvent (QMouseEvent*);
-        void  wheelEvent			(QWheelEvent*);
-        void  closeEvent            (QCloseEvent*);
-        void  keyPressEvent			(QKeyEvent *);
-        void  showEvent			    (QShowEvent*);
-        void  resizeEvent			(QResizeEvent *);
-        void  leaveEvent    		(QEvent*);
-        void  dragEnterEvent        (QDragEnterEvent *event);
-        void  dropEvent             (QDropEvent *event);
-        void  paintEvent            (QPaintEvent *event);
+    void  mouseMoveEvent		(QMouseEvent*);
+    void  mousePressEvent		(QMouseEvent*);
+    void  mouseReleaseEvent		(QMouseEvent*);
+    void  mouseDoubleClickEvent (QMouseEvent*);
+    void  wheelEvent			(QWheelEvent*);
+    void  closeEvent            (QCloseEvent*);
+    void  keyPressEvent			(QKeyEvent *);
+    void  showEvent			    (QShowEvent*);
+    void  resizeEvent			(QResizeEvent *);
+    void  leaveEvent    		(QEvent*);
+    void  dragEnterEvent        (QDragEnterEvent *event);
+    void  dropEvent             (QDropEvent *event);
+    void  paintEvent            (QPaintEvent *event);
 
 public slots:
-        void  MenuOpenSol1Click	();
-        void  MenuOpenSol2Click	();
-        void  MenuOpenMapImageClick();
-        void  MenuOpenShapeClick ();
-        void  MenuOpenObsClick	();
-        void  MenuOpenNavClick	();
-        void  MenuOpenElevMaskClick();
-        void  MenuConnectClick	();
-        void  MenuDisconnectClick ();
-        void  MenuPortClick		();
-        void  MenuReloadClick		();
-        void  MenuClearClick		();
-        void  MenuQuitClick		();
-	
-        void  MenuTimeClick		();
-        void  MenuMapImgClick		();
-        void  MenuWaypointClick	();
-        void  MenuSrcSolClick		();
-        void  MenuSrcObsClick		();
-        void  MenuQcObsClick		();
-        void  MenuCopyClick		();
-        void  MenuOptionsClick	();
-	
-        void  MenuToolBarClick	();
-        void  MenuStatusBarClick	();
-        void  MenuMonitor1Click	();
-        void  MenuMonitor2Click	();
-        void  MenuCenterOriClick	();
-        void  MenuFitHorizClick	();
-        void  MenuFitVertClick	();
-        void  MenuShowTrackClick	();
-        void  MenuFixHorizClick	();
-        void  MenuFixVertClick	();
-        void  MenuShowMapClick	();
-        void  MenuShowImgClick	();
-        void  MenuAnimStartClick	();
-        void  MenuAnimStopClick	();
-        void  MenuAboutClick		();
-	
-        void  BtnConnectClick		();
-        void  BtnSol1Click		();
-        void  BtnSol2Click		();
-        void  BtnSol12Click		();
-        void  BtnSol1DblClick		();
-        void  BtnSol2DblClick		();
-        void  BtnOn1Click			();
-        void  BtnOn2Click			();
-        void  BtnOn3Click			();
-        void  BtnRangeListClick	();
-        void  BtnAnimateClick		();
+    void  MenuOpenSol1Click	();
+    void  MenuOpenSol2Click	();
+    void  MenuOpenMapImageClick();
+    void  MenuOpenShapeClick ();
+    void  MenuOpenObsClick	();
+    void  MenuOpenNavClick	();
+    void  MenuOpenElevMaskClick();
+    void  MenuConnectClick	();
+    void  MenuDisconnectClick ();
+    void  MenuPortClick		();
+    void  MenuReloadClick		();
+    void  MenuClearClick		();
+    void  MenuQuitClick		();
 
-        void  PlotTypeSChange		();
-        void  QFlagChange			();
-        void  ObsTypeChange		();
-        void  DopTypeChange		();
-        void  SatListChange		();
-        void  TimeScrollChange	();
-        void  RangeListClick		();
+    void  MenuTimeClick		();
+    void  MenuMapImgClick		();
+    void  MenuWaypointClick	();
+    void  MenuSrcSolClick		();
+    void  MenuSrcObsClick		();
+    void  MenuQcObsClick		();
+    void  MenuCopyClick		();
+    void  MenuOptionsClick	();
 
-        void  TimerTimer			();
-	
-        void  MenuFileSelClick();
-        void  MenuSaveDopClick();
-        void  MenuSaveImageClick();
-        void  MenuGEClick();
-        void  MenuVisAnaClick();
-        void  MenuFixCentClick();
-        void  MenuGMClick();
-        void  MenuSaveSnrMpClick();
-        void  MenuOpenSkyImageClick();
-        void  MenuSkyImgClick();
-        void  MenuShowSkyplotClick();
-        void  MenuPlotGEClick();
-        void  MenuPlotGMClick();
-        void  MenuPlotGEGMClick();
-        void  MenuMaxClick();
-        void  MenuSaveElMaskClick();
-        void  MenuMapLayerClick();
-        void  BtnMessage2Click();
-        void  MenuOpenWaypointClick();
-        void  MenuSaveWaypointClick();
+    void  MenuToolBarClick	();
+    void  MenuStatusBarClick	();
+    void  MenuMonitor1Click	();
+    void  MenuMonitor2Click	();
+    void  MenuCenterOriClick	();
+    void  MenuFitHorizClick	();
+    void  MenuFitVertClick	();
+    void  MenuShowTrackClick	();
+    void  MenuFixHorizClick	();
+    void  MenuFixVertClick	();
+    void  MenuShowMapClick	();
+    void  MenuShowImgClick	();
+    void  MenuAnimStartClick	();
+    void  MenuAnimStopClick	();
+    void  MenuAboutClick		();
+
+    void  BtnConnectClick		();
+    void  BtnSol1Click		();
+    void  BtnSol2Click		();
+    void  BtnSol12Click		();
+    void  BtnSol1DblClick		();
+    void  BtnSol2DblClick		();
+    void  BtnOn1Click			();
+    void  BtnOn2Click			();
+    void  BtnOn3Click			();
+    void  BtnRangeListClick	();
+    void  BtnAnimateClick		();
+
+    void  PlotTypeSChange		();
+    void  QFlagChange			();
+    void  ObsTypeChange		();
+    void  DopTypeChange		();
+    void  SatListChange		();
+    void  TimeScrollChange	();
+    void  RangeListClick		();
+
+    void  TimerTimer			();
+
+    void  MenuFileSelClick();
+    void  MenuSaveDopClick();
+    void  MenuSaveImageClick();
+    void  MenuGEClick();
+    void  MenuVisAnaClick();
+    void  MenuFixCentClick();
+    void  MenuGMClick();
+    void  MenuSaveSnrMpClick();
+    void  MenuOpenSkyImageClick();
+    void  MenuSkyImgClick();
+    void  MenuShowSkyplotClick();
+    void  MenuPlotGEClick();
+    void  MenuPlotGMClick();
+    void  MenuPlotGEGMClick();
+    void  MenuMaxClick();
+    void  MenuSaveElMaskClick();
+    void  MenuMapLayerClick();
+    void  BtnMessage2Click();
+    void  MenuOpenWaypointClick();
+    void  MenuSaveWaypointClick();
 
 private:
     QPixmap Buff;
@@ -376,6 +377,7 @@ private:
     FileSelDialog *fileSelDialog;
     TextViewer *viewer;
     VecMapDialog *vecMapDialog;
+
 public:
     QImage SkyImageR;
     QString IniFile;
