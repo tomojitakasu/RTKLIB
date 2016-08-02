@@ -133,8 +133,8 @@ void RefDialog::LoadList(void)
 
         AddRef(n, pos, tokens.at(3), tokens.at(4));
 	}
-    if (n == 0)
-        StaList->setRowCount(0);
+    if (n == 0) StaList->setRowCount(0);
+
 	UpdateDist();
     setWindowTitle(StaPosFile);
 }

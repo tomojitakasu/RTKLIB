@@ -184,8 +184,7 @@ QString LogStrDialog::SetFilePath(const QString &p)
     if (TimeTagC->isChecked()) path += "::T";
     str = SwapIntv->currentText();
     str.toDouble(&okay);
-    if (okay)
-        path += "::S=" + str;
+    if (okay) path += "::S=" + str;
 	return path;
 }
 //---------------------------------------------------------------------------

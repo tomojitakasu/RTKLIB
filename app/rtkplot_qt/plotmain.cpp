@@ -1786,7 +1786,19 @@ void Plot::keyPressEvent(QKeyEvent *event)
     if (PlotType == PLOT_TRK) {
         GraphT->GetCent(xc, yc);
         GraphT->GetScale(xs, ys);
-        if (key == 1) if (!MenuFixHoriz->isChecked()) yc += fact * ys; if (key == 2) if (!MenuFixHoriz->isChecked()) yc -= fact * ys; if (key == 3) if (!MenuFixHoriz->isChecked()) xc -= fact * xs; if (key == 4) if (!MenuFixHoriz->isChecked()) xc += fact * xs; if (key == 11) {
+        if (key == 1) {
+            if (!MenuFixHoriz->isChecked()) yc += fact * ys;
+        }
+        if (key == 2) {
+            if (!MenuFixHoriz->isChecked()) yc -= fact * ys;
+        }
+        if (key == 3) {
+            if (!MenuFixHoriz->isChecked()) xc -= fact * xs;
+        }
+        if (key == 4) {
+            if (!MenuFixHoriz->isChecked()) xc += fact * xs;
+        }
+        if (key == 11) {
             xs /= sfact; ys /= sfact;
         }
         if (key == 12) {
@@ -1802,16 +1814,30 @@ void Plot::keyPressEvent(QKeyEvent *event)
         GraphG[1]->GetScale(xs, ys2);
         GraphG[2]->GetScale(xs, ys3);
         if (key == 1) {
-            if (!MenuFixVert->isChecked()) yc1 += fact * ys1; yc2 += fact * ys2; yc3 += fact * ys3;
+            if (!MenuFixVert->isChecked()) yc1 += fact * ys1;
+            yc2 += fact * ys2;
+            yc3 += fact * ys3;
         }
         if (key == 2) {
-            if (!MenuFixVert->isChecked()) yc1 -= fact * ys1; yc2 -= fact * ys2; yc3 -= fact * ys3;
+            if (!MenuFixVert->isChecked()) yc1 -= fact * ys1;
+            yc2 -= fact * ys2;
+            yc3 -= fact * ys3;
         }
-        if (key == 3) if (!MenuFixHoriz->isChecked()) xc -= fact * xs; if (key == 4) if (!MenuFixHoriz->isChecked()) xc += fact * xs; if (key == 11) {
-            ys1 /= sfact; ys2 /= sfact; ys3 /= sfact;
+        if (key == 3) {
+            if (!MenuFixHoriz->isChecked()) xc -= fact * xs;
+        }
+        if (key == 4) {
+            if (!MenuFixHoriz->isChecked()) xc += fact * xs;
+        }
+        if (key == 11) {
+            ys1 /= sfact;
+            ys2 /= sfact;
+            ys3 /= sfact;
         }
         if (key == 12) {
-            ys1 *= sfact; ys2 *= sfact; ys3 *= sfact;
+            ys1 *= sfact;
+            ys2 *= sfact;
+            ys3 *= sfact;
         }
         if (key == 13) xs *= sfact;
         if (key == 14) xs /= sfact;
@@ -1824,7 +1850,19 @@ void Plot::keyPressEvent(QKeyEvent *event)
     } else if (PlotType == PLOT_OBS || PlotType == PLOT_DOP || PlotType == PLOT_SNR) {
         GraphR->GetCent(xc, yc);
         GraphR->GetScale(xs, ys);
-        if (key == 1) if (!MenuFixVert->isChecked()) yc += fact * ys; if (key == 2) if (!MenuFixVert->isChecked()) yc -= fact * ys; if (key == 3) if (!MenuFixHoriz->isChecked()) xc -= fact * xs; if (key == 4) if (!MenuFixHoriz->isChecked()) xc += fact * xs; if (key == 11) ys /= sfact;
+        if (key == 1) {
+            if (!MenuFixVert->isChecked()) yc += fact * ys;
+        }
+        if (key == 2) {
+            if (!MenuFixVert->isChecked()) yc -= fact * ys;
+        }
+        if (key == 3) {
+            if (!MenuFixHoriz->isChecked()) xc -= fact * xs;
+        }
+        if (key == 4) {
+            if (!MenuFixHoriz->isChecked()) xc += fact * xs;
+        }
+        if (key == 11) ys /= sfact;
         if (key == 12) xs *= sfact;
         if (key == 13) xs *= sfact;
         if (key == 14) xs /= sfact;
@@ -2072,12 +2110,13 @@ void Plot::UpdateTime(void)
     i = ObsIndex;
     if (i <= NObs - 1) {
         tt = timediff(Obs.data[IndexObs[i]].time, time);
-        if (tt < -DTTOL)
+        if (tt < -DTTOL) {
             for (; i < NObs; i++)
                 if (timediff(Obs.data[IndexObs[i]].time, time) >= -DTTOL) break;
-        else if (tt > DTTOL)
+        } else if (tt > DTTOL) {
             for (; i >= 0; i--)
                 if (timediff(Obs.data[IndexObs[i]].time, time) <= DTTOL) break;
+        }
         ObsIndex = MAX(0, MIN(NObs - 1, i));
     }
 }

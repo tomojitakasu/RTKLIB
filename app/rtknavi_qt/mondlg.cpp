@@ -43,8 +43,7 @@ MonitorDialog::MonitorDialog(QWidget *parent)
     ObsMode = 0;
     ConFmt = -1;
 
-    for (i = 0; i <= MAXRCVFMT; i++)
-        SelFmt->addItem(formatstrs[i]);
+    for (i = 0; i <= MAXRCVFMT; i++) SelFmt->addItem(formatstrs[i]);
 
 	init_rtcm(&rtcm);
     init_raw(&raw, -1);
@@ -951,10 +950,8 @@ void MonitorDialog::ShowObs(void)
     int i, k, n = 0, nex = ObsMode ? NEXOBS : 0;
 
 	rtksvrlock(&rtksvr);
-    for (i = 0; i < rtksvr.obs[0][0].n && n < MAXOBS * 2; i++)
-        obs[n++] = rtksvr.obs[0][0].data[i];
-    for (i = 0; i < rtksvr.obs[1][0].n && n < MAXOBS * 2; i++)
-        obs[n++] = rtksvr.obs[1][0].data[i];
+    for (i = 0; i < rtksvr.obs[0][0].n && n < MAXOBS * 2; i++) obs[n++] = rtksvr.obs[0][0].data[i];
+    for (i = 0; i < rtksvr.obs[1][0].n && n < MAXOBS * 2; i++) obs[n++] = rtksvr.obs[1][0].data[i];
 	rtksvrunlock(&rtksvr);
 
     Console->setRowCount(n + 1 < 2 ? 0 : n);
@@ -1197,8 +1194,7 @@ void MonitorDialog::ShowSbsNav(void)
 
 	rtksvrlock(&rtksvr); // lock
     time = rtksvr.rtk.sol.time;
-    for (int i = 0; i < NSATSBS; i++)
-        seph[i] = rtksvr.nav.seph[i + off];
+    for (int i = 0; i < NSATSBS; i++) seph[i] = rtksvr.nav.seph[i + off];
 	rtksvrunlock(&rtksvr); // unlock
 
     Label->setText("");
