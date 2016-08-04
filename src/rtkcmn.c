@@ -115,10 +115,10 @@
 *           2016/06/11 1.35 delete trace() in reppath() to avoid deadlock
 *           2016/07/01 1.36 support IRNSS
 *                           add leap second before 2017/1/1 00:00:00
-*           2016/07/29 1.37 nename api compress() -> rtk_uncompress()
-*                           nename api crc16()    -> rtk_crc16()
-*                           nename api crc24q()   -> rtk_crc24q()
-*                           nename api crc32()    -> rtk_crc32()
+*           2016/07/29 1.37 rename api compress() -> rtk_uncompress()
+*                           rename api crc16()    -> rtk_crc16()
+*                           rename api crc24q()   -> rtk_crc24q()
+*                           rename api crc32()    -> rtk_crc32()
 *-----------------------------------------------------------------------------*/
 #define _POSIX_C_SOURCE 199309
 #include <stdarg.h>
