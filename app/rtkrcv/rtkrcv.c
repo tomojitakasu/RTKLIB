@@ -30,6 +30,7 @@
 *           2015/12/25 1.15 fix bug on -sta option (#339)
 *           2015/01/26 1.16 support septentrio
 *           2016/07/01 1.17 support CMR/CMR+
+*           2016/08/04 1.18 output patch level in header
 *-----------------------------------------------------------------------------*/
 #include <signal.h>
 #include "rtklib.h"
@@ -1142,7 +1143,7 @@ static void cmd_save(char **args, int narg, vt_t *vt)
     }
     if (!confwrite(vt,file)) return;
     time2str(utc2gpst(timeget()),s,0);
-    sprintf(comment,"%s options (%s, v.%s)",PRGNAME,s,VER_RTKLIB);
+    sprintf(comment,"%s options (%s, v.%s %s)",PRGNAME,s,VER_RTKLIB,PATCH_LEVEL);
     setsysopts(&prcopt,solopt,&filopt);
     if (!saveopts(file,"w",comment,rcvopts)||!saveopts(file,"a",NULL,sysopts)) {
         vt_printf(vt,"options save error: %s\n",file);
@@ -1438,8 +1439,8 @@ int main(int argc, char **argv)
         /* open console */
         if (!vt_open(&vt,port,dev)) break;
         
-        vt_printf(&vt,"\n%s** %s ver.%s console (h:help) **%s\n",ESC_BOLD,
-                  PRGNAME,VER_RTKLIB,ESC_RESET);
+        vt_printf(&vt,"\n%s** %s ver.%s %s console (h:help) **%s\n",ESC_BOLD,
+                  PRGNAME,VER_RTKLIB,PATCH_LEVEL,ESC_RESET);
         
         /* command interpreter */
         if (login(&vt)) cmdshell(&vt);
