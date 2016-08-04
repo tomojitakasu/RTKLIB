@@ -111,7 +111,7 @@ extern "C" {
 #define SYS_GAL     0x08                /* navigation system: Galileo */
 #define SYS_QZS     0x10                /* navigation system: QZSS */
 #define SYS_CMP     0x20                /* navigation system: BeiDou */
-#define SYS_IRN     0x40                /* navigation system: BeiDou */
+#define SYS_IRN     0x40                /* navigation system: IRNSS */
 #define SYS_LEO     0x80                /* navigation system: LEO */
 #define SYS_ALL     0xFF                /* navigation system: all */
 
