@@ -31,8 +31,17 @@ win32-g++ {
 
     LIBS += $${RTKLIB} -lWs2_32 -lwinmm
 } else {
-    RTKLIB =../../src/libRTKLib.a
-    LIBS += -lpng $${RTKLIB}
+    *msvc* {
+        CONFIG(debug) {
+            RTKLIB = ../../src/debug/RTKLib.lib
+        } else {
+            RTKLIB =../../src/release/RTKLib.lib
+        }
+        LIBS += $${RTKLIB} -lWs2_32 -lwinmm
+    } else {
+        RTKLIB =../../src/libRTKLib.a
+        LIBS += -lpng $${RTKLIB}
+    }
 }
 
 PRE_TARGETDEPS = $${RTKLIB}

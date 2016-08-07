@@ -12,8 +12,10 @@ CONFIG += staticlib
 
 include(../RTKLib.pri)
 
-QMAKE_CFLAGS += -Wall -ansi -pedantic -Wno-unused-but-set-variable  -DTRACE -g
-DEFINES -= UNICODE
+*g++* {
+    QMAKE_CFLAGS += -Wall -ansi -pedantic -Wno-unused-but-set-variable -g
+}
+DEFINES -= UNICODE TRACE
 
 SOURCES += rtkcmn.c \
     convkml.c \
