@@ -52,6 +52,12 @@
 
 strsvr_t strsvr;
 
+extern "C" {
+extern int showmsg(const char *, ...)  {return 0;}
+extern void settime(gtime_t) {}
+extern void settspan(gtime_t, gtime_t) {}
+}
+
 QString color2String(const QColor &c){
     return QString("rgb(%1,%2,%3)").arg(c.red()).arg(c.green()).arg(c.blue());
 }

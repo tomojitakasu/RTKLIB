@@ -6,8 +6,6 @@
 
 QT       += widgets core gui widgets
 
-include(../../RTKLib.pri)
-
 TARGET = rtklaunch_qt
 TEMPLATE = app
 

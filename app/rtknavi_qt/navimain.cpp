@@ -84,14 +84,14 @@ rtksvr_t rtksvr;                        // rtk server struct
 stream_t monistr;                       // monitor stream
 
 // show message in message area ---------------------------------------------
-#if 0
 extern "C" {
-    extern int showmsg(const char *format, ...)
+    extern int showmsg(const char *, ...)
     {
         return 0;
     }
+extern void settime(gtime_t) {}
+extern void settspan(gtime_t, gtime_t) {}
 }
-#endif
 // convert degree to deg-min-sec --------------------------------------------
 static void degtodms(double deg, double *dms)
 {

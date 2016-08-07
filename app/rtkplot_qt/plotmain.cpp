@@ -77,6 +77,11 @@ static int RefreshTime = 10;    // update only every 200ms
 
 extern QString color2String(const QColor &c);
 
+extern "C" {
+extern void settime(gtime_t) {}
+extern void settspan(gtime_t, gtime_t) {}
+}
+
 // instance of Plot --------------------------------------------------------
 Plot *plot = NULL;
 
@@ -359,7 +364,10 @@ Plot::~Plot()
 // callback on form-show ----------------------------------------------------
 void Plot::showEvent(QShowEvent *event)
 {
-    if (event->spontaneous()) return;
+    if (event->spontaneous()) {
+        Refresh();
+        return;
+    }
     QString path1 = "", path2 = "";
 
     trace(3, "FormShow\n");

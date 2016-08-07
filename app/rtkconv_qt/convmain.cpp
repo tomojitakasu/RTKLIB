@@ -63,6 +63,8 @@ extern int showmsg(const char *format, ...)
     QMetaObject::invokeMethod(mainWindow->Message, "setText", Qt::QueuedConnection, Q_ARG(QString, QString(buff)));
     return abortf;
 }
+extern void settime(gtime_t) {}
+extern void settspan(gtime_t, gtime_t) {}
 }
 
 // constructor --------------------------------------------------------------
