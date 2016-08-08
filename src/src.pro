@@ -17,7 +17,7 @@ include(../RTKLib.pri)
     QMAKE_CFLAGS += -Wall -ansi -pedantic -Wno-unused-but-set-variable -g
 }
 
-win *{
+win* {
     CONFIG += staticlib
 }
 
