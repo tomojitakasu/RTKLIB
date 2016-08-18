@@ -1428,27 +1428,30 @@ void Plot::mouseMoveEvent(QMouseEvent *event)
 {
     double dx, dy, dxs, dys;
 
-    if ((abs(event->globalX() - Xn) < 1) && (abs(event->globalY() - Yn) < 1)) return;
+    if ((abs(Disp->mapFromGlobal(event->globalPos()).x() - Xn) < 1) &&
+        (abs(Disp->mapFromGlobal(event->globalPos()).y() - Yn) < 1)) return;
 
     trace(4, "DispMouseMove: X=%d Y=%d\n", event->globalX(), event->globalY());
 
+    Xn = Disp->mapFromGlobal(event->globalPos()).x();
+    Yn = Disp->mapFromGlobal(event->globalPos()).y();
+
     if (Drag == 0) {
-        UpdatePoint(event->globalX(), event->globalY());
+        UpdatePoint(Xn, Yn);
         return;
     }
 
-    Xn = event->globalX(); Yn = event->globalY();
-    dx = (X0 - event->globalX()) * Xs;
-    dy = (event->globalY() - Y0) * Ys;
-    dxs = pow(2.0, (X0 - event->globalX()) / 100.0);
-    dys = pow(2.0, (event->globalY() - Y0) / 100.0);
+    dx = (X0 - Xn) * Xs;
+    dy = (Yn - Y0) * Ys;
+    dxs = pow(2.0, (X0 - Xn) / 100.0);
+    dys = pow(2.0, (Yn - Y0) / 100.0);
 
     if (PlotType == PLOT_TRK)
-        MouseMoveTrk(event->globalX(), event->globalY(), dx, dy, dxs, dys);
+        MouseMoveTrk(Xn, Yn, dx, dy, dxs, dys);
     else if (PlotType <= PLOT_NSAT || PlotType == PLOT_RES || PlotType == PLOT_SNR)
-        MouseMoveSol(event->globalX(), event->globalY(), dx, dy, dxs, dys);
+        MouseMoveSol(Xn, Yn, dx, dy, dxs, dys);
     else if (PlotType == PLOT_OBS || PlotType == PLOT_DOP)
-        MouseMoveObs(event->globalX(), event->globalY(), dx, dy, dxs, dys);
+        MouseMoveObs(Xn, Yn, dx, dy, dxs, dys);
 }
 // callback on mouse-up event -----------------------------------------------
 void Plot::mouseReleaseEvent(QMouseEvent *event)

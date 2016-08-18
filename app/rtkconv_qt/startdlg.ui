@@ -32,7 +32,10 @@
       <string/>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0" colspan="3">
+      <item row="1" column="0">
+       <widget class="QDateTimeEdit" name="Time1"/>
+      </item>
+      <item row="0" column="0" colspan="2">
        <widget class="QLabel" name="Label1">
         <property name="enabled">
          <bool>true</bool>
@@ -45,33 +48,7 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
-       <widget class="QDateEdit" name="TimeY1">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="displayFormat">
-         <string>dd.MM.yyyy</string>
-        </property>
-       </widget>
-      </item>
       <item row="1" column="1">
-       <widget class="QTimeEdit" name="TimeH1">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="displayFormat">
-         <string>HH:mm:ss</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="2">
        <widget class="QPushButton" name="BtnFileTime">
         <property name="text">
          <string>File Time</string>

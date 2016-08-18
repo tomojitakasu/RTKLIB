@@ -366,7 +366,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+            <iconset resource="../rtkget_qt/rtkget_qt.qrc">
              <normaloff>:/buttons/chart.bmp</normaloff>:/buttons/chart.bmp</iconset>
            </property>
            <property name="flat">
@@ -386,7 +386,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+            <iconset resource="../rtkget_qt/rtkget_qt.qrc">
              <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
            </property>
            <property name="flat">
@@ -485,7 +485,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+            <iconset resource="../rtkget_qt/rtkget_qt.qrc">
              <normaloff>:/buttons/chart.bmp</normaloff>:/buttons/chart.bmp</iconset>
            </property>
            <property name="flat">
@@ -505,7 +505,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+            <iconset resource="../rtkget_qt/rtkget_qt.qrc">
              <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
            </property>
            <property name="flat">
@@ -604,7 +604,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+            <iconset resource="../rtkget_qt/rtkget_qt.qrc">
              <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
            </property>
            <property name="flat">
@@ -624,7 +624,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+            <iconset resource="../rtkget_qt/rtkget_qt.qrc">
              <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
            </property>
            <property name="flat">
@@ -644,7 +644,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+            <iconset resource="../rtkget_qt/rtkget_qt.qrc">
              <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
            </property>
            <property name="flat">
@@ -664,7 +664,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+            <iconset resource="../rtkget_qt/rtkget_qt.qrc">
              <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
            </property>
            <property name="flat">
@@ -1173,7 +1173,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+            <iconset resource="../rtkget_qt/rtkget_qt.qrc">
              <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
            </property>
            <property name="flat">
@@ -1199,7 +1199,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+            <iconset resource="../rtkget_qt/rtkget_qt.qrc">
              <normaloff>:/buttons/sqr.bmp</normaloff>:/buttons/sqr.bmp</iconset>
            </property>
            <property name="flat">
@@ -1392,7 +1392,7 @@
          <string>&amp;Plot...</string>
         </property>
         <property name="icon">
-         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+         <iconset resource="../rtkget_qt/rtkget_qt.qrc">
           <normaloff>:/buttons/chart.bmp</normaloff>:/buttons/chart.bmp</iconset>
         </property>
         <property name="flat">
@@ -1412,7 +1412,7 @@
          <string>&amp;View...</string>
         </property>
         <property name="icon">
-         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+         <iconset resource="../rtkget_qt/rtkget_qt.qrc">
           <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
         </property>
         <property name="flat">
@@ -1448,7 +1448,7 @@
          <string>&amp;Options...</string>
         </property>
         <property name="icon">
-         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+         <iconset resource="../rtkget_qt/rtkget_qt.qrc">
           <normaloff>:/buttons/toolbmp</normaloff>:/buttons/toolbmp</iconset>
         </property>
         <property name="flat">
@@ -1509,7 +1509,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../rtkconv_qt/rtkconv_qt.qrc"/>
+  <include location="../rtkget_qt/rtkget_qt.qrc"/>
   <include location="../rtknavi_qt/rtknavi_qt.qrc"/>
  </resources>
  <connections/>

@@ -93,7 +93,7 @@ extern int showmsg(const char *format, ...)
         QMetaObject::invokeMethod(mainForm, "ShowMsg",Qt::QueuedConnection,
                                   Q_ARG(QString,QString(buff)));
     }    
-    return !mainForm->AbortFlag;
+    return mainForm->AbortFlag;
 }
 // set time span of progress bar --------------------------------------------
 extern void settspan(gtime_t ts, gtime_t te)
@@ -219,6 +219,7 @@ MainForm::MainForm(QWidget *parent)
     dirCompleter->setModel(dirModel);
     OutDir->setCompleter(dirCompleter);
 
+    BtnAbort->setVisible(false);
 
     connect(BtnPlot,SIGNAL(clicked(bool)),this,SLOT(BtnPlotClick()));
     connect(BtnView,SIGNAL(clicked(bool)),this,SLOT(BtnViewClick()));
@@ -470,7 +471,8 @@ void MainForm::BtnOptionClick()
 void MainForm::BtnExecClick()
 {
     QString OutputFile_Text=OutputFile->currentText();
-    
+    AbortFlag=false;
+
     if (InputFile1->currentText()=="") {
         showmsg("error : no rinex obs file (rover)");
         return;
@@ -504,7 +506,7 @@ void MainForm::BtnExecClick()
     BtnPlot  ->setEnabled(false);
     BtnOption->setEnabled(false);
     Panel1   ->setEnabled(false);
-    
+
     ExecProc();
 }
 // callback on prcoessing finished-------------------------------------------
@@ -539,7 +541,7 @@ void MainForm::ProcessingFinished(int stat)
 // callback on button-abort -------------------------------------------------
 void MainForm::BtnAbortClick()
 {
-    AbortFlag=1;
+    AbortFlag=true;
     showmsg("aborted");
 }
 // callback on button-exit --------------------------------------------------

@@ -129,7 +129,7 @@ private:
 	
 public:
     QString IniFile;
-    int AbortFlag;
+    bool AbortFlag;
 	
 	// options
 	int PosMode,Freq,Solution,DynamicModel,IonoOpt,TropOpt,RcvBiasEst;

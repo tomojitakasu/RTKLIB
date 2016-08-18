@@ -26,13 +26,12 @@ void StartDialog::showEvent(QShowEvent *event)
         Time = utc2gpst(timeget());
 
     QDateTime date = QDateTime::fromTime_t(Time.time); date = date.addSecs(Time.sec);
-    TimeY1->setDate(date.date());
-    TimeH1->setTime(date.time());
+    Time1->setDateTime(date);
 }
 //---------------------------------------------------------------------------
 void StartDialog::BtnOkClick()
 {
-    QDateTime date(TimeY1->date(), TimeH1->time());
+    QDateTime date(Time1->dateTime());
 
     Time.time = date.toTime_t(); Time.sec = date.time().msec() / 1000;
 
@@ -44,7 +43,6 @@ void StartDialog::BtnFileTimeClick()
     QFileInfo fi(FileName);
     QDateTime d = fi.created();
 
-    TimeH1->setTime(d.time());
-    TimeY1->setDate(d.date());
+    Time1->setDateTime(d);
 }
 //---------------------------------------------------------------------------

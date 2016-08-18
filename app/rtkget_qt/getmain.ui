@@ -283,12 +283,18 @@
            <property name="calendarPopup">
             <bool>true</bool>
            </property>
+           <property name="timeSpec">
+            <enum>Qt::UTC</enum>
+           </property>
           </widget>
          </item>
          <item row="2" column="1" colspan="4">
           <widget class="QDateTimeEdit" name="dateTime2">
            <property name="calendarPopup">
             <bool>true</bool>
+           </property>
+           <property name="timeSpec">
+            <enum>Qt::UTC</enum>
            </property>
           </widget>
          </item>
@@ -738,7 +744,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+         <iconset resource="rtkget_qt.qrc">
           <normaloff>:/buttons/ttray.bmp</normaloff>:/buttons/ttray.bmp</iconset>
         </property>
         <property name="flat">
@@ -884,7 +890,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../rtkconv_qt/rtkconv_qt.qrc"/>
+  <include location="rtkget_qt.qrc"/>
  </resources>
  <connections/>
 </ui>

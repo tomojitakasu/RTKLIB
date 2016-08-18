@@ -405,6 +405,9 @@
         <property name="calendarPopup">
          <bool>true</bool>
         </property>
+        <property name="timeSpec">
+         <enum>Qt::LocalTime</enum>
+        </property>
        </widget>
       </item>
       <item row="2" column="0">
@@ -557,6 +560,9 @@
         <property name="calendarPopup">
          <bool>true</bool>
         </property>
+        <property name="timeSpec">
+         <enum>Qt::LocalTime</enum>
+        </property>
        </widget>
       </item>
       <item row="4" column="2" colspan="2">
@@ -644,7 +650,7 @@
          <string>&amp;View....</string>
         </property>
         <property name="icon">
-         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+         <iconset resource="../rtkget_qt/rtkget_qt.qrc">
           <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
         </property>
        </widget>
@@ -687,7 +693,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../rtkconv_qt/rtkconv_qt.qrc"/>
+  <include location="../rtkget_qt/rtkget_qt.qrc"/>
  </resources>
  <connections/>
 </ui>

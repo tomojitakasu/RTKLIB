@@ -193,12 +193,18 @@
      <property name="calendarPopup">
       <bool>true</bool>
      </property>
+     <property name="timeSpec">
+      <enum>Qt::LocalTime</enum>
+     </property>
     </widget>
    </item>
    <item row="2" column="1" colspan="2">
     <widget class="QDateTimeEdit" name="dateTime2">
      <property name="calendarPopup">
       <bool>true</bool>
+     </property>
+     <property name="timeSpec">
+      <enum>Qt::LocalTime</enum>
      </property>
     </widget>
    </item>
