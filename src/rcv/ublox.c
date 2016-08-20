@@ -48,6 +48,7 @@
 *           2016/07/29 1.20 support RXM-CFG-TMODE3 (0x06 0x71) for M8P
 *                           crc24q() -> rtk_crc24q()
 *                           check week number zero for ubx-rxm-raw and rawx
+*           2016/08/20 1.21 add test of std-dev for carrier-phase valid
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -76,6 +77,8 @@
 #define FS32        9
 
 #define P2_10       0.0009765625 /* 2^-10 */
+
+#define CPSTD_VALID 5           /* std-dev threshold of carrier-phase valid */
 
 #define ROUND(x)    (int)floor((x)+0.5)
 
@@ -228,7 +231,7 @@ static int decode_rxmrawx(raw_t *raw)
 {
     gtime_t time;
     double tow,cp1,pr1,tadj=0.0,toff=0.0,freq,tn;
-    int i,j,sys,prn,sat,n=0,nsat,week,tstat,lockt,slip,halfv,halfc,fcn;
+    int i,j,sys,prn,sat,n=0,nsat,week,tstat,lockt,slip,halfv,halfc,fcn,cpstd;
     char *q;
     unsigned char *p=raw->buff+6;
     
@@ -272,10 +275,11 @@ static int decode_rxmrawx(raw_t *raw)
             trace(2,"ubx rxmrawx sat number error: sys=%2d prn=%2d\n",sys,prn);
             continue;
         }
+        cpstd=U1(p+28)&15; /* carrier-phase std-dev */
         tstat=U1(p+30); /* tracking status */
         pr1=tstat&1?R8(p  ):0.0;
         cp1=tstat&2?R8(p+8):0.0;
-        if (cp1==-0.5) cp1=0.0; /* invalid phase */
+        if (cp1==-0.5||cpstd>CPSTD_VALID) cp1=0.0; /* invalid phase */
         raw->obs.data[n].sat=sat;
         raw->obs.data[n].time=time;
         raw->obs.data[n].P[0]=pr1;

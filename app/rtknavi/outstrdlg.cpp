@@ -153,8 +153,8 @@ void __fastcall TOutputStrDialog::TcpOpt(int index, int opt)
 //---------------------------------------------------------------------------
 void __fastcall TOutputStrDialog::UpdateEnable(void)
 {
-	int ena=Stream1C->Checked&&Stream1->ItemIndex==4||
-			Stream2C->Checked&&Stream2->ItemIndex==4;
+	int ena=(Stream1C->Checked&&Stream1->ItemIndex==4)||
+			(Stream2C->Checked&&Stream2->ItemIndex==4);
 	Stream1  ->Enabled=Stream1C->Checked;
 	Stream2  ->Enabled=Stream2C->Checked;
 	BtnStr1  ->Enabled=Stream1C->Checked&&Stream1->ItemIndex<=3;

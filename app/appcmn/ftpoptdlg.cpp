@@ -21,7 +21,7 @@ void __fastcall TFtpOptDialog::FormShow(TObject *Sender)
 {
 	AnsiString s,cap[]={"FTP Option","HTTP Option"};
 	char buff[2048],*p,*q;
-	char *addr,*file="",*user="",*passwd="";
+	char *addr,*file=(char *)"",*user=(char *)"",*passwd=(char *)"";
 	int topts[4]={0,3600,0,0};
 	
 	Caption=cap[Opt];

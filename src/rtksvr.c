@@ -30,6 +30,7 @@
 *           2015/12/05  1.12 support opt->pppopt=-DIS_FCB
 *           2016/07/01  1.13 support averaging single pos as base position
 *           2016/07/31  1.14 fix bug on ion/utc parameters input
+*           2016/08/20  1.15 support api change of sendnmea()
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -440,7 +441,7 @@ static void *rtksvrthread(void *arg)
     rtksvr_t *svr=(rtksvr_t *)arg;
     obs_t obs;
     obsd_t data[MAXOBS*2];
-    sol_t sol={{0}};
+    sol_t sol={{0}},sol_nmea={{0}};
     double tt;
     unsigned int tick,ticknmea;
     unsigned char *p,*q;
@@ -538,10 +539,13 @@ static void *rtksvrthread(void *arg)
         if (svr->nmeacycle>0&&(int)(tick-ticknmea)>=svr->nmeacycle) {
             if (svr->stream[1].state==1) {
                 if (svr->nmeareq==1) {
-                    strsendnmea(svr->stream+1,svr->nmeapos);
+                    sol_nmea.stat=SOLQ_SINGLE;
+                    sol_nmea.time=utc2gpst(timeget());
+                    matcpy(sol_nmea.rr,svr->nmeapos,3,1);
+                    strsendnmea(svr->stream+1,&sol_nmea);
                 }
                 else if (svr->nmeareq==2&&norm(svr->rtk.sol.rr,3)>0.0) {
-                    strsendnmea(svr->stream+1,svr->rtk.sol.rr);
+                    strsendnmea(svr->stream+1,&svr->rtk.sol);
                 }
             }
             ticknmea=tick;

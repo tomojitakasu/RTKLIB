@@ -28,3 +28,9 @@ cd ..
 cd rtklaunch
 call install.bat
 cd ..
+cd rtkpost_win64
+call install.bat
+cd ..
+cd rtknavi_win64
+call install.bat
+cd ..

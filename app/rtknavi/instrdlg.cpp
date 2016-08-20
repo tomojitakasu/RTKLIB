@@ -351,9 +351,9 @@ void __fastcall TInputStrDialog::FtpOpt(int index, int opt)
 //---------------------------------------------------------------------------
 void __fastcall TInputStrDialog::UpdateEnable(void)
 {
-	int ena1=StreamC1->Checked&&Stream1->ItemIndex==4||
-             StreamC2->Checked&&Stream2->ItemIndex==4||
-             StreamC3->Checked&&Stream3->ItemIndex==4;
+	int ena1=(StreamC1->Checked&&Stream1->ItemIndex==4)||
+             (StreamC2->Checked&&Stream2->ItemIndex==4)||
+             (StreamC3->Checked&&Stream3->ItemIndex==4);
 	int ena2=StreamC2->Checked&&Stream2->ItemIndex<=3;
 	
 	Stream1   ->Enabled=StreamC1->Checked;

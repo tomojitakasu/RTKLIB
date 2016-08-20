@@ -58,7 +58,7 @@ extern "C" {
 
 #define VER_RTKLIB  "2.4.3"             /* library version */
 
-#define PATCH_LEVEL "b16"               /* patch level */
+#define PATCH_LEVEL "b17"               /* patch level */
 
 #define COPYRIGHT_RTKLIB \
             "Copyright (C) 2007-2016 by T.Takasu\nAll rights reserved."
@@ -111,7 +111,7 @@ extern "C" {
 #define SYS_GAL     0x08                /* navigation system: Galileo */
 #define SYS_QZS     0x10                /* navigation system: QZSS */
 #define SYS_CMP     0x20                /* navigation system: BeiDou */
-#define SYS_IRN     0x40                /* navigation system: BeiDou */
+#define SYS_IRN     0x40                /* navigation system: IRNS */
 #define SYS_LEO     0x80                /* navigation system: LEO */
 #define SYS_ALL     0xFF                /* navigation system: all */
 
@@ -993,10 +993,10 @@ typedef struct {        /* download url type */
 } url_t;
 
 typedef struct {        /* option type */
-    char *name;         /* option name */
+    const char *name;   /* option name */
     int format;         /* option format (0:int,1:double,2:string,3:enum) */
     void *var;          /* pointer to option variable */
-    char *comment;      /* option comment/enum labels/unit */
+    const char *comment; /* option comment/enum labels/unit */
 } opt_t;
 
 typedef struct {        /* extended receiver error model */
@@ -1743,7 +1743,7 @@ EXPORT int  strstat  (stream_t *stream, char *msg);
 EXPORT void strsum   (stream_t *stream, int *inb, int *inr, int *outb, int *outr);
 EXPORT void strsetopt(const int *opt);
 EXPORT gtime_t strgettime(stream_t *stream);
-EXPORT void strsendnmea(stream_t *stream, const double *pos);
+EXPORT void strsendnmea(stream_t *stream, const sol_t *sol);
 EXPORT void strsendcmd(stream_t *stream, const char *cmd);
 EXPORT void strsettimeout(stream_t *stream, int toinact, int tirecon);
 EXPORT void strsetdir(const char *dir);

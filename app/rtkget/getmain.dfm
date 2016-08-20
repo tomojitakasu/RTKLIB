@@ -383,7 +383,6 @@ object MainForm: TMainForm
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitTop = 301
     object BtnOpts: TButton
       Left = 145
       Top = 0
@@ -458,7 +457,6 @@ object MainForm: TMainForm
     ParentShowHint = False
     ShowHint = True
     TabOrder = 2
-    ExplicitTop = 223
     object MsgLabel1: TLabel
       Left = 2
       Top = 2
@@ -489,7 +487,6 @@ object MainForm: TMainForm
     ParentDoubleBuffered = False
     ParentFont = False
     TabOrder = 3
-    ExplicitTop = 271
     object MsgLabel3: TLabel
       Left = 2
       Top = 2
@@ -558,7 +555,6 @@ object MainForm: TMainForm
     ParentShowHint = False
     ShowHint = True
     TabOrder = 4
-    ExplicitTop = 247
     object Image1: TImage
       Left = 425
       Top = 6

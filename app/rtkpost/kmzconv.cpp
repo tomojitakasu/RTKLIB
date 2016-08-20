@@ -62,8 +62,9 @@ void __fastcall TConvDialog::BtnInputFileClick(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TConvDialog::BtnGoogleClick(TObject *Sender)
 {
+	AnsiString OutputFile_Text=OutputFile->Text;
 	char cmd[1024];
-	sprintf(cmd,"\"%s\" \"%s\"",MainForm->GoogleEarthFile,OutputFile->Text.c_str());
+	sprintf(cmd,"\"%s\" \"%s\"",MainForm->GoogleEarthFile.c_str(),OutputFile_Text.c_str());
 	if (!ExecCmd(cmd)) ShowMsg("error : google earth execution");
 }
 //---------------------------------------------------------------------------
@@ -120,7 +121,7 @@ void __fastcall TConvDialog::BtnConvertClick(TObject *Sender)
 		return;
 	}
 	if (FormatKML->Checked&&Compress->Checked) {
-		sprintf(cmd,"zip.exe -j -m %s %s",OutputFile->Text.c_str(),kmlfile);
+		sprintf(cmd,"zip.exe -j -m %s %s",OutputFile_Text.c_str(),kmlfile);
 		if (!ExecCmd(cmd)) {
 			ShowMsg("error : zip execution");
 			return;

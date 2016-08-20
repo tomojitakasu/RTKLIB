@@ -115,12 +115,14 @@
 *           2016/06/11 1.35 delete trace() in reppath() to avoid deadlock
 *           2016/07/01 1.36 support IRNSS
 *                           add leap second before 2017/1/1 00:00:00
-*           2016/07/29 1.37 nename api compress() -> rtk_uncompress()
-*                           nename api crc16()    -> rtk_crc16()
-*                           nename api crc24q()   -> rtk_crc24q()
-*                           nename api crc32()    -> rtk_crc32()
+*           2016/07/29 1.37 rename api compress() -> rtk_uncompress()
+*                           rename api crc16()    -> rtk_crc16()
+*                           rename api crc24q()   -> rtk_crc24q()
+*                           rename api crc32()    -> rtk_crc32()
+*           2016/08/20 1.38 fix type incompatibility in win64 environment
+*                           change constant _POSIX_C_SOURCE 199309 -> 199506
 *-----------------------------------------------------------------------------*/
-#define _POSIX_C_SOURCE 199309
+#define _POSIX_C_SOURCE 199506
 #include <stdarg.h>
 #include <ctype.h>
 #ifndef WIN32
@@ -2677,6 +2679,7 @@ extern int readnav(const char *file, nav_t *nav)
     eph_t eph0={0};
     geph_t geph0={0};
     char buff[4096],*p;
+    long toe_time,tof_time,toc_time,ttr_time;
     int i,sat,prn;
     
     trace(3,"loadnav: file=%s\n",file);
@@ -2700,24 +2703,28 @@ extern int readnav(const char *file, nav_t *nav)
         if (satsys(sat,&prn)==SYS_GLO) {
             nav->geph[prn-1]=geph0;
             nav->geph[prn-1].sat=sat;
+            toe_time=tof_time=0;
             sscanf(p+1,"%d,%d,%d,%d,%d,%ld,%ld,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,"
                         "%lf,%lf,%lf,%lf",
                    &nav->geph[prn-1].iode,&nav->geph[prn-1].frq,&nav->geph[prn-1].svh,
                    &nav->geph[prn-1].sva,&nav->geph[prn-1].age,
-                   &nav->geph[prn-1].toe.time,&nav->geph[prn-1].tof.time,
+                   &toe_time,&tof_time,
                    &nav->geph[prn-1].pos[0],&nav->geph[prn-1].pos[1],&nav->geph[prn-1].pos[2],
                    &nav->geph[prn-1].vel[0],&nav->geph[prn-1].vel[1],&nav->geph[prn-1].vel[2],
                    &nav->geph[prn-1].acc[0],&nav->geph[prn-1].acc[1],&nav->geph[prn-1].acc[2],
                    &nav->geph[prn-1].taun  ,&nav->geph[prn-1].gamn  ,&nav->geph[prn-1].dtaun);
+            nav->geph[prn-1].toe.time=toe_time;
+            nav->geph[prn-1].tof.time=tof_time;
         }
         else {
             nav->eph[sat-1]=eph0;
             nav->eph[sat-1].sat=sat;
+            toe_time=toc_time=ttr_time=0;
             sscanf(p+1,"%d,%d,%d,%d,%ld,%ld,%ld,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,"
                         "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%d,%d",
                    &nav->eph[sat-1].iode,&nav->eph[sat-1].iodc,&nav->eph[sat-1].sva ,
-                   &nav->eph[sat-1].svh ,&nav->eph[sat-1].toe.time,
-                   &nav->eph[sat-1].toc.time,&nav->eph[sat-1].ttr.time,
+                   &nav->eph[sat-1].svh ,
+                   &toe_time,&toc_time,&ttr_time,
                    &nav->eph[sat-1].A   ,&nav->eph[sat-1].e   ,&nav->eph[sat-1].i0  ,
                    &nav->eph[sat-1].OMG0,&nav->eph[sat-1].omg ,&nav->eph[sat-1].M0  ,
                    &nav->eph[sat-1].deln,&nav->eph[sat-1].OMGd,&nav->eph[sat-1].idot,
@@ -2726,6 +2733,9 @@ extern int readnav(const char *file, nav_t *nav)
                    &nav->eph[sat-1].toes,&nav->eph[sat-1].fit ,&nav->eph[sat-1].f0  ,
                    &nav->eph[sat-1].f1  ,&nav->eph[sat-1].f2  ,&nav->eph[sat-1].tgd[0],
                    &nav->eph[sat-1].code, &nav->eph[sat-1].flag);
+            nav->eph[prn-1].toe.time=toe_time;
+            nav->eph[prn-1].toc.time=toc_time;
+            nav->eph[prn-1].ttr.time=ttr_time;
         }
     }
     fclose(fp);

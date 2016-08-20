@@ -247,7 +247,7 @@ void __fastcall TMainForm::BtnPlotClick(TObject *Sender)
     opts+=" \""+file+"\"";
     
     if (!ExecCmd(cmd1+opts,1)&&!ExecCmd(cmd2+opts,1)) {
-        ShowMsg("error : rtkplot execution");
+        ShowMsg((char *)"error : rtkplot execution");
     }
 }
 // callback on button-view --------------------------------------------------
@@ -280,29 +280,29 @@ void __fastcall TMainForm::BtnExecClick(TObject *Sender)
     char *p;
     
     if (InputFile1->Text=="") {
-        showmsg("error : no rinex obs file (rover)");
+        showmsg((char *)"error : no rinex obs file (rover)");
         return;
     }
     if (InputFile2->Text==""&&PMODE_DGPS<=PosMode&&PosMode<=PMODE_FIXED) {
-        showmsg("error : no rinex obs file (base station)");
+        showmsg((char *)"error : no rinex obs file (base station)");
         return;
     }
     if (OutputFile->Text=="") {
-        showmsg("error : no output file");
+        showmsg((char *)"error : no output file");
         return;
     }
-    if (p=strrchr(OutputFile_Text.c_str(),'.')) {
+    if ((p=strrchr(OutputFile_Text.c_str(),'.'))) {
         if (!strcmp(p,".obs")||!strcmp(p,".OBS")||!strcmp(p,".nav")||
             !strcmp(p,".NAV")||!strcmp(p,".gnav")||!strcmp(p,".GNAV")||
             !strcmp(p,".gz")||!strcmp(p,".Z")||
             !strcmp(p+3,"o")||!strcmp(p+3,"O")||!strcmp(p+3,"d")||
             !strcmp(p+3,"D")||!strcmp(p+3,"n")||!strcmp(p+3,"N")||
             !strcmp(p+3,"g")||!strcmp(p+3,"G")) {
-            showmsg("error : invalid extension of output file (%s)",p);
+            showmsg((char *)"error : invalid extension of output file (%s)",p);
             return;
         }
     }
-    showmsg("");
+    showmsg((char *)"");
     BtnExec  ->Visible=false;
     BtnAbort ->Visible=true;
     AbortFlag=0;
@@ -324,7 +324,7 @@ void __fastcall TMainForm::BtnExecClick(TObject *Sender)
     }
     AnsiString Message_Caption=Message->Caption;
     if (strstr(Message_Caption.c_str(),"processing")) {
-        showmsg("done");
+        showmsg((char *)"done");
     }
     BtnAbort ->Visible=false;
     BtnExec  ->Visible=true;
@@ -340,7 +340,7 @@ void __fastcall TMainForm::BtnExecClick(TObject *Sender)
 void __fastcall TMainForm::BtnAbortClick(TObject *Sender)
 {
     AbortFlag=1;
-    showmsg("aborted");
+    showmsg((char *)"aborted");
 }
 // callback on button-exit --------------------------------------------------
 void __fastcall TMainForm::BtnExitClick(TObject *Sender)
@@ -351,6 +351,9 @@ void __fastcall TMainForm::BtnExitClick(TObject *Sender)
 void __fastcall TMainForm::BtnAboutClick(TObject *Sender)
 {
     AnsiString prog=PRGNAME;
+#ifdef _WIN64
+    prog+="_WIN64";
+#endif
 #ifdef MKL
     prog+="_MKL";
 #endif
@@ -525,7 +528,7 @@ void __fastcall TMainForm::BtnInputPlot1Click(TObject *Sender)
         files[4]+"\" \""+files[5]+"\"";
     
     if (!ExecCmd(cmd1+opts,1)&&!ExecCmd(cmd2+opts,1)) {
-        ShowMsg("error : rtkplot execution");
+        ShowMsg((char *)"error : rtkplot execution");
     }
 }
 // callback on button-inputplot-2 -------------------------------------------
@@ -555,7 +558,7 @@ void __fastcall TMainForm::BtnInputPlot2Click(TObject *Sender)
          files[4]+"\" \""+files[5]+"\"";
     
     if (!ExecCmd(cmd1+opts,1)&&!ExecCmd(cmd2+opts,1)) {
-        ShowMsg("error : rtkplot execution");
+        ShowMsg((char *)"error : rtkplot execution");
     }
 }
 // callback on button-output-directory --------------------------------------
@@ -735,7 +738,7 @@ int __fastcall TMainForm::ExecProc(void)
         strcpy(infile[n++],InputFile3_Text.c_str());
     }
     else if (!ObsToNav(InputFile1_Text.c_str(),infile[n++])) {
-        showmsg("error: no navigation data");
+        showmsg((char *)"error: no navigation data");
         return 0;
     }
     if (InputFile4_Text!="") {
@@ -782,12 +785,12 @@ int __fastcall TMainForm::ExecProc(void)
         }
     }
     Progress->Position=0;
-    showmsg("reading...");
+    showmsg((char *)"reading...");
     
     // post processing positioning
     if ((stat=postpos(ts,te,ti,tu,&prcopt,&solopt,&filopt,infile,n,outfile,
                       rov,base))==1) {
-        showmsg("aborted");
+        showmsg((char *)"aborted");
     }
     delete [] rov ;
     delete [] base;

@@ -182,9 +182,9 @@ void __fastcall TLogStrDialog::TcpOpt(int index, int opt)
 //---------------------------------------------------------------------------
 void __fastcall TLogStrDialog::UpdateEnable(void)
 {
-	int ena=Stream1C->Checked&&Stream1->ItemIndex==4||
-			Stream2C->Checked&&Stream2->ItemIndex==4||
-			Stream3C->Checked&&Stream3->ItemIndex==4;
+	int ena=(Stream1C->Checked&&Stream1->ItemIndex==4)||
+			(Stream2C->Checked&&Stream2->ItemIndex==4)||
+			(Stream3C->Checked&&Stream3->ItemIndex==4);
 	Stream1  ->Enabled=Stream1C->Checked;
 	Stream2  ->Enabled=Stream2C->Checked;
 	Stream3  ->Enabled=Stream3C->Checked;

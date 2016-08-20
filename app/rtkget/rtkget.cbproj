@@ -6,7 +6,7 @@
         <Base>True</Base>
         <Config Condition="'$(Config)'==''">Release</Config>
         <FrameworkType>VCL</FrameworkType>
-        <ProjectVersion>14.6</ProjectVersion>
+        <ProjectVersion>18.1</ProjectVersion>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <TargetedPlatforms>1</TargetedPlatforms>
         <AppType>Application</AppType>
@@ -59,6 +59,14 @@
         <Base>true</Base>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
+        <ILINK_LinkwithRegEx>false</ILINK_LinkwithRegEx>
+        <ILINK_LinkwithMidas>false</ILINK_LinkwithMidas>
+        <ILINK_LinkwithZLib>false</ILINK_LinkwithZLib>
+        <ILINK_LinkwithSQL>false</ILINK_LinkwithSQL>
+        <ILINK_LinkwithIndy>false</ILINK_LinkwithIndy>
+        <ILINK_LinkwithSQLite>false</ILINK_LinkwithSQLite>
+        <ILINK_LinkwithIntebaseTogo>false</ILINK_LinkwithIntebaseTogo>
+        <SanitizedProjectName>rtkget</SanitizedProjectName>
         <BCC_waus>false</BCC_waus>
         <Icon_MainIcon>..\icon\rtk8.ico</Icon_MainIcon>
         <BCC_weff>false</BCC_weff>
@@ -67,20 +75,18 @@
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <BCC_wpar>false</BCC_wpar>
         <IncludePath>..\appcmn\;..\..\src\;$(IncludePath)</IncludePath>
-        <UsingDelphiRTL>true</UsingDelphiRTL>
         <Manifest_File>None</Manifest_File>
         <VerInfo_Locale>1041</VerInfo_Locale>
         <DCC_Namespace>Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;System;Xml;Data;Datasnap;Web;Soap;$(DCC_Namespace)</DCC_Namespace>
         <BCC_PCHCache>true</BCC_PCHCache>
         <TASM_IncludePath>D:\proj\rtklib\app\downloader;$(BDS)\include;$(BDS)\include\vcl;..\..\src;$(TASM_IncludePath)</TASM_IncludePath>
-        <PackageImports>vclx.bpi;vcl.bpi;rtl.bpi;dbrtl.bpi;vcldb.bpi;adortl.bpi;dbxcds.bpi;dbexpress.bpi;xmlrtl.bpi;vclie.bpi;inet.bpi;inetdbbde.bpi;inetdbxpress.bpi;soaprtl.bpi;dsnap.bpi;bdertl.bpi;vcldbx.bpi;$(PackageImports)</PackageImports>
+        <PackageImports>vclx.bpi;vcl.bpi;$(PackageImports)</PackageImports>
         <ILINK_AppType>Windows</ILINK_AppType>
         <BRCC_IncludePath>D:\proj\rtklib\app\downloader;$(BDS)\include;$(BDS)\include\vcl;..\..\src;$(BRCC_IncludePath)</BRCC_IncludePath>
         <DCC_ObjPath>..\..\src;D:\proj\rtklib\app\downloader;$(DCC_ObjPath)</DCC_ObjPath>
         <DCC_IncludePath>..\..\src;D:\proj\rtklib\app\downloader;C:\Users\ttaka\Documents\Borland Studio Projects;$(BDS)\lib;$(BDS)\lib\obj;$(DCC_IncludePath)</DCC_IncludePath>
         <ILINK_ObjectSearchPath>..\..\src;D:\proj\rtklib\app\downloader;$(ILINK_ObjectSearchPath)</ILINK_ObjectSearchPath>
         <AllPackageLibs>rtl.lib;vcl.lib;vclx.lib;vclimg.lib</AllPackageLibs>
-        <OutputExt>exe</OutputExt>
         <DCC_ResourcePath>..\..\src;D:\proj\rtklib\app\downloader;$(DCC_ResourcePath)</DCC_ResourcePath>
         <BCC_GenerateWindowsApp>true</BCC_GenerateWindowsApp>
         <DCC_UnitSearchPath>..\..\src;D:\proj\rtklib\app\downloader;C:\Users\ttaka\Documents\Borland Studio Projects;$(BDS)\lib;$(BDS)\lib\obj;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
@@ -88,6 +94,8 @@
         <DCC_CBuilderOutput>JPHNE</DCC_CBuilderOutput>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
+        <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
+        <OutputExt>exe</OutputExt>
         <TASM_Defines>_RTLDLL;USEPACKAGES;WIN32;TRACE;$(TASM_Defines)</TASM_Defines>
         <BCC_UserSuppliedOptions> -tWM</BCC_UserSuppliedOptions>
         <BRCC_Defines>_RTLDLL;USEPACKAGES;WIN32;TRACE;$(BRCC_Defines)</BRCC_Defines>
@@ -119,6 +127,7 @@
         <TASM_DisplaySourceLines>true</TASM_DisplaySourceLines>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
+        <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <BCC_UserSuppliedOptions> -tWM -k</BCC_UserSuppliedOptions>
         <BCC_Defines>_DEBUG;$(BCC_Defines);$(BCC_Defines)</BCC_Defines>
         <Icon_MainIcon>..\icon\rtk8.ico</Icon_MainIcon>
@@ -138,9 +147,9 @@
         <ILINK_LibraryPath>$(BDS)\lib\release;$(ILINK_LibraryPath);$(ILINK_LibraryPath)</ILINK_LibraryPath>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
+        <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <BCC_UserSuppliedOptions> -tWM -r</BCC_UserSuppliedOptions>
         <BCC_Defines>NDEBUG;$(BCC_Defines);$(BCC_Defines)</BCC_Defines>
-        <UsePackages>false</UsePackages>
         <BCC_waus>false</BCC_waus>
         <LinkPackageStatics>rtl.lib;vcl.lib;vclx.lib;vclimg.lib</LinkPackageStatics>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
@@ -286,10 +295,15 @@
                     <ProjectProperties Name="AutoShowDeps">False</ProjectProperties>
                     <ProjectProperties Name="ManagePaths">True</ProjectProperties>
                     <ProjectProperties Name="VerifyPackages">True</ProjectProperties>
+                    <ProjectProperties Name="IndexFiles">False</ProjectProperties>
                 </ProjectProperties>
                 <Source>
                     <Source Name="MainSource">rtkget.cpp</Source>
                 </Source>
+                <Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\bcboffice2k240.bpl">Embarcadero C++Builder Office 2000 サーバー パッケージ</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\bcbofficexp240.bpl">Embarcadero C++Builder Office XP サーバー パッケージ</Excluded_Packages>
+                </Excluded_Packages>
             </CPlusPlusBuilder.Personality>
             <Platforms>
                 <Platform value="Win32">True</Platform>
@@ -299,4 +313,5 @@
         <ProjectFileVersion>12</ProjectFileVersion>
     </ProjectExtensions>
     <Import Condition="Exists('$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj')" Project="$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj"/>
+    <Import Project="$(BDS)\Bin\CodeGear.Cpp.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Cpp.Targets')"/>
 </Project>

@@ -74,3 +74,10 @@ UPDATE HISTORY
                       add command of serial output
                       add out-outsingle, out-maxsolstd options
                       add commands for u-blox M8P
+2016/08/20  2.4.3 b17 fix several bugs
+                      merge pull request #180
+                      merge pull request #199
+                      merge pull request #206
+                      binary ap compiled by C++ builder 10.1 Berlin
+                      add ap rtkpost_win64, rtknavi_win64, rnx2rtkp_win64
+                      add ap rtkpost_win64, rtknavi_win64, rnx2rtkp_win64

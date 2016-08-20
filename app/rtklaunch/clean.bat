@@ -4,9 +4,13 @@ del Release\*.exe
 del Release\*.il*
 del Release\*.map
 del Release\*.ini
+del Release\*.o
+del Release\*.d
 del Debug\*.obj
 del Debug\*.tds
 del Debug\*.exe
 del Debug\*.il*
 del Debug\*.map
 del Debug\*.ini
+del Debug\*.o
+del Debug\*.d

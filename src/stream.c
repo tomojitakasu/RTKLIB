@@ -50,6 +50,7 @@
 *                           fix program on struct alignment in time tag header
 *           2016/06/21 1.18 reverse time-tag handler of file to previous
 *           2016/07/23 1.19 add output of received stream to tcp port for serial
+*           2016/08/20 1.20 modify api strsendnmea()
 *-----------------------------------------------------------------------------*/
 #include <ctype.h>
 #include "rtklib.h"
@@ -2191,21 +2192,17 @@ extern gtime_t strgettime(stream_t *stream)
 /* send nmea request -----------------------------------------------------------
 * send nmea gpgga message to stream
 * args   : stream_t *stream I   stream
-*          double *pos      I   position {x,y,z} (ecef) (m)
+*          sol_t *sol       I   solution
 * return : none
 *-----------------------------------------------------------------------------*/
-extern void strsendnmea(stream_t *stream, const double *pos)
+extern void strsendnmea(stream_t *stream, const sol_t *sol)
 {
-    sol_t sol={{0}};
     unsigned char buff[1024];
-    int i,n;
+    int n;
     
-    tracet(3,"strsendnmea: pos=%.3f %.3f %.3f\n",pos[0],pos[1],pos[2]);
+    tracet(3,"strsendnmea: rr=%.3f %.3f %.3f\n",sol->rr[0],sol->rr[1],sol->rr[2]);
     
-    sol.stat=SOLQ_SINGLE;
-    sol.time=utc2gpst(timeget());
-    for (i=0;i<3;i++) sol.rr[i]=pos[i];
-    n=outnmea_gga(buff,&sol);
+    n=outnmea_gga(buff,sol);
     strwrite(stream,buff,n);
 }
 /* generate general hex message ----------------------------------------------*/

@@ -4,6 +4,6 @@
     <Transaction>2009/01/29 00:54:25.123.bdsgroup,G:\rtklib_2.2.0b\app\rtklib_consapp.bdsgroup=C:\Users\ttaka\Documents\Borland Studio Projects\ProjectGroup1.bdsgroup</Transaction>
   </Transactions>
 	<Default.Personality>
-		<Projects ActiveProject="D:\proj\RTKLIB\app\convbin\bcc\_convbin.cbproj"/>
+		<Projects ActiveProject="D:\proj\RTKLIB\app\rnx2rtkp\bcc_win64\_rnx2rtkp_win64.cbproj"/>
 	</Default.Personality>
 </BorlandProject>
