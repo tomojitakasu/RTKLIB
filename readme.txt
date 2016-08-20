@@ -81,3 +81,5 @@ UPDATE HISTORY
                       binary ap compiled by C++ builder 10.1 Berlin
                       add ap rtkpost_win64, rtknavi_win64, rnx2rtkp_win64
                       add ap rtkpost_win64, rtknavi_win64, rnx2rtkp_win64
+2016/08/20  2.4.3 b18 fix #134 (loss-of-lock not recognized in RTCM MSM 6 or 7)
+

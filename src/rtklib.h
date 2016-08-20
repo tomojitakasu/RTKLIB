@@ -58,7 +58,7 @@ extern "C" {
 
 #define VER_RTKLIB  "2.4.3"             /* library version */
 
-#define PATCH_LEVEL "b17"               /* patch level */
+#define PATCH_LEVEL "b18"               /* patch level */
 
 #define COPYRIGHT_RTKLIB \
             "Copyright (C) 2007-2016 by T.Takasu\nAll rights reserved."
@@ -958,8 +958,8 @@ typedef struct {        /* RTCM control struct type */
     int obsflag;        /* obs data complete flag (1:ok,0:not complete) */
     int ephsat;         /* update satellite of ephemeris */
     double cp[MAXSAT][NFREQ+NEXOBS]; /* carrier-phase measurement */
-    unsigned char lock[MAXSAT][NFREQ+NEXOBS]; /* lock time */
-    unsigned char loss[MAXSAT][NFREQ+NEXOBS]; /* loss of lock count */
+    unsigned short lock[MAXSAT][NFREQ+NEXOBS]; /* lock time */
+    unsigned short loss[MAXSAT][NFREQ+NEXOBS]; /* loss of lock count */
     gtime_t lltime[MAXSAT][NFREQ+NEXOBS]; /* last lock time */
     int nbyte;          /* number of bytes in message buffer */ 
     int nbit;           /* number of bits in word buffer */ 
