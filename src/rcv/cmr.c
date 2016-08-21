@@ -13,13 +13,14 @@
 *                           int free_cmr() -> void free_cmr()
 *           2016/07/29 1.4  fix typo
 *                           suppress warning
+*           2016/08/20 1.5  truncated antenna and receiver tables
+*                           added message functions for rtk monitor
 *-----------------------------------------------------------------------------*/
 
 /*
 | CMR protocol stream and file handler functions.
 |
 | Written in June 2016 by Daniel A. Cook, for inclusion into the RTKLIB library.
-| Copyright (C) 2016 by Daniel A. Cook. All Rights Reserved.
 |
 | The Compact Measurement Record Format (CMR) is a de facto industry standard
 | reference station data transmission protocol for RTK positioning. Despite
@@ -70,7 +71,7 @@
 |
 | CMRx (Compressed Measurement Record Extended) and sCMRx (scrambled CMRx)
 | are patented (see the patents) therefore are absolutely positively not
-| implemented!
+| implemented.
 |
 | If you have a copy of reference #2, please be kind and send the author
 | a copy. In fact if you have any technical information concerning any of
@@ -80,9 +81,6 @@
 | Both stream and file input of raw binary CMR base data are supported.
 |
 | Design notes:
-|
-| CMR messages  increment ????[]
-| CMR+ messages increment ????[]
 |
 | Note that because the L1 pseudorange is transmitted modulo one light
 | millisecond, the base to rover distance must be less than 300 KM.
@@ -194,7 +192,7 @@
 | CMR type 4 messages contain the following GPS observables for each satellite:
 |
 | 1. CBT (Actually just once in the messsage header and it's modulo 4000 instead of 240000.)
-| 2. CL1 (But it's a delta against the prior CMR type 3 BL1 for this satellte.)
+| 2. CL1 (But it's a delta against the prior CMR type 0 BL1 for this satellte.)
 |
 | CMR type 4 messages are only received with time represending the intervals
 | between the seconds and never on an exact second.
@@ -401,12 +399,14 @@ typedef struct {                    /* Base observables header record */
     obsbd_t       Data[MAXOBS];     /* Base observables data records */
 } obsb_t;
 
-typedef struct {                    /* CMR information struct type */ 
+typedef struct {                    /* CMR information struct type */
     unsigned char *Buffer;          /* Buffer for building full CMR+ message from little parts */
     unsigned char *MessageBuffer;   /* Message buffer */
     obsr_t        *RoverObservables;/* Rover observables table */
     rtksvr_t      *Svr;             /* Pointer to RTK server structure (when running in that environment otherwise NULL) */
     obsbd_t       *T4Data;          /* Type 3 reference data for type 4 observables */
+    unsigned int  Nmsg1[8];         /* CMR  message counts */
+    unsigned int  Nmsg2[8];         /* CMR+ message counts */
     unsigned int  Flags;            /* Miscellaneous internal flag bits */
     unsigned int  CurrentMessages;  /* Current  base messages active */
     unsigned int  PreviousMessages; /* Previous base messages active */
@@ -414,9 +414,9 @@ typedef struct {                    /* CMR information struct type */
     unsigned int  MessageBytes;     /* Number of bytes in message buffer */
     unsigned int  MessageLength;    /* Message Length */
     int           Page;             /* Previous page number added to CMR+ message mini-buffer */
-    unsigned int  StationID;        /* Station ID */
     unsigned char SlipC[MAXSAT][2]; /* Slip counts */
     unsigned char SlipV[MAXSAT][2]; /* Slip counts valid indicator */
+    char          Msg[128];         /* Message from the base */
 } cmr_t;
 
 /* Static global literals: */
@@ -434,7 +434,7 @@ static const char *CMRTable[] = {
 /* CMR+ 0x94 message types: */
 static const char *CMRplusTable[] = {
     /* 0 */ NULL,
-    /* 1 */ "Reference Station Information",    
+    /* 1 */ "Reference Station Information",
     /* 2 */ "ECEF Reference Station Coordinates",
     /* 3 */ "Reference Station Description"
 };
@@ -454,11 +454,6 @@ static const char *CMRplusTable[] = {
 | The comment is taken from the "Manufacturer" keyword followed by the "Name"
 | keyword unless the name already contains the manufacturer name in which case
 | the manufacturer name is not repeated.
-|
-| ### CMR+ MESSAGE TYPE 1 HAS ONLY A BYTE FOR THE ANTENNA NUMBER SO HOW CAN ###
-| ### THEY POSSIBLY EXCEED 255? THERE MUST EITHER BE A NEW MESSAGE TYPE WE  ###
-| ### DON'T KNOW ABOUT OR A FLAG BIT THAT WE DON'T KNOW ABOUT, ETC. THAT    ###
-| ### EXTENDS THIS OTHERWISE SOMEONE DROPPED THE BALL...                    ###
 */
 static const ant_t AntennasTable[] = {
 {  0,"UNKNOWN_EXT     NONE"},       /* Unknown External */
@@ -716,313 +711,7 @@ static const ant_t AntennasTable[] = {
 {252,"TRMR4           NONE"},       /* Trimble R4 Internal */
 {253,"TRMR6-2         NONE"},       /* Trimble R6-2 Internal */
 {254,"RELNULLANTENNA  NONE"},       /* Relative Null Antenna */
-{255,"GPPNULLANTENNA  NONE"},       /* AdV Null Antenna */
-{256,"TRM29659.00     TCWD"},       /* Trimble Choke Ring w/TCWD Dome */
-{257,"LEIAT302+GP     NONE"},       /* Leica AT302 w/Ground Plane */
-{258,"JNSCR_C146-22-1 NONE"},       /* Javad Navigation Systems JNSCR_C146-22-1 */
-{259,"LEIAR25         NONE"},       /* Leica AR25 */
-{260,"LEIAR25         LEIT"},       /* Leica AR25 w/LEIT Dome */
-{261,"NOV702GG        NONE"},       /* NovAtel 702GG */
-{262,"3S-02-TSADM     NONE"},       /* 3S Navigation 3S-02-TSADM */
-{263,"LEIAT504        OLGA"},       /* Leica AT504 w/OLGA Dome */
-{264,"Yuma Internal"},              /* Trimble Yuma Internal */
-{265,"TRM57971.00     NONE"},       /* Trimble Zephyr Geodetic 2 RoHS */
-{266,"TRMAG25         NONE"},       /* Trimble AG25 GNSS */
-{267,"TRM57972.00     NONE"},       /* Trimble Tornado */
-{268,"TRM59800.80     NONE"},       /* Trimble TRM59800-80 */
-{269,"TRM59800.80     SCIS"},       /* Trimble TRM59800-80 w/SCIS Dome */
-{270,"MAG990596       NONE"},       /* Magellan ProMark 500 */
-{271,"LEIAX1203+GNSS  NONE"},       /* Leica AX1203+GNSS */
-{272,"TRMR8-4         NONE"},       /* Trimble R8-4 Internal */
-{273,"TRM60600.02     NONE"},       /* Trimble AG15 */
-{274,"Tempest"},                    /* Trimble Tempest */
-{275,"TRM59800.80     SCIT"},       /* Trimble TRM59800-80 w/SCIT Dome */
-{276,"TRM57971.00     SCIT"},       /* Trimble Zephyr Geodetic 2 RoHS w/SCIT Dome */
-{277,"TRM57971.00     TZGD"},       /* Trimble Zephyr Geodetic 2 RoHS w/TZGD Dome */
-{278,"ASH701945B_M    NONE"},       /* Ashtech 701945B_M */
-{279,"ASH701945C_M    NONE"},       /* Ashtech 701945C_M */
-{280,"ASH701945D_M    NONE"},       /* Ashtech 701945D_M */
-{281,"ASH701945E_M    NONE"},       /* Ashtech 701945E_M */
-{282,"ASH701945G_M    NONE"},       /* Ashtech 701945G_M */
-{283,"ASH701945B_M    SCIS"},       /* Ashtech 701945B_M w/SCIS Dome */
-{284,"ASH701945C_M    SCIS"},       /* Ashtech 701945C_M w/SCIS Dome */
-{285,"ASH701945D_M    SCIS"},       /* Ashtech 701945D_M w/SCIS Dome */
-{286,"ASH701945E_M    SCIS"},       /* Ashtech 701945E_M w/SCIS Dome */
-{287,"ASH701945G_M    SCIS"},       /* Ashtech 701945G_M w/SCIS Dome */
-{288,"ASH701945B_M    SCIT"},       /* Ashtech 701945B_M w/SCIT Dome */
-{289,"ASH701945C_M    SCIT"},       /* Ashtech 701945C_M w/SCIT Dome */
-{290,"ASH701945D_M    SCIT"},       /* Ashtech 701945D_M w/SCIT Dome */
-{291,"ASH701945E_M    SCIT"},       /* Ashtech 701945E_M w/SCIT Dome */
-{292,"ASH701945G_M    SCIT"},       /* Ashtech 701945G_M w/SCIT Dome */
-{293,"ASH701945B_M    SNOW"},       /* Ashtech 701945B_M w/Snow Dome */
-{294,"ASH701945C_M    SNOW"},       /* Ashtech 701945C_M w/Snow Dome */
-{295,"ASH701945D_M    SNOW"},       /* Ashtech 701945D_M w/Snow Dome */
-{296,"ASH701945E_M    SNOW"},       /* Ashtech 701945E_M w/Snow Dome */
-{297,"ASH701945G_M    SNOW"},       /* Ashtech 701945G_M w/Snow Dome */
-{298,"ASH701945.02B   UNAV"},       /* Ashtech 701945.02B w/UNAV Dome */
-{299,"ASH701945C_M    UNAV"},       /* Ashtech 701945C_M w/UNAV Dome */
-{300,"ASH701945D_M    UNAV"},       /* Ashtech 701945D_M w/UNAV Dome */
-{301,"ASH701945E_M    UNAV"},       /* Ashtech 701945E_M w/UNAV Dome */
-{302,"ASH701933B_M    SCIT"},       /* Ashtech 701933B_M w/SCIT Dome */
-{303,"ASH700936D_M    SCIT"},       /* Ashtech 700936D_M w/SCIT Dome */
-{304,"ASH700936D_M    CAFG"},       /* Ashtech 700936D_M w/CAFG Dome */
-{305,"ASH700936E_C    NONE"},       /* Ashtech 700936E_C */
-{306,"ASH700936E_C    SCIT"},       /* Ashtech 700936E_C w/SCIT Dome */
-{307,"ASH700936B_M    SNOW"},       /* Ashtech 700936B_M w/SNOW Dome */
-{308,"ASH700936B_M    SCIT"},       /* Ashtech 700936B_M w/SCIT Dome */
-{309,"TRMAV59         NONE"},       /* Trimble AV59 */
-{310,"AERAT1675_182   NONE"},       /* AeroAntenna AT1675-182 */
-{311,"ASH700936B_M    NONE"},       /* Ashtech 700936B_M */
-{312,"ASH700936C_M    NONE"},       /* Ashtech 700936C_M */
-{313,"ASH700936D_M    NONE"},       /* Ashtech 700936D_M */
-{314,"ASH700936E      NONE"},       /* Ashtech 700936E */
-{315,"ASH701073.1     NONE"},       /* Ashtech 701073.1 */
-{316,"ASH701073.3     NONE"},       /* Ashtech 701073.3 */
-{317,"TRM99810.00     NONE"},       /* Trimble GA810 */
-{318,"GeoXT 6000 Internal"},        /* Trimble GeoXT 6000 Internal */
-{319,"GeoXH 6000 Internal"},        /* Trimble GeoXH 6000 Internal */
-{320,"SOK_GSR2700ISX  NONE"},       /* Sokkia SOK GSR2700ISX */
-{321,"JAV_TRIUMPH-1   NONE"},       /* Javad GNSS JAV TRIUMPH-1 */
-{322,"TPSCR3_GGD      OLGA"},       /* Topcon CR3 GGD w/OLGA */
-{323,"LEIAR25.R3      NONE"},       /* Leica AR25.R3 */
-{324,"LEIAR25.R3      LEIT"},       /* Leica AR25.R3 w/LEIT Dome */
-{325,"AERAT1675_20W   SPKE"},       /* AeroAntenna AT1675-20W w/SPKE Dome */
-{326,"NAV_ANT3001BR   SPKE"},       /* NavCom ANT3001BR w/SPKE Dome */
-{327,"LEIAR10         NONE"},       /* Leica AR10 */
-{328,"LEIAS10         NONE"},       /* Leica AS10 */
-{329,"SPP68410_10     NONE"},       /* Spectra Precision Epoch 50 Internal */
-{330,"LEIGS15         NONE"},       /* Leica GS15 */
-{331,"LEIAR25.R4      NONE"},       /* Leica AR25.R4 */
-{332,"LEIAR25.R4      LEIT"},       /* Leica AR25.R4 w/LEIT Dome */
-{333,"LEIAR25.R4      SCIT"},       /* Leica AR25.R4 w/SCIT Dome */
-{334,"NOV750.R4       NONE"},       /* NovAtel 750.R4 */
-{335,"NOV750.R4       NOVS"},       /* NovAtel 750.R4 w/NOVS Dome */
-{336,"JAV_GRANT-G3T   NONE"},       /* Javad GNSS JAV GRANT-G3T */
-{337,"JAV_RINGANT_G3T NONE"},       /* Javad GNSS JAV RINGANT-G3T */
-{338,"JAVRINGANT_DM   NONE"},       /* Javad GNSS JAV RINGANT-DM */
-{339,"JAV_RINGANT_G3T JAVC"},       /* Javad GNSS JAV RINGANT-G3T w/JAVC */
-{340,"JAVRINGANT_DM   JVDM"},       /* Javad GNSS JAV RINGANT-DM w/JVDM */
-{341,"JAVRINGANT_DM   SCIS"},       /* Javad GNSS JAV RINGANT-DM w/SCIS */
-{342,"JAVRINGANT_DM   SCIT"},       /* Javad GNSS JAV RINGANT-DM w/SCIT */
-{343,"LEIMNA950GG     NONE"},       /* Leica MNA950GG */
-{344,"TPSCR.G3        SCIS"},       /* Topcon TPS CR.G3 w/SCIS */
-{345,"ASH701945C_M    PFAN"},       /* Ashtech 701945C_M w/PFAN */
-{346,"LEIATX1230+GNSS NONE"},       /* Leica ATX1230+GNSS */
-{347,"TRM_MS972       NONE"},       /* Trimble MS972 */
-{348,"MAG111406       NONE"},       /* Magellan ProFLEX 500 Survey Antenna */
-{349,"TRM_AV33        NONE"},       /* Trimble AV33 */
-{350,"AOAD/M_B        OSOD"},       /* Allen Osborne Associates AOAD Model B w/OSOD Dome */
-{351,"AOAD/M_T        OSOD"},       /* Allen Osborne Associates AOAD Model T w/OSOD Dome */
-{352,"ASH700936A_M    OSOD"},       /* Ashtech 700936A_M w/OSOD Dome */
-{353,"ASH700936D_M    OSOD"},       /* Ashtech 700936D_M w/OSOD Dome */
-{354,"ASH700936E      OSOD"},       /* Ashtech 700936E w/OSOD Dome */
-{355,"ASH700936F_C    OSOD"},       /* Ashtech 700936F_C w/OSOD Dome */
-{356,"701073.1        OSOD"},       /* Ashtech 701073.1 w/OSOD Dome */
-{357,"ASH701941.B     OSOD"},       /* Ashtech 701941.B w/OSOD Dome */
-{358,"701945B_M       OSOD"},       /* Ashtech 701945B_M w/OSOD Dome */
-{359,"701945C_M       OSOD"},       /* Ashtech 701945C_M w/OSOD Dome */
-{360,"701945E_M       OSOD"},       /* Ashtech 701945E_M w/OSOD Dome */
-{361,"701946.3        OSOD"},       /* Ashtech 701946.3 w/OSOD Dome */
-{362,"JAVRINGANT_DM   OSOD"},       /* Javad GNSS RINGANT-DM w/OSOD Dome */
-{363,"JNSCR_C146-22-1 OSOD"},       /* Javad Navigation Systems JNSCR_C146-22-1 w/OSOD DOme */
-{364,"ASH700936F_C    NONE"},       /* Ashtech 700936F_C */
-{365,"ASH700936E      SNOW"},       /* Ashtech 700936E w/SNOW Dome */
-{366,"ASH701941.B     NONE"},       /* Ashtech 701941.B */
-{367,"ASH701946.3     NONE"},       /* Ashtech 701946.3 */
-{368,"ASH700936C_M    SNOW"},       /* Ashtech 700936C_M w/SNOW Dome */
-{369,"ASH700936D_M    SNOW"},       /* Ashtech 700936D_M w/SNOW Dome */
-{370,"ASH700936E_C    SNOW"},       /* Ashtech 700936E_C w/SNOW Dome */
-{371,"Controller Internal"},        /* Trimble Controller Internal */
-{372,"GeoXR 6000 Internal"},        /* Trimble GeoXR 6000 Internal */
-{373,"ASH700936B_M    OSOD"},       /* Ashtech 700936B_M w/OSOD Dome */
-{374,"ASH701933B_M    NONE"},       /* Ashtech 701933B_M */
-{375,"ASH701933B_M    SNOW"},       /* Ashtech 701933B_M w/SNOW Dome */
-{376,"ASH701933B_M    OSOD"},       /* Ashtech 701933B_M w/OSOD Dome */
-{377,"JNSCHOKERING_DM NONE"},       /* Javad Navigation Systems JNSCHOKERING_DM */
-{378,"JNSCHOKERING_DM OSOD"},       /* Javad Navigation Systems JNSCHOKERING_DM w/OSOD DOme */
-{379,"TRMSPS585       NONE"},       /* Trimble SPS585 Internal */
-{380,"TRM44530R.00    NONE"},       /* Trimble Rugged GA530 */
-{381,"TRMR6-3         NONE"},       /* Trimble R6-3 Internal */
-{382,"RNG80971.00     NONE"},       /* Rusnavgeoset RNG80971.00 */
-{383,"RNG80971.00     SCIT"},       /* Rusnavgeoset RNG80971.00 w/SCIT Dome */
-{384,"RNG80971.00     TZGD"},       /* Rusnavgeoset RNG80971.00 w/TZGD Dome */
-{385,"TPSCR.G3        SCIT"},       /* Topcon TPS CR.G3 w/SCIT */
-{386,"ASH111660       NONE"},       /* Ashtech 111660 */
-{387,"ASH111661       NONE"},       /* Ashtech 111661 */
-{388,"ASH802129       NONE"},       /* Ashtech ProMark 500 Galileo */
-{389,"LEIAR25.R3      SCIS"},       /* Leica AR25.R3 w/SCIS Dome */
-{390,"LEIAR25.R3      SCIT"},       /* Leica AR25.R3 w/SCIT Dome */
-{391,"ASH802147_A     NONE"},       /* Spectra Precision ProMark 800 */
-{392,"APSAPS-3        NONE"},       /* Altus APS-3 */
-{393,"TPSHIPER_II     NONE"},       /* Topcon HiPer II */
-{394,"Tempest Rev. B"},             /* Trimble Tempest Rev. B */
-{395,"Pro 6H Internal"},            /* Trimble Pro 6H Internal */
-{396,"Pro 6T Internal"},            /* Trimble Pro 6T Internal */
-{397,"ASH701941.B     SCIS"},       /* Ashtech 701941.B w/SCIS Dome */
-{398,"TPSCR.G5        NONE"},       /* Topcon CR.G5 */
-{399,"TPSCR.G5        SCIS"},       /* Topcon CR.G5 w/SCIS Dome */
-{400,"TPSCR.G5        SCIT"},       /* Topcon CR.G5 w/SCIT Dome */
-{401,"TPSCR.G5        TPSH"},       /* Topcon CR.G5 w/TPSH Dome */
-{402,"STXS9SA7224V3.0 NONE"},       /* STONEX S9II GNSS Internal */
-{403,"TRM_AV34        NONE"},       /* Trimble AV34 */
-{404,"TRMAV37         NONE"},       /* Trimble AV37 */
-{405,"AERAT1675_80    NONE"},       /* AeroAntenna AT1675-80 */
-{406,"TRMLV59         NONE"},       /* Trimble LV59 */
-{407,"AERAT1675_382   NONE"},       /* AeroAntenna AT1675-382 */
-{408,"ASH802111       NONE"},       /* Ashtech MobileMapper 100 Internal */
-{409,"TRMGEO5T        NONE"},       /* Trimble Geo 5T Internal */
-{410,"TRM57970.00     NONE"},       /* Trimble Zephyr - Model 2 RoHS */
-{411,"TPSGR5          NONE"},       /* Topcon GR5 */
-{412,"TRMAG_342       NONE"},       /* Trimble AG-342 Internal */
-{413,"HEMS320         NONE"},       /* Hemisphere S320 */
-{414,"ACC123CGNSSA_XN NONE"},       /* Antcom 123CGNSSA-XN */
-{415,"ACC2G1215A_XT_1 NONE"},       /* Antcom 2G1215A-XT-1 */
-{416,"ACC3G1215A_XT_1 NONE"},       /* Antcom 3G1215A-XT-1 */
-{417,"ACC42G1215A_XT1 NONE"},       /* Antcom 42G1215A-XT1 */
-{418,"ACC4G1215A_XT_1 NONE"},       /* Antcom 4G1215A-XT-1 */
-{419,"ACC53G1215A_XT1 NONE"},       /* Antcom 53G1215A-XT1 */
-{420,"ACC53GO1215AXT1 NONE"},       /* Antcom 53GO1215AXT1 */
-{421,"ACC72CGNSSA     NONE"},       /* Antcom 72CGNSSA */
-{422,"ACC72GNSSA_XT_1 NONE"},       /* Antcom 72GNSSA-XT-1 */
-{423,"ACCG3ANT_3AT1   NONE"},       /* Antcom G3ANT-3AT1 */
-{424,"ACCG3ANT_42AT   NONE"},       /* Antcom G3ANT-42AT1 */
-{425,"ACCG3ANT_52AT   NONE"},       /* Antcom G3ANT-52AT1 */
-{426,"ACCG5ANT_123CAN NONE"},       /* Antcom G5ANT_123CAN */
-{427,"ACCG5ANT_2AT1   NONE"},       /* Antcom G5ANT_2AT1 */
-{428,"ACCG5ANT_3AT1   NONE"},       /* Antcom G5ANT_3AT1 */
-{429,"ACCG5ANT_42AT1  NONE"},       /* Antcom G5ANT_42AT1 */
-{430,"ACCG5ANT_52AT1  NONE"},       /* Antcom G5ANT_52AT1 */
-{431,"ACCG5ANT_72AT1  NONE"},       /* Antcom G5ANT_72AT1 */
-{432,"MAG105645       NONE"},       /* Magellan L1/L2 GPS Antenna */
-{433,"CHCA300GNSS     NONE"},       /* CHC A300GNSS */
-{434,"CHCX900B        NONE"},       /* CHC X900B */
-{435,"CHCX900R        NONE"},       /* CHC X900R */
-{436,"CHCX91B         NONE"},       /* CHC X91B */
-{437,"CHCX91R         NONE"},       /* CHC X91R */
-{438,"TRMR6-4         NONE"},       /* Trimble R6-4 Internal */
-{439,"TRMR4-3         NONE"},       /* Trimble R4-3 Internal */
-{440,"SPP89823_10     NONE"},       /* Spectra Precision ProMark 700 */
-{441,"NOV750.R4       SCIT"},       /* NovAtel 750.R4 w/SCIT Dome */
-{442,"NOV750.R4       SCIS"},       /* NovAtel 750.R4 w/SCIS Dome */
-{443,"NOV702L_1.03    NONE"},       /* NovAtel 702L 1.03 */
-{444,"NOV702GGL_1.01  NONE"},       /* NovAtel 702-GGL 1.01 */
-{445,"NOV702GG_1.02   NONE"},       /* NovAtel 702-GG 1.02 */
-{446,"NOV702GG_1.03   NONE"},       /* NovAtel 702-GG 1.03 */
-{447,"NOV701GGL       NONE"},       /* NovAtel 701-GGL */
-{448,"NOV701GG_1.03   NONE"},       /* NovAtel 701-GG 1.03 */
-{449,"SOKGRX1         NONE"},       /* Sokkia GRX1 */
-{450,"SOKGRX1+10      NONE"},       /* Sokkia GRX1 + 10cm Standoff */
-{451,"SOKGRX2         NONE"},       /* Sokkia GRX2 */
-{452,"SOKGRX2+10      NONE"},       /* Sokkia GRX2 + 10cm Standoff */
-{453,"SOKLOCUS        NONE"},       /* Sokkia Locus */
-{454,"HITV30          NONE"},       /* Hi-Target V30 GNSS */
-{455,"MAGNAP100       NONE"},       /* Magellan NAP100 */
-{456,"AERAT1675_29    NONE"},       /* AeroAntenna AT1675-29 */
-{457,"JAV_TRIUMPH-1R  NONE"},       /* Javad GNSS TRIUMPH-1R */
-{458,"SEPCHOKE_MC     NONE"},       /* Septentrio Choke MC */
-{459,"SEPCHOKE_MC     SPKE"},       /* Septentrio Choke MC w/SPKE Dome */
-{460,"TRM77970.00     NONE"},       /* Trimble Zephyr - Model 2 US/CAN */
-{461,"TRM77971.00     NONE"},       /* Trimble Zephyr Geodetic 2 US/CAN */
-{462,"LEIGS08         NONE"},       /* Leica GS08 */
-{463,"LEIGS08PLUS     NONE"},       /* Leica GS08plus */
-{464,"LEIGS09         NONE"},       /* Leica GS09 */
-{465,"LEIGS12         NONE"},       /* Leica GS12 */
-{466,"LEIGS14         NONE"},       /* Leica GS14 */
-{467,"Geo 7X Internal"},            /* Trimble Geo 7X Internal */
-{468,"SPP91564_1      NONE"},       /* Spectra Precision SP80 */
-{469,"SPP91564_2      NONE"},       /* Spectra Precision SP80 UHF */
-{470,"TRM44830.00     NONE"},       /* Trimble GA830 */
-{473,"TPSHIPER_SR     NONE"},       /* Topcon HiPer SR */
-{474,"JAVTRIUMPH-VS   NONE"},       /* Javad GNSS Triumph-VS */
-{477,"AERAT1675_180   NONE"},       /* AeroAntenna AT1675-180 */
-{478,"TRMAV39         NONE"},       /* Trimble AV39 */
-{479,"LEIAR20         NONE"},       /* Leica AR20 */
-{480,"LEIAR20         LEIM"},       /* Leica AR20 w/LEIM Dome */
-{481,"TPSHIPER_V      NONE"},       /* Topcon HiPer V */
-{482,"AERAT1675_120   NONE"},       /* AeroAntenna AT1675-120 */
-{483,"AERAT1675_120   SPKE"},       /* AeroAntenna AT1675-120 w/SPKE Dome */
-{484,"R1/PG200 Internal"},          /* Trimble R1/PG200 Internal */
-{485,"ITT3750323      NONE"},       /* ITT 3750323 */
-{486,"ITT3750323      SCIS"},       /* ITT 3750323 w/SCIS Dome */
-{487,"TPSPG_A1_6      NONE"},       /* Topcon PG-A1-6 */
-{488,"TPSPG_A1_6+GP   NONE"},       /* Topcon PG-A1-6 w/GP */
-{489,"TPSPG_F1        NONE"},       /* Topcon PG-F1 */
-{490,"TPSPG_F1+GP     NONE"},       /* Topcon PG-F1 w/GP */
-{491,"TPSPG_S1        NONE"},       /* Topcon PG-S1 */
-{492,"TPSPG_S1+GP     NONE"},       /* Topcon PG-S1 w/GP */
-{493,"TPSPN.A5        NONE"},       /* Topcon PN-A5 */
-{494,"TPSPN.A5        SCIS"},       /* Topcon PN-A5 w/SCIS */
-{495,"TPSPN.A5        SCIT"},       /* Topcon PN-A5 w/SCIT */
-{496,"TPSPN.A5        TPSH"},       /* Topcon PN-A5 w/TPSH */
-{497,"TPSHIPER_XT     NONE"},       /* Topcon HiPer XT */
-{498,"TPSHIPER_II+10  NONE"},       /* Topcon HiPer II + 10cm Standoff */
-{499,"TPSHIPER_SR+10  NONE"},       /* Topcon HiPer SR + 10cm Standoff */
-{500,"TPSHIPER_V+10   NONE"},       /* Topcon HiPer V + 10cm Standoff */
-{501,"TPSCR3_GGD      PFAN"},       /* Topcon CR3 GGD w/PFAN */
-{507,"HXCGG486A       NONE"},       /* Harxon HX-GG486A */
-{508,"HXCGG486A       HXCS"},       /* Harxon HX-GG486A w/HXCS */
-{509,"HXCGS488A       NONE"},       /* Harxon HX-GS488A */
-{510,"SPP98147_10     NONE"},       /* Spectra Precision MobileMapper 300 */
-{511,"AERAT1675_219   NONE"},       /* AeroAntenna AT1675-219 */
-{514,"STXS9PX001A     NONE"},       /* STONEX S9III+ GNSS Internal */
-{515,"STXG5ANT_72AT1  NONE"},       /* STONEX G5Ant_72AT1 */
-{516,"TRMR2           NONE"},       /* Trimble R2 Internal */
-{517,"SEPPOLANT_X_MF  NONE"},       /* Septentrio PolaNt-x MF */
-{518,"SEPPOLANT_X_SF  NONE"},       /* Septentrio PolaNt-x SF */
-{519,"SEP_POLANT+     NONE"},       /* Septentrio PolaNt* */
-{520,"SEP_POLANT+_GG  NONE"},       /* Septentrio PolaNt* GG */
-{521,"TRMAT1675_540TS NONE"},       /* Trimble AT1675-540TS */
-{523,"UX5_HP          NONE"},       /* Trimble UX5 HP Internal GNSS */
-{524,"TRM77971.00     SCIT"},       /* Trimble Zephyr Geodetic 2 US/CAN w/SCIT */
-{525,"TPSLEGANT       NONE"},       /* Topcon Legant */
-{526,"TPSHIPER_GGD    NONE"},       /* Topcon HiPer GGD */
-{527,"TRMR8S          NONE"},       /* Trimble R8s Internal */
-{528,"STH82VHX-BS601A NONE"},       /* SOUTH S82V2 GNSS */
-{529,"STHS82HX-BS601A NONE"},       /* SOUTH S82-2013 GNSS */
-{530,"STHS82_7224V3.0 NONE"},       /* SOUTH S82T/S82V GNSS */
-{531,"STHS86HX-BS611A NONE"},       /* SOUTH S86-2013 GNSS */
-{532,"STHS86_7224V3.1 NONE"},       /* SOUTH S86 GNSS */
-{533,"TRMAG_372       NONE"},       /* Trimble AG-372 Internal */
-{534,"HXCCG7601A      NONE"},       /* Harxon HX-CG7601A */
-{535,"HXCCG7601A      HXCG"},       /* Harxon HX-CG7601A w/HXCG */
-{536,"HXCCGX601A      NONE"},       /* Harxon HX-CGX601A */
-{537,"HXCCGX601A      HXCS"},       /* Harxon HX-CGX601A w/HXCS */
-{538,"HXCCSX601A      NONE"},       /* Harxon HX-CSX601A */
-{539,"HXCCA7607A      NONE"},       /* Harxon HX-CA7607A */
-{540,"HXCCG7602A      NONE"},       /* Harxon HX-CG7602A */
-{541,"HXCCG7602A      HXCG"},       /* Harxon HX-CG7602A w/HXCG */
-{542,"LEIICG60        NONE"},       /* Leica ICG60 */
-{543,"CHCA220GR       NONE"},       /* CHC A220GR */
-{544,"CHCC220GR       NONE"},       /* CHC C220GR */
-{545,"CHCC220GR       CHCD"},       /* C220GR w/CHCD */
-{546,"CHCX90D-OPUS    NONE"},       /* CHC X90D-OPUS */
-{547,"CHCX91+S        NONE"},       /* CHC X91+S */
-{550,"JAVTRIUMPH_2A   NONE"},       /* Javad GNSS TRIUMPH-2 */
-{551,"JAVTRIUMPH_LS   NONE"},       /* Javad GNSS TRIUMPH-LS */
-{552,"ACCG8ANT-CHOKES NONE"},       /* Antcom G8ANT-CHOKES */
-{553,"ACCG8ANT_3A4TB1 NONE"},       /* Antcom G8ANT_3A4TB1 */
-{554,"ACCG8ANT_3A4_M1 NONE"},       /* Antcom G8ANT_3A4_M1 */
-{555,"ACCG8ANT_52A4T1 NONE"},       /* Antcom G8ANT_52A4T1 */
-{556,"ACCG8ANT_52A4TC NONE"},       /* Antcom G8ANT_52A4TC */
-{557,"SPP101861       NONE"},       /* Spectra Precision SP60 */
-{559,"GMXZENITH20     NONE"},       /* GeoMax ZENITH 20 */
-{560,"NAX3G+C         NONE"},       /* NavXperience 3G+C */
-{561,"CHANV3          NONE"},       /* Champion Instruments NV3 */
-{562,"CHATKO          NONE"},       /* Champion Instruments TKO GNSS */
-{563,"TRMBEACONIM3_NF NONE"},       /* Trimble Beacon IM3-NF */
-{564,"RAVMBA2_NF      NONE"},       /* Raven MBA-2 NF */
-{565,"RAVMBA2_FF      NONE"},       /* Raven MBA-2 FF */
-{568,"SLGSL600_V1     NONE"},       /* Satlab SL600 V1 */
-{571,"STXS10SX017A    NONE"},       /* STONEX S10 Internal */
-{572,"TWI3870+GP      NONE"},       /* Tallysman 33-3870 GNSS */
-{573,"TWIVP6000       NONE"},       /* Tallysman VP6000 */
-{575,"TRMAV14         NONE"},       /* Trimble AV14 */
-{576,"HXCGX606A       NONE"},       /* Harxon HX-CGX606A */
-{577,"HXCGX606A       HXCS"},       /* Harxon HX-CGX606A w/HXCS */
-{578,"NAVANT3001A     NONE"},       /* NavCom ANT30001A */
-{579,"NAVANT3001B     NONE"},       /* NavCom ANT30001B */
-{580,"NAV_ANT3001R    NONE"},       /* NavCom ANT30001R */
-{581,"NAVSF3040       NONE"}        /* NavCom SF3040 */
+{255,"GPPNULLANTENNA  NONE"}        /* AdV Null Antenna */
 };
 
 /*
@@ -1035,11 +724,6 @@ static const ant_t AntennasTable[] = {
 | the receiver number and the "IGSReceiver" keyword provides the receiver name.
 | A handful of receivers also have an "OldRxId" entry which provides an additional
 | number with the same name.
-|
-| ### CMR+ MESSAGE TYPE 1 HAS ONLY A BYTE FOR THE RECEIVER NUMBER SO HOW CAN ###
-| ### THEY POSSIBLY EXCEED 255? THERE MUST EITHER BE A NEW MESSAGE TYPE WE   ###
-| ### DON'T KNOW ABOUT OR A FLAG BIT THAT WE DON'T KNOW ABOUT, ETC. THAT     ###
-| ### EXTENDS THIS OTHERWISE SOMEONE DROPPED THE BALL...                     ###
 */
 static const rcv_t ReceiversTable[] = {
 {1,"TRIMBLE 4000A"},
@@ -1239,90 +923,7 @@ static const rcv_t ReceiversTable[] = {
 {252,"TRIMBLE GEOXT6000"},
 {253,"TRIMBLE GEOXH6000"},
 {254,"VRS"},
-{255,"UNKNOWN"},
-{257,"LEICA 10"},
-{258,"TPS GB-1000"},
-{259,"TRIMBLE YUMA"},
-{260,"TRIMBLE TSC3"},
-{261,"ASHTECH PROMARK120"},
-{262,"ASHTECH PROMARK220"},
-{263,"ASHTECH PROMARK500"},
-{264,"ASHTECH PF500"},
-{265,"SPP PROMARK800"},
-{266,"ASHTECH PF800"},
-{267,"SOK GSR2700 RS"},
-{268,"SOK GSR2700 RSX"},
-{269,"SOK RADIAN_IS"},
-{270,"TRIMBLE PRO_6H"},
-{271,"TRIMBLE PRO_6T"},
-{272,"STONEX S9II GNSS"},
-{273,"ASHTECH MM100"},
-{274,"TPS GR5"},
-{275,"HEM S320"},
-{276,"TRIMBLE JUNO5"},
-{277,"SOK_GSR2700IS"},
-{278,"SOK_GSR2700ISX"},
-{279,"SOK_GRX1"},
-{280,"SOK_GRX2"},
-{281,"SOK_LOCUS"},
-{282,"TRIMBLE GEOXH6000_CM"},
-{283,"TRIMBLE GEO7T"},
-{284,"TRIMBLE GEO7H"},
-{285,"TRIMBLE GEO7HCM"},
-{286,"HITARGET V30"},
-{287,"TRIMBLE GEO7X"},
-{288,"LEICA GS08"},
-{289,"LEICA GS08PLUS"},
-{290,"LEICA GS09"},
-{291,"LEICA GS10"},
-{292,"LEICA GS12"},
-{293,"LEICA GS14"},
-{294,"LEICA GS15"},
-{295,"LEICA GS25"},
-{296,"JPS EGGDT"},
-{297,"BKG EGGDT"},
-{298,"LEICA GR25"},
-{299,"JAVAD TRE_G3TH SIGMA"},
-{300,"SPECTRA SP80"},
-{301,"TPSHIPER_SR"},
-{302,"JAVAD TR_VS"},
-{303,"TPSHIPER_V"},
-{304,"JAVAD TRE_G3T SIGMA"},
-{305,"TRIMBLE R1/PG200"},
-{306,"TRIMBLE SG160_0X"},
-{307,"TRIMBLE BD930_SG"},
-{308,"TRIMBLE BD982_SG"},
-{309,"STONEX S9III+ GNSS"},
-{310,"TRIMBLE R2"},
-{1022,"ASHTECH MB-ONE"},
-{1024,"NVS NV08C-CSM V4.0"},
-{1025,"UBLOX NEO-6P"},
-{1026,"QUALCOMM GOBI"},
-{1027,"TRIMBLE SOFTGNSS"},
-{1029,"TRIMBLE FMX"},
-{1030,"TRIMBLE FMX_III"},
-{1031,"TRIMBLE CFX"},
-{1032,"TRIMBLE TM_200"},
-{1034,"SOUTH S82T GNSS"},
-{1035,"SOUTH S82V GNSS"},
-{1036,"TRIMBLE AG_372"},
-{1037,"LEICA ICG60"},
-{1038,"SEPT POLARX4"},
-{1039,"JAVAD TRIUMPH2"},
-{1040,"JAVAD TRIUMPH_LS"},
-{1041,"SPECTRA SP60"},
-{1042,"GEOMAX ZENITH20"},
-{1043,"SATLAB SL600_V1"},
-{1044,"TPS NET-G5"},
-{1045,"STONEX S10"},
-{1046,"ASHTECH MB-TWO"},
-{1047,"SOK STRATUS L1"},
-{1048,"CHC X900B"},
-{1049,"CHC X900R"},
-{1050,"CHC X91B"},
-{1051,"CHC X91R"},
-{1052,"CHC X90D-OPUS"},
-{1053,"CHC X91+S"}
+{255,"UNKNOWN"}
 };
 
 /*
@@ -1343,7 +944,7 @@ static const char *AntennaNumberToName(unsigned short Number);
 static void CheckCmrFlags(cmr_t *Cmr, unsigned char *p);
 static int CheckMessageChecksum(unsigned char *MessageBuffer);
 static int CheckMessageFlags(raw_t *Raw);
-static int CheckStation(raw_t *Raw, unsigned int StationID);
+static int CheckStation(raw_t *Raw, int StationID);
 static gtime_t CmrTimeToGtime(unsigned int CmrTime);
 static gtime_t DoubleToGtime(double Time);
 static int DecodeCmr(raw_t *Raw);
@@ -1384,28 +985,33 @@ EXPORT void free_cmr(raw_t *Raw)
     {
         if (Cmr->Buffer)
         {
+            memset(Cmr->Buffer, 0, BUFFER_LENGTH);
             free(Cmr->Buffer);
             Cmr->Buffer = NULL;
         }
        
         if (Cmr->MessageBuffer)
         {
+            memset(Cmr->MessageBuffer, 0, MESSAGEBUFFER_LENGTH);
             free(Cmr->MessageBuffer);
             Cmr->MessageBuffer = NULL;
         }
 
         if (Cmr->RoverObservables)
         {
+            memset(Cmr->RoverObservables, 0, MAXSAT * sizeof(obsr_t));
             free(Cmr->RoverObservables);
             Cmr->RoverObservables = NULL;
         }
 
         if (Cmr->T4Data)
         {
+            memset(Cmr->T4Data, 0, MAXOBS * sizeof(obsbd_t));
             free(Cmr->T4Data);
             Cmr->T4Data = NULL;
         }
 
+        memset(Cmr, 0, sizeof(cmr_t));
         free(Cmr);
         Raw->rcv_data = NULL;
     }
@@ -1574,7 +1180,7 @@ EXPORT int input_cmr(raw_t *Raw, unsigned char Data)
 |
 | Supported CMR messages: 0, 1, 2, 3, 4; CMR+ messages 1, 2, 3.
 */
-extern int input_cmrf(raw_t *Raw, FILE *fp)
+EXPORT int input_cmrf(raw_t *Raw, FILE *fp)
 {
     int i, Data, Ret;
 
@@ -1585,6 +1191,50 @@ extern int input_cmrf(raw_t *Raw, FILE *fp)
     }
 
     return 0; /* return at every 4k bytes */
+}
+
+/* message_cmr - Return message from the base */
+EXPORT void message_cmr(raw_t *Raw, size_t MsgSize, char *Msg)
+{
+    cmr_t *Cmr;
+
+    if (Raw && (Cmr = Raw->rcv_data))
+        strncpy(Msg, (const char*) Cmr->Msg, MsgSize-1);
+}
+
+/* message_counts_cmr - Return CMR/CMR+ message counts */
+EXPORT void message_counts_cmr(raw_t *Raw,
+                               unsigned int Array1Size,
+                               unsigned int *Array1,
+                               unsigned int Array2Size,
+                               unsigned int *Array2 )
+{
+    cmr_t *Cmr;
+    unsigned int n;
+
+    if (Raw && (Cmr = Raw->rcv_data))
+    {
+        /* CMR message counts */
+        for (n = 0; n < Array1Size; n++)
+            Array1[n] = 0;
+
+        if (Array1Size > (sizeof(Cmr->Nmsg1) / sizeof(unsigned int)))
+            Array1Size = sizeof(Cmr->Nmsg1) / sizeof(unsigned int);
+
+        for (n = 0; n < Array1Size; n++)
+            Array1[n] = Cmr->Nmsg1[n];
+
+        /* CMR+ message counts */
+        for (n = 0; n < Array2Size; n++)
+            Array2[n] = 0;
+
+        if (Array2Size > (sizeof(Cmr->Nmsg1) / sizeof(unsigned int)))
+            Array2Size = sizeof(Cmr->Nmsg2) / sizeof(unsigned int);
+
+        for (n = 0; n < Array2Size; n++)
+            Array2[n] = Cmr->Nmsg2[n];
+
+    }
 }
 
 /*
@@ -1702,48 +1352,44 @@ static int CheckMessageChecksum(unsigned char *MessageBuffer)
 static int CheckMessageFlags(raw_t *Raw)
 {
     cmr_t *Cmr = (cmr_t*) Raw->rcv_data;
-    char msg[128] = {0};
+    char Msg[128] = {0};
 
     if (Cmr->CurrentMessages != Cmr->PreviousMessages)
     {
         if (Cmr->CurrentMessages & (M_MFLAG_LOWBATMSG1|M_MFLAG_LOWBATMSG2|M_MFLAG_LOWBATMSG3))
-            strcat(msg, "Low battery at the base");
+            strcat(Msg, "Low battery at the base");
         
         if (Cmr->CurrentMessages & (M_MFLAG_LOWMEMMSG1|M_MFLAG_LOWMEMMSG2|M_MFLAG_LOWMEMMSG3))
         {
-            if (strlen(msg)) strcat(msg,", ");
-            strcat(msg, "Low memory at the base");
+            if (strlen(Msg)) strcat(Msg,", ");
+            strcat(Msg, "Low memory at the base");
         }
 
         if (Cmr->CurrentMessages & (M_MFLAG_NOL2MSG1|M_MFLAG_NOL2MSG2))
         {
-            if (strlen(msg)) strcat(msg, ", ");
-            strcat(msg, "L2 disabled at the base");
+            if (strlen(Msg)) strcat(Msg, ", ");
+            strcat(Msg, "L2 disabled at the base");
         }
-        
-        if (strlen(msg)) strcat(msg, ".");
 
-        Cmr->PreviousMessages = Cmr->CurrentMessages;
+        if (strlen(Msg)) strcat(Msg, ".");
 
-        /* ### WHERE TO PLACE THE BASE STATUS MESSAGE? ### */
-#if 0
-        strncpy(rtcm->msg, msg, sizeof(rtcm->msg) - 1);
-        tracet(2, "CMR: %s\n", msg);
-#endif
+        strncpy(Cmr->Msg, (const char*) Msg, sizeof(Cmr->Msg) - 1);
+        tracet(2, "CMR: %s\n", Msg);
     }
+
+    Cmr->PreviousMessages = Cmr->CurrentMessages;
 
     return 0;
 }
 
 /* CheckStation - Check the Station ID number */
-static int CheckStation(raw_t *Raw, unsigned int StationID)
+static int CheckStation(raw_t *Raw, int StationID)
 {
     cmr_t *Cmr = (cmr_t*) Raw->rcv_data;
-    unsigned int ID;
-    char *p;
+    int ID; char *p;
 
     /* If an explicit Station ID has been specified, then enforce it */
-    if ((p = strstr(Raw->opt, "-STA=")) && sscanf(p, "-STA=%u", &ID) == 1)
+    if ((p = strstr(Raw->opt, "-STA=")) && sscanf(p, "-STA=%d", &ID) == 1)
     {
         if (StationID != ID)
         {
@@ -1756,12 +1402,12 @@ static int CheckStation(raw_t *Raw, unsigned int StationID)
     | We're accepting any Station ID.
     | Let them know what it is and if it changes on them.
     */
-    if (!Cmr->StationID)
+    if (!Raw->staid)
         tracet(2, "CMR: Base Station ID set to %d.\n", StationID);
-    else if (Cmr->StationID != StationID)
-        tracet(2, "CMR: Base Station ID changed from %d to %d.\n", Cmr->StationID, StationID);
+    else if (Raw->staid != StationID)
+        tracet(2, "CMR: Base Station ID changed from %d to %d.\n", Raw->staid, StationID);
 
-    Cmr->StationID = StationID;
+    Raw->staid = StationID;
 
     return 1;
 }  
@@ -1873,10 +1519,8 @@ static int DecodeCmr(raw_t *Raw)
         tracet(2, "CMR: Unsupported CMR message type %u ignored.\n", Type);      
     }
 
-    /* ### WHERE TO PLACE THE VARIOUS BASE MESSAGE TYPE COUNTS? ### */
-#if 0
-    rtcm->nmsg2[Type]++;
-#endif
+    if (Type < (sizeof(Cmr->Nmsg1) / sizeof(unsigned int)))
+        Cmr->Nmsg1[Type]++;
 
     return Ret;
 }
@@ -1926,7 +1570,7 @@ static int DecodeCmrPlus(raw_t *Raw)
     int Page, Pages, Ret = 0;
     cmr_t *Cmr = (cmr_t*) Raw->rcv_data;
     unsigned char *Buffer = (unsigned char*) Cmr->Buffer;
-    unsigned int StationID, Length = Cmr->MessageBuffer[3] - 3;
+    int StationID; unsigned int Length = Cmr->MessageBuffer[3] - 3;
     unsigned char *p = (unsigned char*) &Cmr->MessageBuffer[4];
 
     if (GtimeToDouble(Raw->time) == 0.0)
@@ -1936,7 +1580,7 @@ static int DecodeCmrPlus(raw_t *Raw)
     Page      = *p++;
     Pages     = *p++;
 
-    tracet(3, "CMR: Trimble Packet Type=0x94 (CMR+), Base Station=%u, Page=%d of %d.\n", StationID, Page, Pages);
+    tracet(3, "CMR: Trimble Packet Type=0x94 (CMR+), Base Station=%d, Page=%d of %d.\n", StationID, Page, Pages);
 
     if (!CheckStation(Raw, StationID))
         return 0;
@@ -2097,10 +1741,8 @@ static int DecodeBuffer(raw_t *Raw)
             tracet(2, "CMR: Unsupported CMR+ message type %u ignored.\n", Type);  
         }
 
-        /* ### WHERE TO PLACE THE VARIOUS BASE MESSAGE TYPE COUNTS? ### */
-#if 0
-        rtcm->nmsg3[Type]++;
-#endif
+        if (Type < (sizeof(Cmr->Nmsg2) / sizeof(unsigned int)))
+            Cmr->Nmsg2[Type]++;
 
         Buffer += Length;
         BufferBytes -= Length;
@@ -2122,10 +1764,10 @@ static int DecodeCmrType0(raw_t *Raw)
 {
     cmr_t *Cmr = (cmr_t*) Raw->rcv_data;
     unsigned char *p = (unsigned char*) &Cmr->MessageBuffer[4];
-    unsigned int L1Flags, L2Flags, nsat = ubitn(p+1,0,5), Slot, StationID = ubitn(p,0,5);
+    unsigned int L1Flags, L2Flags, nsat = ubitn(p+1,0,5), Slot;
     gtime_t CmrTime = CmrTimeToGtime(ubitn(p+4,6,18));
     obsb_t Obs; obsbd_t *b;
-    int Prn, Sat;
+    int Prn, Sat, StationID = (int) ubitn(p,0,5);
 
     if (!CheckStation(Raw, StationID))
         return 0;
@@ -2183,8 +1825,8 @@ static int DecodeCmrType0(raw_t *Raw)
         }
 
         Sat = b->Sat - 1;
-        if (Cmr->SlipV[Sat][0] && Cmr->SlipC[Sat][0] != b->Slip[0]) b->LLI[0] |= 1;
-        if (Cmr->SlipV[Sat][1] && Cmr->SlipC[Sat][1] != b->Slip[1]) b->LLI[1] |= 1;
+        if (Cmr->SlipV[Sat][0] && (Cmr->SlipC[Sat][0] != b->Slip[0])) b->LLI[0] |= 1;
+        if (Cmr->SlipV[Sat][1] && (Cmr->SlipC[Sat][1] != b->Slip[1])) b->LLI[1] |= 1;
         Cmr->SlipC[Sat][0] = b->Slip[0];
         Cmr->SlipC[Sat][1] = b->Slip[1];
         Cmr->SlipV[Sat][0] = TRUE;
@@ -2209,7 +1851,7 @@ static int DecodeCmrType1(raw_t *Raw)
 {
     cmr_t *Cmr = (cmr_t*) Raw->rcv_data;
     unsigned char *p = (unsigned char*) &Cmr->MessageBuffer[4];
-    unsigned int StationID = ubitn(p, 0, 5);
+    int StationID = (int) ubitn(p, 0, 5);
 
     if (!CheckStation(Raw, StationID))
         return 0;
@@ -2236,7 +1878,7 @@ static int DecodeCmrType2(raw_t *Raw)
 {
     cmr_t *Cmr = (cmr_t*) Raw->rcv_data;
     unsigned char *p = (unsigned char*) &Cmr->MessageBuffer[4];
-    unsigned int Length, StationID = ubitn(p, 0, 5);
+    unsigned int Length; int StationID = (int) ubitn(p, 0, 5);
 
     if (!CheckStation(Raw, StationID))
         return 0;
@@ -2278,9 +1920,9 @@ static int DecodeCmrType3(raw_t *Raw)
     nav_t *Nav = (Svr) ? &Svr->nav : &Raw->nav;
     unsigned char *p = (unsigned char*) &Cmr->MessageBuffer[4];
     gtime_t CmrTime = utc2gpst(CmrTimeToGtime(ubitn(p+4,6,18)));
-    unsigned int L1Flags, L2Flags, nsat = ubitn(p+1,0,5), Slot, StationID = ubitn(p,0,5);
+    unsigned int L1Flags, L2Flags, nsat = ubitn(p+1,0,5), Slot; 
     obsb_t Obs; obsbd_t *b;
-    int Prn, Sat;
+    int Prn, Sat, StationID = (int) ubitn(p,0,5);
 
     /* ### NEEDS ALPHA TESTING BY SOMEONE WITH APPROPRIATE RECEIVERS ### */
     tracet(2, "CMR: WARNING: CMR type 3 (GLONASS) support is untested.\n");      
@@ -2347,8 +1989,8 @@ static int DecodeCmrType3(raw_t *Raw)
         b->P[0] *= L1WaveLength;
 
         Sat = b->Sat - 1;
-        if (Cmr->SlipV[Sat][0] && Cmr->SlipC[Sat][0] != b->Slip[0]) b->LLI[0] |= 1;
-        if (Cmr->SlipV[Sat][1] && Cmr->SlipC[Sat][1] != b->Slip[1]) b->LLI[1] |= 1;
+        if (Cmr->SlipV[Sat][0] && (Cmr->SlipC[Sat][0] != b->Slip[0])) b->LLI[0] |= 1;
+        if (Cmr->SlipV[Sat][1] && (Cmr->SlipC[Sat][1] != b->Slip[1])) b->LLI[1] |= 1;
         Cmr->SlipC[Sat][0] = b->Slip[0];
         Cmr->SlipC[Sat][1] = b->Slip[1];
         Cmr->SlipV[Sat][0] = TRUE;
@@ -2397,7 +2039,7 @@ static int DecodeCmrType4(raw_t *Raw)
     obsbd_t *t4 = (obsbd_t*) Cmr->T4Data;
     unsigned char *p = (unsigned char*) &Cmr->MessageBuffer[4];
     gtime_t CmrTime = CmrTimeToGtime(ubitn(p+4,6,10)<<2);
-    unsigned int nsat = ubitn(p+1,0,5), Slot, StationID = ubitn(p,0,5);
+    unsigned int nsat = ubitn(p+1,0,5), Slot; int StationID = (int) ubitn(p,0,5);
     obsb_t Obs; obsbd_t *b;
 
     if (!CheckStation(Raw, StationID))
@@ -2504,12 +2146,7 @@ static int ReferenceCmrObs(raw_t *Raw, gtime_t Time, unsigned char Type, double 
     obsd_t *obs = &Raw->obs.data[Raw->obs.n];
     double L0, L1WaveLength = L1_WAVELENGTH, L2WaveLength = L2_WAVELENGTH;
 
-    if (Type == CMR_TYPE_0)
-    {
-        L1WaveLength = L1_WAVELENGTH;
-        L2WaveLength = L2_WAVELENGTH;
-    }
-    else if (Type == CMR_TYPE_3)
+    if (Type == CMR_TYPE_3)
     {
         if ((L1WaveLength = satwavelen(b->Sat, 0, Nav) == 0.0) ||
             (L2WaveLength = satwavelen(b->Sat, 1, Nav) == 0.0))
@@ -2547,7 +2184,7 @@ static int ReferenceCmrObs(raw_t *Raw, gtime_t Time, unsigned char Type, double 
 
     memset(obs, 0, sizeof(obsd_t));
 
-    obs->rcv     = 2; /* And we don't accept rcv=2 in update_cmr() as a rover */
+    obs->rcv     = 2; /* Note that we don't accept rcv=2 in update_cmr() as being from a rover */
     obs->time    = Time;
     obs->P[0]    = b->P[0];
     obs->P[1]    = b->P[1];
@@ -2592,7 +2229,7 @@ static const char *ReceiverNumberToName(unsigned short Number)
 static gtime_t ReferenceCmrTime(gtime_t CmrTime, gtime_t RoverTime, double WindowSize)
 {
     double modtime = GtimeToDouble(RoverTime);
-    return DoubleToGtime((modtime - fmod(modtime, WindowSize)) + CmrTime.time + CmrTime.sec);
+    return DoubleToGtime((modtime - fmod(modtime, WindowSize)) + GtimeToDouble(CmrTime));
 }
 
 /*
@@ -2714,7 +2351,7 @@ static int SyncMessage(cmr_t *Cmr, unsigned char Data)
 
     /*
     | Byte 0 must be an STX character.
-    | Byte 1 = status byte which we always ignore (for now).
+    | Byte 1 = status byte which we ignore here.
     | Byte 2 = message type which must be CMR (93h) or CMR+ (94h).
     | Byte 3 = data length which must be non-zero for any message we're interested in.
     */
@@ -2750,12 +2387,10 @@ static size_t TrimCopy(char *Destination, size_t DestinationLength, char *Source
 | zero in a byte being the least significant bit and bit 7 in a byte being
 | the most significant bit.
 |
-| WARNING: For the purposes of this function The input data is always
-| considered to be in network byte order (AKA BIG-ENDIAN or Motorola format).
-| Bits beyond 7 are taken from bytes at increasingly lower addresses, not
-| higher addresses.
-|
-| For the purposes of this function our machine endianess is irrelevant.
+| For the purposes of this function the input data is always considered to
+| be big-endian. Bits beyond 7 are taken from bytes at increasingly lower
+| addresses, not higher addresses. Works the same on big-endian or little
+| endian machines.
 |
 | The minimum bit position is 0, the maximum bit position is 31,
 | the minimum length is 1 and the maximum length is 32. Other values

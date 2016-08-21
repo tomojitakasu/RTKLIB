@@ -66,6 +66,7 @@ private:
 	void __fastcall SetSbsNav(void);
 	void __fastcall SetIonUtc(void);
 	void __fastcall SetRtcm(void);
+	void __fastcall SetRaw(void);
 	void __fastcall SetRtcmDgps(void);
 	void __fastcall SetRtcmSsr(void);
 	void __fastcall SetLexMsg(void);
@@ -87,6 +88,7 @@ private:
 	void __fastcall ShowSbsFast(void);
 	void __fastcall ShowSbsNav(void);
 	void __fastcall ShowRtcm(void);
+	void __fastcall ShowRaw(void);
 	void __fastcall ShowRtcmDgps(void);
 	void __fastcall ShowRtcmSsr(void);
 	void __fastcall ShowLexMsg(void);

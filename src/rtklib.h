@@ -1232,6 +1232,7 @@ typedef struct {        /* receiver raw data control type */
     
     int format;         /* receiver stream format */
     void *rcv_data;     /* receiver dependent data */
+    int staid;          /* station id */
 } raw_t;
 
 typedef struct {        /* stream type */
@@ -1611,7 +1612,10 @@ EXPORT int init_rt17  (raw_t *raw);
 EXPORT int init_cmr   (raw_t *raw);
 EXPORT void free_rt17 (raw_t *raw);
 EXPORT void free_cmr  (raw_t *raw);
-EXPORT int update_cmr (raw_t *raw, rtksvr_t *svr, obs_t *obs);
+
+EXPORT void message_cmr        (raw_t *raw, size_t msgsize, char *msg);
+EXPORT void message_counts_cmr (raw_t *raw, unsigned int array1size, unsigned int *array1, unsigned int array2size, unsigned int *array2);
+EXPORT int  update_cmr         (raw_t *raw, rtksvr_t *svr, obs_t *obs);
 
 EXPORT int input_oem4  (raw_t *raw, unsigned char data);
 EXPORT int input_oem3  (raw_t *raw, unsigned char data);
