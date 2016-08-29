@@ -19,9 +19,9 @@ object RcvOptDialog: TRcvOptDialog
   TextHeight = 13
   object BtnOk: TButton
     Left = 48
-    Top = 32
+    Top = 29
     Width = 83
-    Height = 23
+    Height = 29
     Caption = '&OK'
     ModalResult = 1
     TabOrder = 0
@@ -29,9 +29,9 @@ object RcvOptDialog: TRcvOptDialog
   end
   object BnCancel: TButton
     Left = 132
-    Top = 32
+    Top = 29
     Width = 83
-    Height = 23
+    Height = 29
     Caption = '&Cancel'
     ModalResult = 2
     TabOrder = 1

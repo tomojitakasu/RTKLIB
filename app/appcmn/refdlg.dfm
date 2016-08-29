@@ -5,7 +5,7 @@ object RefDialog: TRefDialog
   Caption = 'Stations'
   ClientHeight = 443
   ClientWidth = 433
-  Color = clBtnFace
+  Color = clWhite
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -40,7 +40,6 @@ object RefDialog: TRefDialog
     TabOrder = 0
     OnDblClick = StaListDblClick
     OnMouseDown = StaListMouseDown
-    ExplicitHeight = 420
     ColWidths = (
       31
       78
@@ -58,8 +57,6 @@ object RefDialog: TRefDialog
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitLeft = -1
-    ExplicitTop = 411
     object BtnLoad: TButton
       Left = 2
       Top = 2

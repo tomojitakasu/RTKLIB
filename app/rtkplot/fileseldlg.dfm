@@ -5,7 +5,7 @@ object FileSelDialog: TFileSelDialog
   Caption = 'Solutions'
   ClientHeight = 507
   ClientWidth = 183
-  Color = clBtnFace
+  Color = clWhite
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -58,9 +58,9 @@ object FileSelDialog: TFileSelDialog
       object DirLabel: TLabel
         Left = 4
         Top = 1
-        Width = 114
+        Width = 120
         Height = 13
-        Caption = 'D:\proj\rtklib\app\icon'
+        Caption = 'C:\Users\ttaka\Desktop'
         OnClick = DirLabelClick
       end
       object BtnDirSel: TBitBtn
@@ -69,8 +69,6 @@ object FileSelDialog: TFileSelDialog
         Width = 18
         Height = 14
         Align = alRight
-        TabOrder = 0
-        OnClick = BtnDirSelClick
         Glyph.Data = {
           DE000000424DDE00000000000000360000002800000007000000070000000100
           180000000000A800000000000000000000000000000000000000FFFFFFFFFFFF
@@ -80,6 +78,8 @@ object FileSelDialog: TFileSelDialog
           000000000000000000000000FFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFF
           FFFFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
           0000}
+        TabOrder = 0
+        OnClick = BtnDirSelClick
       end
     end
   end
@@ -90,7 +90,6 @@ object FileSelDialog: TFileSelDialog
     Height = 449
     Align = alClient
     Constraints.MinHeight = 100
-    ItemHeight = 16
     ShowGlyphs = True
     TabOrder = 2
     OnClick = FileListClick
@@ -164,7 +163,6 @@ object FileSelDialog: TFileSelDialog
       DirLabel = DirLabel
       FileList = FileList
       IntegralHeight = True
-      ItemHeight = 16
       TabOrder = 0
       OnChange = DirSelChange
       OnDblClick = DirSelChange

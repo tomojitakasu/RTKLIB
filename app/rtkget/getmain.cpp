@@ -402,14 +402,18 @@ void __fastcall TMainForm::DropFiles(TWMDropFiles msg)
 {
     AnsiString file;
     POINT point={0};
+    int x,y;
     char str[1024];
     
     if (DragQueryFile((HDROP)msg.Drop,0xFFFFFFFF,NULL,0)<=0) return;
     DragQueryFile((HDROP)msg.Drop,0,str,sizeof(str));
     if (!DragQueryPoint((HDROP)msg.Drop,&point)) return;
     
-    if (StaList->Left<=point.x&&point.x<StaList->Left+StaList->Width&&
-        StaList->Top <=point.y&&point.y<StaList->Top +StaList->Height) {
+    x=point.x;
+    y=point.y;
+    
+    if (StaList->Left<=x&&x<StaList->Left+StaList->Width&&
+        StaList->Top <=y&&y<StaList->Top +StaList->Height) {
         LoadSta(file=str);
     }
 }

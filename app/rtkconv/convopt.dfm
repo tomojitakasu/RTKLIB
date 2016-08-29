@@ -5,7 +5,7 @@ object ConvOptDialog: TConvOptDialog
   Caption = 'Options'
   ClientHeight = 327
   ClientWidth = 421
-  Color = clBtnFace
+  Color = clWhite
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11

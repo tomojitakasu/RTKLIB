@@ -60,6 +60,23 @@ object MonitorDialog: TMonitorDialog
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goRangeSelect, goColSizing]
     ParentFont = False
     TabOrder = 0
+    ColWidths = (
+      100
+      100
+      100
+      100
+      100)
+    RowHeights = (
+      15
+      15
+      15
+      15
+      15
+      15
+      15
+      15
+      15
+      15)
   end
   object Panel1: TPanel
     Left = 0
@@ -81,10 +98,10 @@ object MonitorDialog: TMonitorDialog
       ParentFont = False
     end
     object BtnPause: TSpeedButton
-      Left = 116
-      Top = 2
-      Width = 19
-      Height = 19
+      Left = 120
+      Top = 0
+      Width = 24
+      Height = 23
       Hint = 'Pause'
       AllowAllUp = True
       GroupIndex = 2
@@ -114,10 +131,10 @@ object MonitorDialog: TMonitorDialog
       Visible = False
     end
     object BtnDown: TSpeedButton
-      Left = 136
-      Top = 2
-      Width = 19
-      Height = 19
+      Left = 144
+      Top = 0
+      Width = 24
+      Height = 23
       Hint = 'Scroll Down'
       AllowAllUp = True
       GroupIndex = 3
@@ -150,9 +167,9 @@ object MonitorDialog: TMonitorDialog
     end
     object BtnClear: TSpeedButton
       Left = 96
-      Top = 2
-      Width = 19
-      Height = 19
+      Top = 0
+      Width = 24
+      Height = 23
       Hint = 'Clear'
       Flat = True
       Glyph.Data = {
@@ -181,18 +198,19 @@ object MonitorDialog: TMonitorDialog
       OnClick = BtnClearClick
     end
     object Panel2: TPanel
-      Left = 409
+      Left = 403
       Top = 1
-      Width = 54
+      Width = 60
       Height = 22
       Align = alRight
       BevelOuter = bvNone
       TabOrder = 1
       object BtnClose: TButton
-        Left = 1
-        Top = -1
-        Width = 53
-        Height = 23
+        Left = 0
+        Top = 0
+        Width = 60
+        Height = 22
+        Align = alClient
         Caption = '&Close'
         ModalResult = 1
         TabOrder = 0

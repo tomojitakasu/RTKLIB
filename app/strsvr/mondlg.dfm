@@ -1,11 +1,13 @@
-object Console: TConsole
+object StrMonDialog: TStrMonDialog
   Left = 0
   Top = 0
   BorderIcons = [biSystemMenu]
-  Caption = 'Console'
+  Caption = 'Input Stream Monitor'
   ClientHeight = 415
   ClientWidth = 623
   Color = clWhite
+  Constraints.MinHeight = 40
+  Constraints.MinWidth = 200
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -17,9 +19,9 @@ object Console: TConsole
   TextHeight = 13
   object Console: TPaintBox
     Left = 0
-    Top = 27
+    Top = 24
     Width = 606
-    Height = 388
+    Height = 391
     Align = alClient
     Color = clWhite
     Constraints.MinHeight = 100
@@ -41,44 +43,16 @@ object Console: TConsole
     Left = 0
     Top = 0
     Width = 623
-    Height = 27
+    Height = 24
     Align = alTop
     BevelInner = bvRaised
     BevelOuter = bvNone
     TabOrder = 0
-    object BtnAsc: TSpeedButton
-      Left = 2
-      Top = 0
-      Width = 37
-      Height = 25
-      Hint = 'Ascii View'
-      GroupIndex = 1
-      Down = True
-      Caption = 'ASC'
-      Flat = True
-      ParentShowHint = False
-      ShowHint = True
-      OnClick = BtnAscClick
-    end
-    object BtnHex: TSpeedButton
-      Left = 40
-      Top = 0
-      Width = 37
-      Height = 25
-      Hint = 'Hex View'
-      GroupIndex = 1
-      Caption = 'HEX'
-      Flat = True
-      ParentShowHint = False
-      ShowHint = True
-      Spacing = 1
-      OnClick = BtnHexClick
-    end
     object BtnClear: TSpeedButton
-      Left = 140
+      Left = 108
       Top = 0
-      Width = 25
-      Height = 25
+      Width = 24
+      Height = 23
       Hint = 'Clear'
       Flat = True
       Glyph.Data = {
@@ -106,10 +80,10 @@ object Console: TConsole
       OnClick = BtnClearClick
     end
     object BtnDown: TSpeedButton
-      Left = 115
+      Left = 156
       Top = 0
-      Width = 25
-      Height = 25
+      Width = 24
+      Height = 23
       Hint = 'Scroll Down'
       Flat = True
       Glyph.Data = {
@@ -137,10 +111,10 @@ object Console: TConsole
       OnClick = BtnDownClick
     end
     object BtnStop: TSpeedButton
-      Left = 90
+      Left = 132
       Top = 0
-      Width = 25
-      Height = 25
+      Width = 24
+      Height = 23
       Hint = 'Pause'
       AllowAllUp = True
       GroupIndex = 2
@@ -170,30 +144,47 @@ object Console: TConsole
       OnClick = BtnStopClick
     end
     object Panel2: TPanel
-      Left = 562
+      Left = 556
       Top = 1
-      Width = 60
-      Height = 25
+      Width = 66
+      Height = 22
       Align = alRight
       BevelOuter = bvNone
       TabOrder = 0
+      ExplicitHeight = 23
       object BtnClose: TButton
         Left = 0
         Top = 0
-        Width = 60
-        Height = 25
+        Width = 66
+        Height = 22
         Align = alClient
         Caption = '&Close'
         TabOrder = 0
         OnClick = BtnCloseClick
+        ExplicitHeight = 23
       end
+    end
+    object SelFmt: TComboBox
+      Left = 2
+      Top = 1
+      Width = 100
+      Height = 21
+      Style = csDropDownList
+      DropDownCount = 20
+      ItemIndex = 0
+      TabOrder = 1
+      Text = 'HEX'
+      OnChange = SelFmtChange
+      Items.Strings = (
+        'HEX'
+        'ASCII')
     end
   end
   object Scroll: TScrollBar
     Left = 606
-    Top = 27
+    Top = 24
     Width = 17
-    Height = 388
+    Height = 391
     Align = alRight
     Ctl3D = True
     DoubleBuffered = False
@@ -206,5 +197,7 @@ object Console: TConsole
     TabOrder = 1
     TabStop = False
     OnChange = ScrollChange
+    ExplicitTop = 25
+    ExplicitHeight = 390
   end
 end

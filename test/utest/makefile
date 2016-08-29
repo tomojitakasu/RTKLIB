@@ -20,11 +20,11 @@ t_misc     : t_misc.o rtkcmn.o preceph.o
 t_preceph  : t_preceph.o rtkcmn.o preceph.o rinex.o ephemeris.o sbas.o qzslex.o
 t_gloeph   : t_gloeph.o rtkcmn.o rinex.o ephemeris.o sbas.o preceph.o qzslex.o
 t_geoid    : t_geoid.o rtkcmn.o preceph.o geoid.o
-t_ppp      : t_ppp.o rtkcmn.o ephemeris.o preceph.o sbas.o ionex.o pntpos.o ppp.o ppp_ar.o
-t_ppp      : stec.o lambda.o qzslex.o
+t_ppp      : t_ppp.o rtkcmn.o ephemeris.o preceph.o sbas.o ionex.o pntpos.o ppp.o ppp_ar.o qzslex.o
+t_ppp      : stec.o lambda.o
 t_ionex    : t_ionex.o rtkcmn.o preceph.o ionex.o
 t_stec     : t_stec.o rtkcmn.o preceph.o stec.o
-t_tle      : t_tle.o rtkcmn.o rinex.o ephemeris.o sbas.o preceph.o tle.o qzslex.o
+t_tle      : t_tle.o rtkcmn.o rinex.o ephemeris.o sbas.o preceph.o tle.o
 
 rtkcmn.o   : $(SRC)/rtklib.h $(SRC)/rtkcmn.c
 	$(CC) -c $(CFLAGS) $(SRC)/rtkcmn.c

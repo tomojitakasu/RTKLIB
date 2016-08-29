@@ -61,8 +61,10 @@ void __fastcall TGoogleEarthView::Timer1Timer(TObject *Sender)
     if (!GetState()) return;
     
     State=1;
+    UpdateOpts();
     SetView(Lat,Lon,Range,Heading);
     Timer1->Enabled=false;
+    Plot->Refresh_GEView();
 }
 //---------------------------------------------------------------------------
 void __fastcall TGoogleEarthView::BtnCloseClick(TObject *Sender)
@@ -246,10 +248,11 @@ void __fastcall TGoogleEarthView::SetMark(int index, const double *pos)
 {
     AnsiString f;
     if (index<1||2<index) return;
-    MarkPos[index-1][0]=pos[0]*R2D;
-    MarkPos[index-1][1]=pos[1]*R2D;
     ExecFunc(f.sprintf("SetMark(%d,%.9f,%.9f,%.3f)",index,pos[0]*R2D,
              pos[1]*R2D,pos[2]));
+    MarkPos[index-1][0]=pos[0]*R2D;
+    MarkPos[index-1][1]=pos[1]*R2D;
+    SetCent(Lat,Lon);
 }
 // --------------------------------------------------------------------------
 void __fastcall TGoogleEarthView::ShowMark(int index)
@@ -434,6 +437,9 @@ void __fastcall TGoogleEarthView::ExecFunc(AnsiString func)
     ::MultiByteToWideChar(CP_UTF8,0,func.c_str(),-1,func_w,512);
     hr=win->execScript(func_w,L"javascript",&var);
     VariantClear(&var);
+#if 1 // for debug
+    trace(2,"GE: %s\n",func.c_str());
+#endif
 }
 //---------------------------------------------------------------------------
 

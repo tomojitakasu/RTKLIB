@@ -2,11 +2,14 @@ object MainForm: TMainForm
   Left = 0
   Top = 0
   BorderIcons = []
-  BorderStyle = bsSingle
   Caption = 'STRSVR'
-  ClientHeight = 224
-  ClientWidth = 405
-  Color = clBtnFace
+  ClientHeight = 230
+  ClientWidth = 406
+  Color = clWhite
+  Constraints.MaxHeight = 268
+  Constraints.MaxWidth = 422
+  Constraints.MinHeight = 268
+  Constraints.MinWidth = 422
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -21,17 +24,22 @@ object MainForm: TMainForm
   object Panel3: TPanel
     Left = 0
     Top = 0
-    Width = 405
-    Height = 195
+    Width = 406
+    Height = 200
     Align = alTop
     BevelOuter = bvNone
     BorderWidth = 1
     TabOrder = 0
     object Panel1: TPanel
-      Left = 1
-      Top = 27
-      Width = 403
+      AlignWithMargins = True
+      Left = 2
+      Top = 30
+      Width = 402
       Height = 134
+      Margins.Left = 1
+      Margins.Top = 1
+      Margins.Right = 1
+      Margins.Bottom = 1
       Align = alTop
       BevelInner = bvRaised
       BevelOuter = bvLowered
@@ -537,20 +545,25 @@ object MainForm: TMainForm
       end
     end
     object Panel4: TPanel
-      Left = 1
-      Top = 168
-      Width = 403
-      Height = 26
+      AlignWithMargins = True
+      Left = 2
+      Top = 175
+      Width = 402
+      Height = 23
+      Margins.Left = 1
+      Margins.Top = 1
+      Margins.Right = 1
+      Margins.Bottom = 1
       Align = alClient
       BevelInner = bvRaised
       BevelOuter = bvLowered
       TabOrder = 1
-      ExplicitHeight = 27
       object Message: TLabel
-        Left = 4
-        Top = 6
-        Width = 396
-        Height = 13
+        Left = 25
+        Top = 2
+        Width = 333
+        Height = 19
+        Align = alClient
         Alignment = taCenter
         AutoSize = False
         Caption = 'message area'
@@ -562,12 +575,18 @@ object MainForm: TMainForm
         Font.Style = []
         ParentColor = False
         ParentFont = False
+        Layout = tlCenter
+        ExplicitLeft = 4
+        ExplicitTop = 6
+        ExplicitWidth = 396
+        ExplicitHeight = 13
       end
       object BtnAbout: TSpeedButton
         Left = 381
-        Top = 1
+        Top = 2
         Width = 19
-        Height = 23
+        Height = 19
+        Align = alRight
         Caption = '?'
         Flat = True
         Font.Charset = DEFAULT_CHARSET
@@ -577,13 +596,16 @@ object MainForm: TMainForm
         Font.Style = []
         ParentFont = False
         OnClick = BtnAboutClick
+        ExplicitTop = 1
+        ExplicitHeight = 23
       end
       object BtnStrMon: TSpeedButton
-        Left = 1
-        Top = 1
+        Left = 2
+        Top = 2
         Width = 23
-        Height = 23
+        Height = 19
         Hint = 'Stream Monitor'
+        Align = alLeft
         Flat = True
         Glyph.Data = {
           3E020000424D3E0200000000000036000000280000000D0000000D0000000100
@@ -608,13 +630,17 @@ object MainForm: TMainForm
         ParentShowHint = False
         ShowHint = True
         OnClick = BtnStrMonClick
+        ExplicitLeft = 1
+        ExplicitTop = 1
+        ExplicitHeight = 23
       end
       object BtnTaskIcon: TSpeedButton
-        Left = 357
-        Top = 1
+        Left = 358
+        Top = 2
         Width = 23
-        Height = 23
+        Height = 19
         Hint = 'Task Tray Icon'
+        Align = alRight
         Flat = True
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clGray
@@ -645,30 +671,40 @@ object MainForm: TMainForm
         ParentShowHint = False
         ShowHint = True
         OnClick = BtnTaskIconClick
+        ExplicitLeft = 357
+        ExplicitTop = 1
+        ExplicitHeight = 23
       end
     end
     object Progress: TProgressBar
-      Left = 1
-      Top = 161
-      Width = 403
+      AlignWithMargins = True
+      Left = 3
+      Top = 166
+      Width = 400
       Height = 7
+      Margins.Left = 2
+      Margins.Top = 1
+      Margins.Right = 2
+      Margins.Bottom = 1
       Align = alTop
       Smooth = True
       Step = 1
       TabOrder = 2
-      ExplicitTop = 155
-      ExplicitWidth = 382
     end
     object Panel2: TPanel
-      Left = 1
-      Top = 1
-      Width = 403
+      AlignWithMargins = True
+      Left = 2
+      Top = 2
+      Width = 402
       Height = 26
+      Margins.Left = 1
+      Margins.Top = 1
+      Margins.Right = 1
+      Margins.Bottom = 1
       Align = alTop
       BevelInner = bvRaised
       BevelOuter = bvLowered
       TabOrder = 3
-      ExplicitWidth = 382
       object Label8: TLabel
         Left = 223
         Top = 5
@@ -713,7 +749,7 @@ object MainForm: TMainForm
   end
   object BtnStart: TBitBtn
     Left = 0
-    Top = 194
+    Top = 199
     Width = 134
     Height = 29
     Caption = '&Start'
@@ -741,8 +777,8 @@ object MainForm: TMainForm
     OnClick = BtnStartClick
   end
   object BtnStop: TBitBtn
-    Left = 0
-    Top = 194
+    Left = 1
+    Top = 199
     Width = 134
     Height = 29
     Caption = 'S&top'
@@ -772,7 +808,7 @@ object MainForm: TMainForm
   end
   object BtnOpt: TBitBtn
     Left = 136
-    Top = 194
+    Top = 199
     Width = 132
     Height = 29
     Caption = '&Options...'
@@ -801,7 +837,7 @@ object MainForm: TMainForm
   end
   object BtnExit: TBitBtn
     Left = 270
-    Top = 194
+    Top = 199
     Width = 134
     Height = 29
     Caption = 'E&xit'
@@ -904,7 +940,7 @@ object MainForm: TMainForm
     Left = 128
     Top = 161
     Bitmap = {
-      494C0101030004003C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010103000400480010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       000000000000000000000000000000000000C0C0C000C0C0C000C0C0C000C0C0
       C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0

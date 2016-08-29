@@ -6,7 +6,7 @@ object SerialOptDialog: TSerialOptDialog
   Caption = 'Serial Options'
   ClientHeight = 139
   ClientWidth = 310
-  Color = clBtnFace
+  Color = clWhite
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -63,7 +63,7 @@ object SerialOptDialog: TSerialOptDialog
     Left = 127
     Top = 109
     Width = 87
-    Height = 27
+    Height = 29
     Caption = '&OK'
     ModalResult = 1
     TabOrder = 1
@@ -73,7 +73,7 @@ object SerialOptDialog: TSerialOptDialog
     Left = 217
     Top = 109
     Width = 87
-    Height = 27
+    Height = 29
     Caption = '&Cancel'
     ModalResult = 2
     TabOrder = 0
@@ -169,7 +169,7 @@ object SerialOptDialog: TSerialOptDialog
     Left = 9
     Top = 109
     Width = 87
-    Height = 27
+    Height = 29
     Caption = '&Commands...'
     TabOrder = 8
     Visible = False

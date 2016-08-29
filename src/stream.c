@@ -51,6 +51,7 @@
 *           2016/06/21 1.18 reverse time-tag handler of file to previous
 *           2016/07/23 1.19 add output of received stream to tcp port for serial
 *           2016/08/20 1.20 modify api strsendnmea()
+*           2016/08/29 1.21 fix bug on starting serial thread for windows
 *-----------------------------------------------------------------------------*/
 #include <ctype.h>
 #include "rtklib.h"
@@ -264,8 +265,6 @@ static DWORD WINAPI serialthread(void *arg)
     
     tracet(3,"serialthread:\n");
     
-    serial->state=1;
-    
     for (;;) {
         tick=tickget();
         while ((n=readseribuff(serial,buff,sizeof(buff)))>0) {
@@ -366,10 +365,12 @@ static serial_t *openserial(const char *path, int mode, char *msg)
         free(serial);
         return NULL;
     }
+    serial->state=1;
     if (!(serial->thread=CreateThread(NULL,0,serialthread,serial,0,NULL))) {
         sprintf(msg,"%s serial thread error (%d)",port,(int)GetLastError());
         tracet(1,"openserial: %s\n",msg);
         CloseHandle(serial->dev);
+        serial->state=0;
         free(serial);
         return NULL;
     }
@@ -410,6 +411,7 @@ static serial_t *openserial(const char *path, int mode, char *msg)
         sprintf(path_tcp,":%d",tcp_port);
         serial->tcpsvr=opentcpsvr(path_tcp,msg_tcp);
     }
+    tracet(3,"openserial: dev=%d\n",serial->dev);
     return serial;
 }
 /* close serial --------------------------------------------------------------*/

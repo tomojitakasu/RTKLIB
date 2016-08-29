@@ -5,7 +5,7 @@ object KeyDialog: TKeyDialog
   Caption = 'Keyword Replacement in File Path'
   ClientHeight = 133
   ClientWidth = 316
-  Color = clBtnFace
+  Color = clWhite
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11

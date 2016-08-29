@@ -5,7 +5,7 @@ object CodeOptDialog: TCodeOptDialog
   Caption = 'Signal Mask'
   ClientHeight = 333
   ClientWidth = 397
-  Color = clBtnFace
+  Color = clWhite
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11

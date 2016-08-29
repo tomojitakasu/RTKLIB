@@ -49,6 +49,8 @@
 *                           crc24q() -> rtk_crc24q()
 *                           check week number zero for ubx-rxm-raw and rawx
 *           2016/08/20 1.21 add test of std-dev for carrier-phase valid
+*           2016/08/26 1.22 add option -STD_SLIP to test slip by std-dev of cp
+*                           fix on half-cyc valid for sbas in trkmeas
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -232,6 +234,7 @@ static int decode_rxmrawx(raw_t *raw)
     gtime_t time;
     double tow,cp1,pr1,tadj=0.0,toff=0.0,freq,tn;
     int i,j,sys,prn,sat,n=0,nsat,week,tstat,lockt,slip,halfv,halfc,fcn,cpstd;
+    int std_slip=0;
     char *q;
     unsigned char *p=raw->buff+6;
     
@@ -257,6 +260,10 @@ static int decode_rxmrawx(raw_t *raw)
     /* time tag adjustment option (-TADJ) */
     if ((q=strstr(raw->opt,"-TADJ="))) {
         sscanf(q,"-TADJ=%lf",&tadj);
+    }
+    /* slip theshold of std-dev of carreir-phase (-STD_SLIP) */
+    if ((q=strstr(raw->opt,"-STD_SLIP="))) {
+        sscanf(q,"-STD_SLIP=%d",&std_slip);
     }
     /* time tag adjustment */
     if (tadj>0.0) {
@@ -301,6 +308,9 @@ static int decode_rxmrawx(raw_t *raw)
         
         lockt=U2(p+24);    /* lock time count (ms) */
         slip=lockt==0||lockt<raw->lockt[sat-1][0]?1:0;
+        if (std_slip>0) {
+            slip|=(cpstd>=std_slip)?1:0; /* slip by std-dev of cp */
+        }
         halfv=tstat&4?1:0; /* half cycle valid */
         halfc=tstat&8?1:0; /* half cycle subtracted from phase */
         
@@ -574,7 +584,12 @@ static int decode_trkmeas(raw_t *raw)
         raw->obs.data[n].SNR[0]=(unsigned char)(snr*4.0);
         raw->obs.data[n].code[0]=sys==SYS_CMP?CODE_L1I:CODE_L1C;
         raw->obs.data[n].LLI[0]=raw->lockt[sat-1][1]>0.0?1:0;
-        raw->obs.data[n].LLI[0]|=flag&0x80?0:2; /* half-cycle valid */
+        if (sys==SYS_SBS) { /* half-cycle valid */
+            raw->obs.data[n].LLI[0]|=lock2>142?0:2;
+        }
+        else {
+            raw->obs.data[n].LLI[0]|=flag&0x80?0:2;
+        }
         raw->lockt[sat-1][1]=0.0;
         
         for (j=1;j<NFREQ+NEXOBS;j++) {
@@ -1035,6 +1050,7 @@ static int sync_ubx(unsigned char *buff, unsigned char data)
 *          -EPHALL    : input all ephemerides
 *          -INVCP     : invert polarity of carrier-phase
 *          -TADJ=tint : adjust time tags to multiples of tint (sec)
+*          -STD_SLIP=std: slip by std-dev of carrier phase under std
 *
 *          The supported messages are as follows.
 *

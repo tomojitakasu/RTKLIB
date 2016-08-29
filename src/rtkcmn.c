@@ -121,6 +121,7 @@
 *                           rename api crc32()    -> rtk_crc32()
 *           2016/08/20 1.38 fix type incompatibility in win64 environment
 *                           change constant _POSIX_C_SOURCE 199309 -> 199506
+*           2016/08/21 1.39 fix bug on week overflow in time2gpst()/gpst2time()
 *-----------------------------------------------------------------------------*/
 #define _POSIX_C_SOURCE 199506
 #include <stdarg.h>
@@ -1293,7 +1294,7 @@ extern gtime_t gpst2time(int week, double sec)
     gtime_t t=epoch2time(gpst0);
     
     if (sec<-1E9||1E9<sec) sec=0.0;
-    t.time+=86400*7*week+(int)sec;
+    t.time+=(time_t)86400*7*week+(int)sec;
     t.sec=sec-(int)sec;
     return t;
 }
@@ -1310,7 +1311,7 @@ extern double time2gpst(gtime_t t, int *week)
     int w=(int)(sec/(86400*7));
     
     if (week) *week=w;
-    return (double)(sec-w*86400*7)+t.sec;
+    return (double)(sec-(double)w*86400*7)+t.sec;
 }
 /* galileo system time to time -------------------------------------------------
 * convert week and tow in galileo system time (gst) to gtime_t struct
@@ -1323,7 +1324,7 @@ extern gtime_t gst2time(int week, double sec)
     gtime_t t=epoch2time(gst0);
     
     if (sec<-1E9||1E9<sec) sec=0.0;
-    t.time+=86400*7*week+(int)sec;
+    t.time+=(time_t)86400*7*week+(int)sec;
     t.sec=sec-(int)sec;
     return t;
 }
@@ -1340,7 +1341,7 @@ extern double time2gst(gtime_t t, int *week)
     int w=(int)(sec/(86400*7));
     
     if (week) *week=w;
-    return (double)(sec-w*86400*7)+t.sec;
+    return (double)(sec-(double)w*86400*7)+t.sec;
 }
 /* beidou time (bdt) to time ---------------------------------------------------
 * convert week and tow in beidou time (bdt) to gtime_t struct
@@ -1353,7 +1354,7 @@ extern gtime_t bdt2time(int week, double sec)
     gtime_t t=epoch2time(bdt0);
     
     if (sec<-1E9||1E9<sec) sec=0.0;
-    t.time+=86400*7*week+(int)sec;
+    t.time+=(time_t)86400*7*week+(int)sec;
     t.sec=sec-(int)sec;
     return t;
 }
@@ -1370,7 +1371,7 @@ extern double time2bdt(gtime_t t, int *week)
     int w=(int)(sec/(86400*7));
     
     if (week) *week=w;
-    return (double)(sec-w*86400*7)+t.sec;
+    return (double)(sec-(double)w*86400*7)+t.sec;
 }
 /* add time --------------------------------------------------------------------
 * add time to gtime_t struct

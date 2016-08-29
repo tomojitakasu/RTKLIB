@@ -43,8 +43,8 @@ __fastcall TMainForm::TMainForm(TComponent* Owner)
     
     Caption="RTKLIB v." VER_RTKLIB " " PATCH_LEVEL;
     TrayIcon->Hint=Caption;
-    Constraints->MinWidth=(Width-ClientWidth)+BTN_SIZE;
-    Constraints->MaxWidth=(Width-ClientWidth)+BTN_SIZE*BTN_COUNT;
+    Panel1->Constraints->MinWidth=BTN_SIZE+2;
+    Panel1->Constraints->MaxWidth=BTN_SIZE*BTN_COUNT+2;
     
     strcpy(buff,GetCommandLine());
     for (p=strtok(buff," ");p&&argc<32;p=strtok(NULL," ")) {
@@ -79,29 +79,6 @@ void __fastcall TMainForm::FormClose(TObject *Sender, TCloseAction &Action)
     ini->WriteInteger("pos","width",  Width);
     ini->WriteInteger("pos","height",Height);
     delete ini;
-}
-//---------------------------------------------------------------------------
-void __fastcall TMainForm::FormResize(TObject *Sender)
-{
-    TSpeedButton *btn[]={
-        BtnPlot,BtnConv,BtnStr,BtnPost,BtnNtrip,BtnNavi,BtnGet
-    };
-    int i,j,k,n,m,h;
-    
-    n=MAX(1,(Width-10)/BTN_SIZE);
-    m=(BTN_COUNT-1)/n+1;
-    h=(Height-ClientHeight)+BTN_SIZE*m;
-    Constraints->MinHeight=h;
-    Constraints->MaxHeight=h;
-    
-    for (i=k=0;k<7;i++) for (j=0;j<n&&k<BTN_COUNT;j++,k++) {
-        btn[k]->Top =BTN_SIZE*i;
-        btn[k]->Left=BTN_SIZE*j;
-        btn[k]->Height=BTN_SIZE;
-        btn[k]->Width =BTN_SIZE;
-    }
-    BtnTray->Left=ClientWidth -BtnTray->Width;
-    BtnTray->Top =ClientHeight-BtnTray->Height;
 }
 //---------------------------------------------------------------------------
 void __fastcall TMainForm::BtnPlotClick(TObject *Sender)
@@ -227,6 +204,31 @@ void __fastcall TMainForm::MenuGetClick(TObject *Sender)
 void __fastcall TMainForm::MenuExitClick(TObject *Sender)
 {
     Close();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TMainForm::Panel1Resize(TObject *Sender)
+{
+    TSpeedButton *btn[]={
+        BtnPlot,BtnConv,BtnStr,BtnPost,BtnNtrip,BtnNavi,BtnGet
+    };
+    int i,j,k,n,m,h;
+    
+    n=MAX(1,Panel1->ClientWidth/BTN_SIZE);
+    m=(BTN_COUNT-1)/n+1;
+    h=BTN_SIZE*m+2;
+    Panel1->Constraints->MinHeight=h;
+    Panel1->Constraints->MaxHeight=h;
+    
+    for (i=k=0;k<7;i++) for (j=0;j<n&&k<BTN_COUNT;j++,k++) {
+        btn[k]->Top =BTN_SIZE*i+1;
+        btn[k]->Left=BTN_SIZE*j+1;
+        btn[k]->Height=BTN_SIZE;
+        btn[k]->Width =BTN_SIZE;
+    }
+    BtnTray->Left=Panel1->ClientWidth -BtnTray->Width;
+    BtnTray->Top =Panel1->ClientHeight-BtnTray->Height;
+
 }
 //---------------------------------------------------------------------------
 

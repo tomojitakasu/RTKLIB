@@ -209,31 +209,32 @@ void __fastcall TMainForm::FormClose(TObject *Sender, TCloseAction &Action)
 void __fastcall TMainForm::DropFiles(TWMDropFiles msg)
 {
     POINT point={0};
-    int top;
+    int top,y;
     char *p,file[1024];
     
     if (DragQueryFile((HDROP)msg.Drop,0xFFFFFFFF,NULL,0)<=0) return;
     DragQueryFile((HDROP)msg.Drop,0,file,sizeof(file));
     if (!DragQueryPoint((HDROP)msg.Drop,&point)) return;
     
+    y=point.y;
     top=Panel1->Top+Panel4->Top;
-    if (point.y<=top+InputFile1->Top+InputFile1->Height) {
+    if (y<=top+InputFile1->Top+InputFile1->Height) {
         InputFile1->Text=file;
         SetOutFile();
     }
-    else if (point.y<=top+InputFile2->Top+InputFile2->Height) {
+    else if (y<=top+InputFile2->Top+InputFile2->Height) {
         InputFile2->Text=file;
     }
-    else if (point.y<=top+InputFile3->Top+InputFile3->Height) {
+    else if (y<=top+InputFile3->Top+InputFile3->Height) {
         InputFile3->Text=file;
     }
-    else if (point.y<=top+InputFile4->Top+InputFile4->Height) {
+    else if (y<=top+InputFile4->Top+InputFile4->Height) {
         InputFile4->Text=file;
     }
-    else if (point.y<=top+InputFile5->Top+InputFile5->Height) {
+    else if (y<=top+InputFile5->Top+InputFile5->Height) {
         InputFile5->Text=file;
     }
-    else if (point.y<=top+InputFile6->Top+InputFile6->Height) {
+    else if (y<=top+InputFile6->Top+InputFile6->Height) {
         InputFile6->Text=file;
     }
 }
@@ -1335,6 +1336,7 @@ void __fastcall TMainForm::LoadOpt(void)
     TTextViewer::FontD=new TFont;
     TTextViewer::FontD->Name=ini->ReadString ("viewer","fontname","Courier New");
     TTextViewer::FontD->Size=ini->ReadInteger("viewer","fontsize",9);
+    Width=ini->ReadInteger("window","width",486);
     delete ini;
 }
 // save options to ini file -------------------------------------------------
@@ -1543,9 +1545,63 @@ void __fastcall TMainForm::SaveOpt(void)
     ini->WriteInteger("viewer","color2",(int)TTextViewer::Color2  );
     ini->WriteString ("viewer","fontname",TTextViewer::FontD->Name);
     ini->WriteInteger("viewer","fontsize",TTextViewer::FontD->Size);
+    
+    ini->WriteInteger("window","width",Width);
     delete ini;
 }
 
 //---------------------------------------------------------------------------
 
+void __fastcall TMainForm::Panel4Resize(TObject *Sender)
+{
+	TButton *btns[]={
+		BtnInputFile1,BtnInputFile2,BtnInputFile3,BtnInputFile4,
+		BtnInputFile5,BtnInputFile6
+	};
+	TComboBox *boxes[]={
+		InputFile1,InputFile2,InputFile3,InputFile4,InputFile5,InputFile6
+	};
+	int w=Panel4->Width;
+	
+	for (int i=0;i<6;i++) {
+		btns[i]->Left=w-btns[i]->Width-5;
+		boxes[i]->Width=w-btns[i]->Width-boxes[i]->Left-6;
+	}
+	BtnInputView1->Left=InputFile1->Left+InputFile1->Width-BtnInputView1->Width;
+	BtnInputPlot1->Left=BtnInputView1->Left-BtnInputPlot1->Width;
+	BtnInputView2->Left=InputFile2->Left+InputFile2->Width-BtnInputView2->Width;
+	BtnInputPlot2->Left=BtnInputView2->Left-BtnInputPlot2->Width;
+	BtnInputView6->Left=InputFile3->Left+InputFile3->Width-BtnInputView6->Width;
+	BtnInputView5->Left=BtnInputView6->Left-BtnInputView5->Width;
+	BtnInputView4->Left=BtnInputView5->Left-BtnInputView4->Width;
+	BtnInputView3->Left=BtnInputView4->Left-BtnInputView3->Width;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TMainForm::Panel5Resize(TObject *Sender)
+{
+	int w=Panel5->Width;
+	
+	BtnOutDir->Left=w-BtnOutDir->Width-5;
+	OutDir->Width=w-BtnOutDir->Width-OutDir->Left-6;
+	BtnOutputFile->Left=w-BtnOutputFile->Width-5;
+	OutputFile->Width=w-BtnOutputFile->Width-OutputFile->Left-6;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TMainForm::Panel2Resize(TObject *Sender)
+{
+	TBitBtn *btns[]={
+		BtnPlot,BtnView,BtnToKML,BtnOption,BtnExec,BtnExit
+	};
+	int w=(Panel2->Width-2)/6;
+	
+	for (int i=0;i<6;i++) {
+		btns[i]->Width=w;
+		btns[i]->Left=i*w+1;
+	}
+	BtnAbort->Width=BtnExec->Width;
+	BtnAbort->Left =BtnExec->Left;
+}
+//---------------------------------------------------------------------------
 

@@ -5,7 +5,7 @@ object MarkDialog: TMarkDialog
   Caption = 'Add Mark'
   ClientHeight = 206
   ClientWidth = 345
-  Color = clBtnFace
+  Color = clWhite
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11

@@ -6,7 +6,7 @@ object PlotOptDialog: TPlotOptDialog
   Caption = 'Options'
   ClientHeight = 397
   ClientWidth = 552
-  Color = clBtnFace
+  Color = clWhite
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -29,6 +29,8 @@ object PlotOptDialog: TPlotOptDialog
     Height = 395
     Align = alTop
     BevelOuter = bvNone
+    Color = clWhite
+    ParentBackground = False
     TabOrder = 2
     object Label1: TLabel
       Left = 373
@@ -652,7 +654,7 @@ object PlotOptDialog: TPlotOptDialog
       Left = 520
       Top = 185
       Width = 25
-      Height = 23
+      Height = 22
       Caption = '...'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -906,7 +908,7 @@ object PlotOptDialog: TPlotOptDialog
     object AnimCycle: TComboBox
       Left = 467
       Top = 208
-      Width = 78
+      Width = 77
       Height = 21
       TabOrder = 46
       Text = '1'
@@ -973,7 +975,7 @@ object PlotOptDialog: TPlotOptDialog
       Left = 520
       Top = 253
       Width = 25
-      Height = 23
+      Height = 22
       Caption = '...'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -1018,7 +1020,7 @@ object PlotOptDialog: TPlotOptDialog
     object RefCycle: TEdit
       Left = 467
       Top = 230
-      Width = 78
+      Width = 77
       Height = 21
       TabOrder = 47
       Text = '100'
@@ -1036,7 +1038,7 @@ object PlotOptDialog: TPlotOptDialog
       OnClick = MColorClick
     end
     object QcCmd: TEdit
-      Left = 255
+      Left = 254
       Top = 276
       Width = 290
       Height = 21
@@ -1145,14 +1147,14 @@ object PlotOptDialog: TPlotOptDialog
         'ddd mm ss.ss')
     end
     object RnxOpts: TEdit
-      Left = 255
+      Left = 254
       Top = 298
       Width = 290
       Height = 21
       TabOrder = 54
     end
     object TLEFile: TEdit
-      Left = 255
+      Left = 254
       Top = 320
       Width = 245
       Height = 21
@@ -1162,7 +1164,7 @@ object PlotOptDialog: TPlotOptDialog
       Left = 520
       Top = 319
       Width = 25
-      Height = 23
+      Height = 22
       Caption = '...'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -1174,9 +1176,9 @@ object PlotOptDialog: TPlotOptDialog
       OnClick = BtnTLEFileClick
     end
     object TLESatFile: TEdit
-      Left = 255
+      Left = 254
       Top = 342
-      Width = 246
+      Width = 245
       Height = 21
       TabOrder = 57
     end
@@ -1184,7 +1186,7 @@ object PlotOptDialog: TPlotOptDialog
       Left = 520
       Top = 341
       Width = 25
-      Height = 23
+      Height = 22
       Caption = '...'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -1214,9 +1216,9 @@ object PlotOptDialog: TPlotOptDialog
     end
   end
   object BtnCancel: TButton
-    Left = 457
+    Left = 453
     Top = 366
-    Width = 89
+    Width = 92
     Height = 29
     Caption = '&Cancel'
     ModalResult = 2
@@ -1225,7 +1227,7 @@ object PlotOptDialog: TPlotOptDialog
   object BtnOK: TButton
     Left = 360
     Top = 366
-    Width = 89
+    Width = 92
     Height = 29
     Caption = '&OK'
     ModalResult = 1

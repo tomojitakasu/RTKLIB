@@ -36,6 +36,7 @@
 *           2015/11/26  1.18 support opt->freqopt(disable L2)
 *           2016/01/12  1.19 add carrier-phase bias correction by ssr
 *           2016/07/31  1.20 fix error message problem in rnx2rtkp
+*           2016/08/29  1.21 suppress warnings
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -881,7 +882,7 @@ static void setpcv(gtime_t time, prcopt_t *popt, nav_t *nav, const pcvs_t *pcvs,
         if (!(satsys(i+1,NULL)&popt->navsys)) continue;
         if (!(pcv=searchpcv(i+1,"",time,pcvs))) {
             satno2id(i+1,id);
-            trace(2,"no satellite antenna pcv: %s\n",id);
+            trace(3,"no satellite antenna pcv: %s\n",id);
             continue;
         }
         nav->pcvs[i]=*pcv;
