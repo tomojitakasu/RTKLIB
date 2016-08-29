@@ -97,9 +97,9 @@ static void rnx2opt(const rnxctr_t *rnx, rnxopt_t *opt)
 {
     double pos[3],enu[3];
     int i;
-    
+
     trace(3,"rnx2opt:\n");
-    
+
     /* receiver and antenna info */
     if (!*opt->marker&&!*opt->markerno) {
         strcpy(opt->marker,rnx->sta.name);
@@ -139,14 +139,18 @@ static void rtcm2opt(const rtcm_t *rtcm, rnxopt_t *opt)
 {
     double pos[3],enu[3];
     int i;
-    
+
     trace(3,"rtcm2opt:\n");
-    
+
     /* comment */
     sprintf(opt->comment[1]+strlen(opt->comment[1]),", station ID: %d",
             rtcm->staid);
-    
+
     /* receiver and antenna info */
+    if (!*opt->marker&&!*opt->markerno) {
+        strcpy(opt->marker,rtcm->sta.name);
+        strcpy(opt->markerno,rtcm->sta.marker);
+    }
     if (!*opt->rec[0]&&!*opt->rec[1]&&!*opt->rec[2]) {
         strcpy(opt->rec[0],rtcm->sta.recsno);
         strcpy(opt->rec[1],rtcm->sta.rectype);
@@ -190,10 +194,21 @@ static void raw2opt(const raw_t *raw, rnxopt_t *opt)
 {
     double pos[3],enu[3];
     int i;
-    
+
     trace(3,"raw2opt:\n");
-    
-    /* receiver and antenna info */
+
+#if 0 /* Enable this code after PUSH #211 "Add RAW Msgs selection to RTK MONITOR in RTKNAVI" is added */
+    /* comment */
+    if (raw->staid)
+        sprintf(opt->comment[1]+strlen(opt->comment[1]),", station ID: %d",
+                raw->staid);
+#endif
+
+   /* receiver and antenna info */
+    if (!*opt->marker&&!*opt->markerno) {
+        strcpy(opt->marker,raw->sta.name);
+        strcpy(opt->markerno,raw->sta.marker);
+    }
     if (!*opt->rec[0]&&!*opt->rec[1]&&!*opt->rec[2]) {
         strcpy(opt->rec[0],raw->sta.recsno);
         strcpy(opt->rec[1],raw->sta.rectype);
@@ -236,11 +251,11 @@ static void raw2opt(const raw_t *raw, rnxopt_t *opt)
 static strfile_t *gen_strfile(int format, const char *opt, gtime_t time)
 {
     strfile_t *str;
-    
+
     trace(3,"init_strfile:\n");
-    
+
     if (!(str=(strfile_t *)calloc(sizeof(strfile_t),1))) return NULL;
-    
+
     if (format==STRFMT_RTCM2||format==STRFMT_RTCM3) {
         if (!init_rtcm(&str->rtcm)) {
             showmsg("init rtcm error");
