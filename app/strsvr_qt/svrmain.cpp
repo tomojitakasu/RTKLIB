@@ -39,8 +39,9 @@
 #include "convdlg.h"
 #include "aboutdlg.h"
 #include "refdlg.h"
-#include "console.h"
+#include "mondlg.h"
 #include "svrmain.h"
+#include "mondlg.h"
 
 //---------------------------------------------------------------------------
 
@@ -104,11 +105,11 @@ MainForm::MainForm(QWidget *parent)
     TrayIcon->setContextMenu(trayMenu);
 
     svrOptDialog = new SvrOptDialog(this);
-    console = new Console(this);
     tcpOptDialog = new TcpOptDialog(this);
     serialOptDialog = new SerialOptDialog(this);
     fileOptDialog = new FileOptDialog(this);
     ftpOptDialog = new FtpOptDialog(this);
+    strMonDialog = new StrMonDialog(this);
 
     StartTime.sec = StartTime.time = EndTime.sec = EndTime.time = 0;
 
@@ -469,8 +470,7 @@ void MainForm::MenuExitClick()
 // callback on stream-monitor -----------------------------------------------
 void MainForm::BtnStrMonClick()
 {
-    console->setWindowTitle("Input Monitor");
-    console->show();
+    strMonDialog->show();
 }
 // callback on input type change --------------------------------------------
 void MainForm::InputChange()
@@ -495,7 +495,7 @@ void MainForm::Output3Change()
 // callback on interval timer -----------------------------------------------
 void MainForm::Timer1Timer()
 {
-    QColor color[] = { Qt::red, Qt::gray, CLORANGE, Qt::green, QColor(0x00, 0xff, 0x00), QColor(0xff, 0xff, 0x00) };
+    QColor color[] = { Qt::red, Qt::white, CLORANGE, Qt::green, QColor(0x00, 0xff, 0x00), QColor(0xff, 0xff, 0x00) };
     QLabel *e0[] = { IndInput, IndOutput1, IndOutput2, IndOutput3 };
     QLabel *e1[] = { InputByte, Output1Byte, Output2Byte, Output3Byte };
     QLabel *e2[] = { InputBps, Output1Bps, Output2Bps, Output3Bps };
@@ -687,7 +687,7 @@ void MainForm::Timer2Timer()
 
     if (len <= 0 || !msg) return;
 
-    console->AddMsg(msg, len);
+    strMonDialog->AddMsg(msg, len);
 
     free(msg);
 }

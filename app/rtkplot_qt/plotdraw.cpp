@@ -266,20 +266,20 @@ void Plot::DrawTrk(QPainter &c, int level)
     }
 
     // update geview and gmview center
-    if (level && norm(OPos, 3) > 0.0) {
-        GraphT->GetCent(xt, yt);
-        GraphT->ToPoint(xt, yt, p1);
-        GraphT->ToPos(p1, enu[0], enu[1]);
-        enu[2] = 0;
-        ecef2pos(OPos, opos);
-        enu2ecef(opos, enu, rr);
-        for (i = 0; i < 3; i++) rr[i] += OPos[i];
-        ecef2pos(rr, cent);
-
-        googleEarthView->SetCent(cent[0] * R2D, cent[1] * R2D);
-        googleMapView->SetCent(cent[0] * R2D, cent[1] * R2D);
+    if (level) {
+        if (norm(OPos, 3) > 0.0) {
+            GraphT->GetCent(xt, yt);
+            GraphT->ToPoint(xt, yt, p1);
+            GraphT->ToPos(p1, enu[0], enu[1]);
+            ecef2pos(OPos, opos);
+            enu2ecef(opos, enu, rr);
+            for (i=0; i<3; i++) rr[i] += OPos[i];
+            ecef2pos(rr, cent);
+            googleEarthView->SetCent(cent[0] * R2D, cent[1] * R2D);
+            googleMapView  ->SetCent(cent[0] * R2D, cent[1] * R2D);
+        }
+        Refresh_GEView();
     }
-    Refresh_GEView();
 }
 // draw map-image on track-plot ---------------------------------------------
 void Plot::DrawTrkImage(QPainter &c, int level)
@@ -981,25 +981,30 @@ void Plot::DrawObsSlip(QPainter &c, double *yp)
 
     strncpy(code, ObsType->currentIndex() ? qPrintable(ObsTypeText) + 1 : "", 32);
 
-    for (i = 0; i < Obs.n; i++) {
-        if (El[i] < ElMask * D2R) continue;
-        if (ElMaskP && El[i] < ElMaskData[static_cast<int>(Az[i] * R2D + 0.5)]) continue;
-        obs = &Obs.data[i];
-        if (!SatSel[obs->sat - 1]) continue;
-
-        if (!GraphR->ToPoint(TimePos(obs->time), yp[obs->sat - 1], ps[0])) continue;
-        ps[1].rx() = ps[0].x();
-        ps[1].ry() = ps[0].y() + MarkSize * 3 / 2 + 1;
-        ps[0].ry() = ps[0].y() - MarkSize * 3 / 2;
-
-        if (ShowHalfC) {
+    if (ShowHalfC) {
+        for (i = 0; i < Obs.n; i++) {
+            if (El[i] < ElMask * D2R) continue;
+            if (ElMaskP && El[i] < ElMaskData[(int)(Az[i] * R2D + 0.5)]) continue;
+            obs = &Obs.data[i];
+            if (!SatSel[obs->sat-1]) continue;
             slip = 0;
             for (j = 0; j < NFREQ + NEXOBS; j++)
                 if ((!*code || strstr(code2obs(obs->code[j], NULL), code)) &&
                     (obs->LLI[j] & 2)) slip = 1;
-            if (slip) GraphR->DrawPoly(c, ps, 2, MColor[0][0], 0);
+            if (!slip) continue;
+            if (!GraphR->ToPoint(TimePos(obs->time), yp[obs->sat-1], ps[0])) continue;
+            ps[1].setX(ps[0].x());
+            ps[1].setY(ps[0].y() + MarkSize * 3 / 2 + 1);
+            ps[0].setY(ps[0].y() - MarkSize * 3 / 2);
+            GraphR->DrawPoly(c, ps, 2, MColor[0][0], 0);
         }
-        if (ShowSlip) {
+    }
+    if (ShowSlip) {
+        for (i = 0; i < Obs.n; i++) {
+            if (El[i] < ElMask * D2R) continue;
+            if (ElMaskP && El[i] < ElMaskData[(int)(Az[i] * R2D + 0.5)]) continue;
+            obs = &Obs.data[i];
+            if (!SatSel[obs->sat-1]) continue;
             slip = 0;
             if (ShowSlip == 2) { // LLI
                 for (j = 0; j < NFREQ + NEXOBS; j++)
@@ -1013,7 +1018,12 @@ void Plot::DrawObsSlip(QPainter &c, double *yp)
                     gfp[obs->sat - 1] = gf;
                 }
             }
-            if (slip) GraphR->DrawPoly(c, ps, 2, MColor[0][5], 0);
+            if (!slip) continue;
+            if (!GraphR->ToPoint(TimePos(obs->time), yp[obs->sat-1], ps[0])) continue;
+            ps[1].setX(ps[0].x());
+            ps[1].setY(ps[0].y() + MarkSize * 3 / 2 + 1);
+            ps[0].setY(ps[0].y() - MarkSize * 3 / 2);
+            GraphR->DrawPoly(c, ps, 2, MColor[0][5], 0);
         }
     }
 }

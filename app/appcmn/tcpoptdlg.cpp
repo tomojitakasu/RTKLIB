@@ -27,9 +27,10 @@ __fastcall TTcpOptDialog::TTcpOptDialog(TComponent* Owner)
 void __fastcall TTcpOptDialog::FormShow(TObject *Sender)
 {
 	char buff[2048],*p,*q;
-	char *port="",*mntpnt="",*user="",*passwd="",*str="";
-	char *ti[]={"TCP Server Options ","TCP Client Options",
-			    "NTRIP Server Options","NTRIP Client Options"};
+	char *port=(char *)"",*mntpnt=(char *)"",*user=(char *)"";
+	char *passwd=(char *)"",*str=(char *)"";
+	const char *ti[]={"TCP Server Options ","TCP Client Options",
+					  "NTRIP Server Options","NTRIP Client Options"};
 	strcpy(buff,Path.c_str());
 	
 	if (!(p=strchr(buff,'@'))) p=buff;

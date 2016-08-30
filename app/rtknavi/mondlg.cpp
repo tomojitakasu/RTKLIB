@@ -92,7 +92,7 @@ void __fastcall TMonitorDialog::TypeChange(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TMonitorDialog::SelFmtChange(TObject *Sender)
 {
-	AddConsole("\n",1,1);
+	AddConsole((unsigned char *)"\n",1,1);
     
     if (ConFmt>=3&&ConFmt<17) {
         free_raw(&raw);
@@ -184,7 +184,7 @@ void __fastcall TMonitorDialog::ClearTable(void)
 	Tbl     ->Visible=!console;
 	SelFmt  ->Visible=NMONITEM<=TypeF&&TypeF<=NMONITEM+2;
 	SelObs  ->Visible=TypeF==1;
-	SelSat  ->Visible=2<=TypeF&&TypeF<=7||10<=TypeF&&TypeF<=15;
+	SelSat  ->Visible=(2<=TypeF&&TypeF<=7)||(10<=TypeF&&TypeF<=15);
 	SelStr  ->Visible=TypeF==18||TypeF==22||TypeF==24;
 	SelEph  ->Visible=2<=TypeF&&TypeF<=7;
 	SelIon  ->Visible=TypeF==28;
@@ -235,7 +235,7 @@ void __fastcall TMonitorDialog::Timer2Timer(TObject *Sender)
 			input_rtcm2(&rtcm,msg[i]);
 			if (rtcm.msgtype[0]) {
 				n=sprintf(buff,"%s\n",rtcm.msgtype);
-				AddConsole(buff,n,1);
+				AddConsole((unsigned char *)buff,n,1);
 				rtcm.msgtype[0]='\0';
 			}
 	    }
@@ -245,7 +245,7 @@ void __fastcall TMonitorDialog::Timer2Timer(TObject *Sender)
 			input_rtcm3(&rtcm,msg[i]);
 			if (rtcm.msgtype[0]) {
 				n=sprintf(buff,"%s\n",rtcm.msgtype);
-				AddConsole(buff,n,1);
+				AddConsole((unsigned char *)buff,n,1);
 				rtcm.msgtype[0]='\0';
 			}
 	    }
@@ -255,7 +255,7 @@ void __fastcall TMonitorDialog::Timer2Timer(TObject *Sender)
 			input_raw(&raw,ConFmt-2,msg[i]);
 			if (raw.msgtype[0]) {
 				n=sprintf(buff,"%s\n",raw.msgtype);
-				AddConsole(buff,n,1);
+				AddConsole((unsigned char *)buff,n,1);
 				raw.msgtype[0]='\0';
 			}
 	    }
@@ -266,11 +266,12 @@ void __fastcall TMonitorDialog::Timer2Timer(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TMonitorDialog::AddConsole(unsigned char *msg, int len, int mode)
 {
+	AnsiString ConBuff_Str=ConBuff->Strings[ConBuff->Count-1];
 	char buff[MAXLEN+16],*p=buff;
 	
 	if (BtnPause->Down) return;
 	
-	p+=sprintf(p,"%s",ConBuff->Strings[ConBuff->Count-1].c_str());
+	p+=sprintf(p,"%s",ConBuff_Str.c_str());
 	
 	for (int i=0;i<len;i++) {
 		if (mode) {
@@ -373,9 +374,9 @@ void __fastcall TMonitorDialog::ShowRtk(void)
 	int cputime,nb[3]={0},nmsg[3][10]={{0}},ne;
 	char tstr[64],*ant,id[32],s1[64]="-",s2[64]="-",s3[64]="-";
 	char file[1024]="";
-	char *ionoopt[]={"OFF","Broadcast","SBAS","Dual-Frequency","Estimate STEC","IONEX TEC","QZSS LEX",""};
-	char *tropopt[]={"OFF","Saastamoinen","SBAS","Estimate ZTD","Estimate ZTD+Grad",""};
-	char *ephopt []={"Broadcast","Precise","Broadcast+SBAS","Broadcat+SSR APC","Broadcast+SSR CoM","QZSS LEX",""};
+	const char *ionoopt[]={"OFF","Broadcast","SBAS","Dual-Frequency","Estimate STEC","IONEX TEC","QZSS LEX",""};
+	const char *tropopt[]={"OFF","Saastamoinen","SBAS","Estimate ZTD","Estimate ZTD+Grad",""};
+	const char *ephopt []={"Broadcast","Precise","Broadcast+SBAS","Broadcat+SSR APC","Broadcast+SSR CoM","QZSS LEX",""};
 	
 	rtksvrlock(&rtksvr); // lock
 	
@@ -827,6 +828,11 @@ void __fastcall TMonitorDialog::ShowEst(void)
 		memcpy(xa,rtksvr.rtk.xa,sizeof(double)*na);
 		memcpy(Pa,rtksvr.rtk.Pa,sizeof(double)*na*na);
 	}
+	else {
+		rtksvrunlock(&rtksvr);
+		free(x); free(P); free(xa); free(Pa);
+		return;
+	}
 	rtksvrunlock(&rtksvr);
 	
 	for (i=0,n=1;i<nx;i++) {
@@ -884,6 +890,11 @@ void __fastcall TMonitorDialog::ShowCov(void)
 	    (P =(double *)malloc(sizeof(double)*nx*nx))) {
 		memcpy(x ,rtksvr.rtk.x ,sizeof(double)*nx);
 		memcpy(P ,rtksvr.rtk.P ,sizeof(double)*nx*nx);
+	}
+	else {
+		rtksvrunlock(&rtksvr);
+		free(x); free(P);
+		return;
 	}
 	rtksvrunlock(&rtksvr);
 	
@@ -1229,7 +1240,7 @@ void __fastcall TMonitorDialog::ShowSbsNav(void)
 	Label->Caption="";
 	
 	for (i=0,n=1;i<NSATSBS;i++) {
-		valid=fabs(timediff(time,seph[i].t0)<=MAXDTOE_SBS)&&
+		valid=fabs(timediff(time,seph[i].t0))<=MAXDTOE_SBS&&
 			  seph[i].t0.time&&!seph[i].svh;
 		if (SelSat->ItemIndex==1&&!valid) continue;
 		n++;
@@ -1243,7 +1254,7 @@ void __fastcall TMonitorDialog::ShowSbsNav(void)
 	
 	for (i=0,n=1;i<NSATSBS;i++) {
 		j=0;
-		valid=fabs(timediff(time,seph[i].t0)<=MAXDTOE_SBS)&&
+		valid=fabs(timediff(time,seph[i].t0))<=MAXDTOE_SBS&&
 			  seph[i].t0.time&&!seph[i].svh;
 		if (SelSat->ItemIndex==1&&!valid) continue;
 		prn=MINPRNSBS+i;
@@ -1441,7 +1452,7 @@ void __fastcall TMonitorDialog::ShowStr(void)
 			if ((p=strchr(path,'/'))) *p='\0';
 			if ((p=strchr(path,'@'))) pp=p+1;
 			if (stream[i].type==STR_TCPSVR) {
-				if ((p=strchr(pp,':'))) pp=p+1; else pp="";
+				if ((p=strchr(pp,':'))) pp=p+1; else pp=(char *)"";
 			}
 		}
 		Tbl->Cells[j++][i+1]=pp;
@@ -1645,7 +1656,7 @@ void __fastcall TMonitorDialog::ShowSbsFast(void)
 	for (i=0;i<Tbl->RowCount;i++) {
 		j=0;
 		satp=sbssat.sat+i;
-		valid=fabs(timediff(time,satp->fcorr.t0)<=MAXSBSAGEF)&&satp->fcorr.t0.time&&
+		valid=fabs(timediff(time,satp->fcorr.t0))<=MAXSBSAGEF&&satp->fcorr.t0.time&&
 			  0<=satp->fcorr.udre-1&&satp->fcorr.udre-1<14;
 		satno2id(satp->sat,id);
 		Tbl->Cells[j++][i+1]=id;

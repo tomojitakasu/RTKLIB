@@ -6,7 +6,7 @@
 			<Base>True</Base>
 			<Config Condition="'$(Config)'==''">Release</Config>
 			<FrameworkType>VCL</FrameworkType>
-			<ProjectVersion>14.6</ProjectVersion>
+			<ProjectVersion>18.1</ProjectVersion>
 			<Platform Condition="'$(Platform)'==''">Win32</Platform>
 			<TargetedPlatforms>1</TargetedPlatforms>
 			<AppType>Application</AppType>
@@ -59,13 +59,21 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
+			<UsingDelphiRTL>true</UsingDelphiRTL>
+			<ILINK_LinkwithMidas>false</ILINK_LinkwithMidas>
+			<ILINK_LinkwithZLib>false</ILINK_LinkwithZLib>
+			<ILINK_LinkwithIntebaseTogo>false</ILINK_LinkwithIntebaseTogo>
+			<ILINK_LinkwithRegEx>false</ILINK_LinkwithRegEx>
+			<ILINK_LinkwithSQL>false</ILINK_LinkwithSQL>
+			<ILINK_LinkwithIndy>false</ILINK_LinkwithIndy>
+			<ILINK_LinkwithSQLite>false</ILINK_LinkwithSQLite>
+			<SanitizedProjectName>strsvr</SanitizedProjectName>
 			<IncludePath>..\..\src\rcv\;..\appcmn\;..\..\src\;$(IncludePath)</IncludePath>
 			<ILINK_LibraryPath>..\..\src\rcv\;..\appcmn\;..\..\src\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
 			<BCC_waus>false</BCC_waus>
 			<VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
 			<BCC_weff>false</BCC_weff>
 			<BCC_wpar>false</BCC_wpar>
-			<UsingDelphiRTL>true</UsingDelphiRTL>
 			<DCC_Namespace>Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;System;Xml;Data;Datasnap;Web;Soap;$(DCC_Namespace)</DCC_Namespace>
 			<BCC_PCHUsage>None</BCC_PCHUsage>
 			<Icon_MainIcon>strsvr_Icon.ico</Icon_MainIcon>
@@ -75,7 +83,7 @@
 			<BCC_wpin>true</BCC_wpin>
 			<TASM_IncludePath>..\..\src\rcv;..\appcmn;..\..\src;$(BDS)\include;$(BDS)\include\vcl;$(TASM_IncludePath)</TASM_IncludePath>
 			<DCC_ObjPath>..\..\extlex;..\..\qzslex;..\..\src\rcv;..\appcmn;..\..\src;G:\rtklib_2.1.1\app\rtksvr;$(DCC_ObjPath)</DCC_ObjPath>
-			<PackageImports>vclx.bpi;vcl.bpi;rtl.bpi;dbrtl.bpi;vcldb.bpi;adortl.bpi;dbxcds.bpi;dbexpress.bpi;xmlrtl.bpi;vclie.bpi;inet.bpi;inetdbbde.bpi;inetdbxpress.bpi;soaprtl.bpi;dsnap.bpi;bdertl.bpi;vcldbx.bpi;$(PackageImports)</PackageImports>
+			<PackageImports>vclx.bpi;vcl.bpi;$(PackageImports)</PackageImports>
 			<ILINK_AppType>Windows</ILINK_AppType>
 			<BRCC_IncludePath>..\..\src\rcv;..\appcmn;..\..\src;$(BDS)\include;$(BDS)\include\vcl;$(BRCC_IncludePath)</BRCC_IncludePath>
 			<BCC_PCHWithExternalTypeFiles>false</BCC_PCHWithExternalTypeFiles>
@@ -84,7 +92,6 @@
 			<ILINK_ObjectSearchPath>..\..\extlex;..\..\qzslex;..\..\src\rcv;..\appcmn;..\..\src;G:\rtklib_2.1.1\app\rtksvr;$(ILINK_ObjectSearchPath)</ILINK_ObjectSearchPath>
 			<BCC_SmartPCHCache>false</BCC_SmartPCHCache>
 			<AllPackageLibs>rtl.lib;vcl.lib;vclx.lib</AllPackageLibs>
-			<OutputExt>exe</OutputExt>
 			<DCC_UnitSearchPath>..\..\extlex;..\..\qzslex;..\..\src\rcv;..\appcmn;..\..\src;G:\rtklib_2.1.1\app\rtksvr;C:\Users\ttaka\Documents\Borland Studio Projects;$(BDS)\lib;$(BDS)\lib\obj;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
 			<DCC_ResourcePath>..\..\extlex;..\..\qzslex;..\..\src\rcv;..\appcmn;..\..\src;G:\rtklib_2.1.1\app\rtksvr;$(DCC_ResourcePath)</DCC_ResourcePath>
 			<DCC_CBuilderOutput>JPHNE</DCC_CBuilderOutput>
@@ -95,6 +102,8 @@
 			<BCC_Defines>_RTLDLL;WIN32;TRACE;ENAGLO;ENAQZS;ENAGAL;ENACMP;NFREQ=3;NEXOBS=3;$(BCC_Defines)</BCC_Defines>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base_Win32)'!=''">
+			<AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
+			<OutputExt>exe</OutputExt>
 			<BRCC_Defines>_RTLDLL;WIN32;TRACE;$(BRCC_Defines)</BRCC_Defines>
 			<TASM_Defines>_RTLDLL;WIN32;TRACE;$(TASM_Defines)</TASM_Defines>
 			<BCC_UserSuppliedOptions> -tWM</BCC_UserSuppliedOptions>
@@ -142,6 +151,7 @@
 			<BCC_Defines>NDEBUG;$(BCC_Defines);$(BCC_Defines)</BCC_Defines>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
+			<AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
 			<BCC_UserSuppliedOptions> -tWM -r</BCC_UserSuppliedOptions>
 			<BCC_Defines>NDEBUG;$(BCC_Defines);$(BCC_Defines)</BCC_Defines>
 			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
@@ -163,16 +173,9 @@
 				<BuildOrder>20</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\appcmn\confdlg.cpp">
-				<BuildOrder>32</BuildOrder>
 				<Form>ConfDialog</Form>
 				<DependentOn>..\appcmn\confdlg.h</DependentOn>
-				<BuildOrder>10</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\appcmn\console.cpp">
-				<BuildOrder>25</BuildOrder>
-				<Form>Console</Form>
-				<DependentOn>..\appcmn\console.h</DependentOn>
-				<BuildOrder>13</BuildOrder>
+				<BuildOrder>38</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\appcmn\fileoptdlg.cpp">
 				<BuildOrder>7</BuildOrder>
@@ -215,6 +218,11 @@
 				<Form>ConvDialog</Form>
 				<DependentOn>convdlg.h</DependentOn>
 				<BuildOrder>29</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="mondlg.cpp">
+				<Form>StrMonDialog</Form>
+				<DependentOn>mondlg.h</DependentOn>
+				<BuildOrder>38</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="strsvr.cpp">
 				<BuildOrder>-1</BuildOrder>
@@ -314,18 +322,18 @@
 				<BuildOrder>26</BuildOrder>
 				<BuildOrder>12</BuildOrder>
 			</CppCompile>
-			<FormResources Include="..\appcmn\keydlg.dfm"/>
-			<FormResources Include="..\appcmn\ftpoptdlg.dfm"/>
-			<FormResources Include="..\appcmn\serioptdlg.dfm"/>
 			<FormResources Include="..\appcmn\refdlg.dfm"/>
-			<FormResources Include="..\appcmn\fileoptdlg.dfm"/>
+			<FormResources Include="..\appcmn\keydlg.dfm"/>
+			<FormResources Include="..\appcmn\tcpoptdlg.dfm"/>
+			<FormResources Include="..\appcmn\serioptdlg.dfm"/>
+			<FormResources Include="..\appcmn\ftpoptdlg.dfm"/>
 			<FormResources Include="..\appcmn\cmdoptdlg.dfm"/>
 			<FormResources Include="..\appcmn\aboutdlg.dfm"/>
-			<FormResources Include="..\appcmn\console.dfm"/>
+			<FormResources Include="..\appcmn\fileoptdlg.dfm"/>
 			<FormResources Include="..\appcmn\confdlg.dfm"/>
-			<FormResources Include="..\appcmn\tcpoptdlg.dfm"/>
-			<FormResources Include="svroptdlg.dfm"/>
 			<FormResources Include="convdlg.dfm"/>
+			<FormResources Include="svroptdlg.dfm"/>
+			<FormResources Include="mondlg.dfm"/>
 			<FormResources Include="svrmain.dfm"/>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>
@@ -392,11 +400,15 @@
 						<Parameters Name="LoadAllSymbols">True</Parameters>
 						<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
 					</Parameters>
-					<Excluded_Packages/>
+					<Excluded_Packages>
+						<Excluded_Packages Name="$(BDSBIN)\bcboffice2k240.bpl">Embarcadero C++Builder Office 2000 サーバー パッケージ</Excluded_Packages>
+						<Excluded_Packages Name="$(BDSBIN)\bcbofficexp240.bpl">Embarcadero C++Builder Office XP サーバー パッケージ</Excluded_Packages>
+					</Excluded_Packages>
 					<ProjectProperties>
 						<ProjectProperties Name="AutoShowDeps">False</ProjectProperties>
 						<ProjectProperties Name="ManagePaths">True</ProjectProperties>
 						<ProjectProperties Name="VerifyPackages">True</ProjectProperties>
+						<ProjectProperties Name="IndexFiles">False</ProjectProperties>
 					</ProjectProperties>
 					<Source>
 						<Source Name="MainSource">strsvr.cpp</Source>
@@ -410,4 +422,5 @@
 			<ProjectFileVersion>12</ProjectFileVersion>
 		</ProjectExtensions>
 		<Import Condition="Exists('$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj')" Project="$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj"/>
+		<Import Condition="Exists('$(BDS)\Bin\CodeGear.Cpp.Targets')" Project="$(BDS)\Bin\CodeGear.Cpp.Targets"/>
 	</Project>

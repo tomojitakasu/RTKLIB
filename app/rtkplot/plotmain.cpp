@@ -1995,7 +1995,7 @@ void __fastcall TPlot::UpdateSize(void)
     p1.y=tmargin; p2.y=p1.y;
     for (i=n=0;i<3;i++) if (btn[i]->Down) n++;
     for (i=0;i<3;i++) {
-        if (!btn[i]->Down) continue;
+        if (!btn[i]->Down||n<=0) continue;
         h=(Disp->Height-tmargin-bmargin)/n;
         p2.y+=h;
         GraphG[i]->SetPos(p1,p2);
@@ -2004,7 +2004,7 @@ void __fastcall TPlot::UpdateSize(void)
     p1.y=tmargin; p2.y=p1.y;
     for (i=n=0;i<2;i++) if (btn[i]->Down) n++;
     for (i=0;i<2;i++) {
-        if (!btn[i]->Down) continue;
+        if (!btn[i]->Down||n<=0) continue;
         h=(Disp->Height-tmargin-bmargin)/n;
         p2.y+=h;
         GraphE[i]->SetPos(p1,p2);
@@ -2168,9 +2168,7 @@ void __fastcall TPlot::UpdateOrigin(void)
         OPos[i]=opos[i];
         OVel[i]=ovel[i];
     }
-//    ecef2pos(OPos,pos);
-//    GoogleEarthView->SetCent(pos[0]*R2D,pos[1]*R2D);
-//    GoogleMapView->SetCent(pos[0]*R2D,pos[1]*R2D);
+    Refresh_GEView();
 }
 // update satellite mask ----------------------------------------------------
 void __fastcall TPlot::UpdateSatMask(void)

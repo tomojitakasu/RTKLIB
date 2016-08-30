@@ -74,3 +74,19 @@ UPDATE HISTORY
                       add command of serial output
                       add out-outsingle, out-maxsolstd options
                       add commands for u-blox M8P
+2016/08/20  2.4.3 b17 fix several bugs
+                      merge pull request #180
+                      merge pull request #199
+                      merge pull request #206
+                      binary ap compiled by C++ builder 10.1 Berlin
+                      add ap rtkpost_win64, rtknavi_win64, rnx2rtkp_win64
+                      add ap rtkpost_win64, rtknavi_win64, rnx2rtkp_win64
+2016/08/20  2.4.3 b18 fix #134 (loss-of-lock not recognized in RTCM MSM 6 or 7)
+2016/08/29  2.4.3 b19 add option -STD_SLIP for u-blox receiver driver
+                      fix on half-cyc valid for sbas in u-blox trkmeas
+                      update kelper terminate condition for alm2pos(),eph2pos()
+                      fix bug on week overflow in time2gpst(),gpst2time()
+                      fix bug on starting serial thread for windows
+                      fix bug on mark and path in Google Earth view of RTKPLOT
+                      add protocol analysis in input stream monitor of STRSVR
+                      add window size extension of RTKPOST and RTKCONV

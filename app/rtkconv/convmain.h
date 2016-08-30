@@ -26,7 +26,6 @@ __published:
 	TPanel *Panel1;
 	TPanel *Panel3;
 	TPanel *Panel2;
-	TButton *BtnExit;
 	TButton *BtnInFile;
 	TButton *BtnOutFile1;
 	TButton *BtnOutFile2;
@@ -89,16 +88,18 @@ __published:
 	TCheckBox *TimeUnitF;
 	TLabel *LabelTimeUnit;
 	TEdit *TimeUnit;
-	TButton *BtnPost;
 	TCheckBox *OutFileEna7;
 	TEdit *OutFile7;
 	TSpeedButton *BtnOutFileView7;
 	TButton *BtnOutFile7;
 	TSpeedButton *BtnInFileView;
-	TBitBtn *BtnOptions;
-	TBitBtn *BtnConvert;
+	TPanel *Panel4;
 	TBitBtn *BtnAbort;
+	TBitBtn *BtnConvert;
+	TBitBtn *BtnOptions;
 	TBitBtn *BtnPlot;
+	TBitBtn *BtnPost;
+	TBitBtn *BtnExit;
 	
 	void __fastcall FormCreate          (TObject *Sender);
 	void __fastcall FormShow            (TObject *Sender);
@@ -148,6 +149,8 @@ __published:
 	void __fastcall BtnOutFileView7Click(TObject *Sender);
 	void __fastcall BtnInFileViewClick(TObject *Sender);
 	void __fastcall BtnAbortClick(TObject *Sender);
+	void __fastcall Panel4Resize(TObject *Sender);
+	void __fastcall Panel2Resize(TObject *Sender);
 	
 private:
 	AnsiString IniFile,CmdPostExe;

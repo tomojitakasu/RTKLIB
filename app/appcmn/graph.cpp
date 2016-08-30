@@ -557,18 +557,22 @@ int TGraph::ClipPoint(TPoint *p0, int area, TPoint *p1)
 {
 	int x,y,xmin=X,xmax=X+Width-1,ymin=Y,ymax=Y+Height-1;
 	if (area&1) { // left
+		if (p0->x==p1->x) return 0;
 		y=p0->y+(p1->y-p0->y)*(xmin-p0->x)/(p1->x-p0->x);
 		if (ymin<=y&&y<=ymax) {p0->x=xmin; p0->y=y; return 1;}
 	}
 	if (area&2) { // right
+		if (p0->x==p1->x) return 0;
 		y=p0->y+(p1->y-p0->y)*(xmax-p0->x)/(p1->x-p0->x);
 		if (ymin<=y&&y<=ymax) {p0->x=xmax; p0->y=y; return 1;}
 	}
 	if (area&4) { // upper
+		if (p0->y==p1->y) return 0;
 		x=p0->x+(p1->x-p0->x)*(ymin-p0->y)/(p1->y-p0->y);
 		if (xmin<=x&&x<=xmax) {p0->x=x; p0->y=ymin; return 1;}
 	}
 	if (area&8) { // lower
+		if (p0->y==p1->y) return 0;
 		x=p0->x+(p1->x-p0->x)*(ymax-p0->y)/(p1->y-p0->y);
 		if (xmin<=x&&x<=xmax) {p0->x=x; p0->y=ymax; return 1;}
 	}

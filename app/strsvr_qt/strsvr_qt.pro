@@ -26,7 +26,8 @@ SOURCES += \
     ../appcmn_qt/fileoptdlg.cpp \
     ../appcmn_qt/ftpoptdlg.cpp \
     ../appcmn_qt/refdlg.cpp \
-    ../appcmn_qt/keydlg.cpp
+    ../appcmn_qt/keydlg.cpp \
+    mondlg.cpp
 
 HEADERS  += \ 
     convdlg.h \
@@ -40,7 +41,8 @@ HEADERS  += \
     ../appcmn_qt/fileoptdlg.h \
     ../appcmn_qt/ftpoptdlg.h \
     ../appcmn_qt/refdlg.h \
-    ../appcmn_qt/keydlg.h
+    ../appcmn_qt/keydlg.h \
+    mondlg.h
 
 FORMS    += \ 
     convdlg.ui \
@@ -54,7 +56,8 @@ FORMS    += \
     ../appcmn_qt/fileoptdlg.ui \
     ../appcmn_qt/ftpoptdlg.ui \
     ../appcmn_qt/refdlg.ui \
-    ../appcmn_qt/keydlg.ui
+    ../appcmn_qt/keydlg.ui \
+    mondlg.ui
 
 RESOURCES +=  \
     strsvr_qt.qrc

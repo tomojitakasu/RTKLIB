@@ -283,7 +283,7 @@ void __fastcall TMainForm::Panel4Resize(TObject *Sender)
         btn[i]->Left=w*i+1;
         btn[i]->Top=0;
         btn[i]->Width=w-2;
-        btn[i]->Height=h;
+        btn[i]->Height=h-2;
     }
     BtnStop->Left  =BtnStart->Left;
     BtnStop->Top   =BtnStart->Top;
@@ -893,6 +893,9 @@ void __fastcall TMainForm::BtnAboutClick(TObject *Sender)
     AnsiString prog=PRGNAME;
     
     trace(3,"BtnAboutClick\n");
+#ifdef _WIN64
+    prog+="_WIN64";
+#endif
 #ifdef MKL
     prog+="_MKL";
 #endif
@@ -981,27 +984,31 @@ void __fastcall TMainForm::SvrStart(void)
     Message->Caption=""; Message->Parent->Hint="";
     
     if (RovPosTypeF<=2) { // LLH,XYZ
-        PrcOpt.rovpos=0;
+        PrcOpt.rovpos=POSOPT_POS;
         PrcOpt.ru[0]=RovPos[0];
         PrcOpt.ru[1]=RovPos[1];
         PrcOpt.ru[2]=RovPos[2];
     }
     else { // RTCM position
-        PrcOpt.rovpos=4;
+        PrcOpt.rovpos=POSOPT_RTCM;
         for (i=0;i<3;i++) PrcOpt.ru[i]=0.0;
     }
     if (RefPosTypeF<=2) { // LLH,XYZ
-        PrcOpt.refpos=0;
+        PrcOpt.refpos=POSOPT_POS;
         PrcOpt.rb[0]=RefPos[0];
         PrcOpt.rb[1]=RefPos[1];
         PrcOpt.rb[2]=RefPos[2];
     }
     else if (RefPosTypeF==3) { // RTCM position
-        PrcOpt.refpos=4;
+        PrcOpt.refpos=POSOPT_RTCM;
+        for (i=0;i<3;i++) PrcOpt.rb[i]=0.0;
+    }
+    else if (RefPosTypeF==4) { // raw position
+        PrcOpt.refpos=POSOPT_RAW;
         for (i=0;i<3;i++) PrcOpt.rb[i]=0.0;
     }
     else { // average of single position
-        PrcOpt.refpos=1;
+        PrcOpt.refpos=POSOPT_SINGLE;
         for (i=0;i<3;i++) PrcOpt.rb[i]=0.0;
     }
     for (i=0;i<MAXSAT;i++) {
@@ -1069,7 +1076,7 @@ void __fastcall TMainForm::SvrStart(void)
     for (i=3;i<5;i++) strs[i]=StreamC[i]?otype[Stream[i]]:STR_NONE;
     for (i=5;i<8;i++) strs[i]=StreamC[i]?otype[Stream[i]]:STR_NONE;
     for (i=0;i<8;i++) {
-        if      (strs[i]==STR_NONE  ) paths[i]="";
+        if      (strs[i]==STR_NONE  ) paths[i]=(char *)"";
         else if (strs[i]==STR_SERIAL) paths[i]=Paths[i][0].c_str();
         else if (strs[i]==STR_FILE  ) paths[i]=Paths[i][2].c_str();
         else if (strs[i]==STR_FTP||strs[i]==STR_HTTP) paths[i]=Paths[i][3].c_str();
@@ -1238,7 +1245,8 @@ void __fastcall TMainForm::TimerTimer(TObject *Sender)
     
     // keep alive for monitor port
     if (!(++n%(KACYCLE/Timer->Interval))&&OpenPort) {
-        strwrite(&monistr,"\r",1);
+        buff[0]='\r';
+        strwrite(&monistr,buff,1);
     }
 }
 // change plot type ---------------------------------------------------------
@@ -1459,7 +1467,10 @@ void __fastcall TMainForm::DrawPlot(TImage *plot, int type, int freq)
     gtime_t time;
     TCanvas *c=plot->Canvas;
     TLabel *label[]={Plabel1,Plabel2,Plabel3,Pos1,Pos2,Pos3};
-    wchar_t *fstr[]={L"",L"L1 ",L"L2 ",L"L5 ",L"L6 ",L"L7 ",L"L8 ",L""};
+    wchar_t *fstr[]={
+        (wchar_t *)L""   ,(wchar_t *)L"L1 ",(wchar_t *)L"L2 ",(wchar_t *)L"L5 ",
+        (wchar_t *)L"L6 ",(wchar_t *)L"L7 ",(wchar_t *)L"L8 ",(wchar_t *)L""
+    };
     int w=plot->Parent->Width-2,h=plot->Parent->Height-2;
     int i,j,x,sat[2][MAXSAT],ns[2],snr[2][MAXSAT][NFREQ],vsat[2][MAXSAT];
     int *snr0[MAXSAT],*snr1[MAXSAT];
@@ -1468,7 +1479,7 @@ void __fastcall TMainForm::DrawPlot(TImage *plot, int type, int freq)
     
     trace(4,"DrawPlot\n");
     
-    fstr[NFREQ+1]=L"SYS ";
+    fstr[NFREQ+1]=(wchar_t *)L"SYS ";
     
     for (i=0;i<MAXSAT;i++) {
         snr0[i]=snr[0][i];
@@ -2088,6 +2099,7 @@ void __fastcall TMainForm::LoadNav(nav_t *nav)
     AnsiString str,s;
     eph_t eph0={0};
     char buff[2049],id[32],*p;
+    long toe_time,toc_time,ttr_time;
     int i;
     
     trace(3,"LoadNav\n");
@@ -2104,9 +2116,9 @@ void __fastcall TMainForm::LoadNav(nav_t *nav)
                &nav->eph[i].iodc,
                &nav->eph[i].sva ,
                &nav->eph[i].svh ,
-               &nav->eph[i].toe.time,
-               &nav->eph[i].toc.time,
-               &nav->eph[i].ttr.time,
+               &toe_time,
+               &toc_time,
+               &ttr_time,
                &nav->eph[i].A   ,
                &nav->eph[i].e   ,
                &nav->eph[i].i0  ,
@@ -2130,6 +2142,9 @@ void __fastcall TMainForm::LoadNav(nav_t *nav)
                &nav->eph[i].tgd[0],
                &nav->eph[i].code,
                &nav->eph[i].flag);
+        nav->eph[i].toe.time=toe_time;
+        nav->eph[i].toc.time=toc_time;
+        nav->eph[i].ttr.time=ttr_time;
     }
     str=ini->ReadString("navi","ion","");
     for (i=0;i<8;i++) nav->ion_gps[i]=0.0;

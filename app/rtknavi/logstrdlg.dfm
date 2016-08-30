@@ -6,7 +6,7 @@ object LogStrDialog: TLogStrDialog
   Caption = 'Log Streams'
   ClientHeight = 195
   ClientWidth = 390
-  Color = clBtnFace
+  Color = clWhite
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11

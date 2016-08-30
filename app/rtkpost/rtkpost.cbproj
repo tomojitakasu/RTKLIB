@@ -6,7 +6,7 @@
 			<Base>True</Base>
 			<Config Condition="'$(Config)'==''">Release</Config>
 			<FrameworkType>VCL</FrameworkType>
-			<ProjectVersion>14.6</ProjectVersion>
+			<ProjectVersion>18.1</ProjectVersion>
 			<Platform Condition="'$(Platform)'==''">Win32</Platform>
 			<TargetedPlatforms>1</TargetedPlatforms>
 			<AppType>Application</AppType>
@@ -59,6 +59,15 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
+			<UsingDelphiRTL>true</UsingDelphiRTL>
+			<ILINK_LinkwithMidas>false</ILINK_LinkwithMidas>
+			<ILINK_LinkwithZLib>false</ILINK_LinkwithZLib>
+			<ILINK_LinkwithSQLite>false</ILINK_LinkwithSQLite>
+			<ILINK_LinkwithIndy>false</ILINK_LinkwithIndy>
+			<ILINK_LinkwithSQL>false</ILINK_LinkwithSQL>
+			<ILINK_LinkwithRegEx>false</ILINK_LinkwithRegEx>
+			<ILINK_LinkwithIntebaseTogo>false</ILINK_LinkwithIntebaseTogo>
+			<SanitizedProjectName>rtkpost</SanitizedProjectName>
 			<IncludePath>..\appcmn\;..\..\src\;$(IncludePath)</IncludePath>
 			<ILINK_LibraryPath>..\appcmn\;..\..\src\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
 			<BCC_waus>false</BCC_waus>
@@ -69,11 +78,10 @@
 			<BCC_wpia>false</BCC_wpia>
 			<DCC_Namespace>Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;System;Xml;Data;Datasnap;Web;Soap;$(DCC_Namespace)</DCC_Namespace>
 			<VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
-			<UsingDelphiRTL>true</UsingDelphiRTL>
 			<VerInfo_Locale>1041</VerInfo_Locale>
 			<TASM_IncludePath>..\..\..\rtklib_extlex;..\..\extion;..\..\extlex;..\appcmn;..\..\src;$(BDS)\include;$(BDS)\include\vcl;$(TASM_IncludePath)</TASM_IncludePath>
 			<DCC_ObjPath>..\..\..\rtklib_extlex;..\..\extlex;..\..\extion;..\..\src\qzsext;..\appcmn;..\..\src\rcv;..\src;..\..\src;K:\proj\rtklib_1.1\util\gui;$(DCC_ObjPath)</DCC_ObjPath>
-			<PackageImports>vclx.bpi;vcl.bpi;rtl.bpi;dbrtl.bpi;vcldb.bpi;adortl.bpi;dbxcds.bpi;dbexpress.bpi;xmlrtl.bpi;vclie.bpi;inet.bpi;inetdbbde.bpi;inetdbxpress.bpi;soaprtl.bpi;dsnap.bpi;bdertl.bpi;vcldbx.bpi;$(PackageImports)</PackageImports>
+			<PackageImports>vclx.bpi;vcl.bpi;$(PackageImports)</PackageImports>
 			<ILINK_AppType>Windows</ILINK_AppType>
 			<BRCC_IncludePath>..\..\..\rtklib_extlex;..\..\extion;..\..\extlex;..\appcmn;..\..\src;$(BDS)\include;$(BDS)\include\vcl;$(BRCC_IncludePath)</BRCC_IncludePath>
 			<BCC_PCHWithExternalTypeFiles>false</BCC_PCHWithExternalTypeFiles>
@@ -82,7 +90,6 @@
 			<ILINK_ObjectSearchPath>..\..\..\rtklib_extlex;..\..\extlex;..\..\extion;..\..\src\qzsext;..\appcmn;..\..\src\rcv;..\..\src;..\src;$(ILINK_ObjectSearchPath)</ILINK_ObjectSearchPath>
 			<BCC_SmartPCHCache>false</BCC_SmartPCHCache>
 			<AllPackageLibs>rtl.lib;vcl.lib;vclx.lib</AllPackageLibs>
-			<OutputExt>exe</OutputExt>
 			<DCC_UnitSearchPath>..\..\..\rtklib_extlex;..\..\extlex;..\..\extion;..\..\src\qzsext;..\appcmn;..\..\src\rcv;..\src;..\..\src;K:\proj\rtklib_1.1\util\gui;C:\Documents and Settings\TTAKA\My Documents\Borland Studio Projects;$(BDS)\lib;$(BDS)\lib\obj;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
 			<DCC_ResourcePath>..\..\..\rtklib_extlex;..\..\extlex;..\..\extion;..\..\src\qzsext;..\appcmn;..\..\src\rcv;..\src;..\..\src;K:\proj\rtklib_1.1\util\gui;$(DCC_ResourcePath)</DCC_ResourcePath>
 			<DCC_CBuilderOutput>JPHNE</DCC_CBuilderOutput>
@@ -93,6 +100,8 @@
 			<BCC_Defines>_RTLDLL;WIN32;TRACE;ENAGLO;ENAQZS;ENAGAL;ENACMP;NFREQ=3;$(BCC_Defines)</BCC_Defines>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base_Win32)'!=''">
+			<AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
+			<OutputExt>exe</OutputExt>
 			<BRCC_Defines>_RTLDLL;WIN32;TRACE;ENAGLO;ENAQZS;ENAGAL;NFREQ=3;$(BRCC_Defines)</BRCC_Defines>
 			<TASM_Defines>_RTLDLL;WIN32;TRACE;ENAGLO;ENAQZS;ENAGAL;NFREQ=3;$(TASM_Defines)</TASM_Defines>
 			<BCC_Defines>_RTLDLL;WIN32;TRACE;ENAGLO;ENAQZS;ENAGAL;ENACMP;ENAIRN;NFREQ=3;$(BCC_Defines)</BCC_Defines>
@@ -120,6 +129,7 @@
 			<BCC_Defines>_Debug;$(BCC_Defines);$(BCC_Defines)</BCC_Defines>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
+			<AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
 			<BCC_UserSuppliedOptions> -tWM -AT -xp -r</BCC_UserSuppliedOptions>
 			<BCC_Defines>_Debug;$(BCC_Defines);$(BCC_Defines)</BCC_Defines>
 			<IntermediateOutputDir>Debug_Build</IntermediateOutputDir>
@@ -139,6 +149,7 @@
 			<BCC_SourceDebuggingOn>false</BCC_SourceDebuggingOn>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
+			<AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
 			<LinkPackageStatics>rtl.lib;vcl.lib;vclx.lib</LinkPackageStatics>
 			<Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
 			<ILINK_FullDebugInfo>false</ILINK_FullDebugInfo>
@@ -384,11 +395,15 @@
 						<Parameters Name="LoadAllSymbols">True</Parameters>
 						<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
 					</Parameters>
-					<Excluded_Packages/>
+					<Excluded_Packages>
+						<Excluded_Packages Name="$(BDSBIN)\bcboffice2k240.bpl">Embarcadero C++Builder Office 2000 サーバー パッケージ</Excluded_Packages>
+						<Excluded_Packages Name="$(BDSBIN)\bcbofficexp240.bpl">Embarcadero C++Builder Office XP サーバー パッケージ</Excluded_Packages>
+					</Excluded_Packages>
 					<ProjectProperties>
 						<ProjectProperties Name="AutoShowDeps">False</ProjectProperties>
 						<ProjectProperties Name="ManagePaths">True</ProjectProperties>
 						<ProjectProperties Name="VerifyPackages">True</ProjectProperties>
+						<ProjectProperties Name="IndexFiles">False</ProjectProperties>
 					</ProjectProperties>
 					<Source>
 						<Source Name="MainSource">rtkpost.cpp</Source>
@@ -402,4 +417,5 @@
 			<ProjectFileVersion>12</ProjectFileVersion>
 		</ProjectExtensions>
 		<Import Condition="Exists('$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj')" Project="$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj"/>
+		<Import Condition="Exists('$(BDS)\Bin\CodeGear.Cpp.Targets')" Project="$(BDS)\Bin\CodeGear.Cpp.Targets"/>
 	</Project>

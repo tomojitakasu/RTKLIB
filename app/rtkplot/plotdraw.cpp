@@ -254,19 +254,20 @@ void __fastcall TPlot::DrawTrk(int level)
         DrawMark(GraphT,p1,5,CColor[2],20,0);
     }
     // update geview and gmview center
-    if (level&&norm(OPos,3)>0.0) {
-        GraphT->GetCent(xt,yt);
-        GraphT->ToPoint(xt,yt,p1);
-        GraphT->ToPos(p1,enu[0],enu[1]);
-        ecef2pos(OPos,opos);
-        enu2ecef(opos,enu,rr);
-        for (i=0;i<3;i++) rr[i]+=OPos[i];
-        ecef2pos(rr,cent);
-        
-        GoogleEarthView->SetCent(cent[0]*R2D,cent[1]*R2D);
-        GoogleMapView->SetCent(cent[0]*R2D,cent[1]*R2D);
+    if (level) {
+        if (norm(OPos,3)>0.0) {
+            GraphT->GetCent(xt,yt);
+            GraphT->ToPoint(xt,yt,p1);
+            GraphT->ToPos(p1,enu[0],enu[1]);
+            ecef2pos(OPos,opos);
+            enu2ecef(opos,enu,rr);
+            for (i=0;i<3;i++) rr[i]+=OPos[i];
+            ecef2pos(rr,cent);
+            GoogleEarthView->SetCent(cent[0]*R2D,cent[1]*R2D);
+            GoogleMapView  ->SetCent(cent[0]*R2D,cent[1]*R2D);
+        }
+        Refresh_GEView();
     }
-    Refresh_GEView();
 }
 // draw map-image on track-plot ---------------------------------------------
 void __fastcall TPlot::DrawTrkImage(int level)
@@ -971,26 +972,31 @@ void __fastcall TPlot::DrawObsSlip(double *yp)
     
     code=ObsType->ItemIndex?ObsTypeText.c_str()+1:"";
     
-    for (i=0;i<Obs.n;i++) {
-        if (El[i]<ElMask*D2R) continue;
-        if (ElMaskP&&El[i]<ElMaskData[(int)(Az[i]*R2D+0.5)]) continue;
-        obs=&Obs.data[i];
-        if (!SatSel[obs->sat-1]) continue;
-            
-        if (!GraphR->ToPoint(TimePos(obs->time),yp[obs->sat-1],ps[0])) continue;
-        ps[1].x=ps[0].x;
-        ps[1].y=ps[0].y+MarkSize*3/2+1;
-        ps[0].y=ps[0].y-MarkSize*3/2;
-        
-        if (ShowHalfC) {
+    if (ShowHalfC) {
+        for (i=0;i<Obs.n;i++) {
+            if (El[i]<ElMask*D2R) continue;
+            if (ElMaskP&&El[i]<ElMaskData[(int)(Az[i]*R2D+0.5)]) continue;
+            obs=&Obs.data[i];
+            if (!SatSel[obs->sat-1]) continue;
             slip=0;
             for (j=0;j<NFREQ+NEXOBS;j++) {
                 if ((!*code||strstr(code2obs(obs->code[j],NULL),code))&&
                     (obs->LLI[j]&2)) slip=1;
             }
-            if (slip) GraphR->DrawPoly(ps,2,MColor[0][0],0);
+            if (!slip) continue;
+            if (!GraphR->ToPoint(TimePos(obs->time),yp[obs->sat-1],ps[0])) continue;
+            ps[1].x=ps[0].x;
+            ps[1].y=ps[0].y+MarkSize*3/2+1;
+            ps[0].y=ps[0].y-MarkSize*3/2;
+            GraphR->DrawPoly(ps,2,MColor[0][0],0);
         }
-        if (ShowSlip) {
+    }
+    if (ShowSlip) {
+        for (i=0;i<Obs.n;i++) {
+            if (El[i]<ElMask*D2R) continue;
+            if (ElMaskP&&El[i]<ElMaskData[(int)(Az[i]*R2D+0.5)]) continue;
+            obs=&Obs.data[i];
+            if (!SatSel[obs->sat-1]) continue;
             slip=0;
             if (ShowSlip==2) { // LLI
                 for (j=0;j<NFREQ+NEXOBS;j++) {
@@ -1006,7 +1012,12 @@ void __fastcall TPlot::DrawObsSlip(double *yp)
                     gfp[obs->sat-1]=gf;
                 }
             }
-            if (slip) GraphR->DrawPoly(ps,2,MColor[0][5],0);
+            if (!slip) continue;
+            if (!GraphR->ToPoint(TimePos(obs->time),yp[obs->sat-1],ps[0])) continue;
+            ps[1].x=ps[0].x;
+            ps[1].y=ps[0].y+MarkSize*3/2+1;
+            ps[0].y=ps[0].y-MarkSize*3/2;
+            GraphR->DrawPoly(ps,2,MColor[0][5],0);
         }
     }
 }
@@ -1510,6 +1521,7 @@ void __fastcall TPlot::DrawSnr(int level)
             GraphG[j]->SetCent(xp-off,yc);
         }
     }
+    j=0;
     for (i=0;i<3;i++) if (btn[i]->Down) j=i;
     for (i=0;i<3;i++) {
         if (!btn[i]->Down) continue;
@@ -1640,6 +1652,7 @@ void __fastcall TPlot::DrawSnrE(int level)
     
     yl[1][0]=-MaxMP; yl[1][1]=MaxMP;
     
+    j=0;
     for (i=0;i<2;i++) if (btn[i]->Down) j=i;
     for (i=0;i<2;i++) {
         if (!btn[i]->Down) continue;
@@ -2072,7 +2085,6 @@ void __fastcall TPlot::Refresh_GEView(void)
                 else if (GEHeading> 180.0) GEHeading-=360.0;
             }
             GoogleEarthView->SetHeading(GEHeading);
-            
             delete vel;
         }
     }

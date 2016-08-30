@@ -5,7 +5,7 @@ object GoogleMapView: TGoogleMapView
   Caption = 'Google Map View'
   ClientHeight = 506
   ClientWidth = 504
-  Color = clBtnFace
+  Color = clWhite
   Constraints.MinHeight = 240
   Constraints.MinWidth = 424
   DoubleBuffered = True

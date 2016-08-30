@@ -12,6 +12,9 @@
         <Projects Include="pos2kml\bcc\_pos2kml.cbproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="rnx2rtkp\bcc_win64\_rnx2rtkp_win64.cbproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -47,14 +50,23 @@
     <Target Name="_pos2kml:Make">
         <MSBuild Projects="pos2kml\bcc\_pos2kml.cbproj" Targets="Make"/>
     </Target>
+    <Target Name="_rnx2rtkp_win64">
+        <MSBuild Projects="rnx2rtkp\bcc_win64\_rnx2rtkp_win64.cbproj"/>
+    </Target>
+    <Target Name="_rnx2rtkp_win64:Clean">
+        <MSBuild Projects="rnx2rtkp\bcc_win64\_rnx2rtkp_win64.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="_rnx2rtkp_win64:Make">
+        <MSBuild Projects="rnx2rtkp\bcc_win64\_rnx2rtkp_win64.cbproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="_rnx2rtkp;_convbin;_pos2kml"/>
+        <CallTarget Targets="_rnx2rtkp;_convbin;_pos2kml;_rnx2rtkp_win64"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="_rnx2rtkp:Clean;_convbin:Clean;_pos2kml:Clean"/>
+        <CallTarget Targets="_rnx2rtkp:Clean;_convbin:Clean;_pos2kml:Clean;_rnx2rtkp_win64:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="_rnx2rtkp:Make;_convbin:Make;_pos2kml:Make"/>
+        <CallTarget Targets="_rnx2rtkp:Make;_convbin:Make;_pos2kml:Make;_rnx2rtkp_win64:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

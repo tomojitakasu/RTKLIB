@@ -5,7 +5,7 @@ object Console: TConsole
   Caption = 'Console'
   ClientHeight = 415
   ClientWidth = 623
-  Color = clBtnFace
+  Color = clWhite
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -177,7 +177,6 @@ object Console: TConsole
       Align = alRight
       BevelOuter = bvNone
       TabOrder = 0
-      ExplicitTop = 0
       object BtnClose: TButton
         Left = 0
         Top = 0
@@ -187,8 +186,6 @@ object Console: TConsole
         Caption = '&Close'
         TabOrder = 0
         OnClick = BtnCloseClick
-        ExplicitLeft = 1
-        ExplicitWidth = 51
       end
     end
   end
@@ -209,7 +206,5 @@ object Console: TConsole
     TabOrder = 1
     TabStop = False
     OnChange = ScrollChange
-    ExplicitTop = 22
-    ExplicitHeight = 393
   end
 end

@@ -6,7 +6,7 @@ object SatDialog: TSatDialog
   Caption = 'Satellites'
   ClientHeight = 187
   ClientWidth = 349
-  Color = clBtnFace
+  Color = clWhite
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11

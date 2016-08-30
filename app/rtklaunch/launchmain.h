@@ -35,6 +35,7 @@ __published:
 	TPanel *BtnTray;
 	TMenuItem *MenuExpand;
 	TMenuItem *N2;
+	TPanel *Panel1;
 	
 	void __fastcall BtnPlotClick(TObject *Sender);
 	void __fastcall BtnConvClick(TObject *Sender);
@@ -43,7 +44,6 @@ __published:
 	void __fastcall BtnNtripClick(TObject *Sender);
 	void __fastcall BtnNaviClick(TObject *Sender);
 	void __fastcall BtnGetClick(TObject *Sender);
-	void __fastcall FormResize(TObject *Sender);
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
 	void __fastcall BtnTrayClick(TObject *Sender);
@@ -57,6 +57,7 @@ __published:
 	void __fastcall MenuGetClick(TObject *Sender);
 	void __fastcall MenuExitClick(TObject *Sender);
 	void __fastcall MenuExpandClick(TObject *Sender);
+	void __fastcall Panel1Resize(TObject *Sender);
 
 private:
 	AnsiString IniFile;

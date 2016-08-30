@@ -26,12 +26,7 @@ __published:
 	TPanel *Panel2;
 	TLabel *Label6;
 	TPanel *Panel3;
-	TButton *BtnOpts;
-	TButton *BtnLog;
-	TButton *BtnDownload;
-	TButton *BtnExit;
 	TPanel *Msg1;
-	TButton *BtnFile;
 	TPanel *Msg3;
 	TButton *BtnDir;
 	TListBox *DataList;
@@ -62,7 +57,6 @@ __published:
 	TEdit *FtpPasswd;
 	TLabel *Label8;
 	TSaveDialog *SaveDialog;
-	TButton *BtnTest;
 	TButton *BtnStas;
 	TSpeedButton *BtnKeyword;
 	TCheckBox *HidePasswd;
@@ -88,6 +82,12 @@ __published:
 	TLabel *MsgLabel2;
 	TLabel *MsgLabel1;
 	TLabel *MsgLabel3;
+	TButton *BtnFile;
+	TButton *BtnLog;
+	TButton *BtnOpts;
+	TButton *BtnTest;
+	TButton *BtnDownload;
+	TButton *BtnExit;
 	
 	void __fastcall TimeY1UDChangingEx(TObject *Sender, bool &AllowChange,
           short NewValue, TUpDownDirection Direction);

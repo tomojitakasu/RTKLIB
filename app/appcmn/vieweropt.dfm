@@ -6,7 +6,7 @@ object ViewerOptDialog: TViewerOptDialog
   Caption = 'Viewer Options'
   ClientHeight = 110
   ClientWidth = 190
-  Color = clBtnFace
+  Color = clWhite
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -49,7 +49,7 @@ object ViewerOptDialog: TViewerOptDialog
     Left = 11
     Top = 78
     Width = 79
-    Height = 27
+    Height = 29
     Caption = '&OK'
     ModalResult = 1
     TabOrder = 0
@@ -59,7 +59,7 @@ object ViewerOptDialog: TViewerOptDialog
     Left = 106
     Top = 78
     Width = 79
-    Height = 27
+    Height = 29
     Caption = '&Cancel'
     ModalResult = 2
     TabOrder = 1

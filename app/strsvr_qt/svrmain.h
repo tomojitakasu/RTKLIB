@@ -13,11 +13,11 @@
 
 class QCloseEvent;
 class SvrOptDialog;
-class Console;
 class SerialOptDialog;
 class TcpOptDialog;
 class FileOptDialog;
 class FtpOptDialog;
+class StrMonDialog;
 
 //---------------------------------------------------------------------------
 class MainForm : public QDialog, private Ui::MainForm
@@ -69,11 +69,11 @@ private:
 	gtime_t StartTime,EndTime;
     QSystemTrayIcon *TrayIcon;
     SvrOptDialog *svrOptDialog;
-    Console *console;
     TcpOptDialog *tcpOptDialog;
     SerialOptDialog *serialOptDialog;
     FileOptDialog *fileOptDialog;
     FtpOptDialog * ftpOptDialog;
+    StrMonDialog * strMonDialog;
     QTimer Timer1,Timer2;
 
     void SerialOpt(int index, int opt);

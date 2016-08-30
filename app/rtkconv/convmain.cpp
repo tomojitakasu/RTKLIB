@@ -14,12 +14,6 @@
 //           2011/06/10  1.2 rtklib 2.4.1
 //---------------------------------------------------------------------------
 #include <vcl.h>
-#ifdef TCPP
-#include <vcl\inifiles.hpp>
-#else
-#include <inifiles.hpp>
-#endif
-#include "wstring.h"
 
 #pragma hdrstop
 
@@ -961,6 +955,7 @@ void __fastcall TMainWindow::LoadOpt(void)
     TTextViewer::FontD->Size=ini->ReadInteger("viewer","fontsize",9);
     
     CmdPostExe         =ini->ReadString  ("set","cmdpostexe","rtkpost_mkl");
+    Width              =ini->ReadInteger ("window","width", 488);
     
     delete ini;
     
@@ -1049,7 +1044,54 @@ void __fastcall TMainWindow::SaveOpt(void)
     ini->WriteInteger("viewer","color2",  (int)TTextViewer::Color2);
     ini->WriteString ("viewer","fontname",TTextViewer::FontD->Name);
     ini->WriteInteger("viewer","fontsize",TTextViewer::FontD->Size);
+    ini->WriteInteger("window","width",               Width);
     delete ini;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TMainWindow::Panel4Resize(TObject *Sender)
+{
+	TBitBtn *btns[]={BtnPlot,BtnPost,BtnOptions,BtnConvert,BtnExit};
+	int w=(Panel4->Width-2)/5;
+	
+	for (int i=0;i<5;i++) {
+		btns[i]->Width=w;
+		btns[i]->Left=i*w+1;
+	}
+	BtnAbort->Width=BtnConvert->Width;
+	BtnAbort->Left =BtnConvert->Left;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TMainWindow::Panel2Resize(TObject *Sender)
+{
+	TButton *btns1[]={
+		BtnOutFile1,BtnOutFile2,BtnOutFile3,BtnOutFile4,BtnOutFile5,
+		BtnOutFile6,BtnOutFile7
+	};
+	TSpeedButton *btns2[]={
+		BtnOutFileView1,BtnOutFileView2,BtnOutFileView3,BtnOutFileView4,
+		BtnOutFileView5,BtnOutFileView6,BtnOutFileView7
+	};
+	TEdit *inps[]={
+		OutFile1,OutFile2,OutFile3,OutFile4,OutFile5,OutFile6,OutFile7
+	};
+	int w=Panel2->Width;
+	
+	BtnInFile->Left=w-BtnInFile->Width-5;
+	BtnInFileView->Left=w-BtnInFile->Width-BtnInFileView->Width-5;
+	InFile->Width=w-BtnInFile->Width-BtnInFileView->Width-6-InFile->Left;
+	
+	Format->Left=w-Format->Width-5;
+	LabelFormat->Left=Format->Left+3;
+	BtnOutDir->Left=w-BtnOutDir->Width-Format->Width-6;
+	OutDir->Width=w-BtnOutDir->Width-Format->Width-7-OutDir->Left;
+	
+	for (int i=0;i<7;i++) {
+		btns1[i]->Left=w-btns1[i]->Width-5;
+		btns2[i]->Left=w-btns1[i]->Width-btns2[i]->Width-5;
+		inps[i]->Width=w-btns1[i]->Width-btns2[i]->Width-6-inps[i]->Left;
+	}
 }
 //---------------------------------------------------------------------------
 

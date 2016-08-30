@@ -5,7 +5,7 @@ object GoogleEarthView: TGoogleEarthView
   Caption = 'RTKPLOT: Google Earth View'
   ClientHeight = 506
   ClientWidth = 504
-  Color = clBtnFace
+  Color = clWhite
   Constraints.MinHeight = 240
   Constraints.MinWidth = 240
   DoubleBuffered = True

@@ -50,6 +50,8 @@
 *                           fix program on struct alignment in time tag header
 *           2016/06/21 1.18 reverse time-tag handler of file to previous
 *           2016/07/23 1.19 add output of received stream to tcp port for serial
+*           2016/08/20 1.20 modify api strsendnmea()
+*           2016/08/29 1.21 fix bug on starting serial thread for windows
 *-----------------------------------------------------------------------------*/
 #include <ctype.h>
 #include "rtklib.h"
@@ -263,8 +265,6 @@ static DWORD WINAPI serialthread(void *arg)
     
     tracet(3,"serialthread:\n");
     
-    serial->state=1;
-    
     for (;;) {
         tick=tickget();
         while ((n=readseribuff(serial,buff,sizeof(buff)))>0) {
@@ -365,10 +365,12 @@ static serial_t *openserial(const char *path, int mode, char *msg)
         free(serial);
         return NULL;
     }
+    serial->state=1;
     if (!(serial->thread=CreateThread(NULL,0,serialthread,serial,0,NULL))) {
         sprintf(msg,"%s serial thread error (%d)",port,(int)GetLastError());
         tracet(1,"openserial: %s\n",msg);
         CloseHandle(serial->dev);
+        serial->state=0;
         free(serial);
         return NULL;
     }
@@ -409,6 +411,7 @@ static serial_t *openserial(const char *path, int mode, char *msg)
         sprintf(path_tcp,":%d",tcp_port);
         serial->tcpsvr=opentcpsvr(path_tcp,msg_tcp);
     }
+    tracet(3,"openserial: dev=%d\n",serial->dev);
     return serial;
 }
 /* close serial --------------------------------------------------------------*/
@@ -2191,21 +2194,17 @@ extern gtime_t strgettime(stream_t *stream)
 /* send nmea request -----------------------------------------------------------
 * send nmea gpgga message to stream
 * args   : stream_t *stream I   stream
-*          double *pos      I   position {x,y,z} (ecef) (m)
+*          sol_t *sol       I   solution
 * return : none
 *-----------------------------------------------------------------------------*/
-extern void strsendnmea(stream_t *stream, const double *pos)
+extern void strsendnmea(stream_t *stream, const sol_t *sol)
 {
-    sol_t sol={{0}};
     unsigned char buff[1024];
-    int i,n;
+    int n;
     
-    tracet(3,"strsendnmea: pos=%.3f %.3f %.3f\n",pos[0],pos[1],pos[2]);
+    tracet(3,"strsendnmea: rr=%.3f %.3f %.3f\n",sol->rr[0],sol->rr[1],sol->rr[2]);
     
-    sol.stat=SOLQ_SINGLE;
-    sol.time=utc2gpst(timeget());
-    for (i=0;i<3;i++) sol.rr[i]=pos[i];
-    n=outnmea_gga(buff,&sol);
+    n=outnmea_gga(buff,sol);
     strwrite(stream,buff,n);
 }
 /* generate general hex message ----------------------------------------------*/

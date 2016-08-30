@@ -44,7 +44,7 @@ object ConfDialog: TConfDialog
     Left = 82
     Top = 65
     Width = 75
-    Height = 27
+    Height = 29
     Caption = '&Overwrite'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlack
@@ -59,7 +59,7 @@ object ConfDialog: TConfDialog
     Left = 158
     Top = 65
     Width = 75
-    Height = 27
+    Height = 29
     Caption = '&Cancel'
     Default = True
     ModalResult = 2

@@ -130,7 +130,7 @@ void __fastcall TRefDialog::LoadList(void)
 	}
 	if (!(fp=fopen(StaPosFile.c_str(),"r"))) return;
 	while (fgets(buff,sizeof(buff),fp)) {
-		if (p=strchr(buff,'%')) *p='\0';
+		if ((p=strchr(buff,'%'))) *p='\0';
 		pos[0]=pos[1]=pos[2]=0.0; code[0]='\0'; name[0]='\0';
 		if (sscanf(buff,"%lf %lf %lf %s %s",pos,pos+1,pos+2,code,name)<3) continue;
 		StaList->RowCount=++n+1;

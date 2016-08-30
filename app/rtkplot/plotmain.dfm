@@ -5,8 +5,8 @@ object Plot: TPlot
   ClientHeight = 485
   ClientWidth = 633
   Color = clWindow
-  Constraints.MinHeight = 150
-  Constraints.MinWidth = 150
+  Constraints.MinHeight = 320
+  Constraints.MinWidth = 320
   Font.Charset = ANSI_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -96,6 +96,7 @@ object Plot: TPlot
       BevelOuter = bvNone
       BorderWidth = 1
       TabOrder = 0
+      Visible = False
       object Message2: TLabel
         Left = 2
         Top = 2

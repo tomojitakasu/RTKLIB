@@ -30,6 +30,7 @@
 *           2015/12/04 1.13 add MT63 beidou ephemeris (rtcm draft)
 *                           fix bug on ssr 3 message decoding (#321)
 *           2016/01/22 1.14 fix bug on L2C code in MT1004 (#131)
+*           2016/08/20 1.15 fix bug on loss-of-lock detection in MSM 6/7 (#134)
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -159,7 +160,7 @@ static double adjcp(rtcm_t *rtcm, int sat, int freq, double cp)
 static int lossoflock(rtcm_t *rtcm, int sat, int freq, int lock)
 {
     int lli=(!lock&&!rtcm->lock[sat-1][freq])||lock<rtcm->lock[sat-1][freq];
-    rtcm->lock[sat-1][freq]=lock;
+    rtcm->lock[sat-1][freq]=(unsigned short)lock;
     return lli;
 }
 /* s/n ratio -----------------------------------------------------------------*/

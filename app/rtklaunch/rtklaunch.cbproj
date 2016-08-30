@@ -1,7 +1,7 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{B9D0F977-D158-4447-9818-D26CDBC2CE25}</ProjectGuid>
-        <ProjectVersion>14.6</ProjectVersion>
+        <ProjectVersion>18.1</ProjectVersion>
         <FrameworkType>VCL</FrameworkType>
         <MainSource>rtklaunch.cpp</MainSource>
         <Base>True</Base>
@@ -58,6 +58,15 @@
         <Base>true</Base>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
+        <ILINK_LinkwithZLib>false</ILINK_LinkwithZLib>
+        <ILINK_LinkwithIndy>false</ILINK_LinkwithIndy>
+        <ILINK_LinkwithMidas>false</ILINK_LinkwithMidas>
+        <ILINK_LinkwithSQLite>false</ILINK_LinkwithSQLite>
+        <ILINK_LinkwithRegEx>false</ILINK_LinkwithRegEx>
+        <ILINK_LinkwithSQL>false</ILINK_LinkwithSQL>
+        <ILINK_LinkwithIntebaseTogo>false</ILINK_LinkwithIntebaseTogo>
+        <SanitizedProjectName>rtklaunch</SanitizedProjectName>
+        <PackageImports>vclx.bpi;vcl.bpi;$(PackageImports)</PackageImports>
         <ILINK_LibraryPath>..\..\src\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <IncludePath>..\..\src\;$(IncludePath)</IncludePath>
         <BCC_wpia>false</BCC_wpia>
@@ -69,12 +78,10 @@
         <BCC_PCHUsage>None</BCC_PCHUsage>
         <_TCHARMapping>char</_TCHARMapping>
         <ProjectType>CppVCLApplication</ProjectType>
-        <PackageImports>dbexpress;bindcompfmx;fmx;dsnap;rtl;dbrtl;fmxase;IndyCore;bindcomp;IndySystem;DBXInterBaseDriver;fmxobj;xmlrtl;DbxCommonDriver;fmxdae;IndyProtocols;dbxcds;bindengine;IPIndyImpl;$(PackageImports)</PackageImports>
         <Multithreaded>true</Multithreaded>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
         <AllPackageLibs>rtl.lib;vcl.lib</AllPackageLibs>
         <Icon_MainIcon>..\icon\rtk5.ico</Icon_MainIcon>
-        <UsingDelphiRTL>true</UsingDelphiRTL>
         <DCC_CBuilderOutput>JPHNE</DCC_CBuilderOutput>
         <IntermediateOutputDir>.\$(Config)</IntermediateOutputDir>
         <FinalOutputDir>.\$(Config)</FinalOutputDir>
@@ -84,12 +91,10 @@
         <ILINK_TranslatedLibraryPath>$(BDSLIB)\$(PLATFORM)\release\$(LANGDIR);$(ILINK_TranslatedLibraryPath)</ILINK_TranslatedLibraryPath>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
+        <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <BCC_Defines>WIN32;TRACE;$(BCC_Defines)</BCC_Defines>
-        <PackageImports>bindcompvcl;vcltouch;bcbsmp;vcldbx;vclribbon;vcl;vclib;dsnapcon;vclx;ibxpress;vclimg;bdertl;vclactnband;vcldb;bcbie;vcldsnap;$(PackageImports)</PackageImports>
         <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
         <IncludePath>$(BDSINCLUDE)\windows\vcl;$(IncludePath)</IncludePath>
-        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <VerInfo_Locale>1033</VerInfo_Locale>
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win64)'!=''">
@@ -127,6 +132,7 @@
         <TASM_Debugging>None</TASM_Debugging>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
+        <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <Defines>NDEBUG;$(Defines)</Defines>
         <Debugger_RunParams>-tray -mkl</Debugger_RunParams>
         <Icon_MainIcon>..\icon\rtk9.ico</Icon_MainIcon>
@@ -198,10 +204,15 @@
                     <ProjectProperties Name="AutoShowDeps">False</ProjectProperties>
                     <ProjectProperties Name="ManagePaths">True</ProjectProperties>
                     <ProjectProperties Name="VerifyPackages">True</ProjectProperties>
+                    <ProjectProperties Name="IndexFiles">False</ProjectProperties>
                 </ProjectProperties>
                 <Source>
                     <Source Name="MainSource">rtklaunch.cpp</Source>
                 </Source>
+                <Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\bcboffice2k240.bpl">Embarcadero C++Builder Office 2000 サーバー パッケージ</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\bcbofficexp240.bpl">Embarcadero C++Builder Office XP サーバー パッケージ</Excluded_Packages>
+                </Excluded_Packages>
             </CPlusPlusBuilder.Personality>
             <Platforms>
                 <Platform value="Win32">True</Platform>

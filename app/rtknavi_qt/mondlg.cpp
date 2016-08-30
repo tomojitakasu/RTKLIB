@@ -344,11 +344,11 @@ void MonitorDialog::ShowRtk(void)
 {
 	rtk_t rtk;
     QString exsats, navsys = "";
-    QString svrstate[] = { tr("Stop"), tr("Run") };
-    QString sol[] = { tr("-"), tr("Fix"), tr("Float"), tr("SBAS"), tr("DGPS"), tr("Single"), tr("PPP"), "" };
-    QString mode[] = { tr("Single"), tr("DGPS"),	      tr("Kinematic"),	tr("Static"), tr("Moving-Base"),
+    const QString svrstate[] = { tr("Stop"), tr("Run") };
+    const QString sol[] = { tr("-"), tr("Fix"), tr("Float"), tr("SBAS"), tr("DGPS"), tr("Single"), tr("PPP"), "" };
+    const QString mode[] = { tr("Single"), tr("DGPS"),	      tr("Kinematic"),	tr("Static"), tr("Moving-Base"),
                tr("Fixed"),	 tr("PPP-Kinematic"), tr("PPP-Static"), "" };
-    QString freq[] = { tr("-"), tr("L1"), tr("L1+L2"), tr("L1+L2+L5"), tr("L1+L2+L5+L6"), tr("L1+L2+L5+L6+L7"), tr("L1+L2+L5+L6+L7+L8"), "" };
+    const QString freq[] = { tr("-"), tr("L1"), tr("L1+L2"), tr("L1+L2+L5"), tr("L1+L2+L5+L6"), tr("L1+L2+L5+L6+L7"), tr("L1+L2+L5+L6+L7+L8"), "" };
     double *del, *off1, *off2, rt[3] = { 0 }, dop[4] = { 0 };
     double azel[MAXSAT * 2], pos[3], vel[3];
     int i, j, k, cycle, state, rtkstat, nsat0, nsat1, prcout, nave;
@@ -356,9 +356,9 @@ void MonitorDialog::ShowRtk(void)
     int cputime, nb[3] = { 0 }, nmsg[3][10] = { { 0 } }, ne;
     char tstr[64], id[32], s1[64] = "-", s2[64] = "-", s3[64] = "-";
     char file[1024] = "";
-    QString ionoopt[] = { tr("OFF"), tr("Broadcast"), tr("SBAS"), tr("Dual-Frequency"), tr("Estimate STEC"), tr("IONEX TEC"), tr("QZSS LEX"), "" };
-    QString tropopt[] = { tr("OFF"), tr("Saastamoinen"), tr("SBAS"), tr("Estimate ZTD"), tr("Estimate ZTD+Grad"), "" };
-    QString ephopt [] = { tr("Broadcast"), tr("Precise"), tr("Broadcast+SBAS"), tr("Broadcat+SSR APC"), tr("Broadcast+SSR CoM"), tr("QZSS LEX"), "" };
+    const QString ionoopt[] = { tr("OFF"), tr("Broadcast"), tr("SBAS"), tr("Dual-Frequency"), tr("Estimate STEC"), tr("IONEX TEC"), tr("QZSS LEX"), "" };
+    const QString tropopt[] = { tr("OFF"), tr("Saastamoinen"), tr("SBAS"), tr("Estimate ZTD"), tr("Estimate ZTD+Grad"), "" };
+    const QString ephopt [] = { tr("Broadcast"), tr("Precise"), tr("Broadcast+SBAS"), tr("Broadcat+SSR APC"), tr("Broadcast+SSR CoM"), tr("QZSS LEX"), "" };
 
 	rtksvrlock(&rtksvr); // lock
 
@@ -628,7 +628,7 @@ void MonitorDialog::ShowRtk(void)
 void MonitorDialog::SetSat(void)
 {
     int i, j = 0, freq[] = { 1, 2, 5, 6, 7, 8 };
-    QString label[] = {
+    const QString label[] = {
         tr("SAT"),	tr("PRN"),	tr("Status"), tr("Azimuth (deg)"), tr("Elevation (deg)"), tr("LG (m)"), tr("PHW(cyc)"),
         tr("P1-P2(m)"), tr("P1-C1(m)"), tr("P2-C2(m)")
 	};
@@ -904,7 +904,7 @@ void MonitorDialog::ShowCov(void)
 //---------------------------------------------------------------------------
 void MonitorDialog::SetObs(void)
 {
-    QString label[] = { tr("Trcv (GPST)"), tr("SAT"), tr("RCV") };
+    const QString label[] = { tr("Trcv (GPST)"), tr("SAT"), tr("RCV") };
     int i, j = 0, width[] = { 135, 25, 25 }, freq[] = { 1, 2, 5, 6, 7, 8 };
     int nex = ObsMode ? NEXOBS : 0;
 
@@ -1358,19 +1358,19 @@ void MonitorDialog::SetStr(void)
 //---------------------------------------------------------------------------
 void MonitorDialog::ShowStr(void)
 {
-    QString ch[] = {
+    const QString ch[] = {
         tr("Input Rover"),	 tr("Input Base/NRTK"), tr("Input Ephemeris"), tr("Output Solution 1"),
         tr("Output Solution 2"), tr("Log Rover"),	tr("Log Base/NRTK"),   tr("Log Ephemeris"),
         tr("Monitor Port")
 	};
-    QString type[] = {
+    const QString type[] = {
         tr("-"), tr("Serial"), tr("File"), tr("TCP Server"), tr("TCP Client"), tr("UDP"), tr("NTRIP Server"),
         tr("NTRIP Client")
 	};
-    QString outformat[] = {
+    const QString outformat[] = {
         tr("Lat/Lon/Height"), tr("X/Y/Z-ECEF"), tr("E/N/U-Baseline"), tr("NMEA-0183")
 	};
-    QString state[] = { tr("Error"), tr("-"), tr("OK") };
+    const QString state[] = { tr("Error"), tr("-"), tr("OK") };
     QString mode, form;
 	stream_t stream[9];
     int i, format[9] = { 0 };
@@ -1438,7 +1438,7 @@ void MonitorDialog::SetSbsMsg(void)
 void MonitorDialog::ShowSbsMsg(void)
 {
 	sbsmsg_t msg[MAXSBSMSG];
-    QString content[] = {
+    const QString content[] = {
         tr("For Testing"),						    tr("PRN Mask"),				     tr("Fast Corrections"),	  tr("Fast Corrections"),
         tr("Fast Corrections"),						    tr("Fast Corrections"),			     tr("Integrity Information"),
         tr("Fast Correction Degradation Factor"),			    tr("GEO Navigation Message"),

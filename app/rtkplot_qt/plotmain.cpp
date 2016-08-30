@@ -2041,7 +2041,7 @@ void Plot::UpdateSize(void)
     p1.setY(tmargin); p2.setY(p1.y());
     for (i = n = 0; i < 3; i++) if (btn[i]->isChecked()) n++;
     for (i = 0; i < 3; i++) {
-        if (!btn[i]->isChecked()) continue;
+        if (!btn[i]->isChecked() || (n <= 0)) continue;
         if (n == 0) break;
         h = (Disp->height() - tmargin - bmargin) / n;
         p2.ry() += h;
@@ -2051,7 +2051,7 @@ void Plot::UpdateSize(void)
     p1.setY(tmargin); p2.setY(p1.y());
     for (i = n = 0; i < 2; i++) if (btn[i]->isChecked()) n++;
     for (i = 0; i < 2; i++) {
-        if (!btn[i]->isChecked()) continue;
+        if (!btn[i]->isChecked() || (n <= 0)) continue;
         if (n == 0) break;
         h = (Disp->height() - tmargin - bmargin) / n;
         p2.ry() += h;
@@ -2195,9 +2195,7 @@ void Plot::UpdateOrigin(void)
         OPos[i] = opos[i];
         OVel[i] = ovel[i];
     }
-//    ecef2pos(OPos,pos);
-//    googleEarthView->SetCent(pos[0]*R2D,pos[1]*R2D);
-//    googleMapView->SetCent(pos[0]*R2D,pos[1]*R2D);
+    Refresh_GEView();
 }
 // update satellite mask ----------------------------------------------------
 void Plot::UpdateSatMask(void)

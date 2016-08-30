@@ -7,3 +7,6 @@ cd ..\..
 cd pos2kml\bcc
 call install.bat
 cd ..\..
+cd rnx2rtkp\bcc_win64
+call install.bat
+cd ..\..

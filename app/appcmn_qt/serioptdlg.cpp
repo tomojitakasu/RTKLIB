@@ -94,7 +94,7 @@ void SerialOptDialog::BtnCmdClick()
 //---------------------------------------------------------------------------
 void SerialOptDialog::BtnOkClick()
 {
-    char const *parity[] = { "n", "e", "o" }, *fctr[] = { "off", "rts", "xon" };
+    const char *parity[] = { "n", "e", "o" }, *fctr[] = { "off", "rts", "xon" };
     QString Port_Text = Port->currentText(), BitRate_Text = BitRate->currentText();
 
     Path = QString("%1:%2:%3:%4:%5:%6").arg(Port_Text).arg(BitRate_Text)

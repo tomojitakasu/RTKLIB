@@ -6,6 +6,8 @@
 #include <assert.h>
 #include "../../src/rtklib.h"
 
+#define TIME_64BIT 1
+
 /* str2num() */
 void utest1(void)
 {
@@ -58,6 +60,10 @@ void utest3(void)
     double ep2[]={2004, 2,29, 2, 0,30.000000};
     double ep3[]={2004,12,31,23,59,59.999999};
     double ep4[]={2037,10, 1, 0, 0, 0.000000};
+#ifdef TIME_64BIT
+    double ep5[]={2049, 2, 3, 4, 5, 6.000000}; /* 64bit time_t */
+    double ep6[]={2099,12,31,23,59,59.999999}; /* 64bit time_t */
+#endif
     int year,month,day,mday[]={31,28,31,30,31,30,31,31,30,31,30,31};
     gtime_t t;
     double ep[6];
@@ -72,8 +78,18 @@ void utest3(void)
         assert(ep[0]==2004&&ep[1]==12&&ep[2]==31&&ep[3]==23&&ep[4]==59&&fabs(ep[5]-59.999999)<1E-14);
     t=epoch2time(ep4); time2epoch(t,ep);
         assert(ep[0]==2037&&ep[1]==10&&ep[2]==1&&ep[3]==0&&ep[4]==0&&ep[5]==0.0);
+#ifdef TIME_64BIT
+    t=epoch2time(ep5); time2epoch(t,ep);
+        assert(ep[0]==2049&&ep[1]==2&&ep[2]==3&&ep[3]==4&&ep[4]==5&&ep[5]==6.0);
+    t=epoch2time(ep6); time2epoch(t,ep);
+        assert(ep[0]==2099&&ep[1]==12&&ep[2]==31&&ep[3]==23&&ep[4]==59&&fabs(ep[5]-59.999999)<1E-14);
+#endif
     
+#ifdef TIME_64BIT
+    for (year=1970;year<=2099;year++) {
+#else
     for (year=1970;year<=2037;year++) {
+#endif
         mday[1]=year%4==0?29:28;
         for (month=1;month<=12;month++) {
             for (day=1;day<=mday[month-1];day++) {
@@ -106,13 +122,23 @@ void utest4(void)
         assert(ep[0]==2006&&ep[1]==11&&ep[2]==12&&ep[3]==0&&ep[4]==0&&ep[5]==0.0);
     t=gpst2time(1401,0.0); time2epoch(t,ep);
         assert(ep[0]==2006&&ep[1]==11&&ep[2]==12&&ep[3]==0&&ep[4]==0&&ep[5]==0.0);
+#ifdef TIME_64BIT
+    t=gpst2time(4000,0.0); time2epoch(t,ep);
+        assert(ep[0]==2056&&ep[1]==9&&ep[2]==3&&ep[3]==0&&ep[4]==0&&ep[5]==0.0);
+    t=gpst2time(6260,345600.0); time2epoch(t,ep);
+        assert(ep[0]==2099&&ep[1]==12&&ep[2]==31&&ep[3]==0&&ep[4]==0&&ep[5]==0.0);
+#endif
+    
+#ifdef TIME_64BIT
+    for (w=1000;w<=6260;w++) {
+#else
     for (w=1000;w<1100;w++) {
+#endif
         for (time=0.0;time<86400.0*7;time+=3600.0) {
             t=gpst2time(w,time); tt=time2gpst(t,&week);
             assert(tt==time&&week==w);
         }
     }
-    
     printf("%s utset4 : OK\n",__FILE__);
 }
 /* timeadd() */
@@ -184,8 +210,7 @@ void utest7(void)
     t=gpst2utc(epoch2time(ep5)); time2epoch(t,ep);
         assert(ep[0]==2005&&ep[1]==12&&ep[2]==31&&ep[3]==23&&ep[4]==59&&ep[5]==47.0);
     t=gpst2utc(epoch2time(ep6)); time2epoch(t,ep);
-        assert(ep[0]==2037&&ep[1]==12&&ep[2]==31&&ep[3]==23&&ep[4]==59&&ep[5]==44.0);
-
+        assert(ep[0]==2037&&ep[1]==12&&ep[2]==31&&ep[3]==23&&ep[4]==59&&ep[5]==42.0);
     printf("%s utset7 : OK\n",__FILE__);
 }
 /* utc2gpst(), gpst2utc() */

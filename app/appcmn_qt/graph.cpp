@@ -608,24 +608,28 @@ int Graph::ClipPoint(QPoint *p0, int area, QPoint *p1)
     if ((p1->x() - p0->x()) == 0) return 0;
     if ((p1->y() - p0->y()) == 0) return 0;
     if (area & 1) { // left
+        if (p0->x()==p1->x()) return 0;
         y = p0->y() + (p1->y() - p0->y()) * (xmin - p0->x()) / (p1->x() - p0->x());
         if (ymin <= y && y <= ymax) {
             p0->setX(xmin); p0->setY(y); return 1;
         }
 	}
     if (area & 2) { // right
+        if (p0->x()==p1->x()) return 0;
         y = p0->y() + (p1->y() - p0->y()) * (xmax - p0->x()) / (p1->x() - p0->x());
         if (ymin <= y && y <= ymax) {
             p0->setX(xmax); p0->setY(y); return 1;
         }
 	}
     if (area & 4) { // upper
+        if (p0->y()==p1->y()) return 0;
         x = p0->x() + (p1->x() - p0->x()) * (ymin - p0->y()) / (p1->y() - p0->y());
         if (xmin <= x && x <= xmax) {
             p0->setX(x); p0->setY(ymin); return 1;
         }
 	}
     if (area & 8) { // lower
+        if (p0->y()==p1->y()) return 0;
         x = p0->x() + (p1->x() - p0->x()) * (ymax - p0->y()) / (p1->y() - p0->y());
         if (xmin <= x && x <= xmax) {
             p0->setX(x); p0->setY(ymax); return 1;

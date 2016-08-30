@@ -143,8 +143,10 @@ extern Plot *plot;
      if (!GetState()) return;
 
      State = 1;
+     UpdateOpts();
      SetView(Lat, Lon, Range, Heading);
      Timer1.stop();
+     plot->Refresh_GEView();
  }
 //---------------------------------------------------------------------------
  void GoogleEarthView::BtnCloseClick()
@@ -295,10 +297,11 @@ extern Plot *plot;
  void GoogleEarthView::SetMark(int index, const double *pos)
  {
      if (index < 1 || 2 < index) return;
-     MarkPos[index - 1][0] = pos[0] * R2D;
-     MarkPos[index - 1][1] = pos[1] * R2D;
      ExecFunc(QString("SetMark(%1,%2,%3,%4)").arg(index).arg(pos[0] * R2D, 0, 'f', 9)
           .arg(pos[1] * R2D, 0, 'f', 9).arg(pos[2], 0, 'f', 3));
+     MarkPos[index - 1][0] = pos[0] * R2D;
+     MarkPos[index - 1][1] = pos[1] * R2D;
+     SetCent(Lat,Lon);
  }
 // --------------------------------------------------------------------------
  void GoogleEarthView::ShowMark(int index)
@@ -495,5 +498,8 @@ extern Plot *plot;
      Q_UNUSED(func)
  #endif
  #endif
+#if 1 // for debug
+    trace(2, "GE: %s\n", qPrintable(func));
+#endif
  }
 //---------------------------------------------------------------------------

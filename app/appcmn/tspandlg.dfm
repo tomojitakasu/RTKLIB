@@ -6,7 +6,7 @@ object SpanDialog: TSpanDialog
   Caption = 'Time Span/Interval'
   ClientHeight = 114
   ClientWidth = 289
-  Color = clBtnFace
+  Color = clWhite
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -37,18 +37,18 @@ object SpanDialog: TSpanDialog
   end
   object BtnCancel: TButton
     Left = 196
-    Top = 88
+    Top = 85
     Width = 75
-    Height = 23
+    Height = 29
     Caption = '&Cancel'
     ModalResult = 2
     TabOrder = 1
   end
   object BtnOk: TButton
     Left = 118
-    Top = 88
+    Top = 85
     Width = 75
-    Height = 23
+    Height = 29
     Caption = '&OK'
     ModalResult = 1
     TabOrder = 0
@@ -163,7 +163,6 @@ object SpanDialog: TSpanDialog
     Width = 83
     Height = 21
     DropDownCount = 16
-    ItemHeight = 13
     TabOrder = 13
     Text = '1'
     Items.Strings = (

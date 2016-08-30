@@ -35,7 +35,7 @@
 #include "convdlg.h"
 #include "aboutdlg.h"
 #include "refdlg.h"
-#include "console.h"
+#include "mondlg.h"
 #include "svrmain.h"
 
 //---------------------------------------------------------------------------
@@ -358,8 +358,7 @@ void __fastcall TMainForm::MenuExitClick(TObject *Sender)
 // callback on stream-monitor -----------------------------------------------
 void __fastcall TMainForm::BtnStrMonClick(TObject *Sender)
 {
-    Console->Caption="Input Monitor";
-    Console->Show();
+    StrMonDialog->Show();
 }
 // callback on output1 enable -----------------------------------------------
 void __fastcall TMainForm::EnaOut1Click(TObject *Sender)
@@ -399,7 +398,7 @@ void __fastcall TMainForm::Output3Change(TObject *Sender)
 // callback on interval timer -----------------------------------------------
 void __fastcall TMainForm::Timer1Timer(TObject *Sender)
 {
-    TColor color[]={clRed,clBtnFace,CLORANGE,clGreen,clLime,clAqua};
+    TColor color[]={clRed,clWhite,CLORANGE,clGreen,clLime,clAqua};
     TPanel *e0[]={IndInput,IndOutput1,IndOutput2,IndOutput3};
     TLabel *e1[]={InputByte,Output1Byte,Output2Byte,Output3Byte};
     TLabel *e2[]={InputBps,Output1Bps,Output2Bps,Output3Bps};
@@ -591,7 +590,7 @@ void __fastcall TMainForm::Timer2Timer(TObject *Sender)
     
     if (len<=0||!msg) return;
     
-    Console->AddMsg(msg,len);
+    StrMonDialog->AddMsg(msg,len);
     
     free(msg);
 }

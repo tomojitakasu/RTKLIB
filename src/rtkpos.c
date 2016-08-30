@@ -38,6 +38,7 @@
 *           2015/07/22 1.20 fix bug on base station position setting
 *           2016/07/30 1.21 suppress single solution if !prcopt.outsingle
 *                           fix bug on slip detection of backward filter
+*           2016/08/20 1.22 fix bug on ddres() function
 *-----------------------------------------------------------------------------*/
 #include <stdarg.h>
 #include "rtklib.h"
@@ -1122,8 +1123,10 @@ static int ddres(rtk_t *rtk, const nav_t *nav, double dt, const double *x,
             lami=nav->lam[sat[i]-1][ff];
             lamj=nav->lam[sat[j]-1][ff];
             if (lami<=0.0||lamj<=0.0) continue;
-            if (H) Hi=H+nv*rtk->nx;
-            
+            if (H) {
+                Hi=H+nv*rtk->nx;
+                for (k=0;k<rtk->nx;k++) Hi[k]=0.0;
+            }
             /* double-differenced residual */
             v[nv]=(y[f+iu[i]*nf*2]-y[f+ir[i]*nf*2])-
                   (y[f+iu[j]*nf*2]-y[f+ir[j]*nf*2]);

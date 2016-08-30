@@ -943,24 +943,27 @@ void MainWindow::SvrStart(void)
     Message->setText("");
 
     if (RovPosTypeF <= 2) { // LLH,XYZ
-        PrcOpt.rovpos = 0;
+        PrcOpt.rovpos = POSOPT_POS;
         PrcOpt.ru[0] = RovPos[0];
         PrcOpt.ru[1] = RovPos[1];
         PrcOpt.ru[2] = RovPos[2];
     } else { // RTCM position
-        PrcOpt.rovpos = 4;
+        PrcOpt.rovpos = POSOPT_RTCM;
         for (i = 0; i < 3; i++) PrcOpt.ru[i] = 0.0;
     }
     if (RefPosTypeF <= 2) { // LLH,XYZ
-        PrcOpt.refpos = 0;
+        PrcOpt.refpos = POSOPT_POS;
         PrcOpt.rb[0] = RefPos[0];
         PrcOpt.rb[1] = RefPos[1];
         PrcOpt.rb[2] = RefPos[2];
     } else if (RefPosTypeF == 3) { // RTCM position
-        PrcOpt.refpos = 4;
+        PrcOpt.refpos = POSOPT_RTCM;
+        for (i=0;i<3;i++) PrcOpt.rb[i] = 0.0;
+    } else if (RefPosTypeF == 4) { // raw position
+        PrcOpt.refpos = POSOPT_RAW;
         for (i = 0; i < 3; i++) PrcOpt.rb[i] = 0.0;
     } else { // average of single position
-        PrcOpt.refpos = 1;
+        PrcOpt.refpos = POSOPT_SINGLE;
         for (i = 0; i < 3; i++) PrcOpt.rb[i] = 0.0;
     }
 
@@ -2058,6 +2061,7 @@ void MainWindow::LoadNav(nav_t *nav)
     QString str;
     eph_t eph0;
     char buff[2049], *p;
+    long toe_time,toc_time,ttr_time;
     int i;
 
     trace(3, "LoadNav\n");
@@ -2076,9 +2080,9 @@ void MainWindow::LoadNav(nav_t *nav)
                &nav->eph[i].iodc,
                &nav->eph[i].sva,
                &nav->eph[i].svh,
-               &nav->eph[i].toe.time,
-               &nav->eph[i].toc.time,
-               &nav->eph[i].ttr.time,
+               &toe_time,
+               &toc_time,
+               &ttr_time,
                &nav->eph[i].A,
                &nav->eph[i].e,
                &nav->eph[i].i0,
@@ -2102,6 +2106,9 @@ void MainWindow::LoadNav(nav_t *nav)
                &nav->eph[i].tgd[0],
                &nav->eph[i].code,
                &nav->eph[i].flag);
+        nav->eph[i].toe.time = toe_time;
+        nav->eph[i].toc.time = toc_time;
+        nav->eph[i].ttr.time = ttr_time;
     }
     str = settings.value("navi/ion", "").toString();
     QStringList tokens = str.split(",");

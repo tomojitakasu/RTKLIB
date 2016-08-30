@@ -67,7 +67,7 @@ void __fastcall TSerialOptDialog::BtnCmdClick(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TSerialOptDialog::BtnOkClick(TObject *Sender)
 {
-   	char *parity[]={"n","e","o"},*fctr[]={"off","rts"};
+   	const char *parity[]={"n","e","o"},*fctr[]={"off","rts"};
 	AnsiString s,Port_Text=Port->Text,BitRate_Text=BitRate->Text;
 	AnsiString TcpPort_Text=TcpPort->Text;
 	int port;

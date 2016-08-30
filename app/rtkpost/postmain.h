@@ -28,8 +28,6 @@ __published:
 	TPanel *Panel4;
 	TPanel *Panel5;
 	TPanel *Message;
-	TButton *BtnToKML;
-	TButton *BtnExit;
 	TButton *BtnInputFile1;
 	TButton *BtnInputFile3;
 	TButton *BtnInputFile2;
@@ -95,6 +93,9 @@ __published:
 	TBitBtn *BtnExec;
 	TBitBtn *BtnAbort;
 	TBitBtn *BtnPlot;
+	TBitBtn *BtnToKML;
+	TBitBtn *BtnExit;
+	TLabel *Debug;
 	
 	void __fastcall FormCreate         (TObject *Sender);
 	void __fastcall FormShow           (TObject *Sender);
@@ -146,6 +147,9 @@ __published:
 	void __fastcall BtnInputFile6Click(TObject *Sender);
 	void __fastcall BtnInputView6Click(TObject *Sender);
 	void __fastcall BtnAbortClick(TObject *Sender);
+	void __fastcall Panel4Resize(TObject *Sender);
+	void __fastcall Panel5Resize(TObject *Sender);
+	void __fastcall Panel2Resize(TObject *Sender);
 
 private:
 	void __fastcall DropFiles          (TWMDropFiles msg); // for files drop
