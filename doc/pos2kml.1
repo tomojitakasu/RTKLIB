@@ -1,0 +1,34 @@
+.TH POS2KML 1 "July 29 2016"
+.SH NAME
+pos2kml \- lala
+.SH SYNOPSIS
+pos2kml [option]... file [...]
+.SH DESCRIPTION
+Read solution file(s) and convert it to Google Earth KML file. Each line in
+the input file shall contain fields of time, position fields (latitude/
+longitude/height or x/y/z-ecef), and quality flag(option). The line started
+with '%', '#', ';' is treated as comment. Command options are as follows.
+([]:default)
+.SH OPTIONS
+.IP "-h"
+print help
+.IP "-o file"
+output file [infile + .kml]
+.IP "-c color"
+track color (0:off,1:white,2:green,3:orange,4:red,5:yellow) [5]
+.IP "-p color"
+point color (0:off,1:white,2:green,3:orange,4:red,5:by qflag) [5]
+.IP "-a"
+output altitude information [off]
+.IP "-ag"
+output geodetic altitude [off]
+.IP "-tg"
+output time stamp of gpst [off]
+.IP "-tu"
+output time stamp of utc [gpst]
+.IP "-i tint"
+output time interval (s) (0:all) [0]
+.IP "-q qflg"
+output q-flags (0:all) [0]
+.IP "-f n e h"
+add north/east/height offset to position (m) [0 0 0]
