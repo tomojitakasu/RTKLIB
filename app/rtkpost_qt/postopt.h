@@ -75,7 +75,7 @@ protected:
 
 private:
 	snrmask_t SnrMask;
-	int RovPosTypeP,RefPosTypeP;
+    int RovPosTypeP, RefPosTypeP;
 
     void GetOpt(void);
     void SetOpt(void);

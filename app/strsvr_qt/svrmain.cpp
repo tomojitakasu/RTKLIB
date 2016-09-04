@@ -159,7 +159,7 @@ void MainForm::FormCreate()
 
 
     QCommandLineParser parser;
-    parser.setApplicationDescription(tr("stream server"));
+    parser.setApplicationDescription(tr("stream server qt"));
     parser.addHelpOption();
     parser.addVersionOption();
     parser.addPositionalArgument("source", QCoreApplication::translate("main", "Source file to copy."));
@@ -539,10 +539,10 @@ void MainForm::SvrStart(void)
 {
     strconv_t *conv[3] = { 0 };
     static char str[4][1024];
-    int itype[] = {
+    const int itype[] = {
         STR_SERIAL, STR_TCPCLI, STR_TCPSVR, STR_NTRIPCLI, STR_FILE, STR_FTP, STR_HTTP
     };
-    int otype[] = {
+    const int otype[] = {
         STR_NONE, STR_SERIAL, STR_TCPCLI, STR_TCPSVR, STR_NTRIPSVR, STR_FILE
     };
     int ip[] = { 0, 1, 1, 1, 2, 3, 3 }, strs[4] = { 0 }, opt[7] = { 0 }, n;
@@ -630,10 +630,10 @@ void MainForm::SvrStart(void)
 void MainForm::SvrStop(void)
 {
     char *cmds[4];
-    int itype[] = {
+    const int itype[] = {
         STR_SERIAL, STR_TCPCLI, STR_TCPSVR, STR_NTRIPCLI, STR_FILE, STR_FTP, STR_HTTP
     };
-    int otype[] = {
+    const int otype[] = {
         STR_NONE, STR_SERIAL, STR_TCPCLI, STR_TCPSVR, STR_NTRIPSVR, STR_FILE
     };
     int strs[4];

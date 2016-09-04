@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>543</width>
+    <width>637</width>
     <height>297</height>
    </rect>
   </property>
@@ -61,6 +61,12 @@
         <property name="enabled">
          <bool>true</bool>
         </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="toolTip">
          <string/>
         </property>
@@ -71,6 +77,18 @@
          <string/>
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
          <item>
           <widget class="QLabel" name="Time">
            <property name="enabled">
@@ -239,6 +257,18 @@
          <string/>
         </property>
         <layout class="QGridLayout" name="gridLayout">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
          <item row="1" column="3" colspan="2">
           <widget class="QPushButton" name="BtnInput">
            <property name="enabled">
@@ -1087,6 +1117,12 @@
            <property name="enabled">
             <bool>true</bool>
            </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="toolTip">
             <string/>
            </property>
@@ -1150,6 +1186,12 @@
            <property name="enabled">
             <bool>true</bool>
            </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="toolTip">
             <string/>
            </property>
@@ -1162,6 +1204,12 @@
           <widget class="QLabel" name="Label3">
            <property name="enabled">
             <bool>true</bool>
+           </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
            </property>
            <property name="toolTip">
             <string/>
@@ -1176,6 +1224,12 @@
            <property name="enabled">
             <bool>true</bool>
            </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="toolTip">
             <string/>
            </property>
@@ -1189,6 +1243,12 @@
            <property name="enabled">
             <bool>true</bool>
            </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="toolTip">
             <string/>
            </property>
@@ -1201,6 +1261,12 @@
           <widget class="QLabel" name="Label7">
            <property name="enabled">
             <bool>true</bool>
+           </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
            </property>
            <property name="toolTip">
             <string/>
@@ -1347,6 +1413,12 @@
            <property name="enabled">
             <bool>true</bool>
            </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="toolTip">
             <string/>
            </property>
@@ -1422,6 +1494,12 @@
         <property name="enabled">
          <bool>true</bool>
         </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="toolTip">
          <string/>
         </property>
@@ -1432,6 +1510,18 @@
          <string/>
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
          <item>
           <widget class="QPushButton" name="BtnStrMon">
            <property name="enabled">
@@ -1450,7 +1540,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+            <iconset resource="strsvr_qt.qrc">
              <normaloff>:/buttons/sqr.bmp</normaloff>:/buttons/sqr.bmp</iconset>
            </property>
            <property name="flat">
@@ -1563,7 +1653,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+            <iconset resource="strsvr_qt.qrc">
              <normaloff>:/buttons/ttray.bmp</normaloff>:/buttons/ttray.bmp</iconset>
            </property>
            <property name="flat">
@@ -1638,6 +1728,12 @@
    </item>
    <item>
     <widget class="QWidget" name="widget" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <layout class="QHBoxLayout" name="horizontalLayout_3">
       <property name="leftMargin">
        <number>0</number>
@@ -1663,7 +1759,7 @@
          <string>&amp;Start</string>
         </property>
         <property name="icon">
-         <iconset resource="../rtknavi_qt/rtknavi_qt.qrc">
+         <iconset resource="strsvr_qt.qrc">
           <normaloff>:/buttons/start.bmp</normaloff>:/buttons/start.bmp</iconset>
         </property>
         <property name="flat">
@@ -1683,7 +1779,7 @@
          <string>S&amp;top</string>
         </property>
         <property name="icon">
-         <iconset resource="../rtknavi_qt/rtknavi_qt.qrc">
+         <iconset resource="strsvr_qt.qrc">
           <normaloff>:/buttons/stop2.bmp</normaloff>:/buttons/stop2.bmp</iconset>
         </property>
         <property name="flat">
@@ -1703,7 +1799,7 @@
          <string>&amp;Options...</string>
         </property>
         <property name="icon">
-         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+         <iconset resource="strsvr_qt.qrc">
           <normaloff>:/buttons/toolbmp</normaloff>:/buttons/toolbmp</iconset>
         </property>
         <property name="flat">
@@ -1757,8 +1853,7 @@
   <addaction name="MenuExit"/>
  </widget>
  <resources>
-  <include location="../rtkconv_qt/rtkconv_qt.qrc"/>
-  <include location="../rtknavi_qt/rtknavi_qt.qrc"/>
+  <include location="strsvr_qt.qrc"/>
  </resources>
  <connections/>
 </ui>

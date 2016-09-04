@@ -387,10 +387,8 @@ void MainForm::showEvent(QShowEvent* event)
     UpdateEnable();
 }
 // callback on form close ---------------------------------------------------
-void MainForm::closeEvent(QCloseEvent *event)
+void MainForm::closeEvent(QCloseEvent *)
 {
-    if (event->spontaneous()) return;
-
     SaveOpt();
 }
 // callback on drop files ---------------------------------------------------
@@ -1152,13 +1150,13 @@ gtime_t MainForm::GetTime2(void)
 // set time to time-1 -------------------------------------------------------
 void MainForm::SetTime1(gtime_t time)
 {
-    QDateTime t=QDateTime::fromTime_t(time.time); t=t.addSecs(time.sec);
+    QDateTime t=QDateTime::fromTime_t(time.time); t=t.addMSecs(time.sec*1000);
     dateTime1->setDateTime(t);
 }
 // set time to time-2 -------------------------------------------------------
 void MainForm::SetTime2(gtime_t time)
 {
-    QDateTime t=QDateTime::fromTime_t(time.time); t=t.addSecs(time.sec);
+    QDateTime t=QDateTime::fromTime_t(time.time); t=t.addMSecs(time.sec*1000);
     dateTime2->setDateTime(t);
 }
 // update enable/disable of widgets -----------------------------------------

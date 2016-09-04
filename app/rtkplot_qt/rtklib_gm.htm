@@ -66,6 +66,21 @@ function AddMark(lat,lon,title,msg) {
     marks.push(mark);
 }
 
+function HighlightMark(title) {
+    if (markh) {
+        markh.setIcon(icon1);
+        markh.setZIndex(markz);
+    }
+    for (var i in marks) {
+        if (marks[i].getTitle()==title) {
+            markz = marks[i].getZIndex();
+            marks[i].setIcon(icon0);
+            marks[i].setZIndex(google.maps.Marker.MAX_ZINDEX+1);
+            markh=marks[i];
+        }
+    }
+}
+
 function PosMark(lat,lon,title) {
     for (var i in marks) {
         if (marks[i].title==title) {

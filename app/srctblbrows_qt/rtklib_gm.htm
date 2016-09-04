@@ -1,5 +1,5 @@
 <!------------------------------------------------------------------------------
-* rtklib_gmap.htm: rtklib google map view
+* rtkplot_gm.htm: rtkplot google map view
 *
 * history: 2013/01/20 1.0  new
 *------------------------------------------------------------------------------>
@@ -30,10 +30,20 @@ function init() {
     document.getElementById('state').value='1';
 }
 
-function ShowHome() {
+function SetView(lat,lon,zoom) {
     if (map == null) return;
-    map.setCenter(new google.maps.LatLng(0,0));
-    map.setZoom(2);
+    map.setCenter(new google.maps.LatLng(lat,lon));
+    map.setZoom(zoom);
+}
+
+function SetCent(lat,lon) {
+    if (map == null) return;
+    map.setCenter(new google.maps.LatLng(lat,lon));
+}
+
+function SetZoom(zoom) {
+    if (map == null) return;
+    map.setZoom(zoom);
 }
 
 function ClearMark(lat,lon,title) {
@@ -67,6 +77,33 @@ function HighlightMark(title) {
             marks[i].setIcon(icon0);
             marks[i].setZIndex(google.maps.Marker.MAX_ZINDEX+1);
             markh=marks[i];
+        }
+    }
+}
+
+function PosMark(lat,lon,title) {
+    for (var i in marks) {
+        if (marks[i].title==title) {
+            marks[i].setPosition(new google.maps.LatLng(lat,lon));
+            break;
+        }
+    }
+}
+
+function ShowMark(title) {
+    for (var i in marks) {
+        if (marks[i].title==title) {
+            marks[i].setVisible(true);
+            break;
+        }
+    }
+}
+
+function HideMark(title) {
+    for (var i in marks) {
+        if (marks[i].title==title) {
+            marks[i].setVisible(false);
+            break;
         }
     }
 }

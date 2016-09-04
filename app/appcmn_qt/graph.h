@@ -23,9 +23,9 @@ private:
         QPoint p_;
         QColor color_;
         QPaintDevice *Parent;
-        int mark_,size_,rot_;
-        int X,Y,Width,Height;
-        double XCent,YCent,XScale,YScale,XTick,YTick;
+        int mark_, size_, rot_;
+        int X, Y, Width, Height;
+        double XCent, YCent, XScale, YScale, XTick, YTick;
 
 public:
         explicit Graph(QPaintDevice *parent);
@@ -74,8 +74,8 @@ public:
         void DrawSkyPlot(QPainter &c,const QPoint &p, const QColor &color1, const QColor &color2, const QColor &bgcolor, int size);
         void DrawSkyPlot(QPainter &c,double x, double y, const QColor &color1, const QColor &color2, const QColor &bgcolor,double size);
 
-        int Box,Fit,XGrid,YGrid,XLPos,YLPos,Week;
-        QString Title,XLabel,YLabel;
+        int Box, Fit, XGrid, YGrid, XLPos, YLPos, Week;
+        QString Title, XLabel, YLabel;
         QColor Color[3];
 };
 #endif

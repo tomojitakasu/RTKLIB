@@ -64,7 +64,7 @@ static char *getsrctbl(const QString addr)
 
         QMetaObject::invokeMethod(mainForm, "ShowMsg", Qt::QueuedConnection, Q_ARG(QString, msg));
 
-        if (stat < 0) break;
+        if (stat < 1) break;
         if ((int)(tickget() - tick) > NTRIP_TIMEOUT) {
             QMetaObject::invokeMethod(mainForm, "ShowMsg", Qt::QueuedConnection, Q_ARG(QString, QT_TR_NOOP("response timeout")));
 			break;
@@ -119,14 +119,12 @@ MainForm::MainForm(QWidget *parent)
     connect(Timer, SIGNAL(timeout()), this, SLOT(TimerTimer()));
     connect(Table0, SIGNAL(cellClicked(int,int)), this, SLOT(Table0SelectCell(int,int)));
 
+    BtnMap->setEnabled(false);
 #ifdef QWEBKIT
     BtnMap->setEnabled(true);
-#else
+#endif
 #ifdef QWEBENGINE
     BtnMap->setEnabled(true);
-#else
-    BtnMap->setEnabled(false);
-#endif
 #endif
 
     Table0->setSortingEnabled(true);
@@ -144,9 +142,9 @@ void MainForm::showEvent(QShowEvent *event)
 {
     if (event->spontaneous()) return;
 
-    QString colw0 = "74,116,56,244,18,52,62,28,50,50,18,18,120,28,18,18,40,600,";
-    QString colw1 = "112,40,96,126,18,28,50,50,160,40,600,0,0,0,0,0,0,0,";
-    QString colw2 = "80,126,18,18,300,300,300,600,0,0,0,0,0,0,0,0,0,0,";
+    const QString colw0 = "74,116,56,244,18,52,62,28,50,50,18,18,120,28,18,18,40,600,";
+    const QString colw1 = "112,40,96,126,18,28,50,50,160,40,600,0,0,0,0,0,0,0,";
+    const QString colw2 = "80,126,18,18,300,300,300,600,0,0,0,0,0,0,0,0,0,0,";
     QSettings setting(IniFile, QSettings::IniFormat);
     QString list, url = "";
     QStringList colw, stas;
@@ -209,10 +207,8 @@ void MainForm::showEvent(QShowEvent *event)
 	UpdateEnable();
 }
 //---------------------------------------------------------------------------
-void MainForm::closeEvent(QCloseEvent *event)
+void MainForm::closeEvent(QCloseEvent *)
 {
-    if (event->spontaneous()) return;
-
     QSettings setting(IniFile, QSettings::IniFormat);
     QString list, colw;
 
@@ -330,12 +326,12 @@ void MainForm::BtnMapClick()
     googleMapView->show();
 }
 //---------------------------------------------------------------------------
-void MainForm::Table0SelectCell(int ACol, int ARow)
+void MainForm::Table0SelectCell(int ARow, int ACol)
 {
     Q_UNUSED(ACol);
     QString title;
-    if (0 < ARow && ARow < Table0->rowCount()) {
-        title = Table0->item(ARow, 0)->text();
+    if (0 <= ARow && ARow < Table0->rowCount()) {
+        title = Table0->item(ARow,0)->text();
         googleMapView->HighlightMark(title);
         googleMapView->setWindowTitle(QString(tr("NTRIP STR Map: %1/%2")).arg(Address->currentText()).arg(title));
 	}

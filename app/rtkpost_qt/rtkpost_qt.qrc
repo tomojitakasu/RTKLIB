@@ -90,5 +90,9 @@
         <file alias="wait6.bmp">../icon/wait6.bmp</file>
         <file alias="wait7.bmp">../icon/wait7.bmp</file>
         <file alias="wait8.bmp">../icon/wait8.bmp</file>
+        <file alias="start.bmp">../icon/start.bmp</file>
+        <file alias="up2.bmp">../icon/up2.bmp</file>
+        <file alias="stop2.bmp">../icon/stop2.bmp</file>
+        <file alias="anim1_red.bmp">../icon/anim1_red.bmp</file>
     </qresource>
 </RCC>

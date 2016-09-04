@@ -28,7 +28,7 @@ public slots:
 protected:
     void showEvent(QShowEvent*);
     QTreeView *DirSelector;
-    QFileSystemModel *fileModel,*dirModel;
+    QFileSystemModel *fileModel, *dirModel;
 
 public:
     QString Dir;

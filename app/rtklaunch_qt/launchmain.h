@@ -41,7 +41,7 @@ private:
     int ExecCmd(const QString &cmd);
 
 public:
-    explicit MainForm(QWidget *parent=0);
+    explicit MainForm(QWidget *parent = 0);
 };
 //---------------------------------------------------------------------------
 #endif

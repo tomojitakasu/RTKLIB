@@ -242,10 +242,8 @@ void MainForm::FormCreate()
     }
 }
 //---------------------------------------------------------------------------
-void MainForm::closeEvent(QCloseEvent *event)
+void MainForm::closeEvent(QCloseEvent *)
 {
-    if (event->spontaneous()) return;
-
     traceclose();
     SaveOpt();
 }
@@ -467,12 +465,11 @@ void MainForm::BtnAllClick()
 {
     int i, n = 0;
 
-    StaList->setVisible(false);
     for (i = StaList->count() - 1; i >= 0; i--) {
         StaList->item(i)->setSelected(BtnAll->text() == "A");
         if (StaList->item(i)->isSelected()) n++;
     }
-    StaList->setVisible(true);
+
     BtnAll->setText(BtnAll->text() == "A" ? "C" : "A");
     LabelSta->setText(QString(tr("Stations (%1)")).arg(n));
 }

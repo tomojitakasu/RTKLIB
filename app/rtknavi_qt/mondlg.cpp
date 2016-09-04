@@ -74,8 +74,6 @@ void MonitorDialog::showEvent(QShowEvent *event)
 //---------------------------------------------------------------------------
 void MonitorDialog::closeEvent(QCloseEvent *event)
 {
-    if (event->spontaneous()) return;
-
     free_rtcm(&rtcm);
 	free_raw(&raw);
     event->accept();

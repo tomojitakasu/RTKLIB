@@ -100,8 +100,8 @@ MainWindow::MainWindow(QWidget *parent)
     for (i = 0; i <= MAXRCVFMT; i++)
         Format->addItem(formatstrs[i]);
     Format->addItem(formatstrs[STRFMT_RINEX]);
+
     RnxTime = time0;
-    EventEna = 0;
 
     QCompleter *fileCompleter = new QCompleter(this);
     QFileSystemModel *fileModel = new QFileSystemModel(fileCompleter);
@@ -133,6 +133,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(BtnTime1, SIGNAL(clicked(bool)), this, SLOT(BtnTime1Click()));
     connect(BtnTime2, SIGNAL(clicked(bool)), this, SLOT(BtnTime2Click()));
     connect(BtnInFile, SIGNAL(clicked(bool)), this, SLOT(BtnInFileClick()));
+    connect(BtnInFileView, SIGNAL(clicked(bool)), this, SLOT(BtnInFileViewClick()));
     connect(BtnOutFile1, SIGNAL(clicked(bool)), this, SLOT(BtnOutFile1Click()));
     connect(BtnOutFile2, SIGNAL(clicked(bool)), this, SLOT(BtnOutFile2Click()));
     connect(BtnOutFile3, SIGNAL(clicked(bool)), this, SLOT(BtnOutFile3Click()));
@@ -160,7 +161,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(BtnOutDir, SIGNAL(clicked(bool)), this, SLOT(BtnOutDirClick()));
     connect(BtnKey, SIGNAL(clicked(bool)), this, SLOT(BtnKeyClick()));
     connect(BtnPost, SIGNAL(clicked(bool)), this, SLOT(BtnPostClick()));
-    connect(BtnInFileView, SIGNAL(clicked(bool)), this, SLOT(BtnInFileViewClick()));
     connect(OutFileEna1, SIGNAL(clicked(bool)), this, SLOT(UpdateEnable()));
     connect(OutFileEna2, SIGNAL(clicked(bool)), this, SLOT(UpdateEnable()));
     connect(OutFileEna3, SIGNAL(clicked(bool)), this, SLOT(UpdateEnable()));
@@ -169,11 +169,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(OutFileEna6, SIGNAL(clicked(bool)), this, SLOT(UpdateEnable()));
     connect(OutFileEna7, SIGNAL(clicked(bool)), this, SLOT(UpdateEnable()));
 
-    QTimer::singleShot(100, this, SLOT(FormCreate()));
-}
-// callback on form create --------------------------------------------------
-void MainWindow::FormCreate()
-{
     setWindowTitle(QString(tr("%1 ver.%2 %3")).arg(PRGNAME).arg(VER_RTKLIB).arg(PATCH_LEVEL));
 }
 // callback on form show ----------------------------------------------------
@@ -199,14 +194,12 @@ void MainWindow::showEvent(QShowEvent *event)
     parser.process(*QApplication::instance());
 
     if (parser.isSet(iniFileOption))
-
         IniFile = parser.value(iniFileOption);
+
     LoadOpt();
 
     if (parser.isSet(titleOption))
         setWindowTitle(parser.value(titleOption));
-
-    EventEna = 1;
 }
 // callback on form close ---------------------------------------------------
 void MainWindow::closeEvent(QCloseEvent *)
@@ -223,8 +216,6 @@ void MainWindow::SetOutFiles(const QString &infile)
     QString OutDir_Text = OutDir->text();
     QString ofile[8];
     int i, lex = Format_Text.contains(tr("LEX"));
-
-    if (!EventEna) return;
 
     if (OutDirEna->isChecked()) {
         QFileInfo info(infile);
@@ -357,13 +348,14 @@ void MainWindow::BtnPostClick()
 
     if (OutFileEna7->isChecked())
         opts = opts + " -n \"" + OutFile7->text() + "\"";
+
     if (TimeStartF->isChecked()) opts = opts + " -ts " + dateTime1->dateTime().toString("yyyy/MM/dd hh:mm:ss");
     if (TimeEndF->isChecked()) opts = opts + " -te " + dateTime2->dateTime().toString("yyyy/MM/dd hh:mm:ss");
     if (TimeIntF->isChecked()) opts = opts + " -ti " + TimeInt->currentText();
     if (TimeUnitF->isChecked()) opts = opts + " -tu " + TimeUnit->text();
 
     if (!ExecCmd(cmd1 + opts) && !ExecCmd(cmd2 + opts) && !ExecCmd(cmd3 + opts))
-        Message->setText(tr("error : rtkpost execution"));
+        Message->setText(tr("error : rtkpost_qt execution"));
 }
 // callback on button-options -----------------------------------------------
 void MainWindow::BtnOptionsClick()
@@ -439,7 +431,7 @@ void MainWindow::BtnKeyClick()
 // callback on button-output-file-1 -----------------------------------------
 void MainWindow::BtnOutFile1Click()
 {
-    QString selectedFilter = "RINEX OBS (*.obs *.*O)";
+    QString selectedFilter = tr("RINEX OBS (*.obs *.*O)");
 
     OutFile1->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Output RINEX OBS File"), QString(),
                                         tr("All (*.*);;RINEX OBS (*.obs *.*O);;RINEX NAV (*.nav *.*N *.*P);;RINEX GNAV (*.gnav *.*G);;RINEX HNAV (*.hnav *.*H);;"
@@ -448,7 +440,7 @@ void MainWindow::BtnOutFile1Click()
 // callback on button-output-file-2 -----------------------------------------
 void MainWindow::BtnOutFile2Click()
 {
-    QString selectedFilter = "RINEX NAV (*.nav *.*N *.*P)";
+    QString selectedFilter = tr("RINEX NAV (*.nav *.*N *.*P)");
 
     OutFile2->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Output RINEX NAV File"), QString(),
                                         tr("All (*.*);;RINEX OBS (*.obs *.*O);;RINEX NAV (*.nav *.*N *.*P);;RINEX GNAV (*.gnav *.*G);;RINEX HNAV (*.hnav *.*H);;"
@@ -457,7 +449,7 @@ void MainWindow::BtnOutFile2Click()
 // callback on button-output-file-3 -----------------------------------------
 void MainWindow::BtnOutFile3Click()
 {
-    QString selectedFilter = "RINEX GNAV (*.gnav *.*G)";
+    QString selectedFilter = tr("RINEX GNAV (*.gnav *.*G)");
 
     OutFile3->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Output RINEX GNAV File"), QString(),
                                         tr("All (*.*);;RINEX OBS (*.obs *.*O);;RINEX NAV (*.nav *.*N *.*P);;RINEX GNAV (*.gnav *.*G);;RINEX HNAV (*.hnav *.*H);;"
@@ -466,7 +458,7 @@ void MainWindow::BtnOutFile3Click()
 // callback on button-output-file-4 -----------------------------------------
 void MainWindow::BtnOutFile4Click()
 {
-    QString selectedFilter = "RINEX HNAV (*.hnav *.*H)";
+    QString selectedFilter = tr("RINEX HNAV (*.hnav *.*H)");
 
     OutFile4->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Output RINEX HNAV File"), QString(),
                                         tr("All (*.*);;RINEX OBS (*.obs *.*O);;RINEX NAV (*.nav *.*N *.*P);;RINEX GNAV (*.gnav *.*G);;RINEX HNAV (*.hnav *.*H);;"
@@ -475,7 +467,7 @@ void MainWindow::BtnOutFile4Click()
 // callback on button-output-file-5 -----------------------------------------
 void MainWindow::BtnOutFile5Click()
 {
-    QString selectedFilter = "RINEX QNAV (*.qnav *.*Q)";
+    QString selectedFilter = tr("RINEX QNAV (*.qnav *.*Q)");
 
     OutFile5->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Output RINEX QNAV File"), QString(),
                                         tr("All (*.*);;RINEX OBS (*.obs *.*O);;RINEX NAV (*.nav *.*N *.*P);;RINEX GNAV (*.gnav *.*G);;RINEX HNAV (*.hnav *.*H);;"
@@ -484,7 +476,7 @@ void MainWindow::BtnOutFile5Click()
 // callback on button-output-file-6 -----------------------------------------
 void MainWindow::BtnOutFile6Click()
 {
-    QString selectedFilter = "RINEX LNAV (*.lnav *.*L)";
+    QString selectedFilter = tr("RINEX LNAV (*.lnav *.*L)");
 
     OutFile6->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Output RINEX LNAV File"), QString(),
                                         tr("All (*.*);;RINEX OBS (*.obs *.*O);;RINEX NAV (*.nav *.*N *.*P);;RINEX GNAV (*.gnav *.*G);;RINEX HNAV (*.hnav *.*H);;"
@@ -493,7 +485,7 @@ void MainWindow::BtnOutFile6Click()
 // callback on button-output-file-7 -----------------------------------------
 void MainWindow::BtnOutFile7Click()
 {
-    QString selectedFilter = "SBAS Log (*.sbs)";
+    QString selectedFilter = tr("SBAS Log (*.sbs)");
 
     OutFile7->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Output SBAS/LEX Log File"), QString(),
                                         tr("All (*.*);;RINEX OBS (*.obs *.*O);;RINEX NAV (*.nav *.*N *.*P);;RINEX GNAV (*.gnav *.*G);;RINEX HNAV (*.hnav *.*H);;"
@@ -505,10 +497,10 @@ void MainWindow::BtnInFileViewClick()
     QString InFile_Text = InFile->currentText();
     QString ext = QFileInfo(InFile_Text).suffix();
 
-    if (ext.length() < 4) return;
+    if (ext.length() < 3) return;
 
-    if ((ext == "obs") || (ext == "OBS") || (ext == "nav") ||
-        (ext == "NAV") || (ext.mid(1) == "nav") || (ext.mid(1) == "NAV") ||
+    if ((ext.toLower() == "obs") || (ext.toLower() == "nav") ||
+        (ext.mid(1).toLower() == "nav") ||
         (ext.at(2) == 'o') || (ext.at(2) == 'O') || (ext.at(2) == 'n') ||
         (ext.at(2) == 'N') || (ext.at(2) == 'p') || (ext.at(2) == 'P') ||
         (ext.at(2) == 'g') || (ext.at(2) == 'G') || (ext.at(2) == 'h') ||

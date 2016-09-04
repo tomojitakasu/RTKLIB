@@ -26,8 +26,8 @@ private:
     KeyDialog *keyDialog;
 
 public:
-    QString Marker,Comment;
-    int PosMode,NMark;
+    QString Marker, Comment;
+    int PosMode, NMark;
 	
     explicit QMarkDialog(QWidget *parent);
 	

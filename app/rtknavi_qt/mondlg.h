@@ -29,7 +29,7 @@ public slots:
     void SelFmtChange(int);
 
 private:
-	int TypeF,ConFmt,ScrollPos,FontScale,ObsMode;
+    int TypeF, ConFmt, ScrollPos, FontScale, ObsMode;
     QStringList ConBuff;
     QStringList header;
 	rtcm_t rtcm;

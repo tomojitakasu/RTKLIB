@@ -25,10 +25,10 @@ private:
     void UpdateEnable(void);
 
 public:
-    QString StaPosFile,ExeDirectory,LocalDirectory,ProxyAddress;
-    QString AntType,RcvType;
-	int SvrOpt[6],TraceLevel,NmeaReq,FileSwapMargin,StaId,StaSel;
-	double AntPos[3],AntOff[3];
+    QString StaPosFile, ExeDirectory, LocalDirectory, ProxyAddress;
+    QString AntType, RcvType;
+    int SvrOpt[6], TraceLevel, NmeaReq, FileSwapMargin, StaId, StaSel;
+    double AntPos[3], AntOff[3];
 
     explicit SvrOptDialog(QWidget *parent);
 };

@@ -23,6 +23,7 @@ StaListDialog::StaListDialog(QWidget *parent)
 void StaListDialog::showEvent(QShowEvent *event)
 {
     if (event->spontaneous()) return;
+
     StaList->clear();
 
     for (int i = 0; i < mainForm->StaList->count(); i++)

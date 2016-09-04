@@ -14,6 +14,7 @@
 class TextViewer;
 class DownloadThread;
 class TimeDialog;
+
 //---------------------------------------------------------------------------
 class MainForm : public QWidget, public Ui::MainForm
 {

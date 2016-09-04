@@ -17,7 +17,7 @@ class GMPageState : public QObject
     Q_OBJECT
     Q_PROPERTY(QString text MEMBER text NOTIFY textChanged)
 public:
-    explicit GMPageState(QObject *parent=NULL): QObject(parent){}
+    explicit GMPageState(QObject *parent = NULL): QObject(parent){}
     QString getText() {return text;}
 signals:
     void textChanged(const QString &text);
@@ -63,7 +63,7 @@ private:
 public:
     int FixCent;
 
-    explicit GoogleMapView(QWidget *parent=NULL);
+    explicit GoogleMapView(QWidget *parent = NULL);
 
     int  GetState(void);
     void SetView(double lat, double lon, int zoom);

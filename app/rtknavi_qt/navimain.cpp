@@ -275,11 +275,9 @@ void MainWindow::showEvent(QShowEvent *event)
     UpdateEnable();
 }
 // callback on form close ---------------------------------------------------
-void MainWindow::closeEvent(QCloseEvent *event)
+void MainWindow::closeEvent(QCloseEvent *)
 {
     trace(3, "FormClose\n");
-
-    if (event->spontaneous()) return;
 
     if (OpenPort > 0) {
         // send disconnect message
@@ -289,8 +287,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
     }
     SaveOpt();
     SaveNav(&rtksvr.nav);
-
-    QWidget::closeEvent(event);
 }
 // update panel -------------------------------------------------------------
 void MainWindow::UpdatePanel(void)

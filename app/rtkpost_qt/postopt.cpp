@@ -443,7 +443,7 @@ void OptDialog::GetOpt(void)
     PosOpt4->setChecked(mainForm->PosOpt[3]);
     PosOpt5->setChecked(mainForm->PosOpt[4]);
     PosOpt6->setChecked(mainForm->PosOpt[5]);
-//	MapFunc	     ->setCurrentIndex(mainForm->MapFunc);
+//	MapFunc->setCurrentIndex(mainForm->MapFunc);
 
     AmbRes->setCurrentIndex(mainForm->AmbRes);
     GloAmbRes->setCurrentIndex(mainForm->GloAmbRes);
@@ -567,7 +567,7 @@ void OptDialog::SetOpt(void)
     mainForm->PosOpt[3] = PosOpt4->isChecked();
     mainForm->PosOpt[4] = PosOpt5->isChecked();
     mainForm->PosOpt[5] = PosOpt6->isChecked();
-//	mainForm->MapFunc		=MapFunc	->ItemIndex;
+//	mainForm->MapFunc=MapFunc->currentIndex();
 
     mainForm->AmbRes = AmbRes->currentIndex();
     mainForm->GloAmbRes = GloAmbRes->currentIndex();
@@ -704,7 +704,7 @@ void OptDialog::LoadOpt(const QString &file)
     PosOpt4->setChecked(prcopt.posopt[3]);
     PosOpt5->setChecked(prcopt.posopt[4]);
     PosOpt6->setChecked(prcopt.posopt[5]);
-//	MapFunc	     ->ItemIndex	=prcopt.mapfunc;
+//	MapFunc->setCurrentIndex(prcopt.mapfunc);
 
     AmbRes->setCurrentIndex(prcopt.modear);
     GloAmbRes->setCurrentIndex(prcopt.glomodear);
@@ -854,7 +854,7 @@ void OptDialog::SaveOpt(const QString &file)
     prcopt.posopt[3] = PosOpt4->isChecked();
     prcopt.posopt[4] = PosOpt5->isChecked();
     prcopt.posopt[5] = PosOpt6->isChecked();
-//	prcopt.mapfunc	=MapFunc	->ItemIndex;
+//	prcopt.mapfunc=MapFunc->currentIndex();
 
     prcopt.modear = AmbRes->currentIndex();
     prcopt.glomodear = GloAmbRes->currentIndex();
@@ -955,7 +955,7 @@ void OptDialog::UpdateEnable(void)
     Solution->setEnabled(rel || ppp);
     DynamicModel->setEnabled(rel);
     TideCorr->setEnabled(rel || ppp);
-    //IonoOpt        ->setEnabled(!ppp);
+    //IonoOpt->setEnabled(!ppp);
     PosOpt1->setEnabled(ppp);
     PosOpt2->setEnabled(ppp);
     PosOpt3->setEnabled(ppp);

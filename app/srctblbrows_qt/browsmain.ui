@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>831</width>
-    <height>412</height>
+    <width>1098</width>
+    <height>394</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -87,7 +87,7 @@
              <string/>
             </property>
             <property name="icon">
-             <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+             <iconset resource="../strsvr_qt/strsvr_qt.qrc">
               <normaloff>:/buttons/reload.bmp</normaloff>:/buttons/reload.bmp</iconset>
             </property>
            </widget>
@@ -123,7 +123,7 @@
              <string/>
             </property>
             <property name="icon">
-             <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+             <iconset resource="../strsvr_qt/strsvr_qt.qrc">
               <normaloff>:/buttons/load.bmp</normaloff>:/buttons/load.bmp</iconset>
             </property>
             <property name="flat">
@@ -445,8 +445,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>831</width>
-     <height>21</height>
+     <width>1098</width>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="File1">
@@ -576,7 +576,7 @@
   </action>
  </widget>
  <resources>
-  <include location="../rtkconv_qt/rtkconv_qt.qrc"/>
+  <include location="../strsvr_qt/strsvr_qt.qrc"/>
  </resources>
  <connections/>
 </ui>

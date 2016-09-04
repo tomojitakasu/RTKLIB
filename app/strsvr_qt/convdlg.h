@@ -22,9 +22,9 @@ private:
     void UpdateEnable(void);
 
 public:
-    QString ConvMsg,ConvOpt,AntType,RcvType;
-	int ConvEna,ConvInp,ConvOut,StaId;
-	double AntPos[3],AntOff[3];
+    QString ConvMsg, ConvOpt, AntType, RcvType;
+    int ConvEna, ConvInp, ConvOut, StaId;
+    double AntPos[3], AntOff[3];
 	
     explicit ConvDialog(QWidget *parent);
 };

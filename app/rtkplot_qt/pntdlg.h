@@ -29,7 +29,7 @@ public:
 	double Pos[3];
 	int FontScale;
 
-    explicit PntDialog(QWidget* parent=NULL);
+    explicit PntDialog(QWidget* parent = NULL);
     void SetPoint(void);
 };
 //---------------------------------------------------------------------------

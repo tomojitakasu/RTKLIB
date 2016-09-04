@@ -833,7 +833,7 @@
          <string/>
         </property>
         <property name="text">
-         <string>Update Cycle (ms)</string>
+         <string>Update Cycle</string>
         </property>
        </widget>
       </item>
@@ -1865,7 +1865,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+         <iconset resource="../strsvr_qt/strsvr_qt.qrc">
           <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
         </property>
         <property name="flat">
@@ -1891,7 +1891,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+         <iconset resource="../strsvr_qt/strsvr_qt.qrc">
           <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
         </property>
         <property name="flat">
@@ -2500,7 +2500,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../rtkconv_qt/rtkconv_qt.qrc"/>
+  <include location="../strsvr_qt/strsvr_qt.qrc"/>
  </resources>
  <connections/>
 </ui>

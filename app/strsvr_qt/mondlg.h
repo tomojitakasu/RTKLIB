@@ -20,9 +20,10 @@ public slots:
     void BtnClearClick();
     void BtnDownClick();
     void SelFmtChange();
+
 private:
     QStringList ConBuff;
-    int Stop,ScrollPos,StrFmt;
+    int Stop, ScrollPos, StrFmt;
     rtcm_t rtcm;
     raw_t raw;
 

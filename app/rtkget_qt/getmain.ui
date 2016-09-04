@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>702</width>
-    <height>412</height>
+    <width>755</width>
+    <height>495</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -275,9 +275,6 @@
            </property>
           </widget>
          </item>
-         <item row="3" column="4">
-          <widget class="QSpinBox" name="Number"/>
-         </item>
          <item row="1" column="1" colspan="4">
           <widget class="QDateTimeEdit" name="dateTime1">
            <property name="calendarPopup">
@@ -297,6 +294,9 @@
             <enum>Qt::UTC</enum>
            </property>
           </widget>
+         </item>
+         <item row="3" column="4" colspan="2">
+          <widget class="QSpinBox" name="Number"/>
          </item>
         </layout>
        </widget>
@@ -744,7 +744,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="rtkget_qt.qrc">
+         <iconset resource="../strsvr_qt/strsvr_qt.qrc">
           <normaloff>:/buttons/ttray.bmp</normaloff>:/buttons/ttray.bmp</iconset>
         </property>
         <property name="flat">
@@ -890,7 +890,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="rtkget_qt.qrc"/>
+  <include location="../strsvr_qt/strsvr_qt.qrc"/>
  </resources>
  <connections/>
 </ui>

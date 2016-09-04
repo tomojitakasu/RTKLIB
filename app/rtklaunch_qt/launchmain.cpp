@@ -16,7 +16,6 @@
 #include <QSettings>
 #include <QFileInfo>
 #include <QShowEvent>
-#include <QCloseEvent>
 #include <QCommandLineParser>
 #include <QProcess>
 
@@ -46,7 +45,7 @@ MainForm::MainForm(QWidget *parent)
     QCoreApplication::setApplicationVersion("1.0");
 
     QCommandLineParser parser;
-    parser.setApplicationDescription("rtklib application launcher");
+    parser.setApplicationDescription("rtklib application launcher Qt");
     parser.addHelpOption();
     parser.addVersionOption();
 

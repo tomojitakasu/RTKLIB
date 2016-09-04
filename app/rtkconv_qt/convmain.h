@@ -20,35 +20,35 @@ class AboutDialog;
 class StartDialog;
 class TextViewer;
 
-//Helper Class ------------------------------------------------------------------
+// Conversion Thread Class ------------------------------------------------------------------
 
 class ConversionThread : public QThread
 {
     Q_OBJECT
 public:
-    char ifile[1024],*ofile[7];
+    char ifile[1024], *ofile[7];
     rnxopt_t rnxopt;
     int format;
 
-    explicit ConversionThread(QObject *parent):QThread(parent){
-        for (int i=0;i<7;i++)
+    explicit ConversionThread(QObject *parent) : QThread(parent) {
+        for (int i = 0; i < 7; i++)
         {
-            ofile[i]=new char[1024];
-            ofile[i][0]='\0';
+            ofile[i] = new char[1024];
+            ofile[i][0] = '\0';
         };
-        memset(&rnxopt,0,sizeof(rnxopt_t));
-        format=0;
-        ifile[0]='\0';
+        memset(&rnxopt, 0, sizeof(rnxopt_t));
+        format = 0;
+        ifile[0] = '\0';
     }
 
     ~ConversionThread() {
-        for (int i=0;i<7;i++) delete[] ofile[i];
+        for (int i = 0; i < 7; i++) delete[] ofile[i];
     }
 
 protected:
     void run() {
         // convert to rinex
-        convrnx(format,&rnxopt,ifile,ofile);
+        convrnx(format, &rnxopt, ifile, ofile);
     }
 };
 
@@ -64,30 +64,28 @@ protected:
     void dropEvent           (QDropEvent *);
 
 public slots:
-    void FormCreate          ();
-
-    void BtnPlotClick        ();
-    void BtnConvertClick     ();
-    void BtnOptionsClick     ();
-    void BtnExitClick        ();
-    void BtnAboutClick       ();
-    void BtnTime1Click       ();
-    void BtnTime2Click       ();
-    void BtnInFileClick      ();
-    void BtnOutFile1Click    ();
-    void BtnOutFile2Click    ();
-    void BtnOutFile3Click    ();
-    void BtnOutFile4Click    ();
+    void BtnPlotClick();
+    void BtnConvertClick();
+    void BtnOptionsClick();
+    void BtnExitClick();
+    void BtnAboutClick();
+    void BtnTime1Click();
+    void BtnTime2Click();
+    void BtnInFileClick();
+    void BtnOutFile1Click();
+    void BtnOutFile2Click();
+    void BtnOutFile3Click();
+    void BtnOutFile4Click();
     void BtnOutFileView1Click();
     void BtnOutFileView2Click();
     void BtnOutFileView3Click();
     void BtnOutFileView4Click();
-    void BtnAbortClick       ();
+    void BtnAbortClick();
 	
-    void TimeStartFClick     ();
-    void TimeEndFClick       ();
-    void TimeIntFClick       ();
-    void OutDirEnaClick      ();
+    void TimeStartFClick();
+    void TimeEndFClick();
+    void TimeIntFClick();
+    void OutDirEnaClick();
 	
     void InFileChange();
     void BtnOutFileView5Click();
@@ -106,7 +104,7 @@ public slots:
     void UpdateEnable();
 
 private:
-    QString IniFile,CmdPostExe;
+    QString IniFile, CmdPostExe;
     ConversionThread *conversionThread;
 
     void ReadList(QComboBox* combo, QSettings *ini, const QString &key);
@@ -130,12 +128,12 @@ private:
     TextViewer *viewer;
 public:
 	gtime_t RnxTime;
-    QString RunBy,Marker,MarkerNo,MarkerType,Name[2],Rec[3],Ant[3];
-    QString RnxCode,Comment[2],RcvOption,ExSats;
+    QString RunBy, Marker, MarkerNo, MarkerType, Name[2], Rec[3], Ant[3];
+    QString RnxCode, Comment[2], RcvOption, ExSats;
     QString CodeMask[6];
-	double AppPos[3],AntDel[3];
-	int RnxVer,RnxFile,NavSys,ObsType,FreqType,TraceLevel,EventEna;
-    int AutoPos,ScanObs,HalfCyc,OutIono,OutTime,OutLeaps;
+    double AppPos[3], AntDel[3];
+    int RnxVer, RnxFile, NavSys, ObsType, FreqType, TraceLevel;
+    int AutoPos, ScanObs, HalfCyc, OutIono, OutTime, OutLeaps;
 	
     explicit MainWindow(QWidget *parent=0);
 };
