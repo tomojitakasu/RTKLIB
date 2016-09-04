@@ -51,12 +51,9 @@ __published:
 	
 	TTimer *Timer;
 	TPanel *Panel4;
-	TPanel *Panel33;
 	TSpeedButton *BtnTaskTray;
 	TSpeedButton *BtnAbout;
-	TPanel *Panel31;
 	TSpeedButton *BtnMonitor;
-	TPanel *Panel32;
 	TPanel *Panel12;
 	TImage *Image1;
 	TImage *Image2;

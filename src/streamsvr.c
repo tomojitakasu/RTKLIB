@@ -17,6 +17,7 @@
 *           2016/07/23 1.7  change api strsvrstart(),strsvrstop()
 *                           support command for output streams
 *           2016/08/20 1.8  support api change of sendnmea()
+*           2016/09/03 1.9  support ntrip caster function
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -366,51 +367,58 @@ static void *strsvrthread(void *arg)
 {
     strsvr_t *svr=(strsvr_t *)arg;
     sol_t sol_nmea={{0}};
-    unsigned int tick,ticknmea;
+    unsigned int tick,tick_nmea;
     unsigned char buff[1024];
+    char sel[256];
     int i,n;
     
     tracet(3,"strsvrthread:\n");
     
-    svr->state=1;
     svr->tick=tickget();
-    ticknmea=svr->tick-1000;
+    tick_nmea=svr->tick-1000;
     
     while (svr->state) {
         tick=tickget();
         
         /* read data from input stream */
-        n=strread(svr->stream,svr->buff,svr->buffsize);
-        
-        /* write data to output streams */
-        for (i=1;i<svr->nstr;i++) {
-            if (svr->conv[i-1]) {
-                strconv(svr->stream+i,svr->conv[i-1],svr->buff,n);
+        while ((n=strread(svr->stream,svr->buff,svr->buffsize))>0) {
+            
+            /* get stream selection */
+            strgetsel(svr->stream,sel);
+            
+            /* write data to output streams */
+            for (i=1;i<svr->nstr;i++) {
+                
+                /* set stream selection */
+                strsetsel(svr->stream+i,sel);
+                
+                if (svr->conv[i-1]) {
+                    strconv(svr->stream+i,svr->conv[i-1],svr->buff,n);
+                }
+                else {
+                    strwrite(svr->stream+i,svr->buff,n);
+                }
             }
-            else {
-                strwrite(svr->stream+i,svr->buff,n);
+            lock(&svr->lock);
+            for (i=0;i<n&&svr->npb<svr->buffsize;i++) {
+                svr->pbuf[svr->npb++]=svr->buff[i];
             }
+            unlock(&svr->lock);
         }
-        /* read data from output streams */
+        /* read output streams and discard data */
         for (i=1;i<svr->nstr;i++) {
-            while (strread(svr->stream+i,buff,(int)sizeof(buff))>0) {
+            while (strread(svr->stream+i,buff,sizeof(buff))>0) {
                 ;
             }
         }
         /* write nmea messages to input stream */
-        if (svr->nmeacycle>0&&(int)(tick-ticknmea)>=svr->nmeacycle) {
+        if (svr->nmeacycle>0&&(int)(tick-tick_nmea)>=svr->nmeacycle) {
             sol_nmea.stat=SOLQ_SINGLE;
             sol_nmea.time=utc2gpst(timeget());
             matcpy(sol_nmea.rr,svr->nmeapos,3,1);
             strsendnmea(svr->stream,&sol_nmea);
-            ticknmea=tick;
+            tick_nmea=tick;
         }
-        lock(&svr->lock);
-        for (i=0;i<n&&svr->npb<svr->buffsize;i++) {
-            svr->pbuf[svr->npb++]=svr->buff[i];
-        }
-        unlock(&svr->lock);
-        
         sleepms(svr->cycle-(int)(tickget()-tick));
     }
     for (i=0;i<svr->nstr;i++) strclose(svr->stream+i);
@@ -515,10 +523,11 @@ extern int strsvrstart(strsvr_t *svr, int *opts, int *strs, char **paths,
             for (i--;i>=0;i--) strclose(svr->stream+i);
             return 0;
         }
-        rw=i==0?STR_MODE_R:STR_MODE_W;
-        if (strs[i]!=STR_FILE) rw|=STR_MODE_W;
-        if (strs[i]==STR_SERIAL&&strstr(paths[i],"#")) {
-            rw|=STR_MODE_R;
+        if (strs[i]==STR_FILE) {
+            rw=i==0?STR_MODE_R:STR_MODE_W;
+        }
+        else {
+            rw=STR_MODE_RW;
         }
         if (stropen(svr->stream+i,strs[i],rw,paths[i])) continue;
         for (i--;i>=0;i--) strclose(svr->stream+i);
@@ -528,6 +537,8 @@ extern int strsvrstart(strsvr_t *svr, int *opts, int *strs, char **paths,
     for (i=0;i<svr->nstr;i++) {
         if (cmds[i]) strsendcmd(svr->stream+i,cmds[i]);
     }
+    svr->state=1;
+    
     /* create stream server thread */
 #ifdef WIN32
     if (!(svr->thread=CreateThread(NULL,0,strsvrthread,svr,0,NULL))) {
@@ -535,6 +546,7 @@ extern int strsvrstart(strsvr_t *svr, int *opts, int *strs, char **paths,
     if (pthread_create(&svr->thread,NULL,strsvrthread,svr)) {
 #endif
         for (i=0;i<svr->nstr;i++) strclose(svr->stream+i);
+        svr->state=0;
         return 0;
     }
     return 1;

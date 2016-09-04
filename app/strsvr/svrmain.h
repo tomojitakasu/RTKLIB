@@ -16,6 +16,8 @@
 #include "rtklib.h"
 #include "tcpoptdlg.h"
 
+#define MAXSTR        4    // number of streams
+
 //---------------------------------------------------------------------------
 class TMainForm : public TForm
 {
@@ -121,13 +123,14 @@ __published:
           int X, int Y);
 private:
 	AnsiString IniFile;
-	AnsiString Paths[4][4],Cmds[4][2],CmdsTcp[4][2];
+	AnsiString Paths[MAXSTR][4],Cmds[MAXSTR][2],CmdsTcp[MAXSTR][2];
 	AnsiString TcpHistory[MAXHIST],TcpMntpHist[MAXHIST];
 	AnsiString StaPosFile,ExeDirectory,LocalDirectory,SwapInterval;
-	AnsiString ProxyAddress;
-	AnsiString ConvMsg[3],ConvOpt[3],AntType,RcvType;
-	int ConvEna[3],ConvInp[3],ConvOut[3],StaId,StaSel;
-	int TraceLevel,SvrOpt[6],CmdEna[4][2],CmdEnaTcp[4][2],NmeaReq,FileSwapMargin;
+	AnsiString ProxyAddress,SrcTblFile,LogFile;
+	AnsiString ConvMsg[MAXSTR-1],ConvOpt[MAXSTR-1],AntType,RcvType;
+	int ConvEna[MAXSTR-1],ConvInp[MAXSTR-1],ConvOut[MAXSTR-1],StaId,StaSel;
+	int TraceLevel,SvrOpt[6],CmdEna[MAXSTR][2],CmdEnaTcp[MAXSTR][2];
+	int NmeaReq,FileSwapMargin;
 	double AntPos[3],AntOff[3];
 	gtime_t StartTime,EndTime;
 	

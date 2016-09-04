@@ -254,6 +254,15 @@ void __fastcall TPlot::FormShow(TObject *Sender)
     if (TLESatFile!="") {
         tle_name_read(TLESatFile.c_str(),&TLEData);
     }
+    if (MenuBrowse->Checked) {
+        Splitter1->Left=PanelBrowse->Width;
+        PanelBrowse->Visible=true;
+        Splitter1->Visible=true;
+    }
+    else {
+        PanelBrowse->Visible=false;
+        Splitter1->Visible=false;
+    }
     Timer->Interval=RefCycle;
     UpdatePlot();
     UpdateEnable();
@@ -437,13 +446,6 @@ void __fastcall TPlot::MenuVisAnaClick(TObject *Sender)
         GenVisData();
     }
     SpanDialog->TimeVal[0]=SpanDialog->TimeVal[1]=SpanDialog->TimeVal[2]=1;
-}
-// callback on menu-sol-browse ----------------------------------------------
-void __fastcall TPlot::MenuFileSelClick(TObject *Sender)
-{
-    trace(3,"MenuFileSelClick\n");
-    
-    FileSelDialog->Show();
 }
 // callback on menu-save image ----------------------------------------------
 void __fastcall TPlot::MenuSaveImageClick(TObject *Sender)
@@ -811,6 +813,24 @@ void __fastcall TPlot::MenuStatusBarClick(TObject *Sender)
     
     MenuStatusBar->Checked=!MenuStatusBar->Checked;
     Panel2->Visible=MenuStatusBar->Checked;
+    UpdateSize();
+    Refresh();
+}
+// callback on menu-show-browse-panel ---------------------------------------
+void __fastcall TPlot::MenuBrowseClick(TObject *Sender)
+{
+    trace(3,"MenuBrowseClick\n");
+    
+	MenuBrowse->Checked=!MenuBrowse->Checked;
+    if (MenuBrowse->Checked) {
+        Splitter1->Left=PanelBrowse->Width;
+        PanelBrowse->Visible=true;
+        Splitter1->Visible=true;
+    }
+    else {
+        PanelBrowse->Visible=false;
+        Splitter1->Visible=false;
+    }
     UpdateSize();
     Refresh();
 }
@@ -2735,7 +2755,10 @@ void __fastcall TPlot::LoadOpt(void)
     TTextViewer::FontD->Name=ini->ReadString ("viewer","fontname","Courier New");
     TTextViewer::FontD->Size=ini->ReadInteger("viewer","fontsize",9);
     
-    FileSelDialog->Dir=ini->ReadString("solbrows","dir","");
+    MenuBrowse->Checked=ini->ReadInteger("solbrows","show",       0);
+    PanelBrowse->Width =ini->ReadInteger("solbrows","split1",   100);
+    DirSel->Height     =ini->ReadInteger("solbrows","split2",   150);
+    DirSel->Directory  =ini->ReadString ("solbrows","dir",  "C:\\");
     
     delete ini;
     
@@ -2867,12 +2890,52 @@ void __fastcall TPlot::SaveOpt(void)
     ini->WriteString ("viewer","fontname",TTextViewer::FontD->Name);
     ini->WriteInteger("viewer","fontsize",TTextViewer::FontD->Size);
     
-    ini->WriteString ("solbrows","dir",FileSelDialog->Dir);
+    ini->WriteInteger("solbrows","show", MenuBrowse->Checked);
+    ini->WriteInteger("solbrows","split1",PanelBrowse->Width);
+    ini->WriteInteger("solbrows","split2",    DirSel->Height);
+    ini->WriteString ("solbrows","dir",    DirSel->Directory);
     
     delete ini;
 }
 //---------------------------------------------------------------------------
 
+void __fastcall TPlot::DriveSelChange(TObject *Sender)
+{
+	
+	;
+}
+//---------------------------------------------------------------------------
 
+void __fastcall TPlot::FileMaskChange(TObject *Sender)
+{
+	switch (FileMask->ItemIndex) {
+		case 0 : FileList->Mask="*.pos" ; break;
+		case 1 : FileList->Mask="*.nmea"; break;
+		case 2 : FileList->Mask="*.stat"; break;
+		default: FileList->Mask="*.*"   ; break;
+	}
+}
+//---------------------------------------------------------------------------
 
+void __fastcall TPlot::DirSelChange(TObject *Sender)
+{
+	;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TPlot::FileListClick(TObject *Sender)
+{
+	TStringList *file=new TStringList;
+	file->Add(FileList->FileName);
+	Plot->ReadSol(file,0);
+	delete file;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TPlot::Splitter1Moved(TObject *Sender)
+{
+    UpdateSize();
+    Refresh();
+}
+//---------------------------------------------------------------------------
 

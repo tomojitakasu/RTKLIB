@@ -90,3 +90,4 @@ UPDATE HISTORY
                       fix bug on mark and path in Google Earth view of RTKPLOT
                       add protocol analysis in input stream monitor of STRSVR
                       add window size extension of RTKPOST and RTKCONV
+2016/09/03  2.4.3 b20 add ntrip caster functions

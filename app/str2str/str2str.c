@@ -22,6 +22,8 @@
 *                            add option -px
 *           2016/07/01  1.12 support CMR/CMR+
 *           2016/07/23  1.13 add option -c1 -c2 -c3 -c4
+*           2016/09/03  1.14 support ntrip caster
+*                            add option -ft,-fl
 *-----------------------------------------------------------------------------*/
 #include <signal.h>
 #include <unistd.h>
@@ -63,7 +65,10 @@ static const char *help[]={
 "    tcp server   : tcpsvr://:port",
 "    tcp client   : tcpcli://addr[:port]",
 "    ntrip client : ntrip://[user[:passwd]@]addr[:port][/mntpnt]",
-"    ntrip server : ntrips://[:passwd@]addr[:port][/mntpnt[:str]] (only out)",
+"    ntrip server : ntrips://[:passwd@]addr[:port]/mntpnt[:str] (only out)",
+"    ntrip caster : ntripc://[user:passwd@][:port]/mntpnt (only out)",
+"    ntrip cast srv: ntripc_s://[:passwd@][:port]/mntpnt[:str] (only in)",
+"    ntrip cast cli: ntripc_c://[user:passwd@][:port]/mntpnt (only out)",
 "    file         : [file://]path[::T][::+start][::xseppd][::S=swap]",
 "",
 "  format",
@@ -104,6 +109,8 @@ static const char *help[]={
 " -l  local_dir     ftp/http local directory []",
 " -x  proxy_addr    http/ntrip proxy address [no]",
 " -t  level         trace level [0]",
+" -ft file          http souce table file []",
+" -fl file          log file [str2str.trace]",
 " -h                print help",
 };
 /* print help ----------------------------------------------------------------*/
@@ -161,12 +168,14 @@ static int decodepath(const char *path, int *type, char *strpath, int *fmt)
         *type=STR_FILE;
         return 1;
     }
-    if      (!strncmp(path,"serial",6)) *type=STR_SERIAL;
-    else if (!strncmp(path,"tcpsvr",6)) *type=STR_TCPSVR;
-    else if (!strncmp(path,"tcpcli",6)) *type=STR_TCPCLI;
-    else if (!strncmp(path,"ntrips",6)) *type=STR_NTRIPSVR;
-    else if (!strncmp(path,"ntrip", 5)) *type=STR_NTRIPCLI;
-    else if (!strncmp(path,"file",  4)) *type=STR_FILE;
+    if      (!strncmp(path,"serial",  6)) *type=STR_SERIAL;
+    else if (!strncmp(path,"tcpsvr",  6)) *type=STR_TCPSVR;
+    else if (!strncmp(path,"tcpcli",  6)) *type=STR_TCPCLI;
+    else if (!strncmp(path,"ntripc_s",8)) *type=STR_NTRIPC_S;
+    else if (!strncmp(path,"ntripc_c",8)) *type=STR_NTRIPC_C;
+    else if (!strncmp(path,"ntrips",  6)) *type=STR_NTRIPSVR;
+    else if (!strncmp(path,"ntrip",   5)) *type=STR_NTRIPCLI;
+    else if (!strncmp(path,"file",    4)) *type=STR_FILE;
     else {
         fprintf(stderr,"stream path error: %s\n",buff);
         return 0;
@@ -204,7 +213,7 @@ int main(int argc, char **argv)
     char *cmdfile[MAXSTR]={"","","","",""},*cmds[MAXSTR];
     char *local="",*proxy="",*msg="1004,1019",*opt="",buff[256],*p;
     char strmsg[MAXSTRMSG]="",*antinfo="",*rcvinfo="";
-    char *ant[]={"","",""},*rcv[]={"","",""};
+    char *ant[]={"","",""},*rcv[]={"","",""},*srctbl="",*logfile="";
     int i,j,n=0,dispint=5000,trlevel=0,opts[]={10000,10000,2000,32768,10,0,30};
     int types[MAXSTR]={STR_FILE,STR_FILE},stat[MAXSTR]={0},byte[MAXSTR]={0};
     int bps[MAXSTR]={0},fmts[MAXSTR]={0},sta=0;
@@ -254,6 +263,8 @@ int main(int argc, char **argv)
         else if (!strcmp(argv[i],"-i"  )&&i+1<argc) rcvinfo=argv[++i];
         else if (!strcmp(argv[i],"-l"  )&&i+1<argc) local=argv[++i];
         else if (!strcmp(argv[i],"-x"  )&&i+1<argc) proxy=argv[++i];
+        else if (!strcmp(argv[i],"-ft" )&&i+1<argc) srctbl=argv[++i];
+        else if (!strcmp(argv[i],"-fl" )&&i+1<argc) logfile=argv[++i];
         else if (!strcmp(argv[i],"-t"  )&&i+1<argc) trlevel=atoi(argv[++i]);
         else if (*argv[i]=='-') printhelp();
     }
@@ -294,13 +305,14 @@ int main(int argc, char **argv)
     strsvrinit(&strsvr,n+1);
     
     if (trlevel>0) {
-        traceopen(TRFILE);
+        traceopen(*logfile?logfile:TRFILE);
         tracelevel(trlevel);
     }
     fprintf(stderr,"stream server start\n");
     
     strsetdir(local);
     strsetproxy(proxy);
+    strsetsrctbl(srctbl);
     
     for (i=0;i<MAXSTR;i++) {
         if (*cmdfile[i]) readcmd(cmdfile[i],cmds[i],0);

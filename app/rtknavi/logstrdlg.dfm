@@ -102,6 +102,7 @@ object LogStrDialog: TLogStrDialog
       'TCP Client'
       'TCP Server'
       'NTRIP Server'
+      'NTRIP Caster'
       'File')
   end
   object Stream2: TComboBox
@@ -119,6 +120,7 @@ object LogStrDialog: TLogStrDialog
       'TCP Client'
       'TCP Server'
       'NTRIP Server'
+      'NTRIP Caster'
       'File')
   end
   object BtnStr1: TButton
@@ -245,6 +247,7 @@ object LogStrDialog: TLogStrDialog
       'TCP Client'
       'TCP Server'
       'NTRIP Server'
+      'NTRIP Caster'
       'File')
   end
   object BtnStr3: TButton
