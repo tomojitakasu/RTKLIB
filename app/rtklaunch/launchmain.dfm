@@ -30,10 +30,6 @@ object MainForm: TMainForm
     ParentBackground = False
     TabOrder = 0
     OnResize = Panel1Resize
-    ExplicitLeft = 97
-    ExplicitTop = 62
-    ExplicitWidth = 185
-    ExplicitHeight = 41
     object BtnConv: TSpeedButton
       Left = 42
       Top = 0
@@ -826,6 +822,22 @@ object MainForm: TMainForm
       ShowHint = True
       TabOrder = 0
       OnClick = BtnTrayClick
+    end
+    object BtnOption: TPanel
+      Left = 2
+      Top = 2
+      Width = 12
+      Height = 12
+      Hint = 'Task Tray'
+      BevelInner = bvRaised
+      BevelOuter = bvLowered
+      Color = clBtnHighlight
+      ParentBackground = False
+      ParentShowHint = False
+      ShowCaption = False
+      ShowHint = True
+      TabOrder = 1
+      OnClick = BtnOptionClick
     end
   end
   object TrayIcon: TTrayIcon

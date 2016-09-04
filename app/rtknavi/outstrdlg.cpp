@@ -94,6 +94,7 @@ void __fastcall TOutputStrDialog::BtnStr1Click(TObject *Sender)
 		case 1: TcpOpt(0,1); break;
 		case 2: TcpOpt(0,0); break;
 		case 3: TcpOpt(0,2); break;
+		case 4: TcpOpt(0,4); break;
 	}
 }
 //---------------------------------------------------------------------------
@@ -104,6 +105,7 @@ void __fastcall TOutputStrDialog::BtnStr2Click(TObject *Sender)
 		case 1: TcpOpt(1,1); break;
 		case 2: TcpOpt(1,0); break;
 		case 3: TcpOpt(1,2); break;
+		case 4: TcpOpt(1,4); break;
 	}
 }
 //---------------------------------------------------------------------------
@@ -153,16 +155,16 @@ void __fastcall TOutputStrDialog::TcpOpt(int index, int opt)
 //---------------------------------------------------------------------------
 void __fastcall TOutputStrDialog::UpdateEnable(void)
 {
-	int ena=(Stream1C->Checked&&Stream1->ItemIndex==4)||
-			(Stream2C->Checked&&Stream2->ItemIndex==4);
+	int ena=(Stream1C->Checked&&Stream1->ItemIndex==5)||
+			(Stream2C->Checked&&Stream2->ItemIndex==5);
 	Stream1  ->Enabled=Stream1C->Checked;
 	Stream2  ->Enabled=Stream2C->Checked;
-	BtnStr1  ->Enabled=Stream1C->Checked&&Stream1->ItemIndex<=3;
-	BtnStr2  ->Enabled=Stream2C->Checked&&Stream2->ItemIndex<=3;
-	FilePath1->Enabled=Stream1C->Checked&&Stream1->ItemIndex==4;
-	FilePath2->Enabled=Stream2C->Checked&&Stream2->ItemIndex==4;
-	BtnFile1 ->Enabled=Stream1C->Checked&&Stream1->ItemIndex==4;
-	BtnFile2 ->Enabled=Stream2C->Checked&&Stream2->ItemIndex==4;
+	BtnStr1  ->Enabled=Stream1C->Checked&&Stream1->ItemIndex<=4;
+	BtnStr2  ->Enabled=Stream2C->Checked&&Stream2->ItemIndex<=4;
+	FilePath1->Enabled=Stream1C->Checked&&Stream1->ItemIndex==5;
+	FilePath2->Enabled=Stream2C->Checked&&Stream2->ItemIndex==5;
+	BtnFile1 ->Enabled=Stream1C->Checked&&Stream1->ItemIndex==5;
+	BtnFile2 ->Enabled=Stream2C->Checked&&Stream2->ItemIndex==5;
 	LabelF1  ->Enabled=ena;
 	Label1   ->Enabled=ena;
 	Label2   ->Enabled=ena;

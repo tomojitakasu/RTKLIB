@@ -162,6 +162,8 @@ void __fastcall TMainForm::BtnOptClick(TObject *Sender)
     SvrOptDialog->StaSel=StaSel;
     SvrOptDialog->AntType=AntType;
     SvrOptDialog->RcvType=RcvType;
+    SvrOptDialog->SrcTblFile=SrcTblFile;
+    SvrOptDialog->LogFile=LogFile;
     
     if (SvrOptDialog->ShowModal()!=mrOk) return;
     
@@ -179,6 +181,8 @@ void __fastcall TMainForm::BtnOptClick(TObject *Sender)
     StaSel=SvrOptDialog->StaSel;
     AntType=SvrOptDialog->AntType;
     RcvType=SvrOptDialog->RcvType;
+    SrcTblFile=SvrOptDialog->SrcTblFile;
+    LogFile=SvrOptDialog->LogFile;
 }
 // callback on button-input-opt ---------------------------------------------
 void __fastcall TMainForm::BtnInputClick(TObject *Sender)
@@ -188,9 +192,10 @@ void __fastcall TMainForm::BtnInputClick(TObject *Sender)
         case 1: TcpOpt(0,1); break;
         case 2: TcpOpt(0,0); break;
         case 3: TcpOpt(0,3); break;
-        case 4: FileOpt(0,0); break;
-        case 5: FtpOpt(0,0); break;
-        case 6: FtpOpt(0,1); break;
+        case 4: TcpOpt(0,5); break;
+        case 5: FileOpt(0,0); break;
+        case 6: FtpOpt(0,0); break;
+        case 7: FtpOpt(0,1); break;
     }
 }
 // callback on button-cmd ---------------------------------------------------
@@ -200,10 +205,10 @@ void __fastcall TMainForm::BtnCmdClick(TObject *Sender)
     TComboBox *type[]={Input,Output1,Output2,Output3};
     int i;
     
-    for (i=0;i<4;i++) {
+    for (i=0;i<MAXSTR;i++) {
         if (btn[i]==(TButton *)Sender) break;
     }
-    if (i>=4) return;
+    if (i>=MAXSTR) return;
     
     if (type[i]->Text=="Serial") {
         CmdOptDialog->Cmds[0]=Cmds[i][0];
@@ -239,7 +244,8 @@ void __fastcall TMainForm::BtnOutput1Click(TObject *Sender)
         case 2: TcpOpt(1,1); break;
         case 3: TcpOpt(1,0); break;
         case 4: TcpOpt(1,2); break;
-        case 5: FileOpt(1,1); break;
+        case 5: TcpOpt(1,4); break;
+        case 6: FileOpt(1,1); break;
     }
 }
 // callback on button-output2-opt -------------------------------------------
@@ -250,7 +256,8 @@ void __fastcall TMainForm::BtnOutput2Click(TObject *Sender)
         case 2: TcpOpt(2,1); break;
         case 3: TcpOpt(2,0); break;
         case 4: TcpOpt(2,2); break;
-        case 5: FileOpt(2,1); break;
+        case 5: TcpOpt(2,4); break;
+        case 6: FileOpt(2,1); break;
     }
 }
 // callback on button-output3-opt -------------------------------------------
@@ -261,7 +268,8 @@ void __fastcall TMainForm::BtnOutput3Click(TObject *Sender)
         case 2: TcpOpt(3,1); break;
         case 3: TcpOpt(3,0); break;
         case 4: TcpOpt(3,2); break;
-        case 5: FileOpt(3,1); break; 
+        case 5: TcpOpt(3,4); break;
+        case 6: FileOpt(3,1); break; 
     }
 }
 // callback on button-output1-conv ------------------------------------------
@@ -404,12 +412,12 @@ void __fastcall TMainForm::Timer1Timer(TObject *Sender)
     TLabel *e2[]={InputBps,Output1Bps,Output2Bps,Output3Bps};
     AnsiString s;
     gtime_t time=utc2gpst(timeget());
-    int stat[4]={0},byte[4]={0},bps[4]={0};
-    char msg[MAXSTRMSG*4]="",s1[256],s2[256];
+    int stat[MAXSTR]={0},byte[MAXSTR]={0},bps[MAXSTR]={0};
+    char msg[MAXSTRMSG*MAXSTR]="",s1[256],s2[256];
     double ctime,t[4];
     
     strsvrstat(&strsvr,stat,byte,bps,msg);
-    for (int i=0;i<4;i++) {
+    for (int i=0;i<MAXSTR;i++) {
         num2cnum(byte[i],s1);
         num2cnum(bps[i],s2);
         e0[i]->Color=color[stat[i]+1];
@@ -444,20 +452,22 @@ void __fastcall TMainForm::Timer1Timer(TObject *Sender)
 void __fastcall TMainForm::SvrStart(void)
 {
     strconv_t *conv[3]={0};
-    static char str[4][1024];
+    static char str[MAXSTR][1024];
     int itype[]={
-        STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPCLI,STR_FILE,STR_FTP,STR_HTTP
+        STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPCLI,STR_NTRIPC_S,STR_FILE,
+        STR_FTP,STR_HTTP
     };
     int otype[]={
-        STR_NONE,STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPSVR,STR_FILE
+        STR_NONE,STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPSVR,STR_NTRIPC_C,
+        STR_FILE
     };
-    int ip[]={0,1,1,1,2,3,3},strs[4]={0},opt[7]={0},n;
-    char *paths[4],*cmds[4]={0},filepath[1024],buff[1024];
+    int ip[]={0,1,1,1,1,2,3,3},strs[4]={0},opt[7]={0},n;
+    char *paths[MAXSTR],*cmds[MAXSTR]={0},filepath[1024],buff[1024];
     char *ant[3]={"","",""},*rcv[3]={"","",""},*p;
     FILE *fp;
     
     if (TraceLevel>0) {
-        traceopen(TRACEFILE);
+        traceopen(*LogFile.c_str()?LogFile.c_str():TRACEFILE);
         tracelevel(TraceLevel);
     }
     for (int i=0;i<4;i++) paths[i]=str[i];
@@ -472,7 +482,7 @@ void __fastcall TMainForm::SvrStart(void)
     strcpy(paths[2],!Output2->ItemIndex?"":Paths[2][ip[Output2->ItemIndex-1]].c_str());
     strcpy(paths[3],!Output3->ItemIndex?"":Paths[3][ip[Output3->ItemIndex-1]].c_str());
     
-    for (int i=0;i<4;i++) {
+    for (int i=0;i<MAXSTR;i++) {
         if (strs[i]==STR_SERIAL) {
             if (CmdEna[i][0]) cmds[i]=MainForm->Cmds[i][0].c_str();
         }
@@ -486,7 +496,7 @@ void __fastcall TMainForm::SvrStart(void)
     opt[5]=NmeaReq?SvrOpt[5]:0;
     opt[6]=FileSwapMargin;
     
-    for (int i=1;i<4;i++) {
+    for (int i=1;i<MAXSTR;i++) { // for each out stream
         if (strs[i]!=STR_FILE) continue;
         strcpy(filepath,paths[i]);
         if (strstr(filepath,"::A")) continue;
@@ -498,8 +508,9 @@ void __fastcall TMainForm::SvrStart(void)
     }
     strsetdir(LocalDirectory.c_str());
     strsetproxy(ProxyAddress.c_str());
+    strsetsrctbl(SrcTblFile.c_str());
     
-    for (int i=0;i<3;i++) {
+    for (int i=0;i<MAXSTR-1;i++) { // for each out stream
         if (!ConvEna[i]) continue;
         if (!(conv[i]=strconvnew(ConvInp[i],ConvOut[i],ConvMsg[i].c_str(),
                                  StaId,StaSel,ConvOpt[i].c_str()))) continue;
@@ -534,20 +545,22 @@ void __fastcall TMainForm::SvrStart(void)
 void __fastcall TMainForm::SvrStop(void)
 {
     int itype[]={
-        STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPCLI,STR_FILE,STR_FTP,STR_HTTP
+        STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPCLI,STR_NTRIPC_S,STR_FILE,
+        STR_FTP,STR_HTTP
     };
     int otype[]={
-        STR_NONE,STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPSVR,STR_FILE
+        STR_NONE,STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPSVR,STR_NTRIPC_C,
+        STR_FILE
     };
-    char *cmds[4]={0};
-    int strs[4];
+    char *cmds[MAXSTR]={0};
+    int strs[MAXSTR];
     
     strs[0]=itype[Input->ItemIndex];
     strs[1]=otype[Output1->ItemIndex];
     strs[2]=otype[Output2->ItemIndex];
     strs[3]=otype[Output3->ItemIndex];
     
-    for (int i=0;i<4;i++) {
+    for (int i=0;i<MAXSTR;i++) {
         if (strs[i]==STR_SERIAL) {
             if (CmdEna[i][1]) cmds[i]=MainForm->Cmds[i][1].c_str();
         }
@@ -568,7 +581,7 @@ void __fastcall TMainForm::SvrStop(void)
     MenuExit  ->Enabled=true;
     SetTrayIcon(0);
     
-    for (int i=0;i<3;i++) {
+    for (int i=0;i<MAXSTR-1;i++) {
         if (ConvEna[i]) strconvfree(strsvr.conv[i]);
     }
     if (TraceLevel>0) traceclose();
@@ -576,23 +589,50 @@ void __fastcall TMainForm::SvrStop(void)
 // callback on interval timer for stream monitor ----------------------------
 void __fastcall TMainForm::Timer2Timer(TObject *Sender)
 {
+    const char *types[]={
+        "None","Serial","File","TCP Server","TCP Client","UDP","Ntrip Sever",
+        "Ntrip Client","FTP","HTTP","Ntrip Cast S","Ntrip Cast C"
+    };
+    const char *modes[]={"-","R","W","R/W"};
+    const char *states[]={"ERR","-","WAIT","CONN"};
+    stream_t *str;
     unsigned char *msg;
-    int len;
+    char *p;
+    int i,len,inb,inr,outb,outr;
     
-    lock(&strsvr.lock);
-    
-    len=strsvr.npb;
-    if (len>0&&(msg=(unsigned char *)malloc(len))) {
-        memcpy(msg,strsvr.pbuf,len);
-        strsvr.npb=0;
+    if (StrMonDialog->StrFmt) {
+        lock(&strsvr.lock);
+        len=strsvr.npb;
+        if (len>0&&(msg=(unsigned char *)malloc(len))) {
+            memcpy(msg,strsvr.pbuf,len);
+            strsvr.npb=0;
+        }
+        unlock(&strsvr.lock);
+        if (len<=0||!msg) return;
+        StrMonDialog->AddMsg(msg,len);
+        free(msg);
     }
-    unlock(&strsvr.lock);
-    
-    if (len<=0||!msg) return;
-    
-    StrMonDialog->AddMsg(msg,len);
-    
-    free(msg);
+    else {
+        if (!(msg=(unsigned char *)malloc(16000))) return;
+        
+        for (i=0,p=msg;i<MAXSTR;i++) {
+            p+=sprintf(p,"[STREAM %d]\n",i);
+            strsum(strsvr.stream+i,&inb,&inr,&outb,&outr);
+            strstatx(strsvr.stream+i,p);
+            p+=strlen(p);
+            if (inb>0) {
+                p+=sprintf(p,"  inb     = %d\n",inb);
+                p+=sprintf(p,"  inr     = %d\n",inr);
+            }
+            if (outb>0) {
+                p+=sprintf(p,"  outb    = %d\n",outb);
+                p+=sprintf(p,"  outr    = %d\n",outr);
+            }
+        }
+        StrMonDialog->AddMsg(msg,strlen(msg));
+        
+        free(msg);
+    }
 }
 // set serial options -------------------------------------------------------
 void __fastcall TMainForm::SerialOpt(int index, int opt)
@@ -687,27 +727,27 @@ void __fastcall TMainForm::LoadOpt(void)
         AntPos[i]=ini->ReadFloat("set",s.sprintf("antpos_%d",i),0.0);
         AntOff[i]=ini->ReadFloat("set",s.sprintf("antoff_%d",i),0.0);
     }
-    for (int i=0;i<3;i++) {
+    for (int i=0;i<MAXSTR-1;i++) {
         ConvEna[i]=ini->ReadInteger("conv",s.sprintf("ena_%d",i), 0);
         ConvInp[i]=ini->ReadInteger("conv",s.sprintf("inp_%d",i), 0);
         ConvOut[i]=ini->ReadInteger("conv",s.sprintf("out_%d",i), 0);
         ConvMsg[i]=ini->ReadString ("conv",s.sprintf("msg_%d",i),"");
         ConvOpt[i]=ini->ReadString ("conv",s.sprintf("opt_%d",i),"");
     }
-    for (int i=0;i<4;i++) for (int j=0;j<2;j++) {
+    for (int i=0;i<MAXSTR;i++) for (int j=0;j<2;j++) {
         CmdEna   [i][j]=ini->ReadInteger("serial",s.sprintf("cmdena_%d_%d",i,j),1);
         CmdEnaTcp[i][j]=ini->ReadInteger("tcpip" ,s.sprintf("cmdena_%d_%d",i,j),1);
     }
-    for (int i=0;i<4;i++) for (int j=0;j<4;j++) {
+    for (int i=0;i<MAXSTR;i++) for (int j=0;j<4;j++) {
         Paths[i][j]=ini->ReadString("path",s.sprintf("path_%d_%d",i,j),"");
     }
-    for (int i=0;i<4;i++) for (int j=0;j<2;j++) {
+    for (int i=0;i<MAXSTR;i++) for (int j=0;j<2;j++) {
         Cmds[i][j]=ini->ReadString("serial",s.sprintf("cmd_%d_%d",i,j),"");
         for (char *p=Cmds[i][j].c_str();*p;p++) {
             if ((p=strstr(p,"@@"))) strncpy(p,"\r\n",2); else break;
         }
     }
-    for (int i=0;i<4;i++) for (int j=0;j<2;j++) {
+    for (int i=0;i<MAXSTR;i++) for (int j=0;j<2;j++) {
         CmdsTcp[i][j]=ini->ReadString("tcpip",s.sprintf("cmd_%d_%d",i,j),"");
         for (char *p=CmdsTcp[i][j].c_str();*p;p++) {
             if ((p=strstr(p,"@@"))) strncpy(p,"\r\n",2); else break;
@@ -723,6 +763,8 @@ void __fastcall TMainForm::LoadOpt(void)
     ExeDirectory  =ini->ReadString("dirs",  "exedirectory",  "");
     LocalDirectory=ini->ReadString("dirs",  "localdirectory","");
     ProxyAddress  =ini->ReadString("dirs",  "proxyaddress",  "");
+    SrcTblFile    =ini->ReadString("file",  "srctblfile",    "");
+    LogFile       =ini->ReadString("file",  "logfile",       "");
     delete ini;
     
     UpdateEnable();
@@ -752,27 +794,27 @@ void __fastcall TMainForm::SaveOpt(void)
         ini->WriteFloat("set",s.sprintf("antpos_%d",i),AntPos[i]);
         ini->WriteFloat("set",s.sprintf("antoff_%d",i),AntOff[i]);
     }
-    for (int i=0;i<3;i++) {
+    for (int i=0;i<MAXSTR-1;i++) {
         ini->WriteInteger("conv",s.sprintf("ena_%d",i),ConvEna[i]);
         ini->WriteInteger("conv",s.sprintf("inp_%d",i),ConvInp[i]);
         ini->WriteInteger("conv",s.sprintf("out_%d",i),ConvOut[i]);
         ini->WriteString ("conv",s.sprintf("msg_%d",i),ConvMsg[i]);
         ini->WriteString ("conv",s.sprintf("opt_%d",i),ConvOpt[i]);
     }
-    for (int i=0;i<4;i++) for (int j=0;j<2;j++) {
+    for (int i=0;i<MAXSTR;i++) for (int j=0;j<2;j++) {
         ini->WriteInteger("serial",s.sprintf("cmdena_%d_%d",i,j),CmdEna   [i][j]);
         ini->WriteInteger("tcpip" ,s.sprintf("cmdena_%d_%d",i,j),CmdEnaTcp[i][j]);
     }
-    for (int i=0;i<4;i++) for (int j=0;j<4;j++) {
+    for (int i=0;i<MAXSTR;i++) for (int j=0;j<4;j++) {
         ini->WriteString("path",s.sprintf("path_%d_%d",i,j),Paths[i][j]);
     }
-    for (int i=0;i<4;i++) for (int j=0;j<2;j++) {
+    for (int i=0;i<MAXSTR;i++) for (int j=0;j<2;j++) {
         for (char *p=Cmds[i][j].c_str();*p;p++) {
             if ((p=strstr(p,"\r\n"))) strncpy(p,"@@",2); else break;
         }
         ini->WriteString("serial",s.sprintf("cmd_%d_%d",i,j),Cmds[i][j]);
     }
-    for (int i=0;i<4;i++) for (int j=0;j<2;j++) {
+    for (int i=0;i<MAXSTR;i++) for (int j=0;j<2;j++) {
         for (char *p=CmdsTcp[i][j].c_str();*p;p++) {
             if ((p=strstr(p,"\r\n"))) strncpy(p,"@@",2); else break;
         }
@@ -788,6 +830,8 @@ void __fastcall TMainForm::SaveOpt(void)
     ini->WriteString("dirs"  ,"exedirectory"  ,ExeDirectory  );
     ini->WriteString("dirs"  ,"localdirectory",LocalDirectory);
     ini->WriteString("dirs"  ,"proxyaddress"  ,ProxyAddress  );
+    ini->WriteString("file",  "srctblfile"    ,SrcTblFile    );
+    ini->WriteString("file",  "logfile"       ,LogFile       );
     delete ini;
 }
 //---------------------------------------------------------------------------

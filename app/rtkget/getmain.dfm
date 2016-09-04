@@ -2,11 +2,14 @@ object MainForm: TMainForm
   Left = 0
   Top = 0
   BorderIcons = [biSystemMenu, biMinimize]
-  BorderStyle = bsSingle
   Caption = 'RTKGET'
-  ClientHeight = 333
-  ClientWidth = 465
+  ClientHeight = 335
+  ClientWidth = 464
   Color = clWhite
+  Constraints.MaxHeight = 373
+  Constraints.MaxWidth = 480
+  Constraints.MinHeight = 373
+  Constraints.MinWidth = 480
   DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -24,7 +27,7 @@ object MainForm: TMainForm
     AlignWithMargins = True
     Left = 1
     Top = 0
-    Width = 463
+    Width = 462
     Height = 226
     Margins.Left = 1
     Margins.Top = 0
@@ -34,6 +37,7 @@ object MainForm: TMainForm
     BevelInner = bvRaised
     BevelOuter = bvLowered
     TabOrder = 0
+    ExplicitWidth = 463
     object Label6: TLabel
       Left = 12
       Top = 264
@@ -384,14 +388,21 @@ object MainForm: TMainForm
     end
   end
   object Panel3: TPanel
+    AlignWithMargins = True
     Left = 0
-    Top = 301
-    Width = 465
-    Height = 32
-    Align = alClient
+    Top = 302
+    Width = 464
+    Height = 33
+    Margins.Left = 0
+    Margins.Top = 1
+    Margins.Right = 0
+    Margins.Bottom = 0
+    Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitHeight = 31
+    ExplicitTop = 301
+    ExplicitWidth = 465
+    ExplicitHeight = 32
     object BtnFile: TButton
       Left = 1
       Top = 1
@@ -451,7 +462,7 @@ object MainForm: TMainForm
     AlignWithMargins = True
     Left = 1
     Top = 226
-    Width = 463
+    Width = 462
     Height = 25
     Margins.Left = 1
     Margins.Top = 0
@@ -471,10 +482,11 @@ object MainForm: TMainForm
     ParentShowHint = False
     ShowHint = True
     TabOrder = 2
+    ExplicitWidth = 463
     object MsgLabel1: TLabel
       Left = 2
       Top = 2
-      Width = 459
+      Width = 458
       Height = 21
       Margins.Left = 1
       Margins.Top = 1
@@ -491,7 +503,7 @@ object MainForm: TMainForm
     AlignWithMargins = True
     Left = 1
     Top = 276
-    Width = 463
+    Width = 462
     Height = 25
     Margins.Left = 1
     Margins.Top = 0
@@ -511,23 +523,25 @@ object MainForm: TMainForm
     ParentDoubleBuffered = False
     ParentFont = False
     TabOrder = 3
+    ExplicitWidth = 463
     object MsgLabel3: TLabel
-      Left = 26
+      Left = 25
       Top = 2
-      Width = 411
+      Width = 412
       Height = 21
       Align = alClient
       Alignment = taCenter
       Color = clWhite
       ParentColor = False
       Layout = tlCenter
+      ExplicitLeft = 26
       ExplicitWidth = 3
       ExplicitHeight = 13
     end
     object BtnTray: TSpeedButton
       Left = 437
       Top = 2
-      Width = 24
+      Width = 23
       Height = 21
       Align = alRight
       Flat = True
@@ -552,26 +566,24 @@ object MainForm: TMainForm
         FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
         FF00}
       OnClick = BtnTrayClick
-      ExplicitLeft = 438
-      ExplicitHeight = 20
+      ExplicitLeft = 436
     end
     object BtnHelp: TSpeedButton
       Left = 2
       Top = 2
-      Width = 24
+      Width = 23
       Height = 21
       Align = alLeft
       Caption = '?'
       Flat = True
       OnClick = BtnHelpClick
-      ExplicitHeight = 20
     end
   end
   object Msg2: TPanel
     AlignWithMargins = True
     Left = 1
     Top = 251
-    Width = 463
+    Width = 462
     Height = 25
     Margins.Left = 1
     Margins.Top = 0
@@ -591,6 +603,7 @@ object MainForm: TMainForm
     ParentShowHint = False
     ShowHint = True
     TabOrder = 4
+    ExplicitWidth = 463
     object Image1: TImage
       Left = 444
       Top = 6
@@ -730,7 +743,7 @@ object MainForm: TMainForm
     object MsgLabel2: TLabel
       Left = 2
       Top = 2
-      Width = 459
+      Width = 458
       Height = 21
       Align = alClient
       Alignment = taCenter

@@ -52,6 +52,9 @@
 *           2016/07/23 1.19 add output of received stream to tcp port for serial
 *           2016/08/20 1.20 modify api strsendnmea()
 *           2016/08/29 1.21 fix bug on starting serial thread for windows
+*           2016/09/03 1.22 add ntrip caster functions
+*                           add api strstatx(),strsetsrctbl()
+*                           add api strsetsel(),strgetsel()
 *-----------------------------------------------------------------------------*/
 #include <ctype.h>
 #include "rtklib.h"
@@ -94,9 +97,14 @@ static const char rcsid[]="$Id$";
 #define NTRIP_RSP_TBLEND    "ENDSOURCETABLE"
 #define NTRIP_RSP_HTTP      "HTTP/"     /* ntrip response: http */
 #define NTRIP_RSP_ERROR     "ERROR"     /* ntrip response: error */
+#define NTRIP_RSP_UNAUTH    "HTTP/1.0 401 Unauthorized\r\n"
+#define NTRIP_RSP_ERR_PWD   "ERROR - Bad Pasword\r\n"
+#define NTRIP_RSP_ERR_MNTP  "ERROR - Bad Mountpoint\r\n"
 
 #define FTP_CMD             "wget"      /* ftp/http command */
 #define FTP_TIMEOUT         30          /* ftp/http timeout (s) */
+
+#define MIN(x,y)            ((x)<(y)?(x):(y))
 
 /* macros --------------------------------------------------------------------*/
 
@@ -182,6 +190,24 @@ typedef struct {            /* ntrip control type */
     tcpcli_t *tcp;          /* tcp client */
 } ntrip_t;
 
+typedef struct {            /* ntrip caster connection type */
+    int state;              /* state (0:close,1:connect) */
+    char mntpnt[256];       /* mountpoint */
+    char str[NTRIP_MAXSTR]; /* mountpoint string for server */
+    int nb;                 /* request buffer size */
+    unsigned char buff[NTRIP_MAXRSP]; /* request buffer */
+} ntripc_con_t;
+
+typedef struct {            /* ntrip caster control type */
+    int state;              /* state (0:close,1:wait,2:connect) */
+    int type;               /* type (0:server,1:client) */
+    char mntpnt[256];       /* selected mountpoint */
+    char user[256];         /* user */
+    char passwd[256];       /* password */
+    tcpsvr_t *tcp;          /* tcp server */
+    ntripc_con_t con[MAXCLI]; /* ntrip caster connections */
+} ntripc_t;
+
 typedef struct {            /* ftp download control type */
     int state;              /* state (0:close,1:download,2:complete,3:error) */
     int proto;              /* protocol (0:ftp,1:http) */
@@ -213,6 +239,7 @@ static char localdir[1024]=""; /* local directory for ftp/http */
 static char proxyaddr[256]=""; /* http/ntrip/ftp proxy address */
 static unsigned int tick_master=0; /* time tick master for replay */
 static int fswapmargin=30;  /* file swap margin (s) */
+static char srctbl[32768]=""; /* source table */
 
 /* read/write serial buffer --------------------------------------------------*/
 #ifdef WIN32
@@ -481,6 +508,24 @@ static int stateserial(serial_t *serial)
 {
     return !serial?0:(serial->error?-1:2);
 }
+/* get extended state serial -------------------------------------------------*/
+static int statexserial(serial_t *serial, char *msg)
+{
+    char *p=msg;
+    int state=!serial?0:(serial->error?-1:2);
+    
+    p+=sprintf(p,"serial:\n");
+    p+=sprintf(p,"  state   = %d\n",state);
+    if (!state) return 0;
+    p+=sprintf(p,"  dev     = %d\n",(int)serial->dev);
+    p+=sprintf(p,"  error   = %d\n",serial->error);
+#ifdef WIN32
+    p+=sprintf(p,"  buffsize= %d\n",serial->buffsize);
+    p+=sprintf(p,"  wp      = %d\n",serial->wp);
+    p+=sprintf(p,"  rp      = %d\n",serial->rp);
+#endif
+    return state;
+}
 /* open file -----------------------------------------------------------------*/
 static int openfile_(file_t *file, gtime_t time, char *msg)
 {    
@@ -663,6 +708,32 @@ static void swapclose(file_t *file)
 static int statefile(file_t *file)
 {
     return file?2:0;
+}
+/* get extended state file ---------------------------------------------------*/
+static int statexfile(file_t *file, char *msg)
+{
+    char *p=msg,tstr1[32],tstr2[32];
+    int state=file?2:0;
+    
+    p+=sprintf(p,"file:\n");
+    p+=sprintf(p,"  state   = %d\n",state);
+    if (!state) return 0;
+    time2str(file->time ,tstr1,3);
+    time2str(file->wtime,tstr2,3);
+    p+=sprintf(p,"  path    = %s\n",file->path);
+    p+=sprintf(p,"  openpath= %s\n",file->openpath);
+    p+=sprintf(p,"  mode    = %d\n",file->mode);
+    p+=sprintf(p,"  timetag = %d\n",file->timetag);
+    p+=sprintf(p,"  repmode = %d\n",file->repmode);
+    p+=sprintf(p,"  offsete = %d\n",file->offset);
+    p+=sprintf(p,"  time    = %s\n",tstr1);
+    p+=sprintf(p,"  wtime   = %s\n",tstr2);
+    p+=sprintf(p,"  tick    = %u\n",file->tick);
+    p+=sprintf(p,"  tick_f  = %u\n",file->tick_f);
+    p+=sprintf(p,"  start   = %.3f\n",file->start);
+    p+=sprintf(p,"  speed   = %.3f\n",file->speed);
+    p+=sprintf(p,"  swapintv= %.3f\n",file->swapintv);
+    return state;
 }
 /* read file -----------------------------------------------------------------*/
 static int readfile(file_t *file, unsigned char *buff, int nmax, char *msg)
@@ -876,9 +947,11 @@ static socket_t accept_nb(socket_t sock, struct sockaddr *addr, socklen_t *len)
 {
     struct timeval tv={0};
     fd_set rs;
+    int ret;
     
     FD_ZERO(&rs); FD_SET(sock,&rs);
-    if (!select(sock+1,&rs,NULL,NULL,&tv)) return 0;
+    ret=select(sock+1,&rs,NULL,NULL,&tv);
+    if (ret<=0) return ret;
     return accept(sock,addr,len);
 }
 /* non-block connect ---------------------------------------------------------*/
@@ -916,20 +989,26 @@ static int recv_nb(socket_t sock, unsigned char *buff, int n)
 {
     struct timeval tv={0};
     fd_set rs;
+    int ret,nr;
     
     FD_ZERO(&rs); FD_SET(sock,&rs);
-    if (!select(sock+1,&rs,NULL,NULL,&tv)) return 0;
-    return recv(sock,(char *)buff,n,0);
+    ret=select(sock+1,&rs,NULL,NULL,&tv);
+    if (ret<=0) return ret;
+    nr=recv(sock,(char *)buff,n,0);
+    return nr<=0?-1:nr;
 }
 /* non-block send ------------------------------------------------------------*/
 static int send_nb(socket_t sock, unsigned char *buff, int n)
 {
     struct timeval tv={0};
     fd_set ws;
+    int ret,ns;
     
     FD_ZERO(&ws); FD_SET(sock,&ws);
-    if (!select(sock+1,NULL,&ws,NULL,&tv)) return 0;
-    return send(sock,(char *)buff,n,0);
+    ret=select(sock+1,NULL,&ws,NULL,&tv);
+    if (ret<=0) return ret;
+    ns=send(sock,(char *)buff,n,0);
+    return ns<n?-1:ns;
 }
 /* generate tcp socket -------------------------------------------------------*/
 static int gentcp(tcp_t *tcp, int type, char *msg)
@@ -1042,7 +1121,7 @@ static void updatetcpsvr(tcpsvr_t *tcpsvr, char *msg)
     char saddr[256]="";
     int i,j,n=0;
     
-    tracet(3,"updatetcpsvr: state=%d\n",tcpsvr->svr.state);
+    tracet(4,"updatetcpsvr: state=%d\n",tcpsvr->svr.state);
     
     if (tcpsvr->svr.state==0) return;
     
@@ -1076,7 +1155,7 @@ static int accsock(tcpsvr_t *tcpsvr, char *msg)
     socklen_t len=sizeof(addr);
     int i,err;
     
-    tracet(3,"accsock: sock=%d\n",tcpsvr->svr.sock);
+    tracet(4,"accsock: sock=%d\n",tcpsvr->svr.sock);
     
     for (i=0;i<MAXCLI;i++) if (tcpsvr->cli[i].state==0) break;
     if (i>=MAXCLI) return 0; /* too many client */
@@ -1095,7 +1174,8 @@ static int accsock(tcpsvr_t *tcpsvr, char *msg)
     memcpy(&tcpsvr->cli[i].addr,&addr,sizeof(addr));
     strcpy(tcpsvr->cli[i].saddr,inet_ntoa(addr.sin_addr));
     sprintf(msg,"%s",tcpsvr->cli[i].saddr);
-    tracet(2,"accsock: connected sock=%d addr=%s\n",tcpsvr->cli[i].sock,tcpsvr->cli[i].saddr);
+    tracet(3,"accsock: connected sock=%d addr=%s i=%d\n",
+           tcpsvr->cli[i].sock,tcpsvr->cli[i].saddr,i);
     tcpsvr->cli[i].state=2;
     tcpsvr->cli[i].tact=tickget();
     return 1;
@@ -1115,30 +1195,35 @@ static int waittcpsvr(tcpsvr_t *tcpsvr, char *msg)
 /* read tcp server -----------------------------------------------------------*/
 static int readtcpsvr(tcpsvr_t *tcpsvr, unsigned char *buff, int n, char *msg)
 {
-    int nr,err;
+    int i,nr;
     
-    tracet(4,"readtcpsvr: state=%d n=%d\n",tcpsvr->svr.state,n);
+    tracet(4,"readtcpsvr: state=%d\n",tcpsvr->svr.state);
     
-    if (!waittcpsvr(tcpsvr,msg)||tcpsvr->cli[0].state!=2) return 0;
+    if (!waittcpsvr(tcpsvr,msg)) return 0;
     
-    if ((nr=recv_nb(tcpsvr->cli[0].sock,buff,n))==-1) {
-        err=errsock();
-        tracet(1,"readtcpsvr: recv error sock=%d err=%d\n",tcpsvr->cli[0].sock,err);
-        sprintf(msg,"recv error (%d)",err);
-        discontcp(&tcpsvr->cli[0],ticonnect);
-        updatetcpsvr(tcpsvr,msg);
-        return 0;
+    for (i=0;i<MAXCLI;i++) {
+        if (tcpsvr->cli[i].state!=2) continue;
+        
+        if ((nr=recv_nb(tcpsvr->cli[i].sock,buff,n))==-1) {
+            tracet(1,"readtcpsvr: recv error sock=%d err=%d\n",
+                   tcpsvr->cli[i].sock,errsock());
+            discontcp(&tcpsvr->cli[i],ticonnect);
+            updatetcpsvr(tcpsvr,msg);
+            return 0;
+        }
+        if (nr>0) {
+            tcpsvr->cli[i].tact=tickget();
+            return nr;
+        }
     }
-    if (nr>0) tcpsvr->cli[0].tact=tickget();
-    tracet(5,"readtcpsvr: exit sock=%d nr=%d\n",tcpsvr->cli[0].sock,nr);
-    return nr;
+    return 0;
 }
 /* write tcp server ----------------------------------------------------------*/
 static int writetcpsvr(tcpsvr_t *tcpsvr, unsigned char *buff, int n, char *msg)
 {
-    int i,ns=0,err;
+    int i,ns=0;
     
-    tracet(3,"writetcpsvr: state=%d n=%d\n",tcpsvr->svr.state,n);
+    tracet(4,"writetcpsvr: state=%d n=%d\n",tcpsvr->svr.state,n);
     
     if (!waittcpsvr(tcpsvr,msg)) return 0;
     
@@ -1146,15 +1231,13 @@ static int writetcpsvr(tcpsvr_t *tcpsvr, unsigned char *buff, int n, char *msg)
         if (tcpsvr->cli[i].state!=2) continue;
         
         if ((ns=send_nb(tcpsvr->cli[i].sock,buff,n))==-1) {
-            err=errsock();
-            tracet(1,"writetcpsvr: send error i=%d sock=%d err=%d\n",i,tcpsvr->cli[i].sock,err);
-            sprintf(msg,"send error (%d)",err);
+            tracet(1,"writetcpsvr: send error i=%d sock=%d err=%d\n",i,
+                   tcpsvr->cli[i].sock,errsock());
             discontcp(&tcpsvr->cli[i],ticonnect);
             updatetcpsvr(tcpsvr,msg);
             return 0;
         }
         if (ns>0) tcpsvr->cli[i].tact=tickget();
-        tracet(5,"writetcpsvr: send i=%d ns=%d\n",i,ns);
     }
     return ns;
 }
@@ -1163,12 +1246,46 @@ static int statetcpsvr(tcpsvr_t *tcpsvr)
 {
     return tcpsvr?tcpsvr->svr.state:0;
 }
+/* print extended state tcp ----------------------------------------------------*/
+static int statextcp(tcp_t *tcp, char *msg)
+{
+    char *p=msg;
+    
+    p+=sprintf(p,"    state = %d\n",tcp->state);
+    p+=sprintf(p,"    saddr = %s\n",tcp->saddr);
+    p+=sprintf(p,"    port  = %d\n",tcp->port);
+    p+=sprintf(p,"    sock  = %d\n",(int)tcp->sock);
+#if 0
+    p+=sprintf(p,"    tcon  = %d\n",tcp->tcon);
+    p+=sprintf(p,"    tact  = %u\n",tcp->tact);
+    p+=sprintf(p,"    tdis  = %u\n",tcp->tdis);
+#endif
+    return (int)(p-msg);
+}
+/* get extended state tcp server ---------------------------------------------*/
+static int statextcpsvr(tcpsvr_t *tcpsvr, char *msg)
+{
+    char *p=msg,tstr1[32],tstr2[32];
+    int i,state=tcpsvr?tcpsvr->svr.state:0;
+    
+    p+=sprintf(p,"tcpsvr:\n");
+    p+=sprintf(p,"  state   = %d\n",state);
+    if (!state) return 0;
+    p+=sprintf(p,"  svr:\n");
+    p+=statextcp(&tcpsvr->svr,p);
+    for (i=0;i<MAXCLI;i++) {
+        if (!tcpsvr->cli[i].state) continue;
+        p+=sprintf(p,"  cli#%d:\n",i);
+        p+=statextcp(tcpsvr->cli+i,p);
+    }
+    return state;
+}
 /* connect server ------------------------------------------------------------*/
 static int consock(tcpcli_t *tcpcli, char *msg)
 {
     int stat,err;
     
-    tracet(3,"consock: sock=%d\n",tcpcli->svr.sock);
+    tracet(4,"consock: sock=%d\n",tcpcli->svr.sock);
     
     /* wait re-connect */
     if (tcpcli->svr.tcon<0||(tcpcli->svr.tcon>0&&
@@ -1254,7 +1371,7 @@ static int readtcpcli(tcpcli_t *tcpcli, unsigned char *buff, int n, char *msg)
 {
     int nr,err;
     
-    tracet(4,"readtcpcli: sock=%d state=%d n=%d\n",tcpcli->svr.sock,tcpcli->svr.state,n);
+    tracet(4,"readtcpcli: sock=%d\n",tcpcli->svr.sock);
     
     if (!waittcpcli(tcpcli,msg)) return 0;
     
@@ -1291,6 +1408,11 @@ static int writetcpcli(tcpcli_t *tcpcli, unsigned char *buff, int n, char *msg)
 }
 /* get state tcp client ------------------------------------------------------*/
 static int statetcpcli(tcpcli_t *tcpcli)
+{
+    return tcpcli?tcpcli->svr.state:0;
+}
+/* get extended state tcp client ---------------------------------------------*/
+static int statextcpcli(tcpcli_t *tcpcli, char *msg)
 {
     return tcpcli?tcpcli->svr.state:0;
 }
@@ -1385,6 +1507,7 @@ static int rspntrip_s(ntrip_t *ntrip, char *msg)
     else if ((p=strstr((char *)ntrip->buff,NTRIP_RSP_ERROR))) { /* error */
         nb=ntrip->nb<MAXSTATMSG?ntrip->nb:MAXSTATMSG;
         strncpy(msg,(char *)ntrip->buff,nb); msg[nb]=0;
+        if ((p=strchr(msg,'\r'))) *p='\0';
         tracet(1,"rspntrip_s: %s nb=%d\n",msg,ntrip->nb);
         ntrip->nb=0;
         ntrip->buff[0]='\0';
@@ -1541,9 +1664,10 @@ static int readntrip(ntrip_t *ntrip, unsigned char *buff, int n, char *msg)
 {
     int nb;
     
-    tracet(4,"readntrip: n=%d\n",n);
+    tracet(4,"readntrip:\n");
     
     if (!waitntrip(ntrip,msg)) return 0;
+    
     if (ntrip->nb>0) { /* read response buffer first */
         nb=ntrip->nb<=n?ntrip->nb:n;
         memcpy(buff,ntrip->buff+ntrip->nb-nb,nb);
@@ -1558,6 +1682,7 @@ static int writentrip(ntrip_t *ntrip, unsigned char *buff, int n, char *msg)
     tracet(3,"writentrip: n=%d\n",n);
     
     if (!waitntrip(ntrip,msg)) return 0;
+    
     return writetcpcli(ntrip->tcp,buff,n,msg);
 }
 /* get state ntrip -----------------------------------------------------------*/
@@ -1565,7 +1690,359 @@ static int statentrip(ntrip_t *ntrip)
 {
     return !ntrip?0:(ntrip->state==0?ntrip->tcp->svr.state:ntrip->state);
 }
-/* decode ftp path ----------------------------------------------------------*/
+/* get extended state ntrip --------------------------------------------------*/
+static int statexntrip(ntrip_t *ntrip, char *msg)
+{
+    char *p=msg,tstr1[32],tstr2[32];
+    int i,state=!ntrip?0:(ntrip->state==0?ntrip->tcp->svr.state:ntrip->state);
+    
+    p+=sprintf(p,"ntrip:\n");
+    p+=sprintf(p,"  state   = %d\n",state);
+    if (!state) return 0;
+    p+=sprintf(p,"  state   = %d\n",state);
+    p+=sprintf(p,"  type    = %d\n",ntrip->type);
+    p+=sprintf(p,"  nb      = %d\n",ntrip->nb);
+    p+=sprintf(p,"  url     = %s\n",ntrip->url);
+    p+=sprintf(p,"  mntpnt  = %s\n",ntrip->mntpnt);
+    p+=sprintf(p,"  user    = %s\n",ntrip->user);
+    p+=sprintf(p,"  passwd  = %s\n",ntrip->passwd);
+    p+=sprintf(p,"  str     = %s\n",ntrip->str);
+    p+=sprintf(p,"  svr:\n");
+    p+=statextcp(&ntrip->tcp->svr,p);
+    return state;
+}
+/* open ntrip-caster ---------------------------------------------------------*/
+static ntripc_t *openntripc(const char *path, int type, char *msg)
+{
+    ntripc_t *ntripc;
+    int i,j;
+    char port[256]="",tpath[MAXSTRPATH];
+    
+    tracet(3,"openntripc: path=%s type=%d\n",path,type);
+    
+    if (!(ntripc=(ntripc_t *)malloc(sizeof(ntripc_t)))) return NULL;
+    
+    ntripc->state=0;
+    ntripc->type=type; /* 0:server,1:client */
+    ntripc->mntpnt[0]=ntripc->user[0]=ntripc->passwd[0]='\0';
+    for (i=0;i<MAXCLI;i++) {
+        ntripc->con[i].state=0;
+        ntripc->con[i].mntpnt[0]='\0';
+        ntripc->con[i].str[0]='\0';
+        ntripc->con[i].nb=0;
+        for (j=0;j<NTRIP_MAXRSP;j++) ntripc->con[i].buff[j]=0;
+    }
+    /* decode tcp/ntrip path */
+    decodetcppath(path,NULL,port,ntripc->user,ntripc->passwd,NULL,NULL);
+    
+    /* use default port if no port specified */
+    if (!*port) {
+        sprintf(port,"%d",type?NTRIP_CLI_PORT:NTRIP_SVR_PORT);
+    }
+    sprintf(tpath,":%s",port);
+    
+    /* open tcp server stream */
+    if (!(ntripc->tcp=opentcpsvr(tpath,msg))) {
+        tracet(1,"openntripc: opentcpsvr error port=%d\n",port);
+        free(ntripc);
+        return NULL;
+    }
+    return ntripc;
+}
+/* close ntrip-caster --------------------------------------------------------*/
+static void closentripc(ntripc_t *ntripc)
+{
+    tracet(3,"closentripc: state=%d\n",ntripc->state);
+    
+    closetcpsvr(ntripc->tcp);
+    free(ntripc);
+}
+/* disconnect ntrip-caster connection ----------------------------------------*/
+static void discon_ntripc(ntripc_t *ntripc, int i)
+{
+    tracet(3,"discon_ntripc: i=%d\n",i);
+    
+    discontcp(&ntripc->tcp->cli[i],ticonnect);
+    ntripc->con[i].nb=0;
+    ntripc->con[i].buff[0]='\0';
+    ntripc->con[i].state=0;
+}
+/* test mountpoint in source table -------------------------------------------*/
+static int test_mntpnt(const char *mntpnt)
+{
+    char *p=srctbl,str[256];
+    
+    if (*p=='\0') return 1; /* no source table */
+    
+    for (p=srctbl;(p=strstr(p,"STR;"));p++) {
+        if (sscanf(p,"STR;%255[^;]",str)&&!strcmp(str,mntpnt)) return 1;
+    }
+    return 0;
+}
+/* send ntrip source table ---------------------------------------------------*/
+static void send_srctbl(socket_t sock)
+{
+    char buff[1024],*p=buff;
+    int len=strlen(srctbl);
+    
+    p+=sprintf(p,"Server: %s %s %s\r\n","RTKLIB",VER_RTKLIB,PATCH_LEVEL);
+    p+=sprintf(p,"Date: %s UTC\r\n",time_str(timeget(),0));
+    p+=sprintf(p,"Connection: close\r\n");
+    p+=sprintf(p,"Content-Type: text/plain\r\n");
+    p+=sprintf(p,"Content-Length: %d\r\n\r\n",len);
+    send_nb(sock,(unsigned char *)buff,strlen(buff));
+    send_nb(sock,(unsigned char *)srctbl,len);
+}
+/* test ntrip-caster client request ------------------------------------------*/
+static void rsp_ntripc_c(ntripc_t *ntripc, int i)
+{
+    const char *rsp1=NTRIP_RSP_SRCTBL,*rsp2=NTRIP_RSP_UNAUTH;
+    const char *rsp3=NTRIP_RSP_OK_CLI;
+    ntripc_con_t *con=ntripc->con+i;
+    double ver=0.0;
+    char url[256]="",mntpnt[256]="",user[256],user_pwd[256],*p,*q;
+    
+    tracet(3,"rspntripc_c i=%d\n",i);
+    con->buff[con->nb]='\0';
+    tracet(3,"rspntripc_c: n=%d,buff=\n%s\n",con->nb,con->buff);
+    
+    if (con->nb>=NTRIP_MAXRSP-1) { /* buffer overflow */
+        tracet(1,"rsp_ntripc_c: request buffer overflow\n");
+        discon_ntripc(ntripc,i);
+        return;
+    }
+    /* test GET and User-Agent */
+    if (!(p=strstr((char *)con->buff,"GET"))||!(q=strstr(p,"\r\n"))||
+        !(q=strstr(q,"User-Agent:"))||!strstr(q,"\r\n")) {
+        tracet(2,"rsp_ntripc_c: NTRIP request error\n");
+        discon_ntripc(ntripc,i);
+        return;
+    }
+    sscanf(p,"GET %255[^/ ]/%255[^/ ] HTTP/%lf",url,mntpnt,&ver);
+    
+    if (ver!=1.0) {
+        tracet(2,"rsp_ntripc_c: NTRIP request error ver=%.1f\n",ver);
+        discon_ntripc(ntripc,i);
+        return;
+    }
+    /* test mountpoint */
+    if (!*mntpnt||!test_mntpnt(mntpnt)) {
+        tracet(2,"rsp_ntripc_c: no mountpoint\n");
+        send_nb(ntripc->tcp->cli[i].sock,(unsigned char *)rsp1,strlen(rsp1));
+        send_srctbl(ntripc->tcp->cli[i].sock);
+        discon_ntripc(ntripc,i);
+        return;
+    }
+    /* test authentication */
+    if (*ntripc->passwd) {
+        sprintf(user,"%s:%s",ntripc->user,ntripc->passwd);
+        q=user_pwd;
+        q+=sprintf(q,"Authorization: Basic ");
+        q+=encbase64(q,(unsigned char *)user,strlen(user));
+        if (!(p=strstr((char *)con->buff,"Authorization:"))||
+            strncmp(p,user_pwd,strlen(user_pwd))) {
+            tracet(2,"rsp_ntripc_c: authroziation error\n");
+            send_nb(ntripc->tcp->cli[i].sock,(unsigned char *)rsp2,
+                    strlen(rsp2));
+            discon_ntripc(ntripc,i);
+            return;
+        }
+    }
+    /* send OK response */
+    send_nb(ntripc->tcp->cli[i].sock,(unsigned char *)rsp3,strlen(rsp3));
+    
+    con->state=1;
+    strcpy(con->mntpnt,mntpnt);
+}
+/* test ntrip-caster server request ------------------------------------------*/
+static void rsp_ntripc_s(ntripc_t *ntripc, int i)
+{
+    const char *rsp1=NTRIP_RSP_ERR_MNTP,*rsp2=NTRIP_RSP_ERR_PWD;
+    const char *rsp3=NTRIP_RSP_OK_CLI;
+    ntripc_con_t *con=ntripc->con+i;
+    char passwd[256]="",mntpnt[256]="",str[NTRIP_MAXSTR]="",*p,*q;
+    int j,n;
+    
+    tracet(3,"rspntripc_s i=%d\n",i);
+    con->buff[con->nb]='\0';
+    tracet(3,"rsp_ntripc_s: n=%d,buff=\n%s\n",con->nb,con->buff);
+    
+    if (con->nb>=NTRIP_MAXRSP-1) { /* buffer overflow */
+        tracet(1,"rspntripc_s: request buffer overflow\n");
+        discon_ntripc(ntripc,i);
+        return;
+    }
+    /* test SOURCE and Source-Agent */
+    if (!(p=strstr((char *)con->buff,"SOURCE"))||!(q=strstr(p,"\r\n"))||
+        !(q=strstr(q,"Source-Agent:"))||!strstr(q,"\r\n\r\n")) {
+        tracet(2,"rsp_ntripc_s: NTRIP request error\n");
+        discon_ntripc(ntripc,i);
+        return;
+    }
+    sscanf(p,"SOURCE %255s %255s",passwd,mntpnt);
+    
+    if ((p=strstr((char *)con->buff,"STR: "))&&(q=strstr(p,"\r\n"))) {
+        n=MIN(q-(p+5),255);
+        strncpy(str,p+5,n);
+        str[n]='\0';
+    }
+    /* test mountpoint */
+    if (!*mntpnt||!test_mntpnt(mntpnt)) {
+        tracet(2,"rsp_ntripc_s: no mountpoint\n");
+        send_nb(ntripc->tcp->cli[i].sock,(unsigned char *)rsp1,strlen(rsp1));
+        discon_ntripc(ntripc,i);
+        return;
+    }
+    /* test password */
+    if (*ntripc->passwd&&strcmp(passwd,ntripc->passwd)) {
+        tracet(2,"rsp_ntripc_s: bad password %s\n",passwd);
+        send_nb(ntripc->tcp->cli[i].sock,(unsigned char *)rsp2,strlen(rsp2));
+        discon_ntripc(ntripc,i);
+        return;
+    }
+    /* test mountpoint busy */
+    for (j=0;j<MAXCLI;j++) {
+        if (ntripc->con[j].state&&!strcmp(mntpnt,ntripc->con[j].mntpnt)) {
+            tracet(2,"rsp_ntripc_s: bad password %s\n",passwd);
+            send_nb(ntripc->tcp->cli[i].sock,(unsigned char *)rsp1,strlen(rsp1));
+            discon_ntripc(ntripc,i);
+            return;
+        }
+    }
+    /* send OK response */
+    send_nb(ntripc->tcp->cli[i].sock,(unsigned char *)rsp3,strlen(rsp3));
+    
+    con->state=1;
+    strcpy(con->mntpnt,mntpnt);
+    strcpy(con->str,str);
+}
+/* handle ntrip-caster connect request ---------------------------------------*/
+static void wait_ntripc(ntripc_t *ntripc, char *msg)
+{
+    unsigned char *buff;
+    int i,n,nmax;
+    
+    tracet(4,"wait_ntripc\n");
+    
+    ntripc->state=ntripc->tcp->svr.state;
+    
+    if (!waittcpsvr(ntripc->tcp,msg)) return;
+    
+    for (i=0;i<MAXCLI;i++) {
+        if (ntripc->tcp->cli[i].state!=2||ntripc->con[i].state) continue;
+        
+        /* receive ntrip-caster request */
+        buff=ntripc->con[i].buff+ntripc->con[i].nb;
+        nmax=NTRIP_MAXRSP-ntripc->con[i].nb-1;
+        
+        if ((n=recv_nb(ntripc->tcp->cli[i].sock,buff,nmax))==-1) {
+            tracet(1,"accept_ntripc: recv error sock=%d err=%d\n",
+                   ntripc->tcp->cli[i].sock,errsock());
+            discon_ntripc(ntripc,i);
+            continue;
+        }
+        if (n<=0) continue;
+        
+        /* test ntrip-caster request */
+        ntripc->con[i].nb+=n;
+        if (ntripc->type) {
+            rsp_ntripc_c(ntripc,i);
+        }
+        else {
+            rsp_ntripc_s(ntripc,i);
+        }
+    }
+}
+/* read ntrip-caster ---------------------------------------------------------*/
+static int readntripc(ntripc_t *ntripc, unsigned char *buff, int n, char *msg)
+{
+    unsigned char *p;
+    int i,nr;
+    
+    tracet(3,"readntripc:\n");
+    
+    wait_ntripc(ntripc,msg);
+    
+    for (i=0;i<MAXCLI;i++) {
+        if (!ntripc->con[i].state) continue;
+        
+        nr=recv_nb(ntripc->tcp->cli[i].sock,buff,n);
+        
+        if (nr<0) {
+            tracet(1,"readntripc: recv error i=%d sock=%d err=%d\n",i,
+                   ntripc->tcp->cli[i].sock,errsock());
+            discon_ntripc(ntripc,i);
+        }
+        else if (nr>0) {
+            ntripc->tcp->cli[i].tact=tickget();
+            
+            /* record received mountpoint */
+            strcpy(ntripc->mntpnt,ntripc->con[i].mntpnt);
+            return nr;
+        }
+    }
+    return 0;
+}
+/* write ntrip-caster --------------------------------------------------------*/
+static int writentripc(ntripc_t *ntripc, unsigned char *buff, int n, char *msg)
+{
+    int i,ns=0;
+    
+    tracet(3,"writentripc: n=%d\n",n);
+    
+    wait_ntripc(ntripc,msg);
+    
+    for (i=0;i<MAXCLI;i++) {
+        if (!ntripc->con[i].state) continue;
+        
+        /* skip if not selected mountpoint */
+        if (*ntripc->mntpnt&&strcmp(ntripc->mntpnt,ntripc->con[i].mntpnt)) {
+            continue;
+        }
+        ns=send_nb(ntripc->tcp->cli[i].sock,buff,n);
+        
+        if (ns<n) {
+            tracet(1,"writentripc: send error i=%d sock=%d err=%d\n",i,
+                   ntripc->tcp->cli[i].sock,errsock());
+            discon_ntripc(ntripc,i);
+        }
+        else {
+            ntripc->tcp->cli[i].tact=tickget();
+        }
+    }
+    return ns;
+}
+/* get state ntrip-caster ----------------------------------------------------*/
+static int statentripc(ntripc_t *ntripc)
+{
+    return !ntripc?0:ntripc->state;
+}
+/* get extended state ntrip --------------------------------------------------*/
+static int statexntripc(ntripc_t *ntripc, char *msg)
+{
+    char *p=msg;
+    int i,j,state=!ntripc?0:ntripc->state;
+    
+    p+=sprintf(p,"ntripc:\n");
+    p+=sprintf(p,"  state   = %d\n",ntripc->state);
+    if (!state) return 0;
+    p+=sprintf(p,"  type    = %d\n",ntripc->type);
+    p+=sprintf(p,"  mntpnt  = %s\n",ntripc->mntpnt);
+    p+=sprintf(p,"  user    = %s\n",ntripc->user);
+    p+=sprintf(p,"  passwd  = %s\n",ntripc->passwd);
+    p+=sprintf(p,"  svr:\n");
+    p+=statextcp(&ntripc->tcp->svr,p);
+    for (i=0;i<MAXCLI;i++) {
+        if (!ntripc->tcp->cli[i].state) continue;
+        p+=sprintf(p,"  cli#%d:\n",i);
+        p+=statextcp(ntripc->tcp->cli+i,p);
+        p+=sprintf(p,"    mntpnt= %s\n",ntripc->con[i].mntpnt);
+        p+=sprintf(p,"    str   = %s\n",ntripc->con[i].str);
+        p+=sprintf(p,"    nb    = %d\n",ntripc->con[i].nb);
+    }
+    return state;
+}
+/* decode ftp path -----------------------------------------------------------*/
 static void decodeftppath(const char *path, char *addr, char *file, char *user,
                           char *passwd, int *topts)
 {
@@ -1813,6 +2290,11 @@ static int stateftp(ftp_t *ftp)
 {
     return !ftp?0:(ftp->state==0?2:(ftp->state<=2?3:-1));
 }
+/* get extended state ftp ----------------------------------------------------*/
+static int statexftp(ftp_t *ftp, char *msg)
+{
+    return !ftp?0:(ftp->state==0?2:(ftp->state<=2?3:-1));
+}
 /* initialize stream environment -----------------------------------------------
 * initialize stream environment
 * args   : none
@@ -1875,9 +2357,11 @@ extern void strinit(stream_t *stream)
 *                    swap  = output swap interval (hr) (0: no swap)
 *   STR_TCPSVR   :port
 *   STR_TCPCLI   address:port
-*   STR_NTRIPSVR user[:passwd]@address[:port]/moutpoint[:string]
-*   STR_NTRIPCLI [user[:passwd]]@address[:port][/mountpoint]
-*   STR_FTP      [user[:passwd]]@address/file_path[::T=poff[,tint[,toff,tret]]]]
+*   STR_NTRIPSVR [:passwd@]address[:port]/moutpoint[:string]
+*   STR_NTRIPCLI [user[:passwd]@]address[:port][/mountpoint]
+*   STR_NTRIPC_S [user[:passwd]@][:port]/mountpoint
+*   STR_NTRIPC_C [user[:passwd]@][:port]/mountpoint
+*   STR_FTP      [user[:passwd]@]address/file_path[::T=poff[,tint[,toff,tret]]]]
 *   STR_HTTP     address/file_path[::T=poff[,tint[,toff,tret]]]]
 *                    poff  = time offset for path extension (s)
 *                    tint  = download interval (s)
@@ -1903,6 +2387,8 @@ extern int stropen(stream_t *stream, int type, int mode, const char *path)
         case STR_TCPCLI  : stream->port=opentcpcli(path,     stream->msg); break;
         case STR_NTRIPSVR: stream->port=openntrip (path,0,   stream->msg); break;
         case STR_NTRIPCLI: stream->port=openntrip (path,1,   stream->msg); break;
+        case STR_NTRIPC_S: stream->port=openntripc(path,0,   stream->msg); break;
+        case STR_NTRIPC_C: stream->port=openntripc(path,1,   stream->msg); break;
         case STR_FTP     : stream->port=openftp   (path,0,   stream->msg); break;
         case STR_HTTP    : stream->port=openftp   (path,1,   stream->msg); break;
         default: stream->state=0; return 1;
@@ -1927,6 +2413,8 @@ extern void strclose(stream_t *stream)
             case STR_TCPCLI  : closetcpcli((tcpcli_t *)stream->port); break;
             case STR_NTRIPSVR: closentrip ((ntrip_t  *)stream->port); break;
             case STR_NTRIPCLI: closentrip ((ntrip_t  *)stream->port); break;
+            case STR_NTRIPC_S: closentripc((ntripc_t *)stream->port); break;
+            case STR_NTRIPC_C: closentripc((ntripc_t *)stream->port); break;
             case STR_FTP     : closeftp   ((ftp_t    *)stream->port); break;
             case STR_HTTP    : closeftp   ((ftp_t    *)stream->port); break;
         }
@@ -1990,7 +2478,10 @@ extern int strread(stream_t *stream, unsigned char *buff, int n)
         case STR_FILE    : nr=readfile  ((file_t   *)stream->port,buff,n,msg); break;
         case STR_TCPSVR  : nr=readtcpsvr((tcpsvr_t *)stream->port,buff,n,msg); break;
         case STR_TCPCLI  : nr=readtcpcli((tcpcli_t *)stream->port,buff,n,msg); break;
+        case STR_NTRIPSVR:
         case STR_NTRIPCLI: nr=readntrip ((ntrip_t  *)stream->port,buff,n,msg); break;
+        case STR_NTRIPC_S:
+        case STR_NTRIPC_C: nr=readntripc((ntripc_t *)stream->port,buff,n,msg); break;
         case STR_FTP     : nr=readftp   ((ftp_t    *)stream->port,buff,n,msg); break;
         case STR_HTTP    : nr=readftp   ((ftp_t    *)stream->port,buff,n,msg); break;
         default:
@@ -2021,7 +2512,7 @@ extern int strwrite(stream_t *stream, unsigned char *buff, int n)
     char *msg=stream->msg;
     int ns;
     
-    tracet(3,"strwrite: n=%d\n",n);
+    tracet(4,"strwrite: n=%d\n",n);
     
     if (!(stream->mode&STR_MODE_W)||!stream->port) return 0;
     
@@ -2032,8 +2523,10 @@ extern int strwrite(stream_t *stream, unsigned char *buff, int n)
         case STR_FILE    : ns=writefile  ((file_t   *)stream->port,buff,n,msg); break;
         case STR_TCPSVR  : ns=writetcpsvr((tcpsvr_t *)stream->port,buff,n,msg); break;
         case STR_TCPCLI  : ns=writetcpcli((tcpcli_t *)stream->port,buff,n,msg); break;
-        case STR_NTRIPCLI:
-        case STR_NTRIPSVR: ns=writentrip ((ntrip_t  *)stream->port,buff,n,msg); break;
+        case STR_NTRIPSVR:
+        case STR_NTRIPCLI: ns=writentrip ((ntrip_t  *)stream->port,buff,n,msg); break;
+        case STR_NTRIPC_S:
+        case STR_NTRIPC_C: ns=writentripc((ntripc_t *)stream->port,buff,n,msg); break;
         case STR_FTP     :
         case STR_HTTP    :
         default:
@@ -2049,6 +2542,46 @@ extern int strwrite(stream_t *stream, unsigned char *buff, int n)
     }
     strunlock(stream);
     return ns;
+}
+/* set stream selection --------------------------------------------------------
+* set stream selection for ntrip-caster
+* args   : stream_t *stream I   stream
+*          char   *sel      I   selected mountpoint of ntrip-caster ("":all)
+* return : status (0:error,1:ok)
+*-----------------------------------------------------------------------------*/
+extern int strsetsel(stream_t *stream, const char *sel)
+{
+    if (!stream->port||
+        (stream->type!=STR_NTRIPC_S&&stream->type!=STR_NTRIPC_C)) {
+        return 0;
+    }
+    strlock(stream);
+    
+    strcpy(((ntripc_t *)stream->port)->mntpnt,sel);
+    
+    strunlock(stream);
+    return 1;
+}
+/* get stream selection --------------------------------------------------------
+* get stream selection for ntrip-caster
+* args   : stream_t *stream I   stream
+*          char   *sel      O   selected mountpoint of ntrip-caster
+* return : status (0:error,1:ok)
+*-----------------------------------------------------------------------------*/
+extern int strgetsel(stream_t *stream, char *sel)
+{
+    *sel='\0';
+    
+    if (!stream->port||
+        (stream->type!=STR_NTRIPC_S&&stream->type!=STR_NTRIPC_C)) {
+        return 0;
+    }
+    strlock(stream);
+    
+    strcpy(sel,((ntripc_t *)stream->port)->mntpnt);
+    
+    strunlock(stream);
+    return 1;
 }
 /* get stream status -----------------------------------------------------------
 * get stream status
@@ -2077,9 +2610,49 @@ extern int strstat(stream_t *stream, char *msg)
         case STR_TCPCLI  : state=statetcpcli((tcpcli_t *)stream->port); break;
         case STR_NTRIPSVR:
         case STR_NTRIPCLI: state=statentrip ((ntrip_t  *)stream->port); break;
+        case STR_NTRIPC_C:
+        case STR_NTRIPC_S: state=statentripc((ntripc_t *)stream->port); break;
         case STR_FTP     : state=stateftp   ((ftp_t    *)stream->port); break;
         case STR_HTTP    : state=stateftp   ((ftp_t    *)stream->port); break;
         default:
+            strunlock(stream);
+            return 0;
+    }
+    if (state==2&&(int)(tickget()-stream->tact)<=TINTACT) state=3;
+    strunlock(stream);
+    return state;
+}
+/* get extended stream status ---------------------------------------------------
+* get extended stream status
+* args   : stream_t *stream I   stream
+*          char   *msg      IO  extended status message
+* return : status (-1:error,0:close,1:wait,2:connect,3:active)
+*-----------------------------------------------------------------------------*/
+extern int strstatx(stream_t *stream, char *msg)
+{
+    int state;
+    
+    tracet(4,"strstatx:\n");
+    
+    strlock(stream);
+    
+    if (!stream->port) {
+        strunlock(stream);
+        return stream->state;
+    }
+    switch (stream->type) {
+        case STR_SERIAL  : state=statexserial((serial_t *)stream->port,msg); break;
+        case STR_FILE    : state=statexfile  ((file_t   *)stream->port,msg); break;
+        case STR_TCPSVR  : state=statextcpsvr((tcpsvr_t *)stream->port,msg); break;
+        case STR_TCPCLI  : state=statextcpcli((tcpcli_t *)stream->port,msg); break;
+        case STR_NTRIPSVR:
+        case STR_NTRIPCLI: state=statexntrip ((ntrip_t  *)stream->port,msg); break;
+        case STR_NTRIPC_C:
+        case STR_NTRIPC_S: state=statexntripc((ntripc_t *)stream->port,msg); break;
+        case STR_FTP     : state=statexftp   ((ftp_t    *)stream->port,msg); break;
+        case STR_HTTP    : state=statexftp   ((ftp_t    *)stream->port,msg); break;
+        default:
+            msg[0]='\0';
             strunlock(stream);
             return 0;
     }
@@ -2176,6 +2749,31 @@ extern void strsetproxy(const char *addr)
     tracet(3,"strsetproxy: addr=%s\n",addr);
     
     strcpy(proxyaddr,addr);
+}
+/* set ntrip source table ------------------------------------------------------
+* set ntrip source table
+* args   : char   *file     I   source table file
+* return : none
+*-----------------------------------------------------------------------------*/
+extern void strsetsrctbl(const char *file)
+{
+    FILE *fp;
+    int n;
+    
+    tracet(3,"strsetsrctbl: file=%s\n",file);
+    
+    srctbl[0]='\0';
+    
+    if (!*file) return;
+    
+    if (!(fp=fopen(file,"rb"))) {
+        tracet(2,"strsetsrctbl: file open error %s\n",file);
+        return;
+    }
+    n=fread(srctbl,1,sizeof(srctbl)-1,fp);
+    srctbl[n]='\0';
+    
+    fclose(fp);
 }
 /* get stream time -------------------------------------------------------------
 * get stream time

@@ -39,7 +39,7 @@ object ConvDialog: TConvDialog
   end
   object BtnOk: TButton
     Left = 177
-    Top = 82
+    Top = 80
     Width = 88
     Height = 29
     Caption = '&OK'
@@ -49,7 +49,7 @@ object ConvDialog: TConvDialog
   end
   object BtnCancel: TButton
     Left = 265
-    Top = 82
+    Top = 80
     Width = 88
     Height = 29
     Caption = '&Cancel'

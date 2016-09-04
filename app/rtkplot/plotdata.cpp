@@ -1014,7 +1014,9 @@ void __fastcall TPlot::Connect(void)
     BtnSol12  ->Down=false;
     BtnShowTrack->Down=true;
     BtnFixHoriz->Down=true;
-    UpdateEnable();
+    BtnReload->Visible=false;
+    StrStatus->Left=Panel11->Width-BtnOptions->Width;
+    StrStatus->Visible=true;
     UpdateTime();
     UpdatePlot();
     UpdateEnable();
@@ -1044,6 +1046,9 @@ void __fastcall TPlot::Disconnect(void)
     if (strstr(caption,"CONNECT")) {
         Caption=s.sprintf("DISCONNECT%s",caption+7);
     }
+    StrStatus->Visible=false;
+    BtnReload->Left=Panel11->Width-BtnOptions->Width;
+    BtnReload->Visible=true;
     UpdateTime();
     UpdatePlot();
     UpdateEnable();

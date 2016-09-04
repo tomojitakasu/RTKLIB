@@ -151,7 +151,6 @@ object StrMonDialog: TStrMonDialog
       Align = alRight
       BevelOuter = bvNone
       TabOrder = 0
-      ExplicitHeight = 23
       object BtnClose: TButton
         Left = 0
         Top = 0
@@ -161,7 +160,6 @@ object StrMonDialog: TStrMonDialog
         Caption = '&Close'
         TabOrder = 0
         OnClick = BtnCloseClick
-        ExplicitHeight = 23
       end
     end
     object SelFmt: TComboBox
@@ -173,9 +171,10 @@ object StrMonDialog: TStrMonDialog
       DropDownCount = 20
       ItemIndex = 0
       TabOrder = 1
-      Text = 'HEX'
+      Text = 'Streams'
       OnChange = SelFmtChange
       Items.Strings = (
+        'Streams'
         'HEX'
         'ASCII')
     end
@@ -197,7 +196,5 @@ object StrMonDialog: TStrMonDialog
     TabOrder = 1
     TabStop = False
     OnChange = ScrollChange
-    ExplicitTop = 25
-    ExplicitHeight = 390
   end
 end

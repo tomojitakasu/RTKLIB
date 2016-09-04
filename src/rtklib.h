@@ -58,7 +58,7 @@ extern "C" {
 
 #define VER_RTKLIB  "2.4.3"             /* library version */
 
-#define PATCH_LEVEL "b19"               /* patch level */
+#define PATCH_LEVEL "b20"               /* patch level */
 
 #define COPYRIGHT_RTKLIB \
             "Copyright (C) 2007-2016 by T.Takasu\nAll rights reserved."
@@ -417,8 +417,8 @@ extern "C" {
 #define STR_NTRIPCLI 7                  /* stream type: NTRIP client */
 #define STR_FTP      8                  /* stream type: ftp */
 #define STR_HTTP     9                  /* stream type: http */
-#define STR_NTRIPCAS_S 10               /* stream type: NTRIP caster server */
-#define STR_NTRIPCAS_C 11               /* stream type: NTRIP caster client */
+#define STR_NTRIPC_S 10                 /* stream type: NTRIP caster server */
+#define STR_NTRIPC_C 11                 /* stream type: NTRIP caster client */
 
 #define STRFMT_RTCM2 0                  /* stream format: RTCM 2 */
 #define STRFMT_RTCM3 1                  /* stream format: RTCM 3 */
@@ -1740,7 +1740,10 @@ EXPORT int  strread  (stream_t *stream, unsigned char *buff, int n);
 EXPORT int  strwrite (stream_t *stream, unsigned char *buff, int n);
 EXPORT void strsync  (stream_t *stream1, stream_t *stream2);
 EXPORT int  strstat  (stream_t *stream, char *msg);
+EXPORT int  strstatx (stream_t *stream, char *msg);
 EXPORT void strsum   (stream_t *stream, int *inb, int *inr, int *outb, int *outr);
+EXPORT int  strgetsel(stream_t *stream, char *sel);
+EXPORT int  strsetsel(stream_t *stream, const char *sel);
 EXPORT void strsetopt(const int *opt);
 EXPORT gtime_t strgettime(stream_t *stream);
 EXPORT void strsendnmea(stream_t *stream, const sol_t *sol);
@@ -1748,6 +1751,7 @@ EXPORT void strsendcmd(stream_t *stream, const char *cmd);
 EXPORT void strsettimeout(stream_t *stream, int toinact, int tirecon);
 EXPORT void strsetdir(const char *dir);
 EXPORT void strsetproxy(const char *addr);
+EXPORT void strsetsrctbl(const char *file);
 
 /* integer ambiguity resolution ----------------------------------------------*/
 EXPORT int lambda(int n, int m, const double *a, const double *Q, double *F,
