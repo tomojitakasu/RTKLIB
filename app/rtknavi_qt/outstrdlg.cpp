@@ -121,7 +121,8 @@ void OutputStrDialog::BtnStr1Click()
     case 1: TcpOpt(0, 1); break;
     case 2: TcpOpt(0, 0); break;
     case 3: TcpOpt(0, 2); break;
-	}
+    case 4: TcpOpt(0, 4); break;
+    }
 }
 //---------------------------------------------------------------------------
 void OutputStrDialog::BtnStr2Click()
@@ -131,7 +132,8 @@ void OutputStrDialog::BtnStr2Click()
     case 1: TcpOpt(1, 1); break;
     case 2: TcpOpt(1, 0); break;
     case 3: TcpOpt(1, 2); break;
-	}
+    case 4: TcpOpt(0, 4); break;
+    }
 }
 //---------------------------------------------------------------------------
 QString OutputStrDialog::GetFilePath(const QString path)
@@ -189,17 +191,17 @@ void OutputStrDialog::TcpOpt(int index, int opt)
 //---------------------------------------------------------------------------
 void OutputStrDialog::UpdateEnable(void)
 {
-    int ena = (Stream1C->isChecked() && (Stream1->currentIndex() == 4)) ||
-          (Stream2C->isChecked() && (Stream2->currentIndex() == 4));
+    int ena = (Stream1C->isChecked() && (Stream1->currentIndex() == 5)) ||
+          (Stream2C->isChecked() && (Stream2->currentIndex() == 5));
 
     Stream1->setEnabled(Stream1C->isChecked());
     Stream2->setEnabled(Stream2C->isChecked());
-    BtnStr1->setEnabled(Stream1C->isChecked() && Stream1->currentIndex() <= 3);
-    BtnStr2->setEnabled(Stream2C->isChecked() && Stream2->currentIndex() <= 3);
-    FilePath1->setEnabled(Stream1C->isChecked() && Stream1->currentIndex() == 4);
-    FilePath2->setEnabled(Stream2C->isChecked() && Stream2->currentIndex() == 4);
-    BtnFile1->setEnabled(Stream1C->isChecked() && Stream1->currentIndex() == 4);
-    BtnFile2->setEnabled(Stream2C->isChecked() && Stream2->currentIndex() == 4);
+    BtnStr1->setEnabled(Stream1C->isChecked() && Stream1->currentIndex() <= 4);
+    BtnStr2->setEnabled(Stream2C->isChecked() && Stream2->currentIndex() <= 4);
+    FilePath1->setEnabled(Stream1C->isChecked() && Stream1->currentIndex() == 5);
+    FilePath2->setEnabled(Stream2C->isChecked() && Stream2->currentIndex() == 5);
+    BtnFile1->setEnabled(Stream1C->isChecked() && Stream1->currentIndex() == 5);
+    BtnFile2->setEnabled(Stream2C->isChecked() && Stream2->currentIndex() == 5);
     LabelF1->setEnabled(ena);
     Label1->setEnabled(ena);
     Label2->setEnabled(ena);

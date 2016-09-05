@@ -246,6 +246,21 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
     BtnShowSkyplot->setDefaultAction(MenuShowSkyplot);
     MenuShowSkyplot->setChecked(true);
 
+    dirModel = new QFileSystemModel(this);
+    dirModel->setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
+
+    DirSelector = new QTreeView(this);
+    Panel2->layout()->addWidget(DirSelector);
+    DirSelector->setModel(dirModel);
+    //DirSelector->hideColumn(1); DirSelector->hideColumn(2); DirSelector->hideColumn(3); //only show names
+
+    fileModel = new QFileSystemModel(this);
+    fileModel->setFilter((fileModel->filter() & ~QDir::Dirs & ~QDir::AllDirs));
+    fileModel->setNameFilterDisables(false);
+    qWarning()<<fileModel->iconProvider();
+    FileList->setModel(fileModel);
+
+
     connect(BtnOn1, SIGNAL(clicked(bool)), this, SLOT(BtnOn1Click()));
     connect(BtnOn2, SIGNAL(clicked(bool)), this, SLOT(BtnOn2Click()));
     connect(BtnOn3, SIGNAL(clicked(bool)), this, SLOT(BtnOn3Click()));
@@ -257,11 +272,11 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
     connect(MenuAbout, SIGNAL(triggered(bool)), this, SLOT(MenuAboutClick()));
     connect(MenuAnimStart, SIGNAL(triggered(bool)), this, SLOT(MenuAnimStartClick()));
     connect(MenuAnimStop, SIGNAL(triggered(bool)), this, SLOT(MenuAnimStopClick()));
+    connect(MenuBrowse, SIGNAL(triggered(bool)), this, SLOT(MenuBrowseClick()));
     connect(MenuCenterOri, SIGNAL(triggered(bool)), this, SLOT(MenuCenterOriClick()));
     connect(MenuClear, SIGNAL(triggered(bool)), this, SLOT(MenuClearClick()));
     connect(MenuConnect, SIGNAL(triggered(bool)), this, SLOT(MenuConnectClick()));
     connect(MenuDisconnect, SIGNAL(triggered(bool)), this, SLOT(MenuDisconnectClick()));
-    connect(MenuFileSel, SIGNAL(triggered(bool)), this, SLOT(MenuFileSelClick()));
     connect(MenuFitHoriz, SIGNAL(triggered(bool)), this, SLOT(MenuFitHorizClick()));
     connect(MenuFitVert, SIGNAL(triggered(bool)), this, SLOT(MenuFitVertClick()));
     connect(MenuFixCent, SIGNAL(triggered(bool)), this, SLOT(MenuFixCentClick()));
@@ -319,6 +334,13 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
     connect(ObsType, SIGNAL(currentIndexChanged(int)), this, SLOT(ObsTypeChange()));
     connect(ObsType2, SIGNAL(currentIndexChanged(int)), this, SLOT(ObsTypeChange()));
     connect(FrqType, SIGNAL(currentIndexChanged(int)), this, SLOT(ObsTypeChange()));
+    connect(DriveSel, SIGNAL(currentIndexChanged(QString)), this, SLOT(DriveSelChanged()));
+    connect(DirSelector, SIGNAL(clicked(QModelIndex)), this, SLOT(DirSelChange(QModelIndex)));
+    connect(DirSelector, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(DirSelSelected(QModelIndex)));
+    connect(BtnDirSel, SIGNAL(clicked(bool)), this, SLOT(BtnDirSelClick()));
+    connect(FileList, SIGNAL(clicked(QModelIndex)), this, SLOT(FileListClick(QModelIndex)));
+    connect(Filter, SIGNAL(currentIndexChanged(QString)), this, SLOT(FilterClick()));
+
 
     bool state = false;
 #ifdef QWEBKIT
@@ -333,15 +355,13 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
     MenuPlotGEGM->setEnabled(state);
     MenuPlotGM->setEnabled(state);
 
-    Disp->setAttribute(Qt::WA_TransparentForMouseEvents);
     Disp->setAttribute(Qt::WA_OpaquePaintEvent);
-    widget->setAttribute(Qt::WA_TransparentForMouseEvents);
-    centralwidget->setAttribute(Qt::WA_TransparentForMouseEvents);
     setMouseTracking(true);
 
     LoadOpt();
 
     updateTime.start();
+    qApp->installEventFilter(this);
 }
 // destructor ---------------------------------------------------------------
 Plot::~Plot()
@@ -360,6 +380,25 @@ Plot::~Plot()
     for (int i = 0; i < 3; i++)
         delete GraphG[i];
     delete RangeList;
+
+    delete DirSelector;
+}
+// callback on all events ----------------------------------------------------
+bool Plot::eventFilter(QObject *obj, QEvent *event)
+{
+    if ((obj == Disp) && (event->type() == QEvent::MouseMove))
+    {
+        QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
+        if (childAt(mouseEvent->pos()) == Disp)
+            mouseMove(mouseEvent);
+    }
+    if ((obj == Disp) && (event->type() == QEvent::Resize))
+    {
+        UpdateSize();
+        Refresh();
+    }
+
+    return false;
 }
 // callback on form-show ----------------------------------------------------
 void Plot::showEvent(QShowEvent *event)
@@ -450,6 +489,34 @@ void Plot::showEvent(QShowEvent *event)
         tle_read(qPrintable(TLEFile), &TLEData);
     if (TLESatFile != "")
         tle_name_read(qPrintable(TLESatFile), &TLEData);
+
+    QFileInfoList drives = QDir::drives();
+    if (drives.size() > 1 && drives.at(0).filePath() != "/") {
+        Panel1->setVisible(true);
+        DriveSel->clear();
+
+        foreach(const QFileInfo &drive, drives) {
+            DriveSel->addItem(drive.filePath());
+        }
+    } else {
+        Panel1->setVisible(false); // do not show drive selection on unix
+    }
+    if (Dir == "") Dir = drives.at(0).filePath();
+
+    DriveSel->setCurrentText(Dir.mid(0, Dir.indexOf(":") + 2));
+    dirModel->setRootPath(Dir);
+    DirSelector->setVisible(false);
+    DirSelected->setText(Dir);
+    fileModel->setRootPath(Dir);
+    FileList->setRootIndex(fileModel->index(Dir));
+
+    if (MenuBrowse->isChecked()) {
+        PanelBrowse->setVisible(true);
+    }
+    else {
+        PanelBrowse->setVisible(false);
+    }
+
     Timer.start(RefCycle);
     UpdatePlot();
     UpdateEnable();
@@ -624,13 +691,6 @@ void Plot::MenuVisAnaClick()
         GenVisData();
     }
     spanDialog->TimeVal[0] = spanDialog->TimeVal[1] = spanDialog->TimeVal[2] = 1;
-}
-// callback on menu-sol-browse ----------------------------------------------
-void Plot::MenuFileSelClick()
-{
-    trace(3, "MenuFileSelClick\n");
-
-    fileSelDialog->show();
 }
 // callback on menu-save image ----------------------------------------------
 void Plot::MenuSaveImageClick()
@@ -980,6 +1040,23 @@ void Plot::MenuStatusBarClick()
     trace(3, "MenuStatusBarClick\n");
 
     statusbar->setVisible(MenuStatusBar->isChecked());
+    UpdateSize();
+    Refresh();
+}
+// callback on menu-show-browse-panel ---------------------------------------
+void Plot::MenuBrowseClick()
+{
+    trace(3,"MenuBrowseClick\n");
+
+    if (MenuBrowse->isChecked()) {
+        PanelBrowse->setVisible(true);
+    }
+    else {
+        PanelBrowse->setVisible(false);
+    }
+
+    Disp->updateGeometry();
+
     UpdateSize();
     Refresh();
 }
@@ -1424,7 +1501,7 @@ void Plot::mousePressEvent(QMouseEvent *event)
     RangeList->setVisible(false);
 }
 // callback on mouse-move event ---------------------------------------------
-void Plot::mouseMoveEvent(QMouseEvent *event)
+void Plot::mouseMove(QMouseEvent *event)
 {
     double dx, dy, dxs, dys;
 
@@ -2713,7 +2790,9 @@ void Plot::LoadOpt(void)
     TextViewer::FontD.setFamily(settings.value("viewer/fontname", "Courier New").toString());
     TextViewer::FontD.setPointSize(settings.value("viewer/fontsize", 9).toInt());
 
-    fileSelDialog->Dir = settings.value("solbrows/dir", "").toString();
+    MenuBrowse->setChecked(settings.value("solbrows/show",       0).toBool());
+    BrowseSplitter->restoreState(settings.value("solbrows/split1",   100).toByteArray());
+    Dir  =settings.value("solbrows/dir",  "C:\\").toString();
 
     for (i = 0; i < RangeList->count(); i++) {
         bool okay;
@@ -2842,4 +2921,64 @@ void Plot::SaveOpt(void)
     settings.setValue("viewer/fontsize", TextViewer::FontD.pointSize());
 
     settings.setValue("solbrows/dir", fileSelDialog->Dir);
+    settings.setValue("solbrows/split1", BrowseSplitter->saveState());
 }
+
+//---------------------------------------------------------------------------
+void Plot::DriveSelChanged()
+{
+    DirSelector->setVisible(false);
+
+    DirSelector->setRootIndex(dirModel->index(DriveSel->currentText()));
+    DirSelected->setText(DriveSel->currentText());
+}
+//---------------------------------------------------------------------------
+void Plot::BtnDirSelClick()
+{
+#ifdef FLOATING_DIRSELECTOR
+    QPoint pos = Panel5->mapToGlobal(BtnDirSel->pos());
+    pos.rx() += BtnDirSel->width() - DirSelector->width();
+    pos.ry() += BtnDirSel->height();
+
+    DirSelector->move(pos);
+#endif
+    DirSelector->setVisible(!DirSelector->isVisible());
+}
+//---------------------------------------------------------------------------
+void Plot::DirSelChange(QModelIndex index)
+{
+    DirSelector->expand(index);
+
+    Dir = dirModel->filePath(index);
+    DirSelected->setText(Dir);
+    fileModel->setRootPath(Dir);
+    FileList->setRootIndex(fileModel->index(Dir));
+}
+//---------------------------------------------------------------------------
+void Plot::DirSelSelected(QModelIndex)
+{
+    DirSelector->setVisible(false);
+}
+//---------------------------------------------------------------------------
+void Plot::FileListClick(QModelIndex index)
+{
+    QStringList file;
+
+    file.append(fileModel->filePath(index));
+    plot->ReadSol(file, 0);
+
+    DirSelector->setVisible(false);
+}
+//---------------------------------------------------------------------------
+void Plot::FilterClick()
+{
+    QString filter = Filter->currentText();
+
+    // only keep data between brackets
+    filter = filter.mid(filter.indexOf("(") + 1);
+    filter.remove(")");
+
+    fileModel->setNameFilters(filter.split(" "));
+    DirSelector->setVisible(false);
+}
+//--

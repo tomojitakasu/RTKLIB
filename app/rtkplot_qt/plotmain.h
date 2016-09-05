@@ -5,6 +5,8 @@
 #include <QTimer>
 #include <QTime>
 #include <QMainWindow>
+#include <QFileSystemModel>
+#include <QTreeView>
 
 #include "graph.h"
 #include "console.h"
@@ -115,7 +117,6 @@ class Plot : public QMainWindow, public Ui::Plot
     Q_OBJECT
 
 protected:
-    void mouseMoveEvent(QMouseEvent*);
     void mousePressEvent(QMouseEvent*);
     void mouseReleaseEvent(QMouseEvent*);
     void mouseDoubleClickEvent(QMouseEvent*);
@@ -129,6 +130,7 @@ protected:
     void dropEvent(QDropEvent *event);
     void paintEvent(QPaintEvent *event);
 
+    void mouseMove(QMouseEvent*);
 public slots:
     void MenuOpenSol1Click();
     void MenuOpenSol2Click();
@@ -191,7 +193,6 @@ public slots:
 
     void TimerTimer();
 
-    void MenuFileSelClick();
     void MenuSaveDopClick();
     void MenuSaveImageClick();
     void MenuGEClick();
@@ -211,8 +212,21 @@ public slots:
     void BtnMessage2Click();
     void MenuOpenWaypointClick();
     void MenuSaveWaypointClick();
+    void MenuBrowseClick();
+
+    void FileListClick(QModelIndex);
+    void DirSelChange(QModelIndex);
+    void DirSelSelected(QModelIndex);
+    void DriveSelChanged();
+    void FilterClick();
+    void BtnDirSelClick();
 
 private:
+    bool eventFilter(QObject *obj, QEvent *event);
+    QTreeView *DirSelector;
+    QFileSystemModel *fileModel, *dirModel;
+    QString Dir;
+
     QPixmap Buff;
     QImage MapImage;
     QImage SkyImageI;

@@ -3,6 +3,7 @@
 //---------------------------------------------------------------------------
 #include <QColor>
 #include <QPainter>
+#include <QDebug>
 
 #include "rtklib.h"
 #include "plotmain.h"
@@ -65,6 +66,7 @@ void Plot::UpdateDisp(void)
         }
 
         Disp->setPixmap(Buff);
+
     }
 
     Flush = 0;

@@ -1032,7 +1032,9 @@ void Plot::Connect(void)
     BtnShowTrack->setChecked(true);
     BtnFixHoriz->setChecked(true);
 
-    UpdateEnable();
+    BtnReload->setVisible(false);
+    StrStatus->setVisible(true);
+
     UpdateTime();
     UpdatePlot();
     UpdateEnable();
@@ -1063,6 +1065,9 @@ void Plot::Disconnect(void)
     StrStatus1->setStyleSheet(QStringLiteral("QLabel {color: gray;}"));
     StrStatus2->setStyleSheet(QStringLiteral("QLabel {color: gray;}"));
     ConnectMsg->setText("");
+
+    BtnReload->setVisible(true);
+    StrStatus->setVisible(false);
 
     UpdateTime();
     UpdatePlot();

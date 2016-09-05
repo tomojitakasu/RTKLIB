@@ -23,12 +23,14 @@ public slots:
 
 private:
     QStringList ConBuff;
-    int Stop, ScrollPos, StrFmt;
+    int Stop, ScrollPos;
     rtcm_t rtcm;
     raw_t raw;
 
     void AddConsole(unsigned char *msg, int len, int mode);
+
 public:
+    int StrFmt;
     explicit StrMonDialog(QWidget *parent);
     void AddMsg(unsigned char *buff, int n);
 };

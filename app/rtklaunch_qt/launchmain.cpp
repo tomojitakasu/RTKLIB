@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------------
 // rtklaunch_qt : rtklib app launcher
 //
-//          Copyright (C) 2013 by T.TAKASU, All rights reserved.
+//          Copyright (C) 2013-2016 by T.TAKASU, All rights reserved.
 //          ported to Qt by Jens Reimann
 //
 // options : rtklib launcher [-t title][-tray]
@@ -21,6 +21,7 @@
 
 #include "rtklib.h"
 #include "launchmain.h"
+//#include "launchoptdlg.h"
 
 //---------------------------------------------------------------------------
 
@@ -43,6 +44,9 @@ MainForm::MainForm(QWidget *parent)
 
     QCoreApplication::setApplicationName("rtklaunch_qt");
     QCoreApplication::setApplicationVersion("1.0");
+
+    QSettings settings(IniFile, QSettings::IniFormat);
+    Option =  settings.value("pos/option",0).toInt();
 
     QCommandLineParser parser;
     parser.setApplicationDescription("rtklib application launcher Qt");
@@ -95,6 +99,7 @@ MainForm::MainForm(QWidget *parent)
     connect(BtnNavi, SIGNAL(clicked(bool)), this, SLOT(BtnNaviClick()));
     connect(BtnTray, SIGNAL(clicked(bool)), this, SLOT(BtnTrayClick()));
     connect(BtnGet, SIGNAL(clicked(bool)), this, SLOT(BtnGetClick()));
+    connect(BtnOption, SIGNAL(clicked(bool)), this, SLOT(BtnOptionClick()));
     connect(&TrayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(TrayIconActivated(QSystemTrayIcon::ActivationReason)));
 }
 //---------------------------------------------------------------------------
@@ -109,6 +114,7 @@ void MainForm::showEvent(QShowEvent *event)
 
     resize(settings.value("pos/width", 310).toInt(),
            settings.value("pos/height", 79).toInt());
+
 }
 //---------------------------------------------------------------------------
 void MainForm::closeEvent(QCloseEvent *event)
@@ -120,6 +126,7 @@ void MainForm::closeEvent(QCloseEvent *event)
     settings.setValue("pos/top", pos().y());
     settings.setValue("pos/width", width());
     settings.setValue("pos/height", height());
+    settings.setValue("pos/option", Option);
 }
 //---------------------------------------------------------------------------
 void MainForm::BtnPlotClick()
@@ -194,5 +201,11 @@ void MainForm::MenuExpandClick()
 {
     setVisible(true);
     TrayIcon.setVisible(false);
+}
+//---------------------------------------------------------------------------
+void MainForm::BtnOptionClick()
+{
+//    launchOptDialog->exec();
+//    if (launchOptDialog->result()!=QDialog::Accepted) return;
 }
 //---------------------------------------------------------------------------

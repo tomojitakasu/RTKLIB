@@ -51,6 +51,11 @@
         </property>
         <item>
          <property name="text">
+          <string>Stream</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
           <string>HEX</string>
          </property>
         </item>
@@ -73,7 +78,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtkget_qt/rtkget_qt.qrc">
+         <iconset resource="strsvr_qt.qrc">
           <normaloff>:/buttons/del.bmp</normaloff>:/buttons/del.bmp</iconset>
         </property>
         <property name="flat">
@@ -93,7 +98,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtkget_qt/rtkget_qt.qrc">
+         <iconset resource="strsvr_qt.qrc">
           <normaloff>:/buttons/pause.bmp</normaloff>:/buttons/pause.bmp</iconset>
         </property>
         <property name="flat">
@@ -113,7 +118,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtkget_qt/rtkget_qt.qrc">
+         <iconset resource="strsvr_qt.qrc">
           <normaloff>:/buttons/fitd.bmp</normaloff>:/buttons/fitd.bmp</iconset>
         </property>
         <property name="flat">
@@ -180,7 +185,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../rtkget_qt/rtkget_qt.qrc"/>
+  <include location="strsvr_qt.qrc"/>
  </resources>
  <connections/>
 </ui>

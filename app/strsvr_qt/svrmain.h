@@ -19,6 +19,8 @@ class FileOptDialog;
 class FtpOptDialog;
 class StrMonDialog;
 
+#define MAXSTR        4    // number of streams
+
 //---------------------------------------------------------------------------
 class MainForm : public QDialog, private Ui::MainForm
 {
@@ -58,13 +60,13 @@ protected:
 
 private:
     QString IniFile;
-    QString Paths[4][4], Cmds[4][2], CmdsTcp[4][2];
+    QString Paths[MAXSTR][4], Cmds[MAXSTR][2], CmdsTcp[MAXSTR][2];
     QString TcpHistory[MAXHIST], TcpMntpHist[MAXHIST];
     QString StaPosFile, ExeDirectory, LocalDirectory, SwapInterval;
-    QString ProxyAddress;
-    QString ConvMsg[3], ConvOpt[3], AntType, RcvType;
-    int ConvEna[3], ConvInp[3], ConvOut[3], StaId, StaSel;
-    int TraceLevel, SvrOpt[6], CmdEna[4][2], CmdEnaTcp[4][2], NmeaReq, FileSwapMargin;
+    QString ProxyAddress,SrcTblFile,LogFile;
+    QString ConvMsg[MAXSTR - 1], ConvOpt[MAXSTR - 1], AntType, RcvType;
+    int ConvEna[MAXSTR - 1], ConvInp[MAXSTR - 1], ConvOut[3], StaId, StaSel;
+    int TraceLevel, SvrOpt[6], CmdEna[MAXSTR][2], CmdEnaTcp[MAXSTR][2], NmeaReq, FileSwapMargin;
     double AntPos[3], AntOff[3];
     gtime_t StartTime, EndTime;
     QSystemTrayIcon *TrayIcon;

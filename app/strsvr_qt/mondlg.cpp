@@ -41,23 +41,21 @@ void StrMonDialog::BtnCloseClick()
 //---------------------------------------------------------------------------
 void StrMonDialog::SelFmtChange()
 {
-    const char *msg = "\n";
-
-    if ((StrFmt-2 == STRFMT_RTCM2) || (StrFmt-2 == STRFMT_RTCM3)) {
+    if ((StrFmt-3 == STRFMT_RTCM2) || (StrFmt-3 == STRFMT_RTCM3)) {
         free_rtcm(&rtcm);
     }
-    else if (StrFmt >= 2) {
+    else if (StrFmt >= 3) {
         free_raw(&raw);
     }
     StrFmt = SelFmt->currentIndex();
-    AddConsole((unsigned char *)msg, 1, 1);
+    ConBuff.clear();
 
-    if ((StrFmt - 2 == STRFMT_RTCM2)|| (StrFmt - 2 == STRFMT_RTCM3)) {
+    if ((StrFmt - 3 == STRFMT_RTCM2)|| (StrFmt - 3 == STRFMT_RTCM3)) {
         init_rtcm(&rtcm);
         rtcm.outtype = 1;
     }
-    else if (StrFmt >= 2) {
-        init_raw(&raw, StrFmt - 2);
+    else if (StrFmt >= 3) {
+        init_raw(&raw, StrFmt - 3);
         raw.outtype = 1;
     }
 }
@@ -69,7 +67,7 @@ void StrMonDialog::AddMsg(unsigned char *msg, int len)
 
     if (len <= 0) return;
 
-    else if (StrFmt - 2 == STRFMT_RTCM2) {
+    else if (StrFmt - 3 == STRFMT_RTCM2) {
         for (i = 0; i < len; i++) {
             input_rtcm2(&rtcm, msg[i]);
             if (rtcm.msgtype[0]) {
@@ -79,7 +77,7 @@ void StrMonDialog::AddMsg(unsigned char *msg, int len)
             }
         }
     }
-    else if (StrFmt - 2 == STRFMT_RTCM3) {
+    else if (StrFmt - 3 == STRFMT_RTCM3) {
         for (i = 0; i < len; i++) {
             input_rtcm3(&rtcm, msg[i]);
             if (rtcm.msgtype[0]) {
@@ -89,9 +87,9 @@ void StrMonDialog::AddMsg(unsigned char *msg, int len)
             }
         }
     }
-    else if (StrFmt >= 2) { // raw
+    else if (StrFmt >= 3) { // raw
         for (i = 0; i < len; i++) {
-            input_raw(&raw,StrFmt - 2, msg[i]);
+            input_raw(&raw,StrFmt - 3, msg[i]);
             if (raw.msgtype[0]) {
                 n = sprintf(buff, "%s\n", raw.msgtype);
                 AddConsole((unsigned char *)buff, n, 1);
@@ -99,8 +97,12 @@ void StrMonDialog::AddMsg(unsigned char *msg, int len)
             }
         }
     }
-    else { // HEX/ASC
-        AddConsole(msg, len, StrFmt);
+    else if (StrFmt>=1) { // HEX/ASC
+        AddConsole(msg,len,StrFmt-1);
+    }
+    else { // Streams
+        ConBuff.clear();
+        AddConsole(msg,len,1);
     }
 }
 //---------------------------------------------------------------------------

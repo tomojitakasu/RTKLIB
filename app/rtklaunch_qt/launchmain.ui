@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>232</width>
-    <height>45</height>
+    <width>253</width>
+    <height>53</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -47,7 +47,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+      <iconset resource="../strsvr_qt/strsvr_qt.qrc">
        <normaloff>:/icons/rtk6.bmp</normaloff>:/icons/rtk6.bmp</iconset>
      </property>
      <property name="flat">
@@ -67,7 +67,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+      <iconset resource="../strsvr_qt/strsvr_qt.qrc">
        <normaloff>:/icons/rtk5.bmp</normaloff>:/icons/rtk5.bmp</iconset>
      </property>
      <property name="flat">
@@ -87,7 +87,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+      <iconset resource="../strsvr_qt/strsvr_qt.qrc">
        <normaloff>:/icons/rtk3.bmp</normaloff>:/icons/rtk3.bmp</iconset>
      </property>
      <property name="flat">
@@ -107,7 +107,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+      <iconset resource="../strsvr_qt/strsvr_qt.qrc">
        <normaloff>:/icons/rtk2.bmp</normaloff>:/icons/rtk2.bmp</iconset>
      </property>
      <property name="flat">
@@ -127,7 +127,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+      <iconset resource="../strsvr_qt/strsvr_qt.qrc">
        <normaloff>:/icons/rtk1.bmp</normaloff>:/icons/rtk1.bmp</iconset>
      </property>
      <property name="flat">
@@ -147,7 +147,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+      <iconset resource="../strsvr_qt/strsvr_qt.qrc">
        <normaloff>:/icons/rtk7.bmp</normaloff>:/icons/rtk7.bmp</iconset>
      </property>
      <property name="flat">
@@ -167,7 +167,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+      <iconset resource="../strsvr_qt/strsvr_qt.qrc">
        <normaloff>:/icons/rtk8.bmp</normaloff>:/icons/rtk8.bmp</iconset>
      </property>
      <property name="flat">
@@ -199,7 +199,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+      <iconset resource="../strsvr_qt/strsvr_qt.qrc">
        <normaloff>:/buttons/sqr.bmp</normaloff>:/buttons/sqr.bmp</iconset>
      </property>
      <property name="flat">
@@ -207,10 +207,17 @@
      </property>
     </widget>
    </item>
+   <item row="1" column="5">
+    <widget class="QPushButton" name="BtnOption">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <resources>
-  <include location="../rtkconv_qt/rtkconv_qt.qrc"/>
+  <include location="../strsvr_qt/strsvr_qt.qrc"/>
  </resources>
  <connections/>
 </ui>

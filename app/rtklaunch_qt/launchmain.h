@@ -10,6 +10,7 @@
 
 class QCloseEvent;
 class QCloseEvent;
+class LaunchOptDlg;
 
 //---------------------------------------------------------------------------
 class MainForm : public QDialog, private Ui::MainForm
@@ -29,6 +30,7 @@ public slots:
     void BtnNaviClick();
     void BtnGetClick();
     void BtnTrayClick();
+    void BtnOptionClick();
     void TrayIconActivated(QSystemTrayIcon::ActivationReason);
     void MenuExpandClick();
 
@@ -36,11 +38,13 @@ private:
     QString IniFile;
     QSystemTrayIcon TrayIcon;
     QMenu *trayMenu;
+    LaunchOptDlg *launchOptDlg;
     int Tray;
 	
     int ExecCmd(const QString &cmd);
 
 public:
+    int Option;
     explicit MainForm(QWidget *parent = 0);
 };
 //---------------------------------------------------------------------------
