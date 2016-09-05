@@ -511,6 +511,7 @@ void __fastcall TMainForm::SvrStart(void)
     strsetsrctbl(SrcTblFile.c_str());
     
     for (int i=0;i<MAXSTR-1;i++) { // for each out stream
+        if (Input->ItemIndex==2||Input->ItemIndex==4) continue;
         if (!ConvEna[i]) continue;
         if (!(conv[i]=strconvnew(ConvInp[i],ConvOut[i],ConvMsg[i].c_str(),
                                  StaId,StaSel,ConvOpt[i].c_str()))) continue;
@@ -689,9 +690,9 @@ void __fastcall TMainForm::UpdateEnable(void)
     BtnCmd1   ->Enabled=BtnOutput1->Enabled&&(Output1->ItemIndex==1||Output1->ItemIndex==2);
     BtnCmd2   ->Enabled=BtnOutput2->Enabled&&(Output2->ItemIndex==1||Output2->ItemIndex==2);
     BtnCmd3   ->Enabled=BtnOutput3->Enabled&&(Output3->ItemIndex==1||Output3->ItemIndex==2);
-    BtnConv1  ->Enabled=BtnOutput1->Enabled;
-    BtnConv2  ->Enabled=BtnOutput2->Enabled;
-    BtnConv3  ->Enabled=BtnOutput3->Enabled;
+    BtnConv1  ->Enabled=BtnOutput1->Enabled&&Input->ItemIndex!=2&&Input->ItemIndex!=4;
+    BtnConv2  ->Enabled=BtnOutput2->Enabled&&Input->ItemIndex!=2&&Input->ItemIndex!=4;
+    BtnConv3  ->Enabled=BtnOutput3->Enabled&&Input->ItemIndex!=2&&Input->ItemIndex!=4;
 }
 // set task-tray icon -------------------------------------------------------
 void __fastcall TMainForm::SetTrayIcon(int index)

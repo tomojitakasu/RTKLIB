@@ -44,6 +44,10 @@ __published:
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall BtnTime1Click(TObject *Sender);
 	void __fastcall BtnTime2Click(TObject *Sender);
+	void __fastcall TimeY1KeyDown(TObject *Sender, WORD &Key, TShiftState Shift);
+	void __fastcall TimeH2KeyDown(TObject *Sender, WORD &Key, TShiftState Shift);
+	void __fastcall TimeH1KeyDown(TObject *Sender, WORD &Key, TShiftState Shift);
+	void __fastcall TimeY2KeyDown(TObject *Sender, WORD &Key, TShiftState Shift);
 private:
 	void __fastcall UpdateEnable(void);
 public:

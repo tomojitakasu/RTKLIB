@@ -122,6 +122,7 @@
 *           2016/08/20 1.38 fix type incompatibility in win64 environment
 *                           change constant _POSIX_C_SOURCE 199309 -> 199506
 *           2016/08/21 1.39 fix bug on week overflow in time2gpst()/gpst2time()
+*           2016/09/05 1.40 fix bug on invalid nav data read in readnav()
 *-----------------------------------------------------------------------------*/
 #define _POSIX_C_SOURCE 199506
 #include <stdarg.h>
@@ -2734,9 +2735,9 @@ extern int readnav(const char *file, nav_t *nav)
                    &nav->eph[sat-1].toes,&nav->eph[sat-1].fit ,&nav->eph[sat-1].f0  ,
                    &nav->eph[sat-1].f1  ,&nav->eph[sat-1].f2  ,&nav->eph[sat-1].tgd[0],
                    &nav->eph[sat-1].code, &nav->eph[sat-1].flag);
-            nav->eph[prn-1].toe.time=toe_time;
-            nav->eph[prn-1].toc.time=toc_time;
-            nav->eph[prn-1].ttr.time=ttr_time;
+            nav->eph[sat-1].toe.time=toe_time;
+            nav->eph[sat-1].toc.time=toc_time;
+            nav->eph[sat-1].ttr.time=ttr_time;
         }
     }
     fclose(fp);

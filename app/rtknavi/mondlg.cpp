@@ -1405,7 +1405,7 @@ void __fastcall TMonitorDialog::ShowStr(void)
 	};
 	AnsiString type[]={
 		"-","Serial","File","TCP Server","TCP Client","UDP","NTRIP Server",
-		"NTRIP Client"
+		"NTRIP Client","FTP","HTTP","NTRIP Caster S","NTRIP Caster C"
 	};
 	AnsiString outformat[]={
 		"Lat/Lon/Height","X/Y/Z-ECEF","E/N/U-Baseline","NMEA-0183"

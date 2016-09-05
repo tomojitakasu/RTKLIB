@@ -91,3 +91,4 @@ UPDATE HISTORY
                       add protocol analysis in input stream monitor of STRSVR
                       add window size extension of RTKPOST and RTKCONV
 2016/09/03  2.4.3 b20 add ntrip caster functions
+2016/09/05  2.4.3 b21 fix several bugs

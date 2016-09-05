@@ -448,7 +448,6 @@
 			<FormResources Include="..\appcmn\console.dfm"/>
 			<FormResources Include="..\appcmn\ftpoptdlg.dfm"/>
 			<FormResources Include="..\appcmn\fileoptdlg.dfm"/>
-			<FormResources Include="conndlg.dfm"/>
 			<FormResources Include="pntdlg.dfm"/>
 			<FormResources Include="plotopt.dfm"/>
 			<FormResources Include="plotmain.dfm"/>
@@ -456,6 +455,7 @@
 			<FormResources Include="satdlg.dfm"/>
 			<FormResources Include="gmview.dfm"/>
 			<FormResources Include="geview.dfm"/>
+			<FormResources Include="conndlg.dfm"/>
 			<FormResources Include="mapdlg.dfm"/>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>

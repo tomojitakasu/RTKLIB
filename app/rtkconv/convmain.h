@@ -151,6 +151,10 @@ __published:
 	void __fastcall BtnAbortClick(TObject *Sender);
 	void __fastcall Panel4Resize(TObject *Sender);
 	void __fastcall Panel2Resize(TObject *Sender);
+	void __fastcall TimeY1KeyDown(TObject *Sender, WORD &Key, TShiftState Shift);
+	void __fastcall TimeH1KeyDown(TObject *Sender, WORD &Key, TShiftState Shift);
+	void __fastcall TimeY2KeyDown(TObject *Sender, WORD &Key, TShiftState Shift);
+	void __fastcall TimeH2KeyDown(TObject *Sender, WORD &Key, TShiftState Shift);
 	
 private:
 	AnsiString IniFile,CmdPostExe;

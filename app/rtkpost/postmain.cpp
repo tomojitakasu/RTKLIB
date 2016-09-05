@@ -663,6 +663,46 @@ void __fastcall TMainForm::TimeH2UDChangingEx(TObject *Sender,
     TimeH2->Text=s.sprintf("%02d:%02d:%02d",sec/3600,(sec%3600)/60,sec%60);
     TimeH2->SelStart=p>5||p==0?8:(p>2?5:2);
 }
+//---------------------------------------------------------------------------
+void __fastcall TMainForm::TimeY1KeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
+
+{
+    bool allowchange;
+    if (Key==VK_UP||Key==VK_DOWN) {
+        TimeY1UDChangingEx(Sender,allowchange,0,Key==VK_UP?updUp:updDown);
+        Key=0;
+    }
+}
+//---------------------------------------------------------------------------
+void __fastcall TMainForm::TimeH1KeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
+
+{
+    bool allowchange;
+    if (Key==VK_UP||Key==VK_DOWN) {
+        TimeH1UDChangingEx(Sender,allowchange,0,Key==VK_UP?updUp:updDown);
+        Key=0;
+    }
+}
+//---------------------------------------------------------------------------
+void __fastcall TMainForm::TimeY2KeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
+
+{
+    bool allowchange;
+    if (Key==VK_UP||Key==VK_DOWN) {
+        TimeY2UDChangingEx(Sender,allowchange,0,Key==VK_UP?updUp:updDown);
+        Key=0;
+    }
+}
+//---------------------------------------------------------------------------
+void __fastcall TMainForm::TimeH2KeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
+
+{
+    bool allowchange;
+    if (Key==VK_UP||Key==VK_DOWN) {
+        TimeH2UDChangingEx(Sender,allowchange,0,Key==VK_UP?updUp:updDown);
+        Key=0;
+    }
+}
 // callback on inputfile-1 change -------------------------------------------
 void __fastcall TMainForm::InputFile1Change(TObject *Sender)
 {

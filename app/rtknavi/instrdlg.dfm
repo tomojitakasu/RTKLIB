@@ -81,7 +81,7 @@ object InputStrDialog: TInputStrDialog
     Caption = 'Transmit NMEA GPGGA to Base Station'
   end
   object Label1: TLabel
-    Left = 372
+    Left = 375
     Top = 3
     Width = 18
     Height = 13
@@ -89,7 +89,7 @@ object InputStrDialog: TInputStrDialog
   end
   object StreamC2: TCheckBox
     Left = 8
-    Top = 42
+    Top = 43
     Width = 121
     Height = 17
     Caption = '(2) Base Station'
@@ -167,7 +167,7 @@ object InputStrDialog: TInputStrDialog
   end
   object Stream2: TComboBox
     Left = 120
-    Top = 40
+    Top = 41
     Width = 103
     Height = 21
     Style = csDropDownList
@@ -184,7 +184,7 @@ object InputStrDialog: TInputStrDialog
   end
   object BtnStr2: TButton
     Left = 224
-    Top = 39
+    Top = 40
     Width = 25
     Height = 23
     Caption = '...'
@@ -208,7 +208,7 @@ object InputStrDialog: TInputStrDialog
   end
   object Format2: TComboBox
     Left = 275
-    Top = 40
+    Top = 41
     Width = 97
     Height = 21
     Style = csDropDownList
@@ -232,7 +232,7 @@ object InputStrDialog: TInputStrDialog
   end
   object BtnCmd2: TButton
     Left = 249
-    Top = 39
+    Top = 40
     Width = 25
     Height = 23
     Caption = '...'
@@ -385,7 +385,7 @@ object InputStrDialog: TInputStrDialog
   end
   object StreamC3: TCheckBox
     Left = 8
-    Top = 64
+    Top = 66
     Width = 121
     Height = 17
     Caption = '(3) Correction'
@@ -394,7 +394,7 @@ object InputStrDialog: TInputStrDialog
   end
   object Stream3: TComboBox
     Left = 120
-    Top = 62
+    Top = 64
     Width = 103
     Height = 21
     Style = csDropDownList
@@ -413,7 +413,7 @@ object InputStrDialog: TInputStrDialog
   end
   object BtnStr3: TButton
     Left = 224
-    Top = 61
+    Top = 63
     Width = 25
     Height = 23
     Caption = '...'
@@ -428,7 +428,7 @@ object InputStrDialog: TInputStrDialog
   end
   object Format3: TComboBox
     Left = 275
-    Top = 62
+    Top = 64
     Width = 97
     Height = 21
     Style = csDropDownList
@@ -437,7 +437,7 @@ object InputStrDialog: TInputStrDialog
   end
   object BtnCmd3: TButton
     Left = 249
-    Top = 61
+    Top = 63
     Width = 25
     Height = 23
     Caption = '...'
@@ -467,7 +467,7 @@ object InputStrDialog: TInputStrDialog
   end
   object BtnRcvOpt2: TButton
     Left = 373
-    Top = 39
+    Top = 40
     Width = 25
     Height = 23
     Caption = '...'
@@ -482,7 +482,7 @@ object InputStrDialog: TInputStrDialog
   end
   object BtnRcvOpt3: TButton
     Left = 373
-    Top = 61
+    Top = 63
     Width = 25
     Height = 23
     Caption = '...'

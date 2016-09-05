@@ -1195,7 +1195,7 @@ static int waittcpsvr(tcpsvr_t *tcpsvr, char *msg)
 /* read tcp server -----------------------------------------------------------*/
 static int readtcpsvr(tcpsvr_t *tcpsvr, unsigned char *buff, int n, char *msg)
 {
-    int i,nr;
+    int i,nr,err;
     
     tracet(4,"readtcpsvr: state=%d\n",tcpsvr->svr.state);
     
@@ -1205,8 +1205,10 @@ static int readtcpsvr(tcpsvr_t *tcpsvr, unsigned char *buff, int n, char *msg)
         if (tcpsvr->cli[i].state!=2) continue;
         
         if ((nr=recv_nb(tcpsvr->cli[i].sock,buff,n))==-1) {
-            tracet(1,"readtcpsvr: recv error sock=%d err=%d\n",
-                   tcpsvr->cli[i].sock,errsock());
+            if ((err=errsock())) {
+                tracet(1,"readtcpsvr: recv error sock=%d err=%d\n",
+                       tcpsvr->cli[i].sock,err);
+            }
             discontcp(&tcpsvr->cli[i],ticonnect);
             updatetcpsvr(tcpsvr,msg);
             return 0;
@@ -1221,7 +1223,7 @@ static int readtcpsvr(tcpsvr_t *tcpsvr, unsigned char *buff, int n, char *msg)
 /* write tcp server ----------------------------------------------------------*/
 static int writetcpsvr(tcpsvr_t *tcpsvr, unsigned char *buff, int n, char *msg)
 {
-    int i,ns=0;
+    int i,ns=0,err;
     
     tracet(4,"writetcpsvr: state=%d n=%d\n",tcpsvr->svr.state,n);
     
@@ -1231,8 +1233,10 @@ static int writetcpsvr(tcpsvr_t *tcpsvr, unsigned char *buff, int n, char *msg)
         if (tcpsvr->cli[i].state!=2) continue;
         
         if ((ns=send_nb(tcpsvr->cli[i].sock,buff,n))==-1) {
-            tracet(1,"writetcpsvr: send error i=%d sock=%d err=%d\n",i,
-                   tcpsvr->cli[i].sock,errsock());
+            if ((err=errsock())) {
+                tracet(1,"writetcpsvr: send error i=%d sock=%d err=%d\n",i,
+                       tcpsvr->cli[i].sock,err);
+            }
             discontcp(&tcpsvr->cli[i],ticonnect);
             updatetcpsvr(tcpsvr,msg);
             return 0;
@@ -1265,7 +1269,7 @@ static int statextcp(tcp_t *tcp, char *msg)
 /* get extended state tcp server ---------------------------------------------*/
 static int statextcpsvr(tcpsvr_t *tcpsvr, char *msg)
 {
-    char *p=msg,tstr1[32],tstr2[32];
+    char *p=msg;
     int i,state=tcpsvr?tcpsvr->svr.state:0;
     
     p+=sprintf(p,"tcpsvr:\n");
@@ -1376,9 +1380,13 @@ static int readtcpcli(tcpcli_t *tcpcli, unsigned char *buff, int n, char *msg)
     if (!waittcpcli(tcpcli,msg)) return 0;
     
     if ((nr=recv_nb(tcpcli->svr.sock,buff,n))==-1) {
-        err=errsock();
-        tracet(1,"readtcpcli: recv error sock=%d err=%d\n",tcpcli->svr.sock,err);
-        sprintf(msg,"recv error (%d)",err);
+        if ((err=errsock())) {
+            tracet(1,"readtcpcli: recv error sock=%d err=%d\n",tcpcli->svr.sock,err);
+            sprintf(msg,"recv error (%d)",err);
+        }
+        else {
+            sprintf(msg,"disconnected");
+        }
         discontcp(&tcpcli->svr,tcpcli->tirecon);
         return 0;
     }
@@ -1396,9 +1404,13 @@ static int writetcpcli(tcpcli_t *tcpcli, unsigned char *buff, int n, char *msg)
     if (!waittcpcli(tcpcli,msg)) return 0;
     
     if ((ns=send_nb(tcpcli->svr.sock,buff,n))==-1) {
-        err=errsock();
-        tracet(1,"writetcp: send error sock=%d err=%d\n",tcpcli->svr.sock,err);
-        sprintf(msg,"send error (%d)",err);
+        if ((err=errsock())) {
+            tracet(1,"writetcp: send error sock=%d err=%d\n",tcpcli->svr.sock,err);
+            sprintf(msg,"send error (%d)",err);
+        }
+        else {
+            sprintf(msg,"disconnected");
+        }
         discontcp(&tcpcli->svr,tcpcli->tirecon);
         return 0;
     }
@@ -1693,8 +1705,8 @@ static int statentrip(ntrip_t *ntrip)
 /* get extended state ntrip --------------------------------------------------*/
 static int statexntrip(ntrip_t *ntrip, char *msg)
 {
-    char *p=msg,tstr1[32],tstr2[32];
-    int i,state=!ntrip?0:(ntrip->state==0?ntrip->tcp->svr.state:ntrip->state);
+    char *p=msg;
+    int state=!ntrip?0:(ntrip->state==0?ntrip->tcp->svr.state:ntrip->state);
     
     p+=sprintf(p,"ntrip:\n");
     p+=sprintf(p,"  state   = %d\n",state);
@@ -1829,6 +1841,8 @@ static void rsp_ntripc_c(ntripc_t *ntripc, int i)
     if (!*mntpnt||!test_mntpnt(mntpnt)) {
         tracet(2,"rsp_ntripc_c: no mountpoint\n");
         send_nb(ntripc->tcp->cli[i].sock,(unsigned char *)rsp1,strlen(rsp1));
+        
+        /* send source table */
         send_srctbl(ntripc->tcp->cli[i].sock);
         discon_ntripc(ntripc,i);
         return;
@@ -1920,7 +1934,7 @@ static void rsp_ntripc_s(ntripc_t *ntripc, int i)
 static void wait_ntripc(ntripc_t *ntripc, char *msg)
 {
     unsigned char *buff;
-    int i,n,nmax;
+    int i,n,nmax,err;
     
     tracet(4,"wait_ntripc\n");
     
@@ -1936,8 +1950,10 @@ static void wait_ntripc(ntripc_t *ntripc, char *msg)
         nmax=NTRIP_MAXRSP-ntripc->con[i].nb-1;
         
         if ((n=recv_nb(ntripc->tcp->cli[i].sock,buff,nmax))==-1) {
-            tracet(1,"accept_ntripc: recv error sock=%d err=%d\n",
-                   ntripc->tcp->cli[i].sock,errsock());
+            if ((err=errsock())) {
+                tracet(1,"accept_ntripc: recv error sock=%d err=%d\n",
+                       ntripc->tcp->cli[i].sock,err);
+            }
             discon_ntripc(ntripc,i);
             continue;
         }
@@ -1956,8 +1972,7 @@ static void wait_ntripc(ntripc_t *ntripc, char *msg)
 /* read ntrip-caster ---------------------------------------------------------*/
 static int readntripc(ntripc_t *ntripc, unsigned char *buff, int n, char *msg)
 {
-    unsigned char *p;
-    int i,nr;
+    int i,nr,err;
     
     tracet(3,"readntripc:\n");
     
@@ -1969,8 +1984,10 @@ static int readntripc(ntripc_t *ntripc, unsigned char *buff, int n, char *msg)
         nr=recv_nb(ntripc->tcp->cli[i].sock,buff,n);
         
         if (nr<0) {
-            tracet(1,"readntripc: recv error i=%d sock=%d err=%d\n",i,
-                   ntripc->tcp->cli[i].sock,errsock());
+            if ((err=errsock())) {
+                tracet(1,"readntripc: recv error i=%d sock=%d err=%d\n",i,
+                       ntripc->tcp->cli[i].sock,err);
+            }
             discon_ntripc(ntripc,i);
         }
         else if (nr>0) {
@@ -1986,7 +2003,7 @@ static int readntripc(ntripc_t *ntripc, unsigned char *buff, int n, char *msg)
 /* write ntrip-caster --------------------------------------------------------*/
 static int writentripc(ntripc_t *ntripc, unsigned char *buff, int n, char *msg)
 {
-    int i,ns=0;
+    int i,ns=0,err;
     
     tracet(3,"writentripc: n=%d\n",n);
     
@@ -2002,8 +2019,10 @@ static int writentripc(ntripc_t *ntripc, unsigned char *buff, int n, char *msg)
         ns=send_nb(ntripc->tcp->cli[i].sock,buff,n);
         
         if (ns<n) {
-            tracet(1,"writentripc: send error i=%d sock=%d err=%d\n",i,
-                   ntripc->tcp->cli[i].sock,errsock());
+            if ((err=errsock())) {
+                tracet(1,"writentripc: send error i=%d sock=%d err=%d\n",i,
+                       ntripc->tcp->cli[i].sock,err);
+            }
             discon_ntripc(ntripc,i);
         }
         else {
@@ -2021,7 +2040,7 @@ static int statentripc(ntripc_t *ntripc)
 static int statexntripc(ntripc_t *ntripc, char *msg)
 {
     char *p=msg;
-    int i,j,state=!ntripc?0:ntripc->state;
+    int i,state=!ntripc?0:ntripc->state;
     
     p+=sprintf(p,"ntripc:\n");
     p+=sprintf(p,"  state   = %d\n",ntripc->state);

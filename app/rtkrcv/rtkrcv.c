@@ -31,6 +31,7 @@
 *           2015/01/26 1.16 support septentrio
 *           2016/07/01 1.17 support CMR/CMR+
 *           2016/08/20 1.18 add output of patch level with version
+*           2016/09/05 1.19 support ntrip caster for output stream
 *-----------------------------------------------------------------------------*/
 #include <signal.h>
 #include "rtklib.h"
@@ -141,7 +142,7 @@ static const char *pathopts[]={         /* path options help */
 #define CONOPT  "0:dms,1:deg,2:xyz,3:enu,4:pyl"
 #define FLGOPT  "0:off,1:std+2:age/ratio/ns"
 #define ISTOPT  "0:off,1:serial,2:file,3:tcpsvr,4:tcpcli,7:ntripcli,8:ftp,9:http"
-#define OSTOPT  "0:off,1:serial,2:file,3:tcpsvr,4:tcpcli,6:ntripsvr"
+#define OSTOPT  "0:off,1:serial,2:file,3:tcpsvr,4:tcpcli,6:ntripsvr,11:ntripc_c"
 #define FMTOPT  "0:rtcm2,1:rtcm3,2:oem4,3:oem3,4:ubx,5:ss2,6:hemis,7:skytraq,8:gw10,9:javad,10:nvs,11:binex,12:rt17,13:sbf,14:cmr,17:sp3"
 #define NMEOPT  "0:off,1:latlon,2:single"
 #define SOLOPT  "0:llh,1:xyz,2:enu,3:nmea,4:stat"
@@ -814,7 +815,7 @@ static void prnavidata(vt_t *vt)
         if (eph[i].toe.time!=0) time2str(eph[i].toe,s1,0); else strcpy(s1,"-");
         if (eph[i].toc.time!=0) time2str(eph[i].toc,s2,0); else strcpy(s2,"-");
         if (eph[i].ttr.time!=0) time2str(eph[i].ttr,s3,0); else strcpy(s3,"-");
-        vt_printf(vt,"%3s %3s %3d %3d %3d %3d  %02X %19s %19s %19s %3d %3d\n",
+        vt_printf(vt,"%3s %3s %3d %3d %3d %3d %03X %19s %19s %19s %3d %3d\n",
                 id,valid?"OK":"-",eph[i].iode,eph[i].iodc,0,eph[i].sva,
                 eph[i].svh,s1,s2,s3,eph[i].code,eph[i].flag);
     }
@@ -857,7 +858,8 @@ static void prstream(vt_t *vt)
         "log rover","log base","log corr","monitor"
     };
     const char *type[]={
-        "-","serial","file","tcpsvr","tcpcli","udp","ntrips","ntripc","ftp","http"
+        "-","serial","file","tcpsvr","tcpcli","udp","ntrips","ntripc","ftp",
+        "http","ntripc_s","ntripc_c
     };
     const char *fmt[]={"rtcm2","rtcm3","oem4","oem3","ubx","ss2","hemis","skytreq",
                        "gw10","javad","nvs","binex","rt17","sbf","cmr","","","sp3",""};
@@ -875,11 +877,11 @@ static void prstream(vt_t *vt)
     format[8]=SOLF_LLH;
     rtksvrunlock(&svr);
     
-    vt_printf(vt,"\n%s%-12s %-6s %-5s %s %9s %7s %9s %7s %s%s\n",ESC_BOLD,
+    vt_printf(vt,"\n%s%-12s %-8s %-5s %s %9s %7s %9s %7s %s%s\n",ESC_BOLD,
               "Stream","Type","Fmt","S","In-byte","In-bps","Out-byte","Out-bps",
               "Message",ESC_RESET);
     for (i=0;i<9;i++) {
-        vt_printf(vt,"%-12s %-6s %-5s %s %9d %7d %9d %7d %s\n",
+        vt_printf(vt,"%-12s %-8s %-5s %s %9d %7d %9d %7d %s\n",
             ch[i],type[stream[i].type],i<3?fmt[format[i]]:(i<5||i==8?sol[format[i]]:"-"),
             stream[i].state<0?"E":(stream[i].state?"C":"-"),
             stream[i].inb,stream[i].inr,stream[i].outb,stream[i].outr,stream[i].msg);

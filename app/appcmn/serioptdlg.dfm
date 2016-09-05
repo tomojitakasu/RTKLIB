@@ -4,7 +4,7 @@ object SerialOptDialog: TSerialOptDialog
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Serial Options'
-  ClientHeight = 139
+  ClientHeight = 140
   ClientWidth = 310
   Color = clWhite
   Font.Charset = DEFAULT_CHARSET
@@ -60,9 +60,9 @@ object SerialOptDialog: TSerialOptDialog
     Caption = 'Flow Control'
   end
   object BtnOk: TButton
-    Left = 127
-    Top = 109
-    Width = 87
+    Left = 123
+    Top = 108
+    Width = 89
     Height = 29
     Caption = '&OK'
     ModalResult = 1
@@ -70,9 +70,9 @@ object SerialOptDialog: TSerialOptDialog
     OnClick = BtnOkClick
   end
   object BtnCancel: TButton
-    Left = 217
-    Top = 109
-    Width = 87
+    Left = 215
+    Top = 108
+    Width = 89
     Height = 29
     Caption = '&Cancel'
     ModalResult = 2
@@ -167,8 +167,8 @@ object SerialOptDialog: TSerialOptDialog
   end
   object BtnCmd: TButton
     Left = 9
-    Top = 109
-    Width = 87
+    Top = 108
+    Width = 89
     Height = 29
     Caption = '&Commands...'
     TabOrder = 8

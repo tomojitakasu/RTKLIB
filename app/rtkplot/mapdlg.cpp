@@ -7,6 +7,10 @@
 #include "plotmain.h"
 #include "mapdlg.h"
 #include "confdlg.h"
+
+#define INC_LATLON  0.000001
+#define INC_SCALE   0.0001
+
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma resource "*.dfm"
@@ -84,7 +88,7 @@ void __fastcall TMapAreaDialog::ScaleXUpDownChangingEx(TObject *Sender,
 {
 	AnsiString s;
 	double scale=str2dbl(ScaleX->Text);
-	if (Direction==updUp) scale+=0.0005; else scale-=0.0005;
+	if (Direction==updUp) scale+=INC_SCALE; else scale-=INC_SCALE;
 	ScaleX->Text=s.sprintf("%.5f",scale);
 	UpdateMap();
 }
@@ -94,7 +98,7 @@ void __fastcall TMapAreaDialog::ScaleYUpDownChangingEx(TObject *Sender,
 {
 	AnsiString s;
 	double scale=str2dbl(ScaleY->Text);
-	if (Direction==updUp) scale+=0.0005; else scale-=0.0005;
+	if (Direction==updUp) scale+=INC_SCALE; else scale-=INC_SCALE;
 	ScaleY->Text=s.sprintf("%.5f",scale);
 	UpdateMap();
 }
@@ -104,7 +108,7 @@ void __fastcall TMapAreaDialog::LatUpDownChangingEx(TObject *Sender,
 {
 	AnsiString s;
 	double lat=str2dbl(Lat->Text);
-	if (Direction==updUp) lat+=0.000005; else lat-=0.000005;
+	if (Direction==updUp) lat+=INC_LATLON; else lat-=INC_LATLON;
 	Lat->Text=s.sprintf("%.7f",lat);
 	UpdateMap();
 }
@@ -114,9 +118,49 @@ void __fastcall TMapAreaDialog::LonUpDownChangingEx(TObject *Sender,
 {
 	AnsiString s;
 	double lon=str2dbl(Lon->Text);
-	if (Direction==updUp) lon+=0.000005; else lon-=0.000005;
+	if (Direction==updUp) lon+=INC_LATLON; else lon-=INC_LATLON;
 	Lon->Text=s.sprintf("%.7f",lon);
 	UpdateMap();
+}
+//---------------------------------------------------------------------------
+void __fastcall TMapAreaDialog::ScaleXKeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
+
+{
+    bool allowchange;
+    if (Key==VK_UP||Key==VK_DOWN||Key==VK_RIGHT||Key==VK_LEFT) {
+        ScaleXUpDownChangingEx(Sender,allowchange,0,Key==VK_UP||Key==VK_RIGHT?updUp:updDown);
+        Key=0;
+    }
+}
+//---------------------------------------------------------------------------
+void __fastcall TMapAreaDialog::ScaleYKeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
+
+{
+    bool allowchange;
+    if (Key==VK_UP||Key==VK_DOWN||Key==VK_RIGHT||Key==VK_LEFT) {
+        ScaleYUpDownChangingEx(Sender,allowchange,0,Key==VK_UP||Key==VK_RIGHT?updUp:updDown);
+        Key=0;
+    }
+}
+//---------------------------------------------------------------------------
+void __fastcall TMapAreaDialog::LatKeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
+
+{
+    bool allowchange;
+    if (Key==VK_UP||Key==VK_DOWN||Key==VK_RIGHT||Key==VK_LEFT) {
+        LatUpDownChangingEx(Sender,allowchange,0,Key==VK_UP||Key==VK_RIGHT?updUp:updDown);
+        Key=0;
+    }
+}
+//---------------------------------------------------------------------------
+void __fastcall TMapAreaDialog::LonKeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
+
+{
+    bool allowchange;
+    if (Key==VK_UP||Key==VK_DOWN||Key==VK_RIGHT||Key==VK_LEFT) {
+        LonUpDownChangingEx(Sender,allowchange,0,Key==VK_UP||Key==VK_RIGHT?updUp:updDown);
+        Key=0;
+    }
 }
 //---------------------------------------------------------------------------
 void __fastcall TMapAreaDialog::UpdateField(void)
@@ -146,6 +190,6 @@ void __fastcall TMapAreaDialog::UpdateEnable(void)
 {
 	ScaleY      ->Enabled=!ScaleEq->Checked;
 	ScaleYUpDown->Enabled=!ScaleEq->Checked;
-}
+} 
 //---------------------------------------------------------------------------
 

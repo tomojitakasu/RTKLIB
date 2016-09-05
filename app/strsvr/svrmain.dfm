@@ -3,12 +3,12 @@ object MainForm: TMainForm
   Top = 0
   BorderIcons = []
   Caption = 'STRSVR'
-  ClientHeight = 232
+  ClientHeight = 233
   ClientWidth = 406
   Color = clWhite
-  Constraints.MaxHeight = 270
+  Constraints.MaxHeight = 271
   Constraints.MaxWidth = 422
-  Constraints.MinHeight = 270
+  Constraints.MinHeight = 271
   Constraints.MinWidth = 422
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -25,7 +25,7 @@ object MainForm: TMainForm
     Left = 0
     Top = 0
     Width = 406
-    Height = 202
+    Height = 203
     Align = alTop
     BevelOuter = bvNone
     BorderWidth = 1
@@ -548,17 +548,18 @@ object MainForm: TMainForm
     object Panel4: TPanel
       AlignWithMargins = True
       Left = 2
-      Top = 175
+      Top = 176
       Width = 402
       Height = 25
       Margins.Left = 1
-      Margins.Top = 1
+      Margins.Top = 2
       Margins.Right = 1
       Margins.Bottom = 1
       Align = alClient
       BevelInner = bvRaised
       BevelOuter = bvLowered
       TabOrder = 1
+      ExplicitHeight = 24
       object Message: TLabel
         Left = 21
         Top = 2
@@ -747,7 +748,7 @@ object MainForm: TMainForm
   end
   object BtnStart: TBitBtn
     Left = 2
-    Top = 201
+    Top = 202
     Width = 133
     Height = 29
     Caption = '&Start'
@@ -776,7 +777,7 @@ object MainForm: TMainForm
   end
   object BtnStop: TBitBtn
     Left = 2
-    Top = 201
+    Top = 202
     Width = 133
     Height = 29
     Caption = 'S&top'
@@ -806,7 +807,7 @@ object MainForm: TMainForm
   end
   object BtnOpt: TBitBtn
     Left = 137
-    Top = 201
+    Top = 202
     Width = 132
     Height = 29
     Caption = '&Options...'
@@ -835,7 +836,7 @@ object MainForm: TMainForm
   end
   object BtnExit: TBitBtn
     Left = 271
-    Top = 201
+    Top = 202
     Width = 133
     Height = 29
     Caption = 'E&xit'
@@ -938,7 +939,7 @@ object MainForm: TMainForm
     Left = 128
     Top = 161
     Bitmap = {
-      494C010103000400640010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010103000400680010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       000000000000000000000000000000000000C0C0C000C0C0C000C0C0C000C0C0
       C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0

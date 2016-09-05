@@ -4,7 +4,7 @@ object LogStrDialog: TLogStrDialog
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Log Streams'
-  ClientHeight = 195
+  ClientHeight = 196
   ClientWidth = 390
   Color = clWhite
   Font.Charset = DEFAULT_CHARSET
@@ -25,11 +25,11 @@ object LogStrDialog: TLogStrDialog
     Caption = 'Type'
   end
   object Label6: TLabel
-    Left = 234
+    Left = 240
     Top = 3
-    Width = 32
+    Width = 18
     Height = 13
-    Caption = 'Option'
+    Caption = 'Opt'
   end
   object Label10: TLabel
     Left = 50
@@ -40,7 +40,7 @@ object LogStrDialog: TLogStrDialog
   end
   object LabelF1: TLabel
     Left = 12
-    Top = 83
+    Top = 84
     Width = 66
     Height = 13
     Caption = 'Log File Paths'
@@ -89,7 +89,7 @@ object LogStrDialog: TLogStrDialog
   end
   object Stream1: TComboBox
     Left = 133
-    Top = 18
+    Top = 17
     Width = 103
     Height = 21
     Style = csDropDownList
@@ -125,7 +125,7 @@ object LogStrDialog: TLogStrDialog
   end
   object BtnStr1: TButton
     Left = 237
-    Top = 17
+    Top = 16
     Width = 25
     Height = 23
     Caption = '...'
@@ -207,7 +207,7 @@ object LogStrDialog: TLogStrDialog
   end
   object Stream1C: TCheckBox
     Left = 8
-    Top = 20
+    Top = 19
     Width = 117
     Height = 17
     Caption = '(6) Rover'
@@ -225,7 +225,7 @@ object LogStrDialog: TLogStrDialog
   end
   object Stream3C: TCheckBox
     Left = 8
-    Top = 64
+    Top = 65
     Width = 117
     Height = 17
     Caption = '(8) Correction'
@@ -234,7 +234,7 @@ object LogStrDialog: TLogStrDialog
   end
   object Stream3: TComboBox
     Left = 133
-    Top = 62
+    Top = 63
     Width = 103
     Height = 21
     Style = csDropDownList
@@ -252,7 +252,7 @@ object LogStrDialog: TLogStrDialog
   end
   object BtnStr3: TButton
     Left = 237
-    Top = 61
+    Top = 62
     Width = 25
     Height = 23
     Caption = '...'
@@ -305,7 +305,7 @@ object LogStrDialog: TLogStrDialog
   end
   object OutEventC: TCheckBox
     Left = 276
-    Top = 20
+    Top = 19
     Width = 105
     Height = 17
     Caption = 'Output Event'

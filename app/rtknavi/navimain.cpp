@@ -589,7 +589,9 @@ int __fastcall TMainForm::ConfOverwrite(const char *path)
 {
     AnsiString s;
     FILE *fp;
-    int itype[]={STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPCLI,STR_FILE,STR_FTP,STR_HTTP};
+    int itype[]={
+        STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPCLI,STR_FILE,STR_FTP,STR_HTTP
+    };
     int i;
     char buff1[1024],buff2[1024],*p;
     
@@ -622,7 +624,9 @@ int __fastcall TMainForm::ConfOverwrite(const char *path)
 // callback on button-output-streams ----------------------------------------
 void __fastcall TMainForm::BtnOutputStrClick(TObject *Sender)
 {
-    int otype[]={STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPSVR,STR_FILE};
+    int otype[]={
+        STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPSVR,STR_NTRIPC_C,STR_FILE
+    };
     int i,j,str,update[2]={0};
     char *path;
     
@@ -690,7 +694,9 @@ void __fastcall TMainForm::BtnOutputStrClick(TObject *Sender)
 // callback on button-log-streams -------------------------------------------
 void __fastcall TMainForm::BtnLogStrClick(TObject *Sender)
 {
-    int otype[]={STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPSVR,STR_FILE};
+    int otype[]={
+        STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPSVR,STR_NTRIPC_C,STR_FILE
+    };
     int i,j,str,update[3]={0};
     char *path;
     
@@ -969,8 +975,12 @@ void __fastcall TMainForm::SvrStart(void)
     AnsiString s;
     solopt_t solopt[2];
     double pos[3],nmeapos[3];
-    int itype[]={STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPCLI,STR_FILE,STR_FTP,STR_HTTP};
-    int otype[]={STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPSVR,STR_FILE};
+    int itype[]={
+        STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPCLI,STR_FILE,STR_FTP,STR_HTTP
+    };
+    int otype[]={
+        STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPSVR,STR_NTRIPC_C,STR_FILE
+    };
     int i,strs[MAXSTRRTK]={0},sat,ex,stropt[8]={0};
     char *paths[8],*cmds[3]={0},*rcvopts[3]={0},buff[1024],*p;
     char file[1024],*type;
