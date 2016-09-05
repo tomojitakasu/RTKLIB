@@ -859,7 +859,7 @@ static void prstream(vt_t *vt)
     };
     const char *type[]={
         "-","serial","file","tcpsvr","tcpcli","udp","ntrips","ntripc","ftp",
-        "http","ntripc_s","ntripc_c
+        "http","ntripc_s","ntripc_c"
     };
     const char *fmt[]={"rtcm2","rtcm3","oem4","oem3","ubx","ss2","hemis","skytreq",
                        "gw10","javad","nvs","binex","rt17","sbf","cmr","","","sp3",""};
