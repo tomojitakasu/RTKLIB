@@ -2318,35 +2318,34 @@ void __fastcall TPlot::UpdateEnable(void)
                              PlotType==PLOT_RES ||PlotType==PLOT_OBS ||
                              PlotType==PLOT_DOP ||PlotType==PLOT_SNR ||
                              PlotType==PLOT_SNRE;
+    BtnFitHoriz    ->Enabled=data;
     BtnFitVert     ->Visible=PlotType==PLOT_TRK ||PlotType==PLOT_SOLP||
                              PlotType==PLOT_SOLV||PlotType==PLOT_SOLA;
-    BtnFitHoriz    ->Enabled=data;
     BtnFitVert     ->Enabled=data;
     
     BtnShowTrack   ->Enabled=data;
     
     BtnFixCent     ->Visible=PlotType==PLOT_TRK;
+    BtnFixCent     ->Enabled=data;
     BtnFixHoriz    ->Visible=PlotType==PLOT_SOLP||PlotType==PLOT_SOLV||
                              PlotType==PLOT_SOLA||PlotType==PLOT_NSAT||
                              PlotType==PLOT_RES ||PlotType==PLOT_OBS ||
                              PlotType==PLOT_DOP ||PlotType==PLOT_RES ||
                              PlotType==PLOT_SNR;
+    BtnFixHoriz    ->Enabled=data;
     BtnFixVert     ->Visible=PlotType==PLOT_SOLP||PlotType==PLOT_SOLV||
                              PlotType==PLOT_SOLA;
-    BtnFixCent     ->Enabled=data;
-    BtnFixHoriz    ->Enabled=data;
     BtnFixVert     ->Enabled=data;
+    BtnShowGrid    ->Visible=PlotType==PLOT_TRK;
+    BtnShowSkyplot ->Visible=PlotType==PLOT_SKY||PlotType==PLOT_MPS;
     BtnShowMap     ->Visible=PlotType==PLOT_TRK;
     BtnShowMap     ->Enabled=!BtnSol12->Down;
-    
-    BtnShowSkyplot ->Visible=PlotType==PLOT_SKY||PlotType==PLOT_MPS;
-    BtnShowGrid    ->Visible=PlotType==PLOT_TRK;
     BtnShowImg     ->Visible=PlotType==PLOT_TRK||PlotType==PLOT_SKY||
                              PlotType==PLOT_MPS;
     BtnAnimate     ->Visible=data&&BtnShowTrack->Down;
-    TimeScroll     ->Visible=data&&BtnShowTrack->Down;
     BtnGE          ->Visible=PlotType==PLOT_TRK;
     BtnGM          ->Visible=PlotType==PLOT_TRK;
+    TimeScroll     ->Visible=data&&BtnShowTrack->Down;
     
     if (!BtnShowTrack->Down) {
         BtnFixHoriz->Enabled=false;

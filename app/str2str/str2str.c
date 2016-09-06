@@ -24,6 +24,7 @@
 *           2016/07/23  1.13 add option -c1 -c2 -c3 -c4
 *           2016/09/03  1.14 support ntrip caster
 *                            add option -ft,-fl
+*           2016/09/06  1.15 add reload soure table by USR2 signal
 *-----------------------------------------------------------------------------*/
 #include <signal.h>
 #include <unistd.h>
@@ -39,6 +40,7 @@ static const char rcsid[]="$Id:$";
 /* global variables ----------------------------------------------------------*/
 static strsvr_t strsvr;                /* stream server */
 static volatile int intrflg=0;         /* interrupt flag */
+static char srctbl[1024]="";           /* source table file */
 
 /* help text -----------------------------------------------------------------*/
 static const char *help[]={
@@ -54,7 +56,9 @@ static const char *help[]={
 " if both of the input stream and the output stream follow #format, the",
 " format of input messages are converted to output. To specify the output",
 " messages, use -msg option. If the option -in or -out omitted, stdin for",
-" input or stdout for output is used.",
+" input or stdout for output is used. If the stream in the option -in or -out",
+" is null, stdin or stdout is used as well. To reload ntrip source table",
+" specified by the option -ft, send SIGUSR2 to the process",
 " Command options are as follows.",
 "",
 " -in  stream[#format] input  stream path and format",
@@ -66,7 +70,7 @@ static const char *help[]={
 "    tcp client   : tcpcli://addr[:port]",
 "    ntrip client : ntrip://[user[:passwd]@]addr[:port][/mntpnt]",
 "    ntrip server : ntrips://[:passwd@]addr[:port]/mntpnt[:str] (only out)",
-"    ntrip caster server: ntripc_s://[:passwd@][:port]/mntpnt[:str] (only in)",
+"    ntrip caster server: ntripc_s://[:passwd@][:port] (only in)",
 "    ntrip caster client: ntripc_c://[user:passwd@][:port]/mntpnt (only out)",
 "    file         : [file://]path[::T][::+start][::xseppd][::S=swap]",
 "",
@@ -108,7 +112,7 @@ static const char *help[]={
 " -l  local_dir     ftp/http local directory []",
 " -x  proxy_addr    http/ntrip proxy address [no]",
 " -t  level         trace level [0]",
-" -ft file          http souce table file []",
+" -ft file          ntrip souce table file []",
 " -fl file          log file [str2str.trace]",
 " -h                print help",
 };
@@ -123,6 +127,12 @@ static void printhelp(void)
 static void sigfunc(int sig)
 {
     intrflg=1;
+}
+/* reload source table by SIGUSR2 --------------------------------------------*/
+static void reload_srctbl(int sig)
+{
+    strsvrsetsrctbl(&strsvr,srctbl);
+    signal(SIGUSR2,reload_srctbl);
 }
 /* decode format -------------------------------------------------------------*/
 static void decodefmt(char *path, int *fmt)
@@ -212,7 +222,7 @@ int main(int argc, char **argv)
     char *cmdfile[MAXSTR]={"","","","",""},*cmds[MAXSTR];
     char *local="",*proxy="",*msg="1004,1019",*opt="",buff[256],*p;
     char strmsg[MAXSTRMSG]="",*antinfo="",*rcvinfo="";
-    char *ant[]={"","",""},*rcv[]={"","",""},*srctbl="",*logfile="";
+    char *ant[]={"","",""},*rcv[]={"","",""},*logfile="";
     int i,j,n=0,dispint=5000,trlevel=0,opts[]={10000,10000,2000,32768,10,0,30};
     int types[MAXSTR]={STR_FILE,STR_FILE},stat[MAXSTR]={0},byte[MAXSTR]={0};
     int bps[MAXSTR]={0},fmts[MAXSTR]={0},sta=0;
@@ -262,7 +272,7 @@ int main(int argc, char **argv)
         else if (!strcmp(argv[i],"-i"  )&&i+1<argc) rcvinfo=argv[++i];
         else if (!strcmp(argv[i],"-l"  )&&i+1<argc) local=argv[++i];
         else if (!strcmp(argv[i],"-x"  )&&i+1<argc) proxy=argv[++i];
-        else if (!strcmp(argv[i],"-ft" )&&i+1<argc) srctbl=argv[++i];
+        else if (!strcmp(argv[i],"-ft" )&&i+1<argc) strcpy(srctbl,argv[++i]);
         else if (!strcmp(argv[i],"-fl" )&&i+1<argc) logfile=argv[++i];
         else if (!strcmp(argv[i],"-t"  )&&i+1<argc) trlevel=atoi(argv[++i]);
         else if (*argv[i]=='-') printhelp();
@@ -311,7 +321,6 @@ int main(int argc, char **argv)
     
     strsetdir(local);
     strsetproxy(proxy);
-    strsetsrctbl(srctbl);
     
     for (i=0;i<MAXSTR;i++) {
         if (*cmdfile[i]) readcmd(cmdfile[i],cmds[i],0);
@@ -320,6 +329,11 @@ int main(int argc, char **argv)
     if (!strsvrstart(&strsvr,opts,types,paths,conv,cmds,stapos)) {
         fprintf(stderr,"stream server start error\n");
         return -1;
+    }
+    /* read and set ntrip source table */
+    if (*srctbl) {
+        strsvrsetsrctbl(&strsvr,srctbl);
+        signal(SIGUSR2,reload_srctbl);
     }
     for (intrflg=0;!intrflg;) {
         

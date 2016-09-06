@@ -18,6 +18,7 @@
 *                           support command for output streams
 *           2016/08/20 1.8  support api change of sendnmea()
 *           2016/09/03 1.9  support ntrip caster function
+*           2016/09/06 1.10 add api strsvrsetsrctbl()
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -631,4 +632,18 @@ extern int strsvrpeek(strsvr_t *svr, unsigned char *buff, int nmax)
     svr->npb-=n;
     unlock(&svr->lock);
     return n;
+}
+/* set ntrip source table for stream server ------------------------------------
+* set ntrip source table for stream server
+* args   : strsvr_t *svr    IO  stream server struct
+*          char  *file      I   source table file
+* return : none
+*-----------------------------------------------------------------------------*/
+extern void strsvrsetsrctbl(strsvr_t *svr, const char *file)
+{
+    int i;
+    
+    for (i=0;i<svr->nstr;i++) {
+        strsetsrctbl(svr->stream+i,file);
+    }
 }

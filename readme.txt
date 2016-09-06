@@ -92,3 +92,5 @@ UPDATE HISTORY
                       add window size extension of RTKPOST and RTKCONV
 2016/09/03  2.4.3 b20 add ntrip caster functions
 2016/09/05  2.4.3 b21 fix several bugs
+2016/09/06  2.4.3 b22 fix several bugs
+                      add app/str2str/run_cast.sh for ntrip caster control 

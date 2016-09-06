@@ -508,7 +508,6 @@ void __fastcall TMainForm::SvrStart(void)
     }
     strsetdir(LocalDirectory.c_str());
     strsetproxy(ProxyAddress.c_str());
-    strsetsrctbl(SrcTblFile.c_str());
     
     for (int i=0;i<MAXSTR-1;i++) { // for each out stream
         if (Input->ItemIndex==2||Input->ItemIndex==4) continue;
@@ -530,6 +529,9 @@ void __fastcall TMainForm::SvrStart(void)
     }
     // stream server start
     if (!strsvrstart(&strsvr,opt,strs,paths,conv,cmds,AntPos)) return;
+    
+    // set ntrip source table
+    strsvrsetsrctbl(&strsvr,SrcTblFile.c_str());
     
     StartTime=utc2gpst(timeget());
     Panel1    ->Enabled=false;
