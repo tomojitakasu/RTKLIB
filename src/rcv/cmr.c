@@ -15,6 +15,7 @@
 *                           suppress warning
 *           2016/08/20 1.5  truncated antenna and receiver tables
 *                           added message functions for rtk monitor
+*           2016/09/07 1.6  Permit version 4 for Leica type 3 messages (GLONASS)
 *-----------------------------------------------------------------------------*/
 
 /*
@@ -1488,10 +1489,9 @@ static int DecodeCmr(raw_t *Raw)
     tracet(3, "CMR: Trimble Packet Type=0x93 (CMR), CMR Type=%u (%s), CMR Version=%u, Length=%d.\n", Type, Type_s, Version, Cmr->MessageLength);
 
     /*
-    | We support version 3 and below for all messages except message type 4
-    | for which we support version 4 only.
+    | We support version 4 and below for all messages.
     */
-    if ((Version > 3) && !((Version == 4) && (Type == 4))) 
+    if (Version > 4) 
     {
         tracet(2, "CMR: Unsupported CMR type %u message version: %u\n", Type, Version);
         return -1;
