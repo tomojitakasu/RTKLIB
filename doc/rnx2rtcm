@@ -1,0 +1,22 @@
+.TH RNX2RTCM 1 "July 29 2016"
+.SH NAME
+rnx2rtcm \- rinex to rtcm converter
+.SH SYNOPSIS
+rnx2rtcm [options] [infile ...]
+.SH DESCRIPTION
+Convert rinex to rtcm.
+.SH OPTIONS
+.IP "-ts  y/m/d h:m:s"
+start time (gpst)
+.IP "-te  y/m/d h:m:s"
+end time (gpst)
+.IP "-ti  tint"
+time interval (s)
+.IP "-sta staid"
+station id
+.IP "-out outfile"
+output rtcm file
+.IP "-typ type[,type...]"
+rtcm message types
+.IP "-x   level"
+debug trace level
