@@ -1,0 +1,78 @@
+.TH STR2STR 1 "July 29 2016"
+.SH NAME
+str2str \- console version of stream server
+.SH SYNOPSIS
+str2str [-in stream] [-out stream [-out stream...]] [options]
+.SH DESCRIPTION
+Input data from a stream and divide and output them to multiple streams
+The input stream can be serial, tcp client, tcp server, ntrip client, or
+file. The output stream can be serial, tcp client, tcp server, ntrip server,
+or file. str2str is a resident type application. To stop it, type ctr-c in
+console if run foreground or send signal SIGINT for background process.
+if run foreground or send signal SIGINT for background process.
+if both of the input stream and the output stream follow #format, the
+format of input messages are converted to output. To specify the output
+messages, use -msg option. If the option -in or -out omitted, stdin for
+input or stdout for output is used.
+Command options are as follows.
+.SH OPTIONS
+.IP "-in  stream[#format] input  stream path and format"
+.IP "-out stream[#format] output stream path and format"
+stream path
+ serial       : serial://port[:brate[:bsize[:parity[:stopb[:fctr]]]]]
+ tcp server   : tcpsvr://:port
+ tcp client   : tcpcli://addr[:port]
+ ntrip client : ntrip://[user[:passwd]@]addr[:port][/mntpnt]
+ ntrip server : ntrips://[:passwd@]addr[:port][/mntpnt[:str]] (only out)
+ file         : [file://]path[::T][::+start][::xseppd][::S=swap]
+
+format
+ rtcm2        : RTCM 2 (only in)
+ rtcm3        : RTCM 3
+ nov          : NovAtel OEMV/4/6,OEMStar (only in)
+ oem3         : NovAtel OEM3 (only in)
+ ubx          : ublox LEA-4T/5T/6T (only in)
+ ss2          : NovAtel Superstar II (only in)
+ hemis        : Hemisphere Eclipse/Crescent (only in)
+ stq          : SkyTraq S1315F (only in)
+ gw10         : Furuno GW10 (only in)
+ javad        : Javad (only in)
+ nvs          : NVS BINR (only in)
+ binex        : BINEX (only in)
+ rt17         : Trimble RT17 (only in)
+ sbf          : Septentrio SBF (only in)
+
+.IP "-msg type[(tint)][,type[(tint)]...]"
+ rtcm message types and output intervals (s)
+.IP "-sta sta"
+station id
+.IP "-opt opt"
+receiver dependent options
+.IP "-s  msec"
+timeout time (ms) [10000]
+.IP "-r  msec"
+reconnect interval (ms) [10000]
+.IP "-n  msec"
+nmea request cycle (m) [0]
+.IP "-f  sec"
+file swap margin (s) [30]
+.IP "-c  file"
+receiver commands file [no]
+.IP "-p  lat lon hgt"
+station position (latitude/longitude/height) (deg,m)
+.IP "-px x y z"
+station position (x/y/z-ecef) (m)
+.IP "-a  antinfo"
+antenna info (separated by ,)
+.IP "-i  rcvinfo"
+receiver info (separated by ,)
+.IP "-o  e n u"
+antenna offset (e,n,u) (m)
+.IP "-l  local_dir"
+ftp/http local directory []
+.IP "-x  proxy_addr"
+http/ntrip proxy address [no]
+.IP "-t  level"
+trace level [0]
+.IP "-h"
+print help
