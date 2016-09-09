@@ -1,0 +1,140 @@
+.TH convbin 1 "July 29 2016"
+.SH NAME
+convbin \- lala
+.SH SYNOPSIS
+convbin [option ...] file
+.SH DESCRIPTION
+Convert RTCM, receiver raw data log and RINEX file to RINEX and SBAS/LEX
+message file. SBAS message file complies with RTKLIB SBAS/LEX message
+format. It supports the following messages or files.
+ RTCM 2                : Type 1, 3, 9, 14, 16, 17, 18, 19, 22
+ RTCM 3                : Type 1002, 1004, 1005, 1006, 1010, 1012, 1019, 1020
+                         Type 1071-1127 (MSM except for compact msg)
+ NovAtel OEMV/4,OEMStar: RANGECMPB, RANGEB, RAWEPHEMB, IONUTCB, RAWWASSFRAMEB
+ NovAtel OEM3          : RGEB, REGD, REPB, FRMB, IONB, UTCB
+ u-blox LEA-4T/5T/6T   : RXM-RAW, RXM-SFRB
+ NovAtel Superstar II  : ID#20, ID#21, ID#22, ID#23, ID#67
+ Hemisphere            : BIN76, BIN80, BIN94, BIN95, BIN96
+ SkyTraq S1315F        : msg0xDD, msg0xE0, msg0xDC
+ GW10                  : msg0x08, msg0x03, msg0x27, msg0x20
+ Javad                 : [R*],[r*],[*R],[*r],[P*],[p*],[*P],[*p],[D*],[*d],
+                         [E*],[*E],[F*],[TC],[GE],[NE],[EN],[QE],[UO],[IO],
+                         [WD]
+ NVS                   : BINR
+ BINEX                 : big-endian, regular CRC, forward record (0xE2)
+                         0x01-01,0x01-02,0x01-03,0x01-04,0x01-06,0x7f-05
+ Trimble               : RT17
+ Septentrio            : SBF
+ RINEX                 : OBS, NAV, GNAV, HNAV, LNAV, QNAV
+.SH OPTIONS [default]
+.IP "file"
+input receiver binary log file
+.IP "-ts y/m/d h:m:s"
+start time [all]
+.IP "-te y/m/d h:m:s"
+end time [all]
+.IP "-tr y/m/d h:m:s"
+approximated time for rtcm messages
+.IP "-ti tint"
+observation data interval (s) [all]
+.IP "-span span"
+time span (h) [all]
+.IP "-r format"
+log format type
+ rtcm2 = RTCM 2
+ rtcm3 = RTCM 3
+ nov   = NovAtel OEMV/4/6,OEMStar
+ oem3  = NovAtel OEM3
+ ubx   = ublox LEA-4T/5T/6T
+ ss2   = NovAtel Superstar II
+ hemis = Hemisphere Eclipse/Crescent
+ stq   = SkyTraq S1315F
+ javad = Javad
+ nvs   = NVS NV08C BINR
+ binex = BINEX
+ rt17  = Trimble RT17
+ sbf   = Septentrio SBF
+ rinex = RINEX
+.IP "-ro opt"
+receiver options
+.IP "-f freq"
+number of frequencies [2]
+.IP "-hc comment"
+rinex header: comment line
+.IP "-hm marker"
+rinex header: marker name
+.IP "-hn markno"
+rinex header: marker number
+.IP "-ht marktype"
+rinex header: marker type
+.IP "-ho observ"
+rinex header: oberver name and agency separated by /
+.IP "-hr rec"
+rinex header: receiver number, type and version separated by /
+.IP "-ha ant"
+rinex header: antenna number and type separated by /
+.IP "-hp pos"
+rinex header: approx position x/y/z separated by /
+.IP "-hd delta"
+rinex header: antenna delta h/e/n separated by /
+.IP "-v ver"
+rinex version [2.11]
+.IP "-od"
+include doppler frequency in rinex obs [off]
+.IP "-os"
+include snr in rinex obs [off]
+.IP "-oi"
+include iono correction in rinex nav header [off]
+.IP "-ot"
+include time correction in rinex nav header [off]
+.IP "-ol"
+include leap seconds in rinex nav header [off]
+.IP "-scan"
+scan input file [off]
+.IP "-mask [sig[,...]]"
+signal mask(s) (sig={G|R|E|J|S|C}L{1C|1P|1W|...})
+.IP "-nomask [sig[,...]]"
+signal no mask (same as above)
+.IP "-x sat"
+exclude satellite
+.IP "-y sys"
+exclude systems (G:GPS,R:GLONASS,E:Galileo,J:QZSS,S:SBAS,C:BeiDou)
+.IP "-d dir"
+output directory [same as input file]
+.IP "-c staid"
+use RINEX file name convention with staid [off]
+.IP "-o ofile"
+output RINEX OBS file
+.IP "-n nfile"
+output RINEX NAV file
+.IP "-g gfile"
+output RINEX GNAV file
+.IP "-h hfile"
+output RINEX HNAV file
+.IP "-q qfile"
+output RINEX QNAV file
+.IP "-l lfile"
+output RINEX LNAV file
+.IP "-s sfile"
+output SBAS message file
+.IP "-trace level"
+output trace level [off]
+.SH NOTES
+If any output file specified, default output files (<file>.obs,
+<file>.nav, <file>.gnav, <file>.hnav, <file>.qnav, <file>.lnav and
+<file>.sbs) are used.
+.P
+If receiver type is not specified, type is recognized by the input
+file extension as follows.
+ *.rtcm2       RTCM 2
+ *.rtcm3       RTCM 3
+ *.gps         NovAtel OEMV/4/6,OEMStar
+ *.ubx         u-blox LEA-4T/5T/6T
+ *.log         NovAtel Superstar II
+ *.bin         Hemisphere Eclipse/Crescent
+ *.stq         SkyTraq S1315F
+ *.jps         Javad
+ *.bnx,*binex  BINEX
+ *.rt17        Trimble RT17
+ *.sbf         Septentrio SBF
+ *.obs,*.*o    RINEX OBS
