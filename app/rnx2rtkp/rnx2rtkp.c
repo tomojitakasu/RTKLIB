@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * rnx2rtkp.c : read rinex obs/nav files and compute receiver positions
 *
-*          Copyright (C) 2007-2009 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2007-2016 by T.TAKASU, All rights reserved.
 *
 * version : $Revision: 1.1 $ $Date: 2008/07/17 21:55:16 $
 * history : 2007/01/16  1.0 new
@@ -15,6 +15,7 @@
 *           2014/01/27  1.7 fix bug on default output time format
 *           2015/05/15  1.8 -r or -l options for fixed or ppp-fixed mode
 *           2015/06/12  1.9 output patch level in header
+*           2016/09/07  1.10 add option -sys
 *-----------------------------------------------------------------------------*/
 #include <stdarg.h>
 #include "rtklib.h"
@@ -51,6 +52,7 @@ static const char *help[]={
 " -p mode   mode (0:single,1:dgps,2:kinematic,3:static,4:moving-base,",
 "                 5:fixed,6:ppp-kinematic,7:ppp-static) [2]",
 " -m mask   elevation mask angle (deg) [15]",
+" -sys s[,s...] nav system(s) (s=G:GPS,R:GLO,E:GAL,J:QZS,C:BDS,I:IRN) [G|R]",
 " -f freq   number of frequencies for relative mode (1:L1,2:L1+L2,3:L1+L2+L5) [2]",
 " -v thres  validation threshold for integer ambiguity (0.0:no AR) [3.0]",
 " -b        backward solutions [off]",
@@ -99,10 +101,10 @@ int main(int argc, char **argv)
     gtime_t ts={0},te={0};
     double tint=0.0,es[]={2000,1,1,0,0,0},ee[]={2000,12,31,23,59,59},pos[3];
     int i,j,n,ret;
-    char *infile[MAXFILE],*outfile="";
+    char *infile[MAXFILE],*outfile="",*p;
     
     prcopt.mode  =PMODE_KINEMA;
-    prcopt.navsys=SYS_GPS|SYS_GLO;
+    prcopt.navsys=0;
     prcopt.refpos=1;
     prcopt.glomodear=1;
     solopt.timef=0;
@@ -133,6 +135,19 @@ int main(int argc, char **argv)
         else if (!strcmp(argv[i],"-k")&&i+1<argc) {++i; continue;}
         else if (!strcmp(argv[i],"-p")&&i+1<argc) prcopt.mode=atoi(argv[++i]);
         else if (!strcmp(argv[i],"-f")&&i+1<argc) prcopt.nf=atoi(argv[++i]);
+        else if (!strcmp(argv[i],"-sys")&&i+1<argc) {
+            for (p=argv[++i];*p;p++) {
+                switch (*p) {
+                    case 'G': prcopt.navsys|=SYS_GPS;
+                    case 'R': prcopt.navsys|=SYS_GLO;
+                    case 'E': prcopt.navsys|=SYS_GAL;
+                    case 'J': prcopt.navsys|=SYS_QZS;
+                    case 'C': prcopt.navsys|=SYS_CMP;
+                    case 'I': prcopt.navsys|=SYS_IRN;
+                }
+                if (!(p=strchr(p,','))) break;
+            }
+        }
         else if (!strcmp(argv[i],"-m")&&i+1<argc) prcopt.elmin=atof(argv[++i])*D2R;
         else if (!strcmp(argv[i],"-v")&&i+1<argc) prcopt.thresar[0]=atof(argv[++i]);
         else if (!strcmp(argv[i],"-s")&&i+1<argc) strcpy(solopt.sep,argv[++i]);
@@ -163,6 +178,9 @@ int main(int argc, char **argv)
         else if (!strcmp(argv[i],"-x")&&i+1<argc) solopt.trace=atoi(argv[++i]);
         else if (*argv[i]=='-') printhelp();
         else if (n<MAXFILE) infile[n++]=argv[i];
+    }
+    if (!prcopt.navsys) {
+        prcopt.navsys=SYS_GPS|SYS_GLO;
     }
     if (n<=0) {
         showmsg("error : no input file");

@@ -94,3 +94,6 @@ UPDATE HISTORY
 2016/09/05  2.4.3 b21 fix several bugs
 2016/09/06  2.4.3 b22 fix several bugs
                       add app/str2str/run_cast.sh for ntrip caster control 
+2016/09/06  2.4.3 b23 fix several bugs
+                      add -sys option for rnx2rtkp
+                      add 4- and 5-panel modes for rtknavi

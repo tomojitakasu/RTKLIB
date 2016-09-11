@@ -193,7 +193,7 @@ void __fastcall TCodeOptDialog::BtnOkClick(TObject *Sender)
 	if (S24->Checked) mask[4][23]='1';
 	if (S25->Checked) mask[4][24]='1';
 	if (S26->Checked) mask[4][25]='1';
-	for (int i=0;i<6;i++) ConvOptDialog->CodeMask[i]=mask[i];
+	for (int i=0;i<7;i++) ConvOptDialog->CodeMask[i]=mask[i];
 }
 //---------------------------------------------------------------------------
 void __fastcall TCodeOptDialog::BtnSetAllClick(TObject *Sender)
