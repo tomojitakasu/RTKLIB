@@ -123,6 +123,7 @@
 *                           change constant _POSIX_C_SOURCE 199309 -> 199506
 *           2016/08/21 1.39 fix bug on week overflow in time2gpst()/gpst2time()
 *           2016/09/05 1.40 fix bug on invalid nav data read in readnav()
+*           2016/09/17 1.41 suppress warnings
 *-----------------------------------------------------------------------------*/
 #define _POSIX_C_SOURCE 199506
 #include <stdarg.h>
@@ -143,9 +144,9 @@ static const char rcsid[]="$Id: rtkcmn.c,v 1.1 2008/07/17 21:48:06 ttaka Exp tta
 #define POLYCRC32   0xEDB88320u /* CRC32 polynomial */
 #define POLYCRC24Q  0x1864CFBu  /* CRC24Q polynomial */
 
-const static double gpst0[]={1980,1, 6,0,0,0}; /* gps time reference */
-const static double gst0 []={1999,8,22,0,0,0}; /* galileo system time reference */
-const static double bdt0 []={2006,1, 1,0,0,0}; /* beidou time reference */
+static const double gpst0[]={1980,1, 6,0,0,0}; /* gps time reference */
+static const double gst0 []={1999,8,22,0,0,0}; /* galileo system time reference */
+static const double bdt0 []={2006,1, 1,0,0,0}; /* beidou time reference */
 
 static double leaps[MAXLEAPS+1][7]={ /* leap seconds (y,m,d,h,m,s,utc-gpst) */
     {2017,1,1,0,0,0,-18},

@@ -44,12 +44,14 @@ __fastcall TMainForm::TMainForm(TComponent* Owner)
     strcpy(p,".ini");
     IniFile=file;
     Option=0;
+    Minimize=0;
     
     Left  =ini->ReadInteger("pos","left",    0);
     Top   =ini->ReadInteger("pos","top",     0);
     Width =ini->ReadInteger("pos","width", 310);
     Height=ini->ReadInteger("pos","height", 79);
     Option=ini->ReadInteger("pos","option",  0);
+    Minimize=ini->ReadInteger("pos","minimize",0);
     delete ini;
     
     Caption="RTKLIB v." VER_RTKLIB " " PATCH_LEVEL;
@@ -64,17 +66,16 @@ __fastcall TMainForm::TMainForm(TComponent* Owner)
     for (i=1;i<argc;i++) {
         if      (!strcmp(argv[i],"-t")&&i+1<argc) Caption=argv[++i];
         else if (!strcmp(argv[i],"-tray")) tray=1;
+        else if (!strcmp(argv[i],"-min")) Minimize=1;
         else if (!strcmp(argv[i],"-mkl")) Option=1;
         else if (!strcmp(argv[i],"-win64")) Option=2;
     }
+    UpdatePanel();
+    
     if (tray) {
         Application->ShowMainForm=false;
         TrayIcon->Visible=true;
     }
-}
-//---------------------------------------------------------------------------
-void __fastcall TMainForm::FormShow(TObject *Sender)
-{
 }
 //---------------------------------------------------------------------------
 void __fastcall TMainForm::FormClose(TObject *Sender, TCloseAction &Action)
@@ -85,6 +86,7 @@ void __fastcall TMainForm::FormClose(TObject *Sender, TCloseAction &Action)
     ini->WriteInteger("pos","width",  Width);
     ini->WriteInteger("pos","height",Height);
     ini->WriteInteger("pos","option",Option);
+    ini->WriteInteger("pos","minimize",Minimize);
     delete ini;
 }
 //---------------------------------------------------------------------------
@@ -177,6 +179,8 @@ void __fastcall TMainForm::MenuExpandClick(TObject *Sender)
 {
     Visible=true;
     TrayIcon->Visible=false;
+    Minimize=0;
+    UpdatePanel();
 }
 //---------------------------------------------------------------------------
 void __fastcall TMainForm::MenuPlotClick(TObject *Sender)
@@ -226,6 +230,7 @@ void __fastcall TMainForm::Panel1Resize(TObject *Sender)
     };
     int i,j,k,n,m,h;
     
+    if (Minimize) return;
     n=MAX(1,Panel1->ClientWidth/BTN_SIZE);
     m=(BTN_COUNT-1)/n+1;
     h=BTN_SIZE*m+2;
@@ -244,10 +249,32 @@ void __fastcall TMainForm::Panel1Resize(TObject *Sender)
     BtnOption->Top =0;
 }
 //---------------------------------------------------------------------------
-
+void __fastcall TMainForm::UpdatePanel(void)
+{
+    if (Minimize) {
+        BorderStyle=bsToolWindow;
+        Panel1->Visible=false;
+        Panel2->Visible=true;
+        AutoSize=true;
+    }
+    else {
+        BorderStyle=bsSizeToolWin;
+        Panel1->Visible=true;
+        Panel2->Visible=false;
+        AutoSize=false;
+    }
+}
+//---------------------------------------------------------------------------
 void __fastcall TMainForm::BtnOptionClick(TObject *Sender)
 {
 	if (LaunchOptDialog->ShowModal()!=mrOk) return;
+    UpdatePanel();
+}
+//---------------------------------------------------------------------------
+void __fastcall TMainForm::BtnRtklibMouseDown(TObject *Sender, TMouseButton Button,
+		  TShiftState Shift, int X, int Y)
+{
+	PopupMenu->Popup(Left+X,Top+Y);
 }
 //---------------------------------------------------------------------------
 

@@ -58,7 +58,7 @@ extern "C" {
 
 #define VER_RTKLIB  "2.4.3"             /* library version */
 
-#define PATCH_LEVEL "b23"               /* patch level */
+#define PATCH_LEVEL "b24"               /* patch level */
 
 #define COPYRIGHT_RTKLIB \
             "Copyright (C) 2007-2016 T.Takasu\nAll rights reserved."
@@ -1268,6 +1268,7 @@ typedef struct {        /* stream server type */
     int cycle;          /* server cycle (ms) */
     int buffsize;       /* input/monitor buffer size (bytes) */
     int nmeacycle;      /* NMEA request cycle (ms) (0:no) */
+    int relayback;      /* relay back of output streams (0:no) */
     int nstr;           /* number of streams (1 input + (nstr-1) outputs */
     int npb;            /* data length in peek buffer (bytes) */
     double nmeapos[3];  /* NMEA request position (ecef) (m) */
@@ -1812,7 +1813,7 @@ EXPORT int  rtksvrstart (rtksvr_t *svr, int cycle, int buffsize, int *strs,
                          char **paths, int *formats, int navsel, char **cmds,
                          char **rcvopts, int nmeacycle, int nmeareq,
                          const double *nmeapos, prcopt_t *prcopt,
-                         solopt_t *solopt, stream_t *moni);
+                         solopt_t *solopt, stream_t *moni, char *errmsg);
 EXPORT void rtksvrstop  (rtksvr_t *svr, char **cmds);
 EXPORT int  rtksvropenstr(rtksvr_t *svr, int index, int str, const char *path,
                           const solopt_t *solopt);

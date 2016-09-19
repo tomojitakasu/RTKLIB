@@ -1531,13 +1531,19 @@ object Plot: TPlot
             0000}
           Spacing = 0
           OnClick = BtnRangeListClick
+          ExplicitTop = 1
         end
         object SatList: TComboBox
+          AlignWithMargins = True
           Left = 38
-          Top = 0
+          Top = 1
           Width = 6
           Height = 21
           Hint = 'Satllite List'
+          Margins.Left = 0
+          Margins.Top = 1
+          Margins.Right = 0
+          Margins.Bottom = 0
           Align = alClient
           Style = csDropDownList
           DropDownCount = 64

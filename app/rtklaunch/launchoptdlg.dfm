@@ -3,7 +3,7 @@ object LaunchOptDialog: TLaunchOptDialog
   Top = 0
   BorderStyle = bsDialog
   Caption = 'Options'
-  ClientHeight = 110
+  ClientHeight = 129
   ClientWidth = 223
   Color = clWhite
   Font.Charset = DEFAULT_CHARSET
@@ -33,8 +33,8 @@ object LaunchOptDialog: TLaunchOptDialog
     TabOrder = 4
   end
   object BtnCancel: TButton
-    Left = 116
-    Top = 78
+    Left = 118
+    Top = 96
     Width = 95
     Height = 29
     Cancel = True
@@ -43,8 +43,8 @@ object LaunchOptDialog: TLaunchOptDialog
     TabOrder = 0
   end
   object BtnOk: TButton
-    Left = 13
-    Top = 78
+    Left = 15
+    Top = 96
     Width = 95
     Height = 29
     Caption = '&OK'
@@ -59,5 +59,13 @@ object LaunchOptDialog: TLaunchOptDialog
     Height = 17
     Caption = 'Normal APs (32 bit without MKL)'
     TabOrder = 2
+  end
+  object Minimize: TCheckBox
+    Left = 15
+    Top = 73
+    Width = 97
+    Height = 17
+    Caption = 'Minimize'
+    TabOrder = 5
   end
 end

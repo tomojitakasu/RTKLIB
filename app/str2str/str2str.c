@@ -25,6 +25,7 @@
 *           2016/09/03  1.14 support ntrip caster
 *                            add option -ft,-fl
 *           2016/09/06  1.15 add reload soure table by USR2 signal
+*           2016/09/17  1.16 add option -b
 *-----------------------------------------------------------------------------*/
 #include <signal.h>
 #include <unistd.h>
@@ -111,6 +112,7 @@ static const char *help[]={
 " -o  e n u         antenna offset (e,n,u) (m)",
 " -l  local_dir     ftp/http local directory []",
 " -x  proxy_addr    http/ntrip proxy address [no]",
+" -b  str_no        relay back messages from output str to input str [no]",
 " -t  level         trace level [0]",
 " -ft file          ntrip souce table file []",
 " -fl file          log file [str2str.trace]",
@@ -223,7 +225,7 @@ int main(int argc, char **argv)
     char *local="",*proxy="",*msg="1004,1019",*opt="",buff[256],*p;
     char strmsg[MAXSTRMSG]="",*antinfo="",*rcvinfo="";
     char *ant[]={"","",""},*rcv[]={"","",""},*logfile="";
-    int i,j,n=0,dispint=5000,trlevel=0,opts[]={10000,10000,2000,32768,10,0,30};
+    int i,j,n=0,dispint=5000,trlevel=0,opts[]={10000,10000,2000,32768,10,0,30,0};
     int types[MAXSTR]={STR_FILE,STR_FILE},stat[MAXSTR]={0},byte[MAXSTR]={0};
     int bps[MAXSTR]={0},fmts[MAXSTR]={0},sta=0;
     
@@ -272,6 +274,7 @@ int main(int argc, char **argv)
         else if (!strcmp(argv[i],"-i"  )&&i+1<argc) rcvinfo=argv[++i];
         else if (!strcmp(argv[i],"-l"  )&&i+1<argc) local=argv[++i];
         else if (!strcmp(argv[i],"-x"  )&&i+1<argc) proxy=argv[++i];
+        else if (!strcmp(argv[i],"-b"  )&&i+1<argc) opts[7]=atoi(argv[++i]);
         else if (!strcmp(argv[i],"-ft" )&&i+1<argc) strcpy(srctbl,argv[++i]);
         else if (!strcmp(argv[i],"-fl" )&&i+1<argc) logfile=argv[++i];
         else if (!strcmp(argv[i],"-t"  )&&i+1<argc) trlevel=atoi(argv[++i]);

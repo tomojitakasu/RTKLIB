@@ -26,6 +26,7 @@ void __fastcall TLaunchOptDialog::FormShow(TObject *Sender)
 	else {
 		OptNormal->Checked=true;
 	}
+	Minimize->Checked=MainForm->Minimize;
 }
 //---------------------------------------------------------------------------
 void __fastcall TLaunchOptDialog::BtnOkClick(TObject *Sender)
@@ -39,5 +40,6 @@ void __fastcall TLaunchOptDialog::BtnOkClick(TObject *Sender)
 	else {
 		MainForm->Option=0;
 	}
+	MainForm->Minimize=Minimize->Checked;
 }
 //---------------------------------------------------------------------------

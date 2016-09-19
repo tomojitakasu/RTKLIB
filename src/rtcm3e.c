@@ -33,6 +33,7 @@
 *                           fix bug on msm message generation of beidou
 *                           fix bug on ssr 3 message generation (#321)
 *           2016/06/12 1.14 fix bug on segmentation fault by generating msm1
+*           2016/09/20 1.15 fix bug on MT1045 Galileo week rollover
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -1007,7 +1008,7 @@ static int encode_type1045(rtcm_t *rtcm, int sync)
     if (satsys(rtcm->ephsat,&prn)!=SYS_GAL) return 0;
     eph=rtcm->nav.eph+rtcm->ephsat-1;
     if (eph->sat!=rtcm->ephsat) return 0;
-    week=eph->week%4092;
+    week=eph->week%4096;
     toe  =ROUND(eph->toes/60.0);
     toc  =ROUND(time2gpst(eph->toc,NULL)/60.0);
     sqrtA=ROUND_U(sqrt(eph->A)/P2_19);
@@ -1077,7 +1078,7 @@ static int encode_type1046(rtcm_t *rtcm, int sync)
     if (satsys(rtcm->ephsat,&prn)!=SYS_GAL) return 0;
     eph=rtcm->nav.eph+rtcm->ephsat-1;
     if (eph->sat!=rtcm->ephsat) return 0;
-    week=eph->week%4092;
+    week=eph->week%4096;
     toe  =ROUND(eph->toes/60.0);
     toc  =ROUND(time2gpst(eph->toc,NULL)/60.0);
     sqrtA=ROUND_U(sqrt(eph->A)/P2_19);

@@ -2385,7 +2385,7 @@ extern void strinit(stream_t *stream)
 *   STR_TCPSVR   :port
 *   STR_TCPCLI   address:port
 *   STR_NTRIPSVR [:passwd@]address[:port]/moutpoint[:string]
-*   STR_NTRIPCLI [user[:passwd]@]address[:port][/mountpoint]
+*   STR_NTRIPCLI [user[:passwd]@]address[:port]/mountpoint
 *   STR_NTRIPC_S [user[:passwd]@][:port]/mountpoint
 *   STR_NTRIPC_C [user[:passwd]@][:port]/mountpoint
 *   STR_FTP      [user[:passwd]@]address/file_path[::T=poff[,tint[,toff,tret]]]]

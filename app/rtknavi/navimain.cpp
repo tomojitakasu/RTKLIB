@@ -1116,7 +1116,7 @@ void __fastcall TMainForm::SvrStart(void)
     };
     int i,strs[MAXSTRRTK]={0},sat,ex,stropt[8]={0};
     char *paths[8],*cmds[3]={0},*rcvopts[3]={0},buff[1024],*p;
-    char file[1024],*type;
+    char file[1024],*type,errmsg[20148];
     FILE *fp;
     gtime_t time=timeget();
     pcvs_t pcvr={0},pcvs={0};
@@ -1274,7 +1274,8 @@ void __fastcall TMainForm::SvrStart(void)
     // start rtk server
     if (!rtksvrstart(&rtksvr,SvrCycle,SvrBuffSize,strs,paths,Format,NavSelect,
                      cmds,rcvopts,NmeaCycle,NmeaReq,nmeapos,&PrcOpt,solopt,
-                     &monistr)) {
+                     &monistr,errmsg)) {
+        trace(2,"rtksvrstart error %s\n",errmsg);
         traceclose();
         return;
     }
@@ -1865,7 +1866,7 @@ void __fastcall TMainForm::DrawSat(TCanvas *c, int w, int h, int x0, int y0,
     UnicodeString s;
     TPoint p(w/2,h/2);
     double r=MIN(w*0.95,h*0.95)/2,azel[MAXSAT*2],dop[4];
-    int i,j,k,l,d,x[MAXSAT],y[MAXSAT],snr[NFREQ+1],ns=0,f=!freq?0:freq-1;
+    int i,j,k,l,d,x[MAXSAT],y[MAXSAT],snr[NFREQ+1],ns=0;
     char id[16],sys[]="GREJCS",*q;
     
     trace(4,"DrawSat: w=%d h=%d index=%d freq=%d\n",w,h,index,freq);
@@ -1874,15 +1875,15 @@ void __fastcall TMainForm::DrawSat(TCanvas *c, int w, int h, int x0, int y0,
     
     for (i=0,k=Nsat[index]-1;i<Nsat[index]&&i<MAXSAT;i++,k--) {
         if (El[index][k]<=0.0) continue;
-        if (Vsat[index][k]) {
-            azel[ns*2]=Az[index][k]; azel[1+ns*2]=El[index][k];
-            ns++;
-        }
         for (j=snr[0]=0;j<NFREQ;j++) {
-            snr[j+1]=Snr[index][i][j];
+            snr[j+1]=Snr[index][k][j];
             if ((freq&&freq==j+1)||((!freq||freq>NFREQ)&&snr[j+1]>snr[0])) {
                 snr[0]=snr[j+1];
             }
+        }
+        if (Vsat[index][k]&&snr[freq]>0) {
+            azel[ns*2]=Az[index][k]; azel[1+ns*2]=El[index][k];
+            ns++;
         }
         satno2id(Sat[index][k],id);
         l=(q=strchr(sys,id[0]))?(int)(q-sys):5;
@@ -1894,7 +1895,7 @@ void __fastcall TMainForm::DrawSat(TCanvas *c, int w, int h, int x0, int y0,
         c->Brush->Style=bsSolid;
         c->Pen->Color=clGray;
         color_text=clWhite;
-        if (freq<NFREQ+1&&snr[freq]<=0.0) {
+        if (freq<NFREQ+1&&snr[freq]<=0) {
             c->Brush->Style=bsClear;
             c->Pen->Color=clSilver;
             color_text=clSilver;
@@ -1905,8 +1906,8 @@ void __fastcall TMainForm::DrawSat(TCanvas *c, int w, int h, int x0, int y0,
     }
     c->Brush->Style=bsClear;
     dops(ns,azel,0.0,dop);
-    DrawText(c,x0+3,y0+h-15,s.sprintf(L"# Sat:%2d",Nsat[index]),clGray,0);
-    DrawText(c,x0+w-3,y0+h-15,s.sprintf(L"GDOP:%.1f",dop[0]),clGray,2);
+    DrawText(c,x0+3,y0+h-15,s.sprintf(L"# Sat: %d/%d",ns,Nsat[index]),clGray,0);
+    DrawText(c,x0+w-3,y0+h-15,s.sprintf(L"GDOP: %.1f",dop[0]),clGray,2);
 }
 // draw baseline plot -------------------------------------------------------
 void __fastcall TMainForm::DrawBL(TImage *plot, int w, int h)

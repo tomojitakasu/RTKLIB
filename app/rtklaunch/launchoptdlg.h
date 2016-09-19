@@ -16,6 +16,7 @@ __published:	// IDE で管理されるコンポーネント
 	TButton *BtnCancel;
 	TButton *BtnOk;
 	TRadioButton *OptNormal;
+	TCheckBox *Minimize;
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall BtnOkClick(TObject *Sender);
 private:	// ユーザー宣言

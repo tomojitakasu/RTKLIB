@@ -8,6 +8,7 @@
 *
 * version : $Revision:$ $Date:$
 * history : 2016/06/11  1.0  new
+*           2016/09/18  1.1  modify <fix> labels according GPX specs
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -23,7 +24,8 @@ static const char *XMLNS="http://www.topografix.com/GPX/1/1";
 static void outpoint(FILE *fp, gtime_t time, const double *pos,
                      const char *label, int stat, int outalt, int outtime)
 {
-    const char *fix_label[]={"fix","float","sbas","dgps","single","ppp"};
+    /* fix, float, sbas and ppp are rtklib extentions to GPX */
+    const char *fix_label[]={"fix","float","sbas","dgps","3d","ppp"};
     double ep[6];
     
     fprintf(fp,"<wpt lat=\"%.9f\" lon=\"%.9f\">\n",pos[0]*R2D,pos[1]*R2D);

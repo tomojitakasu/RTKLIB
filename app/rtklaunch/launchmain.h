@@ -37,6 +37,8 @@ __published:
 	TMenuItem *N2;
 	TPanel *Panel1;
 	TPanel *BtnOption;
+	TSpeedButton *BtnRtklib;
+	TPanel *Panel2;
 	
 	void __fastcall BtnPlotClick(TObject *Sender);
 	void __fastcall BtnConvClick(TObject *Sender);
@@ -45,7 +47,6 @@ __published:
 	void __fastcall BtnNtripClick(TObject *Sender);
 	void __fastcall BtnNaviClick(TObject *Sender);
 	void __fastcall BtnGetClick(TObject *Sender);
-	void __fastcall FormShow(TObject *Sender);
 	void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
 	void __fastcall BtnTrayClick(TObject *Sender);
 	void __fastcall TrayIconDblClick(TObject *Sender);
@@ -60,14 +61,17 @@ __published:
 	void __fastcall MenuExpandClick(TObject *Sender);
 	void __fastcall Panel1Resize(TObject *Sender);
 	void __fastcall BtnOptionClick(TObject *Sender);
+	void __fastcall BtnRtklibMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift,
+          int X, int Y);
 
 private:
 	AnsiString IniFile;
 	int Tray;
 	
+	void __fastcall UpdatePanel(void);
 	int __fastcall ExecCmd(AnsiString cmd);
 public:
-	int Option;
+	int Option,Minimize;
 	__fastcall TMainForm(TComponent* Owner);
 };
 //---------------------------------------------------------------------------
