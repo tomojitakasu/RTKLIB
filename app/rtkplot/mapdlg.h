@@ -48,6 +48,10 @@ __published:
           short NewValue, TUpDownDirection Direction);
 	void __fastcall BtnCenterClick(TObject *Sender);
 	void __fastcall ScaleEqClick(TObject *Sender);
+	void __fastcall LonKeyDown(TObject *Sender, WORD &Key, TShiftState Shift);
+	void __fastcall LatKeyDown(TObject *Sender, WORD &Key, TShiftState Shift);
+	void __fastcall ScaleXKeyDown(TObject *Sender, WORD &Key, TShiftState Shift);
+	void __fastcall ScaleYKeyDown(TObject *Sender, WORD &Key, TShiftState Shift);
 private:
 	void __fastcall UpdateMap(void);
 	void __fastcall UpdatePlot(void);

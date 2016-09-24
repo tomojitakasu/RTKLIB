@@ -151,6 +151,10 @@ __published:
 	void __fastcall BtnAbortClick(TObject *Sender);
 	void __fastcall Panel4Resize(TObject *Sender);
 	void __fastcall Panel2Resize(TObject *Sender);
+	void __fastcall TimeY1KeyDown(TObject *Sender, WORD &Key, TShiftState Shift);
+	void __fastcall TimeH1KeyDown(TObject *Sender, WORD &Key, TShiftState Shift);
+	void __fastcall TimeY2KeyDown(TObject *Sender, WORD &Key, TShiftState Shift);
+	void __fastcall TimeH2KeyDown(TObject *Sender, WORD &Key, TShiftState Shift);
 	
 private:
 	AnsiString IniFile,CmdPostExe;
@@ -181,7 +185,7 @@ public:
 	gtime_t RnxTime;
 	AnsiString RunBy,Marker,MarkerNo,MarkerType,Name[2],Rec[3],Ant[3];
 	AnsiString RnxCode,Comment[2],RcvOption,ExSats;
-	AnsiString CodeMask[6];
+	AnsiString CodeMask[7];
 	double AppPos[3],AntDel[3];
 	int RnxVer,RnxFile,NavSys,ObsType,FreqType,TraceLevel,EventEna;
 	int AutoPos,ScanObs,HalfCyc,OutIono,OutTime,OutLeaps;

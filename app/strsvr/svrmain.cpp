@@ -154,6 +154,7 @@ void __fastcall TMainForm::BtnOptClick(TObject *Sender)
     SvrOptDialog->TraceLevel=TraceLevel;
     SvrOptDialog->NmeaReq=NmeaReq;
     SvrOptDialog->FileSwapMargin=FileSwapMargin;
+    SvrOptDialog->RelayBack=RelayBack;
     SvrOptDialog->StaPosFile=StaPosFile;
     SvrOptDialog->ExeDirectory=ExeDirectory;
     SvrOptDialog->LocalDirectory=LocalDirectory;
@@ -173,6 +174,7 @@ void __fastcall TMainForm::BtnOptClick(TObject *Sender)
     TraceLevel=SvrOptDialog->TraceLevel;
     NmeaReq=SvrOptDialog->NmeaReq;
     FileSwapMargin=SvrOptDialog->FileSwapMargin;
+    RelayBack=SvrOptDialog->RelayBack;
     StaPosFile=SvrOptDialog->StaPosFile;
     ExeDirectory=SvrOptDialog->ExeDirectory;
     LocalDirectory=SvrOptDialog->LocalDirectory;
@@ -461,7 +463,7 @@ void __fastcall TMainForm::SvrStart(void)
         STR_NONE,STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPSVR,STR_NTRIPC_C,
         STR_FILE
     };
-    int ip[]={0,1,1,1,1,2,3,3},strs[4]={0},opt[7]={0},n;
+    int ip[]={0,1,1,1,1,2,3,3},strs[4]={0},opt[8]={0},n;
     char *paths[MAXSTR],*cmds[MAXSTR]={0},filepath[1024],buff[1024];
     char *ant[3]={"","",""},*rcv[3]={"","",""},*p;
     FILE *fp;
@@ -495,6 +497,7 @@ void __fastcall TMainForm::SvrStart(void)
     }
     opt[5]=NmeaReq?SvrOpt[5]:0;
     opt[6]=FileSwapMargin;
+    opt[7]=RelayBack;
     
     for (int i=1;i<MAXSTR;i++) { // for each out stream
         if (strs[i]!=STR_FILE) continue;
@@ -508,9 +511,9 @@ void __fastcall TMainForm::SvrStart(void)
     }
     strsetdir(LocalDirectory.c_str());
     strsetproxy(ProxyAddress.c_str());
-    strsetsrctbl(SrcTblFile.c_str());
     
     for (int i=0;i<MAXSTR-1;i++) { // for each out stream
+        if (Input->ItemIndex==2||Input->ItemIndex==4) continue;
         if (!ConvEna[i]) continue;
         if (!(conv[i]=strconvnew(ConvInp[i],ConvOut[i],ConvMsg[i].c_str(),
                                  StaId,StaSel,ConvOpt[i].c_str()))) continue;
@@ -529,6 +532,9 @@ void __fastcall TMainForm::SvrStart(void)
     }
     // stream server start
     if (!strsvrstart(&strsvr,opt,strs,paths,conv,cmds,AntPos)) return;
+    
+    // set ntrip source table
+    strsvrsetsrctbl(&strsvr,SrcTblFile.c_str());
     
     StartTime=utc2gpst(timeget());
     Panel1    ->Enabled=false;
@@ -689,9 +695,9 @@ void __fastcall TMainForm::UpdateEnable(void)
     BtnCmd1   ->Enabled=BtnOutput1->Enabled&&(Output1->ItemIndex==1||Output1->ItemIndex==2);
     BtnCmd2   ->Enabled=BtnOutput2->Enabled&&(Output2->ItemIndex==1||Output2->ItemIndex==2);
     BtnCmd3   ->Enabled=BtnOutput3->Enabled&&(Output3->ItemIndex==1||Output3->ItemIndex==2);
-    BtnConv1  ->Enabled=BtnOutput1->Enabled;
-    BtnConv2  ->Enabled=BtnOutput2->Enabled;
-    BtnConv3  ->Enabled=BtnOutput3->Enabled;
+    BtnConv1  ->Enabled=BtnOutput1->Enabled&&Input->ItemIndex!=2&&Input->ItemIndex!=4;
+    BtnConv2  ->Enabled=BtnOutput2->Enabled&&Input->ItemIndex!=2&&Input->ItemIndex!=4;
+    BtnConv3  ->Enabled=BtnOutput3->Enabled&&Input->ItemIndex!=2&&Input->ItemIndex!=4;
 }
 // set task-tray icon -------------------------------------------------------
 void __fastcall TMainForm::SetTrayIcon(int index)
@@ -715,6 +721,7 @@ void __fastcall TMainForm::LoadOpt(void)
     TraceLevel        =ini->ReadInteger("set","tracelevel",  0);
     NmeaReq           =ini->ReadInteger("set","nmeareq",     0);
     FileSwapMargin    =ini->ReadInteger("set","fswapmargin",30);
+    RelayBack         =ini->ReadInteger("set","relayback",   0);
     StaId             =ini->ReadInteger("set","staid"       ,0);
     StaSel            =ini->ReadInteger("set","stasel"      ,0);
     AntType           =ini->ReadString ("set","anttype",    "");
@@ -782,6 +789,7 @@ void __fastcall TMainForm::SaveOpt(void)
     ini->WriteInteger("set","tracelevel", TraceLevel);
     ini->WriteInteger("set","nmeareq",    NmeaReq);
     ini->WriteInteger("set","fswapmargin",FileSwapMargin);
+    ini->WriteInteger("set","relayback",  RelayBack);
     ini->WriteInteger("set","staid",      StaId);
     ini->WriteInteger("set","stasel",     StaSel);
     ini->WriteString ("set","anttype",    AntType);

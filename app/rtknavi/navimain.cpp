@@ -67,6 +67,7 @@ TMainForm *MainForm;
 #define MAXPORTOFF  9                   // max port number offset
 #define MAXTRKSCALE 23                  // track scale
 #define SPLITTER_WIDTH 6                // splitter width
+#define MAXPANELMODE 7                  // max panel mode
 
 #define SQRT(x)     ((x)<0.0?0.0:sqrt(x))
 #define MIN(x,y)    ((x)<(y)?(x):(y))
@@ -255,25 +256,51 @@ void __fastcall TMainForm::Panel211Resize(TObject *Sender)
     LabelNSat->Left=2; LabelNSat->Width=w-4;
     UpdatePos();
 }
-// callback panel 221 resize -------------------------------------------------
-void __fastcall TMainForm::Panel221Resize(TObject *Sender)
+// callback panel 22 resize ---------------------------------------------------
+void __fastcall TMainForm::Panel22Resize(TObject *Sender)
 {
-    trace(3,"Panel221Resize\n");
+    TPanel *panel=(TPanel *)Sender;
     
-    BtnPlotType1->Left=Panel221->Width-BtnPlotType1->Width-2;
+    trace(3,"Panel22Resize\n");
+    
+    BtnPlotType1->Left=panel->Width-BtnPlotType1->Width-2;
     BtnFreqType1->Left=BtnPlotType1->Left-BtnFreqType1->Width-2;
     UpdatePlot();
 }
-// callback panel 222 resize -------------------------------------------------
-void __fastcall TMainForm::Panel222Resize(TObject *Sender)
+// callback panel 23 resize ---------------------------------------------------
+void __fastcall TMainForm::Panel23Resize(TObject *Sender)
 {
-    trace(3,"Panel222Resize\n");
+    TPanel *panel=(TPanel *)Sender;
     
-    BtnPlotType2->Left=Panel222->Width-BtnPlotType2->Width-2;
+    trace(3,"Panel23Resize\n");
+    
+    BtnPlotType2->Left=panel->Width-BtnPlotType2->Width-2;
     BtnFreqType2->Left=BtnPlotType2->Left-BtnFreqType2->Width-2;
     UpdatePlot();
 }
-// callback panel 4 resize ---------------------------------------------------
+// callback panel 24 resize ---------------------------------------------------
+void __fastcall TMainForm::Panel24Resize(TObject *Sender)
+{
+    TPanel *panel=(TPanel *)Sender;
+    
+    trace(3,"Panel24Resize\n");
+    
+    BtnPlotType3->Left=panel->Width-BtnPlotType3->Width-2;
+    BtnFreqType3->Left=BtnPlotType3->Left-BtnFreqType3->Width-2;
+    UpdatePlot();
+}
+// callback panel 25 resize ---------------------------------------------------
+void __fastcall TMainForm::Panel25Resize(TObject *Sender)
+{
+    TPanel *panel=(TPanel *)Sender;
+    
+    trace(3,"Panel25Resize\n");
+    
+    BtnPlotType4->Left=panel->Width-BtnPlotType4->Width-2;
+    BtnFreqType4->Left=BtnPlotType4->Left-BtnFreqType4->Width-2;
+    UpdatePlot();
+}
+// callback panel 4 resize --------------------------------------------------
 void __fastcall TMainForm::Panel4Resize(TObject *Sender)
 {
     TBitBtn *btn[]={BtnStart,BtnMark,BtnPlot,BtnOpt,BtnExit};
@@ -290,7 +317,7 @@ void __fastcall TMainForm::Panel4Resize(TObject *Sender)
     BtnStop->Width =BtnStart->Width;
     BtnStop->Height=BtnStart->Height;
 }
-// callback panel 5 resize ---------------------------------------------------
+// callback panel 5 resize --------------------------------------------------
 void __fastcall TMainForm::Panel5Resize(TObject *Sender)
 {
 	BtnSolType2->Left=BtnSolType2->Parent->Width-BtnSolType2->Width-2;
@@ -298,55 +325,101 @@ void __fastcall TMainForm::Panel5Resize(TObject *Sender)
 // update panel -------------------------------------------------------------
 void __fastcall TMainForm::UpdatePanel(void)
 {
-    if (PanelMode==0) {
-        Panel21 ->Visible=true;
-        Panel5  ->Visible=false;
-        Panel221->Visible=false;
-    }
-    else if (PanelMode==1) {
-        Panel21 ->Visible=true;
-        Panel5  ->Visible=false;
-        Panel221->Visible=true;
-    }
-    else if (PanelMode==2) {
-        Panel21 ->Visible=false;
-        Panel5  ->Visible=true;
-        Panel221->Visible=true;
+    Panel21->Align=alNone;
+    Panel22->Align=alNone;
+    Panel23->Align=alNone;
+    Panel24->Align=alNone;
+    Panel25->Align=alNone;
+    Splitter1->Align=alNone;
+    Splitter2->Align=alNone;
+    Splitter3->Align=alNone;
+    Splitter4->Align=alNone;
+    
+    if (PanelMode<=3) {
+        Panel21->Visible=true;
+        Panel5 ->Visible=false;
     }
     else {
-        Panel21 ->Visible=false;
-        Panel5  ->Visible=true;
-        Panel221->Visible=false;
+        Panel21->Visible=false;
+        Panel5 ->Visible=true;
     }
+    if (PanelMode==0||PanelMode==4) {
+        Panel22->Visible=true;
+        Panel23->Visible=false;
+        Panel24->Visible=false;
+        Panel25->Visible=false;
+    }
+    else if (PanelMode==1||PanelMode==5) {
+        Panel22->Visible=true;
+        Panel23->Visible=true;
+        Panel24->Visible=false;
+        Panel25->Visible=false;
+    }
+    else if (PanelMode==2||PanelMode==6) {
+        Panel22->Visible=true;
+        Panel23->Visible=true;
+        Panel24->Visible=true;
+        Panel25->Visible=false;
+    }
+    else {
+        Panel22->Visible=true;
+        Panel23->Visible=true;
+        Panel24->Visible=true;
+        Panel25->Visible=true;
+    }
+    Splitter1->Visible=Panel21->Visible&&Panel22->Visible;
+    Splitter2->Visible=Panel22->Visible&&Panel23->Visible;
+    Splitter3->Visible=Panel23->Visible&&Panel24->Visible;
+    Splitter4->Visible=Panel24->Visible&&Panel25->Visible;
+    
     if (PanelStack==0) { // horizontal
-        Panel21 ->Align=alLeft;
-        Panel211->Align=alClient;
-        Panel221->Align=alLeft;
-        Panel222->Align=alClient;
         
-        Splitter1->Align=alNone;
-        Splitter2->Align=alNone;
-        Splitter1->Width=PanelMode==2||PanelMode==3?0:SPLITTER_WIDTH;
-        Splitter2->Width=PanelMode==0||PanelMode==3?0:SPLITTER_WIDTH;
-        Splitter1->Left=Panel21 ->Width;
-        Splitter2->Left=Panel221->Width;
+        Splitter1->Width=SPLITTER_WIDTH;
+        Splitter2->Width=SPLITTER_WIDTH;
+        Splitter3->Width=SPLITTER_WIDTH;
+        Splitter4->Width=SPLITTER_WIDTH;
+        Panel21->Left=0;
+        Splitter1->Left=Panel21->Left+Panel21->Width;
+        Panel22->Left=Splitter1->Left+Splitter1->Width;
+        Splitter2->Left=Panel22->Left+Panel22->Width;
+        Panel23->Left=Splitter2->Left+Splitter2->Width;
+        Splitter3->Left=Panel23->Left+Panel23->Width;
+        Panel24->Left=Splitter3->Left+Splitter3->Width;
+        Splitter4->Left=Panel24->Left+Panel24->Width;
+        Panel25->Left=Splitter4->Left+Splitter4->Width;
+        Panel21->Align=Panel22->Visible?alLeft:alClient;
         Splitter1->Align=alLeft;
+        Panel22->Align=Panel23->Visible?alLeft:alClient;
         Splitter2->Align=alLeft;
+        Panel23->Align=Panel24->Visible?alLeft:alClient;
+        Splitter3->Align=alLeft;
+        Panel24->Align=Panel25->Visible?alLeft:alClient;
+        Splitter4->Align=alLeft;
+        Panel25->Align=alClient;
     }
     else { // vertical
-        Panel21 ->Align=alTop;
-        Panel211->Align=alClient;
-        Panel221->Align=alTop;
-        Panel222->Align=alClient;
-        
-        Splitter1->Align=alNone;
-        Splitter2->Align=alNone;
-        Splitter1->Height=PanelMode==2||PanelMode==3?0:SPLITTER_WIDTH;
-        Splitter2->Height=PanelMode==0||PanelMode==3?0:SPLITTER_WIDTH;
-        Splitter1->Top=Panel21 ->Height;
-        Splitter2->Top=Panel221->Height;
+        Splitter1->Height=SPLITTER_WIDTH;
+        Splitter2->Height=SPLITTER_WIDTH;
+        Splitter3->Height=SPLITTER_WIDTH;
+        Splitter4->Height=SPLITTER_WIDTH;
+        Panel21->Top=0;
+        Splitter1->Top=Panel21->Top+Panel21->Height;
+        Panel22->Top=Splitter1->Top+Splitter1->Height;
+        Splitter2->Top=Panel22->Top+Panel22->Height;
+        Panel23->Top=Splitter2->Top+Splitter2->Height;
+        Splitter3->Top=Panel23->Top+Panel23->Height;
+        Panel24->Top=Splitter3->Top+Splitter3->Height;
+        Splitter4->Top=Panel24->Top+Panel24->Height;
+        Panel25->Top=Splitter4->Top+Splitter4->Height;
+        Panel21->Align=Panel22->Visible?alTop:alClient;
         Splitter1->Align=alTop;
+        Panel22->Align=Panel23->Visible?alTop:alClient;
         Splitter2->Align=alTop;
+        Panel23->Align=Panel24->Visible?alTop:alClient;
+        Splitter3->Align=alTop;
+        Panel24->Align=Panel25->Visible?alTop:alClient;
+        Splitter4->Align=alTop;
+        Panel25->Align=alClient;
     }
 }
 // update enabled -----------------------------------------------------------
@@ -354,8 +427,12 @@ void __fastcall TMainForm::UpdateEnable(void)
 {
     BtnExpand1->Visible=PlotType1==6;
     BtnShrink1->Visible=PlotType1==6;
-	BtnExpand2->Visible=PlotType2==6;
+    BtnExpand2->Visible=PlotType2==6;
     BtnShrink2->Visible=PlotType2==6;
+    BtnExpand3->Visible=PlotType3==6;
+    BtnShrink3->Visible=PlotType3==6;
+    BtnExpand4->Visible=PlotType4==6;
+    BtnShrink4->Visible=PlotType4==6;
 }
 // callback on button-exit --------------------------------------------------
 void __fastcall TMainForm::BtnExitClick(TObject *Sender)
@@ -497,8 +574,8 @@ void __fastcall TMainForm::BtnOptClick(TObject *Sender)
     UpdateFont();
     if (panelstack==0&&PanelStack==1) {
         Panel21->Width=170;
-        Panel221->Width=170;
-        Panel222->Width=170;
+        Panel22->Width=170;
+        Panel23->Width=170;
     }
     UpdatePanel();
     if (SolBuffSize!=OptDialog->SolBuffSize) {
@@ -589,7 +666,9 @@ int __fastcall TMainForm::ConfOverwrite(const char *path)
 {
     AnsiString s;
     FILE *fp;
-    int itype[]={STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPCLI,STR_FILE,STR_FTP,STR_HTTP};
+    int itype[]={
+        STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPCLI,STR_FILE,STR_FTP,STR_HTTP
+    };
     int i;
     char buff1[1024],buff2[1024],*p;
     
@@ -622,7 +701,9 @@ int __fastcall TMainForm::ConfOverwrite(const char *path)
 // callback on button-output-streams ----------------------------------------
 void __fastcall TMainForm::BtnOutputStrClick(TObject *Sender)
 {
-    int otype[]={STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPSVR,STR_FILE};
+    int otype[]={
+        STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPSVR,STR_NTRIPC_C,STR_FILE
+    };
     int i,j,str,update[2]={0};
     char *path;
     
@@ -690,7 +771,9 @@ void __fastcall TMainForm::BtnOutputStrClick(TObject *Sender)
 // callback on button-log-streams -------------------------------------------
 void __fastcall TMainForm::BtnLogStrClick(TObject *Sender)
 {
-    int otype[]={STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPSVR,STR_FILE};
+    int otype[]={
+        STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPSVR,STR_NTRIPC_C,STR_FILE
+    };
     int i,j,str,update[3]={0};
     char *path;
     
@@ -756,7 +839,7 @@ void __fastcall TMainForm::BtnPanelClick(TObject *Sender)
 {
     trace(3,"BtnPanelClick\n");
     
-    if (++PanelMode>3) PanelMode=0;
+    if (++PanelMode>MAXPANELMODE) PanelMode=0;
     UpdatePanel();
 }
 // callback on button-plot-type-1 -------------------------------------------
@@ -795,6 +878,26 @@ void __fastcall TMainForm::BtnPlotType2Click(TObject *Sender)
     UpdatePos();
     UpdateEnable();
 }
+//---------------------------------------------------------------------------
+void __fastcall TMainForm::BtnPlotType3Click(TObject *Sender)
+{
+    trace(3,"BtnPlotType3Click\n");
+    
+    if (++PlotType3>6) PlotType3=0;
+    UpdatePlot();
+    UpdatePos();
+    UpdateEnable();
+}
+//---------------------------------------------------------------------------
+void __fastcall TMainForm::BtnPlotType4Click(TObject *Sender)
+{
+    trace(3,"BtnPlotType4Click\n");
+    
+    if (++PlotType4>6) PlotType4=0;
+    UpdatePlot();
+    UpdatePos();
+    UpdateEnable();
+}
 // callback on button frequency-type-1 --------------------------------------
 void __fastcall TMainForm::BtnFreqType1Click(TObject *Sender)
 {
@@ -828,6 +931,42 @@ void __fastcall TMainForm::BtnFreqType2Click(TObject *Sender)
     }
     else {
         if (++FreqType2>NFREQ+1) FreqType2=0;
+        UpdateSolType();
+    }
+}
+//---------------------------------------------------------------------------
+void __fastcall TMainForm::BtnFreqType3Click(TObject *Sender)
+{
+    trace(3,"BtnFreqType3Click\n");
+    
+    if (PlotType3==6) {
+        if (++TrkType3>1) TrkType3=0;
+        UpdatePlot();
+    }
+    else if (PlotType3==5) {
+        if (++BLMode3>1) BLMode3=0;
+        UpdatePlot();
+    }
+    else {
+        if (++FreqType3>NFREQ+1) FreqType3=0;
+        UpdateSolType();
+    }
+}
+//---------------------------------------------------------------------------
+void __fastcall TMainForm::BtnFreqType4Click(TObject *Sender)
+{
+    trace(3,"BtnFreqType4Click\n");
+    
+    if (PlotType4==6) {
+        if (++TrkType4>1) TrkType4=0;
+        UpdatePlot();
+    }
+    else if (PlotType4==5) {
+        if (++BLMode4>1) BLMode4=0;
+        UpdatePlot();
+    }
+    else {
+        if (++FreqType4>NFREQ+1) FreqType4=0;
         UpdateSolType();
     }
 }
@@ -969,11 +1108,15 @@ void __fastcall TMainForm::SvrStart(void)
     AnsiString s;
     solopt_t solopt[2];
     double pos[3],nmeapos[3];
-    int itype[]={STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPCLI,STR_FILE,STR_FTP,STR_HTTP};
-    int otype[]={STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPSVR,STR_FILE};
+    int itype[]={
+        STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPCLI,STR_FILE,STR_FTP,STR_HTTP
+    };
+    int otype[]={
+        STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPSVR,STR_NTRIPC_C,STR_FILE
+    };
     int i,strs[MAXSTRRTK]={0},sat,ex,stropt[8]={0};
     char *paths[8],*cmds[3]={0},*rcvopts[3]={0},buff[1024],*p;
-    char file[1024],*type;
+    char file[1024],*type,errmsg[20148];
     FILE *fp;
     gtime_t time=timeget();
     pcvs_t pcvr={0},pcvs={0};
@@ -1131,7 +1274,8 @@ void __fastcall TMainForm::SvrStart(void)
     // start rtk server
     if (!rtksvrstart(&rtksvr,SvrCycle,SvrBuffSize,strs,paths,Format,NavSelect,
                      cmds,rcvopts,NmeaCycle,NmeaReq,nmeapos,&PrcOpt,solopt,
-                     &monistr)) {
+                     &monistr,errmsg)) {
+        trace(2,"rtksvrstart error %s\n",errmsg);
         traceclose();
         return;
     }
@@ -1552,11 +1696,11 @@ void __fastcall TMainForm::DrawPlot(TImage *plot, int type, int freq)
     }
     else if (type==2) { // skyplot rover
         DrawSat(c,w,h,0,0,0,freq);
-        s1.sprintf(L"Rover %s",fstr[!freq?1:freq]);
+        s1.sprintf(L"Rover %s",fstr[freq]);
         DrawText(c,x,1,s1,clGray,0);
     }
     else if (type==3) { // skyplot+snr plot rover
-        s1.sprintf(L"Rover %s",fstr[!freq?1:freq]);
+        s1.sprintf(L"Rover %s",fstr[freq]);
         s2.sprintf(L"SNR (dBHz)");
         if (w>=h*2) { // horizontal
             DrawSat(c,h,h,0,0,0,freq);
@@ -1571,8 +1715,8 @@ void __fastcall TMainForm::DrawPlot(TImage *plot, int type, int freq)
         }
     }
     else if (type==4) { // skyplot rover+base
-        s1.sprintf(L"Rover %s",fstr[!freq?1:freq]);
-        s2.sprintf(L"Base %s",fstr[!freq?1:freq]);
+        s1.sprintf(L"Rover %s",fstr[freq]);
+        s2.sprintf(L"Base %s",fstr[freq]);
         if (w>=h) { // horizontal
             DrawSat(c,w/2,h,0  ,0,0,freq);
             DrawSat(c,w/2,h,w/2,0,1,freq);
@@ -1598,10 +1742,22 @@ void __fastcall TMainForm::DrawPlot(TImage *plot, int type, int freq)
 // update solution plot ------------------------------------------------------
 void __fastcall TMainForm::UpdatePlot(void)
 {
-    DrawPlot(Plot1,PlotType1,FreqType1);
-    DrawPlot(Plot2,PlotType2,FreqType2);
-    Disp1->Canvas->CopyRect(Panel221->ClientRect,Plot1->Canvas,Panel221->ClientRect);
-    Disp2->Canvas->CopyRect(Panel222->ClientRect,Plot2->Canvas,Panel222->ClientRect);
+    if (Panel22->Visible) {
+        DrawPlot(Plot1,PlotType1,FreqType1);
+        Disp1->Canvas->CopyRect(Panel22->ClientRect,Plot1->Canvas,Panel22->ClientRect);
+    }
+    if (Panel23->Visible) {
+        DrawPlot(Plot2,PlotType2,FreqType2);
+        Disp2->Canvas->CopyRect(Panel23->ClientRect,Plot2->Canvas,Panel23->ClientRect);
+    }
+    if (Panel24->Visible) {
+        DrawPlot(Plot3,PlotType3,FreqType3);
+        Disp3->Canvas->CopyRect(Panel24->ClientRect,Plot3->Canvas,Panel24->ClientRect);
+    }
+    if (Panel25->Visible) {
+        DrawPlot(Plot4,PlotType4,FreqType4);
+        Disp4->Canvas->CopyRect(Panel25->ClientRect,Plot4->Canvas,Panel25->ClientRect);
+    }
 }
 // snr color ----------------------------------------------------------------
 TColor __fastcall TMainForm::SnrColor(int snr)
@@ -1679,7 +1835,7 @@ void __fastcall TMainForm::DrawSnr(TCanvas *c, int w, int h, int x0, int y0,
             TRect r1(x1,y1,x1+www,y2);
             if (j==0) {
                 c->Brush->Style=bsSolid;
-                c->Brush->Color=freq<NFREQ?SnrColor(snr[k]):color_sys[l];
+                c->Brush->Color=freq<NFREQ+1?SnrColor(snr[k]):color_sys[l];
                 if (!Vsat[index][i]) c->Brush->Color=clSilver;
                 c->Rectangle(r1);
             }
@@ -1706,10 +1862,11 @@ void __fastcall TMainForm::DrawSat(TCanvas *c, int w, int h, int x0, int y0,
     static const TColor color_sys[]={
         clGreen,(TColor)0xAAFF,clFuchsia,clBlue,clRed,clGray
     };
+    TColor color_text;
     UnicodeString s;
     TPoint p(w/2,h/2);
     double r=MIN(w*0.95,h*0.95)/2,azel[MAXSAT*2],dop[4];
-    int i,k,l,d,x[MAXSAT],y[MAXSAT],ns=0,f=!freq?0:freq-1;
+    int i,j,k,l,d,x[MAXSAT],y[MAXSAT],snr[NFREQ+1],ns=0;
     char id[16],sys[]="GREJCS",*q;
     
     trace(4,"DrawSat: w=%d h=%d index=%d freq=%d\n",w,h,index,freq);
@@ -1718,7 +1875,13 @@ void __fastcall TMainForm::DrawSat(TCanvas *c, int w, int h, int x0, int y0,
     
     for (i=0,k=Nsat[index]-1;i<Nsat[index]&&i<MAXSAT;i++,k--) {
         if (El[index][k]<=0.0) continue;
-        if (Vsat[index][k]) {
+        for (j=snr[0]=0;j<NFREQ;j++) {
+            snr[j+1]=Snr[index][k][j];
+            if ((freq&&freq==j+1)||((!freq||freq>NFREQ)&&snr[j+1]>snr[0])) {
+                snr[0]=snr[j+1];
+            }
+        }
+        if (Vsat[index][k]&&snr[freq]>0) {
             azel[ns*2]=Az[index][k]; azel[1+ns*2]=El[index][k];
             ns++;
         }
@@ -1726,19 +1889,25 @@ void __fastcall TMainForm::DrawSat(TCanvas *c, int w, int h, int x0, int y0,
         l=(q=strchr(sys,id[0]))?(int)(q-sys):5;
         x[i]=(int)(p.x+r*(90-El[index][k]*R2D)/90*sin(Az[index][k]))+x0;
         y[i]=(int)(p.y-r*(90-El[index][k]*R2D)/90*cos(Az[index][k]))+y0;
-        c->Pen->Color=clGray;
-        c->Brush->Style=bsSolid;
         d=SATSIZE/2;
         c->Brush->Color=!Vsat[index][k]?clSilver:
-                        (freq<NFREQ?SnrColor(Snr[index][k][f]):color_sys[l]);
+                        (freq<NFREQ+1?SnrColor(snr[freq]):color_sys[l]);
+        c->Brush->Style=bsSolid;
+        c->Pen->Color=clGray;
+        color_text=clWhite;
+        if (freq<NFREQ+1&&snr[freq]<=0) {
+            c->Brush->Style=bsClear;
+            c->Pen->Color=clSilver;
+            color_text=clSilver;
+        }
         c->Ellipse(x[i]-d,y[i]-d,x[i]+d+1,y[i]+d+1);
         c->Brush->Style=bsClear;
-        DrawText(c,x[i],y[i],s=id,clWhite,1);
+        DrawText(c,x[i],y[i],s=id,color_text,1);
     }
     c->Brush->Style=bsClear;
     dops(ns,azel,0.0,dop);
-    DrawText(c,x0+3,y0+h-15,s.sprintf(L"# Sat:%2d",Nsat[index]),clGray,0);
-    DrawText(c,x0+w-3,y0+h-15,s.sprintf(L"GDOP:%.1f",dop[0]),clGray,2);
+    DrawText(c,x0+3,y0+h-15,s.sprintf(L"# Sat: %d/%d",ns,Nsat[index]),clGray,0);
+    DrawText(c,x0+w-3,y0+h-15,s.sprintf(L"GDOP: %.1f",dop[0]),clGray,2);
 }
 // draw baseline plot -------------------------------------------------------
 void __fastcall TMainForm::DrawBL(TImage *plot, int w, int h)
@@ -1903,10 +2072,10 @@ void __fastcall TMainForm::DrawTrk(TImage *plot)
     if (n>0) {
         graph->ToPoint(x[k],y[k],p1);
         graph->DrawMark(p1,0,clWhite,18,0);
-        graph->DrawMark(p1,1,clBlack,16,0);
-        graph->DrawMark(p1,5,clBlack,20,0);
-        graph->DrawMark(p1,0,clBlack,12,0);
-        graph->DrawMark(p1,0,c[k],10,0);
+        graph->DrawMark(p1,1,rtksvr.state?clBlack:clGray,16,0);
+        graph->DrawMark(p1,5,rtksvr.state?clBlack:clGray,20,0);
+        graph->DrawMark(p1,0,rtksvr.state?clBlack:clGray,12,0);
+        graph->DrawMark(p1,0,rtksvr.state?c[k]:clWhite,10,0);
     }
     // scale
     graph->GetPos(p1,p2);
@@ -1925,7 +2094,7 @@ void __fastcall TMainForm::DrawTrk(TImage *plot)
     // ref position
     if (norm(ref,3)>1E-6) {
         p1.x+=2;
-        p1.y=p2.y+12;
+        p1.y=p2.y+11;
         label.sprintf("%.9f %.9f",pos[0]*R2D,pos[1]*R2D);
         graph->DrawText(p1,label,clGray,clWhite,1,1,0);
     }
@@ -2386,16 +2555,24 @@ void __fastcall TMainForm::LoadOpt(void)
     SolType         =ini->ReadInteger("setting","soltype",         0);
     PlotType1       =ini->ReadInteger("setting","plottype",        0);
     PlotType2       =ini->ReadInteger("setting","plottype2",       0);
+    PlotType3       =ini->ReadInteger("setting","plottype3",       0);
+    PlotType4       =ini->ReadInteger("setting","plottype4",       0);
     PanelMode       =ini->ReadInteger("setting","panelmode",       0);
     ProxyAddr       =ini->ReadString ("setting","proxyaddr",      "");
     MoniPort        =ini->ReadInteger("setting","moniport",DEFAULTPORT);
     PanelStack      =ini->ReadInteger("setting","panelstack",      0);
     TrkType1        =ini->ReadInteger("setting","trktype1",        0);
     TrkType2        =ini->ReadInteger("setting","trktype2",        0);
+    TrkType3        =ini->ReadInteger("setting","trktype3",        0);
+    TrkType4        =ini->ReadInteger("setting","trktype4",        0);
     TrkScale1       =ini->ReadInteger("setting","trkscale1",       5);
     TrkScale2       =ini->ReadInteger("setting","trkscale2",       5);
+    TrkScale3       =ini->ReadInteger("setting","trkscale3",       5);
+    TrkScale4       =ini->ReadInteger("setting","trkscale4",       5);
     BLMode1         =ini->ReadInteger("setting","blmode1",         0);
     BLMode2         =ini->ReadInteger("setting","blmode2",         0);
+    BLMode3         =ini->ReadInteger("setting","blmode3",         0);
+    BLMode4         =ini->ReadInteger("setting","blmode4",         0);
     MarkerName      =ini->ReadString ("setting","markername",     "");
     MarkerComment   =ini->ReadString ("setting","markercomment",  "");
     
@@ -2434,14 +2611,27 @@ void __fastcall TMainForm::LoadOpt(void)
     UpdatePanel();
     
     if (PanelStack==0) {
-        Panel21 ->Width=ini->ReadInteger("window","splitpos" ,180);
-        Panel221->Width=ini->ReadInteger("window","splitpos1",180);
-        Panel222->Width=ini->ReadInteger("window","splitpos2",180);
+        Panel21->Width=ini->ReadInteger("window","splitpos" ,185);
+        Panel22->Width=ini->ReadInteger("window","splitpos1",185);
+        Panel23->Width=ini->ReadInteger("window","splitpos2",185);
+        Panel24->Width=ini->ReadInteger("window","splitpos3",185);
+        Panel25->Width=ini->ReadInteger("window","splitpos4",185);
+        Panel21->Height=185;
+        Panel22->Height=185;
+        Panel23->Height=185;
+        Panel24->Height=185;
+        Panel25->Height=185;
     }
     else {
-        Panel21 ->Height=ini->ReadInteger("window","splitpos" ,180);
-        Panel221->Height=ini->ReadInteger("window","splitpos1",180);
-        Panel222->Height=ini->ReadInteger("window","splitpos2",180);
+        Panel21->Height=ini->ReadInteger("window","splitpos" ,185);
+        Panel22->Height=ini->ReadInteger("window","splitpos1",185);
+        Panel23->Height=ini->ReadInteger("window","splitpos2",185);
+        Panel24->Height=ini->ReadInteger("window","splitpos3",185);
+        Panel25->Height=ini->ReadInteger("window","splitpos4",185);
+        Panel21->Width=185;
+        Panel22->Width=185;
+        Panel23->Width=185;
+        Panel24->Width=185;
     }
     Width         =ini->ReadInteger("window","width",   388);
     Height        =ini->ReadInteger("window","height",  284);
@@ -2604,16 +2794,24 @@ void __fastcall TMainForm::SaveOpt(void)
     ini->WriteInteger("setting","soltype",    SolType            );
     ini->WriteInteger("setting","plottype",   PlotType1          );
     ini->WriteInteger("setting","plottype2",  PlotType2          );
+    ini->WriteInteger("setting","plottype3",  PlotType3          );
+    ini->WriteInteger("setting","plottype4",  PlotType4          );
     ini->WriteInteger("setting","panelmode",  PanelMode          );
     ini->WriteString ("setting","proxyaddr",  ProxyAddr          );
     ini->WriteInteger("setting","moniport",   MoniPort           );
     ini->WriteInteger("setting","panelstack", PanelStack         );
     ini->WriteInteger("setting","trktype1",   TrkType1           );
     ini->WriteInteger("setting","trktype2",   TrkType2           );
+    ini->WriteInteger("setting","trktype3",   TrkType3           );
+    ini->WriteInteger("setting","trktype4",   TrkType4           );
     ini->WriteInteger("setting","trkscale1",  TrkScale1          );
     ini->WriteInteger("setting","trkscale2",  TrkScale2          );
+    ini->WriteInteger("setting","trkscale3",  TrkScale3          );
+    ini->WriteInteger("setting","trkscale4",  TrkScale4          );
     ini->WriteInteger("setting","blmode1",    BLMode1            );
     ini->WriteInteger("setting","blmode2",    BLMode2            );
+    ini->WriteInteger("setting","blmode3",    BLMode3            );
+    ini->WriteInteger("setting","blmode4",    BLMode4            );
     ini->WriteString ("setting","markername", MarkerName         );
     ini->WriteString ("setting","markercomment",MarkerComment    );
     
@@ -2650,18 +2848,21 @@ void __fastcall TMainForm::SaveOpt(void)
     ini->WriteInteger("window","width",    Width);
     ini->WriteInteger("window","height",   Height);
     if (PanelStack==0) {
-        ini->WriteInteger("window","splitpos", Panel21 ->Width);
-        ini->WriteInteger("window","splitpos1",Panel221->Width);
-        ini->WriteInteger("window","splitpos2",Panel222->Width);
+        ini->WriteInteger("window","splitpos", Panel21->Width);
+        ini->WriteInteger("window","splitpos1",Panel22->Width);
+        ini->WriteInteger("window","splitpos2",Panel23->Width);
+        ini->WriteInteger("window","splitpos3",Panel24->Width);
+        ini->WriteInteger("window","splitpos4",Panel25->Width);
     }
     else {
-        ini->WriteInteger("window","splitpos", Panel21 ->Height);
-        ini->WriteInteger("window","splitpos1",Panel221->Height);
-        ini->WriteInteger("window","splitpos2",Panel222->Height);
+        ini->WriteInteger("window","splitpos", Panel21->Height);
+        ini->WriteInteger("window","splitpos1",Panel22->Height);
+        ini->WriteInteger("window","splitpos2",Panel23->Height);
+        ini->WriteInteger("window","splitpos3",Panel24->Height);
+        ini->WriteInteger("window","splitpos4",Panel25->Height);
     }
     delete ini;
 }
-//---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
 void __fastcall TMainForm::BtnMarkClick(TObject *Sender)
@@ -2676,4 +2877,7 @@ void __fastcall TMainForm::BtnMarkClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+
+
+//---------------------------------------------------------------------------
 

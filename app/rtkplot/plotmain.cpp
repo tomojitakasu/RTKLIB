@@ -909,6 +909,15 @@ void __fastcall TPlot::MenuShowSkyplotClick(TObject *Sender)
     UpdatePlot();
     UpdateEnable();
 }
+// callback on menu-show-grid -----------------------------------------------
+void __fastcall TPlot::MenuShowGridClick(TObject *Sender)
+{
+    trace(3,"MenuShowGrid\n");
+    
+    BtnShowGrid->Down=!BtnShowGrid->Down;
+    UpdatePlot();
+    UpdateEnable();
+}
 // callback on menu-show-map-image ------------------------------------------
 void __fastcall TPlot::MenuShowImgClick(TObject *Sender)
 {
@@ -1155,6 +1164,14 @@ void __fastcall TPlot::BtnShowImgClick(TObject *Sender)
 void __fastcall TPlot::BtnShowSkyplotClick(TObject *Sender)
 {
     trace(3,"BtnShowSkyplotClick\n");
+    
+	UpdateEnable();
+    Refresh();
+}
+//---------------------------------------------------------------------------
+void __fastcall TPlot::BtnShowGridClick(TObject *Sender)
+{
+    trace(3,"BtnShowGridClick\n");
     
 	UpdateEnable();
     Refresh();
@@ -2285,11 +2302,12 @@ void __fastcall TPlot::UpdateEnable(void)
     BtnFixCent     ->Left=325;
     BtnFixHoriz    ->Left=350;
     BtnFixVert     ->Left=375;
-    BtnShowMap     ->Left=400;
+    BtnShowGrid    ->Left=400;
     BtnShowSkyplot ->Left=425;
-    BtnShowImg     ->Left=450;
-    BtnGE          ->Left=475;
-    BtnGM          ->Left=500;
+    BtnShowMap     ->Left=450;
+    BtnShowImg     ->Left=475;
+    BtnGE          ->Left=500;
+    BtnGM          ->Left=525;
     
     Panel102       ->Visible=PlotType==PLOT_SOLP||PlotType==PLOT_SOLV||
                              PlotType==PLOT_SOLA||PlotType==PLOT_NSAT||
@@ -2300,34 +2318,34 @@ void __fastcall TPlot::UpdateEnable(void)
                              PlotType==PLOT_RES ||PlotType==PLOT_OBS ||
                              PlotType==PLOT_DOP ||PlotType==PLOT_SNR ||
                              PlotType==PLOT_SNRE;
+    BtnFitHoriz    ->Enabled=data;
     BtnFitVert     ->Visible=PlotType==PLOT_TRK ||PlotType==PLOT_SOLP||
                              PlotType==PLOT_SOLV||PlotType==PLOT_SOLA;
-    BtnFitHoriz    ->Enabled=data;
     BtnFitVert     ->Enabled=data;
     
     BtnShowTrack   ->Enabled=data;
     
     BtnFixCent     ->Visible=PlotType==PLOT_TRK;
+    BtnFixCent     ->Enabled=data;
     BtnFixHoriz    ->Visible=PlotType==PLOT_SOLP||PlotType==PLOT_SOLV||
                              PlotType==PLOT_SOLA||PlotType==PLOT_NSAT||
                              PlotType==PLOT_RES ||PlotType==PLOT_OBS ||
                              PlotType==PLOT_DOP ||PlotType==PLOT_RES ||
                              PlotType==PLOT_SNR;
+    BtnFixHoriz    ->Enabled=data;
     BtnFixVert     ->Visible=PlotType==PLOT_SOLP||PlotType==PLOT_SOLV||
                              PlotType==PLOT_SOLA;
-    BtnFixCent     ->Enabled=data;
-    BtnFixHoriz    ->Enabled=data;
     BtnFixVert     ->Enabled=data;
+    BtnShowGrid    ->Visible=PlotType==PLOT_TRK;
+    BtnShowSkyplot ->Visible=PlotType==PLOT_SKY||PlotType==PLOT_MPS;
     BtnShowMap     ->Visible=PlotType==PLOT_TRK;
     BtnShowMap     ->Enabled=!BtnSol12->Down;
-    
-    BtnShowSkyplot ->Visible=PlotType==PLOT_SKY||PlotType==PLOT_MPS;
     BtnShowImg     ->Visible=PlotType==PLOT_TRK||PlotType==PLOT_SKY||
                              PlotType==PLOT_MPS;
     BtnAnimate     ->Visible=data&&BtnShowTrack->Down;
-    TimeScroll     ->Visible=data&&BtnShowTrack->Down;
     BtnGE          ->Visible=PlotType==PLOT_TRK;
     BtnGM          ->Visible=PlotType==PLOT_TRK;
+    TimeScroll     ->Visible=data&&BtnShowTrack->Down;
     
     if (!BtnShowTrack->Down) {
         BtnFixHoriz->Enabled=false;
@@ -2356,6 +2374,7 @@ void __fastcall TPlot::UpdateEnable(void)
     MenuShowMap    ->Enabled=BtnShowMap  ->Enabled;
     MenuShowImg    ->Enabled=BtnShowImg  ->Enabled;
     MenuShowSkyplot->Enabled=BtnShowSkyplot->Visible;
+    MenuShowGrid   ->Enabled=BtnShowGrid ->Visible;
     MenuGE         ->Enabled=BtnGE       ->Enabled;
     MenuGM         ->Enabled=BtnGM       ->Enabled;
     
@@ -2364,6 +2383,7 @@ void __fastcall TPlot::UpdateEnable(void)
     MenuFixHoriz   ->Checked=BtnFixHoriz ->Down;
     MenuFixVert    ->Checked=BtnFixVert  ->Down;
     MenuShowSkyplot->Checked=BtnShowSkyplot->Down;
+    MenuShowGrid   ->Checked=BtnShowGrid ->Down;
     MenuShowMap    ->Checked=BtnShowMap  ->Down;
     MenuShowImg    ->Checked=BtnShowImg  ->Down;
     
@@ -2899,13 +2919,6 @@ void __fastcall TPlot::SaveOpt(void)
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TPlot::DriveSelChange(TObject *Sender)
-{
-	
-	;
-}
-//---------------------------------------------------------------------------
-
 void __fastcall TPlot::FileMaskChange(TObject *Sender)
 {
 	switch (FileMask->ItemIndex) {
@@ -2914,12 +2927,6 @@ void __fastcall TPlot::FileMaskChange(TObject *Sender)
 		case 2 : FileList->Mask="*.stat"; break;
 		default: FileList->Mask="*.*"   ; break;
 	}
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TPlot::DirSelChange(TObject *Sender)
-{
-	;
 }
 //---------------------------------------------------------------------------
 

@@ -261,6 +261,8 @@ __published:
 	TComboBox *FileMask;
 	TMenuItem *MenuBrowse;
 	TPanel *StrStatus;
+	TSpeedButton *BtnShowGrid;
+	TMenuItem *MenuShowGrid;
 	
 	void __fastcall FormCreate			(TObject *Sender);
 	void __fastcall FormShow			(TObject *Sender);
@@ -378,11 +380,11 @@ __published:
 	void __fastcall MenuSaveWaypointClick(TObject *Sender);
 	void __fastcall DispDblClick(TObject *Sender);
 	void __fastcall FileMaskChange(TObject *Sender);
-	void __fastcall DirSelChange(TObject *Sender);
-	void __fastcall DriveSelChange(TObject *Sender);
 	void __fastcall FileListClick(TObject *Sender);
 	void __fastcall Splitter1Moved(TObject *Sender);
 	void __fastcall MenuBrowseClick(TObject *Sender);
+	void __fastcall MenuShowGridClick(TObject *Sender);
+	void __fastcall BtnShowGridClick(TObject *Sender);
 
 
 protected:

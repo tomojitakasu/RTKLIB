@@ -8,6 +8,7 @@
 #include <Forms.hpp>
 #include <ExtCtrls.hpp>
 #include <Graphics.hpp>
+#include <Vcl.Buttons.hpp>
 //---------------------------------------------------------------------------
 class TAboutDialog : public TForm
 {
@@ -23,9 +24,10 @@ __published:
 	TImage *Icon6;
 	TImage *Icon7;
 	TPanel *Panel1;
-	TButton *BtnOk;
 	TImage *Icon8;
+	TSpeedButton *BtnOk;
 	void __fastcall FormShow(TObject *Sender);
+	void __fastcall BtnOkClick(TObject *Sender);
 private:
 public:
 	int IconIndex;

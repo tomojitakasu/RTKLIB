@@ -31,6 +31,7 @@
 *                           fix bug on ssr 3 message decoding (#321)
 *           2016/01/22 1.14 fix bug on L2C code in MT1004 (#131)
 *           2016/08/20 1.15 fix bug on loss-of-lock detection in MSM 6/7 (#134)
+*           2016/09/20 1.16 fix bug on MT1045 Galileo week rollover
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -1065,9 +1066,9 @@ static int decode_type1045(rtcm_t *rtcm)
         return -1;
     }
     eph.sat=sat;
-    eph.week=adjgpsweek(week%1024);
-    eph.toe=gpst2time(eph.week,eph.toes);
-    eph.toc=gpst2time(eph.week,toc);
+    eph.week=week;
+    eph.toe=gst2time(eph.week,eph.toes);
+    eph.toc=gst2time(eph.week,toc);
     eph.ttr=rtcm->time;
     eph.A=sqrtA*sqrtA;
     eph.svh=(e5a_hs<<4)+(e5a_dvs<<3);
@@ -1133,9 +1134,9 @@ static int decode_type1046(rtcm_t *rtcm)
         return -1;
     }
     eph.sat=sat;
-    eph.week=adjgpsweek(week%1024);
-    eph.toe=gpst2time(eph.week,eph.toes);
-    eph.toc=gpst2time(eph.week,toc);
+    eph.week=week;
+    eph.toe=gst2time(eph.week,eph.toes);
+    eph.toc=gst2time(eph.week,toc);
     eph.ttr=rtcm->time;
     eph.A=sqrtA*sqrtA;
     eph.svh=(e5a_hs<<4)+(e5a_dvs<<3);

@@ -17,12 +17,13 @@
 /* type definitions ----------------------------------------------------------*/
 typedef struct vt_tag {                 /* virtual console type */
     int state;                          /* state(0:close,1:open) */
-    int type;                           /* type (0:stdio,1:device,2:telnet) */
+    int type;                           /* type (0:dev,1:telnet) */
     int in,out;                         /* input/output file descriptor */
     int n,nesc;                         /* number of line buffer/escape */
     int cur;                            /* cursor position */
     int cur_h;                          /* current history */
     int brk;                            /* break status */
+    int blind;                          /* blind inpu mode */
     struct termios tio;                 /* original terminal attribute */
     char buff[MAXBUFF];                 /* line buffer */
     char esc[8];                        /* escape buffer */
@@ -31,7 +32,7 @@ typedef struct vt_tag {                 /* virtual console type */
 } vt_t;
 
 /* function prototypes -------------------------------------------------------*/
-extern int vt_open(vt_t *vt, int port, const char *dev);
+extern vt_t *vt_open(int sock, const char *dev);
 extern void vt_close(vt_t *vt);
 extern int vt_getc(vt_t *vt, char *c);
 extern int vt_gets(vt_t *vt, char *buff, int n);

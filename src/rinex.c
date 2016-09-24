@@ -83,6 +83,8 @@
 *           2014/12/07 1.24 add read rinex option -SYS=...
 *           2016/07/01 1.25 support RINEX 3.03
 *                           support IRNSS
+*           2016/09/17 1.26 fix bug on fit interval in QZSS RINEX nav
+*                           URA output value complient to RINEX 3.03
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -111,6 +113,10 @@ static const char frqcodes[]="1256789"; /* frequency codes */
 static const double ura_eph[]={         /* ura values (ref [3] 20.3.3.3.1.1) */
     2.4,3.4,4.85,6.85,9.65,13.65,24.0,48.0,96.0,192.0,384.0,768.0,1536.0,
     3072.0,6144.0,0.0
+};
+static const double ura_nominal[]={     /* ura nominal values */
+    2.0,2.8,4.0,5.7,8.0,11.3,16.0,32.0,64.0,128.0,256.0,512.0,1024.0,
+    2048.0,4096.0,8192.0
 };
 /* type definition -----------------------------------------------------------*/
 typedef struct {                        /* signal index type */
@@ -175,10 +181,10 @@ static int sat2code(int sat, char *code)
     }
     return 1;
 }
-/* ura index to ura value (m) ------------------------------------------------*/
+/* ura index to ura nominal value (m) ----------------------------------------*/
 static double uravalue(int sva)
 {
-    return 0<=sva&&sva<15?ura_eph[sva]:32767.0;
+    return 0<=sva&&sva<15?ura_nominal[sva]:8192.0;
 }
 /* ura value (m) to ura index ------------------------------------------------*/
 static int uraindex(double value)
@@ -1065,7 +1071,12 @@ static int decode_eph(double ver, int sat, gtime_t toc, const double *data,
         eph->flag=(int)data[22];      /* GPS: L2 P data flag */
         
         eph->tgd[0]=   data[25];      /* TGD */
-        eph->fit   =   data[28];      /* fit interval */
+        if (sys==SYS_GPS) {
+            eph->fit=data[28];        /* fit interval (h) */
+        }
+        else {
+            eph->fit=data[28]==0.0?1.0:2.0; /* fit interval (0:1h,1:>2h) */
+        }
     }
     else if (sys==SYS_GAL) { /* GAL ver.3 */
         eph->iode=(int)data[ 3];      /* IODnav */
@@ -2341,8 +2352,11 @@ extern int outrnxnavb(FILE *fp, const rnxopt_t *opt, const eph_t *eph)
     }
     outnavf(fp,ttr+(week-eph->week)*604800.0);
     
-    if (sys==SYS_GPS||sys==SYS_QZS) {
+    if (sys==SYS_GPS) {
         outnavf(fp,eph->fit);
+    }
+    else if (sys==SYS_QZS) {
+        outnavf(fp,eph->fit>2.0?1.0:0.0);
     }
     else if (sys==SYS_CMP) {
         outnavf(fp,eph->iodc); /* AODC */

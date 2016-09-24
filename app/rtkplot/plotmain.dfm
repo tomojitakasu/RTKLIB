@@ -35,7 +35,6 @@ object Plot: TPlot
     Color = clWhite
     ParentBackground = False
     TabOrder = 3
-    ExplicitWidth = 633
     object Disp: TPaintBox
       AlignWithMargins = True
       Left = 154
@@ -110,7 +109,6 @@ object Plot: TPlot
         Color = clWhite
         DirList = DirSel
         TabOrder = 0
-        OnChange = DriveSelChange
       end
       object DirSel: TDirectoryListBox
         Left = 0
@@ -124,7 +122,6 @@ object Plot: TPlot
         Constraints.MinHeight = 38
         FileList = FileList
         TabOrder = 1
-        OnChange = DirSelChange
       end
       object FileList: TFileListBox
         AlignWithMargins = True
@@ -177,7 +174,6 @@ object Plot: TPlot
     Color = clWindow
     ParentBackground = False
     TabOrder = 0
-    ExplicitWidth = 633
     object BtnMessage2: TSpeedButton
       Left = 618
       Top = 0
@@ -209,7 +205,6 @@ object Plot: TPlot
       BorderWidth = 1
       TabOrder = 0
       Visible = False
-      ExplicitLeft = 439
       object Message2: TLabel
         Left = 2
         Top = 2
@@ -247,7 +242,6 @@ object Plot: TPlot
       Font.Style = []
       ParentFont = False
       TabOrder = 1
-      ExplicitWidth = 439
       object QL3: TLabel
         Left = 11
         Top = 2
@@ -349,7 +343,6 @@ object Plot: TPlot
     Color = clWindow
     ParentBackground = False
     TabOrder = 1
-    ExplicitWidth = 633
     object Panel11: TPanel
       Left = 434
       Top = 0
@@ -398,8 +391,6 @@ object Plot: TPlot
         Font.Style = []
         ParentFont = False
         Layout = tlCenter
-        ExplicitLeft = 0
-        ExplicitTop = 5
         ExplicitHeight = 13
       end
       object BtnClear: TSpeedButton
@@ -482,7 +473,6 @@ object Plot: TPlot
         BevelOuter = bvNone
         TabOrder = 0
         Visible = False
-        ExplicitLeft = 122
         object StrStatus1: TPanel
           Left = 2
           Top = 7
@@ -510,7 +500,7 @@ object Plot: TPlot
     object Panel10: TPanel
       Left = 0
       Top = 0
-      Width = 518
+      Width = 541
       Height = 25
       Margins.Left = 1
       Margins.Top = 1
@@ -646,7 +636,7 @@ object Plot: TPlot
         OnDblClick = BtnSol2DblClick
       end
       object BtnFixHoriz: TSpeedButton
-        Left = 380
+        Left = 357
         Top = 0
         Width = 23
         Height = 25
@@ -899,7 +889,7 @@ object Plot: TPlot
         ExplicitLeft = 303
       end
       object BtnFixVert: TSpeedButton
-        Left = 403
+        Left = 380
         Top = 0
         Width = 23
         Height = 25
@@ -935,7 +925,7 @@ object Plot: TPlot
         ExplicitLeft = 335
       end
       object BtnShowMap: TSpeedButton
-        Left = 426
+        Left = 449
         Top = 0
         Width = 23
         Height = 25
@@ -972,7 +962,7 @@ object Plot: TPlot
         ExplicitTop = 1
       end
       object BtnShowImg: TSpeedButton
-        Left = 449
+        Left = 472
         Top = 0
         Width = 23
         Height = 25
@@ -1015,7 +1005,7 @@ object Plot: TPlot
         ExplicitTop = -1
       end
       object BtnGE: TSpeedButton
-        Left = 472
+        Left = 495
         Top = 0
         Width = 23
         Height = 25
@@ -1049,7 +1039,7 @@ object Plot: TPlot
         ExplicitLeft = 473
       end
       object BtnFixCent: TSpeedButton
-        Left = 357
+        Left = 334
         Top = 0
         Width = 23
         Height = 25
@@ -1086,7 +1076,7 @@ object Plot: TPlot
         ExplicitTop = 1
       end
       object BtnGM: TSpeedButton
-        Left = 495
+        Left = 518
         Top = 0
         Width = 23
         Height = 25
@@ -1120,7 +1110,7 @@ object Plot: TPlot
         ExplicitLeft = 496
       end
       object BtnShowSkyplot: TSpeedButton
-        Left = 334
+        Left = 426
         Top = 0
         Width = 23
         Height = 25
@@ -1161,7 +1151,44 @@ object Plot: TPlot
         Spacing = 1
         Visible = False
         OnClick = BtnShowSkyplotClick
-        ExplicitLeft = 330
+        ExplicitLeft = 441
+      end
+      object BtnShowGrid: TSpeedButton
+        Left = 403
+        Top = 0
+        Width = 23
+        Height = 25
+        Hint = 'Show Grid'
+        Align = alLeft
+        AllowAllUp = True
+        GroupIndex = 17
+        Down = True
+        Flat = True
+        Glyph.Data = {
+          3E020000424D3E0200000000000036000000280000000D0000000D0000000100
+          1800000000000802000000000000000000000000000000000000FFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FF00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFF00FFFFFFFFFFFFFFFFFFFFFFFF000000FFFFFFFFFFFFFF
+          FFFF000000FFFFFFFFFFFFFFFFFFFFFFFF00FFFFFFFFFFFFFFFFFFFFFFFFC3C3
+          C3FFFFFFFFFFFFFFFFFFC3C3C3FFFFFFFFFFFFFFFFFFFFFFFF00FFFFFFFFFFFF
+          000000C3C3C3000000C3C3C3000000C3C3C3000000C3C3C3000000FFFFFFFFFF
+          FF00FFFFFFFFFFFFFFFFFFFFFFFFC3C3C3FFFFFFFFFFFFFFFFFFC3C3C3FFFFFF
+          FFFFFFFFFFFFFFFFFF00FFFFFFFFFFFFFFFFFFFFFFFF000000FFFFFFFFFFFFFF
+          FFFF000000FFFFFFFFFFFFFFFFFFFFFFFF00FFFFFFFFFFFFFFFFFFFFFFFFC3C3
+          C3FFFFFFFFFFFFFFFFFFC3C3C3FFFFFFFFFFFFFFFFFFFFFFFF00FFFFFFFFFFFF
+          000000C3C3C3000000C3C3C3000000C3C3C3000000C3C3C3000000FFFFFFFFFF
+          FF00FFFFFFFFFFFFFFFFFFFFFFFFC3C3C3FFFFFFFFFFFFFFFFFFC3C3C3FFFFFF
+          FFFFFFFFFFFFFFFFFF00FFFFFFFFFFFFFFFFFFFFFFFF000000FFFFFFFFFFFFFF
+          FFFF000000FFFFFFFFFFFFFFFFFFFFFFFF00FFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFFFFFFFFFF
+          FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+          FF00}
+        ParentShowHint = False
+        ShowHint = True
+        Spacing = 1
+        OnClick = BtnShowGridClick
+        ExplicitLeft = 443
       end
       object Panel101: TPanel
         AlignWithMargins = True
@@ -1178,10 +1205,15 @@ object Plot: TPlot
         FullRepaint = False
         TabOrder = 0
         object PlotTypeS: TComboBox
+          AlignWithMargins = True
           Left = 0
-          Top = 0
+          Top = 1
           Width = 61
           Height = 21
+          Margins.Left = 0
+          Margins.Top = 1
+          Margins.Right = 0
+          Margins.Bottom = 0
           Align = alClient
           Style = csDropDownList
           DropDownCount = 16
@@ -1279,11 +1311,16 @@ object Plot: TPlot
         BevelOuter = bvNone
         TabOrder = 2
         object DopType: TComboBox
+          AlignWithMargins = True
           Left = 0
-          Top = 0
+          Top = 1
           Width = 48
           Height = 21
           Hint = 'Dop Type'
+          Margins.Left = 0
+          Margins.Top = 1
+          Margins.Right = 0
+          Margins.Bottom = 0
           Align = alClient
           Style = csDropDownList
           DropDownCount = 20
@@ -1309,11 +1346,16 @@ object Plot: TPlot
             'VDOP')
         end
         object FrqType: TComboBox
+          AlignWithMargins = True
           Left = 0
-          Top = 0
+          Top = 1
           Width = 48
           Height = 21
           Hint = 'Freq Type'
+          Margins.Left = 0
+          Margins.Top = 1
+          Margins.Right = 0
+          Margins.Bottom = 0
           Align = alClient
           Style = csDropDownList
           DropDownCount = 32
@@ -1334,11 +1376,16 @@ object Plot: TPlot
             'L2')
         end
         object ObsType: TComboBox
+          AlignWithMargins = True
           Left = 0
-          Top = 0
+          Top = 1
           Width = 48
           Height = 21
           Hint = 'Obs Type'
+          Margins.Left = 0
+          Margins.Top = 1
+          Margins.Right = 0
+          Margins.Bottom = 0
           Align = alClient
           Style = csDropDownList
           DropDownCount = 32
@@ -1355,11 +1402,16 @@ object Plot: TPlot
           OnChange = ObsTypeChange
         end
         object ObsType2: TComboBox
+          AlignWithMargins = True
           Left = 0
-          Top = 0
+          Top = 1
           Width = 48
           Height = 21
           Hint = 'Freq Type'
+          Margins.Left = 0
+          Margins.Top = 1
+          Margins.Right = 0
+          Margins.Bottom = 0
           Align = alClient
           Style = csDropDownList
           DropDownCount = 32
@@ -1381,11 +1433,16 @@ object Plot: TPlot
             'L2')
         end
         object QFlag: TComboBox
+          AlignWithMargins = True
           Left = 0
-          Top = 0
+          Top = 1
           Width = 48
           Height = 21
           Hint = 'Quality Flag'
+          Margins.Left = 0
+          Margins.Top = 1
+          Margins.Right = 0
+          Margins.Bottom = 0
           Align = alClient
           Style = csDropDownList
           DropDownCount = 20
@@ -1474,13 +1531,19 @@ object Plot: TPlot
             0000}
           Spacing = 0
           OnClick = BtnRangeListClick
+          ExplicitTop = 1
         end
         object SatList: TComboBox
+          AlignWithMargins = True
           Left = 38
-          Top = 0
+          Top = 1
           Width = 6
           Height = 21
           Hint = 'Satllite List'
+          Margins.Left = 0
+          Margins.Top = 1
+          Margins.Right = 0
+          Margins.Bottom = 0
           Align = alClient
           Style = csDropDownList
           DropDownCount = 64
@@ -1503,7 +1566,7 @@ object Plot: TPlot
       end
     end
     object Panel12: TPanel
-      Left = 518
+      Left = 541
       Top = 0
       Width = 140
       Height = 25
@@ -1922,6 +1985,10 @@ object Plot: TPlot
       object MenuShowSkyplot: TMenuItem
         Caption = 'Show Sky&plot'
         OnClick = MenuShowSkyplotClick
+      end
+      object MenuShowGrid: TMenuItem
+        Caption = 'Show &Grid'
+        OnClick = MenuShowGridClick
       end
       object MenuShowImg: TMenuItem
         Caption = 'Show &Image'

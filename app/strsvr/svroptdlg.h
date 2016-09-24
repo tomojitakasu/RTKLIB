@@ -56,6 +56,8 @@ __published:
 	TEdit *LogFileF;
 	TButton *BtnLogFile;
 	TOpenDialog *OpenDialog;
+	TLabel *Label16;
+	TComboBox *RelayMsg;
 	void __fastcall BtnOkClick(TObject *Sender);
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall BtnPosClick(TObject *Sender);
@@ -69,7 +71,7 @@ private:
 public:
 	AnsiString StaPosFile,ExeDirectory,LocalDirectory,ProxyAddress;
 	AnsiString AntType,RcvType,SrcTblFile,LogFile;
-	int SvrOpt[6],TraceLevel,NmeaReq,FileSwapMargin,StaId,StaSel;
+	int SvrOpt[6],TraceLevel,NmeaReq,FileSwapMargin,StaId,StaSel,RelayBack;
 	double AntPos[3],AntOff[3];
 	__fastcall TSvrOptDialog(TComponent* Owner);
 };

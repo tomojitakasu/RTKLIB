@@ -133,13 +133,13 @@ extern void alm2pos(gtime_t time, const alm_t *alm, double *rs, double *dts)
     
     M=alm->M0+sqrt(mu/(alm->A*alm->A*alm->A))*tk;
     for (n=0,E=M,Ek=0.0;fabs(E-Ek)>RTOL_KEPLER&&n<MAX_ITER_KEPLER;n++) {
-        Ek=E; sinE=sin(Ek); E=M+alm->e*sinE;
+        Ek=E; E-=(E-alm->e*sin(E)-M)/(1.0-alm->e*cos(E));
     }
     if (n>=MAX_ITER_KEPLER) {
         trace(2,"alm2pos: kepler iteration overflow sat=%2d\n",alm->sat);
         return;
     }
-    cosE=cos(E);
+    sinE=sin(E); cosE=cos(E);
     u=atan2(sqrt(1.0-alm->e*alm->e)*sinE,cosE-alm->e)+alm->omg;
     r=alm->A*(1.0-alm->e*cosE);
     i=alm->i0;

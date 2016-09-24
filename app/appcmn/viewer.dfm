@@ -5,6 +5,8 @@ object TextViewer: TTextViewer
   ClientHeight = 415
   ClientWidth = 624
   Color = clWhite
+  Constraints.MinHeight = 160
+  Constraints.MinWidth = 320
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -82,7 +84,7 @@ object TextViewer: TTextViewer
     end
     object FindStr: TEdit
       Left = 2
-      Top = 3
+      Top = 4
       Width = 119
       Height = 21
       TabOrder = 1
@@ -99,10 +101,11 @@ object TextViewer: TTextViewer
     end
   end
   object Text: TRichEdit
-    Left = 0
-    Top = 29
-    Width = 624
-    Height = 386
+    AlignWithMargins = True
+    Left = 3
+    Top = 32
+    Width = 618
+    Height = 380
     Align = alClient
     BevelInner = bvNone
     BevelOuter = bvNone
@@ -115,6 +118,10 @@ object TextViewer: TTextViewer
     ScrollBars = ssBoth
     TabOrder = 1
     WordWrap = False
+    ExplicitLeft = 0
+    ExplicitTop = 29
+    ExplicitWidth = 624
+    ExplicitHeight = 386
   end
   object OpenDialog: TOpenDialog
     Filter = 'Text File (*.txt)|*.txt|All (*.*)|*.*'

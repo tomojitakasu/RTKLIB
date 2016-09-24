@@ -91,11 +91,11 @@ __published:
 	TPanel *Panel212;
 	TLabel *Plabel0;
 	TSplitter *Splitter1;
-	TPanel *Panel221;
+	TPanel *Panel22;
 	TImage *Plot1;
 	TSpeedButton *BtnFreqType1;
 	TSplitter *Splitter2;
-	TPanel *Panel222;
+	TPanel *Panel23;
 	TImage *Disp2;
 	TImage *Plot2;
 	TSpeedButton *BtnFreqType2;
@@ -105,7 +105,6 @@ __published:
 	TSpeedButton *BtnPlotType2;
 	TSpeedButton *BtnPanel;
 	TPanel *Pane6;
-	TPanel *Panel22;
 	TPanel *Panel5;
 	TPanel *IndQ;
 	TLabel *SolS;
@@ -121,6 +120,22 @@ __published:
 	TSpeedButton *BtnShrink1;
 	TSpeedButton *BtnExpand2;
 	TSpeedButton *BtnShrink2;
+	TPanel *Panel24;
+	TImage *Disp3;
+	TImage *Plot3;
+	TSpeedButton *BtnFreqType3;
+	TSpeedButton *BtnPlotType3;
+	TSpeedButton *BtnExpand3;
+	TSpeedButton *BtnShrink3;
+	TPanel *Panel25;
+	TImage *Disp4;
+	TImage *Plot4;
+	TSpeedButton *BtnFreqType4;
+	TSpeedButton *BtnPlotType4;
+	TSpeedButton *BtnExpand4;
+	TSpeedButton *BtnShrink4;
+	TSplitter *Splitter3;
+	TSplitter *Splitter4;
 	
 	void __fastcall FormCreate        (TObject *Sender);
 	void __fastcall FormShow          (TObject *Sender);
@@ -157,10 +172,10 @@ __published:
 	
 	void __fastcall TrayIconDblClick  (TObject *Sender);
 	void __fastcall BtnFreqType1Click(TObject *Sender);
-	void __fastcall Panel221Resize(TObject *Sender);
+	void __fastcall Panel22Resize(TObject *Sender);
 	void __fastcall Panel4Resize(TObject *Sender);
 	void __fastcall Panel21Resize(TObject *Sender);
-	void __fastcall Panel222Resize(TObject *Sender);
+	void __fastcall Panel23Resize(TObject *Sender);
 	void __fastcall BtnPanelClick(TObject *Sender);
 	void __fastcall BtnPlotType2Click(TObject *Sender);
 	void __fastcall BtnFreqType2Click(TObject *Sender);
@@ -171,6 +186,12 @@ __published:
 	void __fastcall BtnExpand2Click(TObject *Sender);
 	void __fastcall BtnShrink2Click(TObject *Sender);
 	void __fastcall BtnMarkClick(TObject *Sender);
+	void __fastcall Panel24Resize(TObject *Sender);
+	void __fastcall Panel25Resize(TObject *Sender);
+	void __fastcall BtnPlotType3Click(TObject *Sender);
+	void __fastcall BtnFreqType3Click(TObject *Sender);
+	void __fastcall BtnPlotType4Click(TObject *Sender);
+	void __fastcall BtnFreqType4Click(TObject *Sender);
 private:
 	tle_t TLEData;
 
@@ -219,8 +240,12 @@ public:
 	int TimeoutTime,ReconTime,SbasCorr,DgpsCorr,TideCorr,FileSwapMargin;
 	int Stream[MAXSTRRTK],StreamC[MAXSTRRTK],Format[MAXSTRRTK];
 	int CmdEna[3][2],CmdEnaTcp[3][2];
-	int TimeSys,SolType,PlotType1,FreqType1,PlotType2,FreqType2;
-	int TrkType1,TrkType2,TrkScale1,TrkScale2,BLMode1,BLMode2;
+	int TimeSys,SolType;
+	int PlotType1,FreqType1,PlotType2,FreqType2;
+	int PlotType3,FreqType3,PlotType4,FreqType4;
+	int TrkType1,TrkType2,TrkType3,TrkType4;
+	int TrkScale1,TrkScale2,TrkScale3,TrkScale4;
+	int BLMode1,BLMode2,BLMode3,BLMode4;
 	int MoniPort,OpenPort;
 	
 	int PSol,PSolS,PSolE,Nsat[2],SolCurrentStat;

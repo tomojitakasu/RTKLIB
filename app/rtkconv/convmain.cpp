@@ -612,6 +612,45 @@ void __fastcall TMainWindow::TimeH2UDChangingEx(TObject *Sender,
     TimeH2->Text=s.sprintf("%02d:%02d:%02d",sec/3600,(sec%3600)/60,sec%60);
     TimeH2->SelStart=p>5||p==0?8:(p>2?5:2);
 }
+// callback on time-start-ymd key press -------------------------------------
+void __fastcall TMainWindow::TimeY1KeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
+{
+    bool allowchange;
+    if (Key==VK_UP||Key==VK_DOWN) {
+        TimeY1UDChangingEx(Sender,allowchange,0,Key==VK_UP?updUp:updDown);
+        Key=0;
+    }
+}
+// callback on time-start-hms key press -------------------------------------
+void __fastcall TMainWindow::TimeH1KeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
+
+{
+    bool allowchange;
+    if (Key==VK_UP||Key==VK_DOWN) {
+        TimeH1UDChangingEx(Sender,allowchange,0,Key==VK_UP?updUp:updDown);
+        Key=0;
+    }
+}
+// callback on time-end-ymd key press ---------------------------------------
+void __fastcall TMainWindow::TimeY2KeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
+
+{
+    bool allowchange;
+    if (Key==VK_UP||Key==VK_DOWN) {
+        TimeY2UDChangingEx(Sender,allowchange,0,Key==VK_UP?updUp:updDown);
+        Key=0;
+    }
+}
+// callback on time-end-hms key press ---------------------------------------
+void __fastcall TMainWindow::TimeH2KeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
+
+{
+    bool allowchange;
+    if (Key==VK_UP||Key==VK_DOWN) {
+        TimeH2UDChangingEx(Sender,allowchange,0,Key==VK_UP?updUp:updDown);
+        Key=0;
+    }
+}
 // replace keywords in file path --------------------------------------------
 AnsiString __fastcall TMainWindow::RepPath(AnsiString File)
 {
@@ -794,7 +833,7 @@ void __fastcall TMainWindow::ConvertFile(void)
     p+=sprintf(p,"format: %s",formatstrs[format]);
     if (*rnxopt.rcvopt) sprintf(p,", option: %s",rnxopt.rcvopt);
     for (i=0;i<2;i++) strncpy(rnxopt.comment[i+2],Comment[i].c_str(),63);
-    for (i=0;i<6;i++) strcpy(rnxopt.mask[i],CodeMask[i].c_str());
+    for (i=0;i<7;i++) strcpy(rnxopt.mask[i],CodeMask[i].c_str());
     rnxopt.autopos=AutoPos;
     rnxopt.scanobs=ScanObs;
     rnxopt.halfcyc=HalfCyc;
@@ -872,7 +911,7 @@ void __fastcall TMainWindow::ConvertFile(void)
 void __fastcall TMainWindow::LoadOpt(void)
 {
     TIniFile *ini=new TIniFile(IniFile);
-    AnsiString mask="1111111111111111111111111111111111111111111";
+    AnsiString mask="1111111111111111111111111111111111111111111111111111111";
     
     RnxVer              =ini->ReadInteger("opt","rnxver",      0);
     RnxFile             =ini->ReadInteger("opt","rnxfile",     0);
@@ -910,6 +949,7 @@ void __fastcall TMainWindow::LoadOpt(void)
     CodeMask[3]         =ini->ReadString ("opt","codemask_4",mask);
     CodeMask[4]         =ini->ReadString ("opt","codemask_5",mask);
     CodeMask[5]         =ini->ReadString ("opt","codemask_6",mask);
+    CodeMask[6]         =ini->ReadString ("opt","codemask_7",mask);
     AutoPos             =ini->ReadInteger("opt","autopos",     0);
     ScanObs             =ini->ReadInteger("opt","scanobs",     0);
     HalfCyc             =ini->ReadInteger("opt","halfcyc",     0);
@@ -1002,6 +1042,7 @@ void __fastcall TMainWindow::SaveOpt(void)
     ini->WriteString ("opt","codemask_4", CodeMask[3]);
     ini->WriteString ("opt","codemask_5", CodeMask[4]);
     ini->WriteString ("opt","codemask_6", CodeMask[5]);
+    ini->WriteString ("opt","codemask_7", CodeMask[6]);
     ini->WriteInteger("opt","autopos",    AutoPos);
     ini->WriteInteger("opt","scanobs",    ScanObs);
     ini->WriteInteger("opt","halfcyc",    HalfCyc);

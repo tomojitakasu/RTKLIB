@@ -4,8 +4,8 @@ object AboutDialog: TAboutDialog
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'About'
-  ClientHeight = 95
-  ClientWidth = 299
+  ClientHeight = 91
+  ClientWidth = 306
   Color = clWhite
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,9 +18,9 @@ object AboutDialog: TAboutDialog
   PixelsPerInch = 96
   TextHeight = 13
   object LabelVer: TLabel
-    Left = 69
+    Left = 68
     Top = 31
-    Width = 224
+    Width = 222
     Height = 17
     Alignment = taCenter
     AutoSize = False
@@ -35,7 +35,7 @@ object AboutDialog: TAboutDialog
   object LabelAbout: TLabel
     Left = 68
     Top = 12
-    Width = 226
+    Width = 222
     Height = 19
     Alignment = taCenter
     AutoSize = False
@@ -48,10 +48,10 @@ object AboutDialog: TAboutDialog
     ParentFont = False
   end
   object LabelCopyright: TLabel
-    Left = 70
-    Top = 52
-    Width = 224
-    Height = 27
+    Left = 68
+    Top = 51
+    Width = 222
+    Height = 32
     Alignment = taCenter
     AutoSize = False
     Caption = 'Copyright'
@@ -62,8 +62,17 @@ object AboutDialog: TAboutDialog
     Font.Style = []
     ParentFont = False
   end
+  object BtnOk: TSpeedButton
+    Left = 268
+    Top = 62
+    Width = 34
+    Height = 27
+    Caption = '&OK'
+    Flat = True
+    OnClick = BtnOkClick
+  end
   object Panel1: TPanel
-    Left = 4
+    Left = 6
     Top = 8
     Width = 70
     Height = 78
@@ -74,8 +83,8 @@ object AboutDialog: TAboutDialog
     ParentBackground = False
     TabOrder = 0
     object Icon1: TImage
-      Left = 2
-      Top = 6
+      Left = 3
+      Top = 7
       Width = 64
       Height = 64
       Picture.Data = {
@@ -487,8 +496,8 @@ object AboutDialog: TAboutDialog
       Visible = False
     end
     object Icon2: TImage
-      Left = 2
-      Top = 6
+      Left = 3
+      Top = 7
       Width = 64
       Height = 64
       Picture.Data = {
@@ -900,8 +909,8 @@ object AboutDialog: TAboutDialog
       Visible = False
     end
     object Icon3: TImage
-      Left = 2
-      Top = 6
+      Left = 3
+      Top = 7
       Width = 64
       Height = 64
       Picture.Data = {
@@ -1313,8 +1322,8 @@ object AboutDialog: TAboutDialog
       Visible = False
     end
     object Icon4: TImage
-      Left = 2
-      Top = 6
+      Left = 3
+      Top = 7
       Width = 64
       Height = 64
       Picture.Data = {
@@ -1726,8 +1735,8 @@ object AboutDialog: TAboutDialog
       Visible = False
     end
     object Icon5: TImage
-      Left = 2
-      Top = 6
+      Left = 3
+      Top = 7
       Width = 64
       Height = 64
       Picture.Data = {
@@ -5470,8 +5479,8 @@ object AboutDialog: TAboutDialog
       Visible = False
     end
     object Icon6: TImage
-      Left = 2
-      Top = 6
+      Left = 3
+      Top = 7
       Width = 64
       Height = 64
       Picture.Data = {
@@ -5659,8 +5668,8 @@ object AboutDialog: TAboutDialog
       Visible = False
     end
     object Icon7: TImage
-      Left = 2
-      Top = 6
+      Left = 3
+      Top = 7
       Width = 64
       Height = 64
       Picture.Data = {
@@ -5848,8 +5857,8 @@ object AboutDialog: TAboutDialog
       Visible = False
     end
     object Icon8: TImage
-      Left = 4
-      Top = 8
+      Left = 3
+      Top = 7
       Width = 64
       Height = 64
       Picture.Data = {
@@ -6260,14 +6269,5 @@ object AboutDialog: TAboutDialog
       Stretch = True
       Visible = False
     end
-  end
-  object BtnOk: TButton
-    Left = 255
-    Top = 66
-    Width = 41
-    Height = 27
-    Caption = '&OK'
-    ModalResult = 1
-    TabOrder = 1
   end
 end
