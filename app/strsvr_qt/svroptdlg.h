@@ -29,7 +29,7 @@ private:
 public:
     QString StaPosFile, ExeDirectory, LocalDirectory, ProxyAddress;
     QString AntType, RcvType, SrcTblFile, LogFile;
-    int SvrOpt[6], TraceLevel, NmeaReq, FileSwapMargin, StaId, StaSel;
+    int SvrOpt[6], TraceLevel, NmeaReq, FileSwapMargin, StaId, StaSel, RelayBack;
     double AntPos[3], AntOff[3];
 
     explicit SvrOptDialog(QWidget *parent);

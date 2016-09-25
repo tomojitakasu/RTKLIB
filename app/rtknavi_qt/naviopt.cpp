@@ -696,7 +696,7 @@ void OptDialog::SetOpt(void)
 void OptDialog::LoadOpt(const QString &file)
 {
     int itype[] = { STR_SERIAL, STR_TCPCLI, STR_TCPSVR, STR_NTRIPCLI, STR_FILE, STR_FTP, STR_HTTP };
-    int otype[] = { STR_SERIAL, STR_TCPCLI, STR_TCPSVR, STR_NTRIPSVR, STR_FILE };
+    int otype[] = { STR_SERIAL, STR_TCPCLI, STR_TCPSVR, STR_NTRIPSVR, STR_NTRIPC_C, STR_FILE };
     QLineEdit *editu[] = { RovPos1, RovPos2, RovPos3 };
     QLineEdit *editr[] = { RefPos1, RefPos2, RefPos3 };
     QString buff;
@@ -865,10 +865,10 @@ void OptDialog::SaveOpt(const QString &file)
     QString DCBFile_Text = DCBFile->text();
     QString LocalDir_Text = LocalDir->text();
     int itype[] = { STR_SERIAL, STR_TCPCLI, STR_TCPSVR, STR_NTRIPCLI, STR_FILE, STR_FTP, STR_HTTP };
-    int otype[] = { STR_SERIAL, STR_TCPCLI, STR_TCPSVR, STR_NTRIPSVR, STR_FILE };
+    int otype[] = { STR_SERIAL, STR_TCPCLI, STR_TCPSVR, STR_NTRIPSVR, STR_NTRIPC_C, STR_FILE };
     QLineEdit *editu[] = { RovPos1, RovPos2, RovPos3 };
     QLineEdit *editr[] = { RefPos1, RefPos2, RefPos3 };
-    char buff[1024], *p, comment[256], s[64];
+    char buff[1024], *p, *q, comment[256], s[64];
     int sat, ex;
     prcopt_t prcopt = prcopt_default;
     solopt_t solopt = solopt_default;
@@ -887,9 +887,52 @@ void OptDialog::SaveOpt(const QString &file)
             strcpy(strpath[i], qPrintable(mainForm->Paths[i][0]));
         } else if (strtype[i] == STR_FILE) {
             strcpy(strpath[i], qPrintable(mainForm->Paths[i][2]));
-        } else if (strtype[i] <= STR_NTRIPCLI) {
-            strcpy(strpath[i], qPrintable(mainForm->Paths[i][1]));
-        } else if (strtype[i] <= STR_HTTP) {
+        } else if (strtype[i] == STR_TCPSVR) {
+            strcpy(buff,qPrintable(mainForm->Paths[i][1]));
+            if ((p=strchr(buff,'/'))) *p='\0'; // TODO
+            if ((p=strrchr(buff,':'))) {
+                strcpy(strpath[i],p);
+            }
+            else {
+                strcpy(strpath[i],"");
+            }
+        }
+        else if (strtype[i]==STR_TCPCLI) {
+            strcpy(buff,qPrintable(mainForm->Paths[i][1]));
+            if ((p=strchr(buff,'/'))) *p='\0';
+            if ((p=strrchr(buff,'@'))) {
+                strcpy(strpath[i],p+1);
+            }
+            else {
+                strcpy(strpath[i],buff);
+            }
+        }
+        else if (strtype[i]==STR_NTRIPSVR) {
+            strcpy(buff,qPrintable(mainForm->Paths[i][1]));
+            if ((p=strchr(buff,':'))&&strchr(p+1,'@')) {
+                strcpy(strpath[i],p);
+            }
+            else {
+                strcpy(strpath[i],buff);
+            }
+        }
+        else if (strtype[i]==STR_NTRIPCLI) {
+            strcpy(buff,qPrintable(mainForm->Paths[i][1]));
+            if ((p=strchr(buff,'/'))&&(q=strchr(p+1,':'))) *q='\0';
+            strcpy(strpath[i],buff);
+        }
+        else if (strtype[i]==STR_NTRIPC_S||strtype[i]==STR_NTRIPC_C) {
+            strcpy(buff,qPrintable(mainForm->Paths[i][1]));
+            if ((p=strchr(buff,'/'))&&(q=strchr(p+1,':'))) *q='\0';
+            if ((p=strchr(buff,'@'))) {
+                *(p+1)='\0';
+                strcpy(strpath[i],buff);
+            }
+            if ((p=strchr(p?p+2:buff,':'))) {
+                strcat(strpath[i],p);
+            }
+        } else if (strtype[i]==STR_FTP||strtype[i]==STR_HTTP)
+        {
             strcpy(strpath[i], qPrintable(mainForm->Paths[i][3]));
 		}
 	}

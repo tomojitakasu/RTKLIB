@@ -130,7 +130,7 @@ public:
 	gtime_t RnxTime;
     QString RunBy, Marker, MarkerNo, MarkerType, Name[2], Rec[3], Ant[3];
     QString RnxCode, Comment[2], RcvOption, ExSats;
-    QString CodeMask[6];
+    QString CodeMask[7];
     double AppPos[3], AntDel[3];
     int RnxVer, RnxFile, NavSys, ObsType, FreqType, TraceLevel;
     int AutoPos, ScanObs, HalfCyc, OutIono, OutTime, OutLeaps;

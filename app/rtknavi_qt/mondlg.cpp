@@ -1363,7 +1363,7 @@ void MonitorDialog::ShowStr(void)
 	};
     const QString type[] = {
         tr("-"), tr("Serial"), tr("File"), tr("TCP Server"), tr("TCP Client"), tr("UDP"), tr("NTRIP Server"),
-        tr("NTRIP Client")
+        tr("NTRIP Client"), tr("FTP"),tr("HTTP"),tr("NTRIP Caster S"),tr("NTRIP Caster C")
 	};
     const QString outformat[] = {
         tr("Lat/Lon/Height"), tr("X/Y/Z-ECEF"), tr("E/N/U-Baseline"), tr("NMEA-0183")

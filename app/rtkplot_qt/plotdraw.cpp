@@ -109,19 +109,21 @@ void Plot::DrawTrk(QPainter &c, int level)
     if (BtnShowMap->isChecked())                            // map
         DrawTrkMap(c, level);
 
-    if (level) {                                            // center +
-        GraphT->GetPos(p1, p2);
-        p1.rx() = (p1.x() + p2.x()) / 2;
-        p1.ry() = (p1.y() + p2.y()) / 2;
-        DrawMark(GraphT, c, p1, 5, CColor[1], 20, 0);
-    }
-
-    if (ShowGLabel >= 3) {// circles
-        GraphT->XLPos = 7; GraphT->YLPos = 7;
-        GraphT->DrawCircles(c, ShowGLabel == 4);
-    } else if (ShowGLabel >= 1) {// grid
-        GraphT->XLPos = 2; GraphT->YLPos = 4;
-        GraphT->DrawAxis(c, ShowLabel, ShowGLabel == 2);
+    if (BtnShowGrid->isChecked()) { // grid
+        if (level) { // center +
+            GraphT->GetPos(p1, p2);
+            p1.setX((p1.x() + p2.x()) / 2);
+            p1.setY((p1.y() + p2.y()) / 2);
+            DrawMark(GraphT, c, p1, 5, CColor[1], 20, 0);
+        }
+        if (ShowGLabel >= 3) { // circles
+            GraphT->XLPos = 7; GraphT->YLPos = 7;
+            GraphT->DrawCircles(c, ShowGLabel == 4);
+        }
+        else if (ShowGLabel >= 1) { // grid
+            GraphT->XLPos = 2; GraphT->YLPos = 4;
+            GraphT->DrawAxis(c, ShowLabel, ShowGLabel == 2);
+        }
     }
 
     if (norm(OPos, 3) > 0.0) {
@@ -324,7 +326,7 @@ void Plot::DrawTrkMap(QPainter &c, int level)
     gtime_t time = { 0, 0 };
     QColor color;
     QPoint *p, p1;
-    double xyz[3], S, xl[2], yl[2], enu[6][3] = { { 0 } }, opos[3], pos[3], rr[3];
+    double xyz[3], S, xl[2], yl[2], enu[8][3] = { { 0 } }, opos[3], pos[3], rr[3];
     double bound[4] = { PI / 2.0, -PI / 2.0, PI, -PI };
     int i, j, n, m;
 
@@ -338,10 +340,19 @@ void Plot::DrawTrkMap(QPainter &c, int level)
     enu[3][0] = xl[1]; enu[3][1] = yl[1];
     enu[4][0] = (xl[0] + xl[1]) / 2.0; enu[4][1] = yl[0];
     enu[5][0] = (xl[0] + xl[1]) / 2.0; enu[5][1] = yl[1];
+    enu[6][0] = xl[0]; enu[6][1] = (yl[0] + yl[1]) / 2.0;
+    enu[7][0] = xl[1]; enu[7][1] = (yl[0] + yl[1]) / 2.0;
 
     ecef2pos(OPos, opos);
 
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < 8; i++) {
+        if (norm(enu[i], 2) >= 1000000.0) {
+            bound[0] =-PI / 2.0;
+            bound[1] = PI / 2.0;
+            bound[2] =-PI;
+            bound[3] = PI;
+            break;
+        }
         enu2ecef(opos, enu[i], rr);
         for (j = 0; j < 3; j++) rr[j] += OPos[j];
         ecef2pos(rr, pos);
@@ -358,6 +369,7 @@ void Plot::DrawTrkMap(QPainter &c, int level)
                 pnt = static_cast<gis_pnt_t *>(data->data);
                 if (!P_IN_B(pnt->pos, bound)) continue;
                 PosToXyz(time, pnt->pos, 0, xyz);
+                if (xyz[2]<-RE_WGS84) continue;
                 GraphT->ToPoint(xyz[0], xyz[1], p1);
                 DrawMark(GraphT, c, p1, 1, CColor[2], 6, 0);
                 DrawMark(GraphT, c, p1, 0, CColor[2], 2, 0);
@@ -368,6 +380,13 @@ void Plot::DrawTrkMap(QPainter &c, int level)
                 p = new QPoint [n];
                 for (j = m = 0; j < n; j++) {
                     PosToXyz(time, poly->pos + j * 3, 0, xyz);
+                    if (xyz[2] < -RE_WGS84) {
+                        if (m > 1) {
+                            GraphT->DrawPoly(c, p, m, MapColor[i], 0);
+                            m = 0;
+                        }
+                        continue;
+                    }
                     GraphT->ToPoint(xyz[0], xyz[1], p1);
                     if (m == 0 || p1.x() != p[m - 1].x() || p1.y() != p[m - 1].y())
                         p[m++] = p1;
@@ -381,6 +400,9 @@ void Plot::DrawTrkMap(QPainter &c, int level)
                 p = new QPoint [n];
                 for (j = m = 0; j < n; j++) {
                     PosToXyz(time, polygon->pos + j * 3, 0, xyz);
+                    if (xyz[2] < -RE_WGS84) {
+                        continue;
+                    }
                     GraphT->ToPoint(xyz[0], xyz[1], p1);
                     if (m == 0 || p1.x() != p[m - 1].x() || p1.y() != p[m - 1].y())
                         p[m++] = p1;

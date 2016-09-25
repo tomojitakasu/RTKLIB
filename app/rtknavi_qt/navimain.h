@@ -65,10 +65,18 @@ public slots:
     void BtnPanelClick();
     void BtnPlotType2Click();
     void BtnFreqType2Click();
+    void BtnPlotType3Click();
+    void BtnFreqType3Click();
+    void BtnPlotType4Click();
+    void BtnFreqType4Click();
     void BtnExpand1Click();
     void BtnShrink1Click();
     void BtnExpand2Click();
     void BtnShrink2Click();
+    void BtnExpand3Click();
+    void BtnShrink3Click();
+    void BtnExpand4Click();
+    void BtnShrink4Click();
     void BtnMarkClick();
 
 protected:
@@ -133,8 +141,12 @@ public:
     int TimeoutTime, ReconTime, SbasCorr, DgpsCorr, TideCorr, FileSwapMargin;
     int Stream[MAXSTRRTK], StreamC[MAXSTRRTK], Format[MAXSTRRTK];
     int CmdEna[3][2], CmdEnaTcp[3][2];
-    int TimeSys, SolType, PlotType1, FreqType1, PlotType2, FreqType2;
-    int TrkType1, TrkType2, TrkScale1, TrkScale2, BLMode1, BLMode2;
+    int TimeSys,SolType;
+    int PlotType1,FreqType1,PlotType2,FreqType2;
+    int PlotType3,FreqType3,PlotType4,FreqType4;
+    int TrkType1,TrkType2,TrkType3,TrkType4;
+    int TrkScale1,TrkScale2,TrkScale3,TrkScale4;
+    int BLMode1,BLMode2,BLMode3,BLMode4;
     int MoniPort, OpenPort;
 	
     int PSol, PSolS, PSolE, Nsat[2], SolCurrentStat;

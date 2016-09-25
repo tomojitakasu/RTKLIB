@@ -29,15 +29,21 @@
 #define BTN_COUNT       7
 #define MAX(x, y)        ((x) > (y) ? (x) : (y))
 
+MainForm *mainForm;
+
 //---------------------------------------------------------------------------
 MainForm::MainForm(QWidget *parent)
     : QDialog(parent)
 {
     setupUi(this);
 
+    mainForm = this;
+
     QString file = QApplication::applicationFilePath();
     QFileInfo fi(file);
     IniFile = fi.absolutePath() + "/" + fi.baseName() + ".ini";
+    Option = 0;
+    Minimize = 0;
 
     setWindowTitle(tr("RTKLIB v.%1 %2").arg(VER_RTKLIB).arg(PATCH_LEVEL));
     setWindowIcon(QIcon(":/icons/rtk9.bmp"));
@@ -47,6 +53,7 @@ MainForm::MainForm(QWidget *parent)
 
     QSettings settings(IniFile, QSettings::IniFormat);
     Option =  settings.value("pos/option",0).toInt();
+    Minimize =  settings.value("pos/minimize",0).toInt();
 
     QCommandLineParser parser;
     parser.setApplicationDescription("rtklib application launcher Qt");
@@ -62,6 +69,11 @@ MainForm::MainForm(QWidget *parent)
                       QCoreApplication::translate("main", "only show tray icon"));
     parser.addOption(trayOption);
 
+    QCommandLineOption miniOption(QStringList() << "min",
+                      QCoreApplication::translate("main", "start minimized"));
+    parser.addOption(miniOption);
+
+
     parser.process(*QApplication::instance());
 
     bool tray = parser.isSet(trayOption);
@@ -73,6 +85,8 @@ MainForm::MainForm(QWidget *parent)
         setVisible(false);
         TrayIcon.setVisible(true);
     }
+
+    if (parser.isSet(miniOption)) Minimize = 1;
 
     trayMenu = new QMenu(this);
     trayMenu->addAction(tr("Expand"), this, SLOT(MenuExpandClick()));
@@ -101,6 +115,8 @@ MainForm::MainForm(QWidget *parent)
     connect(BtnGet, SIGNAL(clicked(bool)), this, SLOT(BtnGetClick()));
     connect(BtnOption, SIGNAL(clicked(bool)), this, SLOT(BtnOptionClick()));
     connect(&TrayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(TrayIconActivated(QSystemTrayIcon::ActivationReason)));
+
+    UpdatePanel();
 }
 //---------------------------------------------------------------------------
 void MainForm::showEvent(QShowEvent *event)
@@ -127,6 +143,7 @@ void MainForm::closeEvent(QCloseEvent *event)
     settings.setValue("pos/width", width());
     settings.setValue("pos/height", height());
     settings.setValue("pos/option", Option);
+    settings.setValue("pos/minimize", Minimize);
 }
 //---------------------------------------------------------------------------
 void MainForm::BtnPlotClick()
@@ -201,11 +218,26 @@ void MainForm::MenuExpandClick()
 {
     setVisible(true);
     TrayIcon.setVisible(false);
+    Minimize = 0;
+    UpdatePanel();
+}
+//---------------------------------------------------------------------------
+void MainForm::UpdatePanel(void)
+{
+    if (Minimize) {
+        Panel1->setVisible(false);
+        Panel2->setVisible(true);
+    }
+    else {
+        Panel1->setVisible(true);
+        Panel2->setVisible(false);
+    }
 }
 //---------------------------------------------------------------------------
 void MainForm::BtnOptionClick()
 {
 //    launchOptDialog->exec();
 //    if (launchOptDialog->result()!=QDialog::Accepted) return;
+    UpdatePanel();
 }
 //---------------------------------------------------------------------------

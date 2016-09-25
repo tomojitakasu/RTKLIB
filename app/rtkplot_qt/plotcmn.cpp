@@ -153,6 +153,7 @@ TIMEPOS *Plot::SolToPos(solbuf_t *sol, int index, int qflag, int type)
 
         PosToXyz(data->time, data->rr, data->type, xyz);
         CovToXyz(data->rr, data->qr, data->type, xyzs);
+        if (xyz[2]<-RE_WGS84) continue;
 
         pos->t  [pos->n] = data->time;
         pos->x  [pos->n] = xyz [0];
@@ -406,6 +407,7 @@ int Plot::SearchPos(int x, int y)
         if (QFlag->currentIndex() && data->stat != QFlag->currentIndex()) continue;
 
         PosToXyz(data->time, data->rr, data->type, xyz);
+        if (xyz[2]<-RE_WGS84) continue;
 
         if (SQR(xp - xyz[0]) + SQR(yp - xyz[1]) <= SQR(r)) return i;
     }

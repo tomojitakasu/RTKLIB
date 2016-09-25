@@ -167,6 +167,7 @@ public slots:
     void MenuFixVertClick();
     void MenuShowMapClick();
     void MenuShowImgClick();
+    void MenuShowGridClick();
     void MenuAnimStartClick();
     void MenuAnimStopClick();
     void MenuAboutClick();

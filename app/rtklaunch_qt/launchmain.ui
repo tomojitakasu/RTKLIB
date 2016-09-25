@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>253</width>
-    <height>53</height>
+    <width>286</width>
+    <height>131</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -35,144 +35,150 @@
    <property name="bottomMargin">
     <number>0</number>
    </property>
-   <item row="0" column="2">
-    <widget class="QPushButton" name="BtnStr">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string>STRSVR</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="icon">
-      <iconset resource="../strsvr_qt/strsvr_qt.qrc">
-       <normaloff>:/icons/rtk6.bmp</normaloff>:/icons/rtk6.bmp</iconset>
-     </property>
-     <property name="flat">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="5">
-    <widget class="QPushButton" name="BtnNavi">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string>RTKNAVI</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="icon">
-      <iconset resource="../strsvr_qt/strsvr_qt.qrc">
-       <normaloff>:/icons/rtk5.bmp</normaloff>:/icons/rtk5.bmp</iconset>
-     </property>
-     <property name="flat">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="1">
-    <widget class="QPushButton" name="BtnConv">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string>RTKCONV</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="icon">
-      <iconset resource="../strsvr_qt/strsvr_qt.qrc">
-       <normaloff>:/icons/rtk3.bmp</normaloff>:/icons/rtk3.bmp</iconset>
-     </property>
-     <property name="flat">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
    <item row="0" column="0">
-    <widget class="QPushButton" name="BtnPlot">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string>RTKPLOT</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="icon">
-      <iconset resource="../strsvr_qt/strsvr_qt.qrc">
-       <normaloff>:/icons/rtk2.bmp</normaloff>:/icons/rtk2.bmp</iconset>
-     </property>
-     <property name="flat">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="3">
-    <widget class="QPushButton" name="BtnPost">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string>RTKPOST</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="icon">
-      <iconset resource="../strsvr_qt/strsvr_qt.qrc">
-       <normaloff>:/icons/rtk1.bmp</normaloff>:/icons/rtk1.bmp</iconset>
-     </property>
-     <property name="flat">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="4">
-    <widget class="QPushButton" name="BtnNtrip">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string>NTRIP Browser</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="icon">
-      <iconset resource="../strsvr_qt/strsvr_qt.qrc">
-       <normaloff>:/icons/rtk7.bmp</normaloff>:/icons/rtk7.bmp</iconset>
-     </property>
-     <property name="flat">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="6">
-    <widget class="QPushButton" name="BtnGet">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string>RTKGET</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="icon">
-      <iconset resource="../strsvr_qt/strsvr_qt.qrc">
-       <normaloff>:/icons/rtk8.bmp</normaloff>:/icons/rtk8.bmp</iconset>
-     </property>
-     <property name="flat">
-      <bool>true</bool>
-     </property>
+    <widget class="QWidget" name="Panel1" native="true">
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="1">
+       <widget class="QPushButton" name="BtnConv">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string>RTKCONV</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+          <normaloff>:/icons/rtk3.bmp</normaloff>:/icons/rtk3.bmp</iconset>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="4">
+       <widget class="QPushButton" name="BtnNtrip">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string>NTRIP Browser</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+          <normaloff>:/icons/rtk7.bmp</normaloff>:/icons/rtk7.bmp</iconset>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QPushButton" name="BtnPost">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string>RTKPOST</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+          <normaloff>:/icons/rtk1.bmp</normaloff>:/icons/rtk1.bmp</iconset>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="5">
+       <widget class="QPushButton" name="BtnNavi">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string>RTKNAVI</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+          <normaloff>:/icons/rtk5.bmp</normaloff>:/icons/rtk5.bmp</iconset>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QPushButton" name="BtnPlot">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string>RTKPLOT</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+          <normaloff>:/icons/rtk2.bmp</normaloff>:/icons/rtk2.bmp</iconset>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QPushButton" name="BtnStr">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string>STRSVR</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+          <normaloff>:/icons/rtk6.bmp</normaloff>:/icons/rtk6.bmp</iconset>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="6">
+       <widget class="QPushButton" name="BtnGet">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string>RTKGET</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+          <normaloff>:/icons/rtk8.bmp</normaloff>:/icons/rtk8.bmp</iconset>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
    <item row="1" column="6">
@@ -199,7 +205,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../strsvr_qt/strsvr_qt.qrc">
+      <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
        <normaloff>:/buttons/sqr.bmp</normaloff>:/buttons/sqr.bmp</iconset>
      </property>
      <property name="flat">
@@ -207,17 +213,40 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="5">
+   <item row="1" column="0">
     <widget class="QPushButton" name="BtnOption">
      <property name="text">
       <string/>
      </property>
     </widget>
    </item>
+   <item row="2" column="0">
+    <widget class="QWidget" name="Panel2" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QPushButton" name="BtnRtklib">
+        <property name="toolTip">
+         <string>RTKLIB APs</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+          <normaloff>:/icons/rtk9.bmp</normaloff>:/icons/rtk9.bmp</iconset>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
   </layout>
  </widget>
  <resources>
-  <include location="../strsvr_qt/strsvr_qt.qrc"/>
+  <include location="../rtkconv_qt/rtkconv_qt.qrc"/>
  </resources>
  <connections/>
 </ui>

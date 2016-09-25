@@ -13,13 +13,16 @@ INCLUDEPATH += ../../src/
 
 SOURCES += \ 
     launchmain.cpp \
-    main.cpp
+    main.cpp \
+    launchoptdlg.cpp
 
 HEADERS  += \ 
-    launchmain.h
+    launchmain.h \
+    launchoptdlg.h
 
 FORMS    += \ 
-    launchmain.ui
+    launchmain.ui \
+    launchoptdlg.ui
 
 RESOURCES += \
     rtklaunch_qt.qrc

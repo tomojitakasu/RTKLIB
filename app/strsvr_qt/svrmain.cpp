@@ -600,11 +600,11 @@ void MainForm::SvrStart(void)
     }
     strsetdir(qPrintable(LocalDirectory));
     strsetproxy(qPrintable(ProxyAddress));
-    strsetsrctbl(qPrintable(SrcTblFile));
 
     for (int i=0;i<MAXSTR-1;i++) { // for each out stream
 
         if (!ConvEna[i]) continue;
+        if (Input->currentIndex() == 2||Input->currentIndex() == 4) continue;
         if (!(conv[i] = strconvnew(ConvInp[i], ConvOut[i], qPrintable(ConvMsg[i]),
                        StaId, StaSel, qPrintable(ConvOpt[i])))) continue;
         strcpy(buff, qPrintable(AntType));
@@ -623,6 +623,9 @@ void MainForm::SvrStart(void)
 
     // stream server start
     if (!strsvrstart(&strsvr, opt, strs, paths, conv, cmds, AntPos)) return;
+
+    // set ntrip source table
+    strsvrsetsrctbl(&strsvr, qPrintable(SrcTblFile));
 
     for (int i = 0; i < 4; i++) delete cmds[i];
 
@@ -794,9 +797,9 @@ void MainForm::UpdateEnable(void)
     BtnCmd1->setEnabled(BtnOutput1->isEnabled() && (Output1->currentIndex() == 1 || Output1->currentIndex() == 2));
     BtnCmd2->setEnabled(BtnOutput2->isEnabled() && (Output2->currentIndex() == 1 || Output2->currentIndex() == 2));
     BtnCmd3->setEnabled(BtnOutput3->isEnabled() && (Output3->currentIndex() == 1 || Output3->currentIndex() == 2));
-    BtnConv1->setEnabled(BtnOutput1->isEnabled());
-    BtnConv2->setEnabled(BtnOutput2->isEnabled());
-    BtnConv3->setEnabled(BtnOutput3->isEnabled());
+    BtnConv1->setEnabled(BtnOutput1->isEnabled() && Input->currentIndex() != 2 && Input->currentIndex() != 4);
+    BtnConv2->setEnabled(BtnOutput2->isEnabled() && Input->currentIndex() != 2 && Input->currentIndex() != 4);
+    BtnConv3->setEnabled(BtnOutput3->isEnabled() && Input->currentIndex() != 2 && Input->currentIndex() != 4);
 }
 // set task-tray icon -------------------------------------------------------
 void MainForm::SetTrayIcon(int index)

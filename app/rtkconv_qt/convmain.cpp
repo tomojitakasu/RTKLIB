@@ -822,7 +822,7 @@ void MainWindow::ConvertFile(void)
     p += sprintf(p, "format: %s", formatstrs[conversionThread->format]);
     if (*conversionThread->rnxopt.rcvopt) sprintf(p, ", option: %s", conversionThread->rnxopt.rcvopt);
     for (i = 0; i < 2; i++) strncpy(conversionThread->rnxopt.comment[i + 2], qPrintable(Comment[i]), 63);
-    for (i = 0; i < 6; i++) strcpy(conversionThread->rnxopt.mask[i], qPrintable(CodeMask[i]));
+    for (i = 0; i < 7; i++) strcpy(conversionThread->rnxopt.mask[i], qPrintable(CodeMask[i]));
     conversionThread->rnxopt.autopos = AutoPos;
     conversionThread->rnxopt.scanobs = ScanObs;
     conversionThread->rnxopt.halfcyc = HalfCyc;
@@ -913,7 +913,7 @@ void MainWindow::ConversionFinished()
 void MainWindow::LoadOpt(void)
 {
     QSettings ini(IniFile, QSettings::IniFormat);
-    QString mask = "1111111111111111111111111111111111111111111";
+    QString mask = "1111111111111111111111111111111111111111111111111111111";
 
     RnxVer = ini.value("opt/rnxver", 0).toInt();
     RnxFile = ini.value("opt/rnxfile", 0).toInt();
@@ -951,6 +951,7 @@ void MainWindow::LoadOpt(void)
     CodeMask[3] = ini.value("opt/codemask_4", mask).toString();
     CodeMask[4] = ini.value("opt/codemask_5", mask).toString();
     CodeMask[5] = ini.value("opt/codemask_6", mask).toString();
+    CodeMask[6] = ini.value("opt/codemask_7", mask).toString();
     AutoPos = ini.value("opt/autopos", 0).toInt();
     ScanObs = ini.value("opt/scanobs", 0).toInt();
     HalfCyc = ini.value("opt/halfcyc", 0).toInt();
@@ -1039,6 +1040,7 @@ void MainWindow::SaveOpt(void)
     ini.setValue("opt/codemask_4", CodeMask[3]);
     ini.setValue("opt/codemask_5", CodeMask[4]);
     ini.setValue("opt/codemask_6", CodeMask[5]);
+    ini.setValue("opt/codemask_7", CodeMask[6]);
     ini.setValue("opt/autopos", AutoPos);
     ini.setValue("opt/scanobs", ScanObs);
     ini.setValue("opt/halfcyc", HalfCyc);

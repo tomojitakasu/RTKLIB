@@ -42,6 +42,7 @@ void SvrOptDialog::showEvent(QShowEvent *event)
     AvePeriodRate->setValue(SvrOpt[2]);
     SvrBuffSize->setValue(SvrOpt[3]);
     SvrCycle->setValue(SvrOpt[4]);
+    RelayMsg->setCurrentIndex(RelayBack);
     NmeaCycle->setValue(SvrOpt[5]);
     FileSwapMarginE->setValue(FileSwapMargin);
     if (norm(AntPos, 3) > 0.0) {
@@ -84,6 +85,7 @@ void SvrOptDialog::BtnOkClick()
     SvrOpt[4] = SvrCycle->value();
     SvrOpt[5] = NmeaCycle->value();
     FileSwapMargin = FileSwapMarginE->value();
+    RelayBack = RelayMsg->currentIndex();
     pos[0] = AntPos1->value() * D2R;
     pos[1] = AntPos2->value() * D2R;
     pos[2] = AntPos3->value();

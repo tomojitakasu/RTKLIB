@@ -59,7 +59,7 @@ void ConvOptDialog::showEvent(QShowEvent *event)
     Comment1->setText(mainWindow->Comment[1]);
     RcvOption->setText(mainWindow->RcvOption);
 
-    for (int i = 0; i < 6; i++) CodeMask[i] = mainWindow->CodeMask[i];
+    for (int i = 0; i < 7; i++) CodeMask[i] = mainWindow->CodeMask[i];
 
     AutoPos->setChecked(mainWindow->AutoPos);
     ScanObs->setChecked(mainWindow->ScanObs);
@@ -119,7 +119,7 @@ void ConvOptDialog::BtnOkClick()
     mainWindow->Comment[1] = Comment1->text();
     mainWindow->RcvOption = RcvOption->text();
 
-    for (int i = 0; i < 6; i++) mainWindow->CodeMask[i] = CodeMask[i];
+    for (int i = 0; i < 7; i++) mainWindow->CodeMask[i] = CodeMask[i];
 
     mainWindow->AutoPos = AutoPos->isChecked();
     mainWindow->ScanObs = ScanObs->isChecked();

@@ -72,6 +72,7 @@ MainWindow *mainForm;
 #define DEFAULTPORT 52001               // default monitor port number
 #define MAXPORTOFF  9                   // max port number offset
 #define MAXTRKSCALE 23                  // track scale
+#define MAXPANELMODE 7                  // max panel mode
 
 #define SQRT(x)     ((x)<0.0?0.0:sqrt(x))
 #define MIN(x,y)    ((x)<(y)?(x):(y))
@@ -210,8 +211,16 @@ void MainWindow::showEvent(QShowEvent *event)
     connect(BtnAbout, SIGNAL(clicked(bool)), this, SLOT(BtnAboutClick()));
     connect(BtnFreqType1, SIGNAL(clicked(bool)), this, SLOT(BtnFreqType1Click()));
     connect(BtnFreqType2, SIGNAL(clicked(bool)), this, SLOT(BtnFreqType2Click()));
-    connect(BtnExpand, SIGNAL(clicked(bool)), this, SLOT(BtnExpand1Click()));
-    connect(BtnShrink, SIGNAL(clicked(bool)), this, SLOT(BtnShrink1Click()));
+    connect(BtnFreqType3, SIGNAL(clicked(bool)), this, SLOT(BtnFreqType3Click()));
+    connect(BtnFreqType4, SIGNAL(clicked(bool)), this, SLOT(BtnFreqType4Click()));
+    connect(BtnExpand1, SIGNAL(clicked(bool)), this, SLOT(BtnExpand1Click()));
+    connect(BtnShrink1, SIGNAL(clicked(bool)), this, SLOT(BtnShrink1Click()));
+    connect(BtnExpand2, SIGNAL(clicked(bool)), this, SLOT(BtnExpand2Click()));
+    connect(BtnShrink2, SIGNAL(clicked(bool)), this, SLOT(BtnShrink2Click()));
+    connect(BtnExpand3, SIGNAL(clicked(bool)), this, SLOT(BtnExpand3Click()));
+    connect(BtnShrink3, SIGNAL(clicked(bool)), this, SLOT(BtnShrink3Click()));
+    connect(BtnExpand4, SIGNAL(clicked(bool)), this, SLOT(BtnExpand4Click()));
+    connect(BtnShrink4, SIGNAL(clicked(bool)), this, SLOT(BtnShrink4Click()));
     connect(BtnInputStr, SIGNAL(clicked(bool)), this, SLOT(BtnInputStrClick()));
     connect(BtnLogStr, SIGNAL(clicked(bool)), this, SLOT(BtnLogStrClick()));
     connect(BtnMonitor, SIGNAL(clicked(bool)), this, SLOT(BtnMonitorClick()));
@@ -221,6 +230,8 @@ void MainWindow::showEvent(QShowEvent *event)
     connect(BtnPlot, SIGNAL(clicked(bool)), this, SLOT(BtnPlotClick()));
     connect(BtnPlotType1, SIGNAL(clicked(bool)), this, SLOT(BtnPlotType1Click()));
     connect(BtnPlotType2, SIGNAL(clicked(bool)), this, SLOT(BtnPlotType2Click()));
+    connect(BtnPlotType3, SIGNAL(clicked(bool)), this, SLOT(BtnPlotType3Click()));
+    connect(BtnPlotType4, SIGNAL(clicked(bool)), this, SLOT(BtnPlotType4Click()));
     connect(BtnSave, SIGNAL(clicked(bool)), this, SLOT(BtnSaveClick()));
     connect(BtnSolType, SIGNAL(clicked(bool)), this, SLOT(BtnSolTypeClick()));
     connect(BtnSolType2, SIGNAL(clicked(bool)), this, SLOT(BtnSolTypeClick()));
@@ -291,29 +302,56 @@ void MainWindow::closeEvent(QCloseEvent *)
 // update panel -------------------------------------------------------------
 void MainWindow::UpdatePanel(void)
 {
-    if (PanelMode == 0) {
+    if (PanelMode<=3) {
         Panel21->setVisible(true);
-        Panel5->setVisible(false);
-        Panel221->setVisible(false);
-    } else if (PanelMode == 1) {
-        Panel21->setVisible(true);
-        Panel5->setVisible(false);
-        Panel221->setVisible(true);
-    } else if (PanelMode == 2) {
+        Panel5 ->setVisible(false);
+    }
+    else {
         Panel21->setVisible(false);
-        Panel5->setVisible(true);
-        Panel221->setVisible(true);
-    } else {
-        Panel21->setVisible(false);
-        Panel5->setVisible(true);
-        Panel221->setVisible(false);
+        Panel5 ->setVisible(true);
+    }
+    if (PanelMode==0||PanelMode==4) {
+        Panel22->setVisible(true);
+        Panel23->setVisible(false);
+        Panel24->setVisible(false);
+        Panel25->setVisible(false);
+    }
+    else if (PanelMode==1||PanelMode==5) {
+        Panel22->setVisible(true);
+        Panel23->setVisible(true);
+        Panel24->setVisible(false);
+        Panel25->setVisible(false);
+    }
+    else if (PanelMode==2||PanelMode==6) {
+        Panel22->setVisible(true);
+        Panel23->setVisible(true);
+        Panel24->setVisible(true);
+        Panel25->setVisible(false);
+    }
+    else {
+        Panel22->setVisible(true);
+        Panel23->setVisible(true);
+        Panel24->setVisible(true);
+        Panel25->setVisible(true);
+    }
+    if (PanelStack==0) { // horizontal
+        splitter->setOrientation(Qt::Horizontal);
+    }
+    else { // vertical
+        splitter->setOrientation(Qt::Vertical);
     }
 }
 // update enabled -----------------------------------------------------------
 void MainWindow::UpdateEnable(void)
 {
-    BtnExpand->setVisible(PlotType2 == 6);
-    BtnShrink->setVisible(PlotType2 == 6);
+    BtnExpand1->setVisible(PlotType1 == 6);
+    BtnShrink1->setVisible(PlotType1 == 6);
+    BtnExpand2->setVisible(PlotType2 == 6);
+    BtnShrink2->setVisible(PlotType2 == 6);
+    BtnExpand3->setVisible(PlotType3 == 6);
+    BtnShrink3->setVisible(PlotType3 == 6);
+    BtnExpand4->setVisible(PlotType4 == 6);
+    BtnShrink4->setVisible(PlotType4 == 6);
 }
 // callback on button-exit --------------------------------------------------
 void MainWindow::BtnExitClick()
@@ -575,7 +613,7 @@ int MainWindow::ConfOverwrite(const QString &path)
 // callback on button-output-streams ----------------------------------------
 void MainWindow::BtnOutputStrClick()
 {
-    int otype[] = { STR_SERIAL, STR_TCPCLI, STR_TCPSVR, STR_NTRIPSVR, STR_FILE };
+    int otype[] = { STR_SERIAL, STR_TCPCLI, STR_TCPSVR, STR_NTRIPSVR, STR_NTRIPC_C, STR_FILE };
     int i, j, str, update[2] = { 0 };
     char path[1024];
 
@@ -644,7 +682,7 @@ void MainWindow::BtnOutputStrClick()
 // callback on button-log-streams -------------------------------------------
 void MainWindow::BtnLogStrClick()
 {
-    int otype[] = { STR_SERIAL, STR_TCPCLI, STR_TCPSVR, STR_NTRIPSVR, STR_FILE };
+    int otype[] = { STR_SERIAL, STR_TCPCLI, STR_TCPSVR, STR_NTRIPSVR, STR_NTRIPC_C, STR_FILE };
     int i, j, str, update[3] = { 0 };
     char path[1024];
 
@@ -715,7 +753,7 @@ void MainWindow::BtnPanelClick()
 {
     trace(3, "BtnPanelClick\n");
 
-    if (++PanelMode > 3) PanelMode = 0;
+    if (++PanelMode > MAXPANELMODE) PanelMode = 0;
     UpdatePanel();
 }
 // callback on button-plot-type-1 -------------------------------------------
@@ -755,6 +793,26 @@ void MainWindow::BtnPlotType2Click()
     UpdatePos();
     UpdateEnable();
 }
+//---------------------------------------------------------------------------
+void MainWindow::BtnPlotType3Click()
+{
+    trace(3,"BtnPlotType3Click\n");
+
+    if (++PlotType3 > 6) PlotType3 = 0;
+    UpdatePlot();
+    UpdatePos();
+    UpdateEnable();
+}
+//---------------------------------------------------------------------------
+void MainWindow::BtnPlotType4Click()
+{
+    trace(3,"BtnPlotType4Click\n");
+
+    if (++PlotType4 > 6) PlotType4 = 0;
+    UpdatePlot();
+    UpdatePos();
+    UpdateEnable();
+}
 // callback on button frequency-type-1 --------------------------------------
 void MainWindow::BtnFreqType1Click()
 {
@@ -787,6 +845,42 @@ void MainWindow::BtnFreqType2Click()
         UpdateSolType();
     }
 }
+//---------------------------------------------------------------------------
+void MainWindow::BtnFreqType3Click()
+{
+    trace(3,"BtnFreqType3Click\n");
+
+    if (PlotType3 == 6) {
+        if (++TrkType3 > 1) TrkType3 = 0;
+        UpdatePlot();
+    }
+    else if (PlotType3 == 5) {
+        if (++BLMode3 > 1) BLMode3 = 0;
+        UpdatePlot();
+    }
+    else {
+        if (++FreqType3 > NFREQ + 1) FreqType3 = 0;
+        UpdateSolType();
+    }
+}
+//---------------------------------------------------------------------------
+void MainWindow::BtnFreqType4Click()
+{
+    trace(3,"BtnFreqType4Click\n");
+
+    if (PlotType4 == 6) {
+        if (++TrkType4 > 1) TrkType4 = 0;
+        UpdatePlot();
+    }
+    else if (PlotType4 == 5) {
+        if (++BLMode4 > 1) BLMode4 = 0;
+        UpdatePlot();
+    }
+    else {
+        if (++FreqType4 > NFREQ + 1) FreqType4 = 0;
+        UpdateSolType();
+    }
+}
 // callback on button expand-1 ----------------------------------------------
 void MainWindow::BtnExpand1Click()
 {
@@ -813,6 +907,34 @@ void MainWindow::BtnShrink2Click()
 {
     if (TrkScale2 >= MAXTRKSCALE) return;
     TrkScale2++;
+    UpdatePlot();
+}
+// callback on button expand-3 ----------------------------------------------
+void MainWindow::BtnExpand3Click()
+{
+    if (TrkScale3 <= 0) return;
+    TrkScale3--;
+    UpdatePlot();
+}
+// callback on button shrink-3 ----------------------------------------------
+void MainWindow::BtnShrink3Click()
+{
+    if (TrkScale3 >= MAXTRKSCALE) return;
+    TrkScale3++;
+    UpdatePlot();
+}
+// callback on button expand-4 ----------------------------------------------
+void MainWindow::BtnExpand4Click()
+{
+    if (TrkScale4 <= 0) return;
+    TrkScale4--;
+    UpdatePlot();
+}
+// callback on button shrink-4 ----------------------------------------------
+void MainWindow::BtnShrink4Click()
+{
+    if (TrkScale4 >= MAXTRKSCALE) return;
+    TrkScale4++;
     UpdatePlot();
 }
 // callback on button-rtk-monitor -------------------------------------------
@@ -922,11 +1044,15 @@ void MainWindow::SvrStart(void)
 {
     solopt_t solopt[2];
     double pos[3], nmeapos[3];
-    int itype[] = { STR_SERIAL, STR_TCPCLI, STR_TCPSVR, STR_NTRIPCLI, STR_FILE, STR_FTP, STR_HTTP };
-    int otype[] = { STR_SERIAL, STR_TCPCLI, STR_TCPSVR, STR_NTRIPSVR, STR_FILE };
+    int itype[]={
+        STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPCLI,STR_FILE,STR_FTP,STR_HTTP
+    };
+    int otype[]={
+        STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPSVR,STR_NTRIPC_C,STR_FILE
+    };
     int i, strs[MAXSTRRTK] = { 0 }, sat, ex, stropt[8] = { 0 };
     char *paths[8], *cmds[3] = { 0 }, *rcvopts[3] = { 0 };
-    char buff[1024], *p;
+    char buff[1024], *p, errmsg[20148];
     gtime_t time = timeget();
     pcvs_t pcvr, pcvs;
     pcv_t *pcv;
@@ -1079,7 +1205,9 @@ void MainWindow::SvrStart(void)
     // start rtk server
     if (!rtksvrstart(&rtksvr, SvrCycle, SvrBuffSize, strs, paths, Format, NavSelect,
              cmds, rcvopts, NmeaCycle, NmeaReq, nmeapos, &PrcOpt, solopt,
-             &monistr)) {
+             &monistr, errmsg)) {
+
+        trace(2,"rtksvrstart error %s\n",errmsg);
         traceclose();
         for (i = 0; i < 8; i++) delete[] paths[i];
         for (i = 0; i < 3; i++) delete[] rcvopts[i];
@@ -1519,10 +1647,10 @@ void MainWindow::DrawPlot(QLabel *plot, int type, int freq)
         DrawText(c, x, 1, s1, Qt::gray, 0);
     } else if (type == 2) { // skyplot rover
         DrawSat(c, w, h, 0, 0, 0, freq);
-        s1 = QString(tr("Rover %1")).arg(fstr[!freq ? 1 : freq]);
+        s1 = QString(tr("Rover %1")).arg(fstr[freq]);
         DrawText(c, x, 1, s1, Qt::gray, 0);
     } else if (type == 3) { // skyplot+snr plot rover
-        s1 = QString(tr("Rover %1")).arg(fstr[!freq ? 1 : freq]);
+        s1 = QString(tr("Rover %1")).arg(fstr[freq]);
         s2 = QString(tr("SNR (dBHz)"));
         if (w >= h * 2) { // horizontal
             DrawSat(c, h, h, 0, 0, 0, freq);
@@ -1535,8 +1663,8 @@ void MainWindow::DrawPlot(QLabel *plot, int type, int freq)
             DrawText(c, x, 1, s1, Qt::gray, 0);
         }
     } else if (type == 4) { // skyplot rover+base
-        s1 = QString(tr("Rover %1")).arg(fstr[!freq ? 1 : freq]);
-        s2 = QString(tr("Base %1")).arg(fstr[!freq ? 1 : freq]);
+        s1 = QString(tr("Rover %1")).arg(fstr[freq]);
+        s2 = QString(tr("Base %1")).arg(fstr[freq]);
         if (w >= h) { // horizontal
             DrawSat(c, w / 2, h, 0, 0, 0, freq);
             DrawSat(c, w / 2, h, w / 2, 0, 1, freq);
@@ -1563,6 +1691,19 @@ void MainWindow::UpdatePlot(void)
 {
     DrawPlot(Disp1, PlotType1, FreqType1);
     DrawPlot(Disp2, PlotType2, FreqType2);
+
+    if (Panel22->isVisible()) {
+        DrawPlot(Disp1,PlotType1,FreqType1);
+    }
+    if (Panel23->isVisible()) {
+        DrawPlot(Disp2,PlotType2,FreqType2);
+    }
+    if (Panel24->isVisible()) {
+        DrawPlot(Disp3,PlotType3,FreqType3);
+    }
+    if (Panel25->isVisible()) {
+        DrawPlot(Disp4,PlotType4,FreqType4);
+    }
 }
 // snr color ----------------------------------------------------------------
 QColor MainWindow::SnrColor(int snr)
@@ -1638,7 +1779,7 @@ void MainWindow::DrawSnr(QPainter *c, int w, int h, int x0, int y0,
 
             QRect r1(x1, y1, www, y2 - y1);
             if (j == 0) {
-                c->setBrush(QBrush(freq < NFREQ ? SnrColor(snr[k]) : color_sys[l], Qt::SolidPattern));
+                c->setBrush(QBrush(freq < NFREQ + 1 ? SnrColor(snr[k]) : color_sys[l], Qt::SolidPattern));
                 if (!Vsat[index][i]) c->setBrush(QBrush(QColor(0x0c, 0x0c, 0x0c), Qt::SolidPattern));
                 c->drawRect(r1);
             } else {
@@ -1664,10 +1805,11 @@ void MainWindow::DrawSat(QPainter *c, int w, int h, int x0, int y0,
     static const QColor color_sys[] = {
         Qt::green, QColor(0x00, 0xAA, 0xFF), QColor(0xff, 0x00, 0xff), Qt::blue, Qt::red, Qt::gray
     };
+    QColor color_text;
     QString s;
     QPoint p(w / 2, h / 2);
     double r = MIN(w * 0.95, h * 0.95) / 2, azel[MAXSAT * 2], dop[4];
-    int i, k, l, d, x[MAXSAT], y[MAXSAT], ns = 0, f = !freq ? 0 : freq - 1;
+    int i, j, k, l, d, x[MAXSAT], y[MAXSAT], snr[NFREQ+1], ns = 0;
     char id[16], sys[] = "GREJCS", *q;
 
     trace(4, "DrawSat: w=%d h=%d index=%d freq=%d\n", w, h, index, freq);
@@ -1676,6 +1818,12 @@ void MainWindow::DrawSat(QPainter *c, int w, int h, int x0, int y0,
 
     for (i = 0, k = Nsat[index] - 1; i < Nsat[index] && i < MAXSAT; i++, k--) {
         if (El[index][k] <= 0.0) continue;
+        for (j = snr[0] = 0; j < NFREQ; j++) {
+            snr[j + 1] = Snr[index][k][j];
+            if ((freq && freq == j + 1) || ((!freq || freq > NFREQ) && snr[j + 1] > snr[0])) {
+                snr[0] = snr[j + 1];
+            }
+        }
         if (Vsat[index][k]) {
             azel[ns * 2] = Az[index][k]; azel[1 + ns * 2] = El[index][k];
             ns++;
@@ -1686,14 +1834,21 @@ void MainWindow::DrawSat(QPainter *c, int w, int h, int x0, int y0,
         y[i] = static_cast<int>(p.y() - r * (90 - El[index][k] * R2D) / 90 * cos(Az[index][k])) + y0;
         c->setPen(Qt::gray);
         d = SATSIZE / 2;
+
         c->setBrush(!Vsat[index][k] ? QColor(0xc0, 0xc0, 0xc0) :
-                (freq < NFREQ ? SnrColor(Snr[index][k][f]) : color_sys[l]));
+                (freq < NFREQ ? SnrColor(snr[freq]) : color_sys[l]));
+        c->setPen(Qt::gray);
+        color_text=Qt::white;
+        if (freq < NFREQ + 1 && snr[freq] <= 0) {
+            c->setPen(QColor(0xc0, 0xc0, 0xc0));
+            color_text=QColor(0xc0, 0xc0, 0xc0);
+        }
         c->drawEllipse(x[i] - d, y[i] - d, 2 * d + 1, 2 * d + 1);
-        DrawText(c, x[i], y[i], s = id, Qt::white, 1);
+        DrawText(c, x[i], y[i], s = id, color_text, 1);
     }
     dops(ns, azel, 0.0, dop);
-    DrawText(c, x0 + 3, y0 + h - 15, QString(tr("# Sat:%1")).arg(Nsat[index], 2), Qt::gray, 0);
-    DrawText(c, x0 + w - 3, y0 + h - 15, QString(tr("GDOP:%1")).arg(dop[0], 0, 'f', 1), Qt::gray, 2);
+    DrawText(c, x0 + 3, y0 + h - 15, QString(tr("# Sat: %1/%2")).arg(ns).arg(Nsat[index], 2), Qt::gray, 0);
+    DrawText(c, x0 + w - 3, y0 + h - 15, QString(tr("GDOP: %1")).arg(dop[0], 0, 'f', 1), Qt::gray, 2);
 }
 // draw baseline plot -------------------------------------------------------
 void MainWindow::DrawBL(QPainter *c, QLabel *disp, int w, int h)
@@ -1848,10 +2003,10 @@ void MainWindow::DrawTrk(QPainter *c, QLabel *disp, QPixmap &buff)
     if (n > 0) {
         graph->ToPoint(x[k], y[k], p1);
         graph->DrawMark(*c, p1, 0, Qt::white, 18, 0);
-        graph->DrawMark(*c, p1, 1, Qt::black, 16, 0);
-        graph->DrawMark(*c, p1, 5, Qt::black, 20, 0);
-        graph->DrawMark(*c, p1, 0, Qt::black, 12, 0);
-        graph->DrawMark(*c, p1, 0, color.at(k), 10, 0);
+        graph->DrawMark(*c, p1, 1, rtksvr.state ? Qt::black : Qt::gray, 16, 0);
+        graph->DrawMark(*c, p1, 5, rtksvr.state ? Qt::black : Qt::gray, 20, 0);
+        graph->DrawMark(*c, p1, 0, rtksvr.state ? Qt::black : Qt::gray, 12, 0);
+        graph->DrawMark(*c, p1, 0, rtksvr.state ? color.at(k) : Qt::white, 10, 0);
     }
     // scale
     graph->GetPos(p1, p2);
@@ -1870,7 +2025,7 @@ void MainWindow::DrawTrk(QPainter *c, QLabel *disp, QPixmap &buff)
     // ref position
     if (norm(ref, 3) > 1E-6) {
         p1.rx() += 2;
-        p1.ry() = p2.y() + 12;
+        p1.ry() = p2.y() + 11;
         label = QString("%1 %2").arg(pos[0] * R2D, 0, 'f').arg(pos[1] * R2D, 0, 'f', 9);
         graph->DrawText(*c, p1, label, Qt::gray, Qt::white, 1, 1, 0);
     }
@@ -2332,16 +2487,24 @@ void MainWindow::LoadOpt(void)
     SolType = settings.value("setting/soltype", 0).toInt();
     PlotType1 = settings.value("setting/plottype", 0).toInt();
     PlotType2 = settings.value("setting/plottype2", 0).toInt();
+    PlotType3 = settings.value("setting/plottype3", 0).toInt();
+    PlotType4 = settings.value("setting/plottype4", 0).toInt();
     PanelMode = settings.value("setting/panelmode", 0).toInt();
     ProxyAddr = settings.value("setting/proxyaddr", "").toString();
     MoniPort = settings.value("setting/moniport", DEFAULTPORT).toInt();
     PanelStack = settings.value("setting/panelstack", 0).toInt();
     TrkType1 = settings.value("setting/trktype1", 0).toInt();
     TrkType2 = settings.value("setting/trktype2", 0).toInt();
+    TrkType3 = settings.value("setting/trktype3", 0).toInt();
+    TrkType4 = settings.value("setting/trktype4", 0).toInt();
     TrkScale1 = settings.value("setting/trkscale1", 5).toInt();
     TrkScale2 = settings.value("setting/trkscale2", 5).toInt();
+    TrkScale3 = settings.value("setting/trkscale3", 5).toInt();
+    TrkScale4 = settings.value("setting/trkscale4", 5).toInt();
     BLMode1 = settings.value("setting/blmode1", 0).toInt();
     BLMode2 = settings.value("setting/blmode2", 0).toInt();
+    BLMode3 = settings.value("setting/blmode3", 0).toInt();
+    BLMode4 = settings.value("setting/blmode4", 0).toInt();
     MarkerName = settings.value("setting/markername", "").toString();
     MarkerComment = settings.value("setting/markercomment", "").toString();
 
@@ -2375,8 +2538,7 @@ void MainWindow::LoadOpt(void)
 
     UpdatePanel();
 
-    Splitter1->restoreState(settings.value("window/splitpos").toByteArray());
-    Splitter2->restoreState(settings.value("window/splitpos2").toByteArray());
+    splitter->restoreState(settings.value("window/splitpos").toByteArray());
 
     resize(settings.value("window/width", 388).toInt(),
            settings.value("window/height", 284).toInt());
@@ -2529,16 +2691,24 @@ void MainWindow::SaveOpt(void)
     settings.setValue("setting/soltype", SolType);
     settings.setValue("setting/plottype", PlotType1);
     settings.setValue("setting/plottype2", PlotType2);
+    settings.setValue("setting/plottype3", PlotType3);
+    settings.setValue("setting/plottype4", PlotType4);
     settings.setValue("setting/panelmode", PanelMode);
     settings.setValue("setting/proxyaddr", ProxyAddr);
     settings.setValue("setting/moniport", MoniPort);
     settings.setValue("setting/panelstack", PanelStack);
     settings.setValue("setting/trktype1", TrkType1);
     settings.setValue("setting/trktype2", TrkType2);
+    settings.setValue("setting/trktype3", TrkType3);
+    settings.setValue("setting/trktype4", TrkType4);
     settings.setValue("setting/trkscale1", TrkScale1);
     settings.setValue("setting/trkscale2", TrkScale2);
+    settings.setValue("setting/trkscale3", TrkScale3);
+    settings.setValue("setting/trkscale4", TrkScale4);
     settings.setValue("setting/blmode1", BLMode1);
     settings.setValue("setting/blmode2", BLMode2);
+    settings.setValue("setting/blmode3", BLMode3);
+    settings.setValue("setting/blmode4", BLMode4);
     settings.setValue("setting/markername", MarkerName);
     settings.setValue("setting/markercomment", MarkerComment);
 
@@ -2572,8 +2742,7 @@ void MainWindow::SaveOpt(void)
     settings.setValue("window/width", size().width());
     settings.setValue("window/height", size().height());
 
-    settings.setValue("window/splitpos", Splitter1->saveState());
-    settings.setValue("window/splitpos2", Splitter2->saveState());
+    settings.setValue("window/splitpos", splitter->saveState());
 }
 //---------------------------------------------------------------------------
 void MainWindow::BtnMarkClick()

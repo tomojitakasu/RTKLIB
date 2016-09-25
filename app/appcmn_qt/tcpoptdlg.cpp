@@ -52,13 +52,13 @@ void TcpOptDialog::showEvent(QShowEvent *event)
     Str->setText(Str_Text);
 
     Addr->setEnabled(Opt >= 1 && Opt<=3);
-    MntPnt->setEnabled(Opt >= 2 && Opt<=3);
+    MntPnt->setEnabled(Opt >= 2 && Opt<=4);
     User->setEnabled(Opt >= 3 && Opt<=4);
     Passwd->setEnabled(Opt >= 2);
     Str->setEnabled(Opt == 2);
     LabelAddr->setText(Opt >= 2 ? tr("NTRIP Caster Host") : tr("TCP Server Address"));
     LabelAddr->setEnabled(Opt >= 1 && Opt<=3);
-    LabelMntPnt->setEnabled(Opt >= 2 && Opt<=3);
+    LabelMntPnt->setEnabled(Opt >= 2 && Opt<=4);
     LabelUser->setEnabled(Opt >= 3 && Opt<=4);
     LabelPasswd->setEnabled(Opt >= 2);
     LabelStr->setEnabled(Opt == 2);

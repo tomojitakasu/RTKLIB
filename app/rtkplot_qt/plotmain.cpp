@@ -242,9 +242,11 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
     BtnFixHoriz->setDefaultAction(MenuFixHoriz);
     BtnFixVert->setDefaultAction(MenuFixVert);
     BtnShowMap->setDefaultAction(MenuShowMap);
+    BtnShowGrid->setDefaultAction(MenuShowGrid);
     BtnShowImg->setDefaultAction(MenuShowImg);
     BtnShowSkyplot->setDefaultAction(MenuShowSkyplot);
     MenuShowSkyplot->setChecked(true);
+    MenuShowGrid->setChecked(true);
 
     dirModel = new QFileSystemModel(this);
     dirModel->setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
@@ -252,7 +254,7 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
     DirSelector = new QTreeView(this);
     Panel2->layout()->addWidget(DirSelector);
     DirSelector->setModel(dirModel);
-    //DirSelector->hideColumn(1); DirSelector->hideColumn(2); DirSelector->hideColumn(3); //only show names
+    DirSelector->hideColumn(1); DirSelector->hideColumn(2); DirSelector->hideColumn(3); //only show names
 
     fileModel = new QFileSystemModel(this);
     fileModel->setFilter((fileModel->filter() & ~QDir::Dirs & ~QDir::AllDirs));
@@ -310,6 +312,7 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
     connect(MenuSaveSnrMp, SIGNAL(triggered(bool)), this, SLOT(MenuSaveSnrMpClick()));
     connect(MenuShowMap, SIGNAL(triggered(bool)), this, SLOT(MenuShowMapClick()));
     connect(MenuShowImg, SIGNAL(triggered(bool)), this, SLOT(MenuShowImgClick()));
+    connect(MenuShowGrid, SIGNAL(triggered(bool)), this, SLOT(MenuShowGridClick()));
     connect(MenuShowSkyplot, SIGNAL(triggered(bool)), this, SLOT(MenuShowSkyplotClick()));
     connect(MenuShowTrack, SIGNAL(triggered(bool)), this, SLOT(MenuShowTrackClick()));
     connect(MenuSkyImg, SIGNAL(triggered(bool)), this, SLOT(MenuSkyImgClick()));
@@ -509,6 +512,7 @@ void Plot::showEvent(QShowEvent *event)
     DirSelected->setText(Dir);
     fileModel->setRootPath(Dir);
     FileList->setRootIndex(fileModel->index(Dir));
+    FilterClick();
 
     if (MenuBrowse->isChecked()) {
         PanelBrowse->setVisible(true);
@@ -1138,6 +1142,15 @@ void Plot::MenuShowImgClick()
 
     UpdatePlot();
     UpdateEnable();
+}
+// callback on menu-show-grid -----------------------------------------------
+void Plot::MenuShowGridClick()
+{
+    trace(3,"MenuShowGrid\n");
+
+    UpdatePlot();
+    UpdateEnable();
+    Refresh();
 }
 // callback on menu-show-track-points ---------------------------------------
 void Plot::MenuShowTrackClick()
@@ -2415,6 +2428,7 @@ void Plot::UpdateEnable(void)
 
     BtnShowImg->setVisible(PlotType == PLOT_TRK || PlotType == PLOT_SKY ||
                    PlotType == PLOT_MPS);
+    BtnShowGrid->setVisible(PlotType==PLOT_TRK);
     MenuAnimStart->setEnabled(!ConnectState && BtnAnimate->isEnabled() && !BtnAnimate->isChecked());
     MenuAnimStop->setEnabled(!ConnectState && BtnAnimate->isEnabled() && BtnAnimate->isChecked());
     TimeScroll->setEnabled(data && MenuShowTrack->isChecked());

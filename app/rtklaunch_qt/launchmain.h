@@ -42,9 +42,10 @@ private:
     int Tray;
 	
     int ExecCmd(const QString &cmd);
+    void UpdatePanel();
 
 public:
-    int Option;
+    int Option, Minimize;
     explicit MainForm(QWidget *parent = 0);
 };
 //---------------------------------------------------------------------------
