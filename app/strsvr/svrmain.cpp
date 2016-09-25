@@ -48,6 +48,7 @@ TMainForm *MainForm;
 #define CLORANGE    (TColor)0x00AAFF
 
 #define MIN(x,y)    ((x)<(y)?(x):(y))
+#define MAX(x,y)    ((x)>(y)?(x):(y))
 
 static strsvr_t strsvr;
 
@@ -155,6 +156,7 @@ void __fastcall TMainForm::BtnOptClick(TObject *Sender)
     SvrOptDialog->NmeaReq=NmeaReq;
     SvrOptDialog->FileSwapMargin=FileSwapMargin;
     SvrOptDialog->RelayBack=RelayBack;
+    SvrOptDialog->ProgBarRange=ProgBarRange;
     SvrOptDialog->StaPosFile=StaPosFile;
     SvrOptDialog->ExeDirectory=ExeDirectory;
     SvrOptDialog->LocalDirectory=LocalDirectory;
@@ -175,6 +177,7 @@ void __fastcall TMainForm::BtnOptClick(TObject *Sender)
     NmeaReq=SvrOptDialog->NmeaReq;
     FileSwapMargin=SvrOptDialog->FileSwapMargin;
     RelayBack=SvrOptDialog->RelayBack;
+    ProgBarRange=SvrOptDialog->ProgBarRange;
     StaPosFile=SvrOptDialog->StaPosFile;
     ExeDirectory=SvrOptDialog->ExeDirectory;
     LocalDirectory=SvrOptDialog->LocalDirectory;
@@ -416,7 +419,7 @@ void __fastcall TMainForm::Timer1Timer(TObject *Sender)
     gtime_t time=utc2gpst(timeget());
     int stat[MAXSTR]={0},byte[MAXSTR]={0},bps[MAXSTR]={0};
     char msg[MAXSTRMSG*MAXSTR]="",s1[256],s2[256];
-    double ctime,t[4];
+    double ctime,t[4],pos,range;
     
     strsvrstat(&strsvr,stat,byte,bps,msg);
     for (int i=0;i<MAXSTR;i++) {
@@ -426,7 +429,8 @@ void __fastcall TMainForm::Timer1Timer(TObject *Sender)
         e1[i]->Caption=s1;
         e2[i]->Caption=s2;
     }
-    Progress->Position=!stat[0]?0:MIN(100,(int)(fmod(byte[0]/500.0,110.0)));
+    pos=fmod(byte[0]/1e3/MAX(ProgBarRange,1),1.0)*110.0;
+    Progress->Position=!stat[0]?0:MIN((int)pos,100);
     
     time2str(time,s1,0);
     Time->Caption=s.sprintf("%s GPST",s1);
@@ -722,6 +726,7 @@ void __fastcall TMainForm::LoadOpt(void)
     NmeaReq           =ini->ReadInteger("set","nmeareq",     0);
     FileSwapMargin    =ini->ReadInteger("set","fswapmargin",30);
     RelayBack         =ini->ReadInteger("set","relayback",   0);
+    ProgBarRange      =ini->ReadInteger("set","progbarrange",2000);
     StaId             =ini->ReadInteger("set","staid"       ,0);
     StaSel            =ini->ReadInteger("set","stasel"      ,0);
     AntType           =ini->ReadString ("set","anttype",    "");
@@ -790,6 +795,7 @@ void __fastcall TMainForm::SaveOpt(void)
     ini->WriteInteger("set","nmeareq",    NmeaReq);
     ini->WriteInteger("set","fswapmargin",FileSwapMargin);
     ini->WriteInteger("set","relayback",  RelayBack);
+    ini->WriteInteger("set","progbarrange",ProgBarRange);
     ini->WriteInteger("set","staid",      StaId);
     ini->WriteInteger("set","stasel",     StaSel);
     ini->WriteString ("set","anttype",    AntType);

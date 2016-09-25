@@ -58,6 +58,8 @@ __published:
 	TOpenDialog *OpenDialog;
 	TLabel *Label16;
 	TComboBox *RelayMsg;
+	TEdit *ProgBarR;
+	TLabel *Label17;
 	void __fastcall BtnOkClick(TObject *Sender);
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall BtnPosClick(TObject *Sender);
@@ -72,6 +74,7 @@ public:
 	AnsiString StaPosFile,ExeDirectory,LocalDirectory,ProxyAddress;
 	AnsiString AntType,RcvType,SrcTblFile,LogFile;
 	int SvrOpt[6],TraceLevel,NmeaReq,FileSwapMargin,StaId,StaSel,RelayBack;
+	int ProgBarRange;
 	double AntPos[3],AntOff[3];
 	__fastcall TSvrOptDialog(TComponent* Owner);
 };

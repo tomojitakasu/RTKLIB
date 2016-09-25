@@ -56,6 +56,7 @@ __published:
 	TButton *BtnRcvOpt2;
 	TButton *BtnRcvOpt3;
 	TLabel *Label1;
+	TEdit *NmeaPos3;
 	void __fastcall BtnOkClick(TObject *Sender);
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall BtnStr1Click(TObject *Sender);
@@ -89,7 +90,7 @@ private:
 public:
 	int StreamC[3],Stream[3],Format[3],CmdEna[3][2],CmdEnaTcp[3][2];
 	int NmeaReq,TimeTag,NRcv;
-	double NmeaPos[2];
+	double NmeaPos[3];
 	AnsiString Paths[3][4],Cmds[3][2],CmdsTcp[3][2],TimeStart,TimeSpeed;
 	AnsiString RcvOpt[3];
 	AnsiString History[10],MntpHist[10];

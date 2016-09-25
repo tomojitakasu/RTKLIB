@@ -448,8 +448,12 @@ static void decode_obsh(FILE *fp, char *buff, double ver, int *tsys,
     else if (strstr(label,"LEAP SECONDS"        )) { /* opt */
         if (nav) nav->leaps=(int)str2num(buff,0,6);
     }
-    else if (strstr(label,"# OF SALTELLITES"    )) ; /* opt */
-    else if (strstr(label,"PRN / # OF OBS"      )) ; /* opt */
+    else if (strstr(label,"# OF SALTELLITES"    )) { /* opt */
+        /* skip */ ;
+    }
+    else if (strstr(label,"PRN / # OF OBS"      )) { /* opt */
+        /* skip */ ;
+    }
 }
 /* decode nav header ---------------------------------------------------------*/
 static void decode_navh(char *buff, nav_t *nav)

@@ -300,7 +300,7 @@ object InputStrDialog: TInputStrDialog
   object NmeaReqL: TComboBox
     Left = 8
     Top = 100
-    Width = 117
+    Width = 115
     Height = 21
     Style = csDropDownList
     ItemIndex = 0
@@ -331,17 +331,17 @@ object InputStrDialog: TInputStrDialog
       'x10')
   end
   object NmeaPos1: TEdit
-    Left = 158
+    Left = 125
     Top = 100
-    Width = 107
+    Width = 85
     Height = 21
     TabOrder = 21
     Text = '0.000000000'
   end
   object NmeaPos2: TEdit
-    Left = 266
+    Left = 212
     Top = 100
-    Width = 107
+    Width = 85
     Height = 21
     TabOrder = 22
     Text = '0.000000000'
@@ -494,6 +494,14 @@ object InputStrDialog: TInputStrDialog
     ParentFont = False
     TabOrder = 19
     OnClick = BtnRcvOpt3Click
+  end
+  object NmeaPos3: TEdit
+    Left = 299
+    Top = 100
+    Width = 73
+    Height = 21
+    TabOrder = 33
+    Text = '0.000'
   end
   object OpenDialog: TOpenDialog
     Filter = 

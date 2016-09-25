@@ -559,7 +559,6 @@ object MainForm: TMainForm
       BevelInner = bvRaised
       BevelOuter = bvLowered
       TabOrder = 1
-      ExplicitHeight = 24
       object Message: TLabel
         Left = 21
         Top = 2
@@ -687,6 +686,7 @@ object MainForm: TMainForm
       Margins.Bottom = 1
       Align = alTop
       Smooth = True
+      MarqueeInterval = 0
       Step = 1
       TabOrder = 2
     end
@@ -939,7 +939,7 @@ object MainForm: TMainForm
     Left = 128
     Top = 161
     Bitmap = {
-      494C010103000400680010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010103000400700010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       000000000000000000000000000000000000C0C0C000C0C0C000C0C0C000C0C0
       C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0

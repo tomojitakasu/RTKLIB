@@ -58,7 +58,7 @@ extern "C" {
 
 #define VER_RTKLIB  "2.4.3"             /* library version */
 
-#define PATCH_LEVEL "b24"               /* patch level */
+#define PATCH_LEVEL "b25"               /* patch level */
 
 #define COPYRIGHT_RTKLIB \
             "Copyright (C) 2007-2016 T.Takasu\nAll rights reserved."
@@ -419,6 +419,7 @@ extern "C" {
 #define STR_HTTP     9                  /* stream type: http */
 #define STR_NTRIPC_S 10                 /* stream type: NTRIP caster server */
 #define STR_NTRIPC_C 11                 /* stream type: NTRIP caster client */
+#define STR_MEMBUF   12                 /* stream type: memory buffer */
 
 #define STRFMT_RTCM2 0                  /* stream format: RTCM 2 */
 #define STRFMT_RTCM3 1                  /* stream format: RTCM 3 */
@@ -1444,7 +1445,7 @@ EXPORT void covenu  (const double *pos, const double *P, double *Q);
 EXPORT void covecef (const double *pos, const double *Q, double *P);
 EXPORT void xyz2enu (const double *pos, double *E);
 EXPORT void eci2ecef(gtime_t tutc, const double *erpv, double *U, double *gmst);
-EXPORT void deg2dms (double deg, double *dms);
+EXPORT void deg2dms (double deg, double *dms, int ndec);
 EXPORT double dms2deg(const double *dms);
 
 /* input and output functions ------------------------------------------------*/

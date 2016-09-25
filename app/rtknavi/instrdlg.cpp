@@ -61,6 +61,7 @@ void __fastcall TInputStrDialog::FormShow(TObject *Sender)
 	TimeStartE->Text     =TimeStart;
 	NmeaPos1  ->Text     =s.sprintf("%.9f",NmeaPos[0]);
 	NmeaPos2  ->Text     =s.sprintf("%.9f",NmeaPos[1]);
+	NmeaPos3  ->Text     =s.sprintf("%.3f",NmeaPos[2]);
 	UpdateEnable();
 }
 //---------------------------------------------------------------------------
@@ -84,6 +85,7 @@ void __fastcall TInputStrDialog::BtnOkClick(TObject *Sender)
 	TimeStart  =TimeStartE->Text;
 	NmeaPos[0] =str2dbl(NmeaPos1->Text);
 	NmeaPos[1] =str2dbl(NmeaPos2->Text);
+	NmeaPos[2] =str2dbl(NmeaPos3->Text);
 }
 //---------------------------------------------------------------------------
 void __fastcall TInputStrDialog::StreamC1Click(TObject *Sender)
@@ -290,10 +292,12 @@ void __fastcall TInputStrDialog::BtnPosClick(TObject *Sender)
 	AnsiString s;
 	RefDialog->RovPos[0]=str2dbl(NmeaPos1->Text);
 	RefDialog->RovPos[1]=str2dbl(NmeaPos2->Text);
+	RefDialog->RovPos[2]=str2dbl(NmeaPos3->Text);
 	RefDialog->StaPosFile=MainForm->StaPosFileF;
 	if (RefDialog->ShowModal()!=mrOk) return;
 	NmeaPos1->Text=s.sprintf("%.9f",RefDialog->Pos[0]);
 	NmeaPos2->Text=s.sprintf("%.9f",RefDialog->Pos[1]);
+	NmeaPos3->Text=s.sprintf("%.3f",RefDialog->Pos[2]);
 }
 //---------------------------------------------------------------------------
 void __fastcall TInputStrDialog::SerialOpt(int index, int opt)
@@ -376,6 +380,7 @@ void __fastcall TInputStrDialog::UpdateEnable(void)
 	NmeaReqL  ->Enabled=ena2;
 	NmeaPos1  ->Enabled=ena2&&NmeaReqL->ItemIndex==1;
 	NmeaPos2  ->Enabled=ena2&&NmeaReqL->ItemIndex==1;
+	NmeaPos3  ->Enabled=ena2&&NmeaReqL->ItemIndex==1;
 	BtnPos    ->Enabled=ena2&&NmeaReqL->ItemIndex==1;
 	
 	LabelF1   ->Enabled=ena1;

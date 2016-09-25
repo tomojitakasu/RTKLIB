@@ -451,8 +451,8 @@ AnsiString __fastcall TPlot::LatLonStr(const double *pos, int ndec)
                   ndec+5,ndec,fabs(pos[1]*R2D),pos[1]<0.0?"W":"E");
     }
     else {
-        deg2dms(pos[0]*R2D,dms1);
-        deg2dms(pos[1]*R2D,dms2);
+        deg2dms(pos[0]*R2D,dms1,ndec-5);
+        deg2dms(pos[1]*R2D,dms2,ndec-5);
         s.sprintf("%3.0f" CHARDEG "%02.0f'%0*.*f\"%s %4.0f" CHARDEG "%02.0f'%0*.*f\"%s",
                   fabs(dms1[0]),dms1[1],ndec-2,ndec-5,dms1[2],pos[0]<0.0?"S":"N",
                   fabs(dms2[0]),dms2[1],ndec-2,ndec-5,dms2[2],pos[1]<0.0?"W":"E");

@@ -296,7 +296,7 @@ extern int rtkoutstat(rtk_t *rtk, char *buff)
                        rtk->sol.stat,i+1,rtk->x[j],xa[0]);
         }
     }
-    return p-buff;
+    return (int)(p-buff);
 }
 /* swap solution status file -------------------------------------------------*/
 static void swapsolstat(void)
@@ -1290,7 +1290,7 @@ static double intpres(gtime_t time, const obsd_t *obs, int n, const nav_t *nav,
 /* single to double-difference transformation matrix (D') --------------------*/
 static int ddmat(rtk_t *rtk, double *D)
 {
-    int i,j,k,m,f,nb=0,nx=rtk->nx,na=rtk->na,nf=NF(&rtk->opt);
+    int i,j,k,m,f,nb=0,nx=rtk->nx,na=rtk->na,nf=NF(&rtk->opt),nofix;
     
     trace(3,"ddmat   :\n");
     
@@ -1301,8 +1301,7 @@ static int ddmat(rtk_t *rtk, double *D)
     
     for (m=0;m<4;m++) { /* m=0:gps/qzs/sbs,1:glo,2:gal,3:bds */
         
-        if (m==1&&rtk->opt.glomodear==0) continue;
-        if (m==3&&rtk->opt.bdsmodear==0) continue;
+        nofix=(m==1&&rtk->opt.glomodear==0)||(m==3&&rtk->opt.bdsmodear==0);
         
         for (f=0,k=na;f<nf;f++,k+=MAXSAT) {
             
@@ -1317,7 +1316,7 @@ static int ddmat(rtk_t *rtk, double *D)
                     continue;
                 }
                 if (rtk->ssat[i-k].lock[f]>0&&!(rtk->ssat[i-k].slip[f]&2)&&
-                    rtk->ssat[i-k].azel[1]>=rtk->opt.elmaskar) {
+                    rtk->ssat[i-k].azel[1]>=rtk->opt.elmaskar&&!nofix) {
                     rtk->ssat[i-k].fix[f]=2; /* fix */
                     break;
                 }
@@ -1330,7 +1329,7 @@ static int ddmat(rtk_t *rtk, double *D)
                 }
                 if (rtk->ssat[j-k].lock[f]>0&&!(rtk->ssat[j-k].slip[f]&2)&&
                     rtk->ssat[i-k].vsat[f]&&
-                    rtk->ssat[j-k].azel[1]>=rtk->opt.elmaskar) {
+                    rtk->ssat[j-k].azel[1]>=rtk->opt.elmaskar&&!nofix) {
                     D[i+(na+nb)*nx]= 1.0;
                     D[j+(na+nb)*nx]=-1.0;
                     nb++;

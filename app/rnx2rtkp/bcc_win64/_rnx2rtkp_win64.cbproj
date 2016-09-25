@@ -68,7 +68,7 @@
         <ILINK_LinkwithMidas>false</ILINK_LinkwithMidas>
         <ILINK_LinkwithSQL>false</ILINK_LinkwithSQL>
         <ILINK_LinkwithRegEx>false</ILINK_LinkwithRegEx>
-        <BCC_Defines>WIN32;TRACE;ENAGLO;ENAGAL;ENAQZS;ENACMP;ENAIRN;NFREQ=3;$(BCC_Defines)</BCC_Defines>
+        <BCC_Defines>WIN32;ENAGLO;ENAGAL;ENAQZS;ENACMP;ENAIRN;NFREQ=3;TRACE;$(BCC_Defines)</BCC_Defines>
         <BCC_weff>false</BCC_weff>
         <Manifest_File>None</Manifest_File>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;$(DCC_Namespace)</DCC_Namespace>
@@ -320,7 +320,7 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="..\rnx2rtkp.c" Configuration="Release" Class="ProjectFile">
+                <DeployFile LocalName="..\..\..\src\ephemeris.c" Configuration="Release" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
@@ -343,6 +343,11 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
+                <DeployFile Condition="'$(DynamicRTL)'=='true' And '$(Multithreaded)'=='true'" LocalName="$(BDS)\bin\cc32240mt.dll" Class="DependencyModule">
+                    <Platform Name="Win32">
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployFile LocalName="..\..\..\src\rtcm3e.c" Configuration="Release" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
@@ -352,11 +357,6 @@
                 <DeployFile LocalName="..\..\..\src\ppp.c" Configuration="Release" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile Condition="'$(DynamicRTL)'=='true' And '$(Multithreaded)'=='true'" LocalName="$(BDS)\bin\cc32240mt.dll" Class="DependencyModule">
-                    <Platform Name="Win32">
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
@@ -510,7 +510,7 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="..\..\..\src\ephemeris.c" Configuration="Release" Class="ProjectFile">
+                <DeployFile LocalName="..\..\..\src\lambda.c" Configuration="Release" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
@@ -522,7 +522,7 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="..\..\..\src\lambda.c" Configuration="Release" Class="ProjectFile">
+                <DeployFile LocalName="..\rnx2rtkp.c" Configuration="Release" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>

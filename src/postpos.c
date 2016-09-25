@@ -102,8 +102,8 @@ static void outrpos(FILE *fp, const double *r, const solopt_t *opt)
     if (opt->posf==SOLF_LLH||opt->posf==SOLF_ENU) {
         ecef2pos(r,pos);
         if (opt->degf) {
-            deg2dms(pos[0]*R2D,dms1);
-            deg2dms(pos[1]*R2D,dms2);
+            deg2dms(pos[0]*R2D,dms1,5);
+            deg2dms(pos[1]*R2D,dms2,5);
             fprintf(fp,"%3.0f%s%02.0f%s%08.5f%s%4.0f%s%02.0f%s%08.5f%s%10.4f",
                     dms1[0],sep,dms1[1],sep,dms1[2],sep,dms2[0],sep,dms2[1],
                     sep,dms2[2],sep,pos[2]);
