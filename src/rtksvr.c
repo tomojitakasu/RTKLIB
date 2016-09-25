@@ -708,7 +708,7 @@ extern int rtksvrstart(rtksvr_t *svr, int cycle, int buffsize, int *strs,
                        char **paths, int *formats, int navsel, char **cmds,
                        char **rcvopts, int nmeacycle, int nmeareq,
                        const double *nmeapos, prcopt_t *prcopt,
-                       solopt_t *solopt, stream_t *moni, char *errmsg)
+                       solopt_t *solopt, stream_t *moni, const char *errmsg)
 {
     gtime_t time,time0={0};
     int i,j,rw;
