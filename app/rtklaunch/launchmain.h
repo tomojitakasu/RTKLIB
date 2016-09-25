@@ -39,6 +39,9 @@ __published:
 	TPanel *BtnOption;
 	TSpeedButton *BtnRtklib;
 	TPanel *Panel2;
+	TPanel *BtnExit;
+	TSpeedButton *BtnVideo;
+	TMenuItem *MenuVideo;
 	
 	void __fastcall BtnPlotClick(TObject *Sender);
 	void __fastcall BtnConvClick(TObject *Sender);
@@ -63,6 +66,9 @@ __published:
 	void __fastcall BtnOptionClick(TObject *Sender);
 	void __fastcall BtnRtklibMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift,
           int X, int Y);
+	void __fastcall BtnExitClick(TObject *Sender);
+	void __fastcall BtnVideoClick(TObject *Sender);
+	void __fastcall MenuVideoClick(TObject *Sender);
 
 private:
 	AnsiString IniFile;

@@ -86,6 +86,7 @@ static const char rcsid[]="$Id$";
 #define TIMETAGH_LEN        64          /* time tag file header length */
 #define MAXCLI              32          /* max client connection for tcp svr */
 #define MAXSTATMSG          32          /* max length of status message */
+#define DEFAULT_MEMBUF_SIZE 4096        /* default memory buffer size (bytes) */
 
 #define NTRIP_AGENT         "RTKLIB/" VER_RTKLIB
 #define NTRIP_CLI_PORT      2101        /* default ntrip-client connection port */
@@ -225,6 +226,13 @@ typedef struct {            /* ftp download control type */
     gtime_t tnext;          /* next retry time (gpst) */
     thread_t thread;        /* download thread */
 } ftp_t;
+
+typedef struct {            /* memory buffer type */
+    int state,wp,rp;        /* state,write/read pointer */
+    int bufsize;            /* buffer size (bytes) */
+    lock_t lock;            /* lock flag */
+    unsigned char *buf;     /* write buffer */
+} membuf_t;
 
 /* proto types for static functions ------------------------------------------*/
 
@@ -1244,7 +1252,7 @@ static int statetcpsvr(tcpsvr_t *tcpsvr)
 {
     return tcpsvr?tcpsvr->svr.state:0;
 }
-/* print extended state tcp ----------------------------------------------------*/
+/* print extended state tcp --------------------------------------------------*/
 static int statextcp(tcp_t *tcp, char *msg)
 {
     char *p=msg;
@@ -2322,6 +2330,103 @@ static int statexftp(ftp_t *ftp, char *msg)
 {
     return !ftp?0:(ftp->state==0?2:(ftp->state<=2?3:-1));
 }
+/* open memory buffer --------------------------------------------------------*/
+static membuf_t *openmembuf(const char *path, char *msg)
+{
+    membuf_t *membuf;
+    int bufsize=DEFAULT_MEMBUF_SIZE;
+    
+    tracet(3,"openmembuf: path=%s\n",path);
+    
+    msg[0]='\0';
+    
+    sscanf(path,"%d",&bufsize);
+    
+    if (!(membuf=(membuf_t *)malloc(sizeof(membuf_t)))) return NULL;
+    membuf->state=1;
+    membuf->rp=0;
+    membuf->wp=0;
+    if (!(membuf->buf=(unsigned char *)malloc(bufsize))) {
+        free(membuf);
+        return NULL;
+    }
+    membuf->bufsize=bufsize;
+    initlock(&membuf->lock);
+    
+    sprintf(msg,"membuf sizebuf=%d",bufsize);
+    
+    return membuf;
+}
+/* close ftp -----------------------------------------------------------------*/
+static void closemembuf(membuf_t *membuf)
+{
+    tracet(3,"closemembufp\n");
+    
+    free(membuf->buf);
+    free(membuf);
+}
+/* read memory buffer --------------------------------------------------------*/
+static int readmembuf(membuf_t *membuf, unsigned char *buff, int n, char *msg)
+{
+    int i,nr=0;
+    
+    tracet(4,"readmembuf: n=%d\n",n);
+    
+    if (!membuf) return 0;
+    
+    lock(&membuf->lock);
+    
+    for (i=membuf->rp;i!=membuf->wp&&nr<n;i++) {
+        if (i>=membuf->bufsize) i=0;
+        buff[nr++]=membuf->buf[i];
+    }
+    membuf->rp=i;
+    unlock(&membuf->lock);
+    return nr;
+}
+/* write memory buffer -------------------------------------------------------*/
+static int writemembuf(membuf_t *membuf, unsigned char *buff, int n, char *msg)
+{
+    int i;
+    
+    tracet(3,"writemembuf: n=%d\n",n);
+    
+    if (!membuf) return 0;
+    
+    lock(&membuf->lock);
+    
+    for (i=0;i<n;i++) {
+        membuf->buf[membuf->wp++]=buff[i];
+        if (membuf->wp>=membuf->bufsize) membuf->wp=0;
+        if (membuf->wp==membuf->rp) {
+           strcpy(msg,"mem-buffer overflow");
+           membuf->state=-1;
+           unlock(&membuf->lock);
+           return i+1;
+        }
+    }
+    unlock(&membuf->lock);
+    return i;
+}
+/* get state memory buffer ---------------------------------------------------*/
+static int statemembuf(membuf_t *membuf)
+{
+    return !membuf?0:membuf->state;
+}
+/* get extended state memory buffer ------------------------------------------*/
+static int statexmembuf(membuf_t *membuf, char *msg)
+{
+    char *p=msg;
+    int state=!membuf?0:membuf->state;
+    
+    p+=sprintf(p,"membuf:\n");
+    p+=sprintf(p,"  state   = %d\n",state);
+    if (!state) return 0;
+    p+=sprintf(p,"  buffsize= %d\n",membuf->bufsize);
+    p+=sprintf(p,"  wp      = %d\n",membuf->wp);
+    p+=sprintf(p,"  rp      = %d\n",membuf->rp);
+    return state;
+}
 /* initialize stream environment -----------------------------------------------
 * initialize stream environment
 * args   : none
@@ -2418,6 +2523,7 @@ extern int stropen(stream_t *stream, int type, int mode, const char *path)
         case STR_NTRIPC_C: stream->port=openntripc(path,1,   stream->msg); break;
         case STR_FTP     : stream->port=openftp   (path,0,   stream->msg); break;
         case STR_HTTP    : stream->port=openftp   (path,1,   stream->msg); break;
+        case STR_MEMBUF  : stream->port=openmembuf(path,     stream->msg); break;
         default: stream->state=0; return 1;
     }
     stream->state=!stream->port?-1:1;
@@ -2446,6 +2552,7 @@ extern void strclose(stream_t *stream)
             case STR_NTRIPC_C: closentripc((ntripc_t *)stream->port); break;
             case STR_FTP     : closeftp   ((ftp_t    *)stream->port); break;
             case STR_HTTP    : closeftp   ((ftp_t    *)stream->port); break;
+            case STR_MEMBUF  : closemembuf((membuf_t *)stream->port); break;
         }
     }
     else {
@@ -2513,6 +2620,7 @@ extern int strread(stream_t *stream, unsigned char *buff, int n)
         case STR_NTRIPCLI: nr=readntrip ((ntrip_t  *)stream->port,buff,n,msg); break;
         case STR_NTRIPC_S:
         case STR_NTRIPC_C: nr=readntripc((ntripc_t *)stream->port,buff,n,msg); break;
+        case STR_MEMBUF  : nr=readmembuf((membuf_t *)stream->port,buff,n,msg); break;
         case STR_FTP     : nr=readftp   ((ftp_t    *)stream->port,buff,n,msg); break;
         case STR_HTTP    : nr=readftp   ((ftp_t    *)stream->port,buff,n,msg); break;
         default:
@@ -2558,6 +2666,7 @@ extern int strwrite(stream_t *stream, unsigned char *buff, int n)
         case STR_NTRIPCLI: ns=writentrip ((ntrip_t  *)stream->port,buff,n,msg); break;
         case STR_NTRIPC_S:
         case STR_NTRIPC_C: ns=writentripc((ntripc_t *)stream->port,buff,n,msg); break;
+        case STR_MEMBUF  : ns=writemembuf((membuf_t *)stream->port,buff,n,msg); break;
         case STR_FTP     :
         case STR_HTTP    :
         default:
@@ -2568,7 +2677,7 @@ extern int strwrite(stream_t *stream, unsigned char *buff, int n)
     tick=tickget(); if (ns>0) stream->tact=tick;
     
     if ((int)(tick-stream->tick_o)>tirate) {
-        stream->outr=(stream->outb-stream->outbt)*8000/(tick-stream->tick_o);
+        stream->outr=(int)((double)(stream->outb-stream->outbt)*8000/(tick-stream->tick_o));
         stream->tick_o=tick; stream->outbt=stream->outb;
     }
     strunlock(stream);
@@ -2643,6 +2752,7 @@ extern int strstat(stream_t *stream, char *msg)
         case STR_NTRIPCLI: state=statentrip ((ntrip_t  *)stream->port); break;
         case STR_NTRIPC_C:
         case STR_NTRIPC_S: state=statentripc((ntripc_t *)stream->port); break;
+        case STR_MEMBUF  : state=statemembuf((membuf_t *)stream->port); break;
         case STR_FTP     : state=stateftp   ((ftp_t    *)stream->port); break;
         case STR_HTTP    : state=stateftp   ((ftp_t    *)stream->port); break;
         default:
@@ -2680,6 +2790,7 @@ extern int strstatx(stream_t *stream, char *msg)
         case STR_NTRIPCLI: state=statexntrip ((ntrip_t  *)stream->port,msg); break;
         case STR_NTRIPC_C:
         case STR_NTRIPC_S: state=statexntripc((ntripc_t *)stream->port,msg); break;
+        case STR_MEMBUF  : state=statexmembuf((membuf_t *)stream->port,msg); break;
         case STR_FTP     : state=statexftp   ((ftp_t    *)stream->port,msg); break;
         case STR_HTTP    : state=statexftp   ((ftp_t    *)stream->port,msg); break;
         default:

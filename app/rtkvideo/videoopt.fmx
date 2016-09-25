@@ -1,0 +1,205 @@
+object VideoOptDlg: TVideoOptDlg
+  Left = 0
+  Top = 0
+  BorderStyle = Single
+  Caption = 'Options'
+  ClientHeight = 257
+  ClientWidth = 411
+  Position = MainFormCenter
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnShow = FormShow
+  DesignerMasterStyle = 0
+  object BtnOk: TButton
+    ModalResult = 1
+    Position.X = 170.000000000000000000
+    Position.Y = 220.000000000000000000
+    Size.Width = 112.000000000000000000
+    Size.Height = 29.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    Text = '&OK'
+    OnClick = BtnOkClick
+  end
+  object BtnCancel: TButton
+    ModalResult = 2
+    Position.X = 288.000000000000000000
+    Position.Y = 220.000000000000000000
+    Size.Width = 112.000000000000000000
+    Size.Height = 29.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    Text = '&Cancel'
+  end
+  object SelDev: TComboBox
+    Position.X = 170.000000000000000000
+    Position.Y = 18.000000000000000000
+    Size.Width = 230.000000000000000000
+    Size.Height = 25.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 2
+    OnChange = SelDevChange
+  end
+  object SelProf: TComboBox
+    Position.X = 170.000000000000000000
+    Position.Y = 46.000000000000000000
+    Size.Width = 230.000000000000000000
+    Size.Height = 25.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 3
+  end
+  object Label1: TLabel
+    Position.X = 12.000000000000000000
+    Position.Y = 22.000000000000000000
+    Text = 'Input Device'
+  end
+  object Label2: TLabel
+    Position.X = 12.000000000000000000
+    Position.Y = 50.000000000000000000
+    Text = 'Device Profile'
+  end
+  object EditTcpPort: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    TabOrder = 8
+    Text = '10033'
+    Position.X = 295.000000000000000000
+    Position.Y = 110.000000000000000000
+    Size.Width = 105.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+  end
+  object ChkTcpPort: TCheckBox
+    Position.X = 12.000000000000000000
+    Position.Y = 112.000000000000000000
+    Size.Width = 179.000000000000000000
+    Size.Height = 19.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 7
+    Text = 'Output Stream'
+    OnChange = ChkTcpPortChange
+  end
+  object ChkOutFile: TCheckBox
+    Position.X = 12.000000000000000000
+    Position.Y = 141.000000000000000000
+    Size.Width = 179.000000000000000000
+    Size.Height = 19.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 9
+    Text = 'Output File'
+    OnChange = ChkTcpPortChange
+  end
+  object EditFile: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    TabOrder = 10
+    Position.X = 12.000000000000000000
+    Position.Y = 162.000000000000000000
+    Size.Width = 388.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+  end
+  object Label3: TLabel
+    Position.X = 196.000000000000000000
+    Position.Y = 114.000000000000000000
+    Size.Width = 98.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'TCP Server Port'
+  end
+  object ChkTimeTag: TCheckBox
+    Position.X = 12.000000000000000000
+    Position.Y = 190.000000000000000000
+    Size.Width = 179.000000000000000000
+    Size.Height = 19.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 12
+    Text = 'Output Time Tag'
+    OnChange = ChkTcpPortChange
+  end
+  object Label4: TLabel
+    Position.X = 196.000000000000000000
+    Position.Y = 191.000000000000000000
+    Text = 'File Swap Interval'
+  end
+  object SelFileSwap: TComboBox
+    Items.Strings = (
+      ''
+      '3'
+      '6'
+      '15'
+      '30'
+      '60'
+      '120')
+    Position.X = 299.000000000000000000
+    Position.Y = 188.000000000000000000
+    Size.Width = 70.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 13
+  end
+  object BtnFile: TButton
+    Position.X = 370.000000000000000000
+    Position.Y = 137.000000000000000000
+    Size.Width = 30.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 11
+    Text = '...'
+    OnClick = BtnFileClick
+  end
+  object Label5: TLabel
+    Position.X = 366.000000000000000000
+    Position.Y = 191.000000000000000000
+    Size.Width = 29.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.HorzAlign = Trailing
+    Text = 'Min'
+  end
+  object EditCapWidth: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    TabOrder = 5
+    Text = '500'
+    Position.X = 170.000000000000000000
+    Position.Y = 78.000000000000000000
+    Size.Width = 105.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+  end
+  object ChkCapSize: TCheckBox
+    Enabled = False
+    Position.X = 12.000000000000000000
+    Position.Y = 80.000000000000000000
+    Size.Width = 179.000000000000000000
+    Size.Height = 19.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 4
+    Text = 'Capture Size (W x H)'
+    OnChange = ChkTcpPortChange
+  end
+  object EditCapHeight: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    TabOrder = 6
+    Text = '500'
+    Position.X = 295.000000000000000000
+    Position.Y = 78.000000000000000000
+    Size.Width = 105.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+  end
+  object Label6: TLabel
+    Position.X = 276.000000000000000000
+    Position.Y = 82.000000000000000000
+    Size.Width = 15.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.HorzAlign = Center
+    Text = 'X'
+  end
+  object SaveDialog: TSaveDialog
+    Filter = 'MJPG (*.mjpg)|*.mjpg|ALL (*.*)|*.*'
+    Title = 'Output File'
+    Left = 50
+    Top = 200
+  end
+end

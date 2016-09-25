@@ -189,7 +189,7 @@ extern int pppoutstat(rtk_t *rtk, char *buff)
                    rtk->sol.stat,id,j+1,x[k],STD(rtk,k));
     }
 #endif
-    return p-buff;
+    return (int)(p-buff);
 }
 /* exclude meas of eclipsing satellite (block IIA) ---------------------------*/
 static void testeclipse(const obsd_t *obs, int n, const nav_t *nav, double *rs)

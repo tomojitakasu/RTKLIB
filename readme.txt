@@ -104,3 +104,7 @@ UPDATE HISTORY
                       add option -b to str2str
                       support multiple remote console connections by rtkrcv
                       add option -w to rtkrcv
+2016/09/25  2.4.3 b24 fix several bugs
+                      add ap rtkvideo
+                      add ap rtkvplayer
+                      change build environment to C++ builder 10.1 Berlin

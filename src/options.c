@@ -202,10 +202,10 @@ static int enum2str(char *s, const char *comment, int val)
     }
     if (!(q=strchr(p+n,','))&&!(q=strchr(p+n,')'))) {
         strcpy(s,p+n);
-        return strlen(p+n);
+        return (int)strlen(p+n);
     }
     strncpy(s,p+n,q-p-n); s[q-p-n]='\0';
-    return q-p-n;
+    return (int)(q-p-n);
 }
 /* string to enum ------------------------------------------------------------*/
 static int str2enum(const char *str, const char *comment, int *val)

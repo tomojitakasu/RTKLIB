@@ -634,6 +634,7 @@ void __fastcall TMainForm::BtnInputStrClick(TObject *Sender)
     InputStrDialog->TimeStart =InTimeStart;
     InputStrDialog->NmeaPos[0]=NmeaPos[0];
     InputStrDialog->NmeaPos[1]=NmeaPos[1];
+    InputStrDialog->NmeaPos[2]=NmeaPos[2];
     
     if (InputStrDialog->ShowModal()!=mrOk) return;
     
@@ -660,6 +661,7 @@ void __fastcall TMainForm::BtnInputStrClick(TObject *Sender)
     InTimeStart=InputStrDialog->TimeStart;
     NmeaPos[0] =InputStrDialog->NmeaPos[0];
     NmeaPos[1] =InputStrDialog->NmeaPos[1];
+    NmeaPos[2] =InputStrDialog->NmeaPos[2];
 }
 // confirm overwrite --------------------------------------------------------
 int __fastcall TMainForm::ConfOverwrite(const char *path)
@@ -1238,7 +1240,7 @@ void __fastcall TMainForm::SvrStart(void)
     NmeaCycle=NmeaCycle<1000?1000:NmeaCycle;
     pos[0]=NmeaPos[0]*D2R;
     pos[1]=NmeaPos[1]*D2R;
-    pos[2]=0.0;
+    pos[2]=NmeaPos[2];
     pos2ecef(pos,nmeapos);
     
     strsetdir(LocalDirectory.c_str());
@@ -1571,7 +1573,7 @@ void __fastcall TMainForm::UpdatePos(void)
         s[5].sprintf(L"%.3f m",len);
         s[6].sprintf(L"E:%6.3f N:%6.3f U:%6.3f m",SQRT(Qe[0]),SQRT(Qe[4]),SQRT(Qe[8]));
     }
-    s[7].sprintf(L"Age:%4.1f s Ratio:%4.1f # Sat:%2d",Age[PSol],Ratio[PSol],Nvsat[PSol]);
+    s[7].sprintf(L"Age:%4.1f s Ratio:%4.1f #Sat:%2d",Age[PSol],Ratio[PSol],Nvsat[PSol]);
     if (Ratio[PSol]>0.0) s[8].sprintf(L" R:%4.1f",Ratio[PSol]);
     
     for (i=0;i<8;i++) label[i]->Caption=s[i];
@@ -1906,7 +1908,7 @@ void __fastcall TMainForm::DrawSat(TCanvas *c, int w, int h, int x0, int y0,
     }
     c->Brush->Style=bsClear;
     dops(ns,azel,0.0,dop);
-    DrawText(c,x0+3,y0+h-15,s.sprintf(L"# Sat: %d/%d",ns,Nsat[index]),clGray,0);
+    DrawText(c,x0+3,y0+h-15,s.sprintf(L"#Sat:%2d/%2d",ns,Nsat[index]),clGray,0);
     DrawText(c,x0+w-3,y0+h-15,s.sprintf(L"GDOP: %.1f",dop[0]),clGray,2);
 }
 // draw baseline plot -------------------------------------------------------
@@ -1996,7 +1998,7 @@ void __fastcall TMainForm::DrawBL(TImage *plot, int w, int h)
     c->Brush->Color=col;
     c->Ellipse(pp.x-d2/2+2,pp.y-d2/2+2,pp.x+d2/2-1,pp.y+d2/2-1);
     c->Brush->Color=clWhite;
-    digit=len<10.0?3:(len<100.0?2:(len<1000.0?1:0));
+    digit=len<1000.0?3:(len<10000.0?2:(len<100000.0?1:0));
     DrawText(c,p.x,p.y ,s.sprintf(L"%.*f m",digit,len),clGray,1);
     DrawText(c,5,  h-15,s.sprintf(L"Y: %.1f%c",yaw*R2D,CHARDEG),clGray,0);
     DrawText(c,w-3,h-15,s.sprintf(L"P: %.1f%c",pitch*R2D,CHARDEG),clGray,2);
@@ -2549,6 +2551,7 @@ void __fastcall TMainForm::LoadOpt(void)
     LogSwapInterval =ini->ReadString ("setting","logswapinterval","");
     NmeaPos[0]      =ini->ReadFloat  ("setting","nmeapos1",      0.0);
     NmeaPos[1]      =ini->ReadFloat  ("setting","nmeapos2",      0.0);
+    NmeaPos[2]      =ini->ReadFloat  ("setting","nmeapos3",      0.0);
     FileSwapMargin  =ini->ReadInteger("setting","fswapmargin",    30);
     
     TimeSys         =ini->ReadInteger("setting","timesys",         0);
@@ -2788,6 +2791,7 @@ void __fastcall TMainForm::SaveOpt(void)
     ini->WriteString ("setting","logswapinterval",LogSwapInterval);
     ini->WriteFloat  ("setting","nmeapos1",   NmeaPos[0]         );
     ini->WriteFloat  ("setting","nmeapos2",   NmeaPos[1]         );
+    ini->WriteFloat  ("setting","nmeapos3",   NmeaPos[2]         );
     ini->WriteInteger("setting","fswapmargin",FileSwapMargin     );
     
     ini->WriteInteger("setting","timesys",    TimeSys            );

@@ -39,6 +39,12 @@
         <Projects Include="rtkpost_win64\rtkpost_win64.cbproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="rtkvideo\rtkvideo.cbproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="rtkvplayer\rtkvplayer.cbproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -155,14 +161,32 @@
     <Target Name="rtkpost_win64:Make">
         <MSBuild Projects="rtkpost_win64\rtkpost_win64.cbproj" Targets="Make"/>
     </Target>
+    <Target Name="rtkvideo">
+        <MSBuild Projects="rtkvideo\rtkvideo.cbproj"/>
+    </Target>
+    <Target Name="rtkvideo:Clean">
+        <MSBuild Projects="rtkvideo\rtkvideo.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="rtkvideo:Make">
+        <MSBuild Projects="rtkvideo\rtkvideo.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="rtkvplayer">
+        <MSBuild Projects="rtkvplayer\rtkvplayer.cbproj"/>
+    </Target>
+    <Target Name="rtkvplayer:Clean">
+        <MSBuild Projects="rtkvplayer\rtkvplayer.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="rtkvplayer:Make">
+        <MSBuild Projects="rtkvplayer\rtkvplayer.cbproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="rtkconv;rtknavi;rtkplot;rtkpost;srctblbrows;strsvr;rtkpost_mkl;rtknavi_mkl;rtkget;rtklaunch;rtknavi_win64;rtkpost_win64"/>
+        <CallTarget Targets="rtkconv;rtknavi;rtkplot;rtkpost;srctblbrows;strsvr;rtkpost_mkl;rtknavi_mkl;rtkget;rtklaunch;rtknavi_win64;rtkpost_win64;rtkvideo;rtkvplayer"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="rtkconv:Clean;rtknavi:Clean;rtkplot:Clean;rtkpost:Clean;srctblbrows:Clean;strsvr:Clean;rtkpost_mkl:Clean;rtknavi_mkl:Clean;rtkget:Clean;rtklaunch:Clean;rtknavi_win64:Clean;rtkpost_win64:Clean"/>
+        <CallTarget Targets="rtkconv:Clean;rtknavi:Clean;rtkplot:Clean;rtkpost:Clean;srctblbrows:Clean;strsvr:Clean;rtkpost_mkl:Clean;rtknavi_mkl:Clean;rtkget:Clean;rtklaunch:Clean;rtknavi_win64:Clean;rtkpost_win64:Clean;rtkvideo:Clean;rtkvplayer:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="rtkconv:Make;rtknavi:Make;rtkplot:Make;rtkpost:Make;srctblbrows:Make;strsvr:Make;rtkpost_mkl:Make;rtknavi_mkl:Make;rtkget:Make;rtklaunch:Make;rtknavi_win64:Make;rtkpost_win64:Make"/>
+        <CallTarget Targets="rtkconv:Make;rtknavi:Make;rtkplot:Make;rtkpost:Make;srctblbrows:Make;strsvr:Make;rtkpost_mkl:Make;rtknavi_mkl:Make;rtkget:Make;rtklaunch:Make;rtknavi_win64:Make;rtkpost_win64:Make;rtkvideo:Make;rtkvplayer:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

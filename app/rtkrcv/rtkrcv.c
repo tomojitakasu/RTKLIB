@@ -110,7 +110,7 @@ static int buffsize     =32768;         /* input buffer size (bytes) */
 static int navmsgsel    =0;             /* navigation mesaage select */
 static char proxyaddr[256]="";          /* http/ntrip proxy */
 static int nmeareq      =0;             /* nmea request type (0:off,1:lat/lon,2:single) */
-static double nmeapos[] ={0,0};         /* nmea position (lat/lon) (deg) */
+static double nmeapos[] ={0,0,0};       /* nmea position (lat/lon/height) (deg,m) */
 static char rcvcmds[3][MAXSTR]={""};    /* receiver commands files */
 static char startcmd[MAXSTR]="";        /* start command */
 static char stopcmd [MAXSTR]="";        /* stop command */
@@ -204,6 +204,7 @@ static opt_t rcvopts[]={
     {"inpstr2-nmeareq", 3,  (void *)&nmeareq,            NMEOPT },
     {"inpstr2-nmealat", 1,  (void *)&nmeapos[0],         "deg"  },
     {"inpstr2-nmealon", 1,  (void *)&nmeapos[1],         "deg"  },
+    {"inpstr2-nmeahgt", 1,  (void *)&nmeapos[2],         "m"    },
     {"outstr1-type",    3,  (void *)&strtype[3],         OSTOPT },
     {"outstr2-type",    3,  (void *)&strtype[4],         OSTOPT },
     {"outstr1-path",    2,  (void *)strpath [3],         ""     },
@@ -423,7 +424,7 @@ static int startsvr(vt_t *vt)
     }
     pos[0]=nmeapos[0]*D2R;
     pos[1]=nmeapos[1]*D2R;
-    pos[2]=0.0;
+    pos[2]=nmeapos[2];
     pos2ecef(pos,npos);
     
     /* read antenna file */
@@ -552,8 +553,8 @@ static void prsolution(vt_t *vt, const sol_t *sol, const double *rb)
         if (norm(sol->rr,3)>0.0) {
             ecef2pos(sol->rr,pos);
             covenu(pos,Qr,Qe);
-            deg2dms(pos[0]*R2D,dms1);
-            deg2dms(pos[1]*R2D,dms2);
+            deg2dms(pos[0]*R2D,dms1,4);
+            deg2dms(pos[1]*R2D,dms2,4);
             if (solopt[0].height==1) pos[2]-=geoidh(pos); /* geodetic */
         }       
         vt_printf(vt," %s:%2.0f %02.0f %07.4f",pos[0]<0?"S":"N",fabs(dms1[0]),dms1[1],dms1[2]);

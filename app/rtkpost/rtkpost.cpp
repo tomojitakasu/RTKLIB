@@ -4,42 +4,6 @@
 #pragma hdrstop
 //---------------------------------------------------------------------------
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 USEFORM("kmzconv.cpp", ConvDialog);
 USEFORM("postmain.cpp", MainForm);
 USEFORM("extopt.cpp", ExtOptDialog);

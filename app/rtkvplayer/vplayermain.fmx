@@ -1,0 +1,203 @@
+object MainForm: TMainForm
+  Left = 0
+  Top = 0
+  Caption = 'RTK Video Player'
+  ClientHeight = 320
+  ClientWidth = 480
+  Fill.Kind = Solid
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnClose = FormClose
+  OnResize = FormResize
+  OnShow = FormShow
+  DesignerMasterStyle = 0
+  object Panel3: TGridLayout
+    Align = Bottom
+    ItemHeight = 31.000000000000000000
+    ItemWidth = 110.000000000000000000
+    Orientation = Horizontal
+    Position.Y = 287.000000000000000000
+    Size.Width = 480.000000000000000000
+    Size.Height = 33.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 3
+    object BtnOpen: TButton
+      Margins.Left = 1.000000000000000000
+      Margins.Top = 1.000000000000000000
+      Margins.Right = 1.000000000000000000
+      Margins.Bottom = 1.000000000000000000
+      Position.X = 1.000000000000000000
+      Position.Y = 1.000000000000000000
+      Size.Width = 108.000000000000000000
+      Size.Height = 29.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      Text = '&Open...'
+      ParentShowHint = False
+      ShowHint = True
+      OnClick = BtnOpenClick
+    end
+    object BtnPlay: TButton
+      Margins.Left = 1.000000000000000000
+      Margins.Top = 1.000000000000000000
+      Margins.Right = 1.000000000000000000
+      Margins.Bottom = 1.000000000000000000
+      Position.X = 111.000000000000000000
+      Position.Y = 1.000000000000000000
+      Size.Width = 108.000000000000000000
+      Size.Height = 29.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+      Text = '&Play'
+      OnClick = BtnPlayClick
+    end
+    object BtnStop: TButton
+      Enabled = False
+      Margins.Left = 1.000000000000000000
+      Margins.Top = 1.000000000000000000
+      Margins.Right = 1.000000000000000000
+      Margins.Bottom = 1.000000000000000000
+      Position.X = 221.000000000000000000
+      Position.Y = 1.000000000000000000
+      Size.Width = 108.000000000000000000
+      Size.Height = 29.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 2
+      Text = 'S&top'
+      OnClick = BtnStopClick
+    end
+    object BtnClear: TButton
+      Margins.Left = 1.000000000000000000
+      Margins.Top = 1.000000000000000000
+      Margins.Right = 1.000000000000000000
+      Margins.Bottom = 1.000000000000000000
+      Position.X = 331.000000000000000000
+      Position.Y = 1.000000000000000000
+      Size.Width = 108.000000000000000000
+      Size.Height = 29.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 3
+      Text = '&Clear'
+      OnClick = BtnClearClick
+    end
+    object BtnExit: TButton
+      Margins.Left = 1.000000000000000000
+      Margins.Top = 1.000000000000000000
+      Margins.Right = 1.000000000000000000
+      Margins.Bottom = 1.000000000000000000
+      Position.X = 1.000000000000000000
+      Position.Y = 32.000000000000000000
+      Size.Width = 108.000000000000000000
+      Size.Height = 29.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 4
+      Text = 'E&xit'
+      OnClick = BtnExitClick
+    end
+  end
+  object MediaPlayer: TMediaPlayer
+    Left = 286
+    Top = 172
+  end
+  object OpenDialog: TOpenDialog
+    Filter = 
+      'AVI (*.avi), MP4 (*.mp4), MJPG (.mjpg) |*.avi;*.mp4;*.mjpg|All (' +
+      '*.*)|*.*'
+    Title = 'Open Video'
+    Left = 318
+    Top = 170
+  end
+  object Timer1: TTimer
+    Interval = 100
+    OnTimer = Timer1Timer
+    Left = 348
+    Top = 170
+  end
+  object Panel2: TLayout
+    Align = Bottom
+    Margins.Top = 1.000000000000000000
+    Margins.Bottom = 1.000000000000000000
+    Position.Y = 271.000000000000000000
+    Size.Width = 480.000000000000000000
+    Size.Height = 15.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 7
+    object ProgressBar: TProgressBar
+      Align = Client
+      Max = 1000.000000000000000000
+      Orientation = Horizontal
+      Size.Width = 462.000000000000000000
+      Size.Height = 15.000000000000000000
+      Size.PlatformDefault = False
+      OnMouseDown = ProgressBarMouseDown
+      OnMouseMove = ProgressBarMouseMove
+      OnMouseUp = ProgressBarMouseUp
+    end
+    object BtnPosStart: TButton
+      Align = Left
+      Hint = 'Rewind'
+      Margins.Left = 2.000000000000000000
+      Margins.Right = 1.000000000000000000
+      Position.X = 2.000000000000000000
+      Size.Width = 15.000000000000000000
+      Size.Height = 15.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+      Text = '.'
+      OnClick = BtnPosStartClick
+    end
+  end
+  object Panel1: TRectangle
+    Align = Client
+    Fill.Color = xFF404040
+    Margins.Left = 1.000000000000000000
+    Margins.Top = 1.000000000000000000
+    Margins.Right = 1.000000000000000000
+    Size.Width = 478.000000000000000000
+    Size.Height = 247.000000000000000000
+    Size.PlatformDefault = False
+    Stroke.Color = xFF404040
+    Stroke.Thickness = 0.000000000000000000
+    object MediaPlayerControl: TMediaPlayerControl
+      Size.Width = 478.000000000000000000
+      Size.Height = 247.000000000000000000
+      Size.PlatformDefault = False
+      Align = Client
+      MediaPlayer = MediaPlayer
+    end
+  end
+  object Panel4: TRectangle
+    Align = Bottom
+    Fill.Color = xFF404040
+    Margins.Left = 1.000000000000000000
+    Margins.Right = 1.000000000000000000
+    Position.X = 1.000000000000000000
+    Position.Y = 248.000000000000000000
+    Size.Width = 478.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    Stroke.Color = xFF404040
+    object Message1: TLabel
+      Align = Left
+      StyledSettings = [Family, Size, Style]
+      Margins.Left = 8.000000000000000000
+      Position.X = 8.000000000000000000
+      Size.Width = 320.000000000000000000
+      Size.Height = 22.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.FontColor = claYellow
+    end
+    object Message2: TLabel
+      Align = Right
+      StyledSettings = [Family, Size, Style]
+      Margins.Right = 8.000000000000000000
+      Position.X = -10.000000000000000000
+      Size.Width = 480.000000000000000000
+      Size.Height = 22.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.FontColor = claYellow
+      TextSettings.HorzAlign = Trailing
+    end
+  end
+end
