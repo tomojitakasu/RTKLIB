@@ -2376,81 +2376,133 @@ extern int geterp(const erp_t *erp, gtime_t time, double *erpv)
     erpv[3]=(1.0-a)*erp->data[j].lod    +a*erp->data[j+1].lod;
     return 1;
 }
+/* compare times -------------------------------------------------------------*/
+static int cmptime(const void *p1, const void *p2)
+{
+    gtime_t *t1 = (gtime_t*)p1,
+            *t2 = (gtime_t*)p2;
+    if (t1->time != t2->time) {
+      return (int)(t1->time - t2->time);
+    }
+    return (t1->sec < t2->sec ? -1
+                              : (t1->sec > t2->sec ? 1 : 0));
+}
 /* compare ephemeris ---------------------------------------------------------*/
 static int cmpeph(const void *p1, const void *p2)
 {
-    eph_t *q1=(eph_t *)p1,*q2=(eph_t *)p2;
-    return q1->ttr.time!=q2->ttr.time?(int)(q1->ttr.time-q2->ttr.time):
-           (q1->toe.time!=q2->toe.time?(int)(q1->toe.time-q2->toe.time):
-            q1->sat-q2->sat);
+    eph_t *q1 = (eph_t*)p1,
+          *q2 = (eph_t*)p2;
+    int t = cmptime(&q1->ttr, &q2->ttr);
+    if (t == 0) {
+        t = cmptime(&q1->toe, &q2->toe);
+        if (t == 0) {
+            t = q1->iode - q2->iode;
+            if (t == 0) {
+                return (q1->sat - q2->sat);
+            }
+        }
+    }
+    return t;
 }
 /* sort and unique ephemeris -------------------------------------------------*/
 static void uniqeph(nav_t *nav)
 {
     eph_t *nav_eph;
-    int i,j;
-    
+    int uniq, current;
+
     trace(3,"uniqeph: n=%d\n",nav->n);
-    
     if (nav->n<=0) return;
-    
+
     qsort(nav->eph,nav->n,sizeof(eph_t),cmpeph);
-    
-    for (i=1,j=0;i<nav->n;i++) {
-        if (nav->eph[i].sat!=nav->eph[j].sat||
-            nav->eph[i].iode!=nav->eph[j].iode) {
-            nav->eph[++j]=nav->eph[i];
-        }
-    }
-    nav->n=j+1;
-    
-    if (!(nav_eph=(eph_t *)realloc(nav->eph,sizeof(eph_t)*nav->n))) {
+
+    if (!(nav_eph=(eph_t*)malloc(sizeof(eph_t)*(NSATGPS+NSATQZS+NSATGAL)))) {
         trace(1,"uniqeph malloc error n=%d\n",nav->n);
         free(nav->eph); nav->eph=NULL; nav->n=nav->nmax=0;
         return;
     }
-    nav->eph=nav_eph;
-    nav->nmax=nav->n;
-    
+
+    uniq = 0;
+    for (current=nav->n-1; current>=0; --current) {
+        if (nav->eph[current].svh==0) {
+            int i = 0;
+            for (; i<uniq; ++i) {
+                if (nav_eph[i].sat==nav->eph[current].sat)
+                    break;
+            }
+            if (i==uniq) {
+                nav_eph[uniq++] = nav->eph[current];
+            }
+        }
+    }
+
+    free(nav->eph);
+    if (uniq > 0) {
+        if (!(nav->eph=(eph_t*)realloc(nav_eph, sizeof(eph_t)*uniq))) {
+            trace(1,"uniqeph realloc error uniq_size=%d\n",uniq);
+            free(nav_eph);
+            nav->eph=NULL; nav->n=nav->nmax=0;
+            return;
+        }
+    }
+    nav->n=nav->nmax=uniq;
     trace(4,"uniqeph: n=%d\n",nav->n);
 }
 /* compare glonass ephemeris -------------------------------------------------*/
 static int cmpgeph(const void *p1, const void *p2)
 {
-    geph_t *q1=(geph_t *)p1,*q2=(geph_t *)p2;
-    return q1->tof.time!=q2->tof.time?(int)(q1->tof.time-q2->tof.time):
-           (q1->toe.time!=q2->toe.time?(int)(q1->toe.time-q2->toe.time):
-            q1->sat-q2->sat);
+    geph_t *q1 = (geph_t*)p1,
+           *q2 = (geph_t*)p2;
+    int t = cmptime(&q1->tof, &q2->tof);
+    if (t == 0) {
+        t = cmptime(&q1->toe, &q2->toe);
+        if (t == 0) {
+            return (q1->sat - q2->sat);
+        }
+    }
+    return t;
 }
 /* sort and unique glonass ephemeris -----------------------------------------*/
 static void uniqgeph(nav_t *nav)
 {
     geph_t *nav_geph;
-    int i,j;
-    
+    int uniq, current;
+
     trace(3,"uniqgeph: ng=%d\n",nav->ng);
-    
+
     if (nav->ng<=0) return;
-    
+
     qsort(nav->geph,nav->ng,sizeof(geph_t),cmpgeph);
-    
-    for (i=j=0;i<nav->ng;i++) {
-        if (nav->geph[i].sat!=nav->geph[j].sat||
-            nav->geph[i].toe.time!=nav->geph[j].toe.time||
-            nav->geph[i].svh!=nav->geph[j].svh) {
-            nav->geph[++j]=nav->geph[i];
-        }
-    }
-    nav->ng=j+1;
-    
-    if (!(nav_geph=(geph_t *)realloc(nav->geph,sizeof(geph_t)*nav->ng))) {
+
+    if (!(nav_geph=(geph_t*)malloc(sizeof(geph_t)*NSATGLO))) {
         trace(1,"uniqgeph malloc error ng=%d\n",nav->ng);
         free(nav->geph); nav->geph=NULL; nav->ng=nav->ngmax=0;
         return;
     }
-    nav->geph=nav_geph;
-    nav->ngmax=nav->ng;
-    
+
+    uniq = 0;
+    for (current=nav->ng-1; current>=0; --current) {
+        if (nav->geph[current].svh==0) {
+            int i = 0;
+            for (; i<uniq; ++i) {
+                if (nav_geph[i].sat==nav->geph[current].sat)
+                    break;
+            }
+            if (i==uniq) {
+                nav_geph[uniq++] = nav->geph[current];
+            }
+        }
+    }
+
+    free(nav->geph);
+    if (uniq > 0) {
+        if (!(nav->geph=(geph_t*)realloc(nav_geph, sizeof(geph_t)*uniq))) {
+            trace(1,"uniqgeph realloc error uniq_size=%d\n",uniq);
+            free(nav_geph);
+            nav->geph=NULL; nav->ng=nav->ngmax=0;
+            return;
+        }
+    }
+    nav->ng=nav->ngmax=uniq;
     trace(4,"uniqgeph: ng=%d\n",nav->ng);
 }
 /* compare sbas ephemeris ----------------------------------------------------*/
