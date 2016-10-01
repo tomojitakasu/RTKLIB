@@ -21,6 +21,7 @@
 *           2016/09/06 1.10 add api strsvrsetsrctbl()
 *           2016/09/17 1.11 add relay back function of output stream
 *                           fix bug on rtcm cyclic output of beidou ephemeris 
+*           2016/10/01 1.12 change api startstrserver()
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -363,6 +364,29 @@ static void strconv(stream_t *str, strconv_t *conv, unsigned char *buff, int n)
     write_nav_cycle(str,conv);
     write_sta_cycle(str,conv);
 }
+/* periodic command ----------------------------------------------------------*/
+static void periodic_cmd(int cycle, const char *cmd, stream_t *stream)
+{
+    const char *p=cmd,*q;
+    char msg[1024],*r;
+    int n,period;
+    
+    for (p=cmd;;p=q+1) {
+        for (q=p;;q++) if (*q=='\r'||*q=='\n'||*q=='\0') break;
+        n=(int)(q-p); strncpy(msg,p,n); msg[n]='\0';
+        
+        period=0;
+        if ((r=strrchr(msg,'#'))) {
+            sscanf(r,"# %d",&period);
+            *r='\0';
+        }
+        if (period<=0) period=1000;
+        if (*msg&&cycle%period==0) {
+            strsendcmd(stream,msg);
+        }
+        if (!*q) break;
+    }
+}
 /* stearm server thread ------------------------------------------------------*/
 #ifdef WIN32
 static DWORD WINAPI strsvrthread(void *arg)
@@ -375,14 +399,14 @@ static void *strsvrthread(void *arg)
     unsigned int tick,tick_nmea;
     unsigned char buff[1024];
     char sel[256];
-    int i,n;
+    int i,n,cyc;
     
     tracet(3,"strsvrthread:\n");
     
     svr->tick=tickget();
     tick_nmea=svr->tick-1000;
     
-    while (svr->state) {
+    for (cyc=0;svr->state;cyc++) {
         tick=tickget();
         
         /* read data from input stream */
@@ -421,6 +445,10 @@ static void *strsvrthread(void *arg)
                 }
             }
         }
+        /* write periodic command to input stream */
+        for (i=0;i<svr->nstr;i++) {
+            periodic_cmd(cyc*svr->cycle,svr->cmds_periodic[i],svr->stream+i);
+        }
         /* write nmea messages to input stream */
         if (svr->nmeacycle>0&&(int)(tick-tick_nmea)>=svr->nmeacycle) {
             sol_nmea.stat=SOLQ_SINGLE;
@@ -456,6 +484,7 @@ extern void strsvrinit(strsvr_t *svr, int nout)
     svr->nmeacycle=0;
     svr->relayback=0;
     svr->npb=0;
+    for (i=0;i<16;i++) *svr->cmds_periodic[i]='\0';
     for (i=0;i<3;i++) svr->nmeapos[i]=0.0;
     svr->buff=svr->pbuf=NULL;
     svr->tick=0;
@@ -496,16 +525,23 @@ extern void strsvrinit(strsvr_t *svr, int nout)
 *              cmds[1]= output stream 1 command
 *              cmds[2]= output stream 2 command
 *              cmds[3]= output stream 3 command
+*          char   **cmds_periodic I periodic commands (NULL: no cmd)
+*              cmds[0]= input stream command
+*              cmds[1]= output stream 1 command
+*              cmds[2]= output stream 2 command
+*              cmds[3]= output stream 3 command
 *          double *nmeapos  I   nmea request position (ecef) (m) (NULL: no)
 * return : status (0:error,1:ok)
 *-----------------------------------------------------------------------------*/
 extern int strsvrstart(strsvr_t *svr, int *opts, int *strs, char **paths,
-                       strconv_t **conv, char **cmds, const double *nmeapos)
+                       strconv_t **conv, char **cmds, char **cmds_periodic,
+                       const double *nmeapos)
 {
     int i,rw,stropt[5]={0};
     char file1[MAXSTRPATH],file2[MAXSTRPATH],*p;
     
     tracet(3,"strsvrstart:\n");
+trace(2,"strsvrstart: cmds_periodic=%s\n",cmds_periodic[0]);
     
     if (svr->state) return 0;
     
@@ -519,7 +555,9 @@ extern int strsvrstart(strsvr_t *svr, int *opts, int *strs, char **paths,
     svr->nmeacycle=0<opts[5]&&opts[5]<1000?1000:opts[5]; /* >=1s */
     svr->relayback=opts[7];
     for (i=0;i<3;i++) svr->nmeapos[i]=nmeapos?nmeapos[i]:0.0;
-    
+    for (i=0;i<4;i++) {
+        strcpy(svr->cmds_periodic[i],!cmds_periodic[i]?"":cmds_periodic[i]);
+    }
     for (i=0;i<svr->nstr-1;i++) svr->conv[i]=conv[i];
     
     if (!(svr->buff=(unsigned char *)malloc(svr->buffsize))||

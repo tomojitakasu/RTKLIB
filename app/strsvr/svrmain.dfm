@@ -271,6 +271,7 @@ object MainForm: TMainForm
         Width = 88
         Height = 21
         Style = csDropDownList
+        DropDownCount = 16
         ItemIndex = 0
         TabOrder = 1
         Text = 'Serial'
@@ -281,6 +282,7 @@ object MainForm: TMainForm
           'TCP Server'
           'NTRIP Client'
           'NTRIP Caster'
+          'UDP Server'
           'File'
           'FTP'
           'HTTP')
@@ -291,6 +293,7 @@ object MainForm: TMainForm
         Width = 88
         Height = 21
         Style = csDropDownList
+        DropDownCount = 16
         TabOrder = 5
         OnChange = Output1Change
         Items.Strings = (
@@ -300,6 +303,7 @@ object MainForm: TMainForm
           'TCP Server'
           'NTRIP Server'
           'NTRIP Caster'
+          'UDP Client'
           'File')
       end
       object BtnInput: TButton
@@ -363,6 +367,7 @@ object MainForm: TMainForm
         Width = 88
         Height = 21
         Style = csDropDownList
+        DropDownCount = 16
         TabOrder = 10
         OnChange = Output2Change
         Items.Strings = (
@@ -372,6 +377,7 @@ object MainForm: TMainForm
           'TCP Server'
           'NTRIP Server'
           'NTRIP Caster'
+          'UDP Client'
           'File')
       end
       object IndOutput1: TPanel
@@ -400,6 +406,7 @@ object MainForm: TMainForm
         Width = 88
         Height = 21
         Style = csDropDownList
+        DropDownCount = 16
         TabOrder = 15
         OnChange = Output3Change
         Items.Strings = (
@@ -409,6 +416,7 @@ object MainForm: TMainForm
           'TCP Server'
           'NTRIP Server'
           'NTRIP Caster'
+          'UDP Client'
           'File')
       end
       object BtnOutput3: TButton
@@ -939,7 +947,7 @@ object MainForm: TMainForm
     Left = 128
     Top = 161
     Bitmap = {
-      494C010103000400700010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010103000400780010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       000000000000000000000000000000000000C0C0C000C0C0C000C0C0C000C0C0
       C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0C000C0C0

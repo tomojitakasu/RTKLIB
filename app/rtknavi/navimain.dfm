@@ -24,8 +24,8 @@ object MainForm: TMainForm
     AlignWithMargins = True
     Left = 1
     Top = 51
-    Width = 575
-    Height = 189
+    Width = 573
+    Height = 187
     Margins.Left = 1
     Margins.Top = 1
     Margins.Right = 1
@@ -35,6 +35,8 @@ object MainForm: TMainForm
     Color = clWhite
     ParentBackground = False
     TabOrder = 1
+    ExplicitWidth = 575
+    ExplicitHeight = 189
     object Splitter1: TSplitter
       Left = 380
       Top = 0
@@ -1763,7 +1765,7 @@ object MainForm: TMainForm
     Left = 274
     Top = 91
     Bitmap = {
-      494C010102000400180110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C0101020004001C0110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

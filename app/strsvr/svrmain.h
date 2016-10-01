@@ -124,13 +124,13 @@ __published:
           int X, int Y);
 private:
 	AnsiString IniFile;
-	AnsiString Paths[MAXSTR][4],Cmds[MAXSTR][2],CmdsTcp[MAXSTR][2];
+	AnsiString Paths[MAXSTR][4],Cmds[MAXSTR][3],CmdsTcp[MAXSTR][3];
 	AnsiString TcpHistory[MAXHIST],TcpMntpHist[MAXHIST];
 	AnsiString StaPosFile,ExeDirectory,LocalDirectory,SwapInterval;
 	AnsiString ProxyAddress,SrcTblFile,LogFile;
 	AnsiString ConvMsg[MAXSTR-1],ConvOpt[MAXSTR-1],AntType,RcvType;
 	int ConvEna[MAXSTR-1],ConvInp[MAXSTR-1],ConvOut[MAXSTR-1],StaId,StaSel;
-	int TraceLevel,SvrOpt[6],CmdEna[MAXSTR][2],CmdEnaTcp[MAXSTR][2];
+	int TraceLevel,SvrOpt[6],CmdEna[MAXSTR][3],CmdEnaTcp[MAXSTR][3];
 	int NmeaReq,FileSwapMargin,RelayBack,ProgBarRange;
 	double AntPos[3],AntOff[3];
 	gtime_t StartTime,EndTime;

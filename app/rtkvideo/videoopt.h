@@ -12,6 +12,7 @@
 #include <FMX.Edit.hpp>
 #include <FMX.Media.hpp>
 #include <FMX.Dialogs.hpp>
+#include <FMX.Colors.hpp>
 
 //---------------------------------------------------------------------------
 class TVideoOptDlg : public TForm
@@ -34,15 +35,19 @@ __published:
     TButton *BtnFile;
     TLabel *Label5;
     TSaveDialog *SaveDialog;
-    TEdit *EditCapWidth;
-    TCheckBox *ChkCapSize;
-    TEdit *EditCapHeight;
-    TLabel *Label6;
+	TEdit *EditCapSize;
+	TLabel *Label7;
+	TComboBox *SelCapPos;
+	TLabel *Label8;
+	TComboColorBox *SelCapColor;
+	TLabel *Label6;
+	TEdit *EditCodecQuality;
     void __fastcall FormShow(TObject *Sender);
     void __fastcall SelDevChange(TObject *Sender);
     void __fastcall BtnOkClick(TObject *Sender);
     void __fastcall ChkTcpPortChange(TObject *Sender);
     void __fastcall BtnFileClick(TObject *Sender);
+	void __fastcall SelCapPosChange(TObject *Sender);
 private:
     void __fastcall UpdateProf(void);
     void __fastcall UpdateEnable(void);

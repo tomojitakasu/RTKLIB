@@ -4,7 +4,7 @@ object CmdOptDialog: TCmdOptDialog
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Serial/TCP Commands'
-  ClientHeight = 272
+  ClientHeight = 391
   ClientWidth = 318
   Color = clWhite
   Font.Charset = DEFAULT_CHARSET
@@ -18,8 +18,8 @@ object CmdOptDialog: TCmdOptDialog
   PixelsPerInch = 96
   TextHeight = 13
   object BtnOk: TButton
-    Left = 150
-    Top = 240
+    Left = 148
+    Top = 358
     Width = 81
     Height = 29
     Caption = '&OK'
@@ -28,8 +28,8 @@ object CmdOptDialog: TCmdOptDialog
     OnClick = BtnOkClick
   end
   object BtnCancel: TButton
-    Left = 234
-    Top = 240
+    Left = 232
+    Top = 358
     Width = 81
     Height = 29
     Caption = '&Cancel'
@@ -73,8 +73,8 @@ object CmdOptDialog: TCmdOptDialog
     WordWrap = False
   end
   object BtnLoad: TButton
-    Left = 4
-    Top = 240
+    Left = 2
+    Top = 358
     Width = 65
     Height = 29
     Caption = '&Load...'
@@ -82,26 +82,44 @@ object CmdOptDialog: TCmdOptDialog
     OnClick = BtnLoadClick
   end
   object BtnSave: TButton
-    Left = 72
-    Top = 240
+    Left = 70
+    Top = 358
     Width = 65
     Height = 29
     Caption = '&Save...'
     TabOrder = 7
     OnClick = BtnSaveClick
   end
+  object ChkPeriodicCmd: TCheckBox
+    Left = 2
+    Top = 238
+    Width = 251
+    Height = 17
+    Caption = 'Periodic Commands : <command> # cycle (ms)'
+    TabOrder = 8
+    OnClick = ChkCloseCmdClick
+  end
+  object PeriodicCmd: TMemo
+    Left = 2
+    Top = 254
+    Width = 311
+    Height = 101
+    ScrollBars = ssVertical
+    TabOrder = 9
+    WordWrap = False
+  end
   object SaveDialog: TSaveDialog
     Filter = 'Command File (*.cmd)|*.cmd|All File (*.*)|*.*'
     Options = [ofHideReadOnly, ofNoChangeDir, ofEnableSizing]
     Title = 'Save Serial Commands'
-    Left = 264
-    Top = 204
+    Left = 232
+    Top = 306
   end
   object OpenDialog: TOpenDialog
     Filter = 'Command File (*.cmd)|*.cmd|All File (*.*)|*.*'
     Options = [ofHideReadOnly, ofNoChangeDir, ofEnableSizing]
     Title = 'Load Serial Commands'
-    Left = 236
-    Top = 204
+    Left = 202
+    Top = 306
   end
 end
