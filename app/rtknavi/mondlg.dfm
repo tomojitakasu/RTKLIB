@@ -249,6 +249,7 @@ object MonitorDialog: TMonitorDialog
         'Sat GEO'
         'States'
         'Covariance'
+        'RAW Msgs'
         'SBAS Msgs'
         'SBAS Long'
         'SBAS Iono'

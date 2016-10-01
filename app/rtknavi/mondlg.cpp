@@ -14,7 +14,7 @@
 #define MAXLINE		2048
 #define MAXLEN		200
 
-#define NMONITEM	29
+#define NMONITEM	30
 
 #define IONLON1		110.0
 #define IONLON2		165.0
@@ -33,14 +33,14 @@ __fastcall TMonitorDialog::TMonitorDialog(TComponent* Owner)
 	: TForm(Owner)
 {
 	int i;
-	
+
 	ScrollPos=0;
 	ObsMode=0;
 	ConFmt=-1;
 	ConBuff=new TStringList;
 	ConBuff->Add("");
 	DoubleBuffered=true;
-	
+
 	for (i=0;i<=MAXRCVFMT;i++) {
 		SelFmt->Items->Add(formatstrs[i]);
 	}
@@ -93,12 +93,12 @@ void __fastcall TMonitorDialog::TypeChange(TObject *Sender)
 void __fastcall TMonitorDialog::SelFmtChange(TObject *Sender)
 {
 	AddConsole((unsigned char *)"\n",1,1);
-    
+
     if (ConFmt>=3&&ConFmt<17) {
         free_raw(&raw);
     }
     ConFmt=SelFmt->ItemIndex;
-    
+
     if (ConFmt>=3&&ConFmt<17) {
         init_raw(&raw,ConFmt-2);
     }
@@ -126,24 +126,25 @@ void __fastcall TMonitorDialog::Timer1Timer(TObject *Sender)
 		case 15: ShowSat(SYS_SBS); break;
 		case 16: ShowEst();        break;
 		case 17: ShowCov();        break;
-		case 18: ShowSbsMsg();     break;
-		case 19: ShowSbsLong();    break;
-		case 20: ShowSbsIono();    break;
-		case 21: ShowSbsFast();    break;
-		case 22: ShowRtcm();       break;
-		case 23: ShowRtcmDgps();   break;
-		case 24: ShowRtcmSsr();    break;
-		case 25: ShowLexMsg();     break;
-		case 26: ShowLexEph();     break;
-		case 27: ShowLexIon();     break;
-		case 28: ShowIonCorr();    break;
+                case 18: ShowRaw();        break;
+		case 19: ShowSbsMsg();     break;
+		case 20: ShowSbsLong();    break;
+		case 21: ShowSbsIono();    break;
+		case 22: ShowSbsFast();    break;
+		case 23: ShowRtcm();       break;
+		case 24: ShowRtcmDgps();   break;
+		case 25: ShowRtcmSsr();    break;
+		case 26: ShowLexMsg();     break;
+		case 27: ShowLexEph();     break;
+		case 28: ShowLexIon();     break;
+		case 29: ShowIonCorr();    break;
 	}
 }
 //---------------------------------------------------------------------------
 void __fastcall TMonitorDialog::ClearTable(void)
 {
 	int console=0;
-	
+
 	switch (TypeF) {
 		case  0: SetRtk();      break;
 		case  1: SetObs();      break;
@@ -163,17 +164,18 @@ void __fastcall TMonitorDialog::ClearTable(void)
 		case 15: SetSat();      break;
 		case 16: SetEst();      break;
 		case 17: SetCov();      break;
-		case 18: SetSbsMsg();   break;
-		case 19: SetSbsLong();  break;
-		case 20: SetSbsIono();  break;
-		case 21: SetSbsFast();  break;
-		case 22: SetRtcm();     break;
-		case 23: SetRtcmDgps(); break;
-		case 24: SetRtcmSsr();  break;
-		case 25: SetLexMsg();   break;
-		case 26: SetLexEph();   break;
-		case 27: SetLexIon();   break;
-		case 28: SetIonCorr();  break;
+                case 18: SetRaw();      break;
+		case 19: SetSbsMsg();   break;
+		case 20: SetSbsLong();  break;
+		case 21: SetSbsIono();  break;
+		case 22: SetSbsFast();  break;
+		case 23: SetRtcm();     break;
+		case 24: SetRtcmDgps(); break;
+		case 25: SetRtcmSsr();  break;
+		case 26: SetLexMsg();   break;
+		case 27: SetLexEph();   break;
+		case 28: SetLexIon();   break;
+		case 29: SetIonCorr();  break;
 		default: console=1;     break;
 	}
 	Console ->Visible=console;
@@ -195,9 +197,9 @@ void __fastcall TMonitorDialog::Timer2Timer(TObject *Sender)
 	unsigned char *msg;
 	char buff[256];
 	int i,n,len,index=TypeF-NMONITEM;
-	
+
 	if (index<0||6<=index) return;
-	
+
 	rtksvrlock(&rtksvr);
 	
 	if (index<3) { // input buffer
@@ -224,7 +226,7 @@ void __fastcall TMonitorDialog::Timer2Timer(TObject *Sender)
 	rtksvrunlock(&rtksvr);
 	
 	if (len<=0||!msg) return;
-	
+
 	rtcm.outtype=raw.outtype=1;
 	
 	if (ConFmt<2||index>=3) {
@@ -300,7 +302,7 @@ void __fastcall TMonitorDialog::ConsolePaint(TObject *Sender)
 	TCanvas *c=Console->Canvas;
 	TSize off=c->TextExtent(" ");
 	int n,m,p,y=TOPMARGIN;
-	
+
 	c->Brush->Style=bsSolid;
 	c->Brush->Color=clWhite;
 	c->FillRect(Console->ClientRect);
@@ -490,7 +492,7 @@ void __fastcall TMonitorDialog::ShowRtk(void)
 	
 	Tbl->Cells[0][i  ]="Navi Systems";
 	Tbl->Cells[1][i++]=navsys;
-	
+
 	Tbl->Cells[0][i  ]="Accumulated Time to Run";
 	Tbl->Cells[1][i++]=s.sprintf("%02.0f:%02.0f:%04.1f",rt[0],rt[1],rt[2]);
 	
@@ -512,7 +514,7 @@ void __fastcall TMonitorDialog::ShowRtk(void)
 	Tbl->Cells[1][i++]=s.sprintf("Obs(%d),Nav(%d),Gnav(%d),Ion(%d),Sbs(%d),Pos(%d),Dgps(%d),Ssr(%d),Lex(%d),Err(%d)",
 								 nmsg[1][0],nmsg[1][1],nmsg[1][6],nmsg[1][2],nmsg[1][3],
 								 nmsg[1][4],nmsg[1][5],nmsg[1][7],nmsg[1][8],nmsg[1][9]);
-	
+
 	Tbl->Cells[0][i  ]="# of Input Data Ephemeris";
 	Tbl->Cells[1][i++]=s.sprintf("Obs(%d),Nav(%d),Gnav(%d),Ion(%d),Sbs(%d),Pos(%d),Dgps(%d),Ssr(%d),Lex(%d),Err(%d)",
 								 nmsg[2][0],nmsg[2][1],nmsg[2][6],nmsg[2][2],nmsg[2][3],
@@ -528,7 +530,7 @@ void __fastcall TMonitorDialog::ShowRtk(void)
 	Tbl->Cells[0][i  ] ="Time Sytem Offset/Receiver Bias (GLO-GPS,GAL-GPS,BDS-GPS,IRN-GPS) (ns)";
 	Tbl->Cells[1][i++]=s.sprintf("%.3f,%.3f,%.3f,%.3f",rtk.sol.dtr[1]*1E9,rtk.sol.dtr[2]*1E9,
                                  rtk.sol.dtr[3]*1E9,rtk.sol.dtr[4]*1E9);
-	
+
 	Tbl->Cells[0][i  ]="Solution Interval (s)";
 	Tbl->Cells[1][i++]=s.sprintf("%.3f",rtk.tt);
 	
@@ -558,7 +560,7 @@ void __fastcall TMonitorDialog::ShowRtk(void)
 	
 	Tbl->Cells[0][i  ]="Pos X/Y/Z Single (m) Rover";
 	Tbl->Cells[1][i++]=s.sprintf("%.3f,%.3f,%.3f",rtk.sol.rr[0],rtk.sol.rr[1],rtk.sol.rr[2]);
-	
+
 	if (norm(rtk.sol.rr,3)>0.0) ecef2pos(rtk.sol.rr,pos); else pos[0]=pos[1]=pos[2]=0.0;
 	Tbl->Cells[0][i  ]="Lat/Lon/Height Single (deg,m) Rover";
 	Tbl->Cells[1][i++]=s.sprintf("%.8f,%.8f,%.3f",pos[0]*R2D,pos[1]*R2D,pos[2]);
@@ -566,7 +568,7 @@ void __fastcall TMonitorDialog::ShowRtk(void)
 	ecef2enu(pos,rtk.sol.rr+3,vel);
 	Tbl->Cells[0][i  ]="Vel E/N/U (m/s) Rover";
 	Tbl->Cells[1][i++]=s.sprintf("%.3f,%.3f,%.3f",vel[0],vel[1],vel[2]);
-	
+
 	Tbl->Cells[0][i  ]="Pos X/Y/Z Float (m) Rover";
 	Tbl->Cells[1][i++]=s.sprintf("%.3f,%.3f,%.3f",
 		rtk.x?rtk.x[0]:0,rtk.x?rtk.x[1]:0,rtk.x?rtk.x[2]:0);
@@ -626,13 +628,13 @@ void __fastcall TMonitorDialog::ShowRtk(void)
 	del=rtk.opt.antdel[1];
 	Tbl->Cells[0][i  ]="Ant Delta E/N/U (m) Base/NRTK Station";
 	Tbl->Cells[1][i++]=s.sprintf("%.3f,%.3f,%.3f",del[0],del[1],del[2]);
-	
+
 	Tbl->Cells[0][i  ]="Precise Ephemeris Time/# of Epoch";
 	Tbl->Cells[1][i++]=s.sprintf("%s-%s (%d)",s1,s2,ne);
-	
+
 	Tbl->Cells[0][i  ]="Precise Ephemeris Download Time";
 	Tbl->Cells[1][i++]=s3;
-	
+
 	Tbl->Cells[0][i  ]="Precise Ephemeris Download File";
 	Tbl->Cells[1][i++]=file;
 }
@@ -1308,7 +1310,7 @@ void __fastcall TMonitorDialog::ShowIonUtc(void)
 	double tow=0.0;
 	char tstr[64];
 	int i,j,k,leaps,week=0;
-	
+
 	rtksvrlock(&rtksvr);
 	time=rtksvr.rtk.sol.time;
 	for (i=0;i<4;i++) utc_gps[i]=rtksvr.nav.utc_gps[i];
@@ -1341,7 +1343,7 @@ void __fastcall TMonitorDialog::ShowIonUtc(void)
 	if (time.time!=0) tow=time2gpst(time,&week);
 	Tbl->Cells[0][i  ]="GPS Week/Time (s)";
 	Tbl->Cells[1][i++]=s.sprintf("%d,%.3f",week,tow);
-	
+
 	Tbl->Cells[0][i  ]="Leap Seconds (GPST-UTC) (s)";
 	Tbl->Cells[1][i++]=s.sprintf("%d",leaps);
 	
@@ -1685,6 +1687,19 @@ void __fastcall TMonitorDialog::SetRtcm(void)
 		Tbl->Cells[i][1]="";
 	}
 }
+void __fastcall TMonitorDialog::SetRaw(void)
+{
+	AnsiString label[]={"Parameter","Value"};
+	int i,width[]={220,520};
+
+	Tbl->ColCount=2;
+	Tbl->RowCount=2;
+	for (i=0;i<Tbl->ColCount;i++) {
+		Tbl->ColWidths[i]=width[i]*FontScale/96;
+		Tbl->Cells[i][0]=label[i];
+		Tbl->Cells[i][1]="";
+	}
+}
 //---------------------------------------------------------------------------
 void __fastcall TMonitorDialog::ShowRtcm(void)
 {
@@ -1693,16 +1708,16 @@ void __fastcall TMonitorDialog::ShowRtcm(void)
 	double pos[3]={0};
 	int i=1,j,format;
 	char tstr[64]="-",mstr1[1024]="",mstr2[1024]="",*p1=mstr1,*p2=mstr2;
-	
+
 	if (SelStr->ItemIndex>3) return;
-	
+
 	rtksvrlock(&rtksvr);
 	format=rtksvr.format[SelStr->ItemIndex];
 	rtcm=rtksvr.rtcm[SelStr->ItemIndex];
 	rtksvrunlock(&rtksvr);
-	
+
 	if (rtcm.time.time) time2str(rtcm.time,tstr,3);
-	
+
 	for (j=1;j<100;j++) {
 		if (rtcm.nmsg2[j]==0) continue;
         p1+=sprintf(p1,"%s%d (%d)",p1>mstr1?",":"",j,rtcm.nmsg2[j]);
@@ -1718,87 +1733,198 @@ void __fastcall TMonitorDialog::ShowRtcm(void)
 		sprintf(p2,"%sother(%d)",p2>mstr2?",":"",rtcm.nmsg3[0]);
 	}
 	Label->Caption="";
-	
+
 	Tbl->RowCount=27;
-	
+
 	Tbl->Cells[0][i  ]="Format";
 	Tbl->Cells[1][i++]=format==STRFMT_RTCM2?"RTCM2":"RTCM3";
-	
+
 	Tbl->Cells[0][i  ]="Message Time";
 	Tbl->Cells[1][i++]=tstr;
-	
+
 	Tbl->Cells[0][i  ]="Station ID";
 	Tbl->Cells[1][i++]=s.sprintf("%d",rtcm.staid);
-	
+
 	Tbl->Cells[0][i  ]="Station Health";
 	Tbl->Cells[1][i++]=s.sprintf("%d",rtcm.stah);
-	
+
 	Tbl->Cells[0][i  ]="Sequence No";
 	Tbl->Cells[1][i++]=s.sprintf("%d",rtcm.seqno);
-	
+
 	Tbl->Cells[0][i  ]="Station Pos X/Y/Z (m)";
 	Tbl->Cells[1][i++]=s.sprintf("%.3f,%.3f,%.3f",rtcm.sta.pos[0],rtcm.sta.pos[1],rtcm.sta.pos[2]);
-	
+
 	if (norm(rtcm.sta.pos,3)>0.0) ecef2pos(rtcm.sta.pos,pos);
 	Tbl->Cells[0][i  ]="Station Lat/Lon/Height (deg,m)";
 	Tbl->Cells[1][i++]=s.sprintf("%.8f,%.8f,%.3f",pos[0]*R2D,pos[1]*R2D,pos[2]);
-	
+
 	Tbl->Cells[0][i  ]="ITRF Realization Year";
 	Tbl->Cells[1][i++]=s.sprintf("%d",rtcm.sta.itrf);
-	
+
 	Tbl->Cells[0][i  ]="Antenna Delta Type";
 	Tbl->Cells[1][i++]=rtcm.sta.deltype?"X/Y/Z":"E/N/U";
-	
+
 	Tbl->Cells[0][i  ]="Antenna Delta (m)";
 	Tbl->Cells[1][i++]=s.sprintf("%.3f,%.3f,%.3f",rtcm.sta.del[0],rtcm.sta.del[1],rtcm.sta.del[2]);
-	
+
 	Tbl->Cells[0][i  ]="Antenna Height (m)";
 	Tbl->Cells[1][i++]=s.sprintf("%.3f",rtcm.sta.hgt);
-	
+
 	Tbl->Cells[0][i  ]="Antenna Descriptor";
 	Tbl->Cells[1][i++]=rtcm.sta.antdes;
-	
+
 	Tbl->Cells[0][i  ]="Antenna Setup Id";
 	Tbl->Cells[1][i++]=s.sprintf("%d",rtcm.sta.antsetup);
-	
+
 	Tbl->Cells[0][i  ]="Antenna Serial No";
 	Tbl->Cells[1][i++]=rtcm.sta.antsno;
-	
+
 	Tbl->Cells[0][i  ]="Receiver Type Descriptor";
 	Tbl->Cells[1][i++]=rtcm.sta.rectype;
-	
+
 	Tbl->Cells[0][i  ]="Receiver Firmware Version";
 	Tbl->Cells[1][i++]=rtcm.sta.recver;
-	
+
 	Tbl->Cells[0][i  ]="Receiver Serial No";
 	Tbl->Cells[1][i++]=rtcm.sta.recsno;
-	
+
 	Tbl->Cells[0][i  ]="RTCM Special Message";
 	Tbl->Cells[1][i++]=rtcm.msg;
-	
+
 	Tbl->Cells[0][i  ]="Last Message";
 	Tbl->Cells[1][i++]=rtcm.msgtype;
-	
+
 	Tbl->Cells[0][i  ]="# of RTCM Messages";
 	Tbl->Cells[1][i++]=format==STRFMT_RTCM2?mstr1:mstr2;
-	
+
 	Tbl->Cells[0][i  ]="MSM Signals for GPS";
 	Tbl->Cells[1][i++]=rtcm.msmtype[0];
-	
+
 	Tbl->Cells[0][i  ]="MSM Signals for GLONASS";
 	Tbl->Cells[1][i++]=rtcm.msmtype[1];
-	
+
 	Tbl->Cells[0][i  ]="MSM Signals for Galileo";
 	Tbl->Cells[1][i++]=rtcm.msmtype[2];
-	
+
 	Tbl->Cells[0][i  ]="MSM Signals for QZSS";
 	Tbl->Cells[1][i++]=rtcm.msmtype[3];
-	
+
 	Tbl->Cells[0][i  ]="MSM Signals for SBAS";
 	Tbl->Cells[1][i++]=rtcm.msmtype[4];
-	
+
 	Tbl->Cells[0][i  ]="MSM Signals for BeiDou";
 	Tbl->Cells[1][i++]=rtcm.msmtype[5];
+}
+
+//---------------------------------------------------------------------------
+void __fastcall TMonitorDialog::ShowRaw(void)
+{
+	AnsiString s;
+	raw_t raw;
+	double pos[3]={0};
+	int i=1,j,format;
+        unsigned int nmsg1[8],nmsg2[8];
+	char msg[128],tstr[64]="-",mstr1[1024]="",mstr2[1024]="",*p1=mstr1,*p2=mstr2;
+
+	if (SelStr->ItemIndex>3) return;
+
+	rtksvrlock(&rtksvr);
+
+	format=rtksvr.format[SelStr->ItemIndex];
+	raw=rtksvr.raw[SelStr->ItemIndex];
+
+        if ((format==STRFMT_CMR) && raw.rcv_data)
+        {
+                message_cmr(&raw, sizeof(msg), msg);
+
+                message_counts_cmr( &raw,
+                                    sizeof(nmsg1) / sizeof(unsigned int),
+                                    nmsg1,
+                                    sizeof(nmsg2) / sizeof(unsigned int),
+                                    nmsg2 );
+        }
+
+	rtksvrunlock(&rtksvr);
+
+    	Label->Caption="";
+
+	Tbl->RowCount=19;
+
+	Tbl->Cells[0][i  ]="Format";
+	Tbl->Cells[1][i++]=formatstrs[format];
+
+ 	if (raw.time.time) time2str(raw.time,tstr,3);
+
+	Tbl->Cells[0][i  ]="Message Time";
+	Tbl->Cells[1][i++]=tstr;
+
+	Tbl->Cells[0][i  ]="Station ID";
+	Tbl->Cells[1][i++]=s.sprintf("%d",raw.staid);
+
+	Tbl->Cells[0][i  ]="Station Pos X/Y/Z (m)";
+	Tbl->Cells[1][i++]=s.sprintf("%.3f,%.3f,%.3f",raw.sta.pos[0],raw.sta.pos[1],raw.sta.pos[2]);
+
+	if (norm(raw.sta.pos,3)>0.0) ecef2pos(raw.sta.pos,pos);
+	Tbl->Cells[0][i  ]="Station Lat/Lon/Height (deg,m)";
+	Tbl->Cells[1][i++]=s.sprintf("%.8f,%.8f,%.3f",pos[0]*R2D,pos[1]*R2D,pos[2]);
+
+	Tbl->Cells[0][i  ]="ITRF Realization Year";
+	Tbl->Cells[1][i++]=s.sprintf("%d",raw.sta.itrf);
+
+	Tbl->Cells[0][i  ]="Antenna Delta Type";
+	Tbl->Cells[1][i++]=raw.sta.deltype?"X/Y/Z":"E/N/U";
+
+	Tbl->Cells[0][i  ]="Antenna Delta (m)";
+	Tbl->Cells[1][i++]=s.sprintf("%.3f,%.3f,%.3f",raw.sta.del[0],raw.sta.del[1],raw.sta.del[2]);
+
+	Tbl->Cells[0][i  ]="Antenna Height (m)";
+	Tbl->Cells[1][i++]=s.sprintf("%.3f",raw.sta.hgt);
+
+	Tbl->Cells[0][i  ]="Antenna Descriptor";
+	Tbl->Cells[1][i++]=raw.sta.antdes;
+
+	Tbl->Cells[0][i  ]="Antenna Setup Id";
+	Tbl->Cells[1][i++]=s.sprintf("%d",raw.sta.antsetup);
+
+	Tbl->Cells[0][i  ]="Antenna Serial No";
+	Tbl->Cells[1][i++]=raw.sta.antsno;
+
+	Tbl->Cells[0][i  ]="Receiver Type Descriptor";
+	Tbl->Cells[1][i++]=raw.sta.rectype;
+
+	Tbl->Cells[0][i  ]="Receiver Firmware Version";
+	Tbl->Cells[1][i++]=raw.sta.recver;
+
+	Tbl->Cells[0][i  ]="Receiver Serial No";
+	Tbl->Cells[1][i++]=raw.sta.recsno;
+
+	Tbl->Cells[0][i  ]="Last Message";
+	Tbl->Cells[1][i++]=raw.msgtype;
+
+        switch (format)
+        {
+        case STRFMT_CMR:
+                for (j = 0; j < (int) ((sizeof(nmsg1) / sizeof(unsigned int))); j++)
+			if (nmsg1[j] > 0)
+        			p1+=sprintf(p1,"%s%d(%d)",p1>mstr1?", ":"CMR: ",j,nmsg1[j]);
+
+		for (j = 0; j < (int) ((sizeof(nmsg2) / sizeof(unsigned int))); j++)
+			if (nmsg2[j] > 0)
+        			p2+=sprintf(p2,"%s%d(%d)",p2>mstr2?", ":"CMR+: ",j,nmsg2[j]);
+
+		if (strlen(mstr2)) strcat(mstr1,", ");
+		strcat(mstr1,mstr2);
+                break;
+        default:
+                strcpy(msg,"N/A");
+                strcpy(mstr1,"N/A");
+        }
+
+        Tbl->Cells[0][i  ]="Messages Type(Count)";
+        Tbl->Cells[1][i++]=mstr1;
+
+        Tbl->Cells[0][i  ]="Receiver Status Message";
+        Tbl->Cells[1][i++]=msg;
 }
 //---------------------------------------------------------------------------
 void __fastcall TMonitorDialog::SetRtcmDgps(void)
@@ -1807,7 +1933,7 @@ void __fastcall TMonitorDialog::SetRtcmDgps(void)
 		"SAT","Status","PRC (m)","RRC (m)","IOD","UDRE","T0"
 	};
 	int i,width[]={25,30,60,60,30,30,115};
-	
+
 	Tbl->ColCount=7;
 	Tbl->RowCount=2;
 	for (i=0;i<Tbl->ColCount;i++) {
@@ -1832,7 +1958,7 @@ void __fastcall TMonitorDialog::ShowRtcmDgps(void)
 	
 	Label->Caption="";
 	Tbl->RowCount=MAXSAT+1;
-	
+
 	for (i=0;i<Tbl->RowCount;i++) {
 		j=0;
 		satno2id(i+1,id);
@@ -1980,7 +2106,7 @@ void __fastcall TMonitorDialog::ShowLexMsg(void)
 	
 	Tbl->Cells[0][i  ]="Message Type";
 	Tbl->Cells[1][i++]=s.sprintf("%d",raw.lexmsg.type);
-	
+
 	Tbl->Cells[0][i  ]="Alert Flag";
 	Tbl->Cells[1][i++]=s.sprintf("%d",raw.lexmsg.alert);
 	
@@ -2054,7 +2180,7 @@ void __fastcall TMonitorDialog::ShowLexEph(void)
 			p+=sprintf(p,"%d",(lexeph[i].health>>(4-k))&1);
 		}
 		Tbl->Cells[j++][n]=health;
-		
+
 		if (lexeph[i].toe.time==0) sprintf(tstr,"-");
 		else time2str(lexeph[i].toe,tstr,0);
 		Tbl->Cells[j++][n]=tstr;
@@ -2126,7 +2252,7 @@ void __fastcall TMonitorDialog::ShowLexIon(void)
 	
 	Tbl->Cells[0][i  ]="0-0 Degree Coefficient E00 (m)";
 	Tbl->Cells[1][i++]=s.sprintf("%.3f",lexion.coef[0][0]);
-	
+
 	Tbl->Cells[0][i  ]="1-1 Degree Coefficient E10 (m/rad)";
 	Tbl->Cells[1][i++]=s.sprintf("%.3f",lexion.coef[1][0]);
 	
