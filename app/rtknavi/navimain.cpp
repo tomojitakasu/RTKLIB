@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------------
 // rtknavi : real-time positioning ap
 //
-//          Copyright (C) 2007-2014 by T.TAKASU, All rights reserved.
+//          Copyright (C) 2007-2016 by T.TAKASU, All rights reserved.
 //
 // options : rtknavi [-t title][-i file]
 //
@@ -111,7 +111,7 @@ __fastcall TMainForm::TMainForm(TComponent* Owner)
     SvrCycle=SvrBuffSize=0;
     SolBuffSize=1000;
     for (int i=0;i<8;i++) {
-        StreamC[i]=Stream[i]=Format[i]=CmdEna[i][0]=CmdEna[i][1]=0;
+        StreamC[i]=Stream[i]=Format[i]=CmdEna[i][0]=CmdEna[i][1]=CmdEna[i][2]=0;
     }
     TimeSys=SolType=PlotType1=PlotType2=FreqType1=FreqType2=0;
     TrkType1=TrkType2=0;
@@ -618,7 +618,7 @@ void __fastcall TMainForm::BtnInputStrClick(TObject *Sender)
         /* Paths[0]:serial,[1]:tcp,[2]:file,[3]:ftp */
         for (j=0;j<4;j++) InputStrDialog->Paths[i][j]=Paths[i][j];
     }
-    for (i=0;i<3;i++) for (j=0;j<2;j++) {
+    for (i=0;i<3;i++) for (j=0;j<3;j++) {
         InputStrDialog->CmdEna   [i][j]=CmdEna   [i][j];
         InputStrDialog->Cmds     [i][j]=Cmds     [i][j];
         InputStrDialog->CmdEnaTcp[i][j]=CmdEnaTcp[i][j];
@@ -645,7 +645,7 @@ void __fastcall TMainForm::BtnInputStrClick(TObject *Sender)
         RcvOpt [i]=InputStrDialog->RcvOpt[i];
         for (j=0;j<4;j++) Paths[i][j]=InputStrDialog->Paths[i][j];
     }
-    for (i=0;i<3;i++) for (j=0;j<2;j++) {
+    for (i=0;i<3;i++) for (j=0;j<3;j++) {
         CmdEna   [i][j]=InputStrDialog->CmdEna   [i][j];
         Cmds     [i][j]=InputStrDialog->Cmds     [i][j];
         CmdEnaTcp[i][j]=InputStrDialog->CmdEnaTcp[i][j];
@@ -1117,7 +1117,8 @@ void __fastcall TMainForm::SvrStart(void)
         STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPSVR,STR_NTRIPC_C,STR_FILE
     };
     int i,strs[MAXSTRRTK]={0},sat,ex,stropt[8]={0};
-    char *paths[8],*cmds[3]={0},*rcvopts[3]={0},buff[1024],*p;
+    char *paths[8],*cmds[3]={0},*cmds_periodic[3]={0},*rcvopts[3]={0};
+    char buff[1024],*p;
     char file[1024],*type,errmsg[20148];
     FILE *fp;
     gtime_t time=timeget();
@@ -1230,10 +1231,12 @@ void __fastcall TMainForm::SvrStart(void)
     for (i=0;i<3;i++) {
         if (strs[i]==STR_SERIAL) {
             if (CmdEna[i][0]) cmds[i]=Cmds[i][0].c_str();
+            if (CmdEna[i][2]) cmds_periodic[i]=Cmds[i][2].c_str();
         }
         else if (strs[i]==STR_TCPCLI||strs[i]==STR_TCPSVR||
                  strs[i]==STR_NTRIPCLI) {
             if (CmdEnaTcp[i][0]) cmds[i]=CmdsTcp[i][0].c_str();
+            if (CmdEnaTcp[i][2]) cmds_periodic[i]=CmdsTcp[i][2].c_str();
         }
         rcvopts[i]=RcvOpt[i].c_str();
     }
@@ -1275,8 +1278,8 @@ void __fastcall TMainForm::SvrStart(void)
     
     // start rtk server
     if (!rtksvrstart(&rtksvr,SvrCycle,SvrBuffSize,strs,paths,Format,NavSelect,
-                     cmds,rcvopts,NmeaCycle,NmeaReq,nmeapos,&PrcOpt,solopt,
-                     &monistr,errmsg)) {
+                     cmds,cmds_periodic,rcvopts,NmeaCycle,NmeaReq,nmeapos,
+                     &PrcOpt,solopt,&monistr,errmsg)) {
         trace(2,"rtksvrstart error %s\n",errmsg);
         traceclose();
         return;
@@ -2421,14 +2424,14 @@ void __fastcall TMainForm::LoadOpt(void)
     for (i=0;i<3;i++) {
         RcvOpt [i]=ini->ReadString("stream",s.sprintf("rcvopt%d",i+1),"");
     }
-    for (i=0;i<3;i++) for (j=0;j<2;j++) {
+    for (i=0;i<3;i++) for (j=0;j<3;j++) {
         Cmds[i][j]=ini->ReadString("serial",s.sprintf("cmd_%d_%d",i,j),"");
         CmdEna[i][j]=ini->ReadInteger("serial",s.sprintf("cmdena_%d_%d",i,j),0);
         for (p=Cmds[i][j].c_str();*p;p++) {
             if ((p=strstr(p,"@@"))) strncpy(p,"\r\n",2); else break;
         }
     }
-    for (i=0;i<3;i++) for (j=0;j<2;j++) {
+    for (i=0;i<3;i++) for (j=0;j<3;j++) {
         CmdsTcp[i][j]=ini->ReadString("tcpip",s.sprintf("cmd_%d_%d",i,j),"");
         CmdEnaTcp[i][j]=ini->ReadInteger("tcpip",s.sprintf("cmdena_%d_%d",i,j),0);
         for (p=CmdsTcp[i][j].c_str();*p;p++) {
@@ -2662,14 +2665,14 @@ void __fastcall TMainForm::SaveOpt(void)
     for (i=0;i<3;i++) {
         ini->WriteString("stream",s.sprintf("rcvopt%d",i+1),RcvOpt[i]);
     }
-    for (i=0;i<3;i++) for (j=0;j<2;j++) {
+    for (i=0;i<3;i++) for (j=0;j<3;j++) {
         for (p=Cmds[i][j].c_str();*p;p++) {
             if ((p=strstr(p,"\r\n"))) strncpy(p,"@@",2); else break;
         }
         ini->WriteString ("serial",s.sprintf("cmd_%d_%d"   ,i,j),Cmds  [i][j]);
         ini->WriteInteger("serial",s.sprintf("cmdena_%d_%d",i,j),CmdEna[i][j]);
     }
-    for (i=0;i<3;i++) for (j=0;j<2;j++) {
+    for (i=0;i<3;i++) for (j=0;j<3;j++) {
         for (p=CmdsTcp[i][j].c_str();*p;p++) {
             if ((p=strstr(p,"\r\n"))) strncpy(p,"@@",2); else break;
         }

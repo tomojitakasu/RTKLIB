@@ -35,7 +35,6 @@ static const char rcsid[]="$Id:$";
 
 #define PRGNAME     "str2str"          /* program name */
 #define MAXSTR      5                  /* max number of streams */
-#define MAXRCVCMD   4096               /* max length of receiver command */
 #define TRFILE      "str2str.trace"    /* trace file */
 
 /* global variables ----------------------------------------------------------*/
@@ -206,7 +205,7 @@ static void readcmd(const char *file, char *cmd, int type)
     if (!(fp=fopen(file,"r"))) return;
     
     while (fgets(buff,sizeof(buff),fp)) {
-        if (*buff=='@') i=1;
+        if (*buff=='@') i++;
         else if (i==type&&p+strlen(buff)+1<cmd+MAXRCVCMD) {
             p+=sprintf(p,"%s",buff);
         }
@@ -217,11 +216,12 @@ static void readcmd(const char *file, char *cmd, int type)
 int main(int argc, char **argv)
 {
     static char cmd_strs[MAXSTR][MAXRCVCMD]={"","","","",""};
+    static char cmd_periodic_strs[MAXSTR][MAXRCVCMD]={"","","","",""};
     const char ss[]={'E','-','W','C','C'};
     strconv_t *conv[MAXSTR]={NULL};
     double pos[3],stapos[3]={0},stadel[3]={0};
     char *paths[MAXSTR],s[MAXSTR][MAXSTRPATH]={{0}};
-    char *cmdfile[MAXSTR]={"","","","",""},*cmds[MAXSTR];
+    char *cmdfile[MAXSTR]={"","","","",""},*cmds[MAXSTR],*cmds_periodic[MAXSTR];
     char *local="",*proxy="",*msg="1004,1019",*opt="",buff[256],*p;
     char strmsg[MAXSTRMSG]="",*antinfo="",*rcvinfo="";
     char *ant[]={"","",""},*rcv[]={"","",""},*logfile="";
@@ -232,6 +232,7 @@ int main(int argc, char **argv)
     for (i=0;i<MAXSTR;i++) {
         paths[i]=s[i];
         cmds[i]=cmd_strs[i];
+        cmds_periodic[i]=cmd_periodic_strs[i];
     }
     for (i=1;i<argc;i++) {
         if (!strcmp(argv[i],"-in")&&i+1<argc) {
@@ -327,9 +328,10 @@ int main(int argc, char **argv)
     
     for (i=0;i<MAXSTR;i++) {
         if (*cmdfile[i]) readcmd(cmdfile[i],cmds[i],0);
+        if (*cmdfile[i]) readcmd(cmdfile[i],cmds_periodic[i],2);
     }
     /* start stream server */
-    if (!strsvrstart(&strsvr,opts,types,paths,conv,cmds,stapos)) {
+    if (!strsvrstart(&strsvr,opts,types,paths,conv,cmds,cmds_periodic,stapos)) {
         fprintf(stderr,"stream server start error\n");
         return -1;
     }

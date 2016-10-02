@@ -33,6 +33,7 @@
 *           2016/08/20  1.15 support api change of sendnmea()
 *           2016/09/18  1.16 fix server-crash with server-cycle > 1000
 *           2016/09/20  1.17 change api rtksvrstart()
+*           2016/10/01  1.18 change api rtksvrstart()
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -433,6 +434,29 @@ static void corr_phase_bias(obsd_t *obs, int n, const nav_t *nav)
         obs[i].L[j]-=nav->ssr[obs[i].sat-1].pbias[code-1]/lam;
     }
 }
+/* periodic command ----------------------------------------------------------*/
+static void periodic_cmd(int cycle, const char *cmd, stream_t *stream)
+{
+    const char *p=cmd,*q;
+    char msg[1024],*r;
+    int n,period;
+    
+    for (p=cmd;;p=q+1) {
+        for (q=p;;q++) if (*q=='\r'||*q=='\n'||*q=='\0') break;
+        n=(int)(q-p); strncpy(msg,p,n); msg[n]='\0';
+        
+        period=0;
+        if ((r=strrchr(msg,'#'))) {
+            sscanf(r,"# %d",&period);
+            *r='\0';
+        }
+        if (period<=0) period=1000;
+        if (*msg&&cycle%period==0) {
+            strsendcmd(stream,msg);
+        }
+        if (!*q) break;
+    }
+}
 /* rtk server thread ---------------------------------------------------------*/
 #ifdef WIN32
 static DWORD WINAPI rtksvrthread(void *arg)
@@ -538,6 +562,10 @@ static void *rtksvrthread(void *arg)
             writesol(svr,0);
             tick1hz=tick;
         }
+        /* write periodic command to input stream */
+        for (i=0;i<3;i++) {
+            periodic_cmd(cycle*svr->cycle,svr->cmds_periodic[i],svr->stream+i);
+        }
         /* send nmea request to base/nrtk input stream */
         if (svr->nmeacycle>0&&(int)(tick-ticknmea)>=svr->nmeacycle) {
             if (svr->stream[1].state==1) {
@@ -636,6 +664,7 @@ extern int rtksvrinit(rtksvr_t *svr)
     }
     for (i=0;i<MAXSTRRTK;i++) strinit(svr->stream+i);
     
+    for (i=0;i<3;i++) *svr->cmds_periodic[i]='\0';
     initlock(&svr->lock);
     
     return 1;
@@ -689,6 +718,10 @@ extern void rtksvrunlock(rtksvr_t *svr) {unlock(&svr->lock);}
 *                              cmds[0]=input stream rover (NULL: no command)
 *                              cmds[1]=input stream base (NULL: no command)
 *                              cmds[2]=input stream corr (NULL: no command)
+*          char    **cmds_periodic I input stream periodic commands
+*                              cmds[0]=input stream rover (NULL: no command)
+*                              cmds[1]=input stream base (NULL: no command)
+*                              cmds[2]=input stream corr (NULL: no command)
 *          char    **rcvopts I receiver options
 *                              rcvopt[0]=receiver option rover
 *                              rcvopt[1]=receiver option base
@@ -706,8 +739,8 @@ extern void rtksvrunlock(rtksvr_t *svr) {unlock(&svr->lock);}
 *-----------------------------------------------------------------------------*/
 extern int rtksvrstart(rtksvr_t *svr, int cycle, int buffsize, int *strs,
                        char **paths, int *formats, int navsel, char **cmds,
-                       char **rcvopts, int nmeacycle, int nmeareq,
-                       const double *nmeapos, prcopt_t *prcopt,
+                       char **cmds_periodic, char **rcvopts, int nmeacycle,
+                       int nmeareq, const double *nmeapos, prcopt_t *prcopt,
                        solopt_t *solopt, stream_t *moni, char *errmsg)
 {
     gtime_t time,time0={0};
@@ -748,6 +781,7 @@ extern int rtksvrstart(rtksvr_t *svr, int cycle, int buffsize, int *strs,
         }
         for (j=0;j<10;j++) svr->nmsg[i][j]=0;
         for (j=0;j<MAXOBSBUF;j++) svr->obs[i][j].n=0;
+        strcpy(svr->cmds_periodic[i],!cmds_periodic[i]?"":cmds_periodic[i]);
         
         /* initialize receiver raw and rtcm control */
         init_raw(svr->raw+i,formats[i]);

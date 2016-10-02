@@ -33,18 +33,20 @@ void __fastcall TVideoOptDlg::FormShow(TObject *Sender)
             SelDev->ItemIndex = i;
         }
     }
+    UpdateProf();
+    
     UnicodeString str;
     SelProf      ->ItemIndex = MainForm->Profile;
-    ChkCapSize   ->IsChecked = MainForm->CapSizeEna;
-    EditCapWidth ->Text      = str.sprintf(L"%d", MainForm->CapWidth);
-    EditCapHeight->Text      = str.sprintf(L"%d", MainForm->CapHeight);
+    SelCapPos    ->ItemIndex = MainForm->CaptionPos;
+    EditCapSize  ->Text      = str.sprintf(L"%d", MainForm->CaptionSize);
+    SelCapColor  ->Color     = MainForm->CaptionColor;
+    EditCodecQuality->Text   = str.sprintf(L"%d", MainForm->CodecQuality);
     ChkTcpPort   ->IsChecked = MainForm->TcpPortEna;
     EditTcpPort  ->Text      = str.sprintf(L"%d", MainForm->TcpPortNo);
     ChkOutFile   ->IsChecked = MainForm->OutFileEna;
     EditFile     ->Text      = MainForm->OutFile;
     ChkTimeTag   ->IsChecked = MainForm->OutTimeTag;
     SelFileSwap  ->ItemIndex = MainForm->FileSwap;
-    UpdateProf();
     UpdateEnable();
 }
 //---------------------------------------------------------------------------
@@ -56,16 +58,17 @@ void __fastcall TVideoOptDlg::BtnOkClick(TObject *Sender)
     else {
         MainForm->DevName = L"";
     }
-    MainForm->Profile    = SelProf      ->ItemIndex;
-    MainForm->CapSizeEna = ChkCapSize   ->IsChecked;
-    MainForm->CapWidth   = EditCapWidth ->Text.ToInt();
-    MainForm->CapHeight  = EditCapHeight->Text.ToInt();
-    MainForm->TcpPortEna = ChkTcpPort   ->IsChecked;
-    MainForm->TcpPortNo  = EditTcpPort  ->Text.ToInt();
-    MainForm->OutFileEna = ChkOutFile   ->IsChecked;
-    MainForm->OutFile    = EditFile     ->Text;
-    MainForm->OutTimeTag = ChkTimeTag   ->IsChecked;
-    MainForm->FileSwap   = SelFileSwap  ->ItemIndex;
+    MainForm->Profile      = SelProf    ->ItemIndex;
+    MainForm->CaptionPos   = SelCapPos  ->ItemIndex;
+    MainForm->CaptionSize  = EditCapSize->Text.ToInt();
+    MainForm->CaptionColor = SelCapColor->Color;
+    MainForm->CodecQuality = EditCodecQuality->Text.ToInt();
+    MainForm->TcpPortEna   = ChkTcpPort ->IsChecked;
+    MainForm->TcpPortNo    = EditTcpPort->Text.ToInt();
+    MainForm->OutFileEna   = ChkOutFile ->IsChecked;
+    MainForm->OutFile      = EditFile   ->Text;
+    MainForm->OutTimeTag   = ChkTimeTag ->IsChecked;
+    MainForm->FileSwap     = SelFileSwap->ItemIndex;
 }
 //---------------------------------------------------------------------------
 void __fastcall TVideoOptDlg::BtnFileClick(TObject *Sender)
@@ -81,6 +84,11 @@ void __fastcall TVideoOptDlg::SelDevChange(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 void __fastcall TVideoOptDlg::ChkTcpPortChange(TObject *Sender)
+{
+    UpdateEnable();
+}
+//---------------------------------------------------------------------------
+void __fastcall TVideoOptDlg::SelCapPosChange(TObject *Sender)
 {
     UpdateEnable();
 }
@@ -102,20 +110,23 @@ void __fastcall TVideoOptDlg::UpdateProf(void)
     
     for (int i = 0; i < settings.Length; i++) {
         UnicodeString str;
-        str.sprintf(L"%d x %d, FPS=%.0f (%.0f-%.0f)", settings[i].Width,
+        str.sprintf(L"%d x %d, %2.0f FPS (%.0f-%.0f FPS)", settings[i].Width,
                     settings[i].Height, settings[i].FrameRate,
                     settings[i].MinFrameRate, settings[i].MaxFrameRate);
         SelProf->Items->Add(str);
+    }
+    if (settings.Length > 0) {
+        SelProf->ItemIndex = 0;
     }
 }
 //---------------------------------------------------------------------------
 void __fastcall TVideoOptDlg::UpdateEnable(void)
 {
-    EditCapWidth ->Enabled = ChkCapSize->IsChecked;
-    EditCapHeight->Enabled = ChkCapSize->IsChecked;
-    Label6       ->Enabled = ChkCapSize->IsChecked;
     EditTcpPort  ->Enabled = ChkTcpPort->IsChecked;
     EditFile     ->Enabled = ChkOutFile->IsChecked;
+    Label8       ->Enabled = SelCapPos->ItemIndex != 0;
+    EditCapSize  ->Enabled = SelCapPos->ItemIndex != 0;
+    SelCapColor  ->Enabled = SelCapPos->ItemIndex != 0;
     BtnFile      ->Enabled = ChkOutFile->IsChecked;
     ChkTimeTag   ->Enabled = ChkOutFile->IsChecked;
     SelFileSwap  ->Enabled = ChkOutFile->IsChecked;

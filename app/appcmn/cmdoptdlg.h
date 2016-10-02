@@ -21,6 +21,8 @@ __published:
 	TButton *BtnSave;
 	TSaveDialog *SaveDialog;
 	TOpenDialog *OpenDialog;
+	TCheckBox *ChkPeriodicCmd;
+	TMemo *PeriodicCmd;
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall BtnOkClick(TObject *Sender);
 	void __fastcall ChkCloseCmdClick(TObject *Sender);
@@ -30,8 +32,8 @@ __published:
 	void __fastcall BtnSaveClick(TObject *Sender);
 private:
 public:
-	AnsiString Cmds[2];
-	int CmdEna[2];
+	AnsiString Cmds[3];
+	int CmdEna[3];
 	__fastcall TCmdOptDialog(TComponent* Owner);
 };
 //---------------------------------------------------------------------------

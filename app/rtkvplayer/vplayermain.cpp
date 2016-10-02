@@ -44,8 +44,8 @@ void __fastcall TMainForm::FormShow(TObject *Sender)
         Fmx::Platform::Win::WindowHandleToPlatform(Handle);
     ::DragAcceptFiles(handle->Wnd, true);
     
-    Caption=PRGNAME;
-    Caption=Caption+" ver."+VER_RTKLIB+" "+PATCH_LEVEL;
+    Caption = PRGNAME;
+    Caption = Caption+" ver."+VER_RTKLIB+" "+PATCH_LEVEL;
 }
 //---------------------------------------------------------------------------
 void __fastcall TMainForm::FormClose(TObject *Sender, TCloseAction &Action)
@@ -166,6 +166,7 @@ void __fastcall TMainForm::OpenVideo(UnicodeString file)
         VideoType = VIDEO_TYPE_MEDIA;
     }
     FileName = file;
+    SetVideoPos(0.0f);
 }
 //---------------------------------------------------------------------------
 void __fastcall TMainForm::ClearVideo(void)
