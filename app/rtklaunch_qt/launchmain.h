@@ -29,6 +29,7 @@ public slots:
     void BtnNtripClick();
     void BtnNaviClick();
     void BtnGetClick();
+    void BtnVideoClick();
     void BtnTrayClick();
     void BtnOptionClick();
     void TrayIconActivated(QSystemTrayIcon::ActivationReason);

@@ -18,6 +18,7 @@
 #include <QShowEvent>
 #include <QCommandLineParser>
 #include <QProcess>
+#include <QMenu>
 
 #include "rtklib.h"
 #include "launchmain.h"
@@ -26,7 +27,7 @@
 //---------------------------------------------------------------------------
 
 #define BTN_SIZE        42
-#define BTN_COUNT       7
+#define BTN_COUNT       8
 #define MAX(x, y)        ((x) > (y) ? (x) : (y))
 
 MainForm *mainForm;
@@ -52,8 +53,9 @@ MainForm::MainForm(QWidget *parent)
     QCoreApplication::setApplicationVersion("1.0");
 
     QSettings settings(IniFile, QSettings::IniFormat);
-    Option =  settings.value("pos/option",0).toInt();
-    Minimize =  settings.value("pos/minimize",0).toInt();
+    Option =  settings.value("pos/option", 0).toInt();
+    Minimize =  settings.value("pos/minimize", 1).toInt();
+    BtnRtklib->setStatusTip("RTKLIB v." VER_RTKLIB " " PATCH_LEVEL);
 
     QCommandLineParser parser;
     parser.setApplicationDescription("rtklib application launcher Qt");
@@ -105,6 +107,21 @@ MainForm::MainForm(QWidget *parent)
     TrayIcon.setIcon(QIcon(":/icons/rtk9.bmp"));
     TrayIcon.setToolTip(windowTitle());
 
+    QMenu *Popup = new QMenu();
+    Popup->addAction(tr("&Expand"), this, SLOT(MenuExpandClick()));
+    Popup->addSeparator();
+    Popup->addAction(actionRtkConv);
+    Popup->addAction(actionRtkGet);
+    Popup->addAction(actionRtkNavi);
+    Popup->addAction(actionRtkNtrip);
+    Popup->addAction(actionRtkPlot);
+    Popup->addAction(actionRtkPost);
+    Popup->addAction(actionRtkStr);
+    Popup->addAction(actionRtkVideo);
+    Popup->addSeparator();
+    Popup->addAction(tr("E&xit"),this,SLOT(accept()));
+    BtnRtklib->setMenu(Popup);
+
     connect(BtnPlot, SIGNAL(clicked(bool)), this, SLOT(BtnPlotClick()));
     connect(BtnConv, SIGNAL(clicked(bool)), this, SLOT(BtnConvClick()));
     connect(BtnStr, SIGNAL(clicked(bool)), this, SLOT(BtnStrClick()));
@@ -113,8 +130,19 @@ MainForm::MainForm(QWidget *parent)
     connect(BtnNavi, SIGNAL(clicked(bool)), this, SLOT(BtnNaviClick()));
     connect(BtnTray, SIGNAL(clicked(bool)), this, SLOT(BtnTrayClick()));
     connect(BtnGet, SIGNAL(clicked(bool)), this, SLOT(BtnGetClick()));
+    connect(BtnVideo, SIGNAL(clicked(bool)), this, SLOT(BtnVideoClick()));
     connect(BtnOption, SIGNAL(clicked(bool)), this, SLOT(BtnOptionClick()));
     connect(&TrayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(TrayIconActivated(QSystemTrayIcon::ActivationReason)));
+    connect(BtnExit, SIGNAL(clicked(bool)), this, SLOT(accept()));
+
+    connect(actionRtkConv, SIGNAL(triggered(bool)), this, SLOT(BtnConvClick()));
+    connect(actionRtkGet, SIGNAL(triggered(bool)), this, SLOT(BtnGetClick()));
+    connect(actionRtkNavi, SIGNAL(triggered(bool)), this, SLOT(BtnNaviClick()));
+    connect(actionRtkNtrip, SIGNAL(triggered(bool)), this, SLOT(BtnNtripClick()));
+    connect(actionRtkPlot, SIGNAL(triggered(bool)), this, SLOT(BtnPlotClick()));
+    connect(actionRtkPost, SIGNAL(triggered(bool)), this, SLOT(BtnPostClick()));
+    connect(actionRtkStr, SIGNAL(triggered(bool)), this, SLOT(BtnStrClick()));
+    connect(actionRtkVideo, SIGNAL(triggered(bool)), this, SLOT(BtnVideoClick()));
 
     UpdatePanel();
 }
@@ -195,6 +223,13 @@ void MainForm::BtnGetClick()
     if (!ExecCmd(cmd1 + opts)) ExecCmd(cmd2 + opts);
 }
 //---------------------------------------------------------------------------
+void MainForm::BtnVideoClick()
+{
+    QString cmd1 = "rtkvideo", cmd2 = "..\\..\\..\\bin\\rtkvideo", opts = "";
+
+    if (!ExecCmd(cmd1 + opts)) ExecCmd(cmd2 + opts);
+}
+//---------------------------------------------------------------------------
 int MainForm::ExecCmd(const QString &cmd)
 {
     return QProcess::startDetached(cmd);
@@ -240,4 +275,3 @@ void MainForm::BtnOptionClick()
 //    if (launchOptDialog->result()!=QDialog::Accepted) return;
     UpdatePanel();
 }
-//---------------------------------------------------------------------------

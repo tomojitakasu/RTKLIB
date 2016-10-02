@@ -553,6 +553,7 @@ void MainWindow::BtnInputStrClick()
     inputStrDialog->TimeStart = InTimeStart;
     inputStrDialog->NmeaPos[0] = NmeaPos[0];
     inputStrDialog->NmeaPos[1] = NmeaPos[1];
+    inputStrDialog->NmeaPos[2] = NmeaPos[2];
 
     inputStrDialog->exec();
 
@@ -581,6 +582,7 @@ void MainWindow::BtnInputStrClick()
     InTimeStart = inputStrDialog->TimeStart;
     NmeaPos[0] = inputStrDialog->NmeaPos[0];
     NmeaPos[1] = inputStrDialog->NmeaPos[1];
+    NmeaPos[2] = inputStrDialog->NmeaPos[2];
 }
 // confirm overwrite --------------------------------------------------------
 int MainWindow::ConfOverwrite(const QString &path)
@@ -1171,7 +1173,7 @@ void MainWindow::SvrStart(void)
     NmeaCycle = NmeaCycle < 1000 ? 1000 : NmeaCycle;
     pos[0] = NmeaPos[0] * D2R;
     pos[1] = NmeaPos[1] * D2R;
-    pos[2] = 0.0;
+    pos[2] = NmeaPos[2];
     pos2ecef(pos, nmeapos);
 
     strsetdir(qPrintable(LocalDirectory));
@@ -1523,7 +1525,7 @@ void MainWindow::UpdatePos(void)
         s[5] = QString("%1 m").arg(len, 0, 'f', 3);
         s[6] = QString(tr("N:%1 E:%2 U:%3 m")).arg(SQRT(Qe[4]), 6, 'f', 3).arg(SQRT(Qe[0]), 6, 'f', 3).arg(SQRT(Qe[8]), 6, 'f', 3);
     }
-    s[7] = QString(tr("Age:%1 s Ratio:%2 # Sat:%3")).arg(Age[PSol], 4, 'f', 1).arg(Ratio[PSol], 4, 'f', 1).arg(Nvsat[PSol], 2);
+    s[7] = QString(tr("Age:%1 s Ratio:%2 #Sat:%3")).arg(Age[PSol], 4, 'f', 1).arg(Ratio[PSol], 4, 'f', 1).arg(Nvsat[PSol], 2);
     if (Ratio[PSol] > 0.0) s[8] = QString(" R:%1").arg(Ratio[PSol], 4, 'f', 1);
 
     for (i = 0; i < 8; i++) label[i]->setText(s[i]);
@@ -1847,7 +1849,7 @@ void MainWindow::DrawSat(QPainter *c, int w, int h, int x0, int y0,
         DrawText(c, x[i], y[i], s = id, color_text, 1);
     }
     dops(ns, azel, 0.0, dop);
-    DrawText(c, x0 + 3, y0 + h - 15, QString(tr("# Sat: %1/%2")).arg(ns).arg(Nsat[index], 2), Qt::gray, 0);
+    DrawText(c, x0 + 3, y0 + h - 15, QString(tr("# Sat: %1/%2")).arg(ns,2).arg(Nsat[index], 2), Qt::gray, 0);
     DrawText(c, x0 + w - 3, y0 + h - 15, QString(tr("GDOP: %1")).arg(dop[0], 0, 'f', 1), Qt::gray, 2);
 }
 // draw baseline plot -------------------------------------------------------
@@ -1932,7 +1934,7 @@ void MainWindow::DrawBL(QPainter *c, QLabel *disp, int w, int h)
     c->setBrush(col);
     c->drawEllipse(pp.x() - d2 / 2 + 2, pp.y() - d2 / 2 + 2, d2 - 4, d2 - 4);
     c->setBrush(Qt::white);
-    digit = len < 10.0 ? 3 : (len < 100.0 ? 2 : (len < 1000.0 ? 1 : 0));
+    digit = len < 1000.0 ? 3 : (len < 10000.0 ? 2 : (len < 100000.0 ? 1 : 0));
     DrawText(c, p.x(), p.y(), QString("%1 m").arg(len, 0, 'f', digit), Qt::gray, 1);
     DrawText(c, 5, h - 15, QString("Y: %1%2").arg(yaw * R2D, 0, 'f', 1).arg(degreeChar), Qt::gray, 0);
     DrawText(c, w - 3, h - 15, QString("P: %1%2").arg(pitch * R2D, 0, 'f', 1).arg(degreeChar), Qt::gray, 2);
@@ -2481,6 +2483,7 @@ void MainWindow::LoadOpt(void)
     LogSwapInterval = settings.value("setting/logswapinterval", "").toString();
     NmeaPos[0] = settings.value("setting/nmeapos1", 0.0).toDouble();
     NmeaPos[1] = settings.value("setting/nmeapos2", 0.0).toDouble();
+    NmeaPos[2] = settings.value("setting/nmeapos3", 0.0).toDouble();
     FileSwapMargin = settings.value("setting/fswapmargin", 30).toInt();
 
     TimeSys = settings.value("setting/timesys", 0).toInt();
@@ -2685,6 +2688,7 @@ void MainWindow::SaveOpt(void)
     settings.setValue("setting/logswapinterval", LogSwapInterval);
     settings.setValue("setting/nmeapos1", NmeaPos[0]);
     settings.setValue("setting/nmeapos2", NmeaPos[1]);
+    settings.setValue("setting/nmeapos3", NmeaPos[2]);
     settings.setValue("setting/fswapmargin", FileSwapMargin);
 
     settings.setValue("setting/timesys", TimeSys);

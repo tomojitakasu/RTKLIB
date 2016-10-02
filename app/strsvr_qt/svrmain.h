@@ -66,7 +66,7 @@ private:
     QString ProxyAddress,SrcTblFile,LogFile;
     QString ConvMsg[MAXSTR - 1], ConvOpt[MAXSTR - 1], AntType, RcvType;
     int ConvEna[MAXSTR - 1], ConvInp[MAXSTR - 1], ConvOut[3], StaId, StaSel;
-    int TraceLevel, SvrOpt[6], CmdEna[MAXSTR][2], CmdEnaTcp[MAXSTR][2], NmeaReq, FileSwapMargin, RelayBack;
+    int TraceLevel, SvrOpt[6], CmdEna[MAXSTR][2], CmdEnaTcp[MAXSTR][2], NmeaReq, FileSwapMargin, RelayBack, ProgBarRange;
     double AntPos[3], AntOff[3];
     gtime_t StartTime, EndTime;
     QSystemTrayIcon *TrayIcon;

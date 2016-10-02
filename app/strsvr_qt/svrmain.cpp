@@ -50,6 +50,7 @@
 #define CLORANGE    QColor(0x00,0xAA,0xFF)
 
 #define MIN(x,y)    ((x)<(y)?(x):(y))
+#define MAX(x,y)    ((x)>(y)?(x):(y))
 
 strsvr_t strsvr;
 
@@ -239,6 +240,8 @@ void MainForm::BtnOptClick()
     svrOptDialog->TraceLevel = TraceLevel;
     svrOptDialog->NmeaReq = NmeaReq;
     svrOptDialog->FileSwapMargin = FileSwapMargin;
+    svrOptDialog->RelayBack = RelayBack;
+    svrOptDialog->ProgBarRange = ProgBarRange;
     svrOptDialog->StaPosFile = StaPosFile;
     svrOptDialog->ExeDirectory = ExeDirectory;
     svrOptDialog->LocalDirectory = LocalDirectory;
@@ -259,6 +262,8 @@ void MainForm::BtnOptClick()
     TraceLevel = svrOptDialog->TraceLevel;
     NmeaReq = svrOptDialog->NmeaReq;
     FileSwapMargin = svrOptDialog->FileSwapMargin;
+    RelayBack = svrOptDialog->RelayBack;
+    ProgBarRange = svrOptDialog->ProgBarRange;
     StaPosFile = svrOptDialog->StaPosFile;
     ExeDirectory = svrOptDialog->ExeDirectory;
     LocalDirectory = svrOptDialog->LocalDirectory;
@@ -510,7 +515,7 @@ void MainForm::Timer1Timer()
     gtime_t time = utc2gpst(timeget());
     int stat[MAXSTR] = { 0 }, byte[MAXSTR] = { 0 }, bps[MAXSTR] = { 0 };
     char msg[MAXSTRMSG * MAXSTR] = "", s1[256], s2[256];
-    double ctime, t[4];
+    double ctime, t[4], pos;
 
     strsvrstat(&strsvr, stat, byte, bps, msg);
     for (int i = 0; i < MAXSTR; i++) {
@@ -520,7 +525,8 @@ void MainForm::Timer1Timer()
         e1[i]->setText(s1);
         e2[i]->setText(s2);
     }
-    Progress->setValue(!stat[0] ? 0 : MIN(100, (int)(fmod(byte[0] / 500.0, 110.0))));
+    pos = fmod(byte[0] / 1e3 / MAX(ProgBarRange, 1), 1.0) * 110.0;
+    Progress->setValue(!stat[0] ? 0 : MIN((int)pos, 100));
 
     time2str(time, s1, 0);
     Time->setText(QString(tr("%1 GPST")).arg(s1));
@@ -821,6 +827,8 @@ void MainForm::LoadOpt(void)
     TraceLevel = settings.value("set/tracelevel", 0).toInt();
     NmeaReq = settings.value("set/nmeareq", 0).toInt();
     FileSwapMargin = settings.value("set/fswapmargin", 30).toInt();
+    RelayBack = settings.value("set/relayback", 30).toInt();
+    ProgBarRange = settings.value("set/progbarrange", 30).toInt();
     StaId = settings.value("set/staid", 0).toInt();
     StaSel = settings.value("set/stasel", 0).toInt();
     AntType = settings.value("set/anttype", "").toString();
@@ -882,6 +890,8 @@ void MainForm::SaveOpt(void)
     settings.setValue("set/tracelevel", TraceLevel);
     settings.setValue("set/nmeareq", NmeaReq);
     settings.setValue("set/fswapmargin", FileSwapMargin);
+    settings.setValue("set/relayback", RelayBack);
+    settings.setValue("set/progbarrange", ProgBarRange);
     settings.setValue("set/staid", StaId);
     settings.setValue("set/stasel", StaSel);
     settings.setValue("set/anttype", AntType);

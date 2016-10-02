@@ -170,7 +170,7 @@ public:
     int DebugTraceF, DebugStatusF, OutputGeoidF, BaselineC;
     int RovPosTypeF, RefPosTypeF, RovAntPcvF, RefAntPcvF;
     QString RovAntF, RefAntF, SatPcvFileF, AntPcvFileF;
-    double RovAntDel[3], RefAntDel[3], RovPos[3], RefPos[3], NmeaPos[2];
+    double RovAntDel[3], RefAntDel[3], RovPos[3], RefPos[3], NmeaPos[3];
 	double Baseline[2];
 
     QString History[10], MntpHist[10];

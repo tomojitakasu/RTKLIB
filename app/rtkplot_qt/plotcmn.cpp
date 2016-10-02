@@ -453,8 +453,8 @@ QString Plot::LatLonStr(const double *pos, int ndec)
         s = QStringLiteral("%1%2%3 %4%5%6").arg(fabs(pos[0] * R2D), ndec + 4, 'f', ndec).arg(degreeChar).arg(pos[0] < 0.0 ? "S" : "N")
             .arg(fabs(pos[1] * R2D), ndec + 5, 'f', ndec).arg(degreeChar).arg(pos[1] < 0.0 ? "W" : "E");
     } else {
-        deg2dms(pos[0] * R2D, dms1);
-        deg2dms(pos[1] * R2D, dms2);
+        deg2dms(pos[0] * R2D, dms1, ndec - 5);
+        deg2dms(pos[1] * R2D, dms2, ndec - 5);
         s = QStringLiteral("%1%2 %3' %4\" %5 %6%7 %8' %9\" %10")
             .arg(fabs(dms1[0]), 3, 'f', 0).arg(degreeChar).arg(dms1[1], 2, 'f', 0, QChar('0')).arg(dms1[2], ndec - 2, 'f', ndec - 5, QChar('0')).arg(pos[0] < 0.0 ? "S" : "N")
             .arg(fabs(dms2[0]), 4, 'f', 0).arg(degreeChar).arg(dms2[1], 2, 'f', 0, QChar('0')).arg(dms2[2], ndec - 2, 'f', ndec - 5, QChar('0')).arg(pos[1] < 0.0 ? "W" : "E");

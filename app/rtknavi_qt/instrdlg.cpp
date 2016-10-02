@@ -102,6 +102,7 @@ void InputStrDialog::showEvent(QShowEvent *event)
     TimeStartE->setText(TimeStart);
     NmeaPos1->setValue(NmeaPos[0]);
     NmeaPos2->setValue(NmeaPos[1]);
+    NmeaPos3->setValue(NmeaPos[2]);
 
 	UpdateEnable();
 }
@@ -126,6 +127,7 @@ void InputStrDialog::BtnOkClick()
     TimeStart = TimeStartE->text();
     NmeaPos[0] = NmeaPos1->value();
     NmeaPos[1] = NmeaPos2->value();
+    NmeaPos[2] = NmeaPos3->value();
 
     accept();
 }
@@ -345,6 +347,7 @@ void InputStrDialog::BtnPosClick()
 {
     refDialog->RovPos[0] = NmeaPos1->value();
     refDialog->RovPos[1] = NmeaPos2->value();
+    refDialog->RovPos[2] = NmeaPos3->value();
     refDialog->StaPosFile = mainForm->StaPosFileF;
 
     refDialog->exec();
@@ -352,6 +355,7 @@ void InputStrDialog::BtnPosClick()
 
     NmeaPos1->setValue(refDialog->Pos[0]);
     NmeaPos2->setValue(refDialog->Pos[1]);
+    NmeaPos3->setValue(refDialog->Pos[2]);
 }
 //---------------------------------------------------------------------------
 void InputStrDialog::SerialOpt(int index, int opt)
@@ -437,6 +441,7 @@ void InputStrDialog::UpdateEnable(void)
     NmeaReqL->setEnabled(ena2);
     NmeaPos1->setEnabled(ena2 && NmeaReqL->currentIndex() == 1);
     NmeaPos2->setEnabled(ena2 && NmeaReqL->currentIndex() == 1);
+    NmeaPos3->setEnabled(ena2 && NmeaReqL->currentIndex() == 1);
     BtnPos->setEnabled(ena2 && NmeaReqL->currentIndex() == 1);
 
     LabelF1->setEnabled(ena1);

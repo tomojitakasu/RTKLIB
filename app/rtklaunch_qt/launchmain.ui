@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>286</width>
+    <width>340</width>
     <height>131</height>
    </rect>
   </property>
@@ -38,6 +38,18 @@
    <item row="0" column="0">
     <widget class="QWidget" name="Panel1" native="true">
      <layout class="QGridLayout" name="gridLayout_2">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
       <item row="0" column="1">
        <widget class="QPushButton" name="BtnConv">
         <property name="enabled">
@@ -50,7 +62,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+         <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
           <normaloff>:/icons/rtk3.bmp</normaloff>:/icons/rtk3.bmp</iconset>
         </property>
         <property name="flat">
@@ -70,8 +82,28 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+         <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
           <normaloff>:/icons/rtk7.bmp</normaloff>:/icons/rtk7.bmp</iconset>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="6">
+       <widget class="QPushButton" name="BtnGet">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string>RTKGET</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
+          <normaloff>:/icons/rtk8.bmp</normaloff>:/icons/rtk8.bmp</iconset>
         </property>
         <property name="flat">
          <bool>true</bool>
@@ -90,7 +122,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+         <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
           <normaloff>:/icons/rtk1.bmp</normaloff>:/icons/rtk1.bmp</iconset>
         </property>
         <property name="flat">
@@ -110,7 +142,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+         <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
           <normaloff>:/icons/rtk5.bmp</normaloff>:/icons/rtk5.bmp</iconset>
         </property>
         <property name="flat">
@@ -130,7 +162,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+         <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
           <normaloff>:/icons/rtk2.bmp</normaloff>:/icons/rtk2.bmp</iconset>
         </property>
         <property name="flat">
@@ -150,7 +182,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+         <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
           <normaloff>:/icons/rtk6.bmp</normaloff>:/icons/rtk6.bmp</iconset>
         </property>
         <property name="flat">
@@ -158,20 +190,10 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="6">
-       <widget class="QPushButton" name="BtnGet">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string>RTKGET</string>
-        </property>
+      <item row="0" column="7">
+       <widget class="QPushButton" name="BtnVideo">
         <property name="text">
          <string/>
-        </property>
-        <property name="icon">
-         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
-          <normaloff>:/icons/rtk8.bmp</normaloff>:/icons/rtk8.bmp</iconset>
         </property>
         <property name="flat">
          <bool>true</bool>
@@ -205,7 +227,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+      <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
        <normaloff>:/buttons/sqr.bmp</normaloff>:/buttons/sqr.bmp</iconset>
      </property>
      <property name="flat">
@@ -223,6 +245,18 @@
    <item row="2" column="0">
     <widget class="QWidget" name="Panel2" native="true">
      <layout class="QHBoxLayout" name="horizontalLayout">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
       <item>
        <widget class="QPushButton" name="BtnRtklib">
         <property name="toolTip">
@@ -232,10 +266,20 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+         <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
           <normaloff>:/icons/rtk9.bmp</normaloff>:/icons/rtk9.bmp</iconset>
         </property>
         <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="BtnExit">
+        <property name="text">
+         <string>Exit</string>
+        </property>
+        <property name="default">
          <bool>true</bool>
         </property>
        </widget>
@@ -244,9 +288,101 @@
     </widget>
    </item>
   </layout>
+  <action name="actionRtkConv">
+   <property name="icon">
+    <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
+     <normaloff>:/icons/rtk3.bmp</normaloff>:/icons/rtk3.bmp</iconset>
+   </property>
+   <property name="text">
+    <string>rtkConv</string>
+   </property>
+   <property name="toolTip">
+    <string>RTK Convert</string>
+   </property>
+  </action>
+  <action name="actionRtkGet">
+   <property name="icon">
+    <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
+     <normaloff>:/icons/rtk8.bmp</normaloff>:/icons/rtk8.bmp</iconset>
+   </property>
+   <property name="text">
+    <string>rtkGet</string>
+   </property>
+   <property name="toolTip">
+    <string>RTK Get</string>
+   </property>
+  </action>
+  <action name="actionRtkNavi">
+   <property name="icon">
+    <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
+     <normaloff>:/icons/rtk5.bmp</normaloff>:/icons/rtk5.bmp</iconset>
+   </property>
+   <property name="text">
+    <string>rtkNavi</string>
+   </property>
+   <property name="toolTip">
+    <string>RTK Navi</string>
+   </property>
+  </action>
+  <action name="actionRtkNtrip">
+   <property name="icon">
+    <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
+     <normaloff>:/icons/rtk7.bmp</normaloff>:/icons/rtk7.bmp</iconset>
+   </property>
+   <property name="text">
+    <string>rtkNtrip</string>
+   </property>
+   <property name="toolTip">
+    <string>RTK NTRIP</string>
+   </property>
+  </action>
+  <action name="actionRtkPlot">
+   <property name="icon">
+    <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
+     <normaloff>:/icons/rtk2.bmp</normaloff>:/icons/rtk2.bmp</iconset>
+   </property>
+   <property name="text">
+    <string>rtkPlot</string>
+   </property>
+   <property name="toolTip">
+    <string>RTK Plot</string>
+   </property>
+  </action>
+  <action name="actionRtkPost">
+   <property name="icon">
+    <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
+     <normaloff>:/icons/rtk1.bmp</normaloff>:/icons/rtk1.bmp</iconset>
+   </property>
+   <property name="text">
+    <string>rtkPost</string>
+   </property>
+   <property name="toolTip">
+    <string>RTK Post</string>
+   </property>
+  </action>
+  <action name="actionRtkStr">
+   <property name="icon">
+    <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
+     <normaloff>:/icons/rtk6.bmp</normaloff>:/icons/rtk6.bmp</iconset>
+   </property>
+   <property name="text">
+    <string>rtkStr</string>
+   </property>
+   <property name="toolTip">
+    <string>RTK Stream</string>
+   </property>
+  </action>
+  <action name="actionRtkVideo">
+   <property name="text">
+    <string>rtkVideo</string>
+   </property>
+   <property name="toolTip">
+    <string>RTK Video</string>
+   </property>
+  </action>
  </widget>
  <resources>
-  <include location="../rtkconv_qt/rtkconv_qt.qrc"/>
+  <include location="../rtkplot_qt/rtkplot_qt.qrc"/>
  </resources>
  <connections/>
 </ui>
