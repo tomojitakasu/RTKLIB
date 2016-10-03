@@ -512,6 +512,11 @@
            </item>
            <item>
             <property name="text">
+             <string>UDP Client</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
              <string>File</string>
             </property>
            </item>
@@ -760,6 +765,11 @@
            </item>
            <item>
             <property name="text">
+             <string>UDP Client</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
              <string>File</string>
             </property>
            </item>
@@ -954,6 +964,11 @@
            <item>
             <property name="text">
              <string>NTRIP Caster</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>UDP Client</string>
             </property>
            </item>
            <item>
@@ -1413,6 +1428,11 @@
            </item>
            <item>
             <property name="text">
+             <string>UDP Server</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
              <string>File</string>
             </property>
            </item>
@@ -1560,7 +1580,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="strsvr_qt.qrc">
+            <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
              <normaloff>:/buttons/sqr.bmp</normaloff>:/buttons/sqr.bmp</iconset>
            </property>
            <property name="flat">
@@ -1673,7 +1693,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="strsvr_qt.qrc">
+            <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
              <normaloff>:/buttons/ttray.bmp</normaloff>:/buttons/ttray.bmp</iconset>
            </property>
            <property name="flat">
@@ -1779,7 +1799,7 @@
          <string>&amp;Start</string>
         </property>
         <property name="icon">
-         <iconset resource="strsvr_qt.qrc">
+         <iconset resource="../rtknavi_qt/rtknavi_qt.qrc">
           <normaloff>:/buttons/start.bmp</normaloff>:/buttons/start.bmp</iconset>
         </property>
         <property name="flat">
@@ -1799,7 +1819,7 @@
          <string>S&amp;top</string>
         </property>
         <property name="icon">
-         <iconset resource="strsvr_qt.qrc">
+         <iconset resource="../rtknavi_qt/rtknavi_qt.qrc">
           <normaloff>:/buttons/stop2.bmp</normaloff>:/buttons/stop2.bmp</iconset>
         </property>
         <property name="flat">
@@ -1819,7 +1839,7 @@
          <string>&amp;Options...</string>
         </property>
         <property name="icon">
-         <iconset resource="strsvr_qt.qrc">
+         <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
           <normaloff>:/buttons/toolbmp</normaloff>:/buttons/toolbmp</iconset>
         </property>
         <property name="flat">
@@ -1873,7 +1893,8 @@
   <addaction name="MenuExit"/>
  </widget>
  <resources>
-  <include location="strsvr_qt.qrc"/>
+  <include location="../rtkplot_qt/rtkplot_qt.qrc"/>
+  <include location="../rtknavi_qt/rtknavi_qt.qrc"/>
  </resources>
  <connections/>
 </ui>

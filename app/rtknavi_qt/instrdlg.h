@@ -62,10 +62,10 @@ private:
     FtpOptDialog *ftpOptDialog;
 public:
     bool StreamC[3], TimeTag;
-    int Stream[3], Format[3], CmdEna[3][2], CmdEnaTcp[3][2];
+    int Stream[3], Format[3], CmdEna[3][3], CmdEnaTcp[3][3];
     int NmeaReq, NRcv;
     double NmeaPos[3];
-    QString Paths[3][4], Cmds[3][2], CmdsTcp[3][2], TimeStart, TimeSpeed;
+    QString Paths[3][4], Cmds[3][3], CmdsTcp[3][3], TimeStart, TimeSpeed;
     QString RcvOpt[3];
     QString History[10], MntpHist[10];
 

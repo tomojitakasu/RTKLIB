@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>376</width>
-    <height>264</height>
+    <width>385</width>
+    <height>361</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -65,6 +65,16 @@
       <string/>
      </property>
     </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="ChkPeriodicCmd">
+     <property name="text">
+      <string>Periodic Commands : &lt;command&gt; # cycle (ms)</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPlainTextEdit" name="PeriodicCmd"/>
    </item>
    <item>
     <widget class="QWidget" name="widget" native="true">

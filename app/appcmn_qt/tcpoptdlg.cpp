@@ -35,7 +35,8 @@ void TcpOptDialog::showEvent(QShowEvent *event)
     QString ti[] = { tr("TCP Server Options "),  tr("TCP Client Options"),
              tr("NTRIP Server Options"), tr("NTRIP Client Options"),
                 "NTRIP Caster Client Options",
-                "NTRIP Caster Server Options"};
+                "NTRIP Caster Server Options", "UDP Server Options",
+                "UDP Client Options"};
 
     if (event->spontaneous()) return;
 
@@ -51,16 +52,16 @@ void TcpOptDialog::showEvent(QShowEvent *event)
     Passwd->setText(url.password());
     Str->setText(Str_Text);
 
-    Addr->setEnabled(Opt >= 1 && Opt<=3);
-    MntPnt->setEnabled(Opt >= 2 && Opt<=4);
-    User->setEnabled(Opt >= 3 && Opt<=4);
-    Passwd->setEnabled(Opt >= 2);
+    Addr->setEnabled((Opt >= 1 && Opt <= 3) || Opt == 7);
+    MntPnt->setEnabled(Opt >= 2 && Opt <= 4);
+    User->setEnabled(Opt >= 3 && Opt <= 4);
+    Passwd->setEnabled(Opt >= 2 && Opt <= 5);
     Str->setEnabled(Opt == 2);
-    LabelAddr->setText(Opt >= 2 ? tr("NTRIP Caster Host") : tr("TCP Server Address"));
-    LabelAddr->setEnabled(Opt >= 1 && Opt<=3);
-    LabelMntPnt->setEnabled(Opt >= 2 && Opt<=4);
-    LabelUser->setEnabled(Opt >= 3 && Opt<=4);
-    LabelPasswd->setEnabled(Opt >= 2);
+    LabelAddr->setText(Opt >= 2 && Opt <= 5 ? tr("NTRIP Caster Host") : tr("Server Address"));
+    LabelAddr->setEnabled((Opt >= 1 && Opt <= 3) || Opt == 7);
+    LabelMntPnt->setEnabled(Opt >= 2 && Opt <= 4);
+    LabelUser->setEnabled(Opt >= 3 && Opt <= 4);
+    LabelPasswd->setEnabled(Opt >= 2 && Opt <= 5);
     LabelStr->setEnabled(Opt == 2);
 
     setWindowTitle(ti[Opt]);

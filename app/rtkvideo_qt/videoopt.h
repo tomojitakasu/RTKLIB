@@ -17,9 +17,16 @@ public slots:
     void ChkTcpPortChange();
     void BtnFileClick();
     void UpdateEnable(void);
+    void SelCapPosChange();
+    void SelDevChange();
+    void SelCapColorClicked();
 
 protected:
     void showEvent(QShowEvent *);
+
+    void UpdateProf(void);
+
+    QColor CapColor;
 
 public:
     VideoOptDlg(QWidget *parent);

@@ -226,93 +226,85 @@ void InputStrDialog::BtnStr3Click()
 //---------------------------------------------------------------------------
 void InputStrDialog::BtnCmd1Click()
 {
-    if (Stream1->currentIndex() == 0) {
-        cmdOptDialog->Cmds  [0] = Cmds  [0][0];
-        cmdOptDialog->Cmds  [1] = Cmds  [0][1];
-        cmdOptDialog->CmdEna[0] = CmdEna[0][0];
-        cmdOptDialog->CmdEna[1] = CmdEna[0][1];
-    } else {
-        cmdOptDialog->Cmds  [0] = CmdsTcp  [0][0];
-        cmdOptDialog->Cmds  [1] = CmdsTcp  [0][1];
-        cmdOptDialog->CmdEna[0] = CmdEnaTcp[0][0];
-        cmdOptDialog->CmdEna[1] = CmdEnaTcp[0][1];
-	}
+    for (int i = 0;i<3;i++) {
+        if (Stream1->currentIndex() == 0) {
+            cmdOptDialog->Cmds  [i] = Cmds  [0][i];
+            cmdOptDialog->CmdEna[i] = CmdEna[0][i];
+        }
+        else {
+            cmdOptDialog->Cmds  [i] = CmdsTcp  [0][i];
+            cmdOptDialog->CmdEna[i] = CmdEnaTcp[0][i];
+        }
+    }
 
     cmdOptDialog->exec();
     if (cmdOptDialog->result() != QDialog::Accepted) return;
 
-    if (Stream1->currentIndex() == 0) {
-        Cmds  [0][0] = cmdOptDialog->Cmds  [0];
-        Cmds  [0][1] = cmdOptDialog->Cmds  [1];
-        CmdEna[0][0] = cmdOptDialog->CmdEna[0];
-        CmdEna[0][1] = cmdOptDialog->CmdEna[1];
-    } else {
-        CmdsTcp  [0][0] = cmdOptDialog->Cmds  [0];
-        CmdsTcp  [0][1] = cmdOptDialog->Cmds  [1];
-        CmdEnaTcp[0][0] = cmdOptDialog->CmdEna[0];
-        CmdEnaTcp[0][1] = cmdOptDialog->CmdEna[1];
-	}
+    for (int i = 0; i < 3; i++) {
+        if (Stream1->currentIndex() == 0) {
+            Cmds  [0][i] = cmdOptDialog->Cmds  [i];
+            CmdEna[0][i] = cmdOptDialog->CmdEna[i];
+        }
+        else {
+            CmdsTcp  [0][i] = cmdOptDialog->Cmds  [i];
+            CmdEnaTcp[0][i] = cmdOptDialog->CmdEna[i];
+        }
+    }
 }
 //---------------------------------------------------------------------------
 void InputStrDialog::BtnCmd2Click()
 {
-    if (Stream2->currentIndex() == 0) {
-        cmdOptDialog->Cmds  [0] = Cmds  [1][0];
-        cmdOptDialog->Cmds  [1] = Cmds  [1][1];
-        cmdOptDialog->CmdEna[0] = CmdEna[1][0];
-        cmdOptDialog->CmdEna[1] = CmdEna[1][1];
-    } else {
-        cmdOptDialog->Cmds  [0] = CmdsTcp  [1][0];
-        cmdOptDialog->Cmds  [1] = CmdsTcp  [1][1];
-        cmdOptDialog->CmdEna[0] = CmdEnaTcp[1][0];
-        cmdOptDialog->CmdEna[1] = CmdEnaTcp[1][1];
-	}
+    for (int i = 0;i<3;i++) {
+        if (Stream1->currentIndex() == 0) {
+            cmdOptDialog->Cmds  [i] = Cmds  [1][i];
+            cmdOptDialog->CmdEna[i] = CmdEna[1][i];
+        }
+        else {
+            cmdOptDialog->Cmds  [i] = CmdsTcp  [1][i];
+            cmdOptDialog->CmdEna[i] = CmdEnaTcp[1][i];
+        }
+    }
 
     cmdOptDialog->exec();
     if (cmdOptDialog->result() != QDialog::Accepted) return;
 
-    if (Stream2->currentIndex() == 0) {
-        Cmds  [1][0] = cmdOptDialog->Cmds  [0];
-        Cmds  [1][1] = cmdOptDialog->Cmds  [1];
-        CmdEna[1][0] = cmdOptDialog->CmdEna[0];
-        CmdEna[1][1] = cmdOptDialog->CmdEna[1];
-    } else {
-        CmdsTcp  [1][0] = cmdOptDialog->Cmds  [0];
-        CmdsTcp  [1][1] = cmdOptDialog->Cmds  [1];
-        CmdEnaTcp[1][0] = cmdOptDialog->CmdEna[0];
-        CmdEnaTcp[1][1] = cmdOptDialog->CmdEna[1];
-	}
-}
+    for (int i = 0; i < 3; i++) {
+        if (Stream1->currentIndex() == 0) {
+            Cmds  [1][i] = cmdOptDialog->Cmds  [i];
+            CmdEna[1][i] = cmdOptDialog->CmdEna[i];
+        }
+        else {
+            CmdsTcp  [1][i] = cmdOptDialog->Cmds  [i];
+            CmdEnaTcp[1][i] = cmdOptDialog->CmdEna[i];
+        }
+    }}
 //---------------------------------------------------------------------------
 void InputStrDialog::BtnCmd3Click()
 {
-    if (Stream3->currentIndex() == 0) {
-        cmdOptDialog->Cmds  [0] = Cmds  [2][0];
-        cmdOptDialog->Cmds  [1] = Cmds  [2][1];
-        cmdOptDialog->CmdEna[0] = CmdEna[2][0];
-        cmdOptDialog->CmdEna[1] = CmdEna[2][1];
-    } else {
-        cmdOptDialog->Cmds  [0] = CmdsTcp  [2][0];
-        cmdOptDialog->Cmds  [1] = CmdsTcp  [2][1];
-        cmdOptDialog->CmdEna[0] = CmdEnaTcp[2][0];
-        cmdOptDialog->CmdEna[1] = CmdEnaTcp[2][1];
-	}
+    for (int i = 0;i<3;i++) {
+        if (Stream1->currentIndex() == 0) {
+            cmdOptDialog->Cmds  [i] = Cmds  [2][i];
+            cmdOptDialog->CmdEna[i] = CmdEna[2][i];
+        }
+        else {
+            cmdOptDialog->Cmds  [i] = CmdsTcp  [2][i];
+            cmdOptDialog->CmdEna[i] = CmdEnaTcp[2][i];
+        }
+    }
 
     cmdOptDialog->exec();
     if (cmdOptDialog->result() != QDialog::Accepted) return;
 
-    if (Stream3->currentIndex() == 0) {
-        Cmds  [2][0] = cmdOptDialog->Cmds  [0];
-        Cmds  [2][1] = cmdOptDialog->Cmds  [1];
-        CmdEna[2][0] = cmdOptDialog->CmdEna[0];
-        CmdEna[2][1] = cmdOptDialog->CmdEna[1];
-    } else {
-        CmdsTcp  [2][0] = cmdOptDialog->Cmds  [0];
-        CmdsTcp  [2][1] = cmdOptDialog->Cmds  [1];
-        CmdEnaTcp[2][0] = cmdOptDialog->CmdEna[0];
-        CmdEnaTcp[2][1] = cmdOptDialog->CmdEna[1];
-	}
-}
+    for (int i = 0; i < 3; i++) {
+        if (Stream1->currentIndex() == 0) {
+            Cmds  [2][i] = cmdOptDialog->Cmds  [i];
+            CmdEna[2][i] = cmdOptDialog->CmdEna[i];
+        }
+        else {
+            CmdsTcp  [2][i] = cmdOptDialog->Cmds  [i];
+            CmdEnaTcp[2][i] = cmdOptDialog->CmdEna[i];
+        }
+    }}
 //---------------------------------------------------------------------------
 void InputStrDialog::BtnRcvOpt1Click()
 {

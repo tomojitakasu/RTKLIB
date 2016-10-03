@@ -35,11 +35,12 @@ protected:
 private:
     QCamera *camera;
     CameraFrameGrabber *cameraFrameGrabber;
-    stream_t OutStr[2];
+    stream_t OutputStream[2];
     gtime_t StartTime;
     gtime_t CaptureTime;
+    unsigned int StartTick, CaptureTick;
     lock_t DeviceLock;
-    int Video_Width, Video_Height, FRM, FRM0, FPS;
+    int Video_Width, Video_Height, FrameCount, FrameCount0, FrameRate;
     QString IniFile;
     QTime Time;
 
@@ -52,9 +53,11 @@ private:
 public:
     QString DevName, OutFile;
     VideoOptDlg *videoOptDlg;
-    int Profile, CapSizeEna, CapWidth, CapHeight, Annotation;
-    int TcpPortEna, TcpPortNo, OutFileEna, OutTimeTag, FileSwap;
-    
+    int Profile, CaptionPos, CaptionSize;
+    int TcpPortEna, TcpPortNo, OutFileEna, OutTimeTag, FileSwap, CodecQuality;
+    QColor CaptionColor;
+    QCameraViewfinderSettings videoSettings;
+
     MainForm(QWidget *parent = 0);
 };
 //---------------------------------------------------------------------------

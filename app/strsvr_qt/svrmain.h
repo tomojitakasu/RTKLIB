@@ -60,13 +60,13 @@ protected:
 
 private:
     QString IniFile;
-    QString Paths[MAXSTR][4], Cmds[MAXSTR][2], CmdsTcp[MAXSTR][2];
+    QString Paths[MAXSTR][4], Cmds[MAXSTR][3], CmdsTcp[MAXSTR][3];
     QString TcpHistory[MAXHIST], TcpMntpHist[MAXHIST];
     QString StaPosFile, ExeDirectory, LocalDirectory, SwapInterval;
     QString ProxyAddress,SrcTblFile,LogFile;
     QString ConvMsg[MAXSTR - 1], ConvOpt[MAXSTR - 1], AntType, RcvType;
     int ConvEna[MAXSTR - 1], ConvInp[MAXSTR - 1], ConvOut[3], StaId, StaSel;
-    int TraceLevel, SvrOpt[6], CmdEna[MAXSTR][2], CmdEnaTcp[MAXSTR][2], NmeaReq, FileSwapMargin, RelayBack, ProgBarRange;
+    int TraceLevel, SvrOpt[6], CmdEna[MAXSTR][3], CmdEnaTcp[MAXSTR][3], NmeaReq, FileSwapMargin, RelayBack, ProgBarRange;
     double AntPos[3], AntOff[3];
     gtime_t StartTime, EndTime;
     QSystemTrayIcon *TrayIcon;

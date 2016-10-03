@@ -83,6 +83,8 @@ void MainForm::closeEvent(QCloseEvent *)
 void MainForm::BtnOpenClick()
 {
     OpenVideo(QFileDialog::getOpenFileName(this, tr("Open Video"), QString(), tr("Video (*.avi *.mp4 *.mjpg);;All (*.*)")));
+
+    SetVideoPos(0.0f);
 }
 //---------------------------------------------------------------------------
 void MainForm::BtnPlayClick()

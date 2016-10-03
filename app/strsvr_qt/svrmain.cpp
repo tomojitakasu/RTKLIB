@@ -280,13 +280,14 @@ void MainForm::BtnInputClick()
 {
     switch (Input->currentIndex()) {
         case 0: SerialOpt(0, 0); break;
-        case 1: TcpOpt(0, 1); break;
-        case 2: TcpOpt(0, 0); break;
-        case 3: TcpOpt(0, 3); break;
-        case 4: TcpOpt(0,5); break;
-        case 5: FileOpt(0,0); break;
-        case 6: FtpOpt(0,0); break;
-        case 7: FtpOpt(0,1); break;
+        case 1: TcpOpt(0, 1); break; // TCP Client
+        case 2: TcpOpt(0, 0); break; // TCP Server
+        case 3: TcpOpt(0, 3); break; // Ntrip Client
+        case 4: TcpOpt(0, 5); break;  // Ntrip Caster Server
+        case 5: TcpOpt(0, 6); break;  // UDP Server
+        case 6: FileOpt(0, 0); break;
+        case 7: FtpOpt(0, 0); break; // FTP
+        case 8: FtpOpt(0, 1); break; // HTTP
     }
 }
 // callback on button-input-cmd ---------------------------------------------
@@ -297,37 +298,35 @@ void MainForm::BtnCmdClick()
 
     QPushButton *btn[] = { BtnCmd, BtnCmd1, BtnCmd2, BtnCmd3 };
     QComboBox *type[] = { Input, Output1, Output2, Output3 };
-    int i;
+    int i, j;
 
     for (i = 0; i < MAXSTR; i++)
         if (btn[i] == qobject_cast<QPushButton *>(sender())) break;
     if (i >= MAXSTR) return;
 
-    if (type[i]->currentText() == tr("Serial")) {
-        cmdOptDialog->Cmds[0] = Cmds[i][0];
-        cmdOptDialog->Cmds[1] = Cmds[i][1];
-        cmdOptDialog->CmdEna[0] = CmdEna[i][0];
-        cmdOptDialog->CmdEna[1] = CmdEna[i][1];
-    } else {
-        cmdOptDialog->Cmds[0] = CmdsTcp[i][0];
-        cmdOptDialog->Cmds[1] = CmdsTcp[i][1];
-        cmdOptDialog->CmdEna[0] = CmdEnaTcp[i][0];
-        cmdOptDialog->CmdEna[1] = CmdEnaTcp[i][1];
+    for (j = 0; j < 3; j++) {
+        if (type[i]->currentText() == tr("Serial")) {
+            cmdOptDialog->Cmds[j] = Cmds[i][j];
+            cmdOptDialog->CmdEna[j] = CmdEna[i][j];
+        }
+        else {
+            cmdOptDialog->Cmds[j] = CmdsTcp[i][j];
+            cmdOptDialog->CmdEna[j] = CmdEnaTcp[i][j];
+        }
     }
 
     cmdOptDialog->exec();
-
     if (cmdOptDialog->result() != QDialog::Accepted) return;
-    if (type[i]->currentText() == tr("Serial")) {
-        Cmds[i][0] = cmdOptDialog->Cmds[0];
-        Cmds[i][1] = cmdOptDialog->Cmds[1];
-        CmdEna[i][0] = cmdOptDialog->CmdEna[0];
-        CmdEna[i][1] = cmdOptDialog->CmdEna[1];
-    } else {
-        CmdsTcp[i][0] = cmdOptDialog->Cmds[0];
-        CmdsTcp[i][1] = cmdOptDialog->Cmds[1];
-        CmdEnaTcp[i][0] = cmdOptDialog->CmdEna[0];
-        CmdEnaTcp[i][1] = cmdOptDialog->CmdEna[1];
+
+    for (j=0;j<3;j++) {
+        if (type[i]->currentText() == tr("Serial")) {
+            Cmds[i][j] = cmdOptDialog->Cmds[j];
+            CmdEna[i][j] = cmdOptDialog->CmdEna[j];
+        }
+        else {
+            CmdsTcp[i][j] = cmdOptDialog->Cmds[j];
+            CmdEnaTcp[i][j] = cmdOptDialog->CmdEna[j];
+        }
     }
 
     delete cmdOptDialog;
@@ -336,36 +335,39 @@ void MainForm::BtnCmdClick()
 void MainForm::BtnOutput1Click()
 {
     switch (Output1->currentIndex()) {
-        case 1: SerialOpt(1, 0); break;
-        case 2: TcpOpt(1, 1); break;
-        case 3: TcpOpt(1, 0); break;
-        case 4: TcpOpt(1, 2); break;
-        case 5: TcpOpt(1, 4); break;
-        case 6: FileOpt(1, 1); break;
+        case 1: SerialOpt(1,0); break;
+        case 2: TcpOpt(1,1); break; // TCP Client
+        case 3: TcpOpt(1,0); break; // TCP Server
+        case 4: TcpOpt(1,2); break; // NTRIP Server
+        case 5: TcpOpt(1,4); break; // NTRIP Caster Client
+        case 6: TcpOpt(1,7); break; // UDP Client
+        case 7: FileOpt(1,1); break;
     }
 }
 // callback on button-output2-opt -------------------------------------------
 void MainForm::BtnOutput2Click()
 {
     switch (Output2->currentIndex()) {
-        case 1: SerialOpt(2, 0); break;
-        case 2: TcpOpt(2, 1); break;
-        case 3: TcpOpt(2, 0); break;
-        case 4: TcpOpt(2, 2); break;
-        case 5: TcpOpt(1, 4); break;
-        case 6: FileOpt(1, 1); break;
+        case 1: SerialOpt(1,0); break;
+        case 2: TcpOpt(1,1); break; // TCP Client
+        case 3: TcpOpt(1,0); break; // TCP Server
+        case 4: TcpOpt(1,2); break; // NTRIP Server
+        case 5: TcpOpt(1,4); break; // NTRIP Caster Client
+        case 6: TcpOpt(1,7); break; // UDP Client
+        case 7: FileOpt(1,1); break;
     }
 }
 // callback on button-output3-opt -------------------------------------------
 void MainForm::BtnOutput3Click()
 {
     switch (Output3->currentIndex()) {
-        case 1: SerialOpt(3, 0); break;
-        case 2: TcpOpt(3, 1); break;
-        case 3: TcpOpt(3, 0); break;
-        case 4: TcpOpt(3, 2); break;
-        case 5: TcpOpt(1, 4); break;
-        case 6: FileOpt(1, 1); break;
+        case 1: SerialOpt(1,0); break;
+        case 2: TcpOpt(1,1); break; // TCP Client
+        case 3: TcpOpt(1,0); break; // TCP Server
+        case 4: TcpOpt(1,2); break; // NTRIP Server
+        case 5: TcpOpt(1,4); break; // NTRIP Caster Client
+        case 6: TcpOpt(1,7); break; // UDP Client
+        case 7: FileOpt(1,1); break;
     }
 }
 // callback on button-output1-conv ------------------------------------------
@@ -551,26 +553,28 @@ void MainForm::Timer1Timer()
 // start stream server ------------------------------------------------------
 void MainForm::SvrStart(void)
 {
-    strconv_t *conv[3] = { 0 };
+    strconv_t *conv[3]={0};
     static char str[MAXSTR][1024];
-    const int itype[] = {
-        STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPCLI,STR_NTRIPC_S,STR_FILE,
-        STR_FTP,STR_HTTP    };
-    const int otype[] = {
-        STR_NONE,STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPSVR,STR_NTRIPC_C,
-        STR_FILE
+    int itype[]={
+        STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPCLI,STR_NTRIPC_S,STR_UDPSVR,
+        STR_FILE,STR_FTP,STR_HTTP
     };
-    int ip[] = { 0, 1, 1, 1, 1, 2, 3, 3 }, strs[4] = { 0 }, opt[7] = { 0 }, n;
-    char *paths[MAXSTR], filepath[1024], buff[1024];
-    char *cmds[MAXSTR];
-    char *ant[3] = { 0 }, *rcv[3] = { 0 }, *p;
+    int otype[]={
+        STR_NONE,STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPSVR,STR_NTRIPC_C,
+        STR_UDPCLI,STR_FILE
+    };
+    int ip[]={0,1,1,1,1,1,2,3,3},strs[4]={0},opt[8]={0},n;
+    char *paths[MAXSTR],*cmds[MAXSTR]={0},*cmds_periodic[MAXSTR]={0};
+    char filepath[1024],buff[1024];
+    char *ant[3]={"","",""},*rcv[3]={"","",""},*p;
     FILE *fp;
 
-    if (TraceLevel > 0) {
+    if (TraceLevel>0) {
         traceopen(!LogFile.isEmpty()?qPrintable(LogFile):TRACEFILE);
         tracelevel(TraceLevel);
     }
-    for (int i = 0; i < MAXSTR; i++) paths[i] = str[i];
+    for (int i=0;i<4;i++) paths[i]=str[i];
+
 
     strs[0] = itype[Input->currentIndex()];
     strs[1] = otype[Output1->currentIndex()];
@@ -582,25 +586,31 @@ void MainForm::SvrStart(void)
     strcpy(paths[2], !Output2->currentIndex() ? "" : qPrintable(Paths[2][ip[Output2->currentIndex() - 1]]));
     strcpy(paths[3], !Output3->currentIndex() ? "" : qPrintable(Paths[3][ip[Output3->currentIndex() - 1]]));
 
-    for (int i = 0; i < MAXSTR; i++) {
+    for (int i=0;i<MAXSTR;i++) {
         cmds[i] = new char[1024];
-        if (strs[i] == STR_SERIAL) {
-            if (CmdEna[i][0]) strncpy(cmds[i], qPrintable(Cmds[i][0]), 1024);
-        } else if (strs[i] == STR_TCPCLI || strs[i] == STR_NTRIPCLI) {
+        cmds_periodic[i] = new char[1024];
+        if (strs[i]==STR_SERIAL) {
+            if (CmdEna[i][0]) strncpy(cmds[i],qPrintable(Cmds[i][0]), 1024);
+            if (CmdEna[i][2]) strncpy(cmds_periodic[i], qPrintable(Cmds[i][2]), 1024);
+        }
+        else if (strs[i]==STR_TCPCLI||strs[i]==STR_NTRIPCLI) {
             if (CmdEnaTcp[i][0]) strncpy(cmds[i], qPrintable(CmdsTcp[i][0]), 1024);
+            if (CmdEnaTcp[i][2]) strncpy(cmds_periodic[i], qPrintable(CmdsTcp[i][2]), 1024);
         }
     }
-    for (int i = 0; i < 5; i++)
-        opt[i] = SvrOpt[i];
-    opt[5] = NmeaReq ? SvrOpt[5] : 0;
-    opt[6] = FileSwapMargin;
+    for (int i=0;i<5;i++) {
+        opt[i]=SvrOpt[i];
+    }
+    opt[5]=NmeaReq?SvrOpt[5]:0;
+    opt[6]=FileSwapMargin;
+    opt[7]=RelayBack;
 
-    for (int i = 1; i < MAXSTR; i++) { // for each out stream
-        if (strs[i] != STR_FILE) continue;
-        strcpy(filepath, paths[i]);
-        if (strstr(filepath, "::A")) continue;
-        if ((p = strstr(filepath, "::"))) *p = '\0';
-        if (!(fp = fopen(filepath, "r"))) continue;
+    for (int i=1;i<MAXSTR;i++) { // for each out stream
+        if (strs[i]!=STR_FILE) continue;
+        strcpy(filepath,paths[i]);
+        if (strstr(filepath,"::A")) continue;
+        if ((p=strstr(filepath,"::"))) *p='\0';
+        if (!(fp=fopen(filepath,"r"))) continue;
         fclose(fp);
         if (QMessageBox::question(this, tr("Overwrite"), tr("File %1 exists. \nDo you want to overwrite?").arg(filepath)) != QMessageBox::Yes) return;
     }
@@ -608,32 +618,31 @@ void MainForm::SvrStart(void)
     strsetproxy(qPrintable(ProxyAddress));
 
     for (int i=0;i<MAXSTR-1;i++) { // for each out stream
-
-        if (!ConvEna[i]) continue;
         if (Input->currentIndex() == 2||Input->currentIndex() == 4) continue;
+        if (!ConvEna[i]) continue;
         if (!(conv[i] = strconvnew(ConvInp[i], ConvOut[i], qPrintable(ConvMsg[i]),
                        StaId, StaSel, qPrintable(ConvOpt[i])))) continue;
         strcpy(buff, qPrintable(AntType));
-        for (p = strtok(buff, ","), n = 0; p && n < 3; p = strtok(NULL, ",")) ant[n++] = p;
-        strcpy(conv[i]->out.sta.antdes, ant[0]);
-        strcpy(conv[i]->out.sta.antsno, ant[1]);
-        conv[i]->out.sta.antsetup = atoi(ant[2]);
+        for (p=strtok(buff,","),n=0;p&&n<3;p=strtok(NULL,",")) ant[n++]=p;
+        strcpy(conv[i]->out.sta.antdes,ant[0]);
+        strcpy(conv[i]->out.sta.antsno,ant[1]);
+        conv[i]->out.sta.antsetup=atoi(ant[2]);
         strcpy(buff, qPrintable(RcvType));
-        for (p = strtok(buff, ","), n = 0; p && n < 3; p = strtok(NULL, ",")) rcv[n++] = p;
-        strcpy(conv[i]->out.sta.rectype, rcv[0]);
-        strcpy(conv[i]->out.sta.recver, rcv[1]);
-        strcpy(conv[i]->out.sta.recsno, rcv[2]);
-        matcpy(conv[i]->out.sta.pos, AntPos, 3, 1);
-        matcpy(conv[i]->out.sta.del, AntOff, 3, 1);
+        for (p=strtok(buff,","),n=0;p&&n<3;p=strtok(NULL,",")) rcv[n++]=p;
+        strcpy(conv[i]->out.sta.rectype,rcv[0]);
+        strcpy(conv[i]->out.sta.recver ,rcv[1]);
+        strcpy(conv[i]->out.sta.recsno ,rcv[2]);
+        matcpy(conv[i]->out.sta.pos,AntPos,3,1);
+        matcpy(conv[i]->out.sta.del,AntOff,3,1);
     }
-
     // stream server start
-    if (!strsvrstart(&strsvr, opt, strs, paths, conv, cmds, AntPos)) return;
-
+    if (!strsvrstart(&strsvr,opt,strs,paths,conv,cmds,cmds_periodic,AntPos)) {
+        return;
+    }
     // set ntrip source table
-    strsvrsetsrctbl(&strsvr, qPrintable(SrcTblFile));
+    strsvrsetsrctbl(&strsvr,qPrintable(SrcTblFile));
 
-    for (int i = 0; i < 4; i++) delete cmds[i];
+    for (int i = 0; i < 4; i++) {delete cmds[i]; delete cmds_periodic[i];};
 
     StartTime = utc2gpst(timeget());
     Panel1->setEnabled(false);
@@ -645,6 +654,7 @@ void MainForm::SvrStart(void)
     MenuStop->setEnabled(true);
     MenuExit->setEnabled(false);
     SetTrayIcon(1);
+
 }
 // stop stream server -------------------------------------------------------
 void MainForm::SvrStop(void)
@@ -696,7 +706,8 @@ void MainForm::Timer2Timer()
 {
     const QString types[]={
         tr("None"),tr("Serial"),tr("File"),tr("TCP Server"),tr("TCP Client"),tr("UDP"),tr("Ntrip Sever"),
-        tr("Ntrip Client"),tr("FTP"),tr("HTTP"),tr("Ntrip Cast S"),tr("Ntrip Cast C")
+        tr("Ntrip Client"),tr("FTP"),tr("HTTP"),tr("Ntrip Cast S"),tr("Ntrip Cast C"),tr("UDP Sever"),
+        tr("UDP Client")
     };
     const QString modes[]={tr("-"),tr("R"),tr("W"),tr("R/W")};
     const QString states[]={tr("ERR"),tr("-"),tr("WAIT"),tr("CONN")};
@@ -706,31 +717,31 @@ void MainForm::Timer2Timer()
 
     if (strMonDialog->StrFmt) {
         lock(&strsvr.lock);
-        len=strsvr.npb;
-        if (len>0&&(msg=(unsigned char *)malloc(len))) {
-            memcpy(msg,strsvr.pbuf,len);
-            strsvr.npb=0;
+        len = strsvr.npb;
+        if (len > 0 && (msg = (unsigned char *)malloc(len))) {
+            memcpy(msg, strsvr.pbuf, len);
+            strsvr.npb = 0;
         }
         unlock(&strsvr.lock);
-        if (len<=0||!msg) return;
-        strMonDialog->AddMsg(msg,len);
+        if (len <= 0 || !msg) return;
+        strMonDialog->AddMsg(msg, len);
         free(msg);
     }
     else {
-        if (!(msg=(unsigned char *)malloc(16000))) return;
+        if (!(msg = (unsigned char *)malloc(16000))) return;
 
-        for (i=0,p=(char*)msg;i<MAXSTR;i++) {
-            p+=sprintf(p,"[STREAM %d]\n",i);
-            strsum(strsvr.stream+i,&inb,&inr,&outb,&outr);
-            strstatx(strsvr.stream+i,p);
-            p+=strlen(p);
-            if (inb>0) {
-                p+=sprintf(p,"  inb     = %d\n",inb);
-                p+=sprintf(p,"  inr     = %d\n",inr);
+        for (i = 0, p = (char*)msg; i < MAXSTR; i++) {
+            p += sprintf(p, "[STREAM %d]\n", i);
+            strsum(strsvr.stream + i, &inb, &inr, &outb, &outr);
+            strstatx(strsvr.stream + i, p);
+            p += strlen(p);
+            if (inb > 0) {
+                p += sprintf(p,"  inb     = %d\n", inb);
+                p += sprintf(p,"  inr     = %d\n", inr);
             }
-            if (outb>0) {
-                p+=sprintf(p,"  outb    = %d\n",outb);
-                p+=sprintf(p,"  outr    = %d\n",outr);
+            if (outb > 0) {
+                p += sprintf(p,"  outb    = %d\n", outb);
+                p += sprintf(p,"  outr    = %d\n", outr);
             }
         }
         strMonDialog->AddMsg(msg,strlen((char*)msg));

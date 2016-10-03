@@ -140,7 +140,7 @@ public:
     int NmeaReq, NmeaCycle, InTimeTag, OutTimeTag, OutAppend, LogTimeTag, LogAppend;
     int TimeoutTime, ReconTime, SbasCorr, DgpsCorr, TideCorr, FileSwapMargin;
     int Stream[MAXSTRRTK], StreamC[MAXSTRRTK], Format[MAXSTRRTK];
-    int CmdEna[3][2], CmdEnaTcp[3][2];
+    int CmdEna[3][3], CmdEnaTcp[3][3];
     int TimeSys,SolType;
     int PlotType1,FreqType1,PlotType2,FreqType2;
     int PlotType3,FreqType3,PlotType4,FreqType4;
@@ -157,7 +157,7 @@ public:
     double *SolRov, *SolRef, *Qr, *VelRov, *Age, *Ratio;
     double TrkOri[3];
 
-    QString Paths[MAXSTRRTK][4], Cmds[3][2], CmdsTcp[3][2];
+    QString Paths[MAXSTRRTK][4], Cmds[3][3], CmdsTcp[3][3];
     QString InTimeStart, InTimeSpeed, ExSats;
     QString RcvOpt[3], ProxyAddr;
     QString OutSwapInterval, LogSwapInterval;

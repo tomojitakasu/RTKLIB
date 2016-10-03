@@ -57,13 +57,11 @@ MainForm::MainForm(QWidget *parent)
     camera = NULL;
     StartTime.time = 0;
     CaptureTime.time = 0;
-    Video_Width = Video_Height = FRM = FRM0 = FPS = 0;
+    Video_Width = Video_Height = FrameCount = FrameCount0 = FrameRate = 0;
     DevName = "";
     OutFile = "";
-    Profile = CapSizeEna = Annotation = 0;
+    Profile = 0;
     TcpPortEna = OutFileEna = OutTimeTag = FileSwap = 0;
-    CapWidth = DEFAULT_CAP_WIDTH;
-    CapHeight = DEFAULT_CAP_HEIGHT;
     TcpPortNo = DEFAULT_TCP_PORT;
 
     setWindowTitle(QString("%1 ver. %2 %3").arg(PRGNAME).arg(VER_RTKLIB).arg(PATCH_LEVEL));
@@ -74,6 +72,7 @@ MainForm::MainForm(QWidget *parent)
     connect(BtnExit, SIGNAL(clicked(bool)), this, SLOT(BtnExitClick()));
     connect(BtnOpt, SIGNAL(clicked(bool)), this, SLOT(BtnOptClick()));
 
+    BtnStop->setEnabled(false);
     Time.start();
 }
 //---------------------------------------------------------------------------
@@ -91,7 +90,7 @@ void MainForm::showEvent(QShowEvent *event)
     strsetopt(str_opt);
     
     for (int i = 0; i < 2; i++) {
-        strinit(OutStr+i);
+        strinit(OutputStream+i);
     }
     initlock(&DeviceLock);
 }
@@ -140,21 +139,21 @@ int MainForm::CaptureStart(void)
     const char *swap[] = {
         "", "::S=0.05", "::S=0.1", "::S=0.25", "::S=0.5", "::S=1", "::S=2"
     };
-    
-   camera = new QCamera(DevName.toLatin1());
+    camera = new QCamera(DevName.toLatin1());
 
-   if (!camera->isAvailable()) return -1;
+    if (!camera->isAvailable()) return -1;
 
-   camera->setCaptureMode(QCamera::CaptureVideo);
+    camera->setViewfinderSettings(videoSettings);
+    camera->setCaptureMode(QCamera::CaptureVideo);
 
-   if (TcpPortEna) {
-        if (!stropen(OutStr, STR_TCPSVR, STR_MODE_RW, qPrintable(QString::number(TcpPortNo)))) {
+    if (TcpPortEna) {
+        if (!stropen(OutputStream, STR_TCPSVR, STR_MODE_RW, qPrintable(QString::number(TcpPortNo)))) {
             Message3->setText(tr("tcp port open error"));
         }
     }
     if (OutFileEna && OutFile != "") {
         QString outfile = OutFile + (OutTimeTag ? "::T" : "") + swap[FileSwap];
-        if (!stropen(OutStr + 1, STR_FILE, STR_MODE_W, qPrintable(outfile))) {
+        if (!stropen(OutputStream + 1, STR_FILE, STR_MODE_W, qPrintable(outfile))) {
             Message3->setText (tr("file open error"));
         }
     }
@@ -165,6 +164,8 @@ int MainForm::CaptureStart(void)
     connect(cameraFrameGrabber, SIGNAL(frameAvailable(QImage)), this, SLOT(SampleBufferSync(QImage)));
 
     StartTime = utc2gpst(timeget());
+    StartTick = tickget();
+
     camera->start();
     return 1;
 }
@@ -174,7 +175,7 @@ void MainForm::CaptureStop(void)
     camera->stop();
     
     for (int i = 0; i < 2; i++) {
-        strclose(OutStr + i);
+        strclose(OutputStream + i);
     }
 }
 //---------------------------------------------------------------------------
@@ -192,61 +193,69 @@ void MainForm::SampleBufferSync(QImage videoFrame)
     QString str;
         
     CaptureTime = utc2gpst(timeget());
-    FRM++;
-
-    if (CapSizeEna) {
-        videoFrame=videoFrame.scaled(CapWidth, CapHeight);
-     }
-    QPainter c(&videoFrame);
-    c.setPen(Qt::yellow);
+    CaptureTick = tickget();
+    FrameCount++;
 
     if (TcpPortEna || OutFileEna) {
-        
-        if (Annotation) {
-            str=QString("%1 FRM=%2").arg(time_str(CaptureTime,1)).arg(FRM);
-            c.drawText(10, 10, str);
+        QImage sentFrame=videoFrame;
+
+        QPainter c(&sentFrame);
+
+        if (CaptionPos)
+        {
+            static const int aligns[] = {
+                    Qt::AlignLeading, Qt::AlignCenter, Qt::AlignTrailing
+            };
+
+            str=QString("%1 T=%2 s TICK=%3 FRM=%4").arg(time_str(CaptureTime,3)).arg((CaptureTick-StartTick)*1e-3,0,'f',3).arg(CaptureTick).arg(FrameCount);
+
+            c.setPen(CaptionColor);
+            c.setFont(QFont(qApp->font().family(),CaptionSize));
+            c.drawText(videoFrame.rect(), aligns[CaptionPos-1]|Qt::AlignTop, str_msg);
         }
+
         QBuffer buff;
 
-        videoFrame.save(&buff, "JPEG");
+        sentFrame.save(&buff, "JPEG");
         
         
         for (int i = 0; i < 2; i++) {
-            strwrite(OutStr + i, (unsigned char *)buff.data().constData(), buff.data().size());
+            strwrite(OutputStream + i, (unsigned char *)buff.data().constData(), buff.data().size());
         }
     }
-        
-    c.setPen(color[strstat(OutStr, str_msg)+1]);
-    strsum(OutStr, NULL, NULL, NULL, &outr);
-    msg = QString("%1Mbps %2").arg(outr / 1e6, 0, 'f', 1).arg(str_msg);
+    QPainter c(&videoFrame);
+
+    c.setPen(color[strstat(OutputStream, str_msg)+1]);
+    strsum(OutputStream, NULL, NULL, NULL, &outr);
+    msg = QString("%1Mbps %2").arg(outr / 1e6, 4, 'f', 1).arg(str_msg);
     QRect rect = videoFrame.rect();
     rect.setHeight(rect.height() - c.boundingRect(videoFrame.rect(), "T").height() - 5); // decrease size by one line (+spacing)
     c.drawText(rect, Qt::AlignBottom|Qt::AlignLeft, msg);
 
-    c.setPen(color[strstat(OutStr + 1, str_msg) + 1]);
-    strsum(OutStr + 1, NULL, NULL, &outb, NULL);
-    msg = QString("%1MB").arg(outb / 1e6, 0, 'f', 1);
-    strstatx(OutStr + 1, str_msg);
+    c.setPen(color[strstat(OutputStream + 1, str_msg) + 1]);
+    strsum(OutputStream + 1, NULL, NULL, &outb, NULL);
+    msg = QString("%1MB").arg(outb / 1e6, 4, 'f', 1);
+    strstatx(OutputStream + 1, str_msg);
     if ((p = strstr(str_msg, "openpath=")) && (q = strchr(p + 9, '\n'))) {
         *q = '\0';
         msg += p + 9;
     }
     c.drawText(videoFrame.rect(), Qt::AlignBottom|Qt::AlignLeft, msg);
 
-    c.setPen(Qt::yellow);
+    c.setPen(CaptionColor);
     if (++Timer_Count * Time.elapsed() >= 1000) {
-        FPS = FRM - FRM0;
-        FRM0 = FRM;
+        FrameRate = FrameCount - FrameCount0;
+        FrameCount0 = FrameCount;
         Timer_Count = 0;
         Time.restart();
     }
-    msg = QString("%1 x %2 FRM=%3 FPS=%4").arg(Video_Width).arg(Video_Height).arg(FRM).arg(FPS, 2);
+    msg = QString("%1 x %2 FRM=%3 FPS=%4").arg(videoFrame.width()).arg(videoFrame.height()).arg(FrameCount).arg(FrameRate, 2);
     c.drawText(videoFrame.rect(), Qt::AlignBottom|Qt::AlignRight, msg);
     
     time2str(utc2gpst(timeget()), str_msg, 1);
     c.drawText(videoFrame.rect(), Qt::AlignTop|Qt::AlignLeft, str_msg);
     
-    msg = QString("TIME = %1 s").arg(!StartTime.time ? 0.0 : timediff(CaptureTime, StartTime), 0, 'f', 1);
+    msg = QString("T = %1 s TICK=%2").arg((CaptureTick - StartTick) * 1e-3, 0, 'f', 1).arg(CaptureTick);
     c.drawText(videoFrame.rect(), Qt::AlignTop|Qt::AlignRight, msg);
 
     // show image in monitor
@@ -257,30 +266,33 @@ void MainForm::LoadOptions(void)
 {
     QSettings settings(IniFile, QSettings::IniFormat);
 
-    CapSizeEna = settings.value("videoopt/capsizeena", 0).toInt();
-    CapWidth = settings.value("videoopt/capwidth", 500).toInt();
-    CapHeight = settings.value("videoopt/capheight", 500).toInt();
+    CaptionSize = settings.value("videoopt/captionsize", 24).toInt();
+    CaptionColor = settings.value("videoopt/captioncolor", QColor(Qt::red)).value<QColor>();
     TcpPortEna = settings.value("videoopt/tcpportena", 0).toInt();
     TcpPortNo = settings.value("videoopt/tcpportno", 10033).toInt();
     OutFileEna = settings.value("videoopt/outfileena", 0).toInt();
     OutFile = settings.value("videoopt/outfile", "").toString();
     OutTimeTag = settings.value("videoopt/outtimetag", 0).toInt();
     FileSwap = settings.value("videoopt/fileswap", 0).toInt();
+    CaptionPos = settings.value("videoopt/captionpos", 2).toInt();
+    CodecQuality = settings.value("videoopt/codecquality", 90).toInt();
 }
 //---------------------------------------------------------------------------
 void MainForm::SaveOptions(void)
 {
     QSettings settings(IniFile, QSettings::IniFormat);
 
-    settings.setValue("videoopt/capsizeena", CapSizeEna);
-    settings.setValue("videoopt/capwidth", CapWidth);
-    settings.setValue("videoopt/capheight", CapHeight);
+    settings.setValue("videoopt/capsize", CaptionSize);
+    settings.setValue("videoopt/captioncolor", CaptionColor);
     settings.setValue("videoopt/tcpportena", TcpPortEna);
     settings.setValue("videoopt/tcpportno", TcpPortNo);
     settings.setValue("videoopt/outfileena", OutFileEna);
     settings.setValue("videoopt/outfile", OutFile);
     settings.setValue("videoopt/outtimetag", OutTimeTag);
     settings.setValue("videoopt/fileswap", FileSwap);
+    settings.setValue("videoopt/captionpos", CaptionPos);
+    settings.setValue("videoopt/codecquality", CodecQuality);
+
 }
 //---------------------------------------------------------------------------
 void MainForm::cameraError(QCamera::Error )
