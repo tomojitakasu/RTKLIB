@@ -30,7 +30,7 @@
 
 static const char rcsid[]="$Id:$";
 
-#define NOUTFILE        7       /* number of output files */
+#define NOUTFILE        8       /* number of output files */
 #define TSTARTMARGIN    60.0    /* time margin for file name replacement */
 
 /* type definition -----------------------------------------------------------*/
@@ -619,6 +619,7 @@ static int openfile(FILE **ofp, char *files[], const char *file,
             case 3: outrnxhnavh(ofp[3],opt,nav); break;
             case 4: outrnxqnavh(ofp[4],opt,nav); break;
             case 5: outrnxlnavh(ofp[5],opt,nav); break;
+            case 6: outrnxcnavh(ofp[6],opt,nav); break;
         }
     }
     return 1;
@@ -643,6 +644,7 @@ static void closefile(FILE **ofp, const rnxopt_t *opt, nav_t *nav)
             case 3: outrnxhnavh(ofp[3],opt,nav); break;
             case 4: outrnxqnavh(ofp[4],opt,nav); break;
             case 5: outrnxlnavh(ofp[5],opt,nav); break;
+            case 6: outrnxcnavh(ofp[6],opt,nav); break;
         }
         fclose(ofp[i]);
     }
@@ -777,6 +779,12 @@ static void convnav(FILE **ofp, rnxopt_t *opt, strfile_t *str, int *n)
             outrnxnavb(ofp[1],opt,str->nav->eph+str->sat-1);
             n[1]++;
         }
+        if (ofp[6]&&opt->rnxver<=2.99) {
+
+            /* output rinex cnav */
+            outrnxnavb(ofp[6],opt,str->nav->eph+str->sat-1);
+            n[6]++;
+        }
     }
 }
 /* convert sbas message ------------------------------------------------------*/
@@ -801,10 +809,10 @@ static void convsbs(FILE **ofp, rnxopt_t *opt, strfile_t *str, int *n)
     }
     if (!(sat=satno(sys,prn))||opt->exsats[sat-1]==1) return;
     
-    if (ofp[6]) { /* output sbas log */
+    if (ofp[7]) { /* output sbas log */
         if (screent(gpst2time(str->raw.sbsmsg.week,str->raw.sbsmsg.tow),opt->ts,
                     opt->te,0.0)) {
-            sbsoutmsg(ofp[6],&str->raw.sbsmsg); n[6]++;
+            sbsoutmsg(ofp[7],&str->raw.sbsmsg); n[7]++;
         }
     }
     if (!(opt->navsys&SYS_SBS)||msg!=9||
@@ -833,8 +841,8 @@ static void convlex(FILE **ofp, rnxopt_t *opt, strfile_t *str, int *n)
     ts1=opt->ts; if (ts1.time!=0) ts1=timeadd(ts1,-MAXDTOE);
     te1=opt->te; if (te1.time!=0) te1=timeadd(te1, MAXDTOE);
     
-    if (ofp[6]&&screent(str->time,opt->ts,opt->te,0.0)) {
-        lexoutmsg(ofp[6],&str->raw.lexmsg); n[6]++;
+    if (ofp[7]&&screent(str->time,opt->ts,opt->te,0.0)) {
+        lexoutmsg(ofp[7],&str->raw.lexmsg); n[7]++;
     }
 }
 /* set approx position -------------------------------------------------------*/
@@ -892,9 +900,9 @@ static int convrnx_s(int sess, int format, rnxopt_t *opt, const char *file,
     char path[1024],*paths[NOUTFILE],s[NOUTFILE][1024];
     char *epath[MAXEXFILE]={0},*staid=*opt->staid?opt->staid:"0000";
     
-    trace(3,"convrnx_s: sess=%d format=%d file=%s ofile=%s %s %s %s %s %s %s\n",
+    trace(3,"convrnx_s: sess=%d format=%d file=%s ofile=%s %s %s %s %s %s %s %s\n",
           sess,format,file,ofile[0],ofile[1],ofile[2],ofile[3],ofile[4],
-          ofile[5],ofile[6]);
+          ofile[5],ofile[6],ofile[7]);
     
     /* replace keywords in input file */
     if (reppath(file,path,opt->ts,staid,"")<0) {
@@ -1016,7 +1024,8 @@ static int convrnx_s(int sess, int format, rnxopt_t *opt, const char *file,
 *                               ofile[3] rinex hnav file  ("": no output)
 *                               ofile[4] rinex qnav file  ("": no output)
 *                               ofile[5] rinex lnav file  ("": no output)
-*                               ofile[6] sbas/lex log file("": no output)
+*                               ofile[6] rinex cnav file  ("": no output)
+*                               ofile[7] sbas/lex log file("": no output)
 * return : status (1:ok,0:error,-1:abort)
 * notes  : the following members of opt are replaced by information in last
 *          converted rinex: opt->tstart, opt->tend, opt->obstype, opt->nobs
@@ -1031,9 +1040,9 @@ extern int convrnx(int format, rnxopt_t *opt, const char *file, char **ofile)
     double tu,ts;
     int i,week,stat=1;
     
-    trace(3,"convrnx: format=%d file=%s ofile=%s %s %s %s %s %s %s\n",
+    trace(3,"convrnx: format=%d file=%s ofile=%s %s %s %s %s %s %s %s\n",
           format,file,ofile[0],ofile[1],ofile[2],ofile[3],ofile[4],ofile[5],
-          ofile[6]);
+          ofile[6],ofile[7]);
     
     showmsg("");
     
