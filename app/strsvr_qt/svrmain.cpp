@@ -28,6 +28,7 @@
 #include <QMessageBox>
 #include <QSettings>
 #include <QMenu>
+#include <QStringList>
 
 #include "rtklib.h"
 #include "svroptdlg.h"
@@ -563,18 +564,16 @@ void MainForm::SvrStart(void)
         STR_NONE,STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPSVR,STR_NTRIPC_C,
         STR_UDPCLI,STR_FILE
     };
-    int ip[]={0,1,1,1,1,1,2,3,3},strs[4]={0},opt[8]={0},n;
+    int ip[]={0,1,1,1,1,1,2,3,3},strs[4]={0},opt[8]={0};
     char *paths[MAXSTR],*cmds[MAXSTR]={0},*cmds_periodic[MAXSTR]={0};
-    char filepath[1024],buff[1024];
-    char *ant[3]={"","",""},*rcv[3]={"","",""},*p;
-    FILE *fp;
+    char filepath[1024];
+    char *p;
 
     if (TraceLevel>0) {
         traceopen(!LogFile.isEmpty()?qPrintable(LogFile):TRACEFILE);
         tracelevel(TraceLevel);
     }
-    for (int i=0;i<4;i++) paths[i]=str[i];
-
+    for (int i = 0; i < 4; i++) paths[i] = str[i];
 
     strs[0] = itype[Input->currentIndex()];
     strs[1] = otype[Output1->currentIndex()];
@@ -610,8 +609,7 @@ void MainForm::SvrStart(void)
         strcpy(filepath,paths[i]);
         if (strstr(filepath,"::A")) continue;
         if ((p=strstr(filepath,"::"))) *p='\0';
-        if (!(fp=fopen(filepath,"r"))) continue;
-        fclose(fp);
+        if (!QFile::exists(filepath)) continue;
         if (QMessageBox::question(this, tr("Overwrite"), tr("File %1 exists. \nDo you want to overwrite?").arg(filepath)) != QMessageBox::Yes) return;
     }
     strsetdir(qPrintable(LocalDirectory));
@@ -622,25 +620,29 @@ void MainForm::SvrStart(void)
         if (!ConvEna[i]) continue;
         if (!(conv[i] = strconvnew(ConvInp[i], ConvOut[i], qPrintable(ConvMsg[i]),
                        StaId, StaSel, qPrintable(ConvOpt[i])))) continue;
-        strcpy(buff, qPrintable(AntType));
-        for (p=strtok(buff,","),n=0;p&&n<3;p=strtok(NULL,",")) ant[n++]=p;
-        strcpy(conv[i]->out.sta.antdes,ant[0]);
-        strcpy(conv[i]->out.sta.antsno,ant[1]);
-        conv[i]->out.sta.antsetup=atoi(ant[2]);
-        strcpy(buff, qPrintable(RcvType));
-        for (p=strtok(buff,","),n=0;p&&n<3;p=strtok(NULL,",")) rcv[n++]=p;
-        strcpy(conv[i]->out.sta.rectype,rcv[0]);
-        strcpy(conv[i]->out.sta.recver ,rcv[1]);
-        strcpy(conv[i]->out.sta.recsno ,rcv[2]);
+        QStringList tokens = AntType.split(',');
+        if (tokens.size() >= 3)
+        {
+            strcpy(conv[i]->out.sta.antdes, qPrintable(tokens.at(0)));
+            strcpy(conv[i]->out.sta.antsno, qPrintable(tokens.at(1)));
+            conv[i]->out.sta.antsetup = atoi(qPrintable(tokens.at(2)));
+        }
+        tokens = RcvType.split(',');
+        if (tokens.size() >= 3)
+        {
+            strcpy(conv[i]->out.sta.rectype, qPrintable(tokens.at(0)));
+            strcpy(conv[i]->out.sta.recver, qPrintable(tokens.at(1)));
+            strcpy(conv[i]->out.sta.recsno, qPrintable(tokens.at(2)));
+        }
         matcpy(conv[i]->out.sta.pos,AntPos,3,1);
         matcpy(conv[i]->out.sta.del,AntOff,3,1);
     }
     // stream server start
-    if (!strsvrstart(&strsvr,opt,strs,paths,conv,cmds,cmds_periodic,AntPos)) {
+    if (!strsvrstart(&strsvr, opt, strs, paths, conv, cmds, cmds_periodic, AntPos)) {
         return;
     }
     // set ntrip source table
-    strsvrsetsrctbl(&strsvr,qPrintable(SrcTblFile));
+    strsvrsetsrctbl(&strsvr, qPrintable(SrcTblFile));
 
     for (int i = 0; i < 4; i++) {delete cmds[i]; delete cmds_periodic[i];};
 
