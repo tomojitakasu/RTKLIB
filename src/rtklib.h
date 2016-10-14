@@ -422,6 +422,7 @@ extern "C" {
 #define STR_UDPSVR   12                 /* stream type: UDP server */
 #define STR_UDPCLI   13                 /* stream type: UDP server */
 #define STR_MEMBUF   14                 /* stream type: memory buffer */
+#define STR_CUSTOM   15                 /* stream type: custom */
 
 #define STRFMT_RTCM2 0                  /* stream format: RTCM 2 */
 #define STRFMT_RTCM3 1                  /* stream format: RTCM 3 */
@@ -1354,6 +1355,15 @@ typedef struct {        /* gis type */
     double bound[4];    /* boundary {lat0,lat1,lon0,lon1} */
 } gis_t;
 
+typedef struct {        /* custom stream type */
+    void * (*open)(const char *path, int type, char *msg); /* open function */
+    void (*close)(void *port);                             /* close function */
+    int (*read)(void *port, unsigned char *buff, int n, char *msg);  /* read function */
+    int (*write)(void *port, unsigned char *buff, int n, char *msg); /* write function */
+    int (*state)(void *port);             /* state function */
+    int (*statex)(void *port, char *msg); /* statex function */
+} strcustom_t;
+
 typedef void fatalfunc_t(const char *); /* fatal callback function type */
 
 /* global variables ----------------------------------------------------------*/
@@ -1758,6 +1768,7 @@ EXPORT void strsendcmd(stream_t *stream, const char *cmd);
 EXPORT void strsettimeout(stream_t *stream, int toinact, int tirecon);
 EXPORT void strsetdir(const char *dir);
 EXPORT void strsetproxy(const char *addr);
+EXPORT void strsetcustom(const strcustom_t *custom);
 
 /* integer ambiguity resolution ----------------------------------------------*/
 EXPORT int lambda(int n, int m, const double *a, const double *Q, double *F,
