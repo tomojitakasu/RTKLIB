@@ -261,6 +261,8 @@ static char proxyaddr[256]=""; /* http/ntrip/ftp proxy address */
 static unsigned int tick_master=0; /* time tick master for replay */
 static int fswapmargin=30;  /* file swap margin (s) */
 
+static strcustom_t custom;  /* custom stream settings */
+
 /* read/write serial buffer --------------------------------------------------*/
 #ifdef WIN32
 static int readseribuff(serial_t *serial, unsigned char *buff, int nmax)
@@ -2607,6 +2609,52 @@ static int statexmembuf(membuf_t *membuf, char *msg)
     p+=sprintf(p,"  rp      = %d\n",membuf->rp);
     return state;
 }
+
+/* initialize custom stream --------------------------------------------------*/
+extern void strsetcustom(const strcustom_t *c)
+{
+    custom = *c;
+}
+
+static void *opencustom(const char *path, int type, char *msg)
+{
+    if( !custom.open ) {
+        strcpy(msg,"custom stream type is not configured");
+        return NULL;
+    }
+
+    return custom.open(path,type,msg);
+}
+
+static void closecustom(void *port)
+{
+    if( custom.close ) custom.close(port);
+}
+
+static int readcustom(void *port, unsigned char *buff, int n, char *msg)
+{
+    if( !custom.read ) return 0;
+    return custom.read(port,buff,n,msg);
+}
+
+static int writecustom(void *port, unsigned char *buff, int n, char *msg)
+{
+    if( !custom.write ) return 0;
+    return custom.write(port,buff,n,msg);
+}
+
+static int statecustom(void *port)
+{
+    if( !custom.state ) return -1;
+    return custom.state(port);
+}
+
+static int statexcustom(void *port, char *msg)
+{
+    if( !custom.statex ) return -1;
+    return custom.statex(port,msg);
+}
+
 /* initialize stream environment -----------------------------------------------
 * initialize stream environment
 * args   : none
@@ -2710,6 +2758,7 @@ extern int stropen(stream_t *stream, int type, int mode, const char *path)
         case STR_FTP     : stream->port=openftp   (path,0,   stream->msg); break;
         case STR_HTTP    : stream->port=openftp   (path,1,   stream->msg); break;
         case STR_MEMBUF  : stream->port=openmembuf(path,     stream->msg); break;
+        case STR_CUSTOM  : stream->port=opencustom(path,mode,stream->msg); break;
         default: stream->state=0; return 1;
     }
     stream->state=!stream->port?-1:1;
@@ -2741,6 +2790,7 @@ extern void strclose(stream_t *stream)
             case STR_FTP     : closeftp   ((ftp_t    *)stream->port); break;
             case STR_HTTP    : closeftp   ((ftp_t    *)stream->port); break;
             case STR_MEMBUF  : closemembuf((membuf_t *)stream->port); break;
+            case STR_CUSTOM  : closecustom(stream->port); break;
         }
     }
     else {
@@ -2810,6 +2860,7 @@ extern int strread(stream_t *stream, unsigned char *buff, int n)
         case STR_NTRIPC_C: nr=readntripc((ntripc_t *)stream->port,buff,n,msg); break;
         case STR_UDPSVR  : nr=readudpsvr((udp_t    *)stream->port,buff,n,msg); break;
         case STR_MEMBUF  : nr=readmembuf((membuf_t *)stream->port,buff,n,msg); break;
+        case STR_CUSTOM  : nr=readcustom(stream->port,buff,n,msg); break;
         case STR_FTP     : nr=readftp   ((ftp_t    *)stream->port,buff,n,msg); break;
         case STR_HTTP    : nr=readftp   ((ftp_t    *)stream->port,buff,n,msg); break;
         default:
@@ -2857,6 +2908,7 @@ extern int strwrite(stream_t *stream, unsigned char *buff, int n)
         case STR_NTRIPC_C: ns=writentripc((ntripc_t *)stream->port,buff,n,msg); break;
         case STR_UDPCLI  : ns=writeudpcli((udp_t    *)stream->port,buff,n,msg); break;
         case STR_MEMBUF  : ns=writemembuf((membuf_t *)stream->port,buff,n,msg); break;
+        case STR_CUSTOM  : ns=writecustom(stream->port,buff,n,msg); break;
         case STR_FTP     :
         case STR_HTTP    :
         default:
@@ -2945,6 +2997,7 @@ extern int strstat(stream_t *stream, char *msg)
         case STR_UDPSVR  : state=stateudpsvr((udp_t    *)stream->port); break;
         case STR_UDPCLI  : state=stateudpcli((udp_t    *)stream->port); break;
         case STR_MEMBUF  : state=statemembuf((membuf_t *)stream->port); break;
+        case STR_CUSTOM  : state=statecustom(stream->port); break;
         case STR_FTP     : state=stateftp   ((ftp_t    *)stream->port); break;
         case STR_HTTP    : state=stateftp   ((ftp_t    *)stream->port); break;
         default:
@@ -2985,6 +3038,7 @@ extern int strstatx(stream_t *stream, char *msg)
         case STR_UDPSVR  : state=statexudpsvr((udp_t    *)stream->port,msg); break;
         case STR_UDPCLI  : state=statexudpcli((udp_t    *)stream->port,msg); break;
         case STR_MEMBUF  : state=statexmembuf((membuf_t *)stream->port,msg); break;
+        case STR_CUSTOM  : state=statexcustom(stream->port,msg); break;
         case STR_FTP     : state=statexftp   ((ftp_t    *)stream->port,msg); break;
         case STR_HTTP    : state=statexftp   ((ftp_t    *)stream->port,msg); break;
         default:
