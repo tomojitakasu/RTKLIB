@@ -1515,6 +1515,25 @@ extern int read_leaps(const char *file)
     fclose(fp);
     return 1;
 }
+
+/* LFE prints out the leaps table*/
+extern void print_leaps(void)
+{
+    int i;
+
+    
+    fprintf(stderr,"Leaps table is:\n");
+    for (i=0;leaps[i][0]>0;i++) {
+        fprintf(stderr,"%f, %f, %f, %f, %f, %f, %f\n", leaps[i][0], leaps[i][1], leaps[i][2], leaps[i][3], leaps[i][4], leaps[i][5], leaps[i][6]);
+    }
+}
+
+
+
+
+/* LFE */
+
+
 /* gpstime to utc --------------------------------------------------------------
 * convert gpstime to utc considering leap seconds
 * args   : gtime_t t        I   time expressed in gpstime

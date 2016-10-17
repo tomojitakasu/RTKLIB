@@ -437,6 +437,10 @@ static int cmdopts(int argc, char **argv, rnxopt_t *opt, char **ifile,
         else if (!strcmp(argv[i],"-s" )&&i+1<argc) ofile[6]=argv[++i];
         else if (!strcmp(argv[i],"-trace" )&&i+1<argc) {
             *trace=atoi(argv[++i]);
+        } /* LFE add leaps file*/
+        else if (!strcmp(argv[i],"--leaps" )&&i+1<argc) {
+            fprintf(stderr,"--leaps detected\n");
+            read_leaps(argv[++i]);
         }
         else if (!strncmp(argv[i],"-",1)) printhelp();
         
@@ -502,6 +506,8 @@ int main(int argc, char **argv)
     /* parse command line options */
     format=cmdopts(argc,argv,&opt,&ifile,ofile,&dir,&trace);
     
+    print_leaps();
+
     if (!*ifile) {
         fprintf(stderr,"no input file\n");
         return -1;
@@ -521,6 +527,7 @@ int main(int argc, char **argv)
         traceopen(TRACEFILE);
         tracelevel(trace);
     }
+
     stat=convbin(format,&opt,ifile,ofile,dir);
     
     traceclose();

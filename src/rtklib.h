@@ -1431,6 +1431,9 @@ EXPORT double  time2doy (gtime_t t);
 EXPORT double  utc2gmst (gtime_t t, double ut1_utc);
 EXPORT int read_leaps(const char *file);
 
+/* LFE */
+EXPORT void print_leaps(void);
+
 EXPORT int adjgpsweek(int week);
 EXPORT unsigned int tickget(void);
 EXPORT void sleepms(int ms);
