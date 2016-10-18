@@ -73,6 +73,9 @@ static const char *help[]={
 "           rover latitude/longitude/height for fixed or ppp-fixed mode",
 " -y level  output soltion status (0:off,1:states,2:residuals) [0]",
 " -x level  debug trace level (0:off) [0]"
+" -leaps file  leap seconds file \"#  y  m  d  h  m  s  utc-gpst\"",
+"                                \"1981  7  1  0  0  0        -1\"",
+
 };
 /* show message --------------------------------------------------------------*/
 extern int showmsg(char *format, ...)
@@ -132,6 +135,10 @@ int main(int argc, char **argv)
             te=epoch2time(ee);
         }
         else if (!strcmp(argv[i],"-ti")&&i+1<argc) tint=atof(argv[++i]);
+        else if (!strcmp(argv[i],"-leaps" )&&i+1<argc) {
+            read_leaps(argv[++i]);
+            print_leaps();
+        }
         else if (!strcmp(argv[i],"-k")&&i+1<argc) {++i; continue;}
         else if (!strcmp(argv[i],"-p")&&i+1<argc) prcopt.mode=atoi(argv[++i]);
         else if (!strcmp(argv[i],"-f")&&i+1<argc) prcopt.nf=atoi(argv[++i]);
@@ -182,6 +189,7 @@ int main(int argc, char **argv)
     if (!prcopt.navsys) {
         prcopt.navsys=SYS_GPS|SYS_GLO;
     }
+
     if (n<=0) {
         showmsg("error : no input file");
         return -2;

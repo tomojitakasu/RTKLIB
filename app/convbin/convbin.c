@@ -135,6 +135,8 @@ static const char *help[]={
 "     -l lfile     output RINEX LNAV file",
 "     -s sfile     output SBAS message file",
 "     -trace level output trace level [off]",
+"     -leaps file  leap seconds file \"#  y  m  d  h  m  s  utc-gpst\"",
+"                                    \"1981  7  1  0  0  0        -1\"",
 "",
 " If any output file specified, default output files (<file>.obs,",
 " <file>.nav, <file>.gnav, <file>.hnav, <file>.qnav, <file>.lnav and",
@@ -437,10 +439,10 @@ static int cmdopts(int argc, char **argv, rnxopt_t *opt, char **ifile,
         else if (!strcmp(argv[i],"-s" )&&i+1<argc) ofile[6]=argv[++i];
         else if (!strcmp(argv[i],"-trace" )&&i+1<argc) {
             *trace=atoi(argv[++i]);
-        } /* LFE add leaps file*/
-        else if (!strcmp(argv[i],"--leaps" )&&i+1<argc) {
-            fprintf(stderr,"--leaps detected\n");
+        }
+        else if (!strcmp(argv[i],"-leaps" )&&i+1<argc) {
             read_leaps(argv[++i]);
+            print_leaps();
         }
         else if (!strncmp(argv[i],"-",1)) printhelp();
         
@@ -506,8 +508,6 @@ int main(int argc, char **argv)
     /* parse command line options */
     format=cmdopts(argc,argv,&opt,&ifile,ofile,&dir,&trace);
     
-    print_leaps();
-
     if (!*ifile) {
         fprintf(stderr,"no input file\n");
         return -1;

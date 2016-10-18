@@ -1516,22 +1516,24 @@ extern int read_leaps(const char *file)
     return 1;
 }
 
-/* LFE prints out the leaps table*/
+
+/* print leap seconds table -----------------------------------------------------
+* print leap seconds table
+* args   : none
+* return : none
+* notes  : 
+*-----------------------------------------------------------------------------*/
 extern void print_leaps(void)
 {
     int i;
-
     
-    fprintf(stderr,"Leaps table is:\n");
+    fprintf(stderr,"Leap seconds table:\n");
+    fprintf(stderr,"   y  m  d  h  m  s utc-gpst\n");
     for (i=0;leaps[i][0]>0;i++) {
-        fprintf(stderr,"%f, %f, %f, %f, %f, %f, %f\n", leaps[i][0], leaps[i][1], leaps[i][2], leaps[i][3], leaps[i][4], leaps[i][5], leaps[i][6]);
+        fprintf(stderr,"%4d %2d %2d %2d %2d %2d %3d\n", (int)leaps[i][0], (int)leaps[i][1], (int)leaps[i][2], (int)leaps[i][3], (int)leaps[i][4], (int)leaps[i][5], (int)leaps[i][6]);
     }
+    fprintf(stderr,"\n");
 }
-
-
-
-
-/* LFE */
 
 
 /* gpstime to utc --------------------------------------------------------------
