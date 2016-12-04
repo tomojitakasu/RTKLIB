@@ -840,7 +840,7 @@ void Plot::ReadStaPos(const QString &file, const QString &sta,
             if (tokens.size() < 4) continue;
             for (int i = 0; i < 3; i++) pos[i] = tokens.at(i).toDouble();
             for (int i = 3; i < tokens.size(); i++) code = tokens.at(i) + ' ';
-            code.simplified();
+            code = code.simplified();
 
             if (code != sta) continue;
 

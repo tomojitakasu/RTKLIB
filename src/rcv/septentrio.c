@@ -536,15 +536,11 @@ static double getSigFreq(int _signType, int freqNo){
     case 11:                                                       /* GLOL2CA */
         return FREQ2_GLO+(freqNo*7./16.)*1e6;
     case 12:                                                       /* GLOL3X  */
-        return 1.202025*1e9;
+        return FREQ3_GLO;
     case 15:                                                       /* IRNSSL5  */
         return FREQ5;
-    case 16:                                                       /* GALL1A  */
-        return FREQ1;
     case 17:                                                       /* GALL1BC */
         return FREQ1;
-    case 18:                                                       /* GALE6A  */
-        return FREQ6;
     case 19:                                                       /* GALE6BC */
         return FREQ6;
     case 20:                                                       /* GALE5a  */
@@ -614,14 +610,8 @@ static int getSignalCode(int signType){
     case 15:                                                       /* IRNSSL5  */
         _code=CODE_L5A;
         break;
-    case 16:                                                       /* GALE1A  */
-        _code=CODE_L1A;
-        break;
     case 17:                                                       /* GALE1BC */
         _code=CODE_L1C;
-        break;
-    case 18:                                                       /* GALE6A  */
-        _code=CODE_L6A;
         break;
     case 19:                                                       /* GALE6BC */
         _code=CODE_L6C;

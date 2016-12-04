@@ -97,7 +97,7 @@ class DownloadThread : public QThread
 {
     public:
         QString usr, pwd, proxy;
-        FILE *fp = NULL;
+        FILE *fp;
         url_t urls[MAX_URL_SEL];
         gtime_t ts, te;
         double ti;
@@ -109,7 +109,9 @@ class DownloadThread : public QThread
         explicit DownloadThread(QObject *parent, const QString lf, bool a, bool t) : QThread(parent)
         {
             seqnos = 0; seqnoe = 0; opts = 0;
-            ts = te = { 0, 0 };
+            ts.time = 0;
+            te.time = 0;
+            fp = NULL;
             test = t;
             LogFile = lf;
             append = a;
