@@ -659,6 +659,48 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>PRN01</tabstop>
+  <tabstop>PRN02</tabstop>
+  <tabstop>PRN03</tabstop>
+  <tabstop>PRN04</tabstop>
+  <tabstop>PRN05</tabstop>
+  <tabstop>PRN06</tabstop>
+  <tabstop>PRN07</tabstop>
+  <tabstop>PRN08</tabstop>
+  <tabstop>PRN09</tabstop>
+  <tabstop>PRN10</tabstop>
+  <tabstop>PRN11</tabstop>
+  <tabstop>PRN12</tabstop>
+  <tabstop>PRN13</tabstop>
+  <tabstop>PRN14</tabstop>
+  <tabstop>PRN15</tabstop>
+  <tabstop>PRN16</tabstop>
+  <tabstop>PRN17</tabstop>
+  <tabstop>PRN18</tabstop>
+  <tabstop>PRN19</tabstop>
+  <tabstop>PRN20</tabstop>
+  <tabstop>PRN21</tabstop>
+  <tabstop>PRN22</tabstop>
+  <tabstop>PRN23</tabstop>
+  <tabstop>PRN24</tabstop>
+  <tabstop>PRN25</tabstop>
+  <tabstop>PRN26</tabstop>
+  <tabstop>PRN27</tabstop>
+  <tabstop>PRN28</tabstop>
+  <tabstop>PRN29</tabstop>
+  <tabstop>PRN30</tabstop>
+  <tabstop>PRN31</tabstop>
+  <tabstop>PRN32</tabstop>
+  <tabstop>SBAS</tabstop>
+  <tabstop>GLO</tabstop>
+  <tabstop>GAL</tabstop>
+  <tabstop>PRN33</tabstop>
+  <tabstop>BtnChkAll</tabstop>
+  <tabstop>BtnUnchkAll</tabstop>
+  <tabstop>BtnOk</tabstop>
+  <tabstop>BtnCancel</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

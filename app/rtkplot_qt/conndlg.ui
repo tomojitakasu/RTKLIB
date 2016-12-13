@@ -511,6 +511,23 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>BtnOk</tabstop>
+  <tabstop>BtnCancel</tabstop>
+  <tabstop>SelStream1</tabstop>
+  <tabstop>BtnOpt1</tabstop>
+  <tabstop>BtnCmd1</tabstop>
+  <tabstop>SolFormat1</tabstop>
+  <tabstop>SelStream2</tabstop>
+  <tabstop>BtnOpt2</tabstop>
+  <tabstop>BtnCmd2</tabstop>
+  <tabstop>SolFormat2</tabstop>
+  <tabstop>TimeFormS</tabstop>
+  <tabstop>DegFormS</tabstop>
+  <tabstop>FieldSepS</tabstop>
+  <tabstop>TimeOutTimeE</tabstop>
+  <tabstop>ReConnTimeE</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

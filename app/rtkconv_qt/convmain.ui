@@ -661,7 +661,7 @@
           <string>&amp;Convert</string>
          </property>
          <property name="icon">
-          <iconset resource="../rtknavi_qt/rtknavi_qt.qrc">
+          <iconset resource="rtkconv_qt.qrc">
            <normaloff>:/buttons/start.bmp</normaloff>:/buttons/start.bmp</iconset>
          </property>
         </widget>
@@ -672,7 +672,7 @@
           <string>Abort</string>
          </property>
          <property name="icon">
-          <iconset resource="../rtknavi_qt/rtknavi_qt.qrc">
+          <iconset resource="rtkconv_qt.qrc">
            <normaloff>:/buttons/stop2.bmp</normaloff>:/buttons/stop2.bmp</iconset>
          </property>
         </widget>
@@ -690,9 +690,63 @@
    </layout>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>BtnConvert</tabstop>
+  <tabstop>BtnAbort</tabstop>
+  <tabstop>BtnExit</tabstop>
+  <tabstop>TimeStartF</tabstop>
+  <tabstop>BtnTime1</tabstop>
+  <tabstop>TimeEndF</tabstop>
+  <tabstop>BtnTime2</tabstop>
+  <tabstop>TimeIntF</tabstop>
+  <tabstop>TimeUnitF</tabstop>
+  <tabstop>dateTime1</tabstop>
+  <tabstop>dateTime2</tabstop>
+  <tabstop>TimeInt</tabstop>
+  <tabstop>TimeUnit</tabstop>
+  <tabstop>InFile</tabstop>
+  <tabstop>BtnKey</tabstop>
+  <tabstop>BtnInFileView</tabstop>
+  <tabstop>BtnInFile</tabstop>
+  <tabstop>OutDirEna</tabstop>
+  <tabstop>OutDir</tabstop>
+  <tabstop>BtnOutDir</tabstop>
+  <tabstop>Format</tabstop>
+  <tabstop>OutFileEna1</tabstop>
+  <tabstop>OutFile1</tabstop>
+  <tabstop>BtnOutFileView1</tabstop>
+  <tabstop>BtnOutFile1</tabstop>
+  <tabstop>OutFileEna2</tabstop>
+  <tabstop>OutFile2</tabstop>
+  <tabstop>BtnOutFileView2</tabstop>
+  <tabstop>BtnOutFile2</tabstop>
+  <tabstop>OutFileEna3</tabstop>
+  <tabstop>OutFile3</tabstop>
+  <tabstop>BtnOutFileView3</tabstop>
+  <tabstop>BtnOutFile3</tabstop>
+  <tabstop>OutFileEna4</tabstop>
+  <tabstop>OutFile4</tabstop>
+  <tabstop>BtnOutFileView4</tabstop>
+  <tabstop>BtnOutFile4</tabstop>
+  <tabstop>OutFileEna5</tabstop>
+  <tabstop>OutFile5</tabstop>
+  <tabstop>BtnOutFileView5</tabstop>
+  <tabstop>BtnOutFile5</tabstop>
+  <tabstop>OutFileEna6</tabstop>
+  <tabstop>OutFile6</tabstop>
+  <tabstop>BtnOutFileView6</tabstop>
+  <tabstop>BtnOutFile6</tabstop>
+  <tabstop>OutFileEna7</tabstop>
+  <tabstop>OutFile7</tabstop>
+  <tabstop>BtnOutFileView7</tabstop>
+  <tabstop>BtnOutFile7</tabstop>
+  <tabstop>BtnAbout</tabstop>
+  <tabstop>BtnPlot</tabstop>
+  <tabstop>BtnPost</tabstop>
+  <tabstop>BtnOptions</tabstop>
+ </tabstops>
  <resources>
   <include location="rtkconv_qt.qrc"/>
-  <include location="../rtknavi_qt/rtknavi_qt.qrc"/>
  </resources>
  <connections/>
 </ui>

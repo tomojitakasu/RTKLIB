@@ -207,6 +207,15 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>Conversion</tabstop>
+  <tabstop>InFormat</tabstop>
+  <tabstop>OutFormat</tabstop>
+  <tabstop>OutMsgs</tabstop>
+  <tabstop>Options</tabstop>
+  <tabstop>BtnOk</tabstop>
+  <tabstop>BtnCancel</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

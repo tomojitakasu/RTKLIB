@@ -735,6 +735,39 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>BtnOk</tabstop>
+  <tabstop>BtnCancel</tabstop>
+  <tabstop>SvrBuffSize</tabstop>
+  <tabstop>AvePeriodRate</tabstop>
+  <tabstop>SvrCycle</tabstop>
+  <tabstop>FileSwapMarginE</tabstop>
+  <tabstop>DataTimeout</tabstop>
+  <tabstop>TraceLevelS</tabstop>
+  <tabstop>ConnectInterval</tabstop>
+  <tabstop>NmeaReqT</tabstop>
+  <tabstop>NmeaCycle</tabstop>
+  <tabstop>StaInfoSel</tabstop>
+  <tabstop>StationId</tabstop>
+  <tabstop>AntPos1</tabstop>
+  <tabstop>AntPos2</tabstop>
+  <tabstop>AntPos3</tabstop>
+  <tabstop>BtnPos</tabstop>
+  <tabstop>AntOff1</tabstop>
+  <tabstop>AntOff2</tabstop>
+  <tabstop>AntOff3</tabstop>
+  <tabstop>AntInfo</tabstop>
+  <tabstop>RcvInfo</tabstop>
+  <tabstop>RelayMsg</tabstop>
+  <tabstop>ProgBarR</tabstop>
+  <tabstop>LogFileF</tabstop>
+  <tabstop>BtnLogFile</tabstop>
+  <tabstop>SrcTblFileF</tabstop>
+  <tabstop>BtnSrcTblFile</tabstop>
+  <tabstop>LocalDir</tabstop>
+  <tabstop>BtnLocalDir</tabstop>
+  <tabstop>ProxyAddr</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

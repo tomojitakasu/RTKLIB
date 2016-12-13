@@ -40,17 +40,26 @@ void TcpOptDialog::showEvent(QShowEvent *event)
 
     if (event->spontaneous()) return;
 
-    int index = Path.lastIndexOf(":");
-    QString Str_Text = Path.mid(index);
+    int index = Path.lastIndexOf("@");
 
-    QUrl url("ftp://" + Path.mid(0, index));
+    QStringList tokens= Path.mid(0,index).split(':'); // separate user and password
+    if (tokens.size() == 2)
+    {
+        User->setText(tokens.at(0));
+        Passwd->setText(tokens.at(1));
+    } else if (tokens.size() == 1)
+        User->setText(tokens.at(0));
+
+    QString url_str = Path.mid(index + 1); // use the rest
+
+    index = url_str.lastIndexOf(":"); // separate "str"
+    Str->setText(url_str.mid(index));
+
+    QUrl url(QString("ftp://") + url_str.mid(0,index));
 
     Addr->insertItem(0, url.host()); Addr->setCurrentIndex(0);
     Port->setValue(url.port());
     MntPnt->insertItem(0, url.path()); MntPnt->setCurrentIndex(0);
-    User->setText(url.userName());
-    Passwd->setText(url.password());
-    Str->setText(Str_Text);
 
     Addr->setEnabled((Opt >= 1 && Opt <= 3) || Opt == 7);
     MntPnt->setEnabled(Opt >= 2 && Opt <= 4);

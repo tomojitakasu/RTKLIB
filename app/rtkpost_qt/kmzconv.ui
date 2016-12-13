@@ -656,7 +656,7 @@
          <string>&amp;View....</string>
         </property>
         <property name="icon">
-         <iconset resource="../strsvr_qt/strsvr_qt.qrc">
+         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
           <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
         </property>
        </widget>
@@ -698,8 +698,35 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>BtnConvert</tabstop>
+  <tabstop>BtnClose</tabstop>
+  <tabstop>FormatKML</tabstop>
+  <tabstop>FormatGPX</tabstop>
+  <tabstop>TimeSpan</tabstop>
+  <tabstop>dateTime1</tabstop>
+  <tabstop>dateTime2</tabstop>
+  <tabstop>TimeIntF</tabstop>
+  <tabstop>TimeInt</tabstop>
+  <tabstop>QFlags</tabstop>
+  <tabstop>TrackColor</tabstop>
+  <tabstop>OutputAlt</tabstop>
+  <tabstop>PointColor</tabstop>
+  <tabstop>OutputTime</tabstop>
+  <tabstop>AddOffset</tabstop>
+  <tabstop>Offset1</tabstop>
+  <tabstop>Offset2</tabstop>
+  <tabstop>Offset3</tabstop>
+  <tabstop>Compress</tabstop>
+  <tabstop>BtnInputFile</tabstop>
+  <tabstop>InputFile</tabstop>
+  <tabstop>OutputFile</tabstop>
+  <tabstop>GoogleEarthFile</tabstop>
+  <tabstop>BtnGoogleEarthFile</tabstop>
+  <tabstop>BtnView</tabstop>
+ </tabstops>
  <resources>
-  <include location="../strsvr_qt/strsvr_qt.qrc"/>
+  <include location="../rtkconv_qt/rtkconv_qt.qrc"/>
  </resources>
  <connections/>
 </ui>

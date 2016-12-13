@@ -286,6 +286,17 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>TimeSpeed</tabstop>
+  <tabstop>TimeStart</tabstop>
+  <tabstop>FilePath</tabstop>
+  <tabstop>BtnFilePath</tabstop>
+  <tabstop>ChkTimeTag</tabstop>
+  <tabstop>SwapIntv</tabstop>
+  <tabstop>BtnKey</tabstop>
+  <tabstop>BtnOk</tabstop>
+  <tabstop>BtnCancel</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

@@ -1580,7 +1580,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
+            <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
              <normaloff>:/buttons/sqr.bmp</normaloff>:/buttons/sqr.bmp</iconset>
            </property>
            <property name="flat">
@@ -1693,7 +1693,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
+            <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
              <normaloff>:/buttons/ttray.bmp</normaloff>:/buttons/ttray.bmp</iconset>
            </property>
            <property name="flat">
@@ -1799,7 +1799,7 @@
          <string>&amp;Start</string>
         </property>
         <property name="icon">
-         <iconset resource="../rtknavi_qt/rtknavi_qt.qrc">
+         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
           <normaloff>:/buttons/start.bmp</normaloff>:/buttons/start.bmp</iconset>
         </property>
         <property name="flat">
@@ -1819,7 +1819,7 @@
          <string>S&amp;top</string>
         </property>
         <property name="icon">
-         <iconset resource="../rtknavi_qt/rtknavi_qt.qrc">
+         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
           <normaloff>:/buttons/stop2.bmp</normaloff>:/buttons/stop2.bmp</iconset>
         </property>
         <property name="flat">
@@ -1839,7 +1839,7 @@
          <string>&amp;Options...</string>
         </property>
         <property name="icon">
-         <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
+         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
           <normaloff>:/buttons/toolbmp</normaloff>:/buttons/toolbmp</iconset>
         </property>
         <property name="flat">
@@ -1892,9 +1892,32 @@
   <addaction name="MenuStop"/>
   <addaction name="MenuExit"/>
  </widget>
+ <tabstops>
+  <tabstop>BtnStart</tabstop>
+  <tabstop>BtnStop</tabstop>
+  <tabstop>BtnOpt</tabstop>
+  <tabstop>BtnExit</tabstop>
+  <tabstop>Input</tabstop>
+  <tabstop>BtnInput</tabstop>
+  <tabstop>BtnCmd</tabstop>
+  <tabstop>Output1</tabstop>
+  <tabstop>BtnOutput1</tabstop>
+  <tabstop>BtnCmd1</tabstop>
+  <tabstop>BtnConv1</tabstop>
+  <tabstop>Output2</tabstop>
+  <tabstop>BtnOutput2</tabstop>
+  <tabstop>BtnCmd2</tabstop>
+  <tabstop>BtnConv2</tabstop>
+  <tabstop>Output3</tabstop>
+  <tabstop>BtnOutput3</tabstop>
+  <tabstop>BtnCmd3</tabstop>
+  <tabstop>BtnConv3</tabstop>
+  <tabstop>BtnStrMon</tabstop>
+  <tabstop>BtnTaskIcon</tabstop>
+  <tabstop>BtnAbout</tabstop>
+ </tabstops>
  <resources>
-  <include location="../rtkplot_qt/rtkplot_qt.qrc"/>
-  <include location="../rtknavi_qt/rtknavi_qt.qrc"/>
+  <include location="../rtkconv_qt/rtkconv_qt.qrc"/>
  </resources>
  <connections/>
 </ui>

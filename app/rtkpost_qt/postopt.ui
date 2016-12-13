@@ -177,7 +177,7 @@
       <enum>QTabWidget::North</enum>
      </property>
      <property name="currentIndex">
-      <number>3</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="TabSheet1">
       <property name="toolTip">
@@ -2167,7 +2167,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="../strsvr_qt/strsvr_qt.qrc">
+          <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
            <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
          </property>
          <property name="flat">
@@ -2681,7 +2681,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="../strsvr_qt/strsvr_qt.qrc">
+          <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
            <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
          </property>
          <property name="flat">
@@ -2701,7 +2701,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="../strsvr_qt/strsvr_qt.qrc">
+          <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
            <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
          </property>
          <property name="flat">
@@ -2821,7 +2821,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="../strsvr_qt/strsvr_qt.qrc">
+          <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
            <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
          </property>
          <property name="flat">
@@ -2883,7 +2883,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="../strsvr_qt/strsvr_qt.qrc">
+          <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
            <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
          </property>
          <property name="flat">
@@ -2945,7 +2945,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="../strsvr_qt/strsvr_qt.qrc">
+          <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
            <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
          </property>
          <property name="flat">
@@ -3416,8 +3416,141 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>BtnExtOpt</tabstop>
+  <tabstop>BtnLoad</tabstop>
+  <tabstop>BtnSave</tabstop>
+  <tabstop>BtnOk</tabstop>
+  <tabstop>BtnCancel</tabstop>
+  <tabstop>Misc</tabstop>
+  <tabstop>PosMode</tabstop>
+  <tabstop>Freq</tabstop>
+  <tabstop>Solution</tabstop>
+  <tabstop>ElMask</tabstop>
+  <tabstop>BtnMask</tabstop>
+  <tabstop>DynamicModel</tabstop>
+  <tabstop>TideCorr</tabstop>
+  <tabstop>IonoOpt</tabstop>
+  <tabstop>TropOpt</tabstop>
+  <tabstop>SatEphem</tabstop>
+  <tabstop>PosOpt1</tabstop>
+  <tabstop>PosOpt2</tabstop>
+  <tabstop>PosOpt3</tabstop>
+  <tabstop>PosOpt4</tabstop>
+  <tabstop>PosOpt5</tabstop>
+  <tabstop>PosOpt6</tabstop>
+  <tabstop>ExSats</tabstop>
+  <tabstop>NavSys1</tabstop>
+  <tabstop>NavSys2</tabstop>
+  <tabstop>NavSys3</tabstop>
+  <tabstop>NavSys4</tabstop>
+  <tabstop>NavSys5</tabstop>
+  <tabstop>NavSys6</tabstop>
+  <tabstop>NavSys7</tabstop>
+  <tabstop>AmbRes</tabstop>
+  <tabstop>GloAmbRes</tabstop>
+  <tabstop>BdsAmbRes</tabstop>
+  <tabstop>ValidThresAR</tabstop>
+  <tabstop>ThresAR2</tabstop>
+  <tabstop>ThresAR3</tabstop>
+  <tabstop>LockCntFixAmb</tabstop>
+  <tabstop>ElMaskAR</tabstop>
+  <tabstop>FixCntHoldAmb</tabstop>
+  <tabstop>ElMaskHold</tabstop>
+  <tabstop>OutCntResetAmb</tabstop>
+  <tabstop>SlipThres</tabstop>
+  <tabstop>MaxAgeDiff</tabstop>
+  <tabstop>SyncSol</tabstop>
+  <tabstop>RejectGdop</tabstop>
+  <tabstop>RejectThres</tabstop>
+  <tabstop>ARIter</tabstop>
+  <tabstop>NumIter</tabstop>
+  <tabstop>BaselineConst</tabstop>
+  <tabstop>BaselineLen</tabstop>
+  <tabstop>BaselineSig</tabstop>
+  <tabstop>SolFormat</tabstop>
+  <tabstop>OutputHead</tabstop>
+  <tabstop>OutputOpt</tabstop>
+  <tabstop>TimeFormat</tabstop>
+  <tabstop>TimeDecimal</tabstop>
+  <tabstop>LatLonFormat</tabstop>
+  <tabstop>FieldSep</tabstop>
+  <tabstop>OutputSingle</tabstop>
+  <tabstop>MaxSolStd</tabstop>
+  <tabstop>OutputDatum</tabstop>
+  <tabstop>OutputHeight</tabstop>
+  <tabstop>OutputGeoid</tabstop>
+  <tabstop>SolStatic</tabstop>
+  <tabstop>NmeaIntv1</tabstop>
+  <tabstop>NmeaIntv2</tabstop>
+  <tabstop>DebugStatus</tabstop>
+  <tabstop>DebugTrace</tabstop>
+  <tabstop>MeasErrR1</tabstop>
+  <tabstop>MeasErrR2</tabstop>
+  <tabstop>MeasErr2</tabstop>
+  <tabstop>MeasErr3</tabstop>
+  <tabstop>MeasErr4</tabstop>
+  <tabstop>MeasErr5</tabstop>
+  <tabstop>PrNoise4</tabstop>
+  <tabstop>PrNoise5</tabstop>
+  <tabstop>PrNoise1</tabstop>
+  <tabstop>PrNoise2</tabstop>
+  <tabstop>PrNoise3</tabstop>
+  <tabstop>SatClkStab</tabstop>
+  <tabstop>RovPosType</tabstop>
+  <tabstop>BtnRovPos</tabstop>
+  <tabstop>RovPos1</tabstop>
+  <tabstop>RovPos2</tabstop>
+  <tabstop>RovPos3</tabstop>
+  <tabstop>RovAntPcv</tabstop>
+  <tabstop>RovAnt</tabstop>
+  <tabstop>RovAntE</tabstop>
+  <tabstop>RovAntN</tabstop>
+  <tabstop>RovAntU</tabstop>
+  <tabstop>RefPosType</tabstop>
+  <tabstop>BtnRefPos</tabstop>
+  <tabstop>RefPos1</tabstop>
+  <tabstop>RefPos2</tabstop>
+  <tabstop>RefPos3</tabstop>
+  <tabstop>RefAntPcv</tabstop>
+  <tabstop>RefAnt</tabstop>
+  <tabstop>RefAntE</tabstop>
+  <tabstop>RefAntN</tabstop>
+  <tabstop>RefAntU</tabstop>
+  <tabstop>StaPosFile</tabstop>
+  <tabstop>BtnStaPosView</tabstop>
+  <tabstop>BtnStaPosFile</tabstop>
+  <tabstop>BtnSatPcvView</tabstop>
+  <tabstop>BtnAntPcvView</tabstop>
+  <tabstop>SatPcvFile</tabstop>
+  <tabstop>BtnSatPcvFile</tabstop>
+  <tabstop>AntPcvFile</tabstop>
+  <tabstop>BtnAntPcvFile</tabstop>
+  <tabstop>GeoidDataFile</tabstop>
+  <tabstop>BtnGeoidDataFile</tabstop>
+  <tabstop>DCBFile</tabstop>
+  <tabstop>BtnDCBView</tabstop>
+  <tabstop>BtnDCBFile</tabstop>
+  <tabstop>EOPFile</tabstop>
+  <tabstop>BtnEOPView</tabstop>
+  <tabstop>BtnEOPFile</tabstop>
+  <tabstop>BLQFile</tabstop>
+  <tabstop>BtnBLQFileView</tabstop>
+  <tabstop>BtnBLQFile</tabstop>
+  <tabstop>IonoFile</tabstop>
+  <tabstop>BtnIonoFile</tabstop>
+  <tabstop>IntpRefObs</tabstop>
+  <tabstop>ComboBox1</tabstop>
+  <tabstop>SbasSat</tabstop>
+  <tabstop>RnxOpts1</tabstop>
+  <tabstop>RnxOpts2</tabstop>
+  <tabstop>PPPOpts</tabstop>
+  <tabstop>BtnHelp</tabstop>
+  <tabstop>RovList</tabstop>
+  <tabstop>BaseList</tabstop>
+ </tabstops>
  <resources>
-  <include location="../strsvr_qt/strsvr_qt.qrc"/>
+  <include location="../rtkconv_qt/rtkconv_qt.qrc"/>
  </resources>
  <connections/>
 </ui>

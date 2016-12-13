@@ -787,6 +787,39 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>MaskEna1</tabstop>
+  <tabstop>MaskEna2</tabstop>
+  <tabstop>Mask_1_1</tabstop>
+  <tabstop>Mask_1_2</tabstop>
+  <tabstop>Mask_1_3</tabstop>
+  <tabstop>Mask_1_4</tabstop>
+  <tabstop>Mask_1_5</tabstop>
+  <tabstop>Mask_1_6</tabstop>
+  <tabstop>Mask_1_7</tabstop>
+  <tabstop>Mask_1_8</tabstop>
+  <tabstop>Mask_1_9</tabstop>
+  <tabstop>Mask_2_1</tabstop>
+  <tabstop>Mask_2_2</tabstop>
+  <tabstop>Mask_2_3</tabstop>
+  <tabstop>Mask_2_4</tabstop>
+  <tabstop>Mask_2_5</tabstop>
+  <tabstop>Mask_2_6</tabstop>
+  <tabstop>Mask_2_7</tabstop>
+  <tabstop>Mask_2_8</tabstop>
+  <tabstop>Mask_2_9</tabstop>
+  <tabstop>Mask_3_1</tabstop>
+  <tabstop>Mask_3_2</tabstop>
+  <tabstop>Mask_3_3</tabstop>
+  <tabstop>Mask_3_4</tabstop>
+  <tabstop>Mask_3_5</tabstop>
+  <tabstop>Mask_3_6</tabstop>
+  <tabstop>Mask_3_7</tabstop>
+  <tabstop>Mask_3_8</tabstop>
+  <tabstop>Mask_3_9</tabstop>
+  <tabstop>BtnOk</tabstop>
+  <tabstop>BtnCancel</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

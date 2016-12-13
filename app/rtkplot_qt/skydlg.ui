@@ -747,6 +747,37 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>SkySize1</tabstop>
+  <tabstop>SkySize2</tabstop>
+  <tabstop>SkyFlip</tabstop>
+  <tabstop>SkyCent1</tabstop>
+  <tabstop>SkyCent2</tabstop>
+  <tabstop>SkyScale</tabstop>
+  <tabstop>SkyFov1</tabstop>
+  <tabstop>SkyFov2</tabstop>
+  <tabstop>SkyFov3</tabstop>
+  <tabstop>SkyDest1</tabstop>
+  <tabstop>SkyDest2</tabstop>
+  <tabstop>SkyDest3</tabstop>
+  <tabstop>SkyDest4</tabstop>
+  <tabstop>SkyDest5</tabstop>
+  <tabstop>SkyDest6</tabstop>
+  <tabstop>SkyDest7</tabstop>
+  <tabstop>SkyDest8</tabstop>
+  <tabstop>SkyDest9</tabstop>
+  <tabstop>SkyDestCorr</tabstop>
+  <tabstop>SkyElMask</tabstop>
+  <tabstop>SkyRes</tabstop>
+  <tabstop>SkyBinarize</tabstop>
+  <tabstop>SkyBinThres1</tabstop>
+  <tabstop>SkyBinThres2</tabstop>
+  <tabstop>BtnSave</tabstop>
+  <tabstop>BtnLoad</tabstop>
+  <tabstop>BtnGenMask</tabstop>
+  <tabstop>BtnUpdate</tabstop>
+  <tabstop>BtnClose</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

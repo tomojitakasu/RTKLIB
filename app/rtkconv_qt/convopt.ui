@@ -1048,6 +1048,61 @@
   <zorder>widget_3</zorder>
   <zorder>widget_4</zorder>
  </widget>
+ <tabstops>
+  <tabstop>RnxVer</tabstop>
+  <tabstop>RnxCode</tabstop>
+  <tabstop>RnxFile</tabstop>
+  <tabstop>RunBy</tabstop>
+  <tabstop>Name0</tabstop>
+  <tabstop>Name1</tabstop>
+  <tabstop>Comment0</tabstop>
+  <tabstop>Comment1</tabstop>
+  <tabstop>Marker</tabstop>
+  <tabstop>MarkerNo</tabstop>
+  <tabstop>MarkerType</tabstop>
+  <tabstop>Rec0</tabstop>
+  <tabstop>Rec1</tabstop>
+  <tabstop>Rec2</tabstop>
+  <tabstop>Ant0</tabstop>
+  <tabstop>Ant1</tabstop>
+  <tabstop>Ant2</tabstop>
+  <tabstop>AutoPos</tabstop>
+  <tabstop>AppPos0</tabstop>
+  <tabstop>AppPos1</tabstop>
+  <tabstop>AppPos2</tabstop>
+  <tabstop>AntDel0</tabstop>
+  <tabstop>AntDel1</tabstop>
+  <tabstop>AntDel2</tabstop>
+  <tabstop>OutTime</tabstop>
+  <tabstop>ScanObs</tabstop>
+  <tabstop>OutIono</tabstop>
+  <tabstop>OutLeaps</tabstop>
+  <tabstop>HalfCyc</tabstop>
+  <tabstop>Nav1</tabstop>
+  <tabstop>Nav2</tabstop>
+  <tabstop>Nav3</tabstop>
+  <tabstop>Nav4</tabstop>
+  <tabstop>Nav5</tabstop>
+  <tabstop>Nav6</tabstop>
+  <tabstop>Nav7</tabstop>
+  <tabstop>ExSats</tabstop>
+  <tabstop>Obs1</tabstop>
+  <tabstop>Obs2</tabstop>
+  <tabstop>Obs3</tabstop>
+  <tabstop>Obs4</tabstop>
+  <tabstop>Freq1</tabstop>
+  <tabstop>Freq2</tabstop>
+  <tabstop>Freq3</tabstop>
+  <tabstop>Freq4</tabstop>
+  <tabstop>Freq5</tabstop>
+  <tabstop>Freq6</tabstop>
+  <tabstop>Freq7</tabstop>
+  <tabstop>BtnMask</tabstop>
+  <tabstop>RcvOption</tabstop>
+  <tabstop>TraceLevel</tabstop>
+  <tabstop>BtnOk</tabstop>
+  <tabstop>BtnCancel</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

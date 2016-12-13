@@ -340,6 +340,19 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>Port</tabstop>
+  <tabstop>Parity</tabstop>
+  <tabstop>BitRate</tabstop>
+  <tabstop>StopBits</tabstop>
+  <tabstop>ByteSize</tabstop>
+  <tabstop>FlowCtr</tabstop>
+  <tabstop>OutTcpPort</tabstop>
+  <tabstop>TcpPort</tabstop>
+  <tabstop>BtnCmd</tabstop>
+  <tabstop>BtnOk</tabstop>
+  <tabstop>BtnCancel</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

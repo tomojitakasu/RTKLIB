@@ -424,6 +424,23 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>BtnOk</tabstop>
+  <tabstop>BtnCancel</tabstop>
+  <tabstop>SelDev</tabstop>
+  <tabstop>SelProf</tabstop>
+  <tabstop>SelCapPos</tabstop>
+  <tabstop>EditCapSize</tabstop>
+  <tabstop>SelCapColor</tabstop>
+  <tabstop>EditCodecQuality</tabstop>
+  <tabstop>ChkTcpPort</tabstop>
+  <tabstop>EditTcpPort</tabstop>
+  <tabstop>ChkOutFile</tabstop>
+  <tabstop>BtnFile</tabstop>
+  <tabstop>EditFile</tabstop>
+  <tabstop>ChkTimeTag</tabstop>
+  <tabstop>SelFileSwap</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

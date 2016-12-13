@@ -28,4 +28,4 @@ FORMS    += \
 RESOURCES += \
     rtkvplayer_qt.qrc
 
-RC_FILE = rtkvplayer_qt.rc
+#RC_FILE = rtkvplayer_qt.rc

@@ -62,7 +62,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
+         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
           <normaloff>:/icons/rtk3.bmp</normaloff>:/icons/rtk3.bmp</iconset>
         </property>
         <property name="flat">
@@ -82,7 +82,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
+         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
           <normaloff>:/icons/rtk7.bmp</normaloff>:/icons/rtk7.bmp</iconset>
         </property>
         <property name="flat">
@@ -102,7 +102,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
+         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
           <normaloff>:/icons/rtk8.bmp</normaloff>:/icons/rtk8.bmp</iconset>
         </property>
         <property name="flat">
@@ -122,7 +122,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
+         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
           <normaloff>:/icons/rtk1.bmp</normaloff>:/icons/rtk1.bmp</iconset>
         </property>
         <property name="flat">
@@ -142,7 +142,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
+         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
           <normaloff>:/icons/rtk5.bmp</normaloff>:/icons/rtk5.bmp</iconset>
         </property>
         <property name="flat">
@@ -162,7 +162,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
+         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
           <normaloff>:/icons/rtk2.bmp</normaloff>:/icons/rtk2.bmp</iconset>
         </property>
         <property name="flat">
@@ -182,7 +182,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
+         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
           <normaloff>:/icons/rtk6.bmp</normaloff>:/icons/rtk6.bmp</iconset>
         </property>
         <property name="flat">
@@ -227,7 +227,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
+      <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
        <normaloff>:/buttons/sqr.bmp</normaloff>:/buttons/sqr.bmp</iconset>
      </property>
      <property name="flat">
@@ -266,7 +266,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
+         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
           <normaloff>:/icons/rtk9.bmp</normaloff>:/icons/rtk9.bmp</iconset>
         </property>
         <property name="flat">
@@ -290,7 +290,7 @@
   </layout>
   <action name="actionRtkConv">
    <property name="icon">
-    <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
      <normaloff>:/icons/rtk3.bmp</normaloff>:/icons/rtk3.bmp</iconset>
    </property>
    <property name="text">
@@ -302,7 +302,7 @@
   </action>
   <action name="actionRtkGet">
    <property name="icon">
-    <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
      <normaloff>:/icons/rtk8.bmp</normaloff>:/icons/rtk8.bmp</iconset>
    </property>
    <property name="text">
@@ -314,7 +314,7 @@
   </action>
   <action name="actionRtkNavi">
    <property name="icon">
-    <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
      <normaloff>:/icons/rtk5.bmp</normaloff>:/icons/rtk5.bmp</iconset>
    </property>
    <property name="text">
@@ -326,7 +326,7 @@
   </action>
   <action name="actionRtkNtrip">
    <property name="icon">
-    <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
      <normaloff>:/icons/rtk7.bmp</normaloff>:/icons/rtk7.bmp</iconset>
    </property>
    <property name="text">
@@ -338,7 +338,7 @@
   </action>
   <action name="actionRtkPlot">
    <property name="icon">
-    <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
      <normaloff>:/icons/rtk2.bmp</normaloff>:/icons/rtk2.bmp</iconset>
    </property>
    <property name="text">
@@ -350,7 +350,7 @@
   </action>
   <action name="actionRtkPost">
    <property name="icon">
-    <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
      <normaloff>:/icons/rtk1.bmp</normaloff>:/icons/rtk1.bmp</iconset>
    </property>
    <property name="text">
@@ -362,7 +362,7 @@
   </action>
   <action name="actionRtkStr">
    <property name="icon">
-    <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
+    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
      <normaloff>:/icons/rtk6.bmp</normaloff>:/icons/rtk6.bmp</iconset>
    </property>
    <property name="text">
@@ -381,8 +381,22 @@
    </property>
   </action>
  </widget>
+ <tabstops>
+  <tabstop>BtnExit</tabstop>
+  <tabstop>BtnPlot</tabstop>
+  <tabstop>BtnConv</tabstop>
+  <tabstop>BtnStr</tabstop>
+  <tabstop>BtnPost</tabstop>
+  <tabstop>BtnNtrip</tabstop>
+  <tabstop>BtnNavi</tabstop>
+  <tabstop>BtnGet</tabstop>
+  <tabstop>BtnVideo</tabstop>
+  <tabstop>BtnOption</tabstop>
+  <tabstop>BtnTray</tabstop>
+  <tabstop>BtnRtklib</tabstop>
+ </tabstops>
  <resources>
-  <include location="../rtkplot_qt/rtkplot_qt.qrc"/>
+  <include location="../rtkconv_qt/rtkconv_qt.qrc"/>
  </resources>
  <connections/>
 </ui>

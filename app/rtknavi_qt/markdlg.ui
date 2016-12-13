@@ -189,6 +189,16 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>ChkMarkerName</tabstop>
+  <tabstop>MarkerName</tabstop>
+  <tabstop>MarkerComment</tabstop>
+  <tabstop>RadioGo</tabstop>
+  <tabstop>RadioStop</tabstop>
+  <tabstop>BtnRepDlg</tabstop>
+  <tabstop>BtnOk</tabstop>
+  <tabstop>BtnCancel</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

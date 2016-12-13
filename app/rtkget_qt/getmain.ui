@@ -744,7 +744,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../strsvr_qt/strsvr_qt.qrc">
+         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
           <normaloff>:/buttons/ttray.bmp</normaloff>:/buttons/ttray.bmp</iconset>
         </property>
         <property name="flat">
@@ -889,8 +889,39 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>BtnDownload</tabstop>
+  <tabstop>BtnExit</tabstop>
+  <tabstop>DataType</tabstop>
+  <tabstop>SubType</tabstop>
+  <tabstop>DataList</tabstop>
+  <tabstop>BtnAll</tabstop>
+  <tabstop>BtnStas</tabstop>
+  <tabstop>StaList</tabstop>
+  <tabstop>dateTime1</tabstop>
+  <tabstop>BtnTime1</tabstop>
+  <tabstop>dateTime2</tabstop>
+  <tabstop>BtnTime2</tabstop>
+  <tabstop>TimeInt</tabstop>
+  <tabstop>Number</tabstop>
+  <tabstop>FtpLogin</tabstop>
+  <tabstop>HidePasswd</tabstop>
+  <tabstop>FtpPasswd</tabstop>
+  <tabstop>SkipExist</tabstop>
+  <tabstop>UnZip</tabstop>
+  <tabstop>LocalDir</tabstop>
+  <tabstop>BtnKeyword</tabstop>
+  <tabstop>Dir</tabstop>
+  <tabstop>BtnDir</tabstop>
+  <tabstop>BtnHelp</tabstop>
+  <tabstop>BtnFile</tabstop>
+  <tabstop>BtnLog</tabstop>
+  <tabstop>BtnOpts</tabstop>
+  <tabstop>BtnTest</tabstop>
+  <tabstop>BtnTray</tabstop>
+ </tabstops>
  <resources>
-  <include location="../strsvr_qt/strsvr_qt.qrc"/>
+  <include location="../rtkconv_qt/rtkconv_qt.qrc"/>
  </resources>
  <connections/>
 </ui>

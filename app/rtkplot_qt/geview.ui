@@ -599,6 +599,28 @@
    </attribute>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>BtnOpt</tabstop>
+  <tabstop>BtnFixCent</tabstop>
+  <tabstop>BtnEnaAlt</tabstop>
+  <tabstop>BtnGENorm</tabstop>
+  <tabstop>BtnGETilt</tabstop>
+  <tabstop>BtnShrink</tabstop>
+  <tabstop>BtnExpand</tabstop>
+  <tabstop>BtnRotL</tabstop>
+  <tabstop>BtnHeading</tabstop>
+  <tabstop>BtnRotR</tabstop>
+  <tabstop>BtnClose</tabstop>
+  <tabstop>BtnOpt1</tabstop>
+  <tabstop>BtnOpt2</tabstop>
+  <tabstop>BtnOpt3</tabstop>
+  <tabstop>BtnOpt4</tabstop>
+  <tabstop>BtnOpt5</tabstop>
+  <tabstop>BtnOpt6</tabstop>
+  <tabstop>BtnOpt7</tabstop>
+  <tabstop>BtnOpt8</tabstop>
+  <tabstop>BtnOpt9</tabstop>
+ </tabstops>
  <resources>
   <include location="../rtkconv_qt/rtkconv_qt.qrc"/>
   <include location="rtkplot_qt.qrc"/>

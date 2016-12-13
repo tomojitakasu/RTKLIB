@@ -207,6 +207,12 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>DriveSel</tabstop>
+  <tabstop>BtnDirSel</tabstop>
+  <tabstop>FileList</tabstop>
+  <tabstop>Filter</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

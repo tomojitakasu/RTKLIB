@@ -1303,6 +1303,54 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>BtnOk</tabstop>
+  <tabstop>BtnCancel</tabstop>
+  <tabstop>ExtEna0</tabstop>
+  <tabstop>CodeErr00</tabstop>
+  <tabstop>CodeErr01</tabstop>
+  <tabstop>CodeErr02</tabstop>
+  <tabstop>CodeErr03</tabstop>
+  <tabstop>CodeErr04</tabstop>
+  <tabstop>CodeErr05</tabstop>
+  <tabstop>CodeErr10</tabstop>
+  <tabstop>CodeErr11</tabstop>
+  <tabstop>CodeErr12</tabstop>
+  <tabstop>CodeErr13</tabstop>
+  <tabstop>CodeErr14</tabstop>
+  <tabstop>CodeErr15</tabstop>
+  <tabstop>CodeErr20</tabstop>
+  <tabstop>CodeErr21</tabstop>
+  <tabstop>CodeErr22</tabstop>
+  <tabstop>CodeErr23</tabstop>
+  <tabstop>CodeErr24</tabstop>
+  <tabstop>CodeErr25</tabstop>
+  <tabstop>ExtEna1</tabstop>
+  <tabstop>PhaseErr00</tabstop>
+  <tabstop>PhaseErr01</tabstop>
+  <tabstop>PhaseErr02</tabstop>
+  <tabstop>PhaseErr03</tabstop>
+  <tabstop>PhaseErr04</tabstop>
+  <tabstop>PhaseErr05</tabstop>
+  <tabstop>PhaseErr10</tabstop>
+  <tabstop>PhaseErr11</tabstop>
+  <tabstop>PhaseErr12</tabstop>
+  <tabstop>PhaseErr13</tabstop>
+  <tabstop>PhaseErr14</tabstop>
+  <tabstop>PhaseErr15</tabstop>
+  <tabstop>PhaseErr20</tabstop>
+  <tabstop>PhaseErr21</tabstop>
+  <tabstop>PhaseErr22</tabstop>
+  <tabstop>PhaseErr23</tabstop>
+  <tabstop>PhaseErr24</tabstop>
+  <tabstop>PhaseErr25</tabstop>
+  <tabstop>ExtEna3</tabstop>
+  <tabstop>GpsGloB0</tabstop>
+  <tabstop>GpsGloB1</tabstop>
+  <tabstop>ExtEna2</tabstop>
+  <tabstop>GloICB0</tabstop>
+  <tabstop>GloICB1</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

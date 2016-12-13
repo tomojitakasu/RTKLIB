@@ -265,6 +265,17 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>Addr</tabstop>
+  <tabstop>Port</tabstop>
+  <tabstop>MntPnt</tabstop>
+  <tabstop>User</tabstop>
+  <tabstop>Passwd</tabstop>
+  <tabstop>Str</tabstop>
+  <tabstop>BtnNtrip</tabstop>
+  <tabstop>BtnOk</tabstop>
+  <tabstop>BtnCancel</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

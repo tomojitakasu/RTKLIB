@@ -503,6 +503,29 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>Stream1C</tabstop>
+  <tabstop>Stream1</tabstop>
+  <tabstop>BtnStr1</tabstop>
+  <tabstop>OutEventC</tabstop>
+  <tabstop>Stream2C</tabstop>
+  <tabstop>Stream2</tabstop>
+  <tabstop>BtnStr2</tabstop>
+  <tabstop>Stream3C</tabstop>
+  <tabstop>Stream3</tabstop>
+  <tabstop>BtnStr3</tabstop>
+  <tabstop>FilePath1</tabstop>
+  <tabstop>BtnFile1</tabstop>
+  <tabstop>FilePath2</tabstop>
+  <tabstop>BtnFile2</tabstop>
+  <tabstop>FilePath3</tabstop>
+  <tabstop>BtnFile3</tabstop>
+  <tabstop>TimeTagC</tabstop>
+  <tabstop>SwapIntv</tabstop>
+  <tabstop>BtnKey</tabstop>
+  <tabstop>BtnOk</tabstop>
+  <tabstop>BtnCancel</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

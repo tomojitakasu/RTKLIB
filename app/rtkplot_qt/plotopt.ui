@@ -1865,7 +1865,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../strsvr_qt/strsvr_qt.qrc">
+         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
           <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
         </property>
         <property name="flat">
@@ -1891,7 +1891,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../strsvr_qt/strsvr_qt.qrc">
+         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
           <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
         </property>
         <property name="flat">
@@ -2499,8 +2499,75 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>BtnOK</tabstop>
+  <tabstop>BtnCancel</tabstop>
+  <tabstop>TimeLabel</tabstop>
+  <tabstop>LatLonFmt</tabstop>
+  <tabstop>ShowStats</tabstop>
+  <tabstop>ShowSlip</tabstop>
+  <tabstop>ShowHalfC</tabstop>
+  <tabstop>ShowEph</tabstop>
+  <tabstop>ElMask</tabstop>
+  <tabstop>ElMaskP</tabstop>
+  <tabstop>HideLowSat</tabstop>
+  <tabstop>MaxDop</tabstop>
+  <tabstop>MaxMP</tabstop>
+  <tabstop>RcvPos</tabstop>
+  <tabstop>NavSys1</tabstop>
+  <tabstop>NavSys2</tabstop>
+  <tabstop>NavSys3</tabstop>
+  <tabstop>NavSys4</tabstop>
+  <tabstop>NavSys5</tabstop>
+  <tabstop>NavSys6</tabstop>
+  <tabstop>NavSys7</tabstop>
+  <tabstop>ExSats</tabstop>
+  <tabstop>ShowErr</tabstop>
+  <tabstop>ShowArrow</tabstop>
+  <tabstop>ShowLabel</tabstop>
+  <tabstop>ShowGLabel</tabstop>
+  <tabstop>ShowCompass</tabstop>
+  <tabstop>ShowScale</tabstop>
+  <tabstop>AutoScale</tabstop>
+  <tabstop>YRange</tabstop>
+  <tabstop>BuffSize</tabstop>
+  <tabstop>Origin</tabstop>
+  <tabstop>MColor1</tabstop>
+  <tabstop>MColor2</tabstop>
+  <tabstop>MColor3</tabstop>
+  <tabstop>MColor4</tabstop>
+  <tabstop>MColor5</tabstop>
+  <tabstop>MColor6</tabstop>
+  <tabstop>MColor7</tabstop>
+  <tabstop>MColor8</tabstop>
+  <tabstop>MColor9</tabstop>
+  <tabstop>MColor10</tabstop>
+  <tabstop>MColor11</tabstop>
+  <tabstop>MColor12</tabstop>
+  <tabstop>BtnColor4</tabstop>
+  <tabstop>BtnColor3</tabstop>
+  <tabstop>BtnColor2</tabstop>
+  <tabstop>BtnColor1</tabstop>
+  <tabstop>PlotStyle</tabstop>
+  <tabstop>MarkSize</tabstop>
+  <tabstop>BtnFont</tabstop>
+  <tabstop>AnimCycle</tabstop>
+  <tabstop>RefCycle</tabstop>
+  <tabstop>RefPos1</tabstop>
+  <tabstop>RefPos2</tabstop>
+  <tabstop>RefPos3</tabstop>
+  <tabstop>BtnRefPos</tabstop>
+  <tabstop>QcCmd</tabstop>
+  <tabstop>RnxOpts</tabstop>
+  <tabstop>TLEFile</tabstop>
+  <tabstop>BtnTLEView</tabstop>
+  <tabstop>BtnTLEFile</tabstop>
+  <tabstop>TLESatFile</tabstop>
+  <tabstop>BtnTLESatView</tabstop>
+  <tabstop>BtnTLESatFile</tabstop>
+ </tabstops>
  <resources>
-  <include location="../strsvr_qt/strsvr_qt.qrc"/>
+  <include location="../rtkconv_qt/rtkconv_qt.qrc"/>
  </resources>
  <connections/>
 </ui>

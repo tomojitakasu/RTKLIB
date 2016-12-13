@@ -368,6 +368,21 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>HoldErr</tabstop>
+  <tabstop>HoldList</tabstop>
+  <tabstop>NCol</tabstop>
+  <tabstop>DateFormat</tabstop>
+  <tabstop>TraceLevel</tabstop>
+  <tabstop>Proxy</tabstop>
+  <tabstop>LogAppend</tabstop>
+  <tabstop>BtnLogFile</tabstop>
+  <tabstop>LogFile</tabstop>
+  <tabstop>BtnUrlFile</tabstop>
+  <tabstop>UrlFile</tabstop>
+  <tabstop>BtnOk</tabstop>
+  <tabstop>BtnCancel</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

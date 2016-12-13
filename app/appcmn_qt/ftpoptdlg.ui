@@ -444,6 +444,18 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>BtnKey</tabstop>
+  <tabstop>Addr</tabstop>
+  <tabstop>Interval</tabstop>
+  <tabstop>User</tabstop>
+  <tabstop>Offset</tabstop>
+  <tabstop>Passwd</tabstop>
+  <tabstop>PathOffset</tabstop>
+  <tabstop>RetryInterval</tabstop>
+  <tabstop>BtnOk</tabstop>
+  <tabstop>BtnCancel</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

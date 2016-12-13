@@ -734,6 +734,42 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>StreamC1</tabstop>
+  <tabstop>Stream1</tabstop>
+  <tabstop>BtnStr1</tabstop>
+  <tabstop>BtnCmd1</tabstop>
+  <tabstop>Format1</tabstop>
+  <tabstop>BtnRcvOpt1</tabstop>
+  <tabstop>StreamC2</tabstop>
+  <tabstop>Stream2</tabstop>
+  <tabstop>BtnStr2</tabstop>
+  <tabstop>BtnCmd2</tabstop>
+  <tabstop>Format2</tabstop>
+  <tabstop>BtnRcvOpt2</tabstop>
+  <tabstop>StreamC3</tabstop>
+  <tabstop>Stream3</tabstop>
+  <tabstop>BtnStr3</tabstop>
+  <tabstop>BtnCmd3</tabstop>
+  <tabstop>Format3</tabstop>
+  <tabstop>BtnRcvOpt3</tabstop>
+  <tabstop>NmeaReqL</tabstop>
+  <tabstop>NmeaPos1</tabstop>
+  <tabstop>NmeaPos2</tabstop>
+  <tabstop>NmeaPos3</tabstop>
+  <tabstop>BtnPos</tabstop>
+  <tabstop>FilePath1</tabstop>
+  <tabstop>BtnFile1</tabstop>
+  <tabstop>FilePath2</tabstop>
+  <tabstop>BtnFile2</tabstop>
+  <tabstop>FilePath3</tabstop>
+  <tabstop>BtnFile3</tabstop>
+  <tabstop>TimeTagC</tabstop>
+  <tabstop>TimeSpeedL</tabstop>
+  <tabstop>TimeStartE</tabstop>
+  <tabstop>BtnOk</tabstop>
+  <tabstop>BtnCancel</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

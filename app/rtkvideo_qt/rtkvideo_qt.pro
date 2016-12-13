@@ -31,4 +31,4 @@ FORMS    += \
 RESOURCES += \
     rtkvideo_qt.qrc
 
-RC_FILE = rtkvideo_qt.rc
+#RC_FILE = rtkvideo_qt.rc
