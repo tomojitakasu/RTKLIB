@@ -1580,7 +1580,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+            <iconset resource="../rtkpost_qt/rtkpost_qt.qrc">
              <normaloff>:/buttons/sqr.bmp</normaloff>:/buttons/sqr.bmp</iconset>
            </property>
            <property name="flat">
@@ -1693,7 +1693,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+            <iconset resource="../rtkpost_qt/rtkpost_qt.qrc">
              <normaloff>:/buttons/ttray.bmp</normaloff>:/buttons/ttray.bmp</iconset>
            </property>
            <property name="flat">
@@ -1799,7 +1799,7 @@
          <string>&amp;Start</string>
         </property>
         <property name="icon">
-         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+         <iconset resource="../rtkpost_qt/rtkpost_qt.qrc">
           <normaloff>:/buttons/start.bmp</normaloff>:/buttons/start.bmp</iconset>
         </property>
         <property name="flat">
@@ -1809,9 +1809,6 @@
       </item>
       <item>
        <widget class="QPushButton" name="BtnStop">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
         <property name="toolTip">
          <string/>
         </property>
@@ -1819,7 +1816,7 @@
          <string>S&amp;top</string>
         </property>
         <property name="icon">
-         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+         <iconset resource="../rtkpost_qt/rtkpost_qt.qrc">
           <normaloff>:/buttons/stop2.bmp</normaloff>:/buttons/stop2.bmp</iconset>
         </property>
         <property name="flat">
@@ -1839,7 +1836,7 @@
          <string>&amp;Options...</string>
         </property>
         <property name="icon">
-         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+         <iconset resource="../rtkpost_qt/rtkpost_qt.qrc">
           <normaloff>:/buttons/toolbmp</normaloff>:/buttons/toolbmp</iconset>
         </property>
         <property name="flat">
@@ -1917,7 +1914,7 @@
   <tabstop>BtnAbout</tabstop>
  </tabstops>
  <resources>
-  <include location="../rtkconv_qt/rtkconv_qt.qrc"/>
+  <include location="../rtkpost_qt/rtkpost_qt.qrc"/>
  </resources>
  <connections/>
 </ui>

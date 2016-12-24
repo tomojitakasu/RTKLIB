@@ -113,6 +113,8 @@ MainForm::MainForm(QWidget *parent)
     ftpOptDialog = new FtpOptDialog(this);
     strMonDialog = new StrMonDialog(this);
 
+    BtnStop->setVisible(false);
+
     StartTime.sec = StartTime.time = EndTime.sec = EndTime.time = 0;
 
     connect(BtnExit, SIGNAL(clicked(bool)), this, SLOT(BtnExitClick()));
