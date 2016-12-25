@@ -39,7 +39,6 @@ MonitorDialog::MonitorDialog(QWidget *parent)
 
     FontScale = physicalDpiX() * 2;
 
-    ScrollPos = 0;
     ObsMode = 0;
     ConFmt = -1;
 
@@ -74,6 +73,9 @@ void MonitorDialog::showEvent(QShowEvent *event)
 //---------------------------------------------------------------------------
 void MonitorDialog::closeEvent(QCloseEvent *event)
 {
+    timer1.stop();
+    timer2.stop();
+
     free_rtcm(&rtcm);
 	free_raw(&raw);
     event->accept();
@@ -244,7 +246,8 @@ void MonitorDialog::Timer2Timer()
         for (i = 0; i < len; i++) {
             input_rtcm2(&rtcm, msg[i]);
 			if (rtcm.msgtype[0]) {
-                AddConsole((unsigned char *)raw.msgtype, strlen(raw.msgtype), 1);
+                QString buff=QString("%1\n").arg(rtcm.msgtype);
+                AddConsole((unsigned char*)qPrintable(buff), buff.size(), 1);
                 rtcm.msgtype[0] = '\0';
 			}
         }
@@ -252,7 +255,8 @@ void MonitorDialog::Timer2Timer()
         for (i = 0; i < len; i++) {
             input_rtcm3(&rtcm, msg[i]);
 			if (rtcm.msgtype[0]) {
-                AddConsole((unsigned char *)raw.msgtype, strlen(raw.msgtype), 1);
+                QString buff=QString("%1\n").arg(rtcm.msgtype);
+                AddConsole((unsigned char*)qPrintable(buff), buff.size(), 1);
                 rtcm.msgtype[0] = '\0';
 			}
         }
@@ -260,7 +264,8 @@ void MonitorDialog::Timer2Timer()
         for (i = 0; i < len; i++) {
             input_raw(&raw, ConFmt - 2, msg[i]);
 			if (raw.msgtype[0]) {
-                AddConsole((unsigned char *)raw.msgtype, strlen(raw.msgtype), 1);
+                QString buff=QString("%1\n").arg(raw.msgtype);
+                AddConsole((unsigned char*)qPrintable(buff), buff.size(), 1);
                 raw.msgtype[0] = '\0';
 			}
         }
@@ -268,7 +273,7 @@ void MonitorDialog::Timer2Timer()
 	free(msg);
 }
 //---------------------------------------------------------------------------
-void MonitorDialog::AddConsole(unsigned char *msg, int n, int mode)
+void MonitorDialog::AddConsole(const unsigned char *msg, int n, int mode)
 {
     char buff[MAXLEN + 16], *p = buff;
 
@@ -303,7 +308,7 @@ void MonitorDialog::AddConsole(unsigned char *msg, int n, int mode)
     for (int i = 0; i < ConBuff.size(); i++)
         Console->setItem(i, 0, new QTableWidgetItem(ConBuff.at(i)));
 
-    if (BtnDown->isDown()) ScrollPos = 0;
+    if (BtnDown->isChecked()) Console->verticalScrollBar()->setValue(Console->verticalScrollBar()->maximum());
 }
 //---------------------------------------------------------------------------
 void MonitorDialog::BtnClearClick()

@@ -78,7 +78,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="strsvr_qt.qrc">
+         <iconset resource="../rtkvplayer_qt/rtkvplayer_qt.qrc">
           <normaloff>:/buttons/del.bmp</normaloff>:/buttons/del.bmp</iconset>
         </property>
         <property name="flat">
@@ -98,8 +98,11 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="strsvr_qt.qrc">
+         <iconset resource="../rtkvplayer_qt/rtkvplayer_qt.qrc">
           <normaloff>:/buttons/pause.bmp</normaloff>:/buttons/pause.bmp</iconset>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
         </property>
         <property name="flat">
          <bool>true</bool>
@@ -118,8 +121,11 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="strsvr_qt.qrc">
+         <iconset resource="../rtkvplayer_qt/rtkvplayer_qt.qrc">
           <normaloff>:/buttons/fitd.bmp</normaloff>:/buttons/fitd.bmp</iconset>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
         </property>
         <property name="flat">
          <bool>true</bool>
@@ -185,7 +191,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="strsvr_qt.qrc"/>
+  <include location="../rtkvplayer_qt/rtkvplayer_qt.qrc"/>
  </resources>
  <connections/>
 </ui>

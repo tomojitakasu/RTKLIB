@@ -26,7 +26,6 @@ StrMonDialog::StrMonDialog(QWidget *parent)
     ConBuff.clear();
     Console->clear();
     Stop = 0;
-    ScrollPos = 0;
     StrFmt = 0;
     for (int i = 0; i <= MAXRCVFMT; i++) {
         SelFmt->addItem(formatstrs[i]);
@@ -62,8 +61,7 @@ void StrMonDialog::SelFmtChange()
 //---------------------------------------------------------------------------
 void StrMonDialog::AddMsg(unsigned char *msg, int len)
 {
-    char buff[256];
-    int i, n;
+    int i;
 
     if (len <= 0) return;
 
@@ -71,8 +69,8 @@ void StrMonDialog::AddMsg(unsigned char *msg, int len)
         for (i = 0; i < len; i++) {
             input_rtcm2(&rtcm, msg[i]);
             if (rtcm.msgtype[0]) {
-                n = sprintf(buff, "%s\n", rtcm.msgtype);
-                AddConsole((unsigned char *)buff, n, 1);
+                QString buff=QString("%1\n").arg(rtcm.msgtype);
+                AddConsole((unsigned char*)qPrintable(buff), buff.size(), 1);
                 rtcm.msgtype[0] = '\0';
             }
         }
@@ -81,8 +79,8 @@ void StrMonDialog::AddMsg(unsigned char *msg, int len)
         for (i = 0; i < len; i++) {
             input_rtcm3(&rtcm, msg[i]);
             if (rtcm.msgtype[0]) {
-                n = sprintf(buff, "%s\n", rtcm.msgtype);
-                AddConsole((unsigned char *)buff, n, 1);
+                QString buff=QString("%1\n").arg(rtcm.msgtype);
+                AddConsole((unsigned char*)qPrintable(buff), buff.size(), 1);
                 rtcm.msgtype[0] = '\0';
             }
         }
@@ -91,8 +89,8 @@ void StrMonDialog::AddMsg(unsigned char *msg, int len)
         for (i = 0; i < len; i++) {
             input_raw(&raw,StrFmt - 3, msg[i]);
             if (raw.msgtype[0]) {
-                n = sprintf(buff, "%s\n", raw.msgtype);
-                AddConsole((unsigned char *)buff, n, 1);
+                QString buff=QString("%1\n").arg(raw.msgtype);
+                AddConsole((unsigned char*)qPrintable(buff), buff.size(), 1);
                 raw.msgtype[0] = '\0';
             }
         }
@@ -141,7 +139,7 @@ void StrMonDialog::AddConsole(unsigned char *msg, int n, int mode)
      for (int i = 0; i < ConBuff.size(); i++)
          Console->setItem(i, 0, new QTableWidgetItem(ConBuff.at(i)));
 
-     if (BtnDown->isDown()) ScrollPos = 0;
+     if (BtnDown->isChecked()) Console->verticalScrollBar()->setValue(Console->verticalScrollBar()->maximum());
 }
 //---------------------------------------------------------------------------
 void StrMonDialog::BtnClearClick()

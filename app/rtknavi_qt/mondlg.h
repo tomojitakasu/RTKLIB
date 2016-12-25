@@ -29,7 +29,7 @@ public slots:
     void SelFmtChange(int);
 
 private:
-    int TypeF, ConFmt, ScrollPos, FontScale, ObsMode;
+    int TypeF, ConFmt, FontScale, ObsMode;
     QStringList ConBuff;
     QStringList header;
 	rtcm_t rtcm;
@@ -80,7 +80,7 @@ private:
     void ShowLexIon(void);
     void ShowIonCorr(void);
 
-    void AddConsole(unsigned char *msg, int n, int mode);
+    void AddConsole(const unsigned char *msg, int n, int mode);
     void ViewConsole(void);
 
 public:

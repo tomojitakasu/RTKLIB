@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>950</width>
+    <width>1035</width>
     <height>502</height>
    </rect>
   </property>
@@ -396,7 +396,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+         <iconset resource="../rtkvplayer_qt/rtkvplayer_qt.qrc">
           <normaloff>:/buttons/del.bmp</normaloff>:/buttons/del.bmp</iconset>
         </property>
         <property name="flat">
@@ -416,7 +416,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+         <iconset resource="../rtkvplayer_qt/rtkvplayer_qt.qrc">
           <normaloff>:/buttons/pause.bmp</normaloff>:/buttons/pause.bmp</iconset>
         </property>
         <property name="checkable">
@@ -439,8 +439,11 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+         <iconset resource="../rtkvplayer_qt/rtkvplayer_qt.qrc">
           <normaloff>:/buttons/fitd.bmp</normaloff>:/buttons/fitd.bmp</iconset>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
         </property>
         <property name="flat">
          <bool>true</bool>
@@ -509,7 +512,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../rtkconv_qt/rtkconv_qt.qrc"/>
+  <include location="../rtkvplayer_qt/rtkvplayer_qt.qrc"/>
  </resources>
  <connections/>
 </ui>

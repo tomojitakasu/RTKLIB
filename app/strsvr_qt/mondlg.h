@@ -23,7 +23,7 @@ public slots:
 
 private:
     QStringList ConBuff;
-    int Stop, ScrollPos;
+    int Stop;
     rtcm_t rtcm;
     raw_t raw;
 
