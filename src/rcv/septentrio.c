@@ -272,6 +272,10 @@ static int decode_measepoch(raw_t *raw){
 
     if ((CommonFlags & 0x80)==0x80) return 0;         /* data is ccrambled and not valid */
 
+    if (raw->outtype) {
+        sprintf(raw->msgtype,"SBF Range Measurements for Satellites: ");
+    }
+
     /* set the pointer from TOW to the beginning of type1 sub-block */
     p = p + 12;
 
@@ -283,6 +287,10 @@ static int decode_measepoch(raw_t *raw){
         raw->obs.data[n].time  = time;            /* not sure what ref. it is */
         codeMSB = (U1(p+3) & 0x0f);               /* code phase MSB. bit[0-3] */
         codeLSB = U4(p+4);                        /* code phase LSB           */
+
+        if (raw->outtype) {
+            sprintf(raw->msgtype,"%s%d, ",raw->msgtype, prn);
+        }
 
         /* code pseudorange in m */
         psr = (codeMSB*4294967296.0+codeLSB)*0.001;
@@ -805,6 +813,10 @@ static int decode_gpsnav(raw_t *raw){
     eph.toc=gpst2time(eph.week,toc);
     eph.ttr=raw->time;
 
+    if (raw->outtype) {
+        sprintf(raw->msgtype,"SBF GPS Decoded Navigation Data (PRN=%d, IODE=%d, IODC=%d, TOES=%6.0f )", prn, eph.iode, eph.iodc, eph.toes);
+    }
+
     if (!strstr(raw->opt,"-EPHALL")) {
         if ((eph.iode==raw->nav.eph[sat-1].iode) &&
             (eph.iodc==raw->nav.eph[sat-1].iodc)) return 0;
@@ -888,6 +900,10 @@ static int decode_galnav(raw_t *raw){
     eph.toc=gpst2time(week_oc,toc);
     eph.ttr=gpst2time(eph.week,tow/1000);
 
+    if (raw->outtype) {
+        sprintf(raw->msgtype,"SBF Galileo Decoded Navigation Data (PRN=%d, IODE=%d, IODC=%d, TOES=%6.0f )", prn, eph.iode, eph.iodc, eph.toes);
+    }
+
     if (!strstr(raw->opt,"-EPHALL")) {
         if (eph.iode==raw->nav.eph[sat-1].iode) return 0;
     }
@@ -947,6 +963,10 @@ static int decode_glonav(raw_t *raw){
     eph.iode   = U2(puiTmp +  80);
     eph.sva    = U2(puiTmp +  88);
 
+    if (raw->outtype) {
+        sprintf(raw->msgtype,"SBF GLONASS Decoded Navigation Data (PRN=%d, Frequency Number=%d IODE=%d, AGE=%d )", prn, eph.frq, eph.iode, eph.age);
+    }
+
     if (!strstr(raw->opt,"-EPHALL")) {
         if (eph.iode==raw->nav.geph[prn-1].iode) return 0;
     }
@@ -1004,6 +1024,10 @@ static int decode_sbasnav(raw_t *raw){
 
     /* debug */
     trace(2,"sat=%2d, week=%d, tow=%f\n",sat,week,U4(puiTmp +  2)/1000);
+
+    if (raw->outtype) {
+        sprintf(raw->msgtype,"SBF SBAS Decoded Navigation Data (PRN=%d, TOW=%d, SVA=%d )", prn, tow, eph.sva);
+    }
 
     if (!strstr(raw->opt,"-EPHALL")) {
         if (fabs(timediff(eph.t0,raw->nav.seph[prn-120].t0))<1.0&&
@@ -1079,6 +1103,10 @@ static int decode_cmpnav(raw_t *raw){
     eph.toc=bdt2time(eph.week,toc);
     eph.ttr=raw->time;
 
+    if (raw->outtype) {
+        sprintf(raw->msgtype,"SBF Compass Decoded Navigation Data (PRN=%d, IODE=%d, IODC=%d, TOES=%6.0f )", prn, eph.iode, eph.iodc, eph.toes);
+    }
+
     if (!strstr(raw->opt,"-EPHALL")) {
         if (eph.iode==raw->nav.eph[sat-1].iode) return 0;
     }
@@ -1152,6 +1180,10 @@ static int decode_qzssnav(raw_t *raw){
     eph.toc=gpst2time(eph.week,toc);
     eph.ttr=raw->time;
 
+    if (raw->outtype) {
+        sprintf(raw->msgtype,"SBF QZSS Decoded Navigation Data (PRN=%d, IODE=%d, IODC=%d, TOES=%6.0f )", prn, eph.iode, eph.iodc, eph.toes);
+    }
+
     if (!strstr(raw->opt,"-EPHALL")) {
         if (eph.iode==raw->nav.eph[sat-1].iode) return 0;
     }
@@ -1191,6 +1223,13 @@ static int decode_rawnav(raw_t *raw, int sys){
 
     sat=satno(sys,prn);
     if (sat == 0) return -1;
+
+    if (raw->outtype) {
+        if (sys==SYS_GPS)
+            sprintf(raw->msgtype,"SBF GPS Raw Navigation Data (PRN=%d)", prn);
+        if (sys==SYS_QZS)
+            sprintf(raw->msgtype,"SBF QZSS Raw Navigation Data (PRN=%d)", prn);
+    }
 
     /* clean up subframe from Septentrio. This is a little bit of work because
      * Septentrio Rx add some parity bits to this message.
@@ -1280,6 +1319,10 @@ static int decode_georaw(raw_t *raw){
     /* get GPS satellite number */
     prn=U1(p+8);
 
+    if (raw->outtype) {
+        sprintf(raw->msgtype,"SBF SBAS Raw Navigation Data (PRN=%d)", prn);
+    }
+
     /* copy data */
     for (i=0;i<8;i++)
     {
@@ -1327,6 +1370,10 @@ static int decode_galrawinav(raw_t *raw){
     if (U1(p+9)!=1) /* CRC test failed */
     {
         return -1;
+    }
+
+    if (raw->outtype) {
+        sprintf(raw->msgtype,"SBF Galileo INAV Raw Data (PRN=%d)", prn);
     }
 
     /* copy data */
@@ -1417,15 +1464,6 @@ static int decode_glorawcanav(raw_t *raw){
         return -1;
     }
 
-    r=p+14;
-    k=0;
-    for (j=0;j<3;j++) {
-        uint32_t d = U4(r+j*4);
-        buff[k++]=(d>>24)&0xff;
-        buff[k++]=(d>>16)&0xff;
-        buff[k++]=(d>> 8)&0xff;
-        buff[k++]=(d>> 0)&0xff;
-    }
     /* get Glonass satellite number */
     prn=U1(p+8)-37;
     if (prn == 0) return -1;
@@ -1434,9 +1472,23 @@ static int decode_glorawcanav(raw_t *raw){
     sat=satno(SYS_GLO,prn);
     if (sat == 0) return -1;
 
+    if (raw->outtype) {
+        sprintf(raw->msgtype,"SBF Galileo CNAV Raw Data (PRN=%d)", prn);
+    }
+
     if (raw->len<32) {
         trace(2,"SBF decode_gpsrawcanav block length error: len=%d\n",raw->len);
         return -1;
+    }
+
+    r=p+14;
+    k=0;
+    for (j=0;j<3;j++) {
+        uint32_t d = U4(r+j*4);
+        buff[k++]=(d>>24)&0xff;
+        buff[k++]=(d>>16)&0xff;
+        buff[k++]=(d>> 8)&0xff;
+        buff[k++]=(d>> 0)&0xff;
     }
 
     /* test hamming of glonass string */
@@ -1486,12 +1538,17 @@ static int decode_cmpraw(raw_t *raw){
     if (raw->len<60) {
         trace(2,"SBF decode_cmprawinav length error: sat=%d len=%d\n",sat,raw->len);
         return -1;
-    }
+    }    
 
     if (U1(p+9)!=1) /* CRC test failed */
     {
         return -1;
     }
+
+    if (raw->outtype) {
+        sprintf(raw->msgtype,"SBF Galileo Compass Raw Navigation Data (PRN=%d)", prn);
+    }
+
     for (i=0;i<10;i++) words[i]=U4(p+12+i*4)&0x3FFFFFFF; /* 30 bits */
 
     satsys(sat,&prn);
@@ -1556,6 +1613,10 @@ static int decode_gloutc(raw_t *raw)
     raw->nav.utc_glo[2] = R4(p + 28);                                 /*  B2 */
     raw->nav.utc_glo[3] = R4(p + 12);                                 /*  tau_GPS */
 
+    if (raw->outtype) {
+        sprintf(raw->msgtype,"SBF GLONASS UTC Offsets");
+    }
+
     return 9;
 }
 /* decode SBF gpsion --------------------------------------------------------*/
@@ -1579,6 +1640,10 @@ static int decode_gpsion(raw_t *raw){
     raw->nav.ion_gps[6] = R4(p + 32);
     raw->nav.ion_gps[7] = R4(p + 36);
 
+    if (raw->outtype) {
+        sprintf(raw->msgtype,"SBF GPS Ionospheric Data");
+    }
+
     return 9;
 }
 /* decode SBF galion --------------------------------------------------------*/
@@ -1597,6 +1662,10 @@ static int decode_galion(raw_t *raw){
     raw->nav.ion_gal[1] = R4(p + 14);
     raw->nav.ion_gal[2] = R4(p + 18);
     raw->nav.ion_gal[3] = 0;
+
+    if (raw->outtype) {
+        sprintf(raw->msgtype,"SBF Galileon Ionospheric Data");
+    }
 
     return 9;
 }
@@ -1626,6 +1695,11 @@ static int decode_gpsutc(raw_t *raw)
             in fact if I take U1(p+24) I do not seem to ge the correct W in
             the header of RINEX nav file, line DELTA-UTC: A0,A1,T,W
     */
+
+    if (raw->outtype) {
+        sprintf(raw->msgtype,"SBF GPS UTC Offsets");
+    }
+
     return 9;
 }
 /* decode SBF gpsalm --------------------------------------------------------*/
@@ -1662,6 +1736,10 @@ static int decode_gpsalm(raw_t *raw)
 
     raw->nav.alm[alm.sat-1]=alm;
 
+    if (raw->outtype) {
+        sprintf(raw->msgtype,"SBF GPS Almanach (PRN=%d)", U1(p + 6));
+    }
+
     return 9;
 }
 /* decode SBF galutc --------------------------------------------------------*/
@@ -1688,6 +1766,11 @@ static int decode_galutc(raw_t *raw)
             in fact if I take U1(p+24) I do not seem to ge the correct W in
             the header of RINEX nav file, line DELTA-UTC: A0,A1,T,W
     */
+
+    if (raw->outtype) {
+        sprintf(raw->msgtype,"SBF Galileo UTC Offsets");
+    }
+
     return 9;
 }
 /* decode SBF galalm --------------------------------------------------------*/
@@ -1704,7 +1787,7 @@ static int decode_galalm(raw_t *raw)
         return -1;
     }
 
-    alm.sat =   satno(SYS_GAL,U1(p + 49)-70);
+    alm.sat =   satno(SYS_GAL,U1(p + 49) - 70);
     alm.e     = R4(p + 8);
     alm.toas  = U4(p + 12);
     alm.i0    = R4(p + 16) + 0.3;
@@ -1722,6 +1805,10 @@ static int decode_galalm(raw_t *raw)
 
     if (alm.sat == 0) return -1;
     raw->nav.alm[alm.sat-1]=alm;
+
+    if (raw->outtype) {
+        sprintf(raw->msgtype,"SBF Galileon Almanach (PRN=%d)", U1(p + 49) - 70);
+    }
 
     return 9;
 }
@@ -1753,6 +1840,10 @@ static int decode_sbsfast(raw_t *raw)
 
     sat=satno(SYS_SBS,prn);
     if (sat == 0) return -1;
+
+    if (raw->outtype) {
+        sprintf(raw->msgtype,"SBF SBAS Ionosphere Fast Correction from PRN=%d", prn);
+    }
 
     tow=U4(p+2)/1000;
     week=U2(p+6);
@@ -1812,6 +1903,10 @@ static int decode_sbsprnmask(raw_t *raw)
 
     raw->nav.sbssat.nsat=U1(p+10);
 
+    if (raw->outtype) {
+        sprintf(raw->msgtype,"SBF SBAS PRN Mask from PRN=%d", prn);
+    }
+
     for (n=0;n<raw->nav.sbssat.nsat&&n<MAXSAT;n++) {
        i=U1(p+11+n);
        if      (i<= 37) sat=satno(SYS_GPS,i);    /*   0- 37: gps */
@@ -1851,6 +1946,10 @@ static int decode_sbsintegriy(raw_t *raw)
     if (prn < 120) return -1;
     if (prn > 139) return -1;
 
+    if (raw->outtype) {
+        sprintf(raw->msgtype,"SBF SABS Integrity Data from PRN=%d", prn);
+    }
+
     for (i=0;i<4;i++) {
         iodf[i]=U1(p+10+i);
     }
@@ -1883,6 +1982,10 @@ static int decode_sbsfastcorrdegr(raw_t *raw)
     if (prn < 120) return -1;
     if (prn > 139) return -1;
 
+    if (raw->outtype) {
+        sprintf(raw->msgtype,"SBF SBAS Fast Correction Degradation Factor from PRN=%d", prn);
+    }
+
     if (raw->nav.sbssat.iodp!=U1(p+9)) return 0;
 
     raw->nav.sbssat.tlat=U1(p+10);
@@ -1914,6 +2017,10 @@ static int decode_sbsionodelay(raw_t *raw)
     prn=U1(p+8);
     if (prn < 120) return -1;
     if (prn > 139) return -1;
+
+    if (raw->outtype) {
+        sprintf(raw->msgtype,"SBF SBAS Ionospheric Delay Correction from PRN=%d", prn);
+    }
 
     band=U1(p+9);
 
@@ -1970,6 +2077,10 @@ static int decode_sbsigpmask(raw_t *raw) /* TODO: verify this function */
     if (prn < 120) return -1;
     if (prn > 139) return -1;
 
+    if (raw->outtype) {
+        sprintf(raw->msgtype, "SBF SBAS Ionospheric Grid Points from PRN=%d", prn);
+    }
+
     band=U1(p+10);
 
     if      (band<= 8) {b=igpband1[band  ]; m=8;}
@@ -2015,6 +2126,10 @@ static int decode_sbslongcorrh(raw_t* raw)
     prn=U1(p+8);
     if (prn < 120) return -1;
     if (prn > 139) return -1;
+
+    if (raw->outtype) {
+        sprintf(raw->msgtype, "SBF SBAS Long Term Corrections from PRN=%d", prn);
+    }
 
     tow=U4(p+2)/1000;
     week=U2(p+6);
@@ -2076,12 +2191,18 @@ static int decode_sbf(raw_t *raw)
         return -1;
     }
 
-    if (raw->outtype) {
-        sprintf(raw->msgtype,"SBF 0x%04X (%4d):",type, raw->len);
-    }
-
     switch (type) {
         case ID_MEASEPOCH:      return decode_measepoch(raw);
+        case ID_MEASEPOCHEXTRA:
+            if (raw->outtype) {
+                sprintf(raw->msgtype, "SBF Measurement Data Extra");
+            }
+            return 0;
+        case ID_MEASEPOCH_END:
+            if (raw->outtype) {
+                sprintf(raw->msgtype, "SBF Measurement Epoch End");
+            }
+            return 0;
 
         case ID_GPSNAV:         return decode_gpsnav(raw);
         case ID_GPSION:         return decode_gpsion(raw);
@@ -2113,8 +2234,8 @@ static int decode_sbf(raw_t *raw)
 #ifdef ENAQZS
         case ID_QZSSL1CA:
         case ID_QZSSL2C:
-        case ID_QZSSL5:         return decode_rawnav(raw, SYS_QZS);l
-        case ID_QZSS_NAV:       return decode_qzssnav(raw);
+        case ID_QZSSL5:         return decode_rawnav(raw, SYS_QZS);
+        case ID_QZSSNAV:       return decode_qzssnav(raw);
 #endif
 
 #ifdef ENACMP
@@ -2124,7 +2245,6 @@ static int decode_sbf(raw_t *raw)
 #endif
 
 #if 0 /* not yet supported by RTKLIB */
-        case ID_GEOMT00:        return decode_sbsfast(raw);
         case ID_GEOPRNMASK:     return decode_sbsprnmask(raw);
         case ID_GEOFASTCORR:    return decode_sbsfast(raw);
         case ID_GEOINTEGRITY:   return decode_sbsintegriy(raw);
@@ -2143,6 +2263,11 @@ static int decode_sbf(raw_t *raw)
         case ID_COMMENT:        return decode_comment(raw);
 #endif
         default:
+#if 0 /* debug output */
+            if (raw->outtype) {
+                sprintf(raw->msgtype,"SBF 0x%04X (%4d):",type, raw->len);
+            }
+#endif
             trace(3,"decode_sbf: unused frame type=%04x len=%d\n",type,raw->len);
         /* there are many more SBF blocks to be extracted */
     }
