@@ -1497,18 +1497,20 @@ void Plot::TimeScrollChange()
 // callback on mouse-down event ---------------------------------------------
 void Plot::mousePressEvent(QMouseEvent *event)
 {
-    X0 = event->globalX(); Y0 = event->globalY(); Xcent0 = Xcent;
+    X0 = Disp->mapFromGlobal(event->globalPos()).x();
+    Y0 = Disp->mapFromGlobal(event->globalPos()).y();
+    Xcent0 = Xcent;
 
-    trace(3, "DispMouseDown: X=%d Y=%d\n", event->globalX(), event->globalY());
+    trace(3, "DispMouseDown: X=%d Y=%d\n", X0, Y0);
 
     Drag = event->buttons().testFlag(Qt::LeftButton) ? 1 : (event->buttons().testFlag(Qt::RightButton) ? 11 : 0);
 
     if (PlotType == PLOT_TRK)
-        MouseDownTrk(event->globalX(), event->globalY());
+        MouseDownTrk(X0, Y0);
     else if (PlotType <= PLOT_NSAT || PlotType == PLOT_RES || PlotType == PLOT_SNR)
-        MouseDownSol(event->globalX(), event->globalY());
+        MouseDownSol(X0, Y0);
     else if (PlotType == PLOT_OBS || PlotType == PLOT_DOP)
-        MouseDownObs(event->globalX(), event->globalY());
+        MouseDownObs(X0, Y0);
     else Drag = 0;
 
     RangeList->setVisible(false);
@@ -1521,10 +1523,10 @@ void Plot::mouseMove(QMouseEvent *event)
     if ((abs(Disp->mapFromGlobal(event->globalPos()).x() - Xn) < 1) &&
         (abs(Disp->mapFromGlobal(event->globalPos()).y() - Yn) < 1)) return;
 
-    trace(4, "DispMouseMove: X=%d Y=%d\n", event->globalX(), event->globalY());
-
     Xn = Disp->mapFromGlobal(event->globalPos()).x();
     Yn = Disp->mapFromGlobal(event->globalPos()).y();
+
+    trace(4, "DispMouseMove: X=%d Y=%d\n", Xn, Yn);
 
     if (Drag == 0) {
         UpdatePoint(Xn, Yn);
@@ -1546,7 +1548,7 @@ void Plot::mouseMove(QMouseEvent *event)
 // callback on mouse-up event -----------------------------------------------
 void Plot::mouseReleaseEvent(QMouseEvent *event)
 {
-    trace(3, "DispMouseUp: X=%d Y=%d\n", event->globalX(), event->globalY());
+    trace(3, "DispMouseUp: X=%d Y=%d\n", Disp->mapFromGlobal(event->globalPos()).x(), Disp->mapFromGlobal(event->globalPos()).y());
 
     Drag = 0;
     setCursor(Qt::ArrowCursor);

@@ -107,7 +107,7 @@ private:
     void UpdateTime(void);
     void UpdatePos(void);
     void UpdateStr(void);
-    void DrawPlot(QLabel *plot, int type, int freq);
+    void DrawPlot(QLabel *plot, int no);
     void UpdatePlot(void);
     void UpdateEnable(void);
     void ChangePlot(void);
@@ -115,8 +115,8 @@ private:
 	
     void DrawSnr(QPainter *c, int w, int h, int x0, int y0, int index, int freq);
     void DrawSat(QPainter *c, int w, int h, int x0, int y0, int index, int freq);
-    void DrawBL(QPainter *c, QLabel *disp, int w, int h);
-    void DrawTrk(QPainter *c, QLabel *disp, QPixmap &plot);
+    void DrawBL(QPainter *c, int no, int w, int h);
+    void DrawTrk(QPainter *c, int no, QPixmap &plot);
     void DrawSky(QPainter *c, int w, int h, int x0, int y0);
     void DrawText(QPainter *c, int x, int y, const QString &s,
                    const QColor &color, int align);
@@ -131,6 +131,7 @@ private:
     void SaveOpt(void);
     void SetTrayIcon(int index);
     int ExecCmd(const QString &cmd, int show);
+    void BtnFreqTypeChange(int i);
     QColor SnrColor(int snr);
 public:
     QString IniFile;
@@ -142,11 +143,10 @@ public:
     int Stream[MAXSTRRTK], StreamC[MAXSTRRTK], Format[MAXSTRRTK];
     int CmdEna[3][3], CmdEnaTcp[3][3];
     int TimeSys,SolType;
-    int PlotType1,FreqType1,PlotType2,FreqType2;
-    int PlotType3,FreqType3,PlotType4,FreqType4;
-    int TrkType1,TrkType2,TrkType3,TrkType4;
-    int TrkScale1,TrkScale2,TrkScale3,TrkScale4;
-    int BLMode1,BLMode2,BLMode3,BLMode4;
+    int PlotType[4],FreqType[4];
+    int TrkType[4];
+    int TrkScale[4];
+    int BLMode[4];
     int MoniPort, OpenPort;
 	
     int PSol, PSolS, PSolE, Nsat[2], SolCurrentStat;
