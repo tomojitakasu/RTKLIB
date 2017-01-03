@@ -85,6 +85,7 @@
 *                           support IRNSS
 *           2016/09/17 1.26 fix bug on fit interval in QZSS RINEX nav
 *                           URA output value complient to RINEX 3.03
+*           2016/10/10 1.27 add api outrnxinavh()
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -2623,6 +2624,34 @@ extern int outrnxcnavh(FILE *fp, const rnxopt_t *opt, const nav_t *nav)
     
     fprintf(fp,"%9.2f           %-20s%-20s%-20s\n",opt->rnxver,
             "N: GNSS NAV DATA","C: BeiDou","RINEX VERSION / TYPE");
+    
+    fprintf(fp,"%-20.20s%-20.20s%-20.20s%-20s\n",opt->prog,opt->runby,date,
+            "PGM / RUN BY / DATE");
+    
+    for (i=0;i<MAXCOMMENT;i++) {
+        if (!*opt->comment[i]) continue;
+        fprintf(fp,"%-60.60s%-20s\n",opt->comment[i],"COMMENT");
+    }
+    return fprintf(fp,"%60s%-20s\n","","END OF HEADER")!=EOF;
+}
+/* output rinex irnss nav header -----------------------------------------------
+* output rinex irnss nav file header (2.12 extention and 3.02)
+* args   : FILE   *fp       I   output file pointer
+*          rnxopt_t *opt    I   rinex options
+*          nav_t  nav       I   navigation data (NULL: no input)
+* return : status (1:ok, 0:output error)
+*-----------------------------------------------------------------------------*/
+extern int outrnxinavh(FILE *fp, const rnxopt_t *opt, const nav_t *nav)
+{
+    int i;
+    char date[64];
+    
+    trace(3,"outrnxinavh:\n");
+    
+    timestr_rnx(date);
+    
+    fprintf(fp,"%9.2f           %-20s%-20s%-20s\n",opt->rnxver,
+            "N: GNSS NAV DATA","I: IRNSS","RINEX VERSION / TYPE");
     
     fprintf(fp,"%-20.20s%-20.20s%-20.20s%-20s\n",opt->prog,opt->runby,date,
             "PGM / RUN BY / DATE");

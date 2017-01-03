@@ -15,6 +15,7 @@
 #include <Menus.hpp>
 
 #include "rtklib.h"
+#include <System.ImageList.hpp>
 
 #define MAXSCALE	18
 #define MAXMAPPNT	10
@@ -236,7 +237,8 @@ public:
 	
 	int PanelStack,PanelMode;
 	int SvrCycle,SvrBuffSize,Scale,SolBuffSize,NavSelect,SavedSol;
-	int NmeaReq,NmeaCycle,InTimeTag,OutTimeTag,OutAppend,LogTimeTag,LogAppend;
+	int NmeaReq,NmeaCycle,InTimeTag,InTime64Bit;
+	int OutTimeTag,OutAppend,LogTimeTag,LogAppend;
 	int TimeoutTime,ReconTime,SbasCorr,DgpsCorr,TideCorr,FileSwapMargin;
 	int Stream[MAXSTRRTK],StreamC[MAXSTRRTK],Format[MAXSTRRTK];
 	int CmdEna[3][3],CmdEnaTcp[3][3];
@@ -254,11 +256,11 @@ public:
 	gtime_t *Time;
 	int *SolStat,*Nvsat;
 	double *SolRov,*SolRef,*Qr,*VelRov,*Age,*Ratio;
-	double TrkOri[3];
+	double TrkOri[3],MaxBL;
 	AnsiString Paths[MAXSTRRTK][4],Cmds[3][3],CmdsTcp[3][3];
 	AnsiString InTimeStart,InTimeSpeed,ExSats;
 	AnsiString RcvOpt[3],ProxyAddr;
-	AnsiString OutSwapInterval,LogSwapInterval;
+	AnsiString OutSwapInterval,LogSwapInterval,ResetCmd;
 	prcopt_t PrcOpt;
 	solopt_t SolOpt;
 	TFont *PosFont;

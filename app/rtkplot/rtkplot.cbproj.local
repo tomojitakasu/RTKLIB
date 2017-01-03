@@ -1,18 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <BorlandProject>
 	<Transactions>
-    <Transaction>2012/05/20 06:22:06.000.259,D:\proj\rtklib\app\rtkplot\Unit1.h=D:\proj\rtklib\app\rtkplot\geview.h</Transaction>
-    <Transaction>2012/05/20 06:22:06.000.259,D:\proj\rtklib\app\rtkplot\Unit1.dfm=D:\proj\rtklib\app\rtkplot\geview.dfm</Transaction>
+    <Transaction>2012/05/20 06:22:06.000.259,D:\proj\rtklib\app\rtkplot\geview.dfm=D:\proj\rtklib\app\rtkplot\Unit1.dfm</Transaction>
+    <Transaction>2012/05/20 06:22:06.000.259,D:\proj\rtklib\app\rtkplot\geview.h=D:\proj\rtklib\app\rtkplot\Unit1.h</Transaction>
     <Transaction>2014/08/26 09:33:12.000.785,=D:\proj\RTKLIB\src\rcv\rt17.c</Transaction>
-    <Transaction>2014/08/31 12:20:44.000.286,D:\proj\RTKLIB\app\rtkplot\mapdlg.dfm=D:\proj\RTKLIB\app\rtkplot\skydlg.dfm</Transaction>
-    <Transaction>2014/08/31 12:20:44.000.286,D:\proj\RTKLIB\app\rtkplot\mapdlg.h=D:\proj\RTKLIB\app\rtkplot\skydlg.h</Transaction>
-    <Transaction>2014/08/31 12:20:44.000.286,D:\proj\RTKLIB\app\rtkplot\mapdlg.cpp=D:\proj\RTKLIB\app\rtkplot\skydlg.cpp</Transaction>
-    <Transaction>2014/08/31 12:21:42.000.544,D:\proj\RTKLIB\app\rtkplot\skydlg.dfm=D:\proj\RTKLIB\app\rtkplot\mapdlg.dfm</Transaction>
-    <Transaction>2014/08/31 12:21:42.000.564,D:\proj\RTKLIB\app\rtkplot\mapdlg.cpp=D:\proj\RTKLIB\app\rtkplot\skydlg.cpp</Transaction>
-    <Transaction>2014/08/31 12:21:42.000.564,D:\proj\RTKLIB\app\rtkplot\mapdlg.h=D:\proj\RTKLIB\app\rtkplot\skydlg.h</Transaction>
-    <Transaction>2014/08/31 12:21:42.000.544,D:\proj\RTKLIB\app\rtkplot\skydlg.h=D:\proj\RTKLIB\app\rtkplot\mapdlg.h</Transaction>
-    <Transaction>2014/08/31 12:21:42.000.544,D:\proj\RTKLIB\app\rtkplot\skydlg.cpp=D:\proj\RTKLIB\app\rtkplot\mapdlg.cpp</Transaction>
-    <Transaction>2014/08/31 12:21:42.000.564,D:\proj\RTKLIB\app\rtkplot\mapdlg.dfm=D:\proj\RTKLIB\app\rtkplot\skydlg.dfm</Transaction>
+    <Transaction>2014/08/31 12:20:44.000.286,D:\proj\RTKLIB\app\rtkplot\skydlg.h=D:\proj\RTKLIB\app\rtkplot\mapdlg.h</Transaction>
+    <Transaction>2014/08/31 12:20:44.000.286,D:\proj\RTKLIB\app\rtkplot\skydlg.dfm=D:\proj\RTKLIB\app\rtkplot\mapdlg.dfm</Transaction>
+    <Transaction>2014/08/31 12:20:44.000.286,D:\proj\RTKLIB\app\rtkplot\skydlg.cpp=D:\proj\RTKLIB\app\rtkplot\mapdlg.cpp</Transaction>
+    <Transaction>2014/08/31 12:21:42.000.564,D:\proj\RTKLIB\app\rtkplot\skydlg.cpp=D:\proj\RTKLIB\app\rtkplot\mapdlg.cpp</Transaction>
+    <Transaction>2014/08/31 12:21:42.000.564,D:\proj\RTKLIB\app\rtkplot\skydlg.dfm=D:\proj\RTKLIB\app\rtkplot\mapdlg.dfm</Transaction>
+    <Transaction>2014/08/31 12:21:42.000.564,D:\proj\RTKLIB\app\rtkplot\skydlg.h=D:\proj\RTKLIB\app\rtkplot\mapdlg.h</Transaction>
+    <Transaction>2014/08/31 12:21:42.000.544,D:\proj\RTKLIB\app\rtkplot\mapdlg.h=D:\proj\RTKLIB\app\rtkplot\skydlg.h</Transaction>
+    <Transaction>2014/08/31 12:21:42.000.544,D:\proj\RTKLIB\app\rtkplot\mapdlg.cpp=D:\proj\RTKLIB\app\rtkplot\skydlg.cpp</Transaction>
+    <Transaction>2014/08/31 12:21:42.000.544,D:\proj\RTKLIB\app\rtkplot\mapdlg.dfm=D:\proj\RTKLIB\app\rtkplot\skydlg.dfm</Transaction>
     <Transaction>2014/08/31 12:22:33.000.525,D:\proj\RTKLIB\app\rtkplot\skydlg.cpp=</Transaction>
     <Transaction>2014/08/31 12:24:52.000.986,=D:\proj\RTKLIB\app\rtkplot\mapdlg.cpp</Transaction>
     <Transaction>2014/08/31 12:24:59.000.431,=D:\proj\RTKLIB\app\rtkplot\skydlg.cpp</Transaction>
@@ -21,9 +21,9 @@
     <Transaction>2016/06/12 21:42:20.000.772,D:\proj\RTKLIB\src\shape.c=</Transaction>
     <Transaction>2016/06/12 21:42:30.000.616,=D:\proj\RTKLIB\src\gis.c</Transaction>
     <Transaction>2016/06/18 12:27:46.000.033,=D:\proj\RTKLIB\app\rtkplot\Unit1.cpp</Transaction>
-    <Transaction>2016/06/18 12:35:43.000.366,D:\proj\RTKLIB\app\rtkplot\vmapdlg.h=D:\proj\RTKLIB\app\rtkplot\Unit1.h</Transaction>
-    <Transaction>2016/06/18 12:35:43.000.366,D:\proj\RTKLIB\app\rtkplot\vmapdlg.dfm=D:\proj\RTKLIB\app\rtkplot\Unit1.dfm</Transaction>
-    <Transaction>2016/06/18 12:35:43.000.366,D:\proj\RTKLIB\app\rtkplot\vmapdlg.cpp=D:\proj\RTKLIB\app\rtkplot\Unit1.cpp</Transaction>
+    <Transaction>2016/06/18 12:35:43.000.366,D:\proj\RTKLIB\app\rtkplot\Unit1.h=D:\proj\RTKLIB\app\rtkplot\vmapdlg.h</Transaction>
+    <Transaction>2016/06/18 12:35:43.000.366,D:\proj\RTKLIB\app\rtkplot\Unit1.cpp=D:\proj\RTKLIB\app\rtkplot\vmapdlg.cpp</Transaction>
+    <Transaction>2016/06/18 12:35:43.000.366,D:\proj\RTKLIB\app\rtkplot\Unit1.dfm=D:\proj\RTKLIB\app\rtkplot\vmapdlg.dfm</Transaction>
     <Transaction>2016/07/05 15:27:09.000.924,=D:\proj\RTKLIB\src\rcv\cmr.c</Transaction>
     <Transaction>2016/08/30 16:07:52.000.046,D:\proj\RTKLIB\app\rtkplot\fileseldlg.cpp=</Transaction>
   </Transactions>

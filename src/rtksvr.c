@@ -34,10 +34,14 @@
 *           2016/09/18  1.16 fix server-crash with server-cycle > 1000
 *           2016/09/20  1.17 change api rtksvrstart()
 *           2016/10/01  1.18 change api rtksvrstart()
+*           2016/10/04  1.19 fix problem to send nmea of single solution
+*           2016/10/09  1.20 add reset-and-single-sol mode for nmea-request
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
 static const char rcsid[]="$Id:$";
+
+#define MIN_INT_RESET   30000   /* mininum interval of reset command (ms) */
 
 /* write solution header to output stream ------------------------------------*/
 static void writesolhead(stream_t *stream, const solopt_t *solopt)
@@ -449,13 +453,79 @@ static void periodic_cmd(int cycle, const char *cmd, stream_t *stream)
         if ((r=strrchr(msg,'#'))) {
             sscanf(r,"# %d",&period);
             *r='\0';
+            while (*--r==' ') *r='\0'; /* delete tail spaces */
         }
         if (period<=0) period=1000;
         if (*msg&&cycle%period==0) {
             strsendcmd(stream,msg);
         }
         if (!*q) break;
-    }
+	}
+}
+/* baseline length -----------------------------------------------------------*/
+static double baseline_len(const rtk_t *rtk)
+{
+	double dr[3];
+	int i;
+
+	if (norm(rtk->sol.rr,3)<=0.0||norm(rtk->rb,3)<=0.0) return 0.0;
+
+	for (i=0;i<3;i++) {
+		dr[i]=rtk->sol.rr[i]-rtk->rb[i];
+	}
+	return norm(dr,3)*0.001; /* (km) */
+}
+/* send nmea request to base/nrtk input stream -------------------------------*/
+static void send_nmea(rtksvr_t *svr, unsigned int *tickreset)
+{
+	sol_t sol_nmea={{0}};
+	double vel,bl;
+	unsigned int tick=tickget();
+	int i;
+
+	if (svr->stream[1].state!=1) return;
+
+	if (svr->nmeareq==1) { /* lat-lon-hgt mode */
+		sol_nmea.stat=SOLQ_SINGLE;
+		sol_nmea.time=utc2gpst(timeget());
+		matcpy(sol_nmea.rr,svr->nmeapos,3,1);
+		strsendnmea(svr->stream+1,&sol_nmea);
+	}
+	else if (svr->nmeareq==2) { /* single-solution mode */
+		if (norm(svr->rtk.sol.rr,3)<=0.0) return;
+		sol_nmea.stat=SOLQ_SINGLE;
+		sol_nmea.time=utc2gpst(timeget());
+		matcpy(sol_nmea.rr,svr->rtk.sol.rr,3,1);
+		strsendnmea(svr->stream+1,&sol_nmea);
+	}
+	else if (svr->nmeareq==3) { /* reset-and-single-sol mode */
+
+		/* send reset command if baseline over threshold */
+		bl=baseline_len(&svr->rtk);
+		if (bl>=svr->bl_reset&&(int)(tick-*tickreset)>MIN_INT_RESET) {
+			strsendcmd(svr->stream+1,svr->cmd_reset);
+			
+			tracet(2,"send reset: bl=%.3f rr=%.3f %.3f %.3f rb=%.3f %.3f %.3f\n",
+				   bl,svr->rtk.sol.rr[0],svr->rtk.sol.rr[1],svr->rtk.sol.rr[2],
+				   svr->rtk.rb[0],svr->rtk.rb[1],svr->rtk.rb[2]);
+			*tickreset=tick;
+		}
+		if (norm(svr->rtk.sol.rr,3)<=0.0) return;
+		sol_nmea.stat=SOLQ_SINGLE;
+		sol_nmea.time=utc2gpst(timeget());
+		matcpy(sol_nmea.rr,svr->rtk.sol.rr,3,1);
+
+		/* set predicted position if velocity > 36km/h */
+		if ((vel=norm(svr->rtk.sol.rr+3,3))>10.0) {
+			for (i=0;i<3;i++) {
+				sol_nmea.rr[i]+=svr->rtk.sol.rr[i+3]/vel*svr->bl_reset*0.8;
+			}
+		}
+		strsendnmea(svr->stream+1,&sol_nmea);
+
+		tracet(3,"send nmea: rr=%.3f %.3f %.3f\n",sol_nmea.rr[0],sol_nmea.rr[1],
+			   sol_nmea.rr[2]);
+	}
 }
 /* rtk server thread ---------------------------------------------------------*/
 #ifdef WIN32
@@ -467,9 +537,9 @@ static void *rtksvrthread(void *arg)
     rtksvr_t *svr=(rtksvr_t *)arg;
     obs_t obs;
     obsd_t data[MAXOBS*2];
-    sol_t sol={{0}},sol_nmea={{0}};
+    sol_t sol={{0}};
     double tt;
-    unsigned int tick,ticknmea,tick1hz;
+    unsigned int tick,ticknmea,tick1hz,tickreset;
     unsigned char *p,*q;
     char msg[128];
     int i,j,n,fobs[3]={0},cycle,cputime;
@@ -479,6 +549,7 @@ static void *rtksvrthread(void *arg)
     svr->state=1; obs.data=data;
     svr->tick=tickget();
     ticknmea=tick1hz=svr->tick-1000;
+    tickreset=svr->tick-MIN_INT_RESET;
     
     for (cycle=0;svr->state;cycle++) {
         tick=tickget();
@@ -568,17 +639,7 @@ static void *rtksvrthread(void *arg)
         }
         /* send nmea request to base/nrtk input stream */
         if (svr->nmeacycle>0&&(int)(tick-ticknmea)>=svr->nmeacycle) {
-            if (svr->stream[1].state==1) {
-                if (svr->nmeareq==1) {
-                    sol_nmea.stat=SOLQ_SINGLE;
-                    sol_nmea.time=utc2gpst(timeget());
-                    matcpy(sol_nmea.rr,svr->nmeapos,3,1);
-                    strsendnmea(svr->stream+1,&sol_nmea);
-                }
-                else if (svr->nmeareq==2&&norm(svr->rtk.sol.rr,3)>0.0) {
-                    strsendnmea(svr->stream+1,&svr->rtk.sol);
-                }
-            }
+            send_nmea(svr,&tickreset);
             ticknmea=tick;
         }
         if ((cputime=(int)(tickget()-tick))>0) svr->cputime=cputime;
@@ -665,6 +726,8 @@ extern int rtksvrinit(rtksvr_t *svr)
     for (i=0;i<MAXSTRRTK;i++) strinit(svr->stream+i);
     
     for (i=0;i<3;i++) *svr->cmds_periodic[i]='\0';
+    *svr->cmd_reset='\0';
+    svr->bl_reset=10.0;
     initlock(&svr->lock);
     
     return 1;
@@ -727,7 +790,8 @@ extern void rtksvrunlock(rtksvr_t *svr) {unlock(&svr->lock);}
 *                              rcvopt[1]=receiver option base
 *                              rcvopt[2]=receiver option corr
 *          int     nmeacycle I nmea request cycle (ms) (0:no request)
-*          int     nmeareq  I  nmea request type (0:no,1:base pos,2:single sol)
+*          int     nmeareq  I  nmea request type
+*                              (0:no,1:base pos,2:single sol,3:reset and single)
 *          double *nmeapos  I  transmitted nmea position (ecef) (m)
 *          prcopt_t *prcopt I  rtk processing options
 *          solopt_t *solopt I  solution options
@@ -842,7 +906,10 @@ extern int rtksvrstart(rtksvr_t *svr, int cycle, int buffsize, int *strs,
     
     /* write start commands to input streams */
     for (i=0;i<3;i++) {
-        if (cmds[i]) strsendcmd(svr->stream+i,cmds[i]);
+        if (!cmds[i]) continue;
+        strwrite(svr->stream+i,(unsigned char *)"",0); /* for connect */
+        sleepms(100);
+        strsendcmd(svr->stream+i,cmds[i]);
     }
     /* write solution header to solution streams */
     for (i=3;i<5;i++) {

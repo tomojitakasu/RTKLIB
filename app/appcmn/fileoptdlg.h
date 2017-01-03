@@ -30,6 +30,7 @@ __published:
 	TLabel *Label5;
 	TSpeedButton *BtnKey;
 	TOpenDialog *OpenDialog;
+	TCheckBox *Chk64Bit;
 	void __fastcall BtnFilePathClick(TObject *Sender);
 	void __fastcall BtnOkClick(TObject *Sender);
 	void __fastcall FormShow(TObject *Sender);

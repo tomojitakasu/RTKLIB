@@ -379,6 +379,7 @@ static void periodic_cmd(int cycle, const char *cmd, stream_t *stream)
         if ((r=strrchr(msg,'#'))) {
             sscanf(r,"# %d",&period);
             *r='\0';
+            while (*--r==' ') *r='\0'; /* delete tail spaces */
         }
         if (period<=0) period=1000;
         if (*msg&&cycle%period==0) {
@@ -410,7 +411,7 @@ static void *strsvrthread(void *arg)
         tick=tickget();
         
         /* read data from input stream */
-        while ((n=strread(svr->stream,svr->buff,svr->buffsize))>0) {
+        while ((n=strread(svr->stream,svr->buff,svr->buffsize))>0&&svr->state) {
             
             /* get stream selection */
             strgetsel(svr->stream,sel);
@@ -541,7 +542,6 @@ extern int strsvrstart(strsvr_t *svr, int *opts, int *strs, char **paths,
     char file1[MAXSTRPATH],file2[MAXSTRPATH],*p;
     
     tracet(3,"strsvrstart:\n");
-trace(2,"strsvrstart: cmds_periodic=%s\n",cmds_periodic[0]);
     
     if (svr->state) return 0;
     
@@ -586,7 +586,10 @@ trace(2,"strsvrstart: cmds_periodic=%s\n",cmds_periodic[0]);
     }
     /* write start commands to input streams */
     for (i=0;i<svr->nstr;i++) {
-        if (cmds[i]) strsendcmd(svr->stream+i,cmds[i]);
+        if (!cmds[i]) continue;
+        strwrite(svr->stream+i,(unsigned char *)"",0); /* for connect */
+        sleepms(100);
+        strsendcmd(svr->stream+i,cmds[i]);
     }
     svr->state=1;
     

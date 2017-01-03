@@ -59,9 +59,12 @@ void __fastcall TInputStrDialog::FormShow(TObject *Sender)
 	TimeTagC  ->Checked  =TimeTag;
 	TimeSpeedL->Text     =TimeSpeed;
 	TimeStartE->Text     =TimeStart;
+	Chk64Bit  ->Checked  =Time64Bit;
 	NmeaPos1  ->Text     =s.sprintf("%.9f",NmeaPos[0]);
 	NmeaPos2  ->Text     =s.sprintf("%.9f",NmeaPos[1]);
 	NmeaPos3  ->Text     =s.sprintf("%.3f",NmeaPos[2]);
+	EditMaxBL ->Text     =s.sprintf("%.0f",MaxBL);
+	EditResetCmd->Text   =ResetCmd;
 	UpdateEnable();
 }
 //---------------------------------------------------------------------------
@@ -83,9 +86,12 @@ void __fastcall TInputStrDialog::BtnOkClick(TObject *Sender)
 	TimeTag    =TimeTagC  ->Checked;
 	TimeSpeed  =TimeSpeedL->Text;
 	TimeStart  =TimeStartE->Text;
+	Time64Bit  =Chk64Bit  ->Checked;
 	NmeaPos[0] =str2dbl(NmeaPos1->Text);
 	NmeaPos[1] =str2dbl(NmeaPos2->Text);
 	NmeaPos[2] =str2dbl(NmeaPos3->Text);
+	MaxBL      =str2dbl(EditMaxBL->Text);
+	ResetCmd   =EditResetCmd->Text;
 }
 //---------------------------------------------------------------------------
 void __fastcall TInputStrDialog::StreamC1Click(TObject *Sender)
@@ -142,6 +148,7 @@ AnsiString __fastcall TInputStrDialog::SetFilePath(AnsiString path)
 	if (TimeTagC->Checked     ) path+="::T";
 	if (TimeStartE->Text!="0" ) path+="::+"+TimeStartE->Text;
 	path+="::"+TimeSpeedL->Text;
+	if (Chk64Bit->Checked     ) path+="::P=8";
 	return path;
 }
 //---------------------------------------------------------------------------
@@ -207,7 +214,7 @@ void __fastcall TInputStrDialog::BtnCmd1Click(TObject *Sender)
 void __fastcall TInputStrDialog::BtnCmd2Click(TObject *Sender)
 {
 	for (int i=0;i<3;i++) {
-		if (Stream1->ItemIndex==0) {
+		if (Stream2->ItemIndex==0) {
 			CmdOptDialog->Cmds  [i]=Cmds  [1][i];
 			CmdOptDialog->CmdEna[i]=CmdEna[1][i];
 		}
@@ -218,7 +225,7 @@ void __fastcall TInputStrDialog::BtnCmd2Click(TObject *Sender)
 	}
 	if (CmdOptDialog->ShowModal()!=mrOk) return;
 	for (int i=0;i<3;i++) {
-		if (Stream1->ItemIndex==0) {
+		if (Stream2->ItemIndex==0) {
 			Cmds  [1][i]=CmdOptDialog->Cmds  [i];
 			CmdEna[1][i]=CmdOptDialog->CmdEna[i];
 		}
@@ -232,7 +239,7 @@ void __fastcall TInputStrDialog::BtnCmd2Click(TObject *Sender)
 void __fastcall TInputStrDialog::BtnCmd3Click(TObject *Sender)
 {
 	for (int i=0;i<3;i++) {
-		if (Stream1->ItemIndex==0) {
+		if (Stream3->ItemIndex==0) {
 			CmdOptDialog->Cmds  [i]=Cmds  [2][i];
 			CmdOptDialog->CmdEna[i]=CmdEna[2][i];
 		}
@@ -243,7 +250,7 @@ void __fastcall TInputStrDialog::BtnCmd3Click(TObject *Sender)
 	}
 	if (CmdOptDialog->ShowModal()!=mrOk) return;
 	for (int i=0;i<3;i++) {
-		if (Stream1->ItemIndex==0) {
+		if (Stream3->ItemIndex==0) {
 			Cmds  [2][i]=CmdOptDialog->Cmds  [i];
 			CmdEna[2][i]=CmdOptDialog->CmdEna[i];
 		}
@@ -370,6 +377,11 @@ void __fastcall TInputStrDialog::UpdateEnable(void)
 	NmeaPos2  ->Enabled=ena2&&NmeaReqL->ItemIndex==1;
 	NmeaPos3  ->Enabled=ena2&&NmeaReqL->ItemIndex==1;
 	BtnPos    ->Enabled=ena2&&NmeaReqL->ItemIndex==1;
+	LabelResetCmd->Enabled=ena2&&NmeaReqL->ItemIndex==3;
+	EditResetCmd->Enabled=ena2&&NmeaReqL->ItemIndex==3;
+	LabelMaxBL->Enabled=ena2&&NmeaReqL->ItemIndex==3;
+	EditMaxBL ->Enabled=ena2&&NmeaReqL->ItemIndex==3;
+	LabelKm   ->Enabled=ena2&&NmeaReqL->ItemIndex==3;
 	
 	LabelF1   ->Enabled=ena1;
 	FilePath1 ->Enabled=StreamC1->Checked&&Stream1->ItemIndex==4;
@@ -383,6 +395,7 @@ void __fastcall TInputStrDialog::UpdateEnable(void)
 	TimeSpeedL->Enabled=ena1&&TimeTagC->Checked;
 	LabelF2   ->Enabled=ena1&&TimeTagC->Checked;
 	LabelF3   ->Enabled=ena1&&TimeTagC->Checked;
+	Chk64Bit  ->Enabled=ena1&&TimeTagC->Checked;
 }
 //---------------------------------------------------------------------------
 

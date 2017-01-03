@@ -80,6 +80,7 @@ __published:
 	TCheckBox *Freq7;
 	TCheckBox *ScanObs;
 	TCheckBox *HalfCyc;
+	TCheckBox *ChkSepNav;
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall BtnOkClick(TObject *Sender);
 	void __fastcall RnxFileClick(TObject *Sender);

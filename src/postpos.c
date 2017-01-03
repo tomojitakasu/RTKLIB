@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * postpos.c : post-processing positioning
 *
-*          Copyright (C) 2007-2014 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2007-2016 by T.TAKASU, All rights reserved.
 *
 * version : $Revision: 1.1 $ $Date: 2008/07/17 21:48:06 $
 * history : 2007/05/08  1.0  new
@@ -37,6 +37,7 @@
 *           2016/01/12  1.19 add carrier-phase bias correction by ssr
 *           2016/07/31  1.20 fix error message problem in rnx2rtkp
 *           2016/08/29  1.21 suppress warnings
+*           2016/10/10  1.22 fix bug on identification of file fopt->blq
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -1003,7 +1004,7 @@ static int execses(gtime_t ts, gtime_t te, double ti, const prcopt_t *popt,
                stas);
     }
     /* read ocean tide loading parameters */
-    if (popt_.mode>PMODE_SINGLE&&fopt->blq) {
+    if (popt_.mode>PMODE_SINGLE&&*fopt->blq) {
         readotl(&popt_,fopt->blq,stas);
     }
     /* rover/reference fixed position */

@@ -133,6 +133,8 @@ __published:
 	TLabel *Label37;
 	TComboBox *MaxMP;
 	TCheckBox *NavSys7;
+	TEdit *EditTimeSync;
+	TCheckBox *ChkTimeSync;
 	void __fastcall BtnOKClick(TObject *Sender);
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall BtnColor1Click(TObject *Sender);
@@ -150,6 +152,7 @@ __published:
 	void __fastcall BtnTLESatFileClick(TObject *Sender);
 	void __fastcall BtnTLEViewClick(TObject *Sender);
 	void __fastcall BtnTLESatViewClick(TObject *Sender);
+	void __fastcall ChkTimeSyncClick(TObject *Sender);
 private:
 	TFont *FontOpt;
 	void __fastcall UpdateFont(void);

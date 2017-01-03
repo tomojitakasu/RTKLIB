@@ -181,8 +181,8 @@ static int decode_rxmraw(raw_t *raw)
     time=gpst2time(week,tow*0.001);
     
     if (week==0) {
-        trace(2,"ubx rxmraw week=0 error: len=%d nsat=%d\n",raw->len,nsat);
-        return -1;
+        trace(3,"ubx rxmraw week=0 error: len=%d nsat=%d\n",raw->len,nsat);
+        return 0;
     }
     /* time tag adjustment */
     if (tadj>0.0) {
@@ -250,8 +250,8 @@ static int decode_rxmrawx(raw_t *raw)
     time=gpst2time(week,tow);
     
     if (week==0) {
-        trace(2,"ubx rxmrawx week=0 error: len=%d nsat=%d\n",raw->len,nsat);
-        return -1;
+        trace(3,"ubx rxmrawx week=0 error: len=%d nsat=%d\n",raw->len,nsat);
+        return 0;
     }
     if (raw->outtype) {
         sprintf(raw->msgtype,"UBX RXM-RAWX  (%4d): time=%s nsat=%d",raw->len,

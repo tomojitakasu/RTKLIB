@@ -32,6 +32,7 @@
 *           2016/01/22 1.14 fix bug on L2C code in MT1004 (#131)
 *           2016/08/20 1.15 fix bug on loss-of-lock detection in MSM 6/7 (#134)
 *           2016/09/20 1.16 fix bug on MT1045 Galileo week rollover
+*           2016/10/09 1.17 support MT1029 unicode text string
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -243,7 +244,8 @@ static int decode_head1001(rtcm_t *rtcm, int *sync)
     
     if (rtcm->outtype) {
         msg=rtcm->msgtype+strlen(rtcm->msgtype);
-        sprintf(msg," %s nsat=%2d sync=%d",time_str(rtcm->time,2),nsat,*sync);
+        sprintf(msg," staid=%4d %s nsat=%2d sync=%d",staid,
+                time_str(rtcm->time,2),nsat,*sync);
     }
     return nsat;
 }
@@ -376,7 +378,7 @@ static double getbits_38(const unsigned char *buff, int pos)
 /* decode type 1005: stationary rtk reference station arp --------------------*/
 static int decode_type1005(rtcm_t *rtcm)
 {
-    double rr[3];
+    double rr[3],re[3],pos[3];
     char *msg;
     int i=24+12,j,staid,itrf;
     
@@ -393,7 +395,10 @@ static int decode_type1005(rtcm_t *rtcm)
     }
     if (rtcm->outtype) {
         msg=rtcm->msgtype+strlen(rtcm->msgtype);
-        sprintf(msg," staid=%4d",staid);
+        for (j=0;j<3;j++) re[j]=rr[j]*0.0001;
+        ecef2pos(re,pos);
+        sprintf(msg," staid=%4d pos=%.8f %.8f %.3f",staid,pos[0]*R2D,pos[1]*R2D,
+                pos[2]);
     }
     /* test station id */
     if (!test_staid(rtcm,staid)) return -1;
@@ -410,7 +415,7 @@ static int decode_type1005(rtcm_t *rtcm)
 /* decode type 1006: stationary rtk reference station arp with height --------*/
 static int decode_type1006(rtcm_t *rtcm)
 {
-    double rr[3],anth;
+    double rr[3],re[3],pos[3],anth;
     char *msg;
     int i=24+12,j,staid,itrf;
     
@@ -428,7 +433,10 @@ static int decode_type1006(rtcm_t *rtcm)
     }
     if (rtcm->outtype) {
         msg=rtcm->msgtype+strlen(rtcm->msgtype);
-        sprintf(msg," staid=%4d",staid);
+        for (j=0;j<3;j++) re[j]=rr[j]*0.0001;
+        ecef2pos(re,pos);
+        sprintf(msg," staid=%4d pos=%.8f %.8f %.3f anth=%.3f",staid,pos[0]*R2D,
+                pos[1]*R2D,pos[2],anth);
     }
     /* test station id */
     if (!test_staid(rtcm,staid)) return -1;
@@ -539,7 +547,8 @@ static int decode_head1009(rtcm_t *rtcm, int *sync)
     
     if (rtcm->outtype) {
         msg=rtcm->msgtype+strlen(rtcm->msgtype);
-        sprintf(msg," %s nsat=%2d sync=%d",time_str(rtcm->time,2),nsat,*sync);
+        sprintf(msg," staid=%4d %s nsat=%2d sync=%d",staid,
+                time_str(rtcm->time,2),nsat,*sync);
     }
     return nsat;
 }
@@ -838,6 +847,38 @@ static int decode_type1026(rtcm_t *rtcm)
 static int decode_type1027(rtcm_t *rtcm)
 {
     trace(2,"rtcm3 1027: not supported message\n");
+    return 0;
+}
+/* decode type 1029: unicode text string -------------------------------------*/
+static int decode_type1029(rtcm_t *rtcm)
+{
+    char *msg;
+    int i=24+12,j,staid,mjd,tod,nchar,cunit;
+    
+    if (i+60<=rtcm->len*8) {
+        staid=getbitu(rtcm->buff,i,12); i+=12;
+        mjd  =getbitu(rtcm->buff,i,16); i+=16;
+        tod  =getbitu(rtcm->buff,i,17); i+=17;
+        nchar=getbitu(rtcm->buff,i, 7); i+= 7;
+        cunit=getbitu(rtcm->buff,i, 8); i+= 8;
+    }
+    else {
+        trace(2,"rtcm3 1029 length error: len=%d\n",rtcm->len);
+        return -1;
+    }
+    if (i+nchar*8>rtcm->len*8) {
+        trace(2,"rtcm3 1029 length error: len=%d nchar=%d\n",rtcm->len,nchar);
+        return -1;
+    } 
+    for (j=0;j<nchar&&j<126;j++) {
+        rtcm->msg[j]=getbitu(rtcm->buff,i,8); i+=8;
+    }
+    rtcm->msg[j]='\0';
+    
+    if (rtcm->outtype) {
+        msg=rtcm->msgtype+strlen(rtcm->msgtype);
+        sprintf(msg," staid=%4d text=%s",staid,rtcm->msg);
+    }
     return 0;
 }
 /* decode type 1030: network rtk residual ------------------------------------*/
@@ -1983,8 +2024,8 @@ static int decode_msm_head(rtcm_t *rtcm, int sys, int *sync, int *iod,
     
     if (rtcm->outtype) {
         msg=rtcm->msgtype+strlen(rtcm->msgtype);
-        sprintf(msg," %s staid=%3d nsat=%2d nsig=%2d iod=%2d ncell=%2d sync=%d",
-                time_str(rtcm->time,2),staid,h->nsat,h->nsig,*iod,ncell,*sync);
+        sprintf(msg," staid=%4d %s nsat=%2d nsig=%2d iod=%2d ncell=%2d sync=%d",
+                staid,time_str(rtcm->time,2),h->nsat,h->nsig,*iod,ncell,*sync);
     }
     return ncell;
 }
@@ -2282,6 +2323,7 @@ extern int decode_rtcm3(rtcm_t *rtcm)
         case 1025: ret=decode_type1025(rtcm); break; /* not supported */
         case 1026: ret=decode_type1026(rtcm); break; /* not supported */
         case 1027: ret=decode_type1027(rtcm); break; /* not supported */
+        case 1029: ret=decode_type1029(rtcm); break;
         case 1030: ret=decode_type1030(rtcm); break; /* not supported */
         case 1031: ret=decode_type1031(rtcm); break; /* not supported */
         case 1032: ret=decode_type1032(rtcm); break; /* not supported */

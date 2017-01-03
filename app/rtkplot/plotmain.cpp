@@ -195,7 +195,7 @@ void __fastcall TPlot::FormShow(TObject *Sender)
 {
     AnsiString cmd,s;
     int i,argc=0;
-    char *p,*argv[32],buff[1024],*path1="",*path2="";
+    char *p,*argv[32],buff[1024],*path1="",*path2="",str_path[256];
     
     trace(3,"FormShow\n");
     
@@ -262,6 +262,13 @@ void __fastcall TPlot::FormShow(TObject *Sender)
     else {
         PanelBrowse->Visible=false;
         Splitter1->Visible=false;
+    }
+    strinit(&StrTimeSync);
+    NStrBuff=0;
+    
+    if (TimeSyncOut) {
+        sprintf(str_path,":%d",TimeSyncPort);
+        stropen(&StrTimeSync,STR_TCPSVR,STR_MODE_RW,str_path);
     }
     Timer->Interval=RefCycle;
     UpdatePlot();
@@ -749,7 +756,8 @@ void __fastcall TPlot::MenuOptionsClick(TObject *Sender)
 {
     AnsiString tlefile=TLEFile,tlesatfile=TLESatFile;
     double oopos[3],range;
-    char file[1024];
+    char file[1024],str_path[256];
+    int timesyncout=TimeSyncOut;
     
     trace(3,"MenuOptionsClick\n");
     
@@ -794,6 +802,13 @@ void __fastcall TPlot::MenuOptionsClick(TObject *Sender)
         if (sscanf(file,"%lf",&range)&&range==YRange) {
             RangeList->Selected[i]=true;
         }
+    }
+    if (!timesyncout&&TimeSyncOut) {
+        sprintf(str_path,":%d",TimeSyncPort);
+        stropen(&StrTimeSync,STR_TCPSVR,STR_MODE_RW,str_path);
+    }
+    else if (timesyncout&&!TimeSyncOut) {
+        strclose(&StrTimeSync);
     }
 }
 // callback on menu-show-tool-bar -------------------------------------------
@@ -1879,8 +1894,10 @@ void __fastcall TPlot::TimerTimer(TObject *Sender)
     AnsiString connectmsg="",s;
     static unsigned char buff[16384];
     solopt_t opt=solopt_default;
+    sol_t *sol;
     const gtime_t ts={0};
-    double tint=TimeEna[2]?TimeInt:0.0,pos[3];
+    gtime_t time={0};
+    double tint=TimeEna[2]?TimeInt:0.0,pos[3],ep[6];
     int i,j,n,inb,inr,cycle,nmsg[2]={0},stat,istat;
     int sel=!BtnSol1->Down&&BtnSol2->Down?1:0;
     char msg[MAXSTRMSG]="",tstr[32];
@@ -1954,6 +1971,45 @@ void __fastcall TPlot::TimerTimer(TObject *Sender)
                 BtnAnimate->Down=false;
             }
         }
+    }
+    else if (TimeSyncOut) { // time sync
+        time.time = 0;
+        while (strread(&StrTimeSync, (unsigned char *)StrBuff+NStrBuff, 1)) {
+            if (++NStrBuff >= 1023) {
+                NStrBuff = 0;
+                continue;
+            }
+            if (StrBuff[NStrBuff-1]=='\n') {
+                StrBuff[NStrBuff-1]='\0';
+                if (sscanf(StrBuff,"%lf/%lf/%lf %lf:%lf:%lf",ep,ep+1,ep+2,
+                           ep+3,ep+4,ep+5)>=6) {
+                    time=epoch2time(ep);
+                }
+                NStrBuff = 0;
+            }
+        }
+        if (time.time&&(PlotType<=PLOT_NSAT||PlotType<=PLOT_RES)) {
+           i=SolIndex[sel];
+           if (!(sol=getsol(SolData+sel,i))) return;
+           double tt=timediff(sol->time,time);
+           if (tt<-DTTOL) {
+               for (;i<SolData[sel].n;i++) {
+                   if (!(sol=getsol(SolData+sel,i))) continue;
+                   if (timediff(sol->time,time)>=-DTTOL) {
+                       i--;
+                       break;
+                   }
+               }
+           }
+           else if (tt>DTTOL) {
+               for (;i>=0;i--) {
+                   if (!(sol=getsol(SolData+sel,i))) continue;
+                   if (timediff(sol->time,time)<=DTTOL) break;
+               }
+           }
+           SolIndex[sel]=MAX(0,MIN(SolData[sel].n-1,i));
+        }
+        else return;
     }
     else return;
     
@@ -2685,6 +2741,8 @@ void __fastcall TPlot::LoadOpt(void)
     ElMaskP      =ini->ReadInteger("plot","elmaskp",       0);
     ExSats       =ini->ReadString ("plot","exsats",       "");
     RtBuffSize   =ini->ReadInteger("plot","rtbuffsize",10800);
+    TimeSyncOut  =ini->ReadInteger("plot","timesyncout",   0);
+    TimeSyncPort =ini->ReadInteger("plot","timesyncport",10071);
     RtStream[0]  =ini->ReadInteger("plot","rtstream1",     0);
     RtStream[1]  =ini->ReadInteger("plot","rtstream2",     0);
     RtFormat[0]  =ini->ReadInteger("plot","rtformat1",     0);
@@ -2823,6 +2881,8 @@ void __fastcall TPlot::SaveOpt(void)
     ini->WriteInteger("plot","elmaskp",      ElMaskP      );
     ini->WriteString ("plot","exsats",       ExSats       );
     ini->WriteInteger("plot","rtbuffsize",   RtBuffSize   );
+    ini->WriteInteger("plot","timesyncout",  TimeSyncOut  );
+    ini->WriteInteger("plot","timesyncport", TimeSyncPort );
     ini->WriteInteger("plot","rtstream1",    RtStream[0]  );
     ini->WriteInteger("plot","rtstream2",    RtStream[1]  );
     ini->WriteInteger("plot","rtformat1",    RtFormat[0]  );
