@@ -97,6 +97,7 @@ extern int init_rtcm(rtcm_t *rtcm)
         rtcm->lltime[i][j]=time0;
     }
     rtcm->nbyte=rtcm->nbit=rtcm->len=0;
+    for (i=0;i<1200;i++) rtcm->buff[i]=0;
     rtcm->word=0;
     for (i=0;i<100;i++) rtcm->nmsg2[i]=0;
     for (i=0;i<300;i++) rtcm->nmsg3[i]=0;
@@ -104,6 +105,12 @@ extern int init_rtcm(rtcm_t *rtcm)
     rtcm->obs.data=NULL;
     rtcm->nav.eph =NULL;
     rtcm->nav.geph=NULL;
+    rtcm->nav.seph=NULL;
+    rtcm->nav.peph=NULL;
+    rtcm->nav.pclk=NULL;
+    rtcm->nav.alm=NULL;
+    rtcm->nav.tec=NULL;
+    rtcm->nav.stec=NULL;
     
     /* reallocate memory for observation and ephemris buffer */
     if (!(rtcm->obs.data=(obsd_t *)malloc(sizeof(obsd_t)*MAXOBS))||
@@ -112,12 +119,20 @@ extern int init_rtcm(rtcm_t *rtcm)
         free_rtcm(rtcm);
         return 0;
     }
-    rtcm->obs.n=0;
-    rtcm->nav.n=MAXSAT;
-    rtcm->nav.ng=MAXPRNGLO;
+    rtcm->obs.n=0;rtcm->obs.nmax=MAXOBS;
+    rtcm->nav.n=0;rtcm->nav.nmax=MAXSAT;
+    rtcm->nav.ng=0;rtcm->nav.ngmax=MAXPRNGLO;
     for (i=0;i<MAXOBS   ;i++) rtcm->obs.data[i]=data0;
     for (i=0;i<MAXSAT   ;i++) rtcm->nav.eph [i]=eph0;
     for (i=0;i<MAXPRNGLO;i++) rtcm->nav.geph[i]=geph0;
+    for (i=0;i<8     ;i++) rtcm->nav.ion_gps[i]=0.0;
+
+    rtcm->nav.ns=rtcm->nav.nsmax=0;
+    rtcm->nav.ne=rtcm->nav.nemax=0;
+    rtcm->nav.nc=rtcm->nav.ncmax=0;
+    rtcm->nav.na=rtcm->nav.namax=0;
+    rtcm->nav.nt=rtcm->nav.ntmax=0;
+    rtcm->nav.nn=rtcm->nav.nnmax=0;
     return 1;
 }
 /* free rtcm control ----------------------------------------------------------

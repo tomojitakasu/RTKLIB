@@ -2042,7 +2042,8 @@ extern int decode_rtcm3(rtcm_t *rtcm)
         case 1038: ret=decode_type1038(rtcm); break; /* not supported */
         case 1039: ret=decode_type1039(rtcm); break; /* not supported */
         case 1044: ret=decode_type1044(rtcm); break;
-        case 1045: ret=decode_type1045(rtcm); break;
+        case 1045:
+        case 1046: ret=decode_type1045(rtcm); break;
         case 1047: ret=decode_type1047(rtcm); break; /* tentative mt */
         case 1057: ret=decode_ssr1(rtcm,SYS_GPS); break;
         case 1058: ret=decode_ssr2(rtcm,SYS_GPS); break;
