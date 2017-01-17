@@ -597,7 +597,7 @@ void MainForm::SvrStart(void)
         else if (strs[i]==STR_TCPCLI||strs[i]==STR_NTRIPCLI) {
             if (CmdEnaTcp[i][0]) strncpy(cmds[i], qPrintable(CmdsTcp[i][0]), 1024);
             if (CmdEnaTcp[i][2]) strncpy(cmds_periodic[i], qPrintable(CmdsTcp[i][2]), 1024);
-        }
+        } else {cmds[i][0] = cmds_periodic[i][0] = '\0';};
     }
     for (int i=0;i<5;i++) {
         opt[i]=SvrOpt[i];

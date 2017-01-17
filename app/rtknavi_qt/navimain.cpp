@@ -1142,7 +1142,7 @@ void MainWindow::SvrStart(void)
                strs[i] == STR_NTRIPCLI) {
             if (CmdEnaTcp[i][0]) strcpy(cmds[i], qPrintable(CmdsTcp[i][0]));
             if (CmdEna[i][2]) strcpy(cmds_periodic[i], qPrintable(CmdsTcp[i][2]));
-        }
+        } else {cmds[i][0]=cmds_periodic[i][0]='\0';};
         strcpy(rcvopts[i], qPrintable(RcvOpt[i]));
     }
     NmeaCycle = NmeaCycle < 1000 ? 1000 : NmeaCycle;
