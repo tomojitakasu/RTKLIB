@@ -133,9 +133,9 @@ ProcessingThread::ProcessingThread(QObject *parent):QThread(parent)
 }
 ProcessingThread::~ProcessingThread()
 {
-    for (int i=0;i<6;i++) delete infile[i];
-    if (rov) delete rov;
-    if (base) delete base;
+    for (int i=0;i<6;i++) delete[] infile[i];
+    if (rov) delete[] rov;
+    if (base) delete[] base;
     rov=base=NULL;
 }
 void ProcessingThread::addInput(const QString & file) {

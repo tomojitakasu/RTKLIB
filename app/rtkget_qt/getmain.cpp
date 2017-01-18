@@ -410,6 +410,7 @@ void MainForm::DownloadFinished()
     UpdateMsg();
     UpdateEnable();
 
+    for (int i = 0; i < MAX_STA; i++) delete[] thread->stas[i];
     delete thread;
 }
 //---------------------------------------------------------------------------

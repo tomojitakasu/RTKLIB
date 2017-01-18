@@ -201,6 +201,8 @@ void MainWindow::showEvent(QShowEvent *event)
 
     systemTray->setContextMenu(trayMenu);
 
+    BtnStop->setVisible(false);
+
     connect(systemTray, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(TrayIconClick(QSystemTrayIcon::ActivationReason)));
 
     connect(BtnExit, SIGNAL(clicked()), this, SLOT(BtnExitClick()));
@@ -1131,18 +1133,21 @@ void MainWindow::SvrStart(void)
     }
 
     for (i = 0; i < 3; i++) {
-        cmds[i] = new char[1024];
         rcvopts[i] = new char[1024];
-        cmds[i][0] = rcvopts[i][0] = '\0';
+        cmds[i] = cmds_periodic[i] = NULL;
 
         if (strs[i] == STR_SERIAL) {
+            cmds[i] = new char[1024];
+            cmds_periodic[i] = new char[1024];
             if (CmdEna[i][0]) strcpy(cmds[i], qPrintable(Cmds[i][0]));
             if (CmdEna[i][2]) strcpy(cmds_periodic[i], qPrintable(Cmds[i][2]));
         } else if (strs[i] == STR_TCPCLI || strs[i] == STR_TCPSVR ||
                strs[i] == STR_NTRIPCLI) {
+            cmds[i] = new char[1024];
+            cmds_periodic[i] = new char[1024];
             if (CmdEnaTcp[i][0]) strcpy(cmds[i], qPrintable(CmdsTcp[i][0]));
             if (CmdEna[i][2]) strcpy(cmds_periodic[i], qPrintable(CmdsTcp[i][2]));
-        } else {cmds[i][0] = cmds_periodic[i][0] = '\0';};
+        };
         strcpy(rcvopts[i], qPrintable(RcvOpt[i]));
     }
     NmeaCycle = NmeaCycle < 1000 ? 1000 : NmeaCycle;
@@ -1188,13 +1193,15 @@ void MainWindow::SvrStart(void)
         traceclose();
         for (i = 0; i < 8; i++) delete[] paths[i];
         for (i = 0; i < 3; i++) delete[] rcvopts[i];
-        for (i = 0; i < 3; i++) delete[] cmds[i];
+        for (i = 0; i < 3; i++) if (cmds[i]) delete[] cmds[i];
+        for (i = 0; i < 3; i++) if (cmds_periodic[i]) delete[] cmds_periodic[i];
         return;
     }
 
     for (i = 0; i < 8; i++) delete[] paths[i];
     for (i = 0; i < 3; i++) delete[] rcvopts[i];
-    for (i = 0; i < 3; i++) delete[] cmds[i];
+    for (i = 0; i < 3; i++) if (cmds[i]) delete[] cmds[i];
+    for (i = 0; i < 3; i++) if (cmds_periodic[i]) delete[] cmds_periodic[i];
 
     PSol = PSolS = PSolE = 0;
     SolStat[0] = Nvsat[0] = 0;
@@ -1230,13 +1237,14 @@ void MainWindow::SvrStop(void)
     trace(3, "SvrStop\n");
 
     for (i = 0; i < 3; i++) {
-        cmds[i] = new char[1024];
-        cmds[i][0] = '\0';
+        cmds[i] = NULL;
         str = rtksvr.stream[i].type;
 
         if (str == STR_SERIAL) {
+            cmds[i] = new char[1024];
             if (CmdEna[i][1]) strcpy(cmds[i], qPrintable(Cmds[i][1]));
         } else if (str == STR_TCPCLI || str == STR_TCPSVR || str == STR_NTRIPCLI) {
+            cmds[i] = new char[1024];
             if (CmdEnaTcp[i][1]) strcpy(cmds[i], qPrintable(CmdsTcp[i][1]));
         }
     }

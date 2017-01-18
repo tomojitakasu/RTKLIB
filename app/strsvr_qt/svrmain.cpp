@@ -588,16 +588,19 @@ void MainForm::SvrStart(void)
     strcpy(paths[3], !Output3->currentIndex() ? "" : qPrintable(Paths[3][ip[Output3->currentIndex() - 1]]));
 
     for (int i=0;i<MAXSTR;i++) {
-        cmds[i] = new char[1024];
-        cmds_periodic[i] = new char[1024];
+        cmds[i] = cmds_periodic[i] = NULL;
         if (strs[i]==STR_SERIAL) {
+            cmds[i] = new char[1024];
+            cmds_periodic[i] = new char[1024];
             if (CmdEna[i][0]) strncpy(cmds[i],qPrintable(Cmds[i][0]), 1024);
             if (CmdEna[i][2]) strncpy(cmds_periodic[i], qPrintable(Cmds[i][2]), 1024);
         }
         else if (strs[i]==STR_TCPCLI||strs[i]==STR_NTRIPCLI) {
+            cmds[i] = new char[1024];
+            cmds_periodic[i] = new char[1024];
             if (CmdEnaTcp[i][0]) strncpy(cmds[i], qPrintable(CmdsTcp[i][0]), 1024);
             if (CmdEnaTcp[i][2]) strncpy(cmds_periodic[i], qPrintable(CmdsTcp[i][2]), 1024);
-        } else {cmds[i][0] = cmds_periodic[i][0] = '\0';};
+        }
     }
     for (int i=0;i<5;i++) {
         opt[i]=SvrOpt[i];
@@ -646,7 +649,10 @@ void MainForm::SvrStart(void)
     // set ntrip source table
     strsvrsetsrctbl(&strsvr, qPrintable(SrcTblFile));
 
-    for (int i = 0; i < 4; i++) {delete cmds[i]; delete cmds_periodic[i];};
+    for (int i = 0; i < 4; i++) {
+        if (cmds[i]) delete[] cmds[i];
+        if (cmds_periodic[i]) delete[] cmds_periodic[i];
+    };
 
     StartTime = utc2gpst(timeget());
     Panel1->setEnabled(false);
@@ -679,10 +685,12 @@ void MainForm::SvrStop(void)
     strs[3] = otype[Output3->currentIndex()];
 
     for (int i = 0; i < MAXSTR; i++) {
-        cmds[i] = new char[1024];
+        cmds[i] = NULL;
         if (strs[i] == STR_SERIAL) {
+            cmds[i] = new char[1024];
             if (CmdEna[i][1]) strncpy(cmds[i], qPrintable(Cmds[i][1]), 1024);
         } else if (strs[i] == STR_TCPCLI || strs[i] == STR_NTRIPCLI) {
+            cmds[i] = new char[1024];
             if (CmdEnaTcp[i][1]) strncpy(cmds[i], qPrintable(CmdsTcp[i][1]), 1024);
         }
     }
@@ -700,7 +708,7 @@ void MainForm::SvrStop(void)
     SetTrayIcon(0);
 
     for (int i = 0; i < MAXSTR - 1; i++) {
-        delete cmds[i];
+        if (cmds[i]) delete[] cmds[i];
         if (ConvEna[i]) strconvfree(strsvr.conv[i]);
     }
     if (TraceLevel > 0) traceclose();

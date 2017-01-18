@@ -541,7 +541,7 @@ extern int strsvrstart(strsvr_t *svr, int *opts, int *strs, char **paths,
     char file1[MAXSTRPATH],file2[MAXSTRPATH],*p;
     
     tracet(3,"strsvrstart:\n");
-trace(2,"strsvrstart: cmds_periodic=%s\n",cmds_periodic[0]);
+    trace(2,"strsvrstart: cmds_periodic=%s\n",cmds_periodic[0]);
     
     if (svr->state) return 0;
     

@@ -473,7 +473,7 @@ static void *rtksvrthread(void *arg)
     unsigned char *p,*q;
     char msg[128];
     int i,j,n,fobs[3]={0},cycle,cputime;
-    
+
     tracet(3,"rtksvrthread:\n");
     
     svr->state=1; obs.data=data;
