@@ -126,10 +126,10 @@ MainWindow::MainWindow(QWidget *parent)
     SolBuffSize = 1000;
 
     for (int i = 0; i < MAXSTRRTK; i++) {
-        StreamC[i] = Stream[i] = Format[i] = CmdEna[i][0] = CmdEna[i][1] = CmdEna[i][2] = 0;
+        StreamC[i] = Stream[i] = Format[i] = 0;
     }
     for (int i = 0; i < 3; i++)
-        CmdEna[i][0] = CmdEna[i][1] = 0;
+        CmdEna[i][0] = CmdEna[i][1] = CmdEna[i][2] = 0;
 
     TimeSys = SolType = 0;
     for (int i = 0; i < 4; i++) { PlotType[i] = FreqType[i] = BLMode[i] = TrkType[i] = 0; TrkScale[i] = 5;};
@@ -179,6 +179,8 @@ MainWindow::~MainWindow()
     delete [] Time;   delete [] SolStat; delete [] Nvsat;  delete [] SolRov;
     delete [] SolRef; delete [] Qr;      delete [] VelRov; delete [] Age;
     delete [] Ratio;
+
+    rtksvrfree(&rtksvr);
 }
 
 // callback on form create --------------------------------------------------

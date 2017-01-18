@@ -62,6 +62,12 @@ MonitorDialog::MonitorDialog(QWidget *parent)
     timer2.start(1000);
 }
 //---------------------------------------------------------------------------
+MonitorDialog::~MonitorDialog()
+{
+    free_raw(&raw);
+    free_rtcm(&rtcm);
+};
+//---------------------------------------------------------------------------
 void MonitorDialog::showEvent(QShowEvent *event)
 {
     if (event->spontaneous()) return;

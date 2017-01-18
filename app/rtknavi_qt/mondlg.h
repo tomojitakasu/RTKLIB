@@ -85,6 +85,7 @@ private:
 
 public:
     explicit MonitorDialog(QWidget* parent);
+    ~MonitorDialog();
 };
 //---------------------------------------------------------------------------
 #endif
