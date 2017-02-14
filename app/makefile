@@ -6,7 +6,7 @@ BINDIR = /usr/local/bin
 DIRS   = pos2kml str2str rnx2rtkp convbin rtkrcv
 
 all:
-	@for i in $(DIRS); do make -C $$i/gcc; done
+	@for i in $(DIRS); do $(MAKE) -C $$i/gcc; done
 
 install:
 	@echo installing...
@@ -14,5 +14,5 @@ install:
 
 clean:
 	@echo cleaning up...
-	@for i in $(DIRS); do make -C $$i/gcc clean; done
+	@for i in $(DIRS); do $(MAKE) -C $$i/gcc clean; done
 
