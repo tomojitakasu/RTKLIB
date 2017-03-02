@@ -50,8 +50,8 @@ static const char rcsid[]="$Id: postpos.c,v 1.1 2008/07/17 21:48:06 ttaka Exp $"
 
 /* constants/global variables ------------------------------------------------*/
 
-static pcvs_t pcvss={0};        /* receiver antenna parameters */
-static pcvs_t pcvsr={0};        /* satellite antenna parameters */
+static pcvs_t pcvsr={0};        /* receiver antenna parameters */
+static pcvs_t pcvss={0};        /* satellite antenna parameters */
 static obs_t obss={0};          /* observation data */
 static nav_t navs={0};          /* navigation data */
 static sbs_t sbss={0};          /* sbas messages */
