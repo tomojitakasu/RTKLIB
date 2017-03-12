@@ -105,6 +105,7 @@
 *           2015/03/19 1.30 fix bug on interpolation of erp values in geterp()
 *                           add leap second insertion before 2015/07/01 00:00
 *                           add api read_leaps()
+*           2017/01/03 1.31 add leap second before 2017/1/1 00:00:00
 *-----------------------------------------------------------------------------*/
 #define _POSIX_C_SOURCE 199309
 #include <stdarg.h>
@@ -130,6 +131,7 @@ const static double gst0 []={1999,8,22,0,0,0}; /* galileo system time reference 
 const static double bdt0 []={2006,1, 1,0,0,0}; /* beidou time reference */
 
 static double leaps[MAXLEAPS+1][7]={ /* leap seconds (y,m,d,h,m,s,utc-gpst) */
+    {2017,1,1,0,0,0,-18},
     {2015,7,1,0,0,0,-17},
     {2012,7,1,0,0,0,-16},
     {2009,1,1,0,0,0,-15},
