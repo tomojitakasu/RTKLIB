@@ -16,9 +16,15 @@
 *           2015/05/15  1.8 -r or -l options for fixed or ppp-fixed mode
 *           2015/06/12  1.9 output patch level in header
 *           2016/09/07  1.10 add option -sys
+*           2017/02          waas study integrated (protection level)
 *-----------------------------------------------------------------------------*/
 #include <stdarg.h>
 #include "rtklib.h"
+
+/* if = 1, HAI WAAS study code will be switched in if SBAS data is available. */
+int waas_study = 0;
+/* if = 1, HAI WAAS study code is switched in. */
+int waas_calc = 0;
 
 static const char rcsid[]="$Id: rnx2rtkp.c,v 1.1 2008/07/17 21:55:16 ttaka Exp $";
 
@@ -72,7 +78,8 @@ static const char *help[]={
 " -l lat lon hgt reference (base) receiver latitude/longitude/height (deg/m)",
 "           rover latitude/longitude/height for fixed or ppp-fixed mode",
 " -y level  output soltion status (0:off,1:states,2:residuals) [0]",
-" -x level  debug trace level (0:off) [0]"
+" -x level  debug trace level (0:off) [0]",
+" -ws       switch in WAAS study code if SBAS data is available "
 };
 /* show message --------------------------------------------------------------*/
 extern int showmsg(char *format, ...)
@@ -178,6 +185,7 @@ int main(int argc, char **argv)
         else if (!strcmp(argv[i],"-x")&&i+1<argc) solopt.trace=atoi(argv[++i]);
         else if (*argv[i]=='-') printhelp();
         else if (n<MAXFILE) infile[n++]=argv[i];
+        else if (!strcmp(argv[i],"-ws")) waas_study=1;
     }
     if (!prcopt.navsys) {
         prcopt.navsys=SYS_GPS|SYS_GLO;

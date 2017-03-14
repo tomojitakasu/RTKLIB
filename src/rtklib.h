@@ -28,6 +28,7 @@
 *           2011/05/27 1.9  rtklib ver.2.4.1
 *           2013/03/28 1.10 rtklib ver.2.4.2
 *           2016/01/26 1.11 rtklib ver.2.4.3
+*           2017/02/   waas study (protection level)
 *-----------------------------------------------------------------------------*/
 #ifndef RTKLIB_H
 #define RTKLIB_H
@@ -1181,6 +1182,11 @@ typedef struct {        /* ambiguity control type */
     char flags[MAXSAT]; /* fix flags */
 } ambc_t;
 
+typedef struct {
+    double hpl;			/* horizontal protection level */
+    double vpl;			/* vertical protection level */
+} protlevels_t;
+
 typedef struct {        /* RTK control/result type */
     sol_t  sol;         /* RTK solution */
     double rb[6];       /* base position/velocity (ecef) (m|m/s) */
@@ -1194,6 +1200,7 @@ typedef struct {        /* RTK control/result type */
     int neb;            /* bytes in error message buffer */
     char errbuf[MAXERRMSG]; /* error message buffer */
     prcopt_t opt;       /* processing options */
+    protlevels_t pl;    /* protection levels */
 } rtk_t;
 
 typedef struct half_cyc_tag {  /* half-cycle correction list type */
@@ -1472,6 +1479,7 @@ EXPORT void tracelevel(int level);
 EXPORT void trace    (int level, const char *format, ...);
 EXPORT void tracet   (int level, const char *format, ...);
 EXPORT void tracemat (int level, const double *A, int n, int m, int p, int q);
+EXPORT void traceimat (int level, const int *A, int n, int m, int p);
 EXPORT void traceobs (int level, const obsd_t *obs, int n);
 EXPORT void tracenav (int level, const nav_t *nav);
 EXPORT void tracegnav(int level, const nav_t *nav);
@@ -1680,14 +1688,16 @@ EXPORT int inputsol(unsigned char data, gtime_t ts, gtime_t te, double tint,
 
 EXPORT int outprcopts(unsigned char *buff, const prcopt_t *opt);
 EXPORT int outsolheads(unsigned char *buff, const solopt_t *opt);
+EXPORT int waasprotlevels(double* azel, int nv, int* vobs2obs, double* var,
+                          protlevels_t *pl);
 EXPORT int outsols  (unsigned char *buff, const sol_t *sol, const double *rb,
-                     const solopt_t *opt);
+                     const solopt_t *opt, protlevels_t *pl);
 EXPORT int outsolexs(unsigned char *buff, const sol_t *sol, const ssat_t *ssat,
                      const solopt_t *opt);
 EXPORT void outprcopt(FILE *fp, const prcopt_t *opt);
 EXPORT void outsolhead(FILE *fp, const solopt_t *opt);
 EXPORT void outsol  (FILE *fp, const sol_t *sol, const double *rb,
-                     const solopt_t *opt);
+                     const solopt_t *opt, protlevels_t *pl);
 EXPORT void outsolex(FILE *fp, const sol_t *sol, const ssat_t *ssat,
                      const solopt_t *opt);
 EXPORT int outnmea_rmc(unsigned char *buff, const sol_t *sol);
@@ -1769,7 +1779,7 @@ EXPORT int lambda_search(int n, int m, const double *a, const double *Q,
 /* standard positioning ------------------------------------------------------*/
 EXPORT int pntpos(const obsd_t *obs, int n, const nav_t *nav,
                   const prcopt_t *opt, sol_t *sol, double *azel,
-                  ssat_t *ssat, char *msg);
+                  ssat_t *ssat, protlevels_t *pl, char *msg);
 
 /* precise positioning -------------------------------------------------------*/
 EXPORT void rtkinit(rtk_t *rtk, const prcopt_t *opt);

@@ -26,10 +26,13 @@
 *                            add option -ft,-fl
 *           2016/09/06  1.15 add reload soure table by USR2 signal
 *           2016/09/17  1.16 add option -b
+*           2017/02          waas study integrated (protection level)
 *-----------------------------------------------------------------------------*/
 #include <signal.h>
 #include <unistd.h>
 #include "rtklib.h"
+
+int waas_calc = 0;
 
 static const char rcsid[]="$Id:$";
 

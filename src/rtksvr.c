@@ -34,6 +34,7 @@
 *           2016/09/18  1.16 fix server-crash with server-cycle > 1000
 *           2016/09/20  1.17 change api rtksvrstart()
 *           2016/10/01  1.18 change api rtksvrstart()
+*           2017/02          waas study integrated (protection level)
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -79,7 +80,7 @@ static void writesol(rtksvr_t *svr, int index)
         }
         else {
             /* output solution */
-            n=outsols(buff,&svr->rtk.sol,svr->rtk.rb,svr->solopt+i);
+            n=outsols(buff,&svr->rtk.sol,svr->rtk.rb,svr->solopt+i,NULL);
         }
         strwrite(svr->stream+i+3,buff,n);
         
@@ -95,7 +96,7 @@ static void writesol(rtksvr_t *svr, int index)
     }
     /* output solution to monitor port */
     if (svr->moni) {
-        n=outsols(buff,&svr->rtk.sol,svr->rtk.rb,&solopt);
+        n=outsols(buff,&svr->rtk.sol,svr->rtk.rb,&solopt,NULL);
         strwrite(svr->moni,buff,n);
     }
     /* save solution buffer */
@@ -515,7 +516,7 @@ static void *rtksvrthread(void *arg)
         if (fobs[1]>0&&svr->rtk.opt.refpos==POSOPT_SINGLE) {
             if ((svr->rtk.opt.maxaveep<=0||svr->nave<svr->rtk.opt.maxaveep)&&
                 pntpos(svr->obs[1][0].data,svr->obs[1][0].n,&svr->nav,
-                       &svr->rtk.opt,&sol,NULL,NULL,msg)) {
+                       &svr->rtk.opt,&sol,NULL,NULL,NULL,msg)) {
                 svr->nave++;
                 for (i=0;i<3;i++) {
                     svr->rb_ave[i]+=(sol.rr[i]-svr->rb_ave[i])/svr->nave;

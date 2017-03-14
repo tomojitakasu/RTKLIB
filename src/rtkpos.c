@@ -39,11 +39,14 @@
 *           2016/07/30 1.21 suppress single solution if !prcopt.outsingle
 *                           fix bug on slip detection of backward filter
 *           2016/08/20 1.22 fix bug on ddres() function
+*           2017/02         waas study integration (protection level)
 *-----------------------------------------------------------------------------*/
 #include <stdarg.h>
 #include "rtklib.h"
 
 static const char rcsid[]="$Id:$";
+
+extern int waas_study, waas_calc;    /* protection level */
 
 /* constants/macros ----------------------------------------------------------*/
 
@@ -240,7 +243,7 @@ extern int rtkoutstat(rtk_t *rtk, char *buff)
     else {
         p+=sprintf(p,"$POS,%d,%.3f,%d,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f\n",week,tow,
                    rtk->sol.stat,rtk->sol.rr[0],rtk->sol.rr[1],rtk->sol.rr[2],
-                   0.0,0.0,0.0);
+                   rtk->pl.hpl,rtk->pl.vpl,0.0);
     }
     /* receiver velocity and acceleration */
     if (est&&rtk->opt.dynamics) {
@@ -1733,6 +1736,7 @@ extern void rtkinit(rtk_t *rtk, const prcopt_t *opt)
     sol_t sol0={{0}};
     ambc_t ambc0={{{0}}};
     ssat_t ssat0={0};
+    protlevels_t pl0={0};
     int i;
     
     trace(3,"rtkinit :\n");
@@ -1753,6 +1757,9 @@ extern void rtkinit(rtk_t *rtk, const prcopt_t *opt)
     }
     for (i=0;i<MAXERRMSG;i++) rtk->errbuf[i]=0;
     rtk->opt=*opt;
+    if (waas_study) {
+         rtk->pl = pl0;
+    }
 }
 /* free rtk control ------------------------------------------------------------
 * free memory for rtk control struct
@@ -1851,7 +1858,7 @@ extern int rtkpos(rtk_t *rtk, const obsd_t *obs, int n, const nav_t *nav)
     time=rtk->sol.time; /* previous epoch */
     
     /* rover position by single point positioning */
-    if (!pntpos(obs,nu,nav,&rtk->opt,&rtk->sol,NULL,rtk->ssat,msg)) {
+    if (!pntpos(obs,nu,nav,&rtk->opt,&rtk->sol,NULL,rtk->ssat,&rtk->pl,msg)) {
         errmsg(rtk,"point pos error (%s)\n",msg);
         
         if (!rtk->opt.dynamics) {
@@ -1885,7 +1892,7 @@ extern int rtkpos(rtk_t *rtk, const obsd_t *obs, int n, const nav_t *nav)
     if (opt->mode==PMODE_MOVEB) { /*  moving baseline */
         
         /* estimate position/velocity of base station */
-        if (!pntpos(obs+nu,nr,nav,&rtk->opt,&solb,NULL,NULL,msg)) {
+        if (!pntpos(obs+nu,nr,nav,&rtk->opt,&solb,NULL,NULL,NULL,msg)) {
             errmsg(rtk,"base station position error (%s)\n",msg);
             return 0;
         }

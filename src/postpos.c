@@ -37,6 +37,7 @@
 *           2016/01/12  1.19 add carrier-phase bias correction by ssr
 *           2016/07/31  1.20 fix error message problem in rnx2rtkp
 *           2016/08/29  1.21 suppress warnings
+*           2017/02     waas study integrated (protection level)
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -49,6 +50,8 @@ static const char rcsid[]="$Id: postpos.c,v 1.1 2008/07/17 21:48:06 ttaka Exp $"
 #define MAXINFILE   1000         /* max number of input files */
 
 /* constants/global variables ------------------------------------------------*/
+
+extern int waas_study, waas_calc; /* protection level */
 
 static pcvs_t pcvss={0};        /* receiver antenna parameters */
 static pcvs_t pcvsr={0};        /* satellite antenna parameters */
@@ -394,7 +397,7 @@ static void procpos(FILE *fp, const prcopt_t *popt, const solopt_t *sopt,
         
         if (mode==0) { /* forward/backward */
             if (!solstatic) {
-                outsol(fp,&rtk.sol,rtk.rb,sopt);
+                outsol(fp,&rtk.sol,rtk.rb,sopt,&rtk.pl);
             }
             else if (time.time==0||pri[rtk.sol.stat]<=pri[sol.stat]) {
                 sol=rtk.sol;
@@ -419,7 +422,7 @@ static void procpos(FILE *fp, const prcopt_t *popt, const solopt_t *sopt,
     }
     if (mode==0&&solstatic&&time.time!=0.0) {
         sol.time=time;
-        outsol(fp,&sol,rb,sopt);
+        outsol(fp,&sol,rb,sopt,&rtk.pl);
     }
     rtkfree(&rtk);
 }
@@ -518,7 +521,7 @@ static void combres(FILE *fp, const prcopt_t *popt, const solopt_t *sopt)
             sols.qr[5]=(float)Qs[2];
         }
         if (!solstatic) {
-            outsol(fp,&sols,rbs,sopt);
+            outsol(fp,&sols,rbs,sopt,NULL);
         }
         else if (time.time==0||pri[sols.stat]<=pri[sol.stat]) {
             sol=sols;
@@ -530,7 +533,7 @@ static void combres(FILE *fp, const prcopt_t *popt, const solopt_t *sopt)
     }
     if (solstatic&&time.time!=0.0) {
         sol.time=time;
-        outsol(fp,&sol,rb,sopt);
+        outsol(fp,&sol,rb,sopt,NULL);
     }
 }
 /* read prec ephemeris, sbas data, lex data, tec grid and open rtcm ----------*/
@@ -721,7 +724,7 @@ static int avepos(double *ra, int rcv, const obs_t *obs, const nav_t *nav,
         }
         if (j<=0||!screent(data[0].time,ts,ts,1.0)) continue; /* only 1 hz */
         
-        if (!pntpos(data,j,nav,opt,&sol,NULL,NULL,msg)) continue;
+        if (!pntpos(data,j,nav,opt,&sol,NULL,NULL,NULL,msg)) continue;
         
         for (i=0;i<3;i++) ra[i]+=sol.rr[i];
         n++;
@@ -1139,6 +1142,8 @@ static int execses_b(gtime_t ts, gtime_t te, double ti, const prcopt_t *popt,
     
     /* read prec ephemeris and sbas data */
     readpreceph(infile,n,popt,&navs,&sbss,&lexs);
+
+	waas_calc=sbss.n>0&&waas_study;
     
     for (i=0;i<n;i++) if (strstr(infile[i],"%b")) break;
     

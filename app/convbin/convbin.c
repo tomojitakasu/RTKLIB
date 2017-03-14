@@ -32,12 +32,15 @@
 *           2016/06/09 1.14 fix bug on output file with -v 3.02
 *           2016/07/01 1.15 support log format CMR/CMR+
 *           2016/07/31 1.16 add option -halfc
+*           2017/02         waas study integrated (protection level)
 *-----------------------------------------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
 #include "rtklib.h"
+
+int waas_calc = 0;
 
 static const char rcsid[]="$Id: convbin.c,v 1.1 2008/07/17 22:13:04 ttaka Exp $";
 

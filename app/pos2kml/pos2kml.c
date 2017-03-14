@@ -13,9 +13,12 @@
 *                           separate readsol.c file
 *           2008/07/18  1.3 support change of convkml() arguments
 *           2016/06/11  1.4 add option -gpx for gpx conversion
+*           2017/02         waas study integrated (protection level)
 *-----------------------------------------------------------------------------*/
 #include <stdarg.h>
 #include "rtklib.h"
+
+int waas_calc = 0;
 
 static const char rcsid[]="$Id: pos2kml.c,v 1.1 2008/07/17 21:54:53 ttaka Exp $";
 

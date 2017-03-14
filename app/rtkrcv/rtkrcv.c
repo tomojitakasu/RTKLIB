@@ -34,6 +34,7 @@
 *           2016/09/05 1.19 support ntrip caster for output stream
 *           2016/09/19 1.20 support multiple remote console connections
 *                           add option -w
+*           2017/02         waas study integrated (protection level)
 *-----------------------------------------------------------------------------*/
 #include <stdlib.h>
 #include <signal.h>
@@ -50,6 +51,9 @@
 #include <errno.h>
 #include "rtklib.h"
 #include "vt.h"
+
+int waas_study = 0;
+int waas_calc = 0;
 
 static const char rcsid[]="$Id:$";
 

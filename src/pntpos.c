@@ -16,6 +16,7 @@
 *           2012/12/25 1.3  add variable snr mask
 *           2014/05/26 1.4  support galileo and beidou
 *           2015/03/19 1.5  fix bug on ionosphere correction for GLO and BDS
+*           2017/02         waas study integrated (protection level)
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -538,7 +539,7 @@ static void estvel(const obsd_t *obs, int n, const double *rs, const double *dts
 *-----------------------------------------------------------------------------*/
 extern int pntpos(const obsd_t *obs, int n, const nav_t *nav,
                   const prcopt_t *opt, sol_t *sol, double *azel, ssat_t *ssat,
-                  char *msg)
+                  protlevels_t *pl, char *msg)
 {
     prcopt_t opt_=*opt;
     double *rs,*dts,*var,*azel_,*resp;
@@ -565,7 +566,7 @@ extern int pntpos(const obsd_t *obs, int n, const nav_t *nav,
     satposs(sol->time,obs,n,nav,opt_.sateph,rs,dts,var,svh);
     
     /* estimate receiver position with pseudorange */
-    stat=estpos(obs,n,rs,dts,var,svh,nav,&opt_,sol,azel_,vsat,resp,msg);
+    stat=estpos(obs,n,rs,dts,var,svh,nav,&opt_,sol,azel_,vsat,resp,pl,msg);
     
     /* raim fde */
     if (!stat&&n>=6&&opt->posopt[4]) {

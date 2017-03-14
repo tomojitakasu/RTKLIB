@@ -27,6 +27,7 @@
 *           2014/08/26 1.9  support input format rt17
 *           2015/05/24 1.10 fix bug on setting antenna delta in rtcm2opt()
 *           2015/07/04 1.11 support IRNSS
+*           2017/02         waas study integrated (protection level)
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -941,7 +942,7 @@ static void setapppos(strfile_t *str, rnxopt_t *opt)
     
     /* point positioning with last obs data */
     if (!pntpos(str->obs->data,str->obs->n,str->nav,&prcopt,&sol,NULL,NULL,
-                msg)) {
+                NULL,msg)) {
         trace(2,"point position error (%s)\n",msg);
         return;
     }

@@ -35,6 +35,7 @@
 *           2011/01/15 1.8  use api ionppp()
 *                           add prn mask of qzss for qzss L1SAIF
 *           2016/07/29 1.9  crc24q() -> rtk_crc24q()
+*           2017/02         waas study integrated (protection level)
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -43,6 +44,8 @@ static const char rcsid[]="$Id: sbas.c,v 1.1 2008/07/17 21:48:06 ttaka Exp $";
 /* constants -----------------------------------------------------------------*/
 
 #define WEEKOFFSET  1024        /* gps week offset for NovAtel OEM-3 */
+
+extern int waas_calc;
 
 /* sbas igp definition -------------------------------------------------------*/
 static const short
@@ -715,7 +718,11 @@ extern int sbsioncorr(gtime_t time, const nav_t *nav, const double *pos,
         if (!igp[i]) continue;
         t=timediff(time,igp[i]->t0);
         *delay+=w[i]*igp[i]->delay;
-        *var+=w[i]*varicorr(igp[i]->give)*9E-8*fabs(t);
+        if (waas_calc) {
+            *var+=w[i]*varicorr(igp[i]->give);   /* updated by ACR 23-Jun-14 */
+		} else {
+            *var+=w[i]*varicorr(igp[i]->give)*9E-8*fabs(t);
+        }
     }
     *delay*=fp; *var*=fp*fp;
     
@@ -834,8 +841,11 @@ static int sbsfastcorr(gtime_t time, int sat, const sbssat_t *sbssat,
             *prc+=p->fcorr.rrc*t;
         }
 #endif
-        *var=varfcorr(p->fcorr.udre)+degfcorr(p->fcorr.ai)*t*t/2.0;
-        
+        if (waas_calc) {
+            *var=varfcorr(p->fcorr.udre);	/* 26-Jun-14 ACR */
+        } else {
+            *var=varfcorr(p->fcorr.udre)+degfcorr(p->fcorr.ai)*t*t/2.0;
+        }
         trace(5,"sbsfastcorr: sat=%3d prc=%7.2f sig=%7.2f t=%5.0f\n",sat,
               *prc,sqrt(*var),t);
         return 1;
@@ -914,4 +924,104 @@ extern int sbsdecodemsg(gtime_t time, int prn, const unsigned int *words,
     f[0]=sbsmsg->msg[0]>>6;
     
     return rtk_crc24q(f,29)==(words[7]&0xFFFFFF); /* check crc */
+}
+
+#define EAST 0
+#define NORTH 1
+#define UP 2
+#define TIME 3
+#define A4(i,j) ((i)+4*(j))
+#define SQR(x)   ((x)*(x))
+
+/**
+* Compute the WAAS protections levels as defined in Appendix J of the WAAS MOPS:
+* RTCA DO-229D, Minimum operational performance standards [MOPS] for global
+* positioning system/wide area augmentation system [WAAS] airborne equipment,
+* RTCA inc, December 13, 2006
+*
+* args   : double* azel      I array of satellite azimuth/elevation angles (rad)
+*          int     nv        I number of valid observations
+*          int*    vobs2obs  I mapping of valid obs index to all obs index
+*          double* var       I array of pseudorange variances (meter^2)
+*          protlevels_t* pl  O pointer to protection level struct (meter)
+* return : status (0:ok,1:singular matrix,2:null pointer,3:too few obs)
+*/
+extern int waasprotlevels(double* azel, int nv, int* vobs2obs, double* var,
+		protlevels_t *pl) {
+
+    double ce, se, ca, sa, az, el;
+	int i, j, ii, jj;
+	double d2east, d2north, d2en, dmajor;
+	double *d, *g;
+
+    /* Check for NULL pointers.  */
+    if (!pl || !azel || !vobs2obs || !var) {
+		trace(4,"waasprotlevels: protection levels not calculated due to null pointer\n");
+		return 2;
+    }
+
+    trace(4,"waasprotlevels: nv=%d azel=%.3f %.3f vobs2obs=%d %d"
+			"var=%.3f %.3f\n",
+			nv,azel[0]*R2D,azel[1]*R2D,vobs2obs[0],vobs2obs[1],
+			var[0], var[1]);
+
+    /* Check for sufficient obs */
+    if (nv < 4) {
+        trace(4,"waasprotlevels: Insufficient obs\n");
+        pl->hpl = 0.;
+        pl->vpl = 0.;
+        return 3;
+    }
+
+    trace(5,"waasprotlevels: vobs2obs = "); traceimat(5,vobs2obs,1,nv,4);
+    trace(5,"waasprotlevels: var = "); tracemat(5,var,1,nv,9,6);
+
+	d = zeros(4,4);
+	g = mat(1,4);
+
+	/* Calculate D matrix. */
+	trace(5,"waasprotlevels: valid sat azimuths and elevations (deg):\n");
+	for (i = 0; i < nv; i++) {
+		j = 2 * vobs2obs[i];
+#ifdef TRACE
+		trace(5, "isat = % 3i az = % 9.6f el = % 9.6f\n",
+				i, azel[j]*R2D, azel[j+1]*R2D);
+#endif
+		az = azel[j];
+		el = azel[j+1];
+		ce = cos(el);
+		se = sin(el);
+		ca = cos(az);
+		sa = sin(az);
+		g[EAST] = -ce * sa;
+		g[NORTH] = -ce * ca;
+		g[UP] = -se;
+		g[TIME] = 1;
+		for (ii = 0; ii < 4; ii++)
+			for (jj = 0; jj < 4; jj++)
+				d[A4(ii,jj)] += g[ii] * g[jj] / var[i];
+	}
+	trace(5, "waasprotlevels: inverse D matrix = \n"); tracemat(5,d,4,4,13,6);
+	if (matinv(d,4) == -1) {
+        trace(1,"waasprotlevels: Singular matrix.\n");
+        pl->hpl = 0.;
+        pl->vpl = 0.;
+		free(d); free(g);
+        return 1;
+	}
+	trace(5, "waasprotlevels: D matrix = \n"); tracemat(5,d,4,4,13,6);
+
+	/* Calculate dmajor. */
+	d2east = d[A4(EAST,EAST)];
+	d2north = d[A4(NORTH,NORTH)];
+	d2en = SQR(d[A4(EAST,NORTH)]);
+	dmajor = sqrt((d2east+d2north)/2.+ sqrt(SQR((d2east-d2north)/2.)+d2en));
+
+	/* Calculate protection levels in meters. */
+	pl->hpl = 6.00 * dmajor;
+	pl->vpl = 5.33 * sqrt(d[A4(UP,UP)]);
+    trace(4,"waasprotlevels: hpl=%.3f vpl=%.3f\n", pl->hpl, pl->vpl);
+
+	free(d); free(g);
+	return 0;
 }
