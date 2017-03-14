@@ -36,6 +36,21 @@ static const char rcsid[]="$Id:$";
 #define ERR_CBIAS   0.3         /* code bias error std (m) */
 #define REL_HUMI    0.7         /* relative humidity for saastamoinen model */
 
+extern int waas_calc;
+/* variance of airborne receiver error (WAAS MOPS) ---------------------------*/
+extern double varrx(double el, int sys)
+{
+    double varmp,varsignal;
+	double aad_a_min;		/* max noise bound for AAD-A equipment */
+    trace(4,"varrx:  el=%5.1f sys=%d\n",el,sys);
+    aad_a_min=sys==SYS_SBS?1.8:(sys==SYS_GPS?0.36:0.0);
+    varmp=SQR(0.13+0.53*exp(-el*R2D/10.0));
+	varsignal=SQR(aad_a_min);
+    trace(5,"varrx:  aad_a_min=%4.2lf varmp=%lf varsignal=%lf\n",
+          aad_a_min,varmp,varsignal);
+    return (varmp+varsignal);
+}
+
 /* pseudorange measurement error variance ------------------------------------*/
 static double varerr(const prcopt_t *opt, double el, int sys)
 {
@@ -201,11 +216,14 @@ static int rescode(int iter, const obsd_t *obs, int n, const double *rs,
                    const double *dts, const double *vare, const int *svh,
                    const nav_t *nav, const double *x, const prcopt_t *opt,
                    double *v, double *H, double *var, double *azel, int *vsat,
-                   double *resp, int *ns)
+                   double *resp, int *ns, protlevels_t *pl)
 {
     double r,dion,dtrp,vmeas,vion,vtrp,rr[3],pos[3],dtr,e[3],P,lam_L1;
     int i,j,nv=0,sys,mask[4]={0};
     
+    int* vobs2obs;  /* Valid obs to obs mapping array. */
+    if (waas_calc) vobs2obs = imat(1, n);
+
     trace(3,"resprng : n=%d\n",n);
     
     for (i=0;i<3;i++) rr[i]=x[i]; dtr=x[3];
@@ -262,10 +280,19 @@ static int rescode(int iter, const obsd_t *obs, int n, const double *rs,
         vsat[i]=1; resp[i]=v[nv]; (*ns)++;
         
         /* error variance */
-        var[nv++]=varerr(opt,azel[1+i*2],sys)+vare[i]+vmeas+vion+vtrp;
-        
+        if (waas_calc) {
+            vobs2obs[nv] = i;
+            var[nv++]=varrx(azel[1+i*2],sys)+vare[i]+vion+vtrp; /* ACR 2-Jul-14 */
+        } else {
+            var[nv++]=varerr(opt,azel[1+i*2],sys)+vare[i]+vmeas+vion+vtrp;
+        }
         trace(4,"sat=%2d azel=%5.1f %4.1f res=%7.3f sig=%5.3f\n",obs[i].sat,
               azel[i*2]*R2D,azel[1+i*2]*R2D,resp[i],sqrt(var[nv-1]));
+    }
+    /* Calculate WAAS protection levels. */
+    if (waas_calc) {
+        waasprotlevels(azel, nv, vobs2obs, var, pl);
+        free(vobs2obs);
     }
     /* constraint to avoid rank-deficient */
     for (i=0;i<4;i++) {
@@ -310,7 +337,7 @@ static int valsol(const double *azel, const int *vsat, int n,
 static int estpos(const obsd_t *obs, int n, const double *rs, const double *dts,
                   const double *vare, const int *svh, const nav_t *nav,
                   const prcopt_t *opt, sol_t *sol, double *azel, int *vsat,
-                  double *resp, char *msg)
+                  double *resp, protlevels_t *pl, char *msg)
 {
     double x[NX]={0},dx[NX],Q[NX*NX],*v,*H,*var,sig;
     int i,j,k,info,stat,nv,ns;
@@ -325,7 +352,7 @@ static int estpos(const obsd_t *obs, int n, const double *rs, const double *dts,
         
         /* pseudorange residuals */
         nv=rescode(i,obs,n,rs,dts,vare,svh,nav,x,opt,v,H,var,azel,vsat,resp,
-                   &ns);
+                   &ns,pl);
         
         if (nv<NX) {
             sprintf(msg,"lack of valid sats ns=%d",nv);
@@ -405,7 +432,7 @@ static int raim_fde(const obsd_t *obs, int n, const double *rs,
         }
         /* estimate receiver position without a satellite */
         if (!estpos(obs_e,n-1,rs_e,dts_e,vare_e,svh_e,nav,opt,&sol_e,azel_e,
-                    vsat_e,resp_e,msg_e)) {
+                    vsat_e,resp_e,NULL,msg_e)) {
             trace(3,"raim_fde: exsat=%2d (%s)\n",obs[i].sat,msg);
             continue;
         }
