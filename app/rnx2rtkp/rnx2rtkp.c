@@ -183,9 +183,9 @@ int main(int argc, char **argv)
         }
         else if (!strcmp(argv[i],"-y")&&i+1<argc) solopt.sstat=atoi(argv[++i]);
         else if (!strcmp(argv[i],"-x")&&i+1<argc) solopt.trace=atoi(argv[++i]);
+        else if (!strcmp(argv[i],"-ws")) waas_study=1;
         else if (*argv[i]=='-') printhelp();
         else if (n<MAXFILE) infile[n++]=argv[i];
-        else if (!strcmp(argv[i],"-ws")) waas_study=1;
     }
     if (!prcopt.navsys) {
         prcopt.navsys=SYS_GPS|SYS_GLO;
