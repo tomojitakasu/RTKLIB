@@ -1916,7 +1916,7 @@
              <string/>
             </property>
             <property name="icon">
-             <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+             <iconset resource="../rtkvideo_qt/rtkvideo_qt.qrc">
               <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
             </property>
             <property name="flat">
@@ -2343,6 +2343,58 @@
        <string>&amp;Files</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_6">
+       <item row="1" column="3">
+        <widget class="QPushButton" name="BtnSatPcvFile">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="text">
+          <string>...</string>
+         </property>
+        </widget>
+       </item>
+       <item row="20" column="0" colspan="2">
+        <widget class="QLineEdit" name="OLFile">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="0" colspan="2">
+        <widget class="QLineEdit" name="DCBFile">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="23" column="0">
+        <widget class="QLabel" name="Label31">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="text">
+          <string>FTP/HTTP Local Directory</string>
+         </property>
+        </widget>
+       </item>
        <item row="0" column="1">
         <widget class="QPushButton" name="BtnSatPcvView">
          <property name="enabled">
@@ -2361,7 +2413,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+          <iconset resource="../rtkvideo_qt/rtkvideo_qt.qrc">
            <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
          </property>
          <property name="flat">
@@ -2379,19 +2431,6 @@
          </property>
          <property name="text">
           <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="3">
-        <widget class="QPushButton" name="BtnSatPcvFile">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string>...</string>
          </property>
         </widget>
        </item>
@@ -2460,20 +2499,7 @@
          </property>
         </widget>
        </item>
-       <item row="5" column="0">
-        <widget class="QLabel" name="Label1">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string>DCB Data File</string>
-         </property>
-        </widget>
-       </item>
-       <item row="15" column="0" colspan="2">
+       <item row="24" column="0" colspan="2">
         <widget class="QLineEdit" name="LocalDir">
          <property name="enabled">
           <bool>true</bool>
@@ -2486,20 +2512,7 @@
          </property>
         </widget>
        </item>
-       <item row="14" column="0">
-        <widget class="QLabel" name="Label31">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string>FTP/HTTP Local Directory</string>
-         </property>
-        </widget>
-       </item>
-       <item row="15" column="3">
+       <item row="24" column="3">
         <widget class="QPushButton" name="BtnLocalDir">
          <property name="enabled">
           <bool>true</bool>
@@ -2541,20 +2554,7 @@
          </property>
         </widget>
        </item>
-       <item row="6" column="0" rowspan="2" colspan="2">
-        <widget class="QLineEdit" name="DCBFile">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="3" rowspan="2">
+       <item row="11" column="3" rowspan="2">
         <widget class="QPushButton" name="BtnEOPView">
          <property name="enabled">
           <bool>true</bool>
@@ -2570,46 +2570,7 @@
          </property>
         </widget>
        </item>
-       <item row="8" column="0">
-        <widget class="QLabel" name="Label23">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string>EOP Data File</string>
-         </property>
-        </widget>
-       </item>
-       <item row="9" column="0" rowspan="2" colspan="2">
-        <widget class="QLineEdit" name="EOPFile">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="10" column="3">
-        <widget class="QPushButton" name="BtnEOPFile">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string>...</string>
-         </property>
-        </widget>
-       </item>
-       <item row="11" column="3" rowspan="2">
+       <item row="18" column="3" rowspan="2">
         <widget class="QPushButton" name="BtnOLFileView">
          <property name="enabled">
           <bool>true</bool>
@@ -2625,33 +2586,7 @@
          </property>
         </widget>
        </item>
-       <item row="12" column="0" rowspan="2" colspan="2">
-        <widget class="QLineEdit" name="OLFile">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="11" column="0">
-        <widget class="QLabel" name="Label34">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string>Ocean Loading BLQ Format</string>
-         </property>
-        </widget>
-       </item>
-       <item row="13" column="3">
+       <item row="20" column="3">
         <widget class="QPushButton" name="BtnOLFile">
          <property name="enabled">
           <bool>true</bool>
@@ -2695,11 +2630,76 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+          <iconset resource="../rtkvideo_qt/rtkvideo_qt.qrc">
            <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
          </property>
          <property name="flat">
           <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="13" column="3">
+        <widget class="QPushButton" name="BtnEOPFile">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="text">
+          <string>...</string>
+         </property>
+        </widget>
+       </item>
+       <item row="13" column="0" colspan="2">
+        <widget class="QLineEdit" name="EOPFile">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="19" column="0">
+        <widget class="QLabel" name="Label34">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="text">
+          <string>Ocean Loading BLQ Format</string>
+         </property>
+        </widget>
+       </item>
+       <item row="12" column="0">
+        <widget class="QLabel" name="Label23">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="text">
+          <string>EOP Data File</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="Label1">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="text">
+          <string>DCB Data File</string>
          </property>
         </widget>
        </item>
@@ -3360,20 +3360,13 @@
   <tabstop>BtnSatPcvView</tabstop>
   <tabstop>BtnAntPcvView</tabstop>
   <tabstop>SatPcvFile</tabstop>
-  <tabstop>BtnSatPcvFile</tabstop>
   <tabstop>AntPcvFile</tabstop>
   <tabstop>BtnAntPcvFile</tabstop>
   <tabstop>GeoidDataFile</tabstop>
   <tabstop>BtnGeoidDataFile</tabstop>
-  <tabstop>DCBFile</tabstop>
   <tabstop>BtnDCBView</tabstop>
-  <tabstop>BtnDCBFile</tabstop>
-  <tabstop>EOPFile</tabstop>
   <tabstop>BtnEOPView</tabstop>
-  <tabstop>BtnEOPFile</tabstop>
-  <tabstop>OLFile</tabstop>
   <tabstop>BtnOLFileView</tabstop>
-  <tabstop>BtnOLFile</tabstop>
   <tabstop>LocalDir</tabstop>
   <tabstop>BtnLocalDir</tabstop>
   <tabstop>SvrCycleE</tabstop>
@@ -3398,7 +3391,7 @@
   <tabstop>BtnSave</tabstop>
  </tabstops>
  <resources>
-  <include location="../rtkconv_qt/rtkconv_qt.qrc"/>
+  <include location="../rtkvideo_qt/rtkvideo_qt.qrc"/>
  </resources>
  <connections/>
 </ui>

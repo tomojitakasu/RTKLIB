@@ -253,6 +253,7 @@ void MainWindow::SetOutFiles(const QString &infile)
     }
     for (i = 0; i < 7; i++) {
         if (ofile[i + 1] == infile) ofile[i + 1] += "_";
+        ofile[i + 1] = QDir::toNativeSeparators(ofile[i + 1]);
         edit[i]->setText(ofile[i + 1]);
     }
 }
@@ -272,7 +273,7 @@ void MainWindow::dropEvent(QDropEvent *event)
 
     if (!event->mimeData()->hasFormat("text/uri-list")) return;
 
-    QString file = QUrl(event->mimeData()->text()).toLocalFile();
+    QString file = QDir::toNativeSeparators(QUrl(event->mimeData()->text()).toLocalFile());
 
     InFile->setCurrentText(file);
     SetOutFiles(InFile->currentText());
