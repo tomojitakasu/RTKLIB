@@ -40,6 +40,14 @@ void TcpOptDialog::showEvent(QShowEvent *event)
 
     if (event->spontaneous()) return;
 
+    Addr->clear();
+    MntPnt->clear();
+
+    for (int i = 0; i < MAXHIST; i++)
+        if (History[i] != "") Addr->addItem(History[i]);
+    for (int i = 0; i < MAXHIST; i++)
+        if (MntpHist[i] != "") MntPnt->addItem(MntpHist[i]);
+
     int index = Path.lastIndexOf("@");
 
     QStringList tokens= Path.mid(0,index).split(':'); // separate user and password
@@ -50,16 +58,16 @@ void TcpOptDialog::showEvent(QShowEvent *event)
     } else if (tokens.size() == 1)
         User->setText(tokens.at(0));
 
-    QString url_str = Path.mid(index + 1); // use the rest
+    QString url_str = Path.mid(index); // use the rest
 
     index = url_str.lastIndexOf(":"); // separate "str"
-    Str->setText(url_str.mid(index));
+    Str->setText(url_str.mid(index + 1));
 
     QUrl url(QString("ftp://") + url_str.mid(0,index));
 
-    Addr->insertItem(0, url.host()); Addr->setCurrentIndex(0);
+    Addr->insertItem(0, url.host()); Addr->setCurrentText(url.host());
     Port->setValue(url.port());
-    MntPnt->insertItem(0, url.path()); MntPnt->setCurrentIndex(0);
+    MntPnt->insertItem(0, url.path().mid(1)); MntPnt->setCurrentText(url.path().mid(1));
 
     Addr->setEnabled((Opt >= 1 && Opt <= 3) || Opt == 7);
     MntPnt->setEnabled(Opt >= 2 && Opt <= 4);
@@ -74,14 +82,6 @@ void TcpOptDialog::showEvent(QShowEvent *event)
     LabelStr->setEnabled(Opt == 2);
 
     setWindowTitle(ti[Opt]);
-
-    Addr->clear();
-    MntPnt->clear();
-
-    for (int i = 0; i < MAXHIST; i++)
-        if (History[i] != "") Addr->addItem(History[i]);
-    for (int i = 0; i < MAXHIST; i++)
-        if (MntpHist[i] != "") MntPnt->addItem(MntpHist[i]);
 
     BtnNtrip->setVisible(Opt == 2 || Opt == 3);
 }
