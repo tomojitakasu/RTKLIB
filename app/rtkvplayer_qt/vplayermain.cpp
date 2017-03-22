@@ -127,7 +127,7 @@ void MainForm::dropEvent(QDropEvent *event)
 {
     if (!event->mimeData()->hasFormat("text/uri-list")) return;
 
-    QString file = QUrl(event->mimeData()->text()).toLocalFile();
+    QString file = QDir::toNativeSeparators(QUrl(event->mimeData()->text()).toLocalFile());
 
     OpenVideo(file);
 }

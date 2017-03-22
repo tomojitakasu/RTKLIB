@@ -404,7 +404,7 @@ void  MainForm::dropEvent(QDropEvent *event)
     
     if (!event->mimeData()->hasFormat("text/uri-list")) return;
 
-    QString file=event->mimeData()->text();
+    QString file=QDir::toNativeSeparators(event->mimeData()->text());
 
     top=Panel1->pos().y()+Panel4->pos().y();
     if (point.y()<=top+InputFile1->pos().y()+InputFile1->height()) {

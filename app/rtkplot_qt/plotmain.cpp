@@ -582,7 +582,7 @@ void Plot::dropEvent(QDropEvent *event)
         return;
     ;
     foreach(QUrl url, event->mimeData()->urls()) {
-        files.append(url.toString());
+        files.append(QDir::toNativeSeparators(url.toString()));
     }
 
     if (files.size() == 1 && (n = files.at(0).lastIndexOf('.')) != -1) {
