@@ -2355,7 +2355,7 @@ void MainWindow::LoadOpt(void)
         }
     PrcOpt.mode = settings.value("prcopt/mode", 0).toInt();
     PrcOpt.nf = settings.value("prcopt/nf", 2).toInt();
-    PrcOpt.elmin = settings.value("prcopt/elmin", 15.0 * D2R).toInt();
+    PrcOpt.elmin = settings.value("prcopt/elmin", 15.0 * D2R).toFloat();
     PrcOpt.snrmask.ena[0] = settings.value("prcopt/snrmask_ena1", 0).toInt();
     PrcOpt.snrmask.ena[1] = settings.value("prcopt/snrmask_ena2", 0).toInt();
     for (i = 0; i < NFREQ; i++) for (j = 0; j < 9; j++)

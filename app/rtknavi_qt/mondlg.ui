@@ -55,6 +55,9 @@
         <property name="toolTip">
          <string/>
         </property>
+        <property name="maxVisibleItems">
+         <number>35</number>
+        </property>
         <item>
          <property name="text">
           <string>RTK</string>
@@ -396,7 +399,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtkvplayer_qt/rtkvplayer_qt.qrc">
+         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
           <normaloff>:/buttons/del.bmp</normaloff>:/buttons/del.bmp</iconset>
         </property>
         <property name="flat">
@@ -416,7 +419,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtkvplayer_qt/rtkvplayer_qt.qrc">
+         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
           <normaloff>:/buttons/pause.bmp</normaloff>:/buttons/pause.bmp</iconset>
         </property>
         <property name="checkable">
@@ -439,10 +442,13 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtkvplayer_qt/rtkvplayer_qt.qrc">
+         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
           <normaloff>:/buttons/fitd.bmp</normaloff>:/buttons/fitd.bmp</iconset>
         </property>
         <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="checked">
          <bool>true</bool>
         </property>
         <property name="flat">
@@ -512,7 +518,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../rtkvplayer_qt/rtkvplayer_qt.qrc"/>
+  <include location="../rtkconv_qt/rtkconv_qt.qrc"/>
  </resources>
  <connections/>
 </ui>
