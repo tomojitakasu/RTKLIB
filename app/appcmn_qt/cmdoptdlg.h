@@ -19,6 +19,7 @@ public slots:
     void BtnOkClick();
     void ChkCloseCmdClick();
     void ChkOpenCmdClick();
+    void ChkPeriodicCmdClick();
     void BtnLoadClick();
     void BtnSaveClick();
 

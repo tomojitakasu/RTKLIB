@@ -856,7 +856,7 @@ static int decode_galnav(raw_t *raw){
 
     tow        = U4(puiTmp +  2);
     eph.week   = U2(puiTmp +  6); /* GAL week number */
-    eph.code   = U1(puiTmp +  9)==2?0:1; /* 0:INAV,1:FNAV */
+    eph.code   = U1(puiTmp +  9); /* 2:INAV,16:FNAV */
     eph.A      = pow(R8(puiTmp +  10), 2);
     eph.M0     = R8(puiTmp +  18) * PI;
     eph.e      = R8(puiTmp +  26);
@@ -879,9 +879,9 @@ static int decode_galnav(raw_t *raw){
     eph.f0     = R8(puiTmp + 110);
     week_oe    = U2(puiTmp + 118); /* WNt_oc */
     week_oc    = U2(puiTmp + 120);
-    eph.iode   =
-    eph.iodc   = U2(puiTmp + 122);
-    if (eph.code==0) /* INAV */
+    eph.iode   = U2(puiTmp + 122);
+    eph.iodc   = 0;
+    if (eph.code==2) /* INAV */
     {
         eph.sva    = U1(puiTmp + 128);
         eph.svh    = (U2(puiTmp + 124)& 0x00ff)^0x0011;

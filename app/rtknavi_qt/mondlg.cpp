@@ -1051,9 +1051,9 @@ void MonitorDialog::ShowNav(int sys)
         Console->setItem(n, j++, new QTableWidgetItem(id));
         Console->setItem(n, j++, new QTableWidgetItem(QString::number(prn)));
         Console->setItem(n, j++, new QTableWidgetItem(valid ? tr("OK") : tr("-")));
-        if (eph[k].iode < 0) s = "-"; else QString::number(eph[k].iode);
+        if (eph[k].iode < 0) s = "-"; else s = QString::number(eph[k].iode);
         Console->setItem(n, j++, new QTableWidgetItem(s));
-        if (eph[k].iodc < 0) s = "-"; else QString::number(eph[k].iodc);
+        if (eph[k].iodc < 0) s = "-"; else s = QString::number(eph[k].iodc);
         Console->setItem(n, j++, new QTableWidgetItem(s));
         Console->setItem(n, j++, new QTableWidgetItem(QString::number(eph[k].sva)));
         Console->setItem(n, j++, new QTableWidgetItem(QString::number(eph[k].svh, 16)));
@@ -1137,36 +1137,36 @@ void MonitorDialog::ShowGnav(void)
     Console->setRowCount(n);
     Console->setHorizontalHeaderLabels(header);
 
-    for (i = 0, n = 1; i < NSATGLO; i++) {
+    for (i = 0, n = 0; i < NSATGLO; i++) {
         int j = 0;
         valid = geph[i].toe.time != 0 && !geph[i].svh &&
             fabs(timediff(time, geph[i].toe)) <= MAXDTOE_GLO;
         if (SelSat->currentIndex() == 1 && !valid) continue;
         prn = MINPRNGLO + i;
         satno2id(satno(SYS_GLO, prn), id);
-        Console->setItem(i, j++, new QTableWidgetItem(id));
-        Console->setItem(i, j++, new QTableWidgetItem(QString::number(prn)));
-        Console->setItem(i, j++, new QTableWidgetItem(valid ? tr("OK") : tr("-")));
-        if (geph[i].iode < 0) s = "-"; else QString::number(geph[i].iode);
-        Console->setItem(i, j++, new QTableWidgetItem(s));
-        Console->setItem(i, j++, new QTableWidgetItem(QString::number(geph[i].frq)));
-        Console->setItem(i, j++, new QTableWidgetItem(QString::number(geph[i].svh)));
-        Console->setItem(i, j++, new QTableWidgetItem(QString::number(geph[i].age)));
+        Console->setItem(n, j++, new QTableWidgetItem(id));
+        Console->setItem(n, j++, new QTableWidgetItem(QString::number(prn)));
+        Console->setItem(n, j++, new QTableWidgetItem(valid ? tr("OK") : tr("-")));
+        if (geph[i].iode < 0) s = "-"; else s = QString::number(geph[i].iode);
+        Console->setItem(n, j++, new QTableWidgetItem(s));
+        Console->setItem(n, j++, new QTableWidgetItem(QString::number(geph[i].frq)));
+        Console->setItem(n, j++, new QTableWidgetItem(QString::number(geph[i].svh)));
+        Console->setItem(n, j++, new QTableWidgetItem(QString::number(geph[i].age)));
         if (geph[i].toe.time != 0) time2str(geph[i].toe, tstr, 0); else strcpy(tstr, "-");
-        Console->setItem(i, j++, new QTableWidgetItem(tstr));
+        Console->setItem(n, j++, new QTableWidgetItem(tstr));
         if (geph[i].tof.time != 0) time2str(geph[i].tof, tstr, 0); else strcpy(tstr, "-");
-        Console->setItem(i, j++, new QTableWidgetItem(tstr));
-        Console->setItem(i, j++, new QTableWidgetItem(QString::number(geph[i].pos[0], 'f', 2)));
-        Console->setItem(i, j++, new QTableWidgetItem(QString::number(geph[i].pos[1], 'f', 2)));
-        Console->setItem(i, j++, new QTableWidgetItem(QString::number(geph[i].pos[2], 'f', 2)));
-        Console->setItem(i, j++, new QTableWidgetItem(QString::number(geph[i].vel[0], 'f', 5)));
-        Console->setItem(i, j++, new QTableWidgetItem(QString::number(geph[i].vel[1], 'f', 5)));
-        Console->setItem(i, j++, new QTableWidgetItem(QString::number(geph[i].vel[2], 'f', 5)));
-        Console->setItem(i, j++, new QTableWidgetItem(QString::number(geph[i].acc[0], 'f', 7)));
-        Console->setItem(i, j++, new QTableWidgetItem(QString::number(geph[i].acc[1], 'f', 7)));
-        Console->setItem(i, j++, new QTableWidgetItem(QString::number(geph[i].acc[2], 'f', 7)));
-        Console->setItem(i, j++, new QTableWidgetItem(QString::number(geph[i].taun * 1E9, 'f', 1)));
-        Console->setItem(i, j++, new QTableWidgetItem(QString::number(geph[i].gamn * 1E9, 'f', 4)));
+        Console->setItem(n, j++, new QTableWidgetItem(tstr));
+        Console->setItem(n, j++, new QTableWidgetItem(QString::number(geph[i].pos[0], 'f', 2)));
+        Console->setItem(n, j++, new QTableWidgetItem(QString::number(geph[i].pos[1], 'f', 2)));
+        Console->setItem(n, j++, new QTableWidgetItem(QString::number(geph[i].pos[2], 'f', 2)));
+        Console->setItem(n, j++, new QTableWidgetItem(QString::number(geph[i].vel[0], 'f', 5)));
+        Console->setItem(n, j++, new QTableWidgetItem(QString::number(geph[i].vel[1], 'f', 5)));
+        Console->setItem(n, j++, new QTableWidgetItem(QString::number(geph[i].vel[2], 'f', 5)));
+        Console->setItem(n, j++, new QTableWidgetItem(QString::number(geph[i].acc[0], 'f', 7)));
+        Console->setItem(n, j++, new QTableWidgetItem(QString::number(geph[i].acc[1], 'f', 7)));
+        Console->setItem(n, j++, new QTableWidgetItem(QString::number(geph[i].acc[2], 'f', 7)));
+        Console->setItem(n, j++, new QTableWidgetItem(QString::number(geph[i].taun * 1E9, 'f', 1)));
+        Console->setItem(n, j++, new QTableWidgetItem(QString::number(geph[i].gamn * 1E9, 'f', 4)));
 		n++;
 	}
 }

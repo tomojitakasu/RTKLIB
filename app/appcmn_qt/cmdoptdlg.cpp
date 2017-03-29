@@ -22,6 +22,7 @@ CmdOptDialog::CmdOptDialog(QWidget *parent)
     connect(BtnSave, SIGNAL(clicked()), this, SLOT(BtnSaveClick()));
     connect(ChkCloseCmd, SIGNAL(clicked(bool)), this, SLOT(ChkCloseCmdClick()));
     connect(ChkOpenCmd, SIGNAL(clicked(bool)), this, SLOT(ChkOpenCmdClick()));
+    connect(ChkPeriodicCmd, SIGNAL(clicked(bool)), this, SLOT(ChkPeriodicCmdClick()));
 }
 
 //---------------------------------------------------------------------------
@@ -108,7 +109,11 @@ void CmdOptDialog::ChkOpenCmdClick()
 {
 	UpdateEnable();
 }
-
+//---------------------------------------------------------------------------
+void CmdOptDialog::ChkPeriodicCmdClick()
+{
+    UpdateEnable();
+}
 //---------------------------------------------------------------------------
 void CmdOptDialog::UpdateEnable()
 {
