@@ -112,3 +112,4 @@ UPDATE HISTORY
                       change api rtksvrstart(), strsvrstart()
                       support udp server and client for stream types
                       support periodic receiver commands by rtknavi, strsvr
+2017/04/25  2.4.3 b27 fix several bugs
