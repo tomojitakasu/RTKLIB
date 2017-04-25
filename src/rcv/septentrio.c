@@ -34,6 +34,7 @@
 *                           - various bug fixes
 *           2016/05/25  1.7  rtk_crc24q() -> crc24q() by T.T
 *           2016/07/29  1.8  crc24q() -> rtk_crc24q() by T.T
+*           2017/04/11  1.9  (char *) -> (signed char *) by T.T
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -133,7 +134,7 @@ static int getFreqNo(int signType);
 
 /* get fields (little-endian) ------------------------------------------------*/
 #define U1(p) (*((unsigned char *)(p)))
-#define I1(p) (*((char *)(p)))
+#define I1(p) (*((signed char *)(p)))
 static unsigned short U2(unsigned char *p) {unsigned short u; memcpy(&u,p,2); return u;}
 static unsigned int   U4(unsigned char *p) {unsigned int   u; memcpy(&u,p,4); return u;}
 static float          R4(unsigned char *p) {float          r; memcpy(&r,p,4); return r;}

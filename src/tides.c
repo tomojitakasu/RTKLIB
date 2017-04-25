@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * tides.c : tidal displacement corrections
 *
-*          Copyright (C) 2015 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2015-2017 by T.TAKASU, All rights reserved.
 *
 * options : -DIERS_MODEL use IERS tide model
 *
@@ -19,6 +19,7 @@
 * version : $Revision:$ $Date:$
 * history : 2015/05/10 1.0  separated from ppp.c
 *           2015/06/11 1.1  fix bug on computing days in tide_oload() (#128)
+*           2017/04/11 1.2  fix bug on calling geterp() in timdedisp()
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -243,8 +244,9 @@ extern void tidedisp(gtime_t tutc, const double *rr, int opt, const erp_t *erp,
     
     trace(3,"tidedisp: tutc=%s\n",time_str(tutc,0));
     
-    if (erp) geterp(erp,tutc,erpv);
-    
+    if (erp) {
+        geterp(erp,utc2gpst(tutc),erpv);
+    }
     tut=timeadd(tutc,erpv[2]);
     
     dr[0]=dr[1]=dr[2]=0.0;

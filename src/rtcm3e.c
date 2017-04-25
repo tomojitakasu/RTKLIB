@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * rtcm3e.c : rtcm ver.3 message encoder functions
 *
-*          Copyright (C) 2012-2015 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2012-2017 by T.TAKASU, All rights reserved.
 *
 * options :
 *     -DSSR_QZSS_DRAFT_V05: qzss ssr messages based on ref [16]
@@ -34,6 +34,7 @@
 *                           fix bug on ssr 3 message generation (#321)
 *           2016/06/12 1.14 fix bug on segmentation fault by generating msm1
 *           2016/09/20 1.15 fix bug on MT1045 Galileo week rollover
+*           2017/04/11 1.16 fix bug on gst-week in MT1045/1046
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -1008,7 +1009,7 @@ static int encode_type1045(rtcm_t *rtcm, int sync)
     if (satsys(rtcm->ephsat,&prn)!=SYS_GAL) return 0;
     eph=rtcm->nav.eph+rtcm->ephsat-1;
     if (eph->sat!=rtcm->ephsat) return 0;
-    week=eph->week%4096;
+    week=(eph->week-1024)%4096; /* gst-week = gal-week - 1024 */
     toe  =ROUND(eph->toes/60.0);
     toc  =ROUND(time2gpst(eph->toc,NULL)/60.0);
     sqrtA=ROUND_U(sqrt(eph->A)/P2_19);
@@ -1078,7 +1079,7 @@ static int encode_type1046(rtcm_t *rtcm, int sync)
     if (satsys(rtcm->ephsat,&prn)!=SYS_GAL) return 0;
     eph=rtcm->nav.eph+rtcm->ephsat-1;
     if (eph->sat!=rtcm->ephsat) return 0;
-    week=eph->week%4096;
+    week=(eph->week-1024)%4096; /* gst-week = gal-week - 1024 */
     toe  =ROUND(eph->toes/60.0);
     toc  =ROUND(time2gpst(eph->toc,NULL)/60.0);
     sqrtA=ROUND_U(sqrt(eph->A)/P2_19);

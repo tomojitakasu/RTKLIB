@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * rtksvr.c : rtk server functions
 *
-*          Copyright (C) 2007-2016 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2007-2017 by T.TAKASU, All rights reserved.
 *
 * options : -DWIN32    use WIN32 API
 *
@@ -36,6 +36,7 @@
 *           2016/10/01  1.18 change api rtksvrstart()
 *           2016/10/04  1.19 fix problem to send nmea of single solution
 *           2016/10/09  1.20 add reset-and-single-sol mode for nmea-request
+*           2017/04/11  1.21 add rtkfree() in rtksvrfree()
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -747,6 +748,7 @@ extern void rtksvrfree(rtksvr_t *svr)
     for (i=0;i<3;i++) for (j=0;j<MAXOBSBUF;j++) {
         free(svr->obs[i][j].data);
     }
+    rtkfree(&svr->rtk);
 }
 /* lock/unlock rtk server ------------------------------------------------------
 * lock/unlock rtk server

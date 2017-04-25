@@ -32,6 +32,7 @@
 *           2013/03/10 1.5 change option -invcp to -INVCP
 *           2014/11/09 1.6 support glonass, qzss and beidou
 *           2016/10/09 1.7 support F/W version specified as ref [6]
+*           2017/04/11 1.8 (char *) -> (signed char *)
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -59,7 +60,7 @@ static const char rcsid[]="$Id:$";
 
 /* extract field (big-endian) ------------------------------------------------*/
 #define U1(p)       (*((unsigned char *)(p)))
-#define I1(p)       (*((char *)(p)))
+#define I1(p)       (*((signed char *)(p)))
 
 static unsigned short U2(unsigned char *p)
 {
@@ -214,10 +215,9 @@ static int decode_stqraw(raw_t *raw)
 /* decode skytraq extended raw measurement data v.1 (0xE5) -------------------*/
 static int decode_stqrawx(raw_t *raw)
 {
-#if 0
     unsigned char *p=raw->buff+4,ind;
     double pr1,cp1;
-    int i,j,ver,iod,week,tow,peri,ind,nsat,sys,sig,prn,frq,sat,n=0;
+    int i,j,ver,iod,week,tow,peri,nsat,sys,sig,prn,frq,sat,n=0;
     
     trace(4,"decode_stqraw: len=%d\n",raw->len);
     
@@ -230,49 +230,69 @@ static int decode_stqrawx(raw_t *raw)
     week=U2(p+3);
     tow =U4(p+5);
     peri=U2(p+9);
-    ind =U1(p+11);
     nsat=U1(p+13);
     if (raw->len<8+23*nsat) {
         trace(2,"stq raw length error: len=%d nsat=%d\n",raw->len,nsat);
         return -1;
     }
     for (i=0,p+=14;i<nsat&&i<MAXOBS;i++,p+=23) {
-        if (U1(p)==0) {
+        if (U1(p)==0) { /* GPS */
             sys=SYS_GPS;
-            sig=U1(p+1)==1?CODE_L1X:(U1(p+1)==2?CODE_L2X:
-                (U1(p+1)==4?CODE_L5X:CODE_L1C));
+            switch (U1(p+1)) {
+                case  1: sig=CODE_L1X; break;
+                case  2: sig=CODE_L2X; break;
+                case  4: sig=CODE_L5X; break;
+                default: sig=CODE_L1C; break;
+            }
             prn=U1(p+2);
             frq=0;
         }
-        else if (U1(p)==1) {
+        else if (U1(p)==1) { /* SBAS */
             sys=SYS_SBS;
             sig=CODE_L1C;
             prn=U1(p+2);
             frq=0;
         }
-        else if (U1(p)==2) {
+        else if (U1(p)==2) { /* GLONASS */
             sys=SYS_GLO;
-            sig=U1(p+1)==2?CODE_L2C:(U1(p+1)==4?CODE_L3X:CODE_L1C);
+            switch (U1(p+1)) {
+                case  2: sig=CODE_L2C; break;
+                case  4: sig=CODE_L3X; break;
+                default: sig=CODE_L1C; break;
+            }
             prn=U1(p+2);
             frq=(int)U1(p+3)-7;
         }
-        else if (U1(p)==3) {
+        else if (U1(p)==3) { /* Galileo */
             sys=SYS_GAL;
-            sig=U1(p+1)==4?CODE_L5X:(U1(p+1)==5?CODE_L7X:
-                (U1(p+1)==6?CODE_L6X:CODE_L1C));
+            switch (U1(p+1)) {
+                case  4: sig=CODE_L5X; break;
+                case  5: sig=CODE_L7X; break;
+                case  6: sig=CODE_L6X; break;
+                default: sig=CODE_L1C; break;
+            }
             prn=U1(p+2);
             frq=0;
         }
-        else if (U1(p)==4) {
+        else if (U1(p)==4) { /* QZSS */
             sys=SYS_QZS;
-            sig=U1(p+1)==1?CODE_L1X:(U1(p+1)==2?CODE_L2X:
-                (U1(p+1)==4?CODE_L5X:(U1(p+1)==6?CODE_L6X:CODE_1C));
+            switch (U1(p+1)) {
+                case  1: sig=CODE_L1X; break;
+                case  2: sig=CODE_L2X; break;
+                case  4: sig=CODE_L5X; break;
+                case  6: sig=CODE_L6X; break;
+                default: sig=CODE_L1C; break;
+            }
             prn=U1(p+2);
             frq=0;
         }
-        else if (U1(p)==5) {
+        else if (U1(p)==5) { /* BeiDou */
             sys=SYS_CMP;
-            sig=U1(p+1)==4?CODE_L7I:(U1(p+1)==6?CODE_L6I:CODE_L2I);
+            switch (U1(p+1)) {
+                case  4: sig=CODE_L7I; break;
+                case  6: sig=CODE_L6I; break;
+                default: sig=CODE_L2I; break;
+            }
             prn=U1(p+2);
             frq=0;
         }
@@ -319,9 +339,6 @@ static int decode_stqrawx(raw_t *raw)
     }
     raw->obs.n=n;
     return n>0?1:0;
-#else
-    return 0;
-#endif
 }
 /* save subframe -------------------------------------------------------------*/
 static int save_subfrm(int sat, raw_t *raw)
@@ -517,7 +534,7 @@ static int decode_stqbds(raw_t *raw)
         trace(2,"stq bds subframe id error: prn=%2d\n",prn);
         return -1;
     }
-    if (prn>=5) { /* IGSO/MEO */
+    if (prn>5) { /* IGSO/MEO */
         word=getbitu(p+3,j,26)<<4; j+=26;
         setbitu(raw->subfrm[sat-1]+(id-1)*38,0,30,word);
         
@@ -551,7 +568,9 @@ static int decode_stqbds(raw_t *raw)
         if (!decode_bds_d2(raw->subfrm[sat-1],&eph)) return 0;
     }
     if (!strstr(raw->opt,"-EPHALL")) {
-        if (timediff(eph.toe,raw->nav.eph[sat-1].toe)==0.0) return 0; /* unchanged */
+        if (timediff(eph.toe,raw->nav.eph[sat-1].toe)==0.0&&
+            eph.iode==raw->nav.eph[sat-1].iode&&
+            eph.iodc==raw->nav.eph[sat-1].iodc) return 0; /* unchanged */
     }
     eph.sat=sat;
     raw->nav.eph[sat-1]=eph;

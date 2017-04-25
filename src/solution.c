@@ -840,7 +840,9 @@ extern sol_t *getsol(solbuf_t *solbuf, int index)
 *-----------------------------------------------------------------------------*/
 extern void initsolbuf(solbuf_t *solbuf, int cyclic, int nmax)
 {
+#if 0
     gtime_t time0={0};
+#endif
     int i;
     
     trace(3,"initsolbuf: cyclic=%d nmax=%d\n",cyclic,nmax);

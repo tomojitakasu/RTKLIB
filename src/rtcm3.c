@@ -33,6 +33,8 @@
 *           2016/08/20 1.15 fix bug on loss-of-lock detection in MSM 6/7 (#134)
 *           2016/09/20 1.16 fix bug on MT1045 Galileo week rollover
 *           2016/10/09 1.17 support MT1029 unicode text string
+*           2017/04/11 1.18 fix bug on unchange-test of beidou ephemeris
+*                           fix bug on week number in galileo ephemeris struct
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -1063,7 +1065,7 @@ static int decode_type1045(rtcm_t *rtcm)
     
     if (i+484<=rtcm->len*8) {
         prn       =getbitu(rtcm->buff,i, 6);              i+= 6;
-        week      =getbitu(rtcm->buff,i,12);              i+=12;
+        week      =getbitu(rtcm->buff,i,12);              i+=12; /* gst-week */
         eph.iode  =getbitu(rtcm->buff,i,10);              i+=10;
         eph.sva   =getbitu(rtcm->buff,i, 8);              i+= 8;
         eph.idot  =getbits(rtcm->buff,i,14)*P2_43*SC2RAD; i+=14;
@@ -1107,9 +1109,9 @@ static int decode_type1045(rtcm_t *rtcm)
         return -1;
     }
     eph.sat=sat;
-    eph.week=week;
-    eph.toe=gst2time(eph.week,eph.toes);
-    eph.toc=gst2time(eph.week,toc);
+    eph.week=week+1024; /* gal-week = gst-week + 1024 */
+    eph.toe=gpst2time(eph.week,eph.toes);
+    eph.toc=gpst2time(eph.week,toc);
     eph.ttr=rtcm->time;
     eph.A=sqrtA*sqrtA;
     eph.svh=(e5a_hs<<4)+(e5a_dvs<<3);
@@ -1131,7 +1133,7 @@ static int decode_type1046(rtcm_t *rtcm)
     
     if (i+484<=rtcm->len*8) {
         prn       =getbitu(rtcm->buff,i, 6);              i+= 6;
-        week      =getbitu(rtcm->buff,i,12);              i+=12;
+        week      =getbitu(rtcm->buff,i,12);              i+=12; /* gst-week */
         eph.iode  =getbitu(rtcm->buff,i,10);              i+=10;
         eph.sva   =getbitu(rtcm->buff,i, 8);              i+= 8;
         eph.idot  =getbits(rtcm->buff,i,14)*P2_43*SC2RAD; i+=14;
@@ -1175,9 +1177,9 @@ static int decode_type1046(rtcm_t *rtcm)
         return -1;
     }
     eph.sat=sat;
-    eph.week=week;
-    eph.toe=gst2time(eph.week,eph.toes);
-    eph.toc=gst2time(eph.week,toc);
+    eph.week=week+1024; /* gal-week = gst-week + 1024 */
+    eph.toe=gpst2time(eph.week,eph.toes);
+    eph.toc=gpst2time(eph.week,toc);
     eph.ttr=rtcm->time;
     eph.A=sqrtA*sqrtA;
     eph.svh=(e5a_hs<<4)+(e5a_dvs<<3);
@@ -1251,7 +1253,9 @@ static int decode_type1047(rtcm_t *rtcm)
     eph.ttr=rtcm->time;
     eph.A=sqrtA*sqrtA;
     if (!strstr(rtcm->opt,"-EPHALL")) {
-        if (eph.iode==rtcm->nav.eph[sat-1].iode) return 0; /* unchanged */
+        if (timediff(eph.toe,rtcm->nav.eph[sat-1].toe)==0.0&&
+            eph.iode==rtcm->nav.eph[sat-1].iode&&
+            eph.iodc==rtcm->nav.eph[sat-1].iodc) return 0; /* unchanged */
     }
     rtcm->nav.eph[sat-1]=eph;
     rtcm->ephsat=sat;
@@ -1317,7 +1321,9 @@ static int decode_type63(rtcm_t *rtcm)
     eph.ttr=rtcm->time;
     eph.A=sqrtA*sqrtA;
     if (!strstr(rtcm->opt,"-EPHALL")) {
-        if (eph.iode==rtcm->nav.eph[sat-1].iode) return 0; /* unchanged */
+        if (timediff(eph.toe,rtcm->nav.eph[sat-1].toe)==0.0&&
+            eph.iode==rtcm->nav.eph[sat-1].iode&&
+            eph.iodc==rtcm->nav.eph[sat-1].iodc) return 0; /* unchanged */
     }
     rtcm->nav.eph[sat-1]=eph;
     rtcm->ephsat=sat;

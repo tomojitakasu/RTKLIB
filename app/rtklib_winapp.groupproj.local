@@ -2,6 +2,6 @@
 <BorlandProject>
 	<Transactions/>
 	<Default.Personality>
-		<Projects ActiveProject="D:\proj\RTKLIB\app\rtknavi\rtknavi.cbproj"/>
+		<Projects ActiveProject="D:\proj\RTKLIB\app\rtknavi_win64\rtknavi_win64.cbproj"/>
 	</Default.Personality>
 </BorlandProject>

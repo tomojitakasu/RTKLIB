@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * streamsvr.c : stream server functions
 *
-*          Copyright (C) 2010-2012 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2010-2017 by T.TAKASU, All rights reserved.
 *
 * options : -DWIN32    use WIN32 API
 *
@@ -22,6 +22,7 @@
 *           2016/09/17 1.11 add relay back function of output stream
 *                           fix bug on rtcm cyclic output of beidou ephemeris 
 *           2016/10/01 1.12 change api startstrserver()
+*           2017/04/11 1.13 fix bug on search of next satellite in nextsat()
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -259,7 +260,7 @@ static int nextsat(nav_t *nav, int sat, int msg)
     if (satsys(sat,&p0)!=sys) return satno(sys,p1);
     
     /* search next valid ephemeris */
-    for (p=p0>p2?p1:p0+1;p!=p0;p=p>=p2?p1:p+1) {
+    for (p=p0>=p2?p1:p0+1;p!=p0;p=p>=p2?p1:p+1) {
         
         if (sys==SYS_GLO) {
             sat=satno(sys,p);

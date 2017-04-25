@@ -57,7 +57,7 @@
 *                           add api strsetsel(),strgetsel()
 *           2016/09/06 1.23 fix bug on ntrip caster socket and request handling
 *           2016/09/27 1.24 support udp server and client
-*           2016/10/10 1.25 support ::P={4|8} option in path for STR_FILE
+*           2016/10/10 1.25 support ::P=,::Q= option in path for STR_FILE
 *-----------------------------------------------------------------------------*/
 #include <ctype.h>
 #include "rtklib.h"
@@ -136,6 +136,7 @@ typedef struct {            /* file control type */
     int repmode;            /* replay mode (0:master,1:slave) */
     int offset;             /* time offset (ms) for slave */
     int size_fpos;          /* file position size (bytes) */
+    int size_time;          /* time_t size (bytes) */
     gtime_t time;           /* start time */
     gtime_t wtime;          /* write time */
     unsigned int tick;      /* start tick */
@@ -552,6 +553,8 @@ static int statexserial(serial_t *serial, char *msg)
 static int openfile_(file_t *file, gtime_t time, char *msg)
 {    
     FILE *fp;
+    double time_sec;
+    unsigned int time_buf[2];
     char *rw,tagpath[MAXSTRPATH+4]="";
     char tagh[TIMETAGH_LEN+1]="";
     
@@ -596,8 +599,14 @@ static int openfile_(file_t *file, gtime_t time, char *msg)
         
         if (file->mode&STR_MODE_R) {
             if (fread(&tagh,TIMETAGH_LEN,1,file->fp_tag)==1&&
-                fread(&file->time,sizeof(file->time),1,file->fp_tag)==1) {
+                fread(&time_buf,file->size_time,1,file->fp_tag)==1&&
+                fread(&time_sec,sizeof(double),1,file->fp_tag)==1) {
                 memcpy(&file->tick_f,tagh+TIMETAGH_LEN-4,sizeof(file->tick_f));
+                file->time.time=(time_t)time_buf[0];
+                if (file->size_time==8&&sizeof(time_t)==8) {
+                    file->time.time+=((time_t)time_buf[1])<<32;
+                }
+                file->time.sec=time_sec;
                 file->wtime=file->time;
             }
             else {
@@ -612,7 +621,7 @@ static int openfile_(file_t *file, gtime_t time, char *msg)
             fwrite(&tagh,1,TIMETAGH_LEN,file->fp_tag);
             fwrite(&file->time,1,sizeof(file->time),file->fp_tag);
             /* time tag file structure   */
-            /*   HEADER(60)+TICK(4)+TIME(12)+ */
+            /*   HEADER(60)+TICK(4)+TIME(4/8+8)+ */
             /*   TICK0(4)+FPOS0(4/8)+    */
             /*   TICK1(4)+FPOS1(4/8)+... */
         }
@@ -636,14 +645,14 @@ static void closefile_(file_t *file)
     if (file->fp_tag_tmp) fclose(file->fp_tag_tmp);
     file->fp=file->fp_tag=file->fp_tmp=file->fp_tag_tmp=NULL;
 }
-/* open file (path=filepath[::T[::+<off>][::x<speed>]][::S=swapintv][::P={4|8}] */
+/* open file (path=filepath[::T[::+<off>][::x<speed>]][::S=swapintv][::P={4|8}][::Q={4|8}] */
 static file_t *openfile(const char *path, int mode, char *msg)
 {
     file_t *file;
     gtime_t time,time0={0};
     double speed=0.0,start=0.0,swapintv=0.0;
     char *p;
-    int timetag=0,size_fpos=(int)sizeof(size_t);
+    int timetag=0,size_fpos=(int)sizeof(size_t),size_time=(int)sizeof(time_t);
     
     tracet(3,"openfile: path=%s mode=%d\n",path,mode);
     
@@ -656,6 +665,7 @@ static file_t *openfile(const char *path, int mode, char *msg)
         else if (*(p+2)=='x') sscanf(p+2,"x%lf",&speed);
         else if (*(p+2)=='S') sscanf(p+2,"S=%lf",&swapintv);
         else if (*(p+2)=='P') sscanf(p+2,"P=%d",&size_fpos);
+        else if (*(p+2)=='Q') sscanf(p+2,"Q=%d",&size_time);
     }
     if (start<=0.0) start=0.0;
     if (swapintv<=0.0) swapintv=0.0;
@@ -670,7 +680,8 @@ static file_t *openfile(const char *path, int mode, char *msg)
     file->timetag=timetag;
     file->repmode=0;
     file->offset=0;
-    file->size_fpos=size_fpos;
+    file->size_fpos=size_fpos==8?8:4; /* 4 or 8 */
+    file->size_time=size_time==8?8:4; /* 4 or 8 */
     file->time=file->wtime=time0;
     file->tick=file->tick_f=file->fpos=0;
     file->start=start;
@@ -765,7 +776,7 @@ static int readfile(file_t *file, unsigned char *buff, int nmax, char *msg)
 {
     struct timeval tv={0};
     fd_set rs;
-    unsigned char fpos_buff[8];
+    unsigned int fpos_buff[2];
     unsigned int t,tick;
     int nr=0;
     size_t fpos;
@@ -802,8 +813,10 @@ static int readfile(file_t *file, unsigned char *buff, int nmax, char *msg)
                 sprintf(msg,"end");
                 break;
             }
-            fpos=*(size_t *)fpos_buff;
-            
+            fpos=(size_t)fpos_buff[0];
+            if (file->size_fpos==8&&sizeof(size_t)==8) {
+                fpos+=((size_t)fpos_buff[1]<<32);
+            }
             /* skip if overload */
             if (file->repmode||file->speed>0.0) {
                 if ((int)(tick-t)<1) continue;
@@ -834,8 +847,10 @@ static int readfile(file_t *file, unsigned char *buff, int nmax, char *msg)
             sprintf(msg,"end");
             return 0;
         }
-        fpos=*(size_t *)fpos_buff;
-        
+        fpos=(size_t)fpos_buff[0];
+        if (file->size_fpos==8&&sizeof(size_t)==8) {
+            fpos+=((size_t)fpos_buff[1]<<32);
+        }
         sprintf(msg,"T%+.1fs",tick<=0?0.0:tick*0.001);
         file->wtime = timeadd(file->time,tick*0.001);
         

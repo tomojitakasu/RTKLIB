@@ -61,7 +61,7 @@ extern "C" {
 #define PATCH_LEVEL "b27"               /* patch level */
 
 #define COPYRIGHT_RTKLIB \
-            "Copyright (C) 2007-2016 T.Takasu\nAll rights reserved."
+            "Copyright (C) 2007-2017 T.Takasu\nAll rights reserved."
 
 #define PI          3.1415926535897932  /* pi */
 #define D2R         (PI/180.0)          /* deg to rad */
