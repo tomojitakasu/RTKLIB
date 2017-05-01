@@ -10,6 +10,7 @@
 #include <QDebug>
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
+#include <QFileInfo>
 
 #include "rtklib.h"
 #include "plotmain.h"
@@ -31,7 +32,7 @@ void Plot::ReadSol(const QStringList &files, int sel)
 {
     solbuf_t sol;
     gtime_t ts, te;
-    double tint;
+    double tint, ep[6];
     int i, n = 0;
     char *paths[MAXNFILE];
 
@@ -46,6 +47,17 @@ void Plot::ReadSol(const QStringList &files, int sel)
     if (files.count() <= 0) return;
 
     ReadWaitStart();
+
+    QFileInfo fi(files.at(0));
+    QDateTime created = fi.created();
+
+    ep[0]=created.date().year();
+    ep[1]=created.date().month();
+    ep[2]=created.date().day();
+    ep[3]=created.time().hour();
+    ep[4]=created.time().minute();
+    ep[5]=created.time().second();
+    sol.time=utc2gpst(epoch2time(ep));
 
     for (i = 0; i < files.count() && n < MAXNFILE; i++)
         strcpy(paths[n++], qPrintable(files.at(i)));

@@ -17,6 +17,8 @@ public slots:
     void BtnOkClick();
     void ChkMarkerNameClick();
     void BtnRepDlgClick();
+    void RadioClick();
+    void BtnPosClick();
 
 protected:
     void showEvent(QShowEvent *);
@@ -28,6 +30,7 @@ private:
 public:
     QString Marker, Comment;
     int PosMode, NMark;
+    double FixPos[3];
 	
     explicit QMarkDialog(QWidget *parent);
 	

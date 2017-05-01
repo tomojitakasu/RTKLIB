@@ -4,7 +4,7 @@ include(../RTKLib.pri)
 ROOT_DIRECTORY = $${PWD}/../
 OUTPUT_DIRECTORY = $${OUT_PWD}
 
-LIBS += -L$${ROOT_DIRECTORY}/lib/ -lRTKLib
+LIBS += -L$${ROOT_DIRECTORY}/lib/ -lRTKLib ../../lib/iers/libiers.a
 
 win* {
     LIBS += -lWs2_32 -lwinmm

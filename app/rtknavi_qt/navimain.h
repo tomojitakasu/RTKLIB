@@ -87,7 +87,6 @@ private:
     tle_t TLEData;
 
     AboutDialog *aboutDialog;
-    OptDialog *optDialog;
     InputStrDialog *inputStrDialog;
     OutputStrDialog *outputStrDialog;
     LogStrDialog *logStrDialog;
@@ -134,11 +133,14 @@ private:
     void BtnFreqTypeChange(int i);
     QColor SnrColor(int snr);
 public:
+    OptDialog *optDialog;
     QString IniFile;
 	
     int PanelStack, PanelMode;
     int SvrCycle, SvrBuffSize, Scale, SolBuffSize, NavSelect, SavedSol;
-    int NmeaReq, NmeaCycle, InTimeTag, OutTimeTag, OutAppend, LogTimeTag, LogAppend;
+
+    int NmeaReq,NmeaCycle,InTimeTag,InTime64Bit;
+    int OutTimeTag,OutAppend,LogTimeTag,LogAppend;
     int TimeoutTime, ReconTime, SbasCorr, DgpsCorr, TideCorr, FileSwapMargin;
     int Stream[MAXSTRRTK], StreamC[MAXSTRRTK], Format[MAXSTRRTK];
     int CmdEna[3][3], CmdEnaTcp[3][3];
@@ -155,12 +157,12 @@ public:
 	gtime_t *Time;
     int *SolStat, *Nvsat;
     double *SolRov, *SolRef, *Qr, *VelRov, *Age, *Ratio;
-    double TrkOri[3];
+    double TrkOri[3], MaxBL;
 
     QString Paths[MAXSTRRTK][4], Cmds[3][3], CmdsTcp[3][3];
     QString InTimeStart, InTimeSpeed, ExSats;
     QString RcvOpt[3], ProxyAddr;
-    QString OutSwapInterval, LogSwapInterval;
+    QString OutSwapInterval, LogSwapInterval, ResetCmd;
 
 	prcopt_t PrcOpt;
 	solopt_t SolOpt;

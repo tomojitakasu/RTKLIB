@@ -60,6 +60,7 @@ PlotOptDialog::PlotOptDialog(QWidget *parent)
     connect(MColor10, SIGNAL(clicked(bool)), this, SLOT(MColorClick()));
     connect(MColor11, SIGNAL(clicked(bool)), this, SLOT(MColorClick()));
     connect(MColor12, SIGNAL(clicked(bool)), this, SLOT(MColorClick()));
+    connect(ChkTimeSync, SIGNAL(clicked(bool)), this, SLOT(ChkTimeSyncClick()));
 }
 //---------------------------------------------------------------------------
 void PlotOptDialog::showEvent(QShowEvent *event)
@@ -135,6 +136,8 @@ void PlotOptDialog::showEvent(QShowEvent *event)
     ElMaskP->setCurrentIndex(plot->ElMaskP);
     ExSats->setText(plot->ExSats);
     BuffSize->setValue(plot->RtBuffSize);
+    ChkTimeSync->setChecked(plot->TimeSyncOut);
+    EditTimeSync->setValue(plot->TimeSyncPort);
     QcCmd->setText(plot->QcCmd);
     RnxOpts->setText(plot->RnxOpts);
     TLEFile->setText(plot->TLEFile);
@@ -193,6 +196,8 @@ void PlotOptDialog::BtnOKClick()
     plot->HideLowSat = HideLowSat->currentIndex();
     plot->ElMaskP = ElMaskP->currentIndex();
     plot->RtBuffSize = BuffSize->value();
+    plot->TimeSyncOut = ChkTimeSync->isChecked();
+    plot->TimeSyncPort = EditTimeSync->value();
     plot->ExSats = ExSats->text();
     plot->QcCmd = QcCmd->text();
     plot->RnxOpts = RnxOpts->text();
@@ -341,6 +346,7 @@ void PlotOptDialog::UpdateEnable(void)
     RefPos3->setEnabled(Origin->currentIndex() == 5 || RcvPos->currentIndex() == 1);
     LabelRefPos->setEnabled(Origin->currentIndex() == 5 || Origin->currentIndex() == 6 || RcvPos->currentIndex() == 1);
     BtnRefPos->setEnabled(Origin->currentIndex() == 5 || Origin->currentIndex() == 6 || RcvPos->currentIndex() == 1);
+    EditTimeSync->setEnabled(ChkTimeSync->isChecked());
 }
 //---------------------------------------------------------------------------
 void PlotOptDialog::RcvPosChange()
@@ -370,5 +376,10 @@ void PlotOptDialog::BtnTLESatViewClick()
     viewer->setWindowTitle(file);
     viewer->show();
     viewer->Read(file);
+}
+//---------------------------------------------------------------------------
+void PlotOptDialog::ChkTimeSyncClick()
+{
+    UpdateEnable();
 }
 //---------------------------------------------------------------------------

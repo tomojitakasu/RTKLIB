@@ -192,31 +192,17 @@
     <item>
      <widget class="QWidget" name="Panel2" native="true">
       <layout class="QGridLayout" name="gridLayout_2">
-       <item row="11" column="0">
-        <widget class="QCheckBox" name="OutFileEna6">
+       <item row="1" column="0" colspan="2">
+        <widget class="QLabel" name="LabelInFile">
          <property name="text">
-          <string/>
+          <string>RTCM, RCV RAW or RINEX OBS</string>
          </property>
         </widget>
        </item>
-       <item row="7" column="0">
-        <widget class="QCheckBox" name="OutFileEna2">
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0" colspan="2">
-        <widget class="QLabel" name="LabelOutDir">
-         <property name="text">
-          <string>Output Directory:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="9" column="0">
-        <widget class="QCheckBox" name="OutFileEna4">
-         <property name="text">
-          <string/>
+       <item row="2" column="0" colspan="3">
+        <widget class="QComboBox" name="InFile">
+         <property name="editable">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
@@ -241,51 +227,13 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="1">
-        <widget class="QLineEdit" name="OutDir"/>
-       </item>
-       <item row="6" column="0">
-        <widget class="QCheckBox" name="OutFileEna1">
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="10" column="0">
-        <widget class="QCheckBox" name="OutFileEna5">
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="0" colspan="2">
-        <widget class="QLabel" name="LabelOutFile">
-         <property name="text">
-          <string>RINEX OBS/NAV/GNAV/HNAV/QNAV/LNAV and SBS</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="0">
-        <widget class="QCheckBox" name="OutDirEna">
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="12" column="0">
-        <widget class="QCheckBox" name="OutFileEna7">
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="3">
-        <widget class="QPushButton" name="BtnOutFileView1">
+       <item row="10" column="3">
+        <widget class="QPushButton" name="BtnOutFileView5">
          <property name="text">
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="rtkconv_qt.qrc">
+          <iconset resource="../rtkvideo_qt/rtkvideo_qt.qrc">
            <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
          </property>
          <property name="flat">
@@ -293,52 +241,13 @@
          </property>
         </widget>
        </item>
-       <item row="6" column="4">
-        <widget class="QPushButton" name="BtnOutFile1">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>...</string>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="4">
-        <widget class="QPushButton" name="BtnOutFile2">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>...</string>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="4">
-        <widget class="QPushButton" name="BtnOutFile3">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>...</string>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="3">
-        <widget class="QPushButton" name="BtnOutFileView2">
+       <item row="11" column="3">
+        <widget class="QPushButton" name="BtnOutFileView6">
          <property name="text">
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="rtkconv_qt.qrc">
+          <iconset resource="../rtkvideo_qt/rtkvideo_qt.qrc">
            <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
          </property>
          <property name="flat">
@@ -346,39 +255,10 @@
          </property>
         </widget>
        </item>
-       <item row="8" column="3">
-        <widget class="QPushButton" name="BtnOutFileView3">
+       <item row="7" column="0">
+        <widget class="QCheckBox" name="OutFileEna2">
          <property name="text">
           <string/>
-         </property>
-         <property name="icon">
-          <iconset resource="rtkconv_qt.qrc">
-           <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
-         </property>
-         <property name="flat">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="1" colspan="2">
-        <widget class="QLineEdit" name="OutFile3"/>
-       </item>
-       <item row="7" column="1" colspan="2">
-        <widget class="QLineEdit" name="OutFile2"/>
-       </item>
-       <item row="6" column="1" colspan="2">
-        <widget class="QLineEdit" name="OutFile1"/>
-       </item>
-       <item row="9" column="4">
-        <widget class="QPushButton" name="BtnOutFile4">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>...</string>
          </property>
         </widget>
        </item>
@@ -408,6 +288,95 @@
          </property>
         </widget>
        </item>
+       <item row="6" column="4">
+        <widget class="QPushButton" name="BtnOutFile1">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>...</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QPushButton" name="BtnKey">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>?</string>
+         </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="0">
+        <widget class="QCheckBox" name="OutFileEna6">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QLineEdit" name="OutDir"/>
+       </item>
+       <item row="6" column="0">
+        <widget class="QCheckBox" name="OutFileEna1">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="4">
+        <widget class="QPushButton" name="BtnOutFile2">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>...</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="4">
+        <widget class="QPushButton" name="BtnOutFile3">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>...</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="1" colspan="2">
+        <widget class="QLineEdit" name="OutFile3"/>
+       </item>
+       <item row="7" column="3">
+        <widget class="QPushButton" name="BtnOutFileView2">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="../rtkvideo_qt/rtkvideo_qt.qrc">
+           <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
+         </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
        <item row="12" column="4">
         <widget class="QPushButton" name="BtnOutFile7">
          <property name="sizePolicy">
@@ -427,7 +396,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="rtkconv_qt.qrc">
+          <iconset resource="../rtkvideo_qt/rtkvideo_qt.qrc">
            <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
          </property>
          <property name="flat">
@@ -435,13 +404,26 @@
          </property>
         </widget>
        </item>
-       <item row="10" column="3">
-        <widget class="QPushButton" name="BtnOutFileView5">
+       <item row="9" column="4">
+        <widget class="QPushButton" name="BtnOutFile4">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>...</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="3">
+        <widget class="QPushButton" name="BtnOutFileView1">
          <property name="text">
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="rtkconv_qt.qrc">
+          <iconset resource="../rtkvideo_qt/rtkvideo_qt.qrc">
            <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
          </property>
          <property name="flat">
@@ -449,13 +431,30 @@
          </property>
         </widget>
        </item>
-       <item row="11" column="3">
-        <widget class="QPushButton" name="BtnOutFileView6">
+       <item row="4" column="0">
+        <widget class="QCheckBox" name="OutDirEna">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="12" column="0">
+        <widget class="QCheckBox" name="OutFileEna7">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="1" colspan="2">
+        <widget class="QLineEdit" name="OutFile2"/>
+       </item>
+       <item row="8" column="3">
+        <widget class="QPushButton" name="BtnOutFileView3">
          <property name="text">
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="rtkconv_qt.qrc">
+          <iconset resource="../rtkvideo_qt/rtkvideo_qt.qrc">
            <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
          </property>
          <property name="flat">
@@ -463,34 +462,36 @@
          </property>
         </widget>
        </item>
-       <item row="12" column="3">
-        <widget class="QPushButton" name="BtnOutFileView7">
+       <item row="6" column="1" colspan="2">
+        <widget class="QLineEdit" name="OutFile1"/>
+       </item>
+       <item row="10" column="0">
+        <widget class="QCheckBox" name="OutFileEna5">
          <property name="text">
           <string/>
          </property>
-         <property name="icon">
-          <iconset resource="rtkconv_qt.qrc">
-           <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
-         </property>
-         <property name="flat">
-          <bool>true</bool>
+        </widget>
+       </item>
+       <item row="5" column="0" colspan="2">
+        <widget class="QLabel" name="LabelOutFile">
+         <property name="text">
+          <string>RINEX OBS/NAV/GNAV/HNAV/QNAV/LNAV and SBS</string>
          </property>
         </widget>
        </item>
-       <item row="9" column="1" colspan="2">
-        <widget class="QLineEdit" name="OutFile4"/>
+       <item row="3" column="0" colspan="2">
+        <widget class="QLabel" name="LabelOutDir">
+         <property name="text">
+          <string>Output Directory:</string>
+         </property>
+        </widget>
        </item>
-       <item row="10" column="1" colspan="2">
-        <widget class="QLineEdit" name="OutFile5"/>
-       </item>
-       <item row="11" column="1" colspan="2">
-        <widget class="QLineEdit" name="OutFile6"/>
-       </item>
-       <item row="12" column="1" colspan="2">
-        <widget class="QLineEdit" name="OutFile7"/>
-       </item>
-       <item row="4" column="3" colspan="2">
-        <widget class="QComboBox" name="Format"/>
+       <item row="9" column="0">
+        <widget class="QCheckBox" name="OutFileEna4">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
        </item>
        <item row="2" column="4">
         <widget class="QPushButton" name="BtnInFile">
@@ -511,7 +512,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="rtkconv_qt.qrc">
+          <iconset resource="../rtkvideo_qt/rtkvideo_qt.qrc">
            <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
          </property>
          <property name="flat">
@@ -519,15 +520,85 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="0" colspan="3">
-        <widget class="QComboBox" name="InFile">
-         <property name="editable">
+       <item row="4" column="3" colspan="2">
+        <widget class="QComboBox" name="Format"/>
+       </item>
+       <item row="10" column="1" colspan="2">
+        <widget class="QLineEdit" name="OutFile5"/>
+       </item>
+       <item row="9" column="1" colspan="2">
+        <widget class="QLineEdit" name="OutFile4"/>
+       </item>
+       <item row="12" column="3">
+        <widget class="QPushButton" name="BtnOutFileView7">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="../rtkvideo_qt/rtkvideo_qt.qrc">
+           <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
+         </property>
+         <property name="flat">
           <bool>true</bool>
          </property>
         </widget>
        </item>
-       <item row="1" column="2">
-        <widget class="QPushButton" name="BtnKey">
+       <item row="11" column="1" colspan="2">
+        <widget class="QLineEdit" name="OutFile6"/>
+       </item>
+       <item row="12" column="1" colspan="2">
+        <widget class="QLineEdit" name="OutFile7"/>
+       </item>
+       <item row="13" column="1" colspan="2">
+        <widget class="QLineEdit" name="OutFile8"/>
+       </item>
+       <item row="14" column="1" colspan="2">
+        <widget class="QLineEdit" name="OutFile9"/>
+       </item>
+       <item row="13" column="0">
+        <widget class="QCheckBox" name="OutFileEna8">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="14" column="0">
+        <widget class="QCheckBox" name="OutFileEna9">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="13" column="3">
+        <widget class="QPushButton" name="BtnOutFileView8">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="../rtkvideo_qt/rtkvideo_qt.qrc">
+           <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
+         </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="14" column="3">
+        <widget class="QPushButton" name="BtnOutFileView9">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="../rtkvideo_qt/rtkvideo_qt.qrc">
+           <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
+         </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="13" column="4">
+        <widget class="QPushButton" name="BtnOutFile8">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -535,17 +606,20 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>?</string>
-         </property>
-         <property name="flat">
-          <bool>true</bool>
+          <string>...</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="0" colspan="2">
-        <widget class="QLabel" name="LabelInFile">
+       <item row="14" column="4">
+        <widget class="QPushButton" name="BtnOutFile9">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="text">
-          <string>RTCM, RCV RAW or RINEX OBS</string>
+          <string>...</string>
          </property>
         </widget>
        </item>
@@ -632,7 +706,7 @@
           <string>&amp;Plot...</string>
          </property>
          <property name="icon">
-          <iconset resource="rtkconv_qt.qrc">
+          <iconset resource="../rtkvideo_qt/rtkvideo_qt.qrc">
            <normaloff>:/buttons/chart.bmp</normaloff>:/buttons/chart.bmp</iconset>
          </property>
         </widget>
@@ -650,7 +724,7 @@
           <string>&amp;Options...</string>
          </property>
          <property name="icon">
-          <iconset resource="rtkconv_qt.qrc">
+          <iconset resource="../rtkvideo_qt/rtkvideo_qt.qrc">
            <normaloff>:/buttons/toolbmp</normaloff>:/buttons/toolbmp</iconset>
          </property>
         </widget>
@@ -661,7 +735,7 @@
           <string>&amp;Convert</string>
          </property>
          <property name="icon">
-          <iconset resource="rtkconv_qt.qrc">
+          <iconset resource="../rtkvideo_qt/rtkvideo_qt.qrc">
            <normaloff>:/buttons/start.bmp</normaloff>:/buttons/start.bmp</iconset>
          </property>
         </widget>
@@ -672,7 +746,7 @@
           <string>Abort</string>
          </property>
          <property name="icon">
-          <iconset resource="rtkconv_qt.qrc">
+          <iconset resource="../rtkvideo_qt/rtkvideo_qt.qrc">
            <normaloff>:/buttons/stop2.bmp</normaloff>:/buttons/stop2.bmp</iconset>
          </property>
         </widget>
@@ -746,7 +820,7 @@
   <tabstop>BtnOptions</tabstop>
  </tabstops>
  <resources>
-  <include location="rtkconv_qt.qrc"/>
+  <include location="../rtkvideo_qt/rtkvideo_qt.qrc"/>
  </resources>
  <connections/>
 </ui>

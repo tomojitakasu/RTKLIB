@@ -26,12 +26,12 @@ class ConversionThread : public QThread
 {
     Q_OBJECT
 public:
-    char ifile[1024], *ofile[7];
+    char ifile[1024], *ofile[9];
     rnxopt_t rnxopt;
     int format;
 
     explicit ConversionThread(QObject *parent) : QThread(parent) {
-        for (int i = 0; i < 7; i++)
+        for (int i = 0; i < 9; i++)
         {
             ofile[i] = new char[1024];
             ofile[i][0] = '\0';
@@ -42,7 +42,7 @@ public:
     }
 
     ~ConversionThread() {
-        for (int i = 0; i < 7; i++) delete[] ofile[i];
+        for (int i = 0; i < 9; i++) delete[] ofile[i];
     }
 
 protected:
@@ -76,10 +76,20 @@ public slots:
     void BtnOutFile2Click();
     void BtnOutFile3Click();
     void BtnOutFile4Click();
+    void BtnOutFile5Click();
+    void BtnOutFile6Click();
+    void BtnOutFile7Click();
+    void BtnOutFile8Click();
+    void BtnOutFile9Click();
     void BtnOutFileView1Click();
     void BtnOutFileView2Click();
     void BtnOutFileView3Click();
     void BtnOutFileView4Click();
+    void BtnOutFileView5Click();
+    void BtnOutFileView6Click();
+    void BtnOutFileView7Click();
+    void BtnOutFileView8Click();
+    void BtnOutFileView9Click();
     void BtnAbortClick();
 	
     void TimeStartFClick();
@@ -88,17 +98,11 @@ public slots:
     void OutDirEnaClick();
 	
     void InFileChange();
-    void BtnOutFileView5Click();
-    void BtnOutFile5Click();
     void FormatChange();
-    void BtnOutFileView6Click();
-    void BtnOutFile6Click();
     void OutDirChange();
     void BtnOutDirClick();
     void BtnKeyClick();
     void BtnPostClick();
-    void BtnOutFile7Click();
-    void BtnOutFileView7Click();
     void BtnInFileViewClick();
     void ConversionFinished();
     void UpdateEnable();
@@ -133,7 +137,7 @@ public:
     QString CodeMask[7];
     double AppPos[3], AntDel[3];
     int RnxVer, RnxFile, NavSys, ObsType, FreqType, TraceLevel;
-    int AutoPos, ScanObs, HalfCyc, OutIono, OutTime, OutLeaps;
+    int AutoPos, ScanObs, HalfCyc, OutIono, OutTime, OutLeaps, SepNav;
 	
     explicit MainWindow(QWidget *parent=0);
 };

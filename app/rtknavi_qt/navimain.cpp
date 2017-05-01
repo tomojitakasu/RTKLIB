@@ -554,9 +554,12 @@ void MainWindow::BtnInputStrClick()
     inputStrDialog->TimeTag = InTimeTag;
     inputStrDialog->TimeSpeed = InTimeSpeed;
     inputStrDialog->TimeStart = InTimeStart;
+    inputStrDialog->Time64Bit = InTime64Bit;
     inputStrDialog->NmeaPos[0] = NmeaPos[0];
     inputStrDialog->NmeaPos[1] = NmeaPos[1];
     inputStrDialog->NmeaPos[2] = NmeaPos[2];
+    inputStrDialog->ResetCmd = ResetCmd;
+    inputStrDialog->MaxBL = MaxBL;
 
     inputStrDialog->exec();
 
@@ -583,9 +586,12 @@ void MainWindow::BtnInputStrClick()
     InTimeTag = inputStrDialog->TimeTag;
     InTimeSpeed = inputStrDialog->TimeSpeed;
     InTimeStart = inputStrDialog->TimeStart;
+    InTime64Bit = inputStrDialog->Time64Bit;
     NmeaPos[0] = inputStrDialog->NmeaPos[0];
     NmeaPos[1] = inputStrDialog->NmeaPos[1];
     NmeaPos[2] = inputStrDialog->NmeaPos[2];
+    ResetCmd = inputStrDialog->ResetCmd;
+    MaxBL = inputStrDialog->MaxBL;
 }
 // confirm overwrite --------------------------------------------------------
 int MainWindow::ConfOverwrite(const QString &path)
@@ -1185,6 +1191,8 @@ void MainWindow::SvrStart(void)
     stropt[3] = SvrBuffSize;
     stropt[4] = FileSwapMargin;
     strsetopt(stropt);
+    strcpy(rtksvr.cmd_reset, qPrintable(ResetCmd));
+    rtksvr.bl_reset = MaxBL;
 
     // start rtk server
     if (!rtksvrstart(&rtksvr, SvrCycle, SvrBuffSize, strs, paths, Format, NavSelect,
@@ -2460,6 +2468,7 @@ void MainWindow::LoadOpt(void)
     InTimeTag = settings.value("setting/intimetag", 0).toInt();
     InTimeSpeed = settings.value("setting/intimespeed", "x1").toString();
     InTimeStart = settings.value("setting/intimestart", "0").toString();
+    InTime64Bit = settings.value("setting/intime64bit", "0").toInt();
     OutTimeTag = settings.value("setting/outtimetag", 0).toInt();
     OutAppend = settings.value("setting/outappend", 0).toInt();
     OutSwapInterval = settings.value("setting/outswapinterval", "").toString();
@@ -2469,6 +2478,8 @@ void MainWindow::LoadOpt(void)
     NmeaPos[0] = settings.value("setting/nmeapos1", 0.0).toDouble();
     NmeaPos[1] = settings.value("setting/nmeapos2", 0.0).toDouble();
     NmeaPos[2] = settings.value("setting/nmeapos3", 0.0).toDouble();
+    ResetCmd = settings.value("setting/resetcmd", "").toString();
+    MaxBL = settings.value("setting/maxbl", 10.0).toDouble();
     FileSwapMargin = settings.value("setting/fswapmargin", 30).toInt();
 
     TimeSys = settings.value("setting/timesys", 0).toInt();
@@ -2665,6 +2676,7 @@ void MainWindow::SaveOpt(void)
     settings.setValue("setting/intimetag", InTimeTag);
     settings.setValue("setting/intimespeed", InTimeSpeed);
     settings.setValue("setting/intimestart", InTimeStart);
+    settings.setValue("setting/intime64bit", InTime64Bit);
     settings.setValue("setting/outtimetag", OutTimeTag);
     settings.setValue("setting/outappend", OutAppend);
     settings.setValue("setting/outswapinterval", OutSwapInterval);
@@ -2674,6 +2686,8 @@ void MainWindow::SaveOpt(void)
     settings.setValue("setting/nmeapos1", NmeaPos[0]);
     settings.setValue("setting/nmeapos2", NmeaPos[1]);
     settings.setValue("setting/nmeapos3", NmeaPos[2]);
+    settings.setValue("setting/resetcmd", ResetCmd);
+    settings.setValue("setting/maxbl", MaxBL);
     settings.setValue("setting/fswapmargin", FileSwapMargin);
 
     settings.setValue("setting/timesys", TimeSys);
@@ -2748,5 +2762,7 @@ void MainWindow::BtnMarkClick()
     MarkerComment = markDialog->Comment;
 
     delete markDialog;
+
+    updatesEnabled();
 }
 //---------------------------------------------------------------------------

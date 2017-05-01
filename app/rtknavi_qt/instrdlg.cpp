@@ -100,9 +100,12 @@ void InputStrDialog::showEvent(QShowEvent *event)
     TimeTagC->setChecked(TimeTag);
     TimeSpeedL->setCurrentIndex(TimeSpeedL->findText(TimeSpeed));
     TimeStartE->setText(TimeStart);
+    Chk64Bit->setChecked(Time64Bit);
     NmeaPos1->setValue(NmeaPos[0]);
     NmeaPos2->setValue(NmeaPos[1]);
     NmeaPos3->setValue(NmeaPos[2]);
+    EditMaxBL->setValue(MaxBL);
+    EditResetCmd->setText(ResetCmd);
 
 	UpdateEnable();
 }
@@ -125,9 +128,12 @@ void InputStrDialog::BtnOkClick()
     TimeTag = TimeTagC->isChecked();
     TimeSpeed = TimeSpeedL->currentText();
     TimeStart = TimeStartE->text();
+    Time64Bit  = Chk64Bit->isChecked();
     NmeaPos[0] = NmeaPos1->value();
     NmeaPos[1] = NmeaPos2->value();
     NmeaPos[2] = NmeaPos3->value();
+    MaxBL      = EditMaxBL->value();
+    ResetCmd   = EditResetCmd->text();
 
     accept();
 }
@@ -187,7 +193,8 @@ QString InputStrDialog::SetFilePath(const QString &p)
     if (TimeTagC->isChecked()) path += "::T";
     if (TimeStartE->text() != "0") path += "::+" + TimeStartE->text();
     path += "::" + TimeSpeedL->currentText();
-	return path;
+    if (Chk64Bit->isChecked()) path += "::P=8";
+    return path;
 }
 //---------------------------------------------------------------------------
 void InputStrDialog::BtnStr1Click()
@@ -255,7 +262,7 @@ void InputStrDialog::BtnCmd1Click()
 void InputStrDialog::BtnCmd2Click()
 {
     for (int i = 0;i<3;i++) {
-        if (Stream1->currentIndex() == 0) {
+        if (Stream2->currentIndex() == 0) {
             cmdOptDialog->Cmds  [i] = Cmds  [1][i];
             cmdOptDialog->CmdEna[i] = CmdEna[1][i];
         }
@@ -269,7 +276,7 @@ void InputStrDialog::BtnCmd2Click()
     if (cmdOptDialog->result() != QDialog::Accepted) return;
 
     for (int i = 0; i < 3; i++) {
-        if (Stream1->currentIndex() == 0) {
+        if (Stream2->currentIndex() == 0) {
             Cmds  [1][i] = cmdOptDialog->Cmds  [i];
             CmdEna[1][i] = cmdOptDialog->CmdEna[i];
         }
@@ -282,7 +289,7 @@ void InputStrDialog::BtnCmd2Click()
 void InputStrDialog::BtnCmd3Click()
 {
     for (int i = 0;i<3;i++) {
-        if (Stream1->currentIndex() == 0) {
+        if (Stream3->currentIndex() == 0) {
             cmdOptDialog->Cmds  [i] = Cmds  [2][i];
             cmdOptDialog->CmdEna[i] = CmdEna[2][i];
         }
@@ -296,7 +303,7 @@ void InputStrDialog::BtnCmd3Click()
     if (cmdOptDialog->result() != QDialog::Accepted) return;
 
     for (int i = 0; i < 3; i++) {
-        if (Stream1->currentIndex() == 0) {
+        if (Stream3->currentIndex() == 0) {
             Cmds  [2][i] = cmdOptDialog->Cmds  [i];
             CmdEna[2][i] = cmdOptDialog->CmdEna[i];
         }
@@ -435,6 +442,10 @@ void InputStrDialog::UpdateEnable(void)
     NmeaPos2->setEnabled(ena2 && NmeaReqL->currentIndex() == 1);
     NmeaPos3->setEnabled(ena2 && NmeaReqL->currentIndex() == 1);
     BtnPos->setEnabled(ena2 && NmeaReqL->currentIndex() == 1);
+    LabelResetCmd->setEnabled(ena2 && NmeaReqL->currentIndex() == 3);
+    EditResetCmd->setEnabled(ena2 && NmeaReqL->currentIndex() == 3);
+    LabelMaxBL->setEnabled(ena2 && NmeaReqL->currentIndex() == 3);
+    EditMaxBL->setEnabled(ena2 && NmeaReqL->currentIndex() == 3);
 
     LabelF1->setEnabled(ena1);
     FilePath1->setEnabled(StreamC1->isChecked() && Stream1->currentIndex() == 4);
@@ -448,5 +459,6 @@ void InputStrDialog::UpdateEnable(void)
     TimeSpeedL->setEnabled(ena1 && TimeTagC->isChecked());
     LabelF2->setEnabled(ena1 && TimeTagC->isChecked());
     LabelF3->setEnabled(ena1 && TimeTagC->isChecked());
+    Chk64Bit->setEnabled(ena1 && TimeTagC->isChecked());
 }
 //---------------------------------------------------------------------------

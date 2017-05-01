@@ -411,6 +411,7 @@ void Plot::showEvent(QShowEvent *event)
         return;
     }
     QString path1 = "", path2 = "";
+    char str_path[256];
 
     trace(3, "FormShow\n");
 
@@ -519,6 +520,14 @@ void Plot::showEvent(QShowEvent *event)
     }
     else {
         PanelBrowse->setVisible(false);
+    }
+
+    strinit(&StrTimeSync);
+    NStrBuff=0;
+
+    if (TimeSyncOut) {
+        sprintf(str_path,":%d",TimeSyncPort);
+        stropen(&StrTimeSync,STR_TCPSVR,STR_MODE_RW,str_path);
     }
 
     Timer.start(RefCycle);
@@ -981,6 +990,8 @@ void Plot::MenuOptionsClick()
 {
     QString tlefile = TLEFile, tlesatfile = TLESatFile;
     double oopos[3], range;
+    char str_path[256];
+    int timesyncout=TimeSyncOut;
 
     trace(3, "MenuOptionsClick\n");
 
@@ -1026,6 +1037,13 @@ void Plot::MenuOptionsClick()
 
         if (okay && (qFuzzyCompare(range, YRange)))
             RangeList->item(i)->setSelected(true);
+    }
+    if (!timesyncout && TimeSyncOut) {
+        sprintf(str_path,":%d",TimeSyncPort);
+        stropen(&StrTimeSync,STR_TCPSVR,STR_MODE_RW,str_path);
+    }
+    else if (timesyncout && !TimeSyncOut) {
+        strclose(&StrTimeSync);
     }
 }
 // callback on menu-show-tool-bar -------------------------------------------
@@ -1983,8 +2001,10 @@ void Plot::TimerTimer()
     QString connectmsg = "";
     static unsigned char buff[16384];
     solopt_t opt = solopt_default;
+    sol_t *sol;
     const gtime_t ts = { 0, 0 };
-    double tint = TimeEna[2] ? TimeInt : 0.0, pos[3];
+    gtime_t time = {0, 0};
+    double tint = TimeEna[2]?TimeInt:0.0, pos[3], ep[6];
     int i, j, n, inb, inr, cycle, nmsg[2] = { 0 }, stat, istat;
     int sel = !BtnSol1->isChecked() && BtnSol2->isChecked() ? 1 : 0;
     char msg[MAXSTRMSG] = "";
@@ -2048,7 +2068,45 @@ void Plot::TimerTimer()
                 BtnAnimate->setChecked(false);
             }
         }
-    } else {
+    } else if (TimeSyncOut) { // time sync
+        time.time = 0;
+        while (strread(&StrTimeSync, (unsigned char *)StrBuff + NStrBuff, 1)) {
+            if (++NStrBuff >= 1023) {
+                NStrBuff = 0;
+                continue;
+            }
+            if (StrBuff[NStrBuff-1] == '\n') {
+                StrBuff[NStrBuff-1] = '\0';
+                if (sscanf(StrBuff,"%lf/%lf/%lf %lf:%lf:%lf",ep,ep+1,ep+2,
+                           ep+3,ep+4,ep+5)>=6) {
+                    time=epoch2time(ep);
+                }
+                NStrBuff = 0;
+            }
+        }
+        if (time.time && (PlotType <= PLOT_NSAT || PlotType <= PLOT_RES)) {
+           i = SolIndex[sel];
+           if (!(sol = getsol(SolData + sel, i))) return;
+           double tt = timediff(sol->time, time);
+           if (tt < -DTTOL) {
+               for (;i < SolData[sel].n; i++) {
+                   if (!(sol = getsol(SolData + sel,i))) continue;
+                   if (timediff(sol->time, time) >= -DTTOL) {
+                       i--;
+                       break;
+                   }
+               }
+           } else if (tt > DTTOL) {
+               for (;i >= 0; i--) {
+                   if (!(sol = getsol(SolData + sel,i))) continue;
+                   if (timediff(sol->time, time) <= DTTOL) break;
+               }
+           }
+           SolIndex[sel] = MAX(0, MIN(SolData[sel].n - 1, i));
+        }
+        else return;
+    }
+    else {
         return;
     }
 
@@ -2718,6 +2776,8 @@ void Plot::LoadOpt(void)
     ElMaskP = settings.value("plot/elmaskp", 0).toInt();
     ExSats = settings.value("plot/exsats", "").toString();
     RtBuffSize = settings.value("plot/rtbuffsize", 10800).toInt();
+    TimeSyncOut = settings.value("plot/timesyncout", 0).toInt();
+    TimeSyncPort = settings.value("plot/timesyncport", 10071).toInt();
     RtStream[0] = settings.value("plot/rtstream1", 0).toInt();
     RtStream[1] = settings.value("plot/rtstream2", 0).toInt();
     RtFormat[0] = settings.value("plot/rtformat1", 0).toInt();
@@ -2849,6 +2909,8 @@ void Plot::SaveOpt(void)
     settings.setValue("plot/elmaskp", ElMaskP);
     settings.setValue("plot/exsats", ExSats);
     settings.setValue("plot/rtbuffsize", RtBuffSize);
+    settings.setValue("plot/timesyncout", TimeSyncOut);
+    settings.setValue("plot/timesyncport", TimeSyncPort);
     settings.setValue("plot/rtstream1", RtStream[0]);
     settings.setValue("plot/rtstream2", RtStream[1]);
     settings.setValue("plot/rtformat1", RtFormat[0]);

@@ -88,6 +88,7 @@ void ConvOptDialog::showEvent(QShowEvent *event)
     Freq7->setChecked(mainWindow->FreqType & FREQTYPE_L9);
     ExSats->setText(mainWindow->ExSats);
     TraceLevel->setCurrentIndex(mainWindow->TraceLevel);
+    ChkSepNav->setChecked(mainWindow->SepNav);
 
 	UpdateEnable();
 }
@@ -156,6 +157,7 @@ void ConvOptDialog::BtnOkClick()
     mainWindow->FreqType = freqtype;
     mainWindow->ExSats = ExSats->text();
     mainWindow->TraceLevel = TraceLevel->currentIndex();
+    mainWindow->SepNav=ChkSepNav->isChecked();
 
     accept();
 }
@@ -207,5 +209,6 @@ void ConvOptDialog::UpdateEnable(void)
     AppPos0->setEnabled(AutoPos->isChecked());
     AppPos1->setEnabled(AutoPos->isChecked());
     AppPos2->setEnabled(AutoPos->isChecked());
+    ChkSepNav->setEnabled(RnxVer->currentIndex()>=3);
 }
 //---------------------------------------------------------------------------

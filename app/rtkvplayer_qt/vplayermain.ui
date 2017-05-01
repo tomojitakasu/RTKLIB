@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>423</width>
+    <width>456</width>
     <height>290</height>
    </rect>
   </property>
@@ -63,6 +63,13 @@
        <widget class="QPushButton" name="BtnClear">
         <property name="text">
          <string>&amp;Clear</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="BtnOption">
+        <property name="text">
+         <string>Options...</string>
         </property>
        </widget>
       </item>
@@ -171,6 +178,16 @@
        </widget>
       </item>
      </layout>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QPushButton" name="BtnSync">
+     <property name="text">
+      <string>Sync</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
     </widget>
    </item>
   </layout>

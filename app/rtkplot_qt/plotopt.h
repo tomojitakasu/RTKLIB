@@ -34,6 +34,7 @@ public slots:
     void BtnTLESatFileClick();
     void BtnTLEViewClick();
     void BtnTLESatViewClick();
+    void ChkTimeSyncClick();
 
 private:
     void UpdateFont(void);

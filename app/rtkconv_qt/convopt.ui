@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>629</width>
-    <height>474</height>
+    <width>833</width>
+    <height>547</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -85,6 +85,13 @@
           <string>3.03</string>
          </property>
         </item>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="ChkSepNav">
+        <property name="text">
+         <string>Sep NAV</string>
+        </property>
        </widget>
       </item>
       <item>

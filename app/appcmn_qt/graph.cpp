@@ -327,10 +327,12 @@ void Graph::DrawMark(QPainter &c, const QPoint &p, int mark, const QColor &color
 	// rot  = rotation angle (deg)
 
 	// if the same mark already drawn, skip it
+#if 0
     if (p == p_ && mark == mark_ && color == color_ && size == size_ &&
         rot == rot_)
 		return;
     p_ = p; mark_ = mark; color_ = color; size_ = size; rot_ = rot;
+#endif
 
     if (size < 1) size = 1;
     int n, s = size / 2;
@@ -338,6 +340,7 @@ void Graph::DrawMark(QPainter &c, const QPoint &p, int mark, const QColor &color
     int xs1[] = { -7, 0, -7, 0 }, ys1[] = { 2, 0, -2, 0 };
     int xs2[] = { -1, -1, -1, 1, 1, 1 }, ys2[] = { -1, 1, 0, 0, -1, 1 };
     int xs3[] = { 3, -4, 0, 0, 0, -8, 8 }, ys3[] = { 0, 5, 20, -20, -10, -10, -10 };
+    int xs4[] = { 0, 0, 0, 1, -1}, ys4[] = { 1, -1, 0, 0, 0};
     QPoint ps[32], pr[32], pd(0, size / 2 + 12), pt;
 
     QPen pen = c.pen();
@@ -376,12 +379,20 @@ void Graph::DrawMark(QPainter &c, const QPoint &p, int mark, const QColor &color
         ps[0].setX(ps[0].x() - size / 2); ps[0].setY(0); ps[1].setX(size / 2); ps[1].setY(0);
         break;
     case 5:         // plus
+#if 0
         brush.setStyle(Qt::NoBrush);
         c.setBrush(brush);
 
         c.drawLine(x1, p.y(), x1 + w1, p.y());
         c.drawLine(p.x(), y1 + h1, p.x(), y1);
         return;
+#else
+        n=5;
+        for (int i=0;i<n;i++) {
+            ps[i].setX(xs4[i] * s); ps[i].setY(ys4[i] * s);
+        }
+        break;
+#endif
     case 10:         // arrow
         n = 6;
         ps[0].setX(ps[0].x() - size / 2); ps[0].setY(0); ps[1].setX(size / 2); ps[1].setY(0);
