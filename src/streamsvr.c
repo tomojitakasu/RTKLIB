@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * streamsvr.c : stream server functions
 *
-*          Copyright (C) 2010-2012 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2010-2017 by T.TAKASU, All rights reserved.
 *
 * options : -DWIN32    use WIN32 API
 *
@@ -22,6 +22,7 @@
 *           2016/09/17 1.11 add relay back function of output stream
 *                           fix bug on rtcm cyclic output of beidou ephemeris 
 *           2016/10/01 1.12 change api startstrserver()
+*           2017/04/11 1.13 fix bug on search of next satellite in nextsat()
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -259,7 +260,7 @@ static int nextsat(nav_t *nav, int sat, int msg)
     if (satsys(sat,&p0)!=sys) return satno(sys,p1);
     
     /* search next valid ephemeris */
-    for (p=p0>p2?p1:p0+1;p!=p0;p=p>=p2?p1:p+1) {
+    for (p=p0>=p2?p1:p0+1;p!=p0;p=p>=p2?p1:p+1) {
         
         if (sys==SYS_GLO) {
             sat=satno(sys,p);
@@ -379,6 +380,7 @@ static void periodic_cmd(int cycle, const char *cmd, stream_t *stream)
         if ((r=strrchr(msg,'#'))) {
             sscanf(r,"# %d",&period);
             *r='\0';
+            while (*--r==' ') *r='\0'; /* delete tail spaces */
         }
         if (period<=0) period=1000;
         if (*msg&&cycle%period==0) {
@@ -410,7 +412,7 @@ static void *strsvrthread(void *arg)
         tick=tickget();
         
         /* read data from input stream */
-        while ((n=strread(svr->stream,svr->buff,svr->buffsize))>0) {
+        while ((n=strread(svr->stream,svr->buff,svr->buffsize))>0&&svr->state) {
             
             /* get stream selection */
             strgetsel(svr->stream,sel);
@@ -586,7 +588,10 @@ extern int strsvrstart(strsvr_t *svr, int *opts, int *strs, char **paths,
     }
     /* write start commands to input streams */
     for (i=0;i<svr->nstr;i++) {
-        if (cmds[i]) strsendcmd(svr->stream+i,cmds[i]);
+        if (!cmds[i]) continue;
+        strwrite(svr->stream+i,(unsigned char *)"",0); /* for connect */
+        sleepms(100);
+        strsendcmd(svr->stream+i,cmds[i]);
     }
     svr->state=1;
     

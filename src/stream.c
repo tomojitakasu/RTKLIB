@@ -57,6 +57,7 @@
 *                           add api strsetsel(),strgetsel()
 *           2016/09/06 1.23 fix bug on ntrip caster socket and request handling
 *           2016/09/27 1.24 support udp server and client
+*           2016/10/10 1.25 support ::P=,::Q= option in path for STR_FILE
 *-----------------------------------------------------------------------------*/
 #include <ctype.h>
 #include "rtklib.h"
@@ -134,6 +135,8 @@ typedef struct {            /* file control type */
     int timetag;            /* time tag flag (0:off,1:on) */
     int repmode;            /* replay mode (0:master,1:slave) */
     int offset;             /* time offset (ms) for slave */
+    int size_fpos;          /* file position size (bytes) */
+    int size_time;          /* time_t size (bytes) */
     gtime_t time;           /* start time */
     gtime_t wtime;          /* write time */
     unsigned int tick;      /* start tick */
@@ -550,6 +553,8 @@ static int statexserial(serial_t *serial, char *msg)
 static int openfile_(file_t *file, gtime_t time, char *msg)
 {    
     FILE *fp;
+    double time_sec;
+    unsigned int time_buf[2];
     char *rw,tagpath[MAXSTRPATH+4]="";
     char tagh[TIMETAGH_LEN+1]="";
     
@@ -594,8 +599,15 @@ static int openfile_(file_t *file, gtime_t time, char *msg)
         
         if (file->mode&STR_MODE_R) {
             if (fread(&tagh,TIMETAGH_LEN,1,file->fp_tag)==1&&
-                fread(&file->time,sizeof(file->time),1,file->fp_tag)==1) {
+                fread(&time_buf,file->size_time,1,file->fp_tag)==1&&
+                fread(&time_sec,sizeof(double),1,file->fp_tag)==1) {
                 memcpy(&file->tick_f,tagh+TIMETAGH_LEN-4,sizeof(file->tick_f));
+                file->time.time=(time_t)time_buf[0];
+                if (file->size_time==8&&sizeof(time_t)==8) {
+                    file->time.time+=((time_t)time_buf[1])<<32;
+                }
+                file->time.sec=time_sec;
+                file->wtime=file->time;
             }
             else {
                 file->tick_f=0;
@@ -609,7 +621,7 @@ static int openfile_(file_t *file, gtime_t time, char *msg)
             fwrite(&tagh,1,TIMETAGH_LEN,file->fp_tag);
             fwrite(&file->time,1,sizeof(file->time),file->fp_tag);
             /* time tag file structure   */
-            /*   HEADER(60)+TICK(4)+TIME(12)+ */
+            /*   HEADER(60)+TICK(4)+TIME(4/8+8)+ */
             /*   TICK0(4)+FPOS0(4/8)+    */
             /*   TICK1(4)+FPOS1(4/8)+... */
         }
@@ -633,14 +645,14 @@ static void closefile_(file_t *file)
     if (file->fp_tag_tmp) fclose(file->fp_tag_tmp);
     file->fp=file->fp_tag=file->fp_tmp=file->fp_tag_tmp=NULL;
 }
-/* open file (path=filepath[::T[::+<off>][::x<speed>]][::S=swapintv]) --------*/
+/* open file (path=filepath[::T[::+<off>][::x<speed>]][::S=swapintv][::P={4|8}][::Q={4|8}] */
 static file_t *openfile(const char *path, int mode, char *msg)
 {
     file_t *file;
     gtime_t time,time0={0};
     double speed=0.0,start=0.0,swapintv=0.0;
     char *p;
-    int timetag=0;
+    int timetag=0,size_fpos=(int)sizeof(size_t),size_time=(int)sizeof(time_t);
     
     tracet(3,"openfile: path=%s mode=%d\n",path,mode);
     
@@ -652,6 +664,8 @@ static file_t *openfile(const char *path, int mode, char *msg)
         else if (*(p+2)=='+') sscanf(p+2,"+%lf",&start);
         else if (*(p+2)=='x') sscanf(p+2,"x%lf",&speed);
         else if (*(p+2)=='S') sscanf(p+2,"S=%lf",&swapintv);
+        else if (*(p+2)=='P') sscanf(p+2,"P=%d",&size_fpos);
+        else if (*(p+2)=='Q') sscanf(p+2,"Q=%d",&size_time);
     }
     if (start<=0.0) start=0.0;
     if (swapintv<=0.0) swapintv=0.0;
@@ -666,6 +680,8 @@ static file_t *openfile(const char *path, int mode, char *msg)
     file->timetag=timetag;
     file->repmode=0;
     file->offset=0;
+    file->size_fpos=size_fpos==8?8:4; /* 4 or 8 */
+    file->size_time=size_time==8?8:4; /* 4 or 8 */
     file->time=file->wtime=time0;
     file->tick=file->tick_f=file->fpos=0;
     file->start=start;
@@ -760,6 +776,7 @@ static int readfile(file_t *file, unsigned char *buff, int nmax, char *msg)
 {
     struct timeval tv={0};
     fd_set rs;
+    unsigned int fpos_buff[2];
     unsigned int t,tick;
     int nr=0;
     size_t fpos;
@@ -780,26 +797,36 @@ static int readfile(file_t *file, unsigned char *buff, int nmax, char *msg)
 #endif
     }
     if (file->fp_tag) {
+        
+        /* target tick */
         if (file->repmode) { /* slave */
             t=(unsigned int)(tick_master+file->offset);
         }
         else { /* master */
             t=(unsigned int)((tickget()-file->tick)*file->speed+file->start*1000.0);
         }
+#if 0
         for (;;) { /* seek file position */
             if (fread(&tick,sizeof(tick),1,file->fp_tag)<1||
-                fread(&fpos,sizeof(fpos),1,file->fp_tag)<1) {
+                fread(fpos_buff,file->size_fpos,1,file->fp_tag)<1) {
                 fseek(file->fp,0,SEEK_END);
                 sprintf(msg,"end");
                 break;
             }
+            fpos=(size_t)fpos_buff[0];
+            if (file->size_fpos==8&&sizeof(size_t)==8) {
+                fpos+=((size_t)fpos_buff[1]<<32);
+            }
+            /* skip if overload */
             if (file->repmode||file->speed>0.0) {
                 if ((int)(tick-t)<1) continue;
             }
             if (!file->repmode) tick_master=tick;
             
             sprintf(msg,"T%+.1fs",(int)tick<0?0.0:(int)tick/1000.0);
+            file->wtime = timeadd(file->time,tick*0.001);
             
+            /* skip if buffer overflow */
             if ((int)(fpos-file->fpos)>=nmax) {
                fseek(file->fp,fpos,SEEK_SET);
                file->fpos=fpos;
@@ -808,10 +835,30 @@ static int readfile(file_t *file, unsigned char *buff, int nmax, char *msg)
             nmax=(int)(fpos-file->fpos);
             
             if (file->repmode||file->speed>0.0) {
-                fseek(file->fp_tag,-(long)(sizeof(tick)+sizeof(fpos)),SEEK_CUR);
+                fseek(file->fp_tag,-(long)(sizeof(tick)+file->size_fpos),SEEK_CUR);
             }
             break;
         }
+#else
+        /* next file position */
+        if (fread(&tick,sizeof(tick),1,file->fp_tag)<1||
+            fread(fpos_buff,file->size_fpos,1,file->fp_tag)<1) {
+            fseek(file->fp,0,SEEK_END);
+            sprintf(msg,"end");
+            return 0;
+        }
+        fpos=(size_t)fpos_buff[0];
+        if (file->size_fpos==8&&sizeof(size_t)==8) {
+            fpos+=((size_t)fpos_buff[1]<<32);
+        }
+        sprintf(msg,"T%+.1fs",tick<=0?0.0:tick*0.001);
+        file->wtime = timeadd(file->time,tick*0.001);
+        
+        if ((int)(tick-t)>0) {
+            fseek(file->fp_tag,-(long)(sizeof(tick)+file->size_fpos),SEEK_CUR);
+        }
+        nmax = MIN(nmax,(int)(fpos-file->fpos));
+#endif
     }
     if (nmax>0) {
         nr=(int)fread(buff,1,nmax,file->fp);
@@ -2537,7 +2584,7 @@ static membuf_t *openmembuf(const char *path, char *msg)
     
     return membuf;
 }
-/* close ftp -----------------------------------------------------------------*/
+/* close memory buffer -------------------------------------------------------*/
 static void closemembuf(membuf_t *membuf)
 {
     tracet(3,"closemembufp\n");
@@ -2643,46 +2690,116 @@ extern void strinit(stream_t *stream)
     stream->msg [0]='\0';
 }
 /* open stream -----------------------------------------------------------------
-* open stream for read or write
+*
+* open stream to read or write data from or to virtual devices.
+*
 * args   : stream_t *stream IO  stream
-*          int type         I   stream type (STR_SERIAL,STR_FILE,STR_TCPSVR,...)
+*          int type         I   stream type
+*                                 STR_SERIAL   = serial device
+*                                 STR_FILE     = file (record and playback)
+*                                 STR_TCPSVR   = TCP server
+*                                 STR_TCPCLI   = TCP client
+*                                 STR_NTRIPSVR = NTRIP server
+*                                 STR_NTRIPCLI = NTRIP client
+*                                 STR_NTRIPC_S = NTRIP caster server
+*                                 STR_NTRIPC_C = NTRIP caster client
+*                                 STR_UDPSVR   = UDP server (read only)
+*                                 STR_UDPCLI   = UDP client (write only)
+*                                 STR_MEMBUF   = memory buffer (FIFO)
+*                                 STR_FTP      = download by FTP (raed only)
+*                                 STR_HTTP     = download by HTTP (raed only)
 *          int mode         I   stream mode (STR_MODE_???)
+*                                 STR_MODE_R   = read only
+*                                 STR_MODE_W   = write only
+*                                 STR_MODE_RW  = read and write
 *          char *path       I   stream path (see below)
+*
 * return : status (0:error,1:ok)
+*
 * notes  : see reference [1] for NTRIP
 *          STR_FTP/HTTP needs "wget" in command search paths
 *
 * stream path ([] options):
 *
 *   STR_SERIAL   port[:brate[:bsize[:parity[:stopb[:fctr[#port]]]]]]
-*                    port  = COM?? (windows), tty??? (linuex, omit /dev/)
+*                    port  = COM??  (windows)
+*                            tty??? (linuex, omit /dev/)
 *                    brate = bit rate     (bps)
 *                    bsize = bit size     (7|8)
 *                    parity= parity       (n|o|e)
 *                    stopb = stop bits    (1|2)
 *                    fctr  = flow control (off|rts)
 *                    port  = tcp server port to output received stream
-*   STR_FILE     file_path[::T][::+start][::xseppd][::S=swap]
+*
+*   STR_FILE     path[::T][::+start][::xseppd][::S=swap][::P={4|8}]
+*                    path  = file path
+*                            (can include keywords defined by )
 *                    ::T   = enable time tag
 *                    start = replay start offset (s)
 *                    speed = replay speed factor
 *                    swap  = output swap interval (hr) (0: no swap)
+*                    ::P={4|8} = file pointer size (4:32bit,8:64bit)
+*
 *   STR_TCPSVR   :port
-*   STR_TCPCLI   address:port
-*   STR_NTRIPSVR [:passwd@]address[:port]/moutpoint[:string]
-*   STR_NTRIPCLI [user[:passwd]@]address[:port]/mountpoint
-*   STR_NTRIPC_S [user[:passwd]@][:port]/mountpoint
-*   STR_NTRIPC_C [user[:passwd]@][:port]/mountpoint
-*   STR_UDPSVR   :port[/cli_addr]
-*                    cli_addr = accepted udp client address ("": all)
-*   STR_UDPCLI   address:port[/if_address]
-*                    if_addr = used interface address
-*   STR_FTP      [user[:passwd]@]address/file_path[::T=poff[,tint[,toff,tret]]]]
-*   STR_HTTP     address/file_path[::T=poff[,tint[,toff,tret]]]]
+*                    port  = TCP server port to accept
+*
+*   STR_TCPCLI   addr:port
+*                    addr  = TCP server address to connect
+*                    port  = TCP server port to connect
+*
+*   STR_NTRIPSVR [:passwd@]addr[:port]/mponit[:string]
+*                    addr  = NTRIP caster address to connect
+*                    port  = NTRIP caster server port to connect
+*                    passwd= NTRIP caster server password to connect
+*                    mpoint= NTRIP mountpoint
+*                    string= NTRIP server string
+*
+*   STR_NTRIPCLI [user[:passwd]@]addr[:port]/mpoint
+*                    addr  = NTRIP caster address to connect
+*                    port  = NTRIP caster client port to connect
+*                    user  = NTRIP caster client user to connect
+*                    passwd= NTRIP caster client password to connect
+*                    mpoint= NTRIP mountpoint
+*
+*   STR_NTRIPC_S [:passwd@][:port]/mpoint
+*                    port  = NTRIP caster server port to accept
+*                    passwd= NTRIP caster server password to accept
+*                    mpoint= NTRIP mountpoint
+*
+*   STR_NTRIPC_C [user[:passwd]@][:port]/mpoint
+*                    port  = NTRIP caster client port to accept
+*                    user  = NTRIP caster client user to accept
+*                    passwd= NTRIP caster client password to accept
+*                    mpoint= NTRIP mountpoint
+*
+*   STR_UDPSVR   :port
+*                    port  = UDP server port to receive
+*
+*   STR_UDPCLI   addr:port
+*                    addr  = UDP server or broadcast address to send
+*                    port  = UDP server or broadcast port to send
+*
+*   STR_MEMBUF   [size]
+*                    size  = FIFO size (bytes) ("":4096)
+*
+*   STR_FTP      [user[:passwd]@]addr/path[::T=poff[,tint[,toff,tret]]]]
+*                    user  = FTP server user
+*                    passwd= FTP server password
+*                    addr  = FTP server address
+*                    path  = FTP server file path
 *                    poff  = time offset for path extension (s)
 *                    tint  = download interval (s)
 *                    toff  = download time offset (s)
 *                    tret  = download retry interval (s) (0:no retry)
+*
+*   STR_HTTP     addr/path[::T=poff[,tint[,toff,tret]]]]
+*                    addr  = HTTP server address
+*                    path  = HTTP server file path
+*                    poff  = time offset for path extension (s)
+*                    tint  = download interval (s)
+*                    toff  = download time offset (s)
+*                    tret  = download retry interval (s) (0:no retry)
+*
 *-----------------------------------------------------------------------------*/
 extern int stropen(stream_t *stream, int type, int mode, const char *path)
 {
@@ -2707,9 +2824,9 @@ extern int stropen(stream_t *stream, int type, int mode, const char *path)
         case STR_NTRIPC_C: stream->port=openntripc(path,1,   stream->msg); break;
         case STR_UDPSVR  : stream->port=openudpsvr(path,     stream->msg); break;
         case STR_UDPCLI  : stream->port=openudpcli(path,     stream->msg); break;
+        case STR_MEMBUF  : stream->port=openmembuf(path,     stream->msg); break;
         case STR_FTP     : stream->port=openftp   (path,0,   stream->msg); break;
         case STR_HTTP    : stream->port=openftp   (path,1,   stream->msg); break;
-        case STR_MEMBUF  : stream->port=openmembuf(path,     stream->msg); break;
         default: stream->state=0; return 1;
     }
     stream->state=!stream->port?-1:1;
@@ -2738,9 +2855,9 @@ extern void strclose(stream_t *stream)
             case STR_NTRIPC_C: closentripc((ntripc_t *)stream->port); break;
             case STR_UDPSVR  : closeudpsvr((udp_t    *)stream->port); break;
             case STR_UDPCLI  : closeudpcli((udp_t    *)stream->port); break;
+            case STR_MEMBUF  : closemembuf((membuf_t *)stream->port); break;
             case STR_FTP     : closeftp   ((ftp_t    *)stream->port); break;
             case STR_HTTP    : closeftp   ((ftp_t    *)stream->port); break;
-            case STR_MEMBUF  : closemembuf((membuf_t *)stream->port); break;
         }
     }
     else {
@@ -3259,8 +3376,8 @@ extern void strsendcmd(stream_t *str, const char *cmd)
             }
         }
         else {
-            strwrite(str,(unsigned char *)msg,n);
-            strwrite(str,(unsigned char *)cmdend,2);
+            strcat(msg,cmdend);
+            strwrite(str,(unsigned char *)msg,n+2);
         }
         if (*q=='\0') break; else p=q+1;
     }

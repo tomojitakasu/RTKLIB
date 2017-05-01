@@ -315,11 +315,13 @@ void TGraph::DrawMark(TPoint p, int mark, TColor color, int size, int rot)
 	// rot  = rotation angle (deg)
 	
 	// if the same mark already drawn, skip it
+#if 0
 	if (p.x==p_.x&&p.y==p_.y&&mark==mark_&&color==color_&&size==size_&&
 		rot==rot_) {
 		return;
 	}
 	p_=p; mark_=mark; color_=color; size_=size; rot_=rot;
+#endif
 	
 	TCanvas *c=Canvas;
 	if (size<1) size=1;
@@ -328,6 +330,7 @@ void TGraph::DrawMark(TPoint p, int mark, TColor color, int size, int rot)
 	int xs1[]={-7,0,-7,0},ys1[]={2,0,-2,0};
 	int xs2[]={-1,-1,-1,1,1,1},ys2[]={-1,1,0,0,-1,1};
 	int xs3[]={3,-4,0,0,0,-8,8},ys3[]={0,5,20,-20,-10,-10,-10};
+	int xs4[]={0,0,0,1,-1},ys4[]={1,-1,0,0,0};
 	TPoint ps[32],pr[32],pd(0,size/2+12),pt;
 	c->Pen->Color=color; c->Pen->Style=psSolid; c->Brush->Color=color;
 	switch (mark) {
@@ -353,10 +356,18 @@ void TGraph::DrawMark(TPoint p, int mark, TColor color, int size, int rot)
 			ps[0].x=-size/2; ps[0].y=0; ps[1].x=size/2; ps[1].y=0;
 			break;
 		case 5: // plus
+#if 0
 			c->Brush->Style=bsClear;
 			c->MoveTo(x1,p.y); c->LineTo(x2,p.y);
 			c->MoveTo(p.x,y2); c->LineTo(p.x,y1);
 			return;
+#else
+			n=5;
+			for (int i=0;i<n;i++) {
+				ps[i].x=xs4[i]*s; ps[i].y=ys4[i]*s;
+			}
+			break;
+#endif
 		case 10: // arrow
 			n=6;
 			ps[0].x=-size/2; ps[0].y=0; ps[1].x=size/2; ps[1].y=0;

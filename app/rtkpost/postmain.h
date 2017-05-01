@@ -131,15 +131,6 @@ __published:
 	void __fastcall TimeStartClick     (TObject *Sender);
 	void __fastcall TimeIntFClick      (TObject *Sender);
 	void __fastcall TimeUnitFClick     (TObject *Sender);
-	void __fastcall TimeH1UDChangingEx (TObject *Sender, bool &AllowChange,
-          short NewValue, TUpDownDirection Direction);
-	void __fastcall TimeY1UDChangingEx (TObject *Sender, bool &AllowChange,
-          short NewValue, TUpDownDirection Direction);
-	void __fastcall TimeY2UDChangingEx (TObject *Sender, bool &AllowChange,
-          short NewValue, TUpDownDirection Direction);
-	void __fastcall TimeH2UDChangingEx (TObject *Sender, bool &AllowChange,
-          short NewValue, TUpDownDirection Direction);
-	
 	void __fastcall InputFile1Change   (TObject *Sender);
 	void __fastcall OutDirEnaClick(TObject *Sender);
 	void __fastcall BtnOutDirClick(TObject *Sender);
@@ -154,6 +145,14 @@ __published:
 	void __fastcall TimeH1KeyDown(TObject *Sender, WORD &Key, TShiftState Shift);
 	void __fastcall TimeY2KeyDown(TObject *Sender, WORD &Key, TShiftState Shift);
 	void __fastcall TimeH2KeyDown(TObject *Sender, WORD &Key, TShiftState Shift);
+	void __fastcall TimeY1UDChangingEx(TObject *Sender, bool &AllowChange, int NewValue,
+          TUpDownDirection Direction);
+	void __fastcall TimeH1UDChangingEx(TObject *Sender, bool &AllowChange, int NewValue,
+          TUpDownDirection Direction);
+	void __fastcall TimeY2UDChangingEx(TObject *Sender, bool &AllowChange, int NewValue,
+          TUpDownDirection Direction);
+	void __fastcall TimeH2UDChangingEx(TObject *Sender, bool &AllowChange, int NewValue,
+          TUpDownDirection Direction);
 
 private:
 	void __fastcall DropFiles          (TWMDropFiles msg); // for files drop

@@ -108,7 +108,7 @@ extern int decode_gal_inav(const unsigned char *buff, eph_t *eph)
     i=0; /* word type 0 */
     type[0]    =getbitu(buff,i, 6);              i+= 6;
     time_f     =getbitu(buff,i, 2);              i+= 2+88;
-    week       =getbitu(buff,i,12);              i+=12;
+    week       =getbitu(buff,i,12);              i+=12; /* gst-week */
     tow        =getbitu(buff,i,20);
     
     i=128; /* word type 1 */

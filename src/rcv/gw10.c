@@ -10,6 +10,7 @@
 * history : 2011/05/27  1.0  new
 *           2011/07/01  1.1  suppress warning
 *           2012/02/14  1.2  add decode of gps message (0x02)
+*           2017/04/11  1.3  (char *) -> (singed char *)
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -47,7 +48,7 @@ static const char rcsid[]="$Id:$";
 
 /* extract field (big-endian) ------------------------------------------------*/
 #define U1(p)       (*((unsigned char *)(p)))
-#define I1(p)       (*((char *)(p)))
+#define I1(p)       (*((signed char *)(p)))
 
 static unsigned short U2(unsigned char *p)
 {

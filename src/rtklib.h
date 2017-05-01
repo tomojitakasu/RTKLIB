@@ -58,10 +58,10 @@ extern "C" {
 
 #define VER_RTKLIB  "2.4.3"             /* library version */
 
-#define PATCH_LEVEL "b26"               /* patch level */
+#define PATCH_LEVEL "b27"               /* patch level */
 
 #define COPYRIGHT_RTKLIB \
-            "Copyright (C) 2007-2016 T.Takasu\nAll rights reserved."
+            "Copyright (C) 2007-2017 T.Takasu\nAll rights reserved."
 
 #define PI          3.1415926535897932  /* pi */
 #define D2R         (PI/180.0)          /* deg to rad */
@@ -468,6 +468,8 @@ extern "C" {
 #define DLOPT_KEEPCMP 0x02              /* download option: keep compressed file */
 #define DLOPT_HOLDERR 0x04              /* download option: hold on error file */
 #define DLOPT_HOLDLST 0x08              /* download option: hold on listing file */
+
+#define IMUFMT_KVH  1                   /* imu data format KVH */
 
 #define P2_5        0.03125             /* 2^-5 */
 #define P2_6        0.015625            /* 2^-6 */
@@ -1142,6 +1144,7 @@ typedef struct {        /* RINEX options type */
     int outleaps;       /* output leap seconds */
     int autopos;        /* auto approx position */
     int halfcyc;        /* half cycle correction */
+    int sep_nav;        /* separated nav files */
     gtime_t tstart;     /* first obs time */
     gtime_t tend;       /* last obs time */
     gtime_t trtcm;      /* approx log start time for rtcm */
@@ -1322,6 +1325,8 @@ typedef struct {        /* RTK server type */
     int nave;           /* number of averaging base pos */
     double rb_ave[3];   /* averaging base pos */
     char cmds_periodic[3][MAXRCVCMD]; /* periodic commands */
+    char cmd_reset[MAXRCVCMD]; /* reset command */
+    double bl_reset;    /* baseline length to reset (km) */
     lock_t lock;        /* lock flag */
 } rtksvr_t;
 
@@ -1353,6 +1358,21 @@ typedef struct {        /* gis type */
     gisd_t *data[MAXGISLAYER]; /* gis data list */
     double bound[4];    /* boundary {lat0,lat1,lon0,lon1} */
 } gis_t;
+
+typedef struct {        /* imu data type */
+    gtime_t time;       /* time */
+    int stat;           /* status */
+    int seqno;          /* sequence number */
+    float temp;         /* temperature (C) */
+    double rot[3];      /* rotation rate {x,y,z} (rad/s) */
+    double acc[3];      /* acceleration data {x,y,z} (m/s^2) */
+} imud_t;
+
+typedef struct {        /* imu type */
+    imud_t data;        /* imu data */
+    int nbyte;          /* bytes in imu data buffer */
+    unsigned char buff[256]; /* imu data buffer */
+} imu_t;
 
 typedef void fatalfunc_t(const char *); /* fatal callback function type */
 
@@ -1550,6 +1570,7 @@ EXPORT int outrnxhnavh(FILE *fp, const rnxopt_t *opt, const nav_t *nav);
 EXPORT int outrnxlnavh(FILE *fp, const rnxopt_t *opt, const nav_t *nav);
 EXPORT int outrnxqnavh(FILE *fp, const rnxopt_t *opt, const nav_t *nav);
 EXPORT int outrnxcnavh(FILE *fp, const rnxopt_t *opt, const nav_t *nav);
+EXPORT int outrnxinavh(FILE *fp, const rnxopt_t *opt, const nav_t *nav);
 EXPORT int outrnxnavb (FILE *fp, const rnxopt_t *opt, const eph_t *eph);
 EXPORT int outrnxgnavb(FILE *fp, const rnxopt_t *opt, const geph_t *geph);
 EXPORT int outrnxhnavb(FILE *fp, const rnxopt_t *opt, const seph_t *seph);
@@ -1846,6 +1867,10 @@ EXPORT void dl_test(gtime_t ts, gtime_t te, double ti, const url_t *urls,
 /* gis data functions --------------------------------------------------------*/
 EXPORT int gis_read(const char *file, gis_t *gis, int layer);
 EXPORT void gis_free(gis_t *gis);
+
+/* imu functions -------------------------------------------------------------*/
+EXPORT int init_imu(imu_t *imu);
+EXPORT int input_imu(imu_t *imu, int format, unsigned char byte);
 
 /* qzss lex functions --------------------------------------------------------*/
 EXPORT int lexupdatecorr(const lexmsg_t *msg, nav_t *nav, gtime_t *tof);

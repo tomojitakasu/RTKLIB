@@ -22,10 +22,13 @@ static const char *XMLNS="http://www.topografix.com/GPX/1/1";
 // read solutions -----------------------------------------------------------
 void __fastcall TPlot::ReadSol(TStrings *files, int sel)
 {
+	FILETIME tc,ta,tw;
+	SYSTEMTIME st;
+	HANDLE h;
     solbuf_t sol={0};
     AnsiString s;
     gtime_t ts,te;
-    double tint;
+    double tint,ep[6];
     int i,n=0;
     char *paths[MAXNFILE];
     
@@ -36,6 +39,23 @@ void __fastcall TPlot::ReadSol(TStrings *files, int sel)
     if (files->Count<=0) return;
     
     ReadWaitStart();
+	
+	s=files->Strings[0];
+    
+	if ((h=CreateFile(s.c_str(),GENERIC_READ,0,NULL,OPEN_EXISTING,
+					  FILE_ATTRIBUTE_NORMAL,0))==INVALID_HANDLE_VALUE) {
+		return;
+	}
+	GetFileTime(h,&tc,&ta,&tw);
+	CloseHandle(h);
+	FileTimeToSystemTime(&tc,&st); // file create time
+	ep[0]=st.wYear;
+	ep[1]=st.wMonth;
+	ep[2]=st.wDay;
+	ep[3]=st.wHour;
+	ep[4]=st.wMinute;
+	ep[5]=st.wSecond;
+	sol.time=utc2gpst(epoch2time(ep));
     
     for (i=0;i<files->Count&&n<MAXNFILE;i++) {
         strcpy(paths[n++],U2A(files->Strings[i]).c_str());

@@ -599,7 +599,7 @@ void __fastcall TMainForm::TimeUnitFClick(TObject *Sender)
 }
 // callback on time-ymd-1 updown --------------------------------------------
 void __fastcall TMainForm::TimeY1UDChangingEx(TObject *Sender,
-      bool &AllowChange, short NewValue, TUpDownDirection Direction)
+      bool &AllowChange, int NewValue, TUpDownDirection Direction)
 {
     AnsiString TimeY1_Text=TimeY1->Text,s;
     double ep[]={2000,1,1,0,0,0};
@@ -618,7 +618,7 @@ void __fastcall TMainForm::TimeY1UDChangingEx(TObject *Sender,
 }
 // callback on time-hms-1 updown --------------------------------------------
 void __fastcall TMainForm::TimeH1UDChangingEx(TObject *Sender,
-      bool &AllowChange, short NewValue, TUpDownDirection Direction)
+      bool &AllowChange, int NewValue, TUpDownDirection Direction)
 {
     AnsiString TimeH1_Text=TimeH1->Text,s;
     int hms[3]={0},sec,p=TimeH1->SelStart,ud=Direction==updUp?1:-1;
@@ -632,7 +632,7 @@ void __fastcall TMainForm::TimeH1UDChangingEx(TObject *Sender,
 }
 // callback on time-ymd-2 updown --------------------------------------------
 void __fastcall TMainForm::TimeY2UDChangingEx(TObject *Sender,
-      bool &AllowChange, short NewValue, TUpDownDirection Direction)
+      bool &AllowChange, int NewValue, TUpDownDirection Direction)
 {
     AnsiString TimeY2_Text=TimeY2->Text,s;
     double ep[]={2000,1,1,0,0,0};
@@ -651,7 +651,7 @@ void __fastcall TMainForm::TimeY2UDChangingEx(TObject *Sender,
 }
 // callback on time-hms-2 updown --------------------------------------------
 void __fastcall TMainForm::TimeH2UDChangingEx(TObject *Sender,
-      bool &AllowChange, short NewValue, TUpDownDirection Direction)
+      bool &AllowChange, int NewValue, TUpDownDirection Direction)
 {
     AnsiString TimeH2_Text=TimeH2->Text,s;
     int hms[3]={0},sec,p=TimeH2->SelStart,ud=Direction==updUp?1:-1;

@@ -195,7 +195,7 @@ object PlotOptDialog: TPlotOptDialog
     end
     object Label3: TLabel
       Left = 193
-      Top = 211
+      Top = 233
       Width = 84
       Height = 13
       Caption = 'Coordinate Origin'
@@ -414,7 +414,7 @@ object PlotOptDialog: TPlotOptDialog
     end
     object Origin: TComboBox
       Left = 283
-      Top = 208
+      Top = 230
       Width = 77
       Height = 21
       Style = csDropDownList
@@ -1213,6 +1213,23 @@ object PlotOptDialog: TPlotOptDialog
         '10'
         '20'
         '30')
+    end
+    object EditTimeSync: TEdit
+      Left = 283
+      Top = 208
+      Width = 77
+      Height = 21
+      TabOrder = 60
+      Text = '0'
+    end
+    object ChkTimeSync: TCheckBox
+      Left = 190
+      Top = 210
+      Width = 87
+      Height = 17
+      Caption = 'Time Sync Port'
+      TabOrder = 61
+      OnClick = ChkTimeSyncClick
     end
   end
   object BtnCancel: TButton

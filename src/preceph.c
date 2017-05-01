@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * preceph.c : precise ephemeris and clock functions
 *
-*          Copyright (C) 2007-2013 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2007-2017 by T.TAKASU, All rights reserved.
 *
 * references :
 *     [1] S.Hilla, The Extended Standard Product 3 Orbit Format (SP3-c),
@@ -40,6 +40,7 @@
 *           2014/10/13 1.14 fix bug on clock error variance in peph2pos()
 *           2015/05/10 1.15 add api readfcb()
 *                           modify api readdcb()
+*           2017/04/11 1.16 fix bug on antenna offset correction in peph2pos()
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -713,6 +714,7 @@ extern void satantoff(gtime_t time, const double *rs, int sat, const nav_t *nav,
 extern int peph2pos(gtime_t time, int sat, const nav_t *nav, int opt,
                     double *rs, double *dts, double *var)
 {
+    gtime_t time_tt;
     double rss[3],rst[3],dtss[1],dtst[1],dant[3]={0},vare=0.0,varc=0.0,tt=1E-3;
     int i;
     
@@ -724,9 +726,9 @@ extern int peph2pos(gtime_t time, int sat, const nav_t *nav, int opt,
     if (!pephpos(time,sat,nav,rss,dtss,&vare,&varc)||
         !pephclk(time,sat,nav,dtss,&varc)) return 0;
     
-    time=timeadd(time,tt);
-    if (!pephpos(time,sat,nav,rst,dtst,NULL,NULL)||
-        !pephclk(time,sat,nav,dtst,NULL)) return 0;
+    time_tt=timeadd(time,tt);
+    if (!pephpos(time_tt,sat,nav,rst,dtst,NULL,NULL)||
+        !pephclk(time_tt,sat,nav,dtst,NULL)) return 0;
     
     /* satellite antenna offset correction */
     if (opt) {

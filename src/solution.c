@@ -840,14 +840,18 @@ extern sol_t *getsol(solbuf_t *solbuf, int index)
 *-----------------------------------------------------------------------------*/
 extern void initsolbuf(solbuf_t *solbuf, int cyclic, int nmax)
 {
+#if 0
     gtime_t time0={0};
+#endif
     int i;
     
     trace(3,"initsolbuf: cyclic=%d nmax=%d\n",cyclic,nmax);
     
     solbuf->n=solbuf->nmax=solbuf->start=solbuf->end=solbuf->nb=0;
     solbuf->cyclic=cyclic;
+#if 0
     solbuf->time=time0;
+#endif
     solbuf->data=NULL;
     for (i=0;i<3;i++) {
         solbuf->rb[i]=0.0;
@@ -1358,7 +1362,7 @@ extern int outnmea_gsv(unsigned char *buff, const sol_t *sol,
 *-----------------------------------------------------------------------------*/
 extern int outprcopts(unsigned char *buff, const prcopt_t *opt)
 {
-    const int sys[]={SYS_GPS,SYS_GLO,SYS_GAL,SYS_QZS,SYS_SBS,0};
+    const int sys[]={SYS_GPS,SYS_GLO,SYS_GAL,SYS_QZS,SYS_CMP,SYS_IRN,SYS_SBS,0};
     const char *s1[]={"single","dgps","kinematic","static","moving-base","fixed",
                  "ppp-kinematic","ppp-static","ppp-fixed",""};
     const char *s2[]={"L1","L1+L2","L1+L2+L5","L1+L2+L5+L6","L1+L2+L5+L6+L7",
@@ -1369,7 +1373,7 @@ extern int outprcopts(unsigned char *buff, const prcopt_t *opt)
     const char *s5[]={"off","saastamoinen","sbas","est ztd","est ztd+grad",""};
     const char *s6[]={"broadcast","precise","broadcast+sbas","broadcast+ssr apc",
                       "broadcast+ssr com","qzss lex",""};
-    const char *s7[]={"gps","glonass","galileo","qzss","sbas",""};
+    const char *s7[]={"gps","glonass","galileo","qzss","beidou","irnss","sbas",""};
     const char *s8[]={"off","continuous","instantaneous","fix and hold",""};
     const char *s9[]={"off","on","auto calib","external calib",""};
     int i;

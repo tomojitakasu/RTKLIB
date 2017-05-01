@@ -406,6 +406,7 @@ private:
     TConsole *Console1,*Console2;
     
     stream_t Stream[2];
+    stream_t StrTimeSync;
     solbuf_t SolData[2];
     solstatbuf_t SolStat[2];
     int SolIndex[2];
@@ -413,6 +414,8 @@ private:
     nav_t Nav;
     sta_t Sta;
     double *Az,*El,*Mp[NFREQ+NEXOBS];
+    char StrBuff[1024];
+    int NStrBuff;
     
     gtime_t OEpoch;
     int FormWidth,FormHeight;
@@ -614,6 +617,8 @@ public:
     int AutoScale;
     double YRange;
     int RtBuffSize;
+    int TimeSyncOut;
+    int TimeSyncPort;
     int Origin;
     int RcvPos;
     double OOPos[3];

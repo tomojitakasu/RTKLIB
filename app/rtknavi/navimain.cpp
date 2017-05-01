@@ -116,7 +116,7 @@ __fastcall TMainForm::TMainForm(TComponent* Owner)
     TimeSys=SolType=PlotType1=PlotType2=FreqType1=FreqType2=0;
     TrkType1=TrkType2=0;
     TrkScale1=TrkScale2=5;
-    BLMode1=BLMode2=0;
+    BLMode1=BLMode2=BLMode3=BLMode4=0;
     PSol=PSolS=PSolE=Nsat[0]=Nsat[1]=0;
     NMapPnt=0;
     OpenPort=0;
@@ -632,9 +632,12 @@ void __fastcall TMainForm::BtnInputStrClick(TObject *Sender)
     InputStrDialog->TimeTag   =InTimeTag;
     InputStrDialog->TimeSpeed =InTimeSpeed;
     InputStrDialog->TimeStart =InTimeStart;
+    InputStrDialog->Time64Bit =InTime64Bit;
     InputStrDialog->NmeaPos[0]=NmeaPos[0];
     InputStrDialog->NmeaPos[1]=NmeaPos[1];
     InputStrDialog->NmeaPos[2]=NmeaPos[2];
+    InputStrDialog->ResetCmd  =ResetCmd;
+    InputStrDialog->MaxBL     =MaxBL;
     
     if (InputStrDialog->ShowModal()!=mrOk) return;
     
@@ -659,9 +662,12 @@ void __fastcall TMainForm::BtnInputStrClick(TObject *Sender)
     InTimeTag  =InputStrDialog->TimeTag;
     InTimeSpeed=InputStrDialog->TimeSpeed;
     InTimeStart=InputStrDialog->TimeStart;
+    InTime64Bit=InputStrDialog->Time64Bit;
     NmeaPos[0] =InputStrDialog->NmeaPos[0];
     NmeaPos[1] =InputStrDialog->NmeaPos[1];
     NmeaPos[2] =InputStrDialog->NmeaPos[2];
+    ResetCmd   =InputStrDialog->ResetCmd;
+    MaxBL      =InputStrDialog->MaxBL;
 }
 // confirm overwrite --------------------------------------------------------
 int __fastcall TMainForm::ConfOverwrite(const char *path)
@@ -1275,6 +1281,8 @@ void __fastcall TMainForm::SvrStart(void)
     stropt[3]=SvrBuffSize;
     stropt[4]=FileSwapMargin;
     strsetopt(stropt);
+    strcpy(rtksvr.cmd_reset,ResetCmd.c_str());
+    rtksvr.bl_reset=MaxBL;
     
     // start rtk server
     if (!rtksvrstart(&rtksvr,SvrCycle,SvrBuffSize,strs,paths,Format,NavSelect,
@@ -1930,7 +1938,10 @@ void __fastcall TMainForm::DrawBL(TImage *plot, int w, int h)
     
     trace(4,"DrawBL: w=%d h=%d\n",w,h);
     
-    mode=plot->Name=="Plot1"?BLMode1:BLMode2;
+	if 		(plot->Name=="Plot1") mode=BLMode1;
+	else if (plot->Name=="Plot2") mode=BLMode2;
+	else if (plot->Name=="Plot3") mode=BLMode3;
+	else 						  mode=BLMode4;
     
     if (PMODE_DGPS<=PrcOpt.mode&&PrcOpt.mode<=PMODE_FIXED) {
         col=rtksvr.state&&SolStat[PSol]&&SolCurrentStat?color[SolStat[PSol]]:clWhite;
@@ -2546,6 +2557,7 @@ void __fastcall TMainForm::LoadOpt(void)
     InTimeTag       =ini->ReadInteger("setting","intimetag",       0);
     InTimeSpeed     =ini->ReadString ("setting","intimespeed",  "x1");
     InTimeStart     =ini->ReadString ("setting","intimestart",   "0");
+    InTime64Bit     =ini->ReadInteger("setting","intime64bit",     0);
     OutTimeTag      =ini->ReadInteger("setting","outtimetag",      0);
     OutAppend       =ini->ReadInteger("setting","outappend",       0);
     OutSwapInterval =ini->ReadString ("setting","outswapinterval","");
@@ -2555,6 +2567,8 @@ void __fastcall TMainForm::LoadOpt(void)
     NmeaPos[0]      =ini->ReadFloat  ("setting","nmeapos1",      0.0);
     NmeaPos[1]      =ini->ReadFloat  ("setting","nmeapos2",      0.0);
     NmeaPos[2]      =ini->ReadFloat  ("setting","nmeapos3",      0.0);
+    ResetCmd        =ini->ReadString ("setting","resetcmd",       "");
+    MaxBL           =ini->ReadFloat  ("setting","maxbl",        10.0);
     FileSwapMargin  =ini->ReadInteger("setting","fswapmargin",    30);
     
     TimeSys         =ini->ReadInteger("setting","timesys",         0);
@@ -2786,6 +2800,7 @@ void __fastcall TMainForm::SaveOpt(void)
     ini->WriteInteger("setting","intimetag",  InTimeTag          );
     ini->WriteString ("setting","intimespeed",InTimeSpeed        );
     ini->WriteString ("setting","intimestart",InTimeStart        );
+    ini->WriteInteger("setting","intime64bit",InTime64Bit        );
     ini->WriteInteger("setting","outtimetag", OutTimeTag         );
     ini->WriteInteger("setting","outappend",  OutAppend          );
     ini->WriteString ("setting","outswapinterval",OutSwapInterval);
@@ -2795,6 +2810,8 @@ void __fastcall TMainForm::SaveOpt(void)
     ini->WriteFloat  ("setting","nmeapos1",   NmeaPos[0]         );
     ini->WriteFloat  ("setting","nmeapos2",   NmeaPos[1]         );
     ini->WriteFloat  ("setting","nmeapos3",   NmeaPos[2]         );
+    ini->WriteString ("setting","resetcmd",   ResetCmd           );
+    ini->WriteFloat  ("setting","maxbl",      MaxBL              );
     ini->WriteInteger("setting","fswapmargin",FileSwapMargin     );
     
     ini->WriteInteger("setting","timesys",    TimeSys            );
@@ -2881,6 +2898,7 @@ void __fastcall TMainForm::BtnMarkClick(TObject *Sender)
 	rtksvr.rtk.opt.mode=MarkDialog->PosMode;
 	MarkerName=MarkDialog->Marker;
 	MarkerComment=MarkDialog->Comment;
+    UpdatePos();
 }
 //---------------------------------------------------------------------------
 
