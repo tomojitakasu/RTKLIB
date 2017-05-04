@@ -34,7 +34,7 @@
 | Although a Trimble proprietary protocol, CMR was documented in reference #1
 | and CMR+ was documented in reference #2. These were then adopted by many
 | other manufacurers in addition to Trimble. Leica extended the protocol to
-| handle GLONASS observations and other manufacturers adopted Leica's extention,
+| handle GLONASS observations and other manufacturers adopted Leica's extension,
 | but there was apparently a disconnect with Trimble on how Trimble implemented
 | the same extension making GLONASS compatibility between Trimble and non-
 | Trimble receivers problematic whenever the CMR protocol is used. Note that
@@ -117,7 +117,7 @@
 | features such as CMR 5Hz and 10Hz output. The Trimble WINPAN utility was used
 | to configure CMR 5Hz and 10Hz output.
 |
-| For the purposes of this explaination the following terms mean the following things:
+| For the purposes of this explanation the following terms mean the following things:
 |
 | C     299,792,458     One light second in meters.
 | CMS   C / 1000        One light millisecond in meters.
@@ -193,7 +193,7 @@
 |
 | CMR type 4 messages contain the following GPS observables for each satellite:
 |
-| 1. CBT (Actually just once in the messsage header and it's modulo 4000 instead of 240000.)
+| 1. CBT (Actually just once in the message header and it's modulo 4000 instead of 240000.)
 | 2. CL1 (But it's a delta against the prior CMR type 3 BL1 for this satellte.)
 |
 | CMR type 4 messages are only received with time represending the intervals
@@ -355,7 +355,7 @@
 | and rover observation times. It must be set low enough so that the change in
 | satellite range in meters over the time period in question can never exceed
 | RANGE_MS. A quick rough back of the envelope calculation says anything over
-| about 73 seconds for GPS or 75 seconds for GLONASS is too long. Incomming
+| about 73 seconds for GPS or 75 seconds for GLONASS is too long. Incoming
 | CMR base observables older than this are dropped.
 */
 #define MAXTIMEDIFF             60.0 /* Maximum tolerable time difference in seconds */
@@ -1898,7 +1898,7 @@ static int DecodeCmr(raw_t *Raw)
 |
 | CMR+ messages can be (and are) interleaved with CMR messages. When
 | CMR+ messages are being sent CMR message types 1 and 2, containing
-| basically the same information, are normally supressed (otherewise
+| basically the same information, are normally suppressed (otherewise
 | there would be no point to CMR+).
 |
 | We can't process CMR+ messages immediately as they are received
@@ -2045,7 +2045,7 @@ static int DecodeCmrPlus(raw_t *Raw)
 |
 |    After the type and length byte this message contains 16 bits worth of
 |    flag bits, a receiver number byte and an antenna number byte. This is
-|    new with CMR+ and has no equivilent in CMR.
+|    new with CMR+ and has no equivalent in CMR.
 |
 | 2. ECEF Reference Station Coordinates
 |
@@ -2755,7 +2755,7 @@ static size_t TrimCopy(char *Destination, size_t DestinationLength, char *Source
 | Bits beyond 7 are taken from bytes at increasingly lower addresses, not
 | higher addresses.
 |
-| For the purposes of this function our machine endianess is irrelevant.
+| For the purposes of this function our machine endianness is irrelevant.
 |
 | The minimum bit position is 0, the maximum bit position is 31,
 | the minimum length is 1 and the maximum length is 32. Other values

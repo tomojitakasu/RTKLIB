@@ -264,7 +264,7 @@ static int decode_rxmrawx(raw_t *raw)
     if ((q=strstr(raw->opt,"-TADJ="))) {
         sscanf(q,"-TADJ=%lf",&tadj);
     }
-    /* slip theshold of std-dev of carreir-phase (-STD_SLIP) */
+    /* slip threshold of std-dev of carreir-phase (-STD_SLIP) */
     if ((q=strstr(raw->opt,"-STD_SLIP="))) {
         sscanf(q,"-STD_SLIP=%d",&std_slip);
     }
@@ -529,7 +529,7 @@ static int decode_trkmeas(raw_t *raw)
     
     for (i=0,p=raw->buff+110;i<nch;i++,p+=56) {
         
-        /* quality indicator (0:idle,1:search,2:aquired,3:unusable, */
+        /* quality indicator (0:idle,1:search,2:acquired,3:unusable, */
         /*                    4:code lock,5,6,7:code/carrier lock) */
         qi=U1(p+1);
         if (qi<4||7<qi) continue;

@@ -1221,7 +1221,7 @@ static int DecodeGSOF(raw_t *Raw)
     char *RecordType_s = NULL;
  
    /*
-    | Reassemble origional message by removing packet headers,
+    | Reassemble original message by removing packet headers,
     | trailers and page framing.
     */
     UnwrapGenout(rt17);
@@ -1569,7 +1569,7 @@ static int DecodeRawdata(raw_t *Raw)
     tracet(3, "RT17: Trimble packet type=0x57 (RAWDATA), Recordtype=%d (%s), Length=%d.\n", RecordType, RecordType_s, rt17->MessageLength);
       
     /*
-    | Reassemble origional message by removing packet headers,
+    | Reassemble original message by removing packet headers,
     | trailers and page framing.
     */
     UnwrapRawdata(rt17, &rif);

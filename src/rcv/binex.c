@@ -786,7 +786,7 @@ static int decode_bnx_01_06(raw_t *raw, unsigned char *buff, int len)
     raw->ephsat=eph.sat;
     return 2;
 }
-/* decode binex mesaage 0x01: gnss navigaion informtion ----------------------*/
+/* decode binex mesaage 0x01: gnss navigaion information ----------------------*/
 static int decode_bnx_01(raw_t *raw, unsigned char *buff, int len)
 {
     char *msg;

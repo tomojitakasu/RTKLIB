@@ -152,7 +152,7 @@ void __fastcall TOptDialog::BtnStaPosViewClick(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TOptDialog::BtnStaPosFileClick(TObject *Sender)
 {
-	OpenDialog->Title="Station Postion File";
+	OpenDialog->Title="Station Position File";
 	OpenDialog->FilterIndex=3;
 	if (!OpenDialog->Execute()) return;
 	StaPosFile->Text=OpenDialog->FileName;

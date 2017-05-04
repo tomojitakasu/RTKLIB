@@ -88,7 +88,7 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
 
     setWindowIcon(QIcon(":/icons/rtk2.bmp"));
 
-    setlocale(LC_NUMERIC,"C"); // use point as decimal separator in formated output
+    setlocale(LC_NUMERIC,"C"); // use point as decimal separator in formatted output
 
     gtime_t t0={0,0};
     nav_t nav0;

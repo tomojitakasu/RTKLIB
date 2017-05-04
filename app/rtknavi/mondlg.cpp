@@ -525,7 +525,7 @@ void __fastcall TMonitorDialog::ShowRtk(void)
 	Tbl->Cells[0][i  ] ="Time of Receiver Clock Rover";
 	Tbl->Cells[1][i++]=rtk.sol.time.time?tstr:"-";
 	
-	Tbl->Cells[0][i  ] ="Time Sytem Offset/Receiver Bias (GLO-GPS,GAL-GPS,BDS-GPS,IRN-GPS) (ns)";
+	Tbl->Cells[0][i  ] ="Time System Offset/Receiver Bias (GLO-GPS,GAL-GPS,BDS-GPS,IRN-GPS) (ns)";
 	Tbl->Cells[1][i++]=s.sprintf("%.3f,%.3f,%.3f,%.3f",rtk.sol.dtr[1]*1E9,rtk.sol.dtr[2]*1E9,
                                  rtk.sol.dtr[3]*1E9,rtk.sol.dtr[4]*1E9);
 	

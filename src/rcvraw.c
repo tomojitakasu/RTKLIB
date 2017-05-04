@@ -448,7 +448,7 @@ extern int test_glostr(const unsigned char *buff)
 *                                  buff[30-39]: string #4
 *          geph_t *geph  IO     glonass ephemeris message
 * return : status (1:ok,0:error)
-* notes  : geph->tof should be set to frame time witin 1/2 day before calling
+* notes  : geph->tof should be set to frame time within 1/2 day before calling
 *          geph->frq is set to 0
 *-----------------------------------------------------------------------------*/
 extern int decode_glostr(const unsigned char *buff, geph_t *geph)

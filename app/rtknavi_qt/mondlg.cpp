@@ -521,7 +521,7 @@ void MonitorDialog::ShowRtk(void)
     Console->setItem(i,0, new QTableWidgetItem(tr("Time of Receiver Clock Rover")));
     Console->setItem(i++,1, new QTableWidgetItem(rtk.sol.time.time?tstr:"-"));
 	
-    Console->setItem(i,0, new QTableWidgetItem(tr("Time Sytem Offset/Receiver Bias (GLO-GPS,GAL-GPS,BDS-GPS,IRN-GPS) (ns)")));
+    Console->setItem(i,0, new QTableWidgetItem(tr("Time System Offset/Receiver Bias (GLO-GPS,GAL-GPS,BDS-GPS,IRN-GPS) (ns)")));
     Console->setItem(i++,1, new QTableWidgetItem(QString("%1,%2,%3,%4").arg(rtk.sol.dtr[1]*1E9,0,'f',3).arg(rtk.sol.dtr[2]*1E9,0,'f',3).arg(rtk.sol.dtr[3]*1E9,0,'f',3)
                                  .arg(rtk.sol.dtr[4]*1E9,0,'f',3)));
 	

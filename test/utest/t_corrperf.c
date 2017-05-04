@@ -1,4 +1,4 @@
-/* correlator performence test */
+/* correlator performance test */
 #include <stdio.h>
 #include "sdr.h"
 

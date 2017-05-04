@@ -31,7 +31,7 @@
 *                            add function to read satellite fcb
 *                            add function to read stec and troposphere file
 *                            add keyword replacement in dcb, erp and ionos file
-*           2015/11/13  1.17 add support of L5 antenna phase center paramters
+*           2015/11/13  1.17 add support of L5 antenna phase center parameters
 *                            add *.stec and *.trp file for ppp correction
 *           2015/11/26  1.18 support opt->freqopt(disable L2)
 *           2016/01/12  1.19 add carrier-phase bias correction by ssr
@@ -57,7 +57,7 @@ static obs_t obss={0};          /* observation data */
 static nav_t navs={0};          /* navigation data */
 static sbs_t sbss={0};          /* sbas messages */
 static lex_t lexs={0};          /* lex messages */
-static sta_t stas[MAXRCV];      /* station infomation */
+static sta_t stas[MAXRCV];      /* station information */
 static int nepoch=0;            /* number of observation epochs */
 static int iobsu =0;            /* current rover observation data index */
 static int iobsr =0;            /* current reference observation data index */
@@ -998,7 +998,7 @@ static int execses(gtime_t ts, gtime_t te, double ti, const prcopt_t *popt,
         reppath(fopt->dcb,path,ts,"","");
         readdcb(path,&navs,stas);
     }
-    /* set antenna paramters */
+    /* set antenna parameters */
     if (popt_.mode!=PMODE_SINGLE) {
         setpcv(obss.n>0?obss.data[0].time:timeget(),&popt_,&navs,&pcvss,&pcvsr,
                stas);
@@ -1205,7 +1205,7 @@ static int execses_b(gtime_t ts, gtime_t te, double ti, const prcopt_t *popt,
 *          observation data file in the input files is recognized as the rover
 *          data.
 *
-*          the type of an input file is recognized by the file extention as ]
+*          the type of an input file is recognized by the file extension as ]
 *          follows:
 *              .sp3,.SP3,.eph*,.EPH*: precise ephemeris (sp3c)
 *              .sbs,.SBS,.ems,.EMS  : sbas message log files (rtklib or ems)

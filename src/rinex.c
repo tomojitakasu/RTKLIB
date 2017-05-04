@@ -14,7 +14,7 @@
 *         Version 2.12, June 23, 2009
 *     [5] W.Gurtner and L.Estey, RINEX The Receiver Independent Exchange Format
 *         Version 3.01, June 22, 2009
-*     [6] J.Ray and W.Gurtner, RINEX extentions to handle clock information
+*     [6] J.Ray and W.Gurtner, RINEX extensions to handle clock information
 *         version 3.02, September 2, 2010
 *     [7] RINEX The Receiver Independent Exchange Format Version 3.02,
 *         International GNSS Service (IGS), RINEX Working Group and Radio
@@ -566,7 +566,7 @@ static void decode_gnavh(char *buff, nav_t *nav)
     
     trace(4,"decode_gnavh:\n");
     
-    if      (strstr(label,"CORR TO SYTEM TIME"  )) ; /* opt */
+    if      (strstr(label,"CORR TO SYSTEM TIME"  )) ; /* opt */
     else if (strstr(label,"LEAP SECONDS"        )) { /* opt */
         if (nav) nav->leaps=(int)str2num(buff,0,6);
     }
@@ -578,7 +578,7 @@ static void decode_hnavh(char *buff, nav_t *nav)
     
     trace(4,"decode_hnavh:\n");
     
-    if      (strstr(label,"CORR TO SYTEM TIME"  )) ; /* opt */
+    if      (strstr(label,"CORR TO SYSTEM TIME"  )) ; /* opt */
     else if (strstr(label,"D-UTC A0,A1,T,W,S,U" )) ; /* opt */
     else if (strstr(label,"LEAP SECONDS"        )) { /* opt */
         if (nav) nav->leaps=(int)str2num(buff,0,6);
@@ -1718,7 +1718,7 @@ extern void free_rnxctr(rnxctr_t *rnx)
     free(rnx->nav.seph); rnx->nav.seph=NULL; rnx->nav.ns=0;
 }
 /* open rinex data -------------------------------------------------------------
-* fetch next rinex message and input a messsage from file
+* fetch next rinex message and input a message from file
 * args   : rnxctr_t *rnx IO  rinex control struct
 *          FILE  *fp    I    file pointer
 * return : status (-2: end of file, 0: no message, 1: input observation data,
@@ -1753,7 +1753,7 @@ extern int open_rnxctr(rnxctr_t *rnx, FILE *fp)
     return 1;
 }
 /* input rinex control ---------------------------------------------------------
-* fetch next rinex message and input a messsage from file
+* fetch next rinex message and input a message from file
 * args   : rnxctr_t *rnx IO  rinex control struct
 *          FILE  *fp    I    file pointer
 * return : status (-2: end of file, 0: no message, 1: input observation data,
@@ -2579,7 +2579,7 @@ extern int outrnxlnavh(FILE *fp, const rnxopt_t *opt, const nav_t *nav)
     return fprintf(fp,"%60s%-20s\n","","END OF HEADER")!=EOF;
 }
 /* output rinex qzss nav header ------------------------------------------------
-* output rinex qzss nav file header (2.12 extention and 3.02)
+* output rinex qzss nav file header (2.12 extension and 3.02)
 * args   : FILE   *fp       I   output file pointer
 *          rnxopt_t *opt    I   rinex options
 *          nav_t  nav       I   navigation data (NULL: no input)
@@ -2607,7 +2607,7 @@ extern int outrnxqnavh(FILE *fp, const rnxopt_t *opt, const nav_t *nav)
     return fprintf(fp,"%60s%-20s\n","","END OF HEADER")!=EOF;
 }
 /* output rinex beidou nav header ----------------------------------------------
-* output rinex beidou nav file header (2.12 extention and 3.02)
+* output rinex beidou nav file header (2.12 extension and 3.02)
 * args   : FILE   *fp       I   output file pointer
 *          rnxopt_t *opt    I   rinex options
 *          nav_t  nav       I   navigation data (NULL: no input)
@@ -2635,7 +2635,7 @@ extern int outrnxcnavh(FILE *fp, const rnxopt_t *opt, const nav_t *nav)
     return fprintf(fp,"%60s%-20s\n","","END OF HEADER")!=EOF;
 }
 /* output rinex irnss nav header -----------------------------------------------
-* output rinex irnss nav file header (2.12 extention and 3.02)
+* output rinex irnss nav file header (2.12 extension and 3.02)
 * args   : FILE   *fp       I   output file pointer
 *          rnxopt_t *opt    I   rinex options
 *          nav_t  nav       I   navigation data (NULL: no input)

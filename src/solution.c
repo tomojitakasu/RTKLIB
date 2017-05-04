@@ -124,7 +124,7 @@ static void covtosol(const double *P, sol_t *sol)
     sol->qr[4]=(float)P[5]; /* yz or nu */
     sol->qr[5]=(float)P[2]; /* zx or ue */
 }
-/* decode nmea gxrmc: recommended minumum data for gps -----------------------*/
+/* decode nmea gxrmc: recommended minimum data for gps -----------------------*/
 static int decode_nmearmc(char **val, int n, sol_t *sol)
 {
     double tod=0.0,lat=0.0,lon=0.0,vel=0.0,dir=0.0,date=0.0,ang=0.0,ep[6];
@@ -166,7 +166,7 @@ static int decode_nmearmc(char **val, int n, sol_t *sol)
     sol->stat=mode=='D'?SOLQ_DGPS:SOLQ_SINGLE;
     sol->ns=0;
     
-    sol->type=0; /* postion type = xyz */
+    sol->type=0; /* position type = xyz */
     
     trace(5,"decode_nmearmc: %s rr=%.3f %.3f %.3f stat=%d ns=%d vel=%.2f dir=%.0f ang=%.0f mew=%c mode=%c\n",
           time_str(sol->time,0),sol->rr[0],sol->rr[1],sol->rr[2],sol->stat,sol->ns,
@@ -248,7 +248,7 @@ static int decode_nmeagga(char **val, int n, sol_t *sol)
     sol->stat=0<=solq&&solq<=8?solq_nmea[solq]:SOLQ_NONE;
     sol->ns=nrcv;
     
-    sol->type=0; /* postion type = xyz */
+    sol->type=0; /* position type = xyz */
     
     trace(5,"decode_nmeagga: %s rr=%.3f %.3f %.3f stat=%d ns=%d hdop=%.1f ua=%c um=%c\n",
           time_str(sol->time,0),sol->rr[0],sol->rr[1],sol->rr[2],sol->stat,sol->ns,
@@ -384,7 +384,7 @@ static int decode_solxyz(char *buff, const solopt_t *opt, sol_t *sol)
     if (i<n) sol->age  =(float)val[i++];
     if (i<n) sol->ratio=(float)val[i];
     
-    sol->type=0; /* postion type = xyz */
+    sol->type=0; /* position type = xyz */
     
     if (MAXSOLQ<sol->stat) sol->stat=SOLQ_NONE;
     return 1;
@@ -431,7 +431,7 @@ static int decode_solllh(char *buff, const solopt_t *opt, sol_t *sol)
     if (i<n) sol->age  =(float)val[i++];
     if (i<n) sol->ratio=(float)val[i];
     
-    sol->type=0; /* postion type = xyz */
+    sol->type=0; /* position type = xyz */
     
     if (MAXSOLQ<sol->stat) sol->stat=SOLQ_NONE;
     return 1;
@@ -466,7 +466,7 @@ static int decode_solenu(char *buff, const solopt_t *opt, sol_t *sol)
     if (i<n) sol->age  =(float)val[i++];
     if (i<n) sol->ratio=(float)val[i];
     
-    sol->type=1; /* postion type = enu */
+    sol->type=1; /* position type = enu */
     
     if (MAXSOLQ<sol->stat) sol->stat=SOLQ_NONE;
     return 1;
@@ -1546,7 +1546,7 @@ extern int outsols(unsigned char *buff, const sol_t *sol, const double *rb,
     return p-buff;
 }
 /* output solution extended ----------------------------------------------------
-* output solution exteneded infomation
+* output solution exteneded information
 * args   : unsigned char *buff IO output buffer
 *          sol_t  *sol      I   solution
 *          ssat_t *ssat     I   satellite status
@@ -1631,7 +1631,7 @@ extern void outsol(FILE *fp, const sol_t *sol, const double *rb,
     }
 }
 /* output solution extended ----------------------------------------------------
-* output solution exteneded infomation to file
+* output solution exteneded information to file
 * args   : FILE   *fp       I   output file pointer
 *          sol_t  *sol      I   solution
 *          ssat_t *ssat     I   satellite status

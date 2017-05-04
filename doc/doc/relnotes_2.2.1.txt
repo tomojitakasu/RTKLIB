@@ -45,7 +45,7 @@ Changes: ver.2.2.0 -> ver.2.2.1
 
 (2) The following receiver raw data messages are supported.
 
-  (a) NovAtel OEM3 (Milennium): RGEB, REPB, FRMB, IONB, UTCB
+  (a) NovAtel OEM3 (Millennium): RGEB, REPB, FRMB, IONB, UTCB
   (b) NovAtel OEM4/5: RANGEB
 
 (3) The following APIs are added, deleted or modified.
@@ -107,7 +107,7 @@ Changes: ver.2.2.0 -> ver.2.2.1
   (b) Keyword replacement in input and output file paths is supported for
       batch processing.
   (c) "Excluded Satellites" is activated in "Options - Setting1" dialog.
-  (d) "RINEX Header Position" is added as "Base/NRTK Station postion" in
+  (d) "RINEX Header Position" is added as "Base/NRTK Station position" in
       "Options - Position" dialog.
   (e) "Rover List" and "Base Station List" are added in "Options - Misc"
       dialog.

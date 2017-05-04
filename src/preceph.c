@@ -698,7 +698,7 @@ extern void satantoff(gtime_t time, const double *rs, int sat, const nav_t *nav,
 * args   : gtime_t time       I   time (gpst)
 *          int    sat         I   satellite number
 *          nav_t  *nav        I   navigation data
-*          int    opt         I   sat postion option
+*          int    opt         I   sat position option
 *                                 (0: center of mass, 1: antenna phase center)
 *          double *rs         O   sat position and velocity (ecef)
 *                                 {x,y,z,vx,vy,vz} (m|m/s)

@@ -24,7 +24,7 @@ static const char *XMLNS="http://www.topografix.com/GPX/1/1";
 static void outpoint(FILE *fp, gtime_t time, const double *pos,
                      const char *label, int stat, int outalt, int outtime)
 {
-    /* fix, float, sbas and ppp are rtklib extentions to GPX */
+    /* fix, float, sbas and ppp are rtklib extensions to GPX */
     const char *fix_label[]={"fix","float","sbas","dgps","3d","ppp"};
     double ep[6];
     

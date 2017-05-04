@@ -282,7 +282,7 @@ extern int input_rtcm3(rtcm_t *rtcm, unsigned char data)
     return decode_rtcm3(rtcm);
 }
 /* input rtcm 2 message from file ----------------------------------------------
-* fetch next rtcm 2 message and input a messsage from file
+* fetch next rtcm 2 message and input a message from file
 * args   : rtcm_t *rtcm IO   rtcm control struct
 *          FILE  *fp    I    file pointer
 * return : status (-2: end of file, -1...10: same as above)
@@ -301,7 +301,7 @@ extern int input_rtcm2f(rtcm_t *rtcm, FILE *fp)
     return 0; /* return at every 4k bytes */
 }
 /* input rtcm 3 message from file ----------------------------------------------
-* fetch next rtcm 3 message and input a messsage from file
+* fetch next rtcm 3 message and input a message from file
 * args   : rtcm_t *rtcm IO   rtcm control struct
 *          FILE  *fp    I    file pointer
 * return : status (-2: end of file, -1...10: same as above)

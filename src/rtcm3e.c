@@ -877,7 +877,7 @@ static int encode_type1020(rtcm_t *rtcm, int sync)
     setbitu(rtcm->buff,i, 4,0        ); i+= 4; /* FT */
     setbitu(rtcm->buff,i,11,NT       ); i+=11;
     setbitu(rtcm->buff,i, 2,0        ); i+= 2; /* M */
-    setbitu(rtcm->buff,i, 1,0        ); i+= 1; /* flag for addtional data */
+    setbitu(rtcm->buff,i, 1,0        ); i+= 1; /* flag for additional data */
     setbitu(rtcm->buff,i,11,0        ); i+=11; /* NA */
     setbitu(rtcm->buff,i,32,0        ); i+=32; /* tauc */
     setbitu(rtcm->buff,i, 5,0        ); i+= 5; /* N4 */

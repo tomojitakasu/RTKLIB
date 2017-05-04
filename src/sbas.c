@@ -535,10 +535,10 @@ static int cmpmsgs(const void *p1, const void *p2)
 *         (gtime_t  te      I   end time  )
 *          sbs_t    *sbs    IO  sbas messages
 * return : number of sbas messages
-* notes  : sbas message are appended and sorted. before calling the funciton, 
+* notes  : sbas message are appended and sorted. before calling the function, 
 *          sbs->n, sbs->nmax and sbs->msgs must be set properly. (initially
 *          sbs->n=sbs->nmax=0, sbs->msgs=NULL)
-*          only the following file extentions after wild card expanded are valid
+*          only the following file extensions after wild card expanded are valid
 *          to read. others are skipped
 *          .sbs, .SBS, .ems, .EMS
 *-----------------------------------------------------------------------------*/

@@ -45,7 +45,7 @@
 *                          add gdop mask for pntpos()
 *                          change constant MAXDTOE value
 *           2007/05/25 1.3 add function execcmd(),expandpath()
-*           2008/06/21 1.4 add funciton sortobs(),uniqeph(),screent()
+*           2008/06/21 1.4 add function sortobs(),uniqeph(),screent()
 *                          replace geodist() by sagnac correction way
 *           2008/10/29 1.5 fix bug of ionosphereic mapping function
 *                          fix bug of seasonal variation term of tropmapf
@@ -1735,7 +1735,7 @@ extern double dms2deg(const double *dms)
     double sign=dms[0]<0.0?-1.0:1.0;
     return sign*(fabs(dms[0])+dms[1]/60.0+dms[2]/3600.0);
 }
-/* transform ecef to geodetic postion ------------------------------------------
+/* transform ecef to geodetic position ------------------------------------------
 * transform ecef position to geodetic position
 * args   : double *r        I   ecef position {x,y,z} (m)
 *          double *pos      O   geodetic position {lat,lon,h} (rad,m)
@@ -2059,7 +2059,7 @@ extern void eci2ecef(gtime_t tutc, const double *erpv, double *U, double *gmst)
     matmul("NN",3,3,3,1.0,R1,R2,0.0,R);
     matmul("NN",3,3,3,1.0,R ,R3,0.0,N); /* N=Rx(-eps)*Rz(-dspi)*Rx(eps) */
     
-    /* greenwich aparent sidereal time (rad) */
+    /* greenwich apparent sidereal time (rad) */
     gmst_=utc2gmst(tutc_,erpv[2]);
     gast=gmst_+dpsi*cos(eps);
     gast+=(0.00264*sin(f[4])+0.000063*sin(2.0*f[4]))*AS2R;
@@ -3760,7 +3760,7 @@ extern void sunmoonpos(gtime_t tutc, const double *erpv, double *rsun,
     /* eci to ecef transformation matrix */
     eci2ecef(tutc,erpv,U,&gmst_);
     
-    /* sun and moon postion in ecef */
+    /* sun and moon position in ecef */
     if (rsun ) matmul("NN",3,1,3,1.0,U,rs,0.0,rsun );
     if (rmoon) matmul("NN",3,1,3,1.0,U,rm,0.0,rmoon);
     if (gmst ) *gmst=gmst_;
@@ -3878,7 +3878,7 @@ extern void settspan(gtime_t ts, gtime_t te) {}
 extern void settime(gtime_t time) {}
 #endif
 
-/* dummy functions for lex extentions ----------------------------------------*/
+/* dummy functions for lex extensions ----------------------------------------*/
 #ifndef EXTLEX
 extern int input_lexr(raw_t *raw, unsigned char data) {return 0;}
 extern int input_lexrf(raw_t *raw, FILE *fp) {return 0;}

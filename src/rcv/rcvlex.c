@@ -17,7 +17,7 @@
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
-#ifdef EXTLEX /* lex extention */
+#ifdef EXTLEX /* lex extension */
 
 #define LEXFRMPREAMB 0x1ACFFC1Du /* lex message frame preamble */
 

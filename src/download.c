@@ -125,7 +125,7 @@ static void remot2local(const char *remot, const char *dir, char *local)
     
     sprintf(local,"%s%c%s",dir,FILEPATHSEP,p);
 }
-/* test file existance -------------------------------------------------------*/
+/* test file existence -------------------------------------------------------*/
 static int exist_file(const char *local)
 {
 #ifdef WIN32
@@ -137,7 +137,7 @@ static int exist_file(const char *local)
     return buff.st_mode&S_IRUSR;
 #endif
 }
-/* test file existance -------------------------------------------------------*/
+/* test file existence -------------------------------------------------------*/
 static int test_file(const char *local)
 {
     char buff[1024],*p;
