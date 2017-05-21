@@ -142,7 +142,7 @@ void OptDialog::BtnStaPosViewClick()
 //---------------------------------------------------------------------------
 void OptDialog::BtnStaPosFileClick()
 {
-    StaPosFile->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Station Postion File"), QString(), tr("Position File (*.pos);;All (*.*)"))));
+    StaPosFile->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Station Position File"), QString(), tr("Position File (*.pos);;All (*.*)"))));
 }
 //---------------------------------------------------------------------------
 void OptDialog::RovPosTypeChange()

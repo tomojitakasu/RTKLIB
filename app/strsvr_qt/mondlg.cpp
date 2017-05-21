@@ -57,6 +57,7 @@ void StrMonDialog::SelFmtChange()
         init_raw(&raw, StrFmt - 3);
         raw.outtype = 1;
     }
+    Console->clear();
 }
 //---------------------------------------------------------------------------
 void StrMonDialog::AddMsg(unsigned char *msg, int len)

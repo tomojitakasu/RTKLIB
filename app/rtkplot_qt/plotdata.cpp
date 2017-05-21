@@ -38,7 +38,7 @@ void Plot::ReadSol(const QStringList &files, int sel)
 
     trace(3, "ReadSol: sel=%d\n", sel);
 
-    setlocale(LC_NUMERIC, "C"); // use point as decimal separator in formated output
+    setlocale(LC_NUMERIC, "C"); // use point as decimal separator in formatted output
 
     memset(&sol, 0, sizeof(solbuf_t));
 
@@ -122,7 +122,7 @@ void Plot::ReadSolStat(const QStringList &files, int sel)
 
     trace(3, "ReadSolStat\n");
 
-    setlocale(LC_NUMERIC, "C"); // use point as decimal separator in formated output
+    setlocale(LC_NUMERIC, "C"); // use point as decimal separator in formatted output
 
     freesolstatbuf(SolStat + sel);
 
@@ -149,7 +149,7 @@ void Plot::ReadObs(const QStringList &files)
 
     trace(3, "ReadObs\n");
 
-    setlocale(LC_NUMERIC, "C"); // use point as decimal separator in formated output
+    setlocale(LC_NUMERIC, "C"); // use point as decimal separator in formatted output
 
     memset(&nav, 0, sizeof(nav_t));
     memset(&sta, 0, sizeof(sta_t));
@@ -209,7 +209,7 @@ int Plot::ReadObsRnx(const QStringList &files, obs_t *obs, nav_t *nav,
 
     trace(3, "ReadObsRnx\n");
 
-    setlocale(LC_NUMERIC, "C"); // use point as decimal separator in formated output
+    setlocale(LC_NUMERIC, "C"); // use point as decimal separator in formatted output
 
     TimeSpan(&ts, &te, &tint);
 
@@ -279,7 +279,7 @@ void Plot::ReadNav(const QStringList &files)
 
     if (files.size() <= 0) return;
 
-    setlocale(LC_NUMERIC, "C"); // use point as decimal separator in formated output
+    setlocale(LC_NUMERIC, "C"); // use point as decimal separator in formatted output
 
     ReadWaitStart();
     ShowLegend(NULL);

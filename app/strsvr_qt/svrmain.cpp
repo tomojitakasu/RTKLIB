@@ -88,7 +88,7 @@ MainForm::MainForm(QWidget *parent)
 
     setWindowIcon(QIcon(":/icons/rtk6.bmp"));
 
-    setlocale(LC_NUMERIC, "C"); // use point as decimal separator in formated output
+    setlocale(LC_NUMERIC, "C"); // use point as decimal separator in formatted output
 
     QString file = QApplication::applicationFilePath();
     QFileInfo fi(file);

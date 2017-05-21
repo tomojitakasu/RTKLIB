@@ -218,7 +218,7 @@ void OptDialog::BtnStaPosFileClick()
 {
     QString fileName;
 
-    fileName = QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Station Postion File"), QString(), tr("Position File (*.pos);;All (*.*)")));
+    fileName = QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Station Position File"), QString(), tr("Position File (*.pos);;All (*.*)")));
 
     StaPosFile->setText(fileName);
 }

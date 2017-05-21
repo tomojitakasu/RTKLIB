@@ -2323,7 +2323,7 @@
             </item>
             <item>
              <property name="text">
-              <string>RINEX Header Postion</string>
+              <string>RINEX Header Position</string>
              </property>
             </item>
            </widget>

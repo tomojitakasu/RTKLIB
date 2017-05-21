@@ -1,0 +1,3 @@
+EMPLATE = subdirs
+
+SUBDIRS= iers 
