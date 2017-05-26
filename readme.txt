@@ -113,3 +113,5 @@ UPDATE HISTORY
                       support udp server and client for stream types
                       support periodic receiver commands by rtknavi, strsvr
 2017/04/25  2.4.3 b27 fix several bugs
+2017/05/26  2.4.3 b28 fix bug on decoding skytraq extended raw message
+                      add rcv/tersus.c to support tersus BX306

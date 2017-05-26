@@ -250,7 +250,7 @@ void __fastcall TMonitorDialog::Timer2Timer(TObject *Sender)
 			}
 	    }
 	}
-	else if (ConFmt<17) {
+	else if (ConFmt<18) {
 		for (i=0;i<len;i++) {
 			input_raw(&raw,ConFmt-2,msg[i]);
 			if (raw.msgtype[0]) {

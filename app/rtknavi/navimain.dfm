@@ -35,13 +35,11 @@ object MainForm: TMainForm
     Color = clWhite
     ParentBackground = False
     TabOrder = 1
-    ExplicitWidth = 575
-    ExplicitHeight = 189
     object Splitter1: TSplitter
       Left = 380
       Top = 0
       Width = 4
-      Height = 189
+      Height = 187
       Beveled = True
       Color = clWhite
       ParentColor = False
@@ -53,7 +51,7 @@ object MainForm: TMainForm
       Left = 384
       Top = 0
       Width = 4
-      Height = 189
+      Height = 187
       Beveled = True
       Color = clWhite
       ParentColor = False
@@ -64,7 +62,7 @@ object MainForm: TMainForm
       Left = 376
       Top = 0
       Width = 4
-      Height = 189
+      Height = 187
       Beveled = True
       Color = clWhite
       ParentColor = False
@@ -76,7 +74,7 @@ object MainForm: TMainForm
       Left = 187
       Top = 0
       Width = 4
-      Height = 189
+      Height = 187
       Beveled = True
       Color = clWhite
       ParentColor = False
@@ -87,14 +85,13 @@ object MainForm: TMainForm
       Left = 0
       Top = 0
       Width = 187
-      Height = 189
+      Height = 187
       Align = alLeft
       BevelOuter = bvNone
       Color = clWhite
       ParentBackground = False
       TabOrder = 0
       OnResize = Panel21Resize
-      ExplicitHeight = 207
       object Panel211: TPanel
         Left = 0
         Top = 17
@@ -111,7 +108,6 @@ object MainForm: TMainForm
         ParentBackground = False
         TabOrder = 0
         OnResize = Panel211Resize
-        ExplicitHeight = 150
         object LabelNSat: TLabel
           Left = 1
           Top = 112
@@ -269,8 +265,6 @@ object MainForm: TMainForm
         Height = 16
         Align = alBottom
         TabOrder = 1
-        ExplicitTop = 184
-        ExplicitWidth = 200
         object ScbSol: TScrollBar
           Left = 1
           Top = 1
@@ -291,7 +285,6 @@ object MainForm: TMainForm
           ShowHint = False
           TabOrder = 0
           OnChange = ScbSolChange
-          ExplicitWidth = 173
         end
         object BtnSave: TButton
           Left = 161
@@ -308,7 +301,6 @@ object MainForm: TMainForm
           ParentFont = False
           TabOrder = 1
           OnClick = BtnSaveClick
-          ExplicitLeft = 174
         end
       end
       object Panel212: TPanel
@@ -319,7 +311,6 @@ object MainForm: TMainForm
         Align = alTop
         BevelOuter = bvNone
         TabOrder = 2
-        ExplicitWidth = 200
         object Plabel0: TLabel
           Left = 30
           Top = 2
@@ -364,7 +355,7 @@ object MainForm: TMainForm
       Left = 191
       Top = 0
       Width = 185
-      Height = 189
+      Height = 187
       Align = alLeft
       BevelOuter = bvNone
       Color = clWhite
@@ -374,8 +365,6 @@ object MainForm: TMainForm
       Constraints.MinWidth = 185
       TabOrder = 1
       OnResize = Panel22Resize
-      ExplicitLeft = 199
-      ExplicitHeight = 207
       object Disp1: TImage
         Left = 0
         Top = 0
@@ -492,7 +481,7 @@ object MainForm: TMainForm
       Left = 388
       Top = 0
       Width = 185
-      Height = 189
+      Height = 187
       Align = alClient
       BevelOuter = bvNone
       Color = clWhite
@@ -502,7 +491,6 @@ object MainForm: TMainForm
       Constraints.MinWidth = 185
       TabOrder = 2
       OnResize = Panel23Resize
-      ExplicitHeight = 207
       object Disp2: TImage
         Left = 0
         Top = 0
@@ -619,7 +607,7 @@ object MainForm: TMainForm
       Left = 388
       Top = 0
       Width = 185
-      Height = 189
+      Height = 187
       Align = alClient
       BevelOuter = bvNone
       Color = clWhite
@@ -629,7 +617,6 @@ object MainForm: TMainForm
       Constraints.MinWidth = 185
       TabOrder = 3
       OnResize = Panel24Resize
-      ExplicitHeight = 207
       object Disp3: TImage
         Left = 0
         Top = 0
@@ -746,7 +733,7 @@ object MainForm: TMainForm
       Left = 388
       Top = 0
       Width = 185
-      Height = 189
+      Height = 187
       Align = alClient
       BevelOuter = bvNone
       Color = clWhite
@@ -756,7 +743,6 @@ object MainForm: TMainForm
       Constraints.MinWidth = 185
       TabOrder = 4
       OnResize = Panel25Resize
-      ExplicitHeight = 207
       object Disp4: TImage
         Left = 0
         Top = 0
@@ -884,8 +870,6 @@ object MainForm: TMainForm
     BevelInner = bvRaised
     BevelOuter = bvLowered
     TabOrder = 2
-    ExplicitTop = 253
-    ExplicitWidth = 616
     object BtnMonitor: TSpeedButton
       Left = 2
       Top = 2
@@ -1019,8 +1003,6 @@ object MainForm: TMainForm
     BevelOuter = bvNone
     TabOrder = 3
     OnResize = Panel4Resize
-    ExplicitTop = 280
-    ExplicitWidth = 618
     object BtnStart: TBitBtn
       Left = 2
       Top = 0
@@ -1217,7 +1199,6 @@ object MainForm: TMainForm
     TabOrder = 4
     Visible = False
     OnResize = Panel5Resize
-    ExplicitWidth = 616
     object SolS: TLabel
       Left = 40
       Top = 2
@@ -1336,7 +1317,6 @@ object MainForm: TMainForm
     BevelInner = bvRaised
     BevelOuter = bvLowered
     TabOrder = 0
-    ExplicitWidth = 616
     object LabelTime: TLabel
       Left = 4
       Top = 6
@@ -1386,7 +1366,6 @@ object MainForm: TMainForm
       Align = alRight
       BevelOuter = bvNone
       TabOrder = 0
-      ExplicitLeft = 429
       object Image1: TImage
         Left = 56
         Top = 3
@@ -1765,7 +1744,7 @@ object MainForm: TMainForm
     Left = 274
     Top = 91
     Bitmap = {
-      494C0101020004001C0110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010102000400200110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

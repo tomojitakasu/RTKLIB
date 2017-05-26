@@ -57,7 +57,6 @@ USEFORM("..\appcmn\aboutdlg.cpp", AboutDialog);
 USEFORM("..\appcmn\console.cpp", Console);
 USEFORM("..\appcmn\ftpoptdlg.cpp", FtpOptDialog);
 USEFORM("..\appcmn\fileoptdlg.cpp", FileOptDialog);
-USEFORM("conndlg.cpp", ConnectDialog);
 USEFORM("pntdlg.cpp", PntDialog);
 USEFORM("plotopt.cpp", PlotOptDialog);
 USEFORM("plotmain.cpp", Plot);
@@ -65,6 +64,7 @@ USEFORM("skydlg.cpp", SkyImgDialog);
 USEFORM("satdlg.cpp", SatDialog);
 USEFORM("gmview.cpp", GoogleMapView);
 USEFORM("geview.cpp", GoogleEarthView);
+USEFORM("conndlg.cpp", ConnectDialog);
 USEFORM("mapdlg.cpp", MapAreaDialog);
 //---------------------------------------------------------------------------
 WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)

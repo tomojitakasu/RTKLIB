@@ -58,7 +58,7 @@ extern "C" {
 
 #define VER_RTKLIB  "2.4.3"             /* library version */
 
-#define PATCH_LEVEL "b27"               /* patch level */
+#define PATCH_LEVEL "b28"               /* patch level */
 
 #define COPYRIGHT_RTKLIB \
             "Copyright (C) 2007-2017 T.Takasu\nAll rights reserved."
@@ -438,16 +438,17 @@ extern "C" {
 #define STRFMT_RT17  12                 /* stream format: Trimble RT17 */
 #define STRFMT_SEPT  13                 /* stream format: Septentrio */
 #define STRFMT_CMR   14                 /* stream format: CMR/CMR+ */
-#define STRFMT_LEXR  15                 /* stream format: Furuno LPY-10000 */
-#define STRFMT_RINEX 16                 /* stream format: RINEX */
-#define STRFMT_SP3   17                 /* stream format: SP3 */
-#define STRFMT_RNXCLK 18                /* stream format: RINEX CLK */
-#define STRFMT_SBAS  19                 /* stream format: SBAS messages */
-#define STRFMT_NMEA  20                 /* stream format: NMEA 0183 */
+#define STRFMT_TERSUS 15                /* stream format: TERSUS */
+#define STRFMT_LEXR  16                 /* stream format: Furuno LPY-10000 */
+#define STRFMT_RINEX 17                 /* stream format: RINEX */
+#define STRFMT_SP3   18                 /* stream format: SP3 */
+#define STRFMT_RNXCLK 19                /* stream format: RINEX CLK */
+#define STRFMT_SBAS  20                 /* stream format: SBAS messages */
+#define STRFMT_NMEA  21                 /* stream format: NMEA 0183 */
 #ifndef EXTLEX
-#define MAXRCVFMT    14                 /* max number of receiver format */
+#define MAXRCVFMT    15                 /* max number of receiver format */
 #else
-#define MAXRCVFMT    15
+#define MAXRCVFMT    16
 #endif
 
 #define STR_MODE_R  0x1                 /* stream mode: read */
@@ -1653,6 +1654,7 @@ EXPORT int input_bnx   (raw_t *raw, unsigned char data);
 EXPORT int input_rt17  (raw_t *raw, unsigned char data);
 EXPORT int input_sbf   (raw_t *raw, unsigned char data);
 EXPORT int input_cmr   (raw_t *raw, unsigned char data);
+EXPORT int input_tersus(raw_t *raw, unsigned char data);
 EXPORT int input_lexr  (raw_t *raw, unsigned char data);
 EXPORT int input_oem4f (raw_t *raw, FILE *fp);
 EXPORT int input_oem3f (raw_t *raw, FILE *fp);
@@ -1667,6 +1669,7 @@ EXPORT int input_bnxf  (raw_t *raw, FILE *fp);
 EXPORT int input_rt17f (raw_t *raw, FILE *fp);
 EXPORT int input_sbff  (raw_t *raw, FILE *fp);
 EXPORT int input_cmrf  (raw_t *raw, FILE *fp);
+EXPORT int input_tersusf(raw_t *raw, FILE *fp);
 EXPORT int input_lexrf (raw_t *raw, FILE *fp);
 
 EXPORT int gen_ubx (const char *msg, unsigned char *buff);

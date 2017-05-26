@@ -26,6 +26,7 @@
 *                            add option -ft,-fl
 *           2016/09/06  1.15 add reload soure table by USR2 signal
 *           2016/09/17  1.16 add option -b
+*           2017/05/26  1.17 add input format tersus
 *-----------------------------------------------------------------------------*/
 #include <signal.h>
 #include <unistd.h>
@@ -90,6 +91,7 @@ static const char *help[]={
 "    rt17         : Trimble RT17 (only in)",
 "    sbf          : Septentrio SBF (only in)",
 "    cmr          : CMR/CMR+ (only in)",
+"    tersus       : TERSUS (only in)",
 "",
 " -msg \"type[(tint)][,type[(tint)]...]\"",
 "                   rtcm message types and output intervals (s)",
@@ -158,6 +160,7 @@ static void decodefmt(char *path, int *fmt)
         else if (!strcmp(p,"#rt17" )) *fmt=STRFMT_RT17;
         else if (!strcmp(p,"#sbf"  )) *fmt=STRFMT_SEPT;
         else if (!strcmp(p,"#cmr"  )) *fmt=STRFMT_CMR;
+        else if (!strcmp(p,"#tersus")) *fmt=STRFMT_TERSUS;
         else return;
         *p='\0';
     }
