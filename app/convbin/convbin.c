@@ -32,6 +32,7 @@
 *           2016/06/09 1.14 fix bug on output file with -v 3.02
 *           2016/07/01 1.15 support log format CMR/CMR+
 *           2016/07/31 1.16 add option -halfc
+*           2017/05/26  1.17 add input format tersus
 *-----------------------------------------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>
@@ -76,6 +77,8 @@ static const char *help[]={
 " Trimble               : RT17",
 " Septentrio            : SBF",
 " CMR                   : CMR Type 0, 1, 2, 3, 4, CMR+ Type 1, 2, 3",
+" TERSUS                : RANGECMPB, RANGEB, GPSEPHEMB, GLOEPHEMERISB,",
+"                         BDSEPHEMERISB",
 " RINEX                 : OBS, NAV, GNAV, HNAV, LNAV, QNAV",
 "",
 " Options [default]",
@@ -101,6 +104,7 @@ static const char *help[]={
 "                  rt17 = Trimble RT17",
 "                  sbf  = Septentrio SBF",
 "                  cmr  = CMR/CMR+",
+"                  tersus= TERSUS",
 "                  rinex= RINEX",
 "     -ro opt      receiver options",
 "     -f freq      number of frequencies [2]",
@@ -154,6 +158,7 @@ static const char *help[]={
 "     *.rt17        Trimble RT17",
 "     *.sbf         Septentrio SBF",
 "     *.cmr         CMR/CMR+",
+"     *.trs         TERSUS",
 "     *.obs,*.*o    RINEX OBS"
 };
 /* print help ----------------------------------------------------------------*/
@@ -468,6 +473,7 @@ static int cmdopts(int argc, char **argv, rnxopt_t *opt, char **ifile,
         else if (!strcmp(fmt,"rt17" )) format=STRFMT_RT17;
         else if (!strcmp(fmt,"sbf"  )) format=STRFMT_SEPT;
         else if (!strcmp(fmt,"cmr"  )) format=STRFMT_CMR;
+        else if (!strcmp(fmt,"tersus")) format=STRFMT_TERSUS;
         else if (!strcmp(fmt,"rinex")) format=STRFMT_RINEX;
     }
     else {
@@ -486,6 +492,7 @@ static int cmdopts(int argc, char **argv, rnxopt_t *opt, char **ifile,
         else if (!strcmp(p,".rt17" ))  format=STRFMT_RT17;
         else if (!strcmp(p,".sbf"  ))  format=STRFMT_SEPT;
         else if (!strcmp(p,".cmr"  ))  format=STRFMT_CMR;
+        else if (!strcmp(p,".trs"  ))  format=STRFMT_TERSUS;
         else if (!strcmp(p,".obs"  ))  format=STRFMT_RINEX;
         else if (!strcmp(p+3,"o"   ))  format=STRFMT_RINEX;
         else if (!strcmp(p+3,"O"   ))  format=STRFMT_RINEX;

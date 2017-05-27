@@ -75,7 +75,7 @@ void __fastcall TPlot::DrawTrk(int level)
     sol_t *sol;
     TPoint p1,p2;
     TColor color;
-    double xt,yt,sx,sy,opos[3],pnt[3],rr[3],enu[3],cent[3];
+    double xt,yt,sx,sy,opos[3],pnt[3],rr[3],enu[3]={0},cent[3];
     int i,j,index,sel=!BtnSol1->Down&&BtnSol2->Down?1:0,p=0;
     
     trace(3,"DrawTrk: level=%d\n",level);
@@ -563,7 +563,7 @@ void __fastcall TPlot::DrawTrkVel(const TIMEPOS *vel)
     trace(3,"DrawTrkVel\n");
     
     if (vel&&vel->n>0) {
-        if ((v=sqrt(SQR(vel->x[0])+SQR(vel->y[0])))>1.0) {
+        if ((v=SQRT(SQR(vel->x[0])+SQR(vel->y[0])))>1.0) {
             dir=ATAN2(vel->x[0],vel->y[0])*R2D;
         }
     }

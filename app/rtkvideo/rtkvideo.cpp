@@ -7,8 +7,8 @@
 #pragma hdrstop
 #include <System.StartUpCopy.hpp>
 //---------------------------------------------------------------------------
-USEFORM("videomain.cpp", MainForm);
 USEFORM("videoopt.cpp", VideoOptDlg);
+USEFORM("videomain.cpp", MainForm);
 //---------------------------------------------------------------------------
 extern "C" int FMXmain()
 {

@@ -38,10 +38,10 @@ USEFORM("..\appcmn\aboutdlg.cpp", AboutDialog);
 USEFORM("..\appcmn\ftpoptdlg.cpp", FtpOptDialog);
 USEFORM("..\appcmn\maskoptdlg.cpp", MaskOptDialog);
 USEFORM("..\appcmn\keydlg.cpp", KeyDialog);
-USEFORM("..\rtknavi\mondlg.cpp", MonitorDialog);
-USEFORM("..\rtknavi\outstrdlg.cpp", OutputStrDialog);
 USEFORM("..\rtknavi\naviopt.cpp", OptDialog);
 USEFORM("..\rtknavi\navimain.cpp", MainForm);
+USEFORM("..\rtknavi\mondlg.cpp", MonitorDialog);
+USEFORM("..\rtknavi\outstrdlg.cpp", OutputStrDialog);
 USEFORM("..\rtknavi\rcvoptdlg.cpp", RcvOptDialog);
 //---------------------------------------------------------------------------
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)

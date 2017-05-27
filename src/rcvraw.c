@@ -33,6 +33,7 @@
 *           2016/01/23 1.11 enable septentrio
 *           2016/01/28 1.12 add decode_gal_inav() for galileo I/NAV
 *           2016/07/04 1.13 support CMR/CMR+
+*           2017/05/26 1.14 support TERSUS
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 #include <stdint.h>
@@ -998,6 +999,7 @@ extern int input_raw(raw_t *raw, int format, unsigned char data)
         case STRFMT_RT17 : return input_rt17 (raw,data);
         case STRFMT_SEPT : return input_sbf  (raw,data);
         case STRFMT_CMR  : return input_cmr  (raw,data);
+        case STRFMT_TERSUS: return input_tersus(raw,data);
         case STRFMT_LEXR : return input_lexr (raw,data);
     }
     return 0;
@@ -1027,6 +1029,7 @@ extern int input_rawf(raw_t *raw, int format, FILE *fp)
         case STRFMT_RT17 : return input_rt17f (raw,fp);
         case STRFMT_SEPT : return input_sbff  (raw,fp);
         case STRFMT_CMR  : return input_cmrf  (raw,fp);
+        case STRFMT_TERSUS: return input_tersusf(raw,fp);
         case STRFMT_LEXR : return input_lexrf (raw,fp);
     }
     return -2;

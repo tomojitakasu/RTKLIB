@@ -550,7 +550,7 @@ void __fastcall TPlot::UpdateSky(void)
             }
             else {
                 r=acos(q[2])/(PI/2.0);
-                a=sqrt(SQR(q[0])+SQR(q[1]));
+                a=SQRT(SQR(q[0])+SQR(q[1]));
                 xp=r*q[0]/a;
                 yp=r*q[1]/a;
             }
