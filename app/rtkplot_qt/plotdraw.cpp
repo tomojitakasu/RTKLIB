@@ -79,7 +79,7 @@ void Plot::DrawTrk(QPainter &c, int level)
     gtime_t time1 = { 0, 0 }, time2 = { 0, 0 };
     sol_t *sol;
     QPoint p1, p2;
-    double xt, yt, sx, sy, opos[3], pnt[3], rr[3], enu[3], cent[3];
+    double xt, yt, sx, sy, opos[3], pnt[3], rr[3], enu[3]={}, cent[3];
     int i, sel = !BtnSol1->isChecked() && BtnSol2->isChecked() ? 1 : 0, p = 0;
 
     trace(3, "DrawTrk: level=%d\n", level);

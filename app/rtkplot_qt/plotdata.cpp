@@ -529,7 +529,7 @@ void Plot::UpdateSky(void)
     for (j = 0; j < h2; j++) for (i = 0; i < w2; i++) {
             xp = (w2 / 2.0 - i) / SkyScaleR;
             yp = (j - h2 / 2.0) / SkyScaleR;
-            r = sqrt(SQR(xp) + SQR(yp));
+            r = SQRT(SQR(xp) + SQR(yp));
             if (SkyElMask && r > 1.0) continue;
 
             // rotate coordinates roll-pitch-yaw

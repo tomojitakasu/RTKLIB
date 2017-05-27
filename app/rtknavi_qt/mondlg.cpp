@@ -118,11 +118,11 @@ void MonitorDialog::SelFmtChange(int)
 
     AddConsole((unsigned char *)c, 1, 1);
 
-    if (ConFmt >= 3 && ConFmt < 17)
+    if (ConFmt >= 3 && ConFmt < 18)
         free_raw(&raw);
     ConFmt = SelFmt->currentIndex();
 
-    if (ConFmt >= 3 && ConFmt < 17)
+    if (ConFmt >= 3 && ConFmt < 18)
         init_raw(&raw, ConFmt - 2);
 }
 //---------------------------------------------------------------------------
@@ -266,7 +266,7 @@ void MonitorDialog::Timer2Timer()
                 rtcm.msgtype[0] = '\0';
 			}
         }
-    } else if (ConFmt < 17) {
+    } else if (ConFmt < 18) {
         for (i = 0; i < len; i++) {
             input_raw(&raw, ConFmt - 2, msg[i]);
 			if (raw.msgtype[0]) {

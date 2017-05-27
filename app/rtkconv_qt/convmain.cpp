@@ -807,6 +807,8 @@ void MainWindow::ConvertFile(void)
             conversionThread->format = STRFMT_RT17;
         } else if (fi.completeSuffix() == "cmr") {
             conversionThread->format = STRFMT_CMR;
+        } else if (fi.completeSuffix() == "trs") {
+            conversionThread->format = STRFMT_TERSUS;
         } else if (fi.completeSuffix().toLower() == "obs") {
             conversionThread->format = STRFMT_RINEX;
         } else if (fi.completeSuffix().toLower().contains("nav")) {
