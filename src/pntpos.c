@@ -391,7 +391,6 @@ static int estpos(const obsd_t *obs, int n, const double *rs, const double *dts,
                 sol->stat=opt->sateph==EPHOPT_SBAS?SOLQ_SBAS:SOLQ_SINGLE;
             }
             free(v); free(H); free(var);
-            
             return stat;
         }
     }
