@@ -3159,8 +3159,8 @@ extern int strsetsrctbl(stream_t *stream, const char *file)
 *-----------------------------------------------------------------------------*/
 extern void strsetopt(const int *opt)
 {
-    tracet(3,"strsetopt: opt=%d %d %d %d %d %d %d %d\n",opt[0],opt[1],opt[2],
-           opt[3],opt[4],opt[5],opt[6],opt[7]);
+    tracet(3,"strsetopt: opt=%d %d %d %d %d\n",opt[0],opt[1],opt[2],
+           opt[3],opt[4]);
     
     toinact    =0<opt[0]&&opt[0]<1000?1000:opt[0]; /* >=1s */
     ticonnect  =opt[1]<1000?1000:opt[1]; /* >=1s */
