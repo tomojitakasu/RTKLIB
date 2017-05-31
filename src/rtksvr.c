@@ -545,7 +545,7 @@ static void *rtksvrthread(void *arg)
     
     tracet(3,"rtksvrthread:\n");
     
-    svr->state=1; obs.data=data;
+    obs.data=data;
     svr->tick=tickget();
     ticknmea=tick1hz=svr->tick-1000;
     tickreset=svr->tick-MIN_INT_RESET;
@@ -912,6 +912,7 @@ extern int rtksvrstart(rtksvr_t *svr, int cycle, int buffsize, int *strs,
         strsendcmd(svr->stream+i,cmds[i]);
     }
     /* write solution header to solution streams */
+    svr->state=1;
     for (i=3;i<5;i++) {
         writesolhead(svr->stream+i,svr->solopt+i-3);
     }
