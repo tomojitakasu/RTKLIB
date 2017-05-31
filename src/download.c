@@ -129,7 +129,7 @@ static void remot2local(const char *remot, const char *dir, char *local)
 static int exist_file(const char *local)
 {
 #ifdef WIN32
-    DWORD stat=GetFileAttributes(local);
+    DWORD stat=GetFileAttributesA(local);
     return stat!=0xFFFFFFFF;
 #else
     struct stat buff;
@@ -276,20 +276,20 @@ static int mkdir_r(const char *dir)
     
 #ifdef WIN32
     HANDLE h;
-    WIN32_FIND_DATA data;
+    WIN32_FIND_DATAA data;
     
     if (!*dir||!strcmp(dir+1,":\\")) return 1;
     
     strcpy(pdir,dir);
     if ((p=strrchr(pdir,FILEPATHSEP))) {
         *p='\0';
-        h=FindFirstFile(pdir,&data);
+        h=FindFirstFileA(pdir,&data);
         if (h==INVALID_HANDLE_VALUE) {
             if (!mkdir_r(pdir)) return 0;
         }
         else FindClose(h);
     }
-    if (CreateDirectory(dir,NULL)||
+    if (CreateDirectoryA(dir,NULL)||
         GetLastError()==ERROR_ALREADY_EXISTS) return 1;
     
     trace(2,"directory generation error: dir=%s\n",dir);

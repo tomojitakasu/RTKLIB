@@ -376,7 +376,7 @@ static serial_t *openserial(const char *path, int mode, char *msg)
     if (mode&STR_MODE_R) rw|=GENERIC_READ;
     if (mode&STR_MODE_W) rw|=GENERIC_WRITE;
     
-    serial->dev=CreateFile(dev,rw,0,0,OPEN_EXISTING,0,NULL);
+    serial->dev=CreateFileA(dev,rw,0,0,OPEN_EXISTING,0,NULL);
     if (serial->dev==INVALID_HANDLE_VALUE) {
         sprintf(msg,"%s open error (%d)",port,(int)GetLastError());
         tracet(1,"openserial: %s path=%s\n",msg,path);
@@ -391,7 +391,7 @@ static serial_t *openserial(const char *path, int mode, char *msg)
         return NULL;
     }
     sprintf(dcb,"baud=%d parity=%c data=%d stop=%d",brate,parity,bsize,stopb);
-    if (!BuildCommDCB(dcb,&cc.dcb)) {
+    if (!BuildCommDCBA(dcb,&cc.dcb)) {
         sprintf(msg,"%s buiddcb error (%d)",port,(int)GetLastError());
         tracet(1,"openserial: %s\n",msg);
         CloseHandle(serial->dev);
@@ -540,7 +540,7 @@ static int statexserial(serial_t *serial, char *msg)
     p+=sprintf(p,"serial:\n");
     p+=sprintf(p,"  state   = %d\n",state);
     if (!state) return 0;
-    p+=sprintf(p,"  dev     = %d\n",(int)serial->dev);
+    p+=sprintf(p,"  dev     = %d\n",(int)(size_t)serial->dev);
     p+=sprintf(p,"  error   = %d\n",serial->error);
 #ifdef WIN32
     p+=sprintf(p,"  buffsize= %d\n",serial->buffsize);
