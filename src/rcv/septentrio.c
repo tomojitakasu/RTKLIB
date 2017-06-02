@@ -230,11 +230,13 @@ static int decode_measepoch(raw_t *raw){
     gtime_t time;
     double tow,psr, adr, dopplerType1;
     double SNR_DBHZ, SNR2_DBHZ, freqType1, freqType2, alpha;
-    int16_t i,ii,j,prn,sat,n=0,nsat,week, code, h;
+    int16_t i,ii,j,n=0,nsat, code, h;
+    uint16_t week, prn;
     uint8_t *p=(raw->buff)+8;                   /* jump to TOW location */
-    int SB1length,SB2length;
-    uint8_t signType1, signType2;
-    uint32_t codeLSB, SB2Num, sys;
+    uint8_t SB1length,SB2length;
+    int sat, sys;
+    uint8_t signType1, signType2, satID;
+    uint32_t codeLSB, SB2Num;
     uint8_t codeMSB, CommonFlags;
     int pri;
 
@@ -367,15 +369,15 @@ static int decode_measepoch(raw_t *raw){
             sat = 0;}
 
         /* store satellite number */
-        sat = satno(sys, sat);
-        if (sat == 0)
+        satID = satno(sys, sat);
+        if (satID == 0)
         {
             p = p + SB1length; /* skip data */
             p = p + SB2length*SB2Num;
             continue;
         };
 
-        raw->obs.data[n].sat=sat;
+        raw->obs.data[n].sat=satID;
 
         /* start new observation period */
         if (fabs(timediff(raw->obs.data[0].time,raw->time))>1E-9) {
@@ -668,13 +670,13 @@ static int getFreqNo(int signType){
         _freq=0;
         break;
     case 1:                                                        /* GPSL1PY */
-        _freq=0;
+        _freq=NEXOBS<1?-1:NFREQ;
         break;
     case 2:                                                        /* GPSL2PY */
         _freq=1;
         break;
     case 3:                                                        /* GPSL2C  */
-        _freq=1;
+        _freq=NEXOBS<2?-1:NFREQ+1;
         break;
     case 4:                                                        /* GPSL5   */
         _freq=2;
@@ -689,13 +691,13 @@ static int getFreqNo(int signType){
         _freq=0;
         break;
     case 9:                                                        /* GLOL1P  */
-        _freq=0;
+        _freq=NEXOBS<1?-1:NFREQ;
         break;
     case 10:                                                       /* GLOL2P  */
         _freq=1;
         break;
     case 11:                                                       /* GLOL2CA */
-        _freq=2;
+        _freq=NEXOBS<2?-1:NFREQ+1;
         break;
     case 12:                                                       /* GLOL3 */
         _freq=3;
