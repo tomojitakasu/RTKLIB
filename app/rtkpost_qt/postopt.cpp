@@ -63,7 +63,7 @@ OptDialog::OptDialog(QWidget *parent)
     connect(BtnRefPos, SIGNAL(clicked(bool)), this, SLOT(BtnRefPosClick()));
     connect(BtnRovPos, SIGNAL(clicked(bool)), this, SLOT(BtnRovPosClick()));
     connect(BtnStaPosView, SIGNAL(clicked(bool)), this, SLOT(BtnStaPosViewClick()));
-    connect(BtnStaPosFile, SIGNAL(clicked(bool)), this, SLOT(BtnSatPcvFileClick()));
+    connect(BtnStaPosFile, SIGNAL(clicked(bool)), this, SLOT(BtnStaPosFileClick()));
     connect(OutputHeight, SIGNAL(currentIndexChanged(int)), this, SLOT(OutputHeightClick()));
     connect(RefPosType, SIGNAL(currentIndexChanged(int)), this, SLOT(RefPosTypeChange()));
     connect(RovPosType, SIGNAL(currentIndexChanged(int)), this, SLOT(RovPosTypeChange()));
