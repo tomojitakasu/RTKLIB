@@ -1,3 +1,3 @@
-EMPLATE = subdirs
+TEMPLATE = subdirs
 
 SUBDIRS= iers 

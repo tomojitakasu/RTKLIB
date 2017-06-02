@@ -1,6 +1,7 @@
 TEMPLATE = subdirs
 
 SUBDIRS= src \
+         lib \
 	 app
 
-app.depends = src
+app.depends = src lib

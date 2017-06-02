@@ -48,3 +48,4 @@ SOURCES += src/cal2jd.f\
 	   src/vmf1_ht.f \
 	   src/zero_vec8.f
 
+DESTDIR = ..
