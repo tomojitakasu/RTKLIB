@@ -8,3 +8,6 @@ Makefile*
 rtkplot_qt
 rtkplot_qt.exe
 object_script*
+debug
+release
+*.stat

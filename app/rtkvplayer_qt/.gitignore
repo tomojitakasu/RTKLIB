@@ -8,3 +8,5 @@ Makefile*
 rtknavi_qt
 rtknavi_qt.exe
 object_script*
+debug
+release
