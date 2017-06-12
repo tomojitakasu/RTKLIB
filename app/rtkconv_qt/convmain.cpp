@@ -218,7 +218,7 @@ void MainWindow::closeEvent(QCloseEvent *)
 void MainWindow::SetOutFiles(const QString &infile)
 {
     QLineEdit *edit[] = {
-        OutFile1, OutFile2, OutFile3, OutFile4, OutFile5, OutFile6, OutFile7
+        OutFile1, OutFile2, OutFile3, OutFile4, OutFile5, OutFile6, OutFile7, OutFile8, OutFile9
     };
     QString Format_Text = Format->currentText();
     QString OutDir_Text = OutDir->text();
@@ -263,7 +263,7 @@ void MainWindow::SetOutFiles(const QString &infile)
         ofile[8] += ofile[0] + "%%r%%n0.%%yI";
         ofile[9] += ofile[0] + (lex ? "%%r%%n0_%%y.lex" : "%%r%%n0_%%y.sbs");
     }
-    for (i = 0; i < 7; i++) {
+    for (i = 0; i < 9; i++) {
         if (ofile[i + 1] == infile) ofile[i + 1] += "_";
         ofile[i + 1] = QDir::toNativeSeparators(ofile[i + 1]);
         edit[i]->setText(ofile[i + 1]);
@@ -1153,8 +1153,8 @@ void MainWindow::SaveOpt(void)
     ini.setValue("set/outfile5", OutFile5->text());
     ini.setValue("set/outfile6", OutFile6->text());
     ini.setValue("set/outfile7", OutFile7->text());
-    ini.setValue("set/outfile8", OutFile7->text());
-    ini.setValue("set/outfile9", OutFile7->text());
+    ini.setValue("set/outfile8", OutFile8->text());
+    ini.setValue("set/outfile9", OutFile9->text());
     ini.setValue("set/outdirena", OutDirEna->isChecked());
     ini.setValue("set/outfileena1", OutFileEna1->isChecked());
     ini.setValue("set/outfileena2", OutFileEna2->isChecked());
@@ -1163,8 +1163,8 @@ void MainWindow::SaveOpt(void)
     ini.setValue("set/outfileena5", OutFileEna5->isChecked());
     ini.setValue("set/outfileena6", OutFileEna6->isChecked());
     ini.setValue("set/outfileena7", OutFileEna7->isChecked());
-    ini.setValue("set/outfileena8", OutFileEna7->isChecked());
-    ini.setValue("set/outfileena9", OutFileEna7->isChecked());
+    ini.setValue("set/outfileena8", OutFileEna8->isChecked());
+    ini.setValue("set/outfileena9", OutFileEna9->isChecked());
     ini.setValue("set/format", Format->currentIndex());
 
     WriteList(&ini, "hist/inputfile", InFile);
