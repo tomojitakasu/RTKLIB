@@ -1451,6 +1451,13 @@ static void accept_sock(int ssock, con_t **con)
     trace(2,"remote console connection refused. addr=%s\n",
          inet_ntoa(addr.sin_addr));
 }
+
+/*close socket for remote console*/
+static void close_sock(int ssock)
+{
+    close(ssock);
+}
+
 /* rtkrcv main -----------------------------------------------------------------
 * sysnopsis
 *     rtkrcv [-s][-p port][-d dev][-o file][-r level][-t level][-sta sta]
@@ -1643,6 +1650,13 @@ int main(int argc, char **argv)
     for (i=0;i<MAXCON;i++) {
         con_close(con[i]);
     }
+
+    /*close socket for remote console*/
+    if (port) {
+        close_sock(sock);
+    }
+
+    
     if (moniport>0) closemoni();
     if (outstat>0) rtkclosestat();
     
