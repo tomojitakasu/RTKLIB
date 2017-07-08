@@ -28,7 +28,6 @@
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
-static const char rcsid[]="$Id:$";
 
 /* write solution header to output stream ------------------------------------*/
 static void writesolhead(stream_t *stream, const solopt_t *solopt)

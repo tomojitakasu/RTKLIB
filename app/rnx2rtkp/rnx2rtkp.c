@@ -17,7 +17,6 @@
 #include <stdarg.h>
 #include "rtklib.h"
 
-static const char rcsid[]="$Id: rnx2rtkp.c,v 1.1 2008/07/17 21:55:16 ttaka Exp $";
 
 #define PROGNAME    "rnx2rtkp"          /* program name */
 #define MAXFILE     8                   /* max number of input files */

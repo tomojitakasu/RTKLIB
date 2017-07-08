@@ -16,7 +16,6 @@
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
-static const char rcsid[]="$Id$";
 
 /* test observation data message ---------------------------------------------*/
 static int is_obsmsg(int msg)

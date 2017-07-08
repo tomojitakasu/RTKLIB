@@ -61,7 +61,6 @@
 #include <netdb.h>
 #endif
 
-static const char rcsid[]="$Id$";
 
 /* constants -----------------------------------------------------------------*/
 

@@ -119,7 +119,6 @@
 #endif
 #include "rtklib.h"
 
-static const char rcsid[]="$Id: rtkcmn.c,v 1.1 2008/07/17 21:48:06 ttaka Exp ttaka $";
 
 /* constants -----------------------------------------------------------------*/
 
@@ -993,7 +992,9 @@ extern int matinv(double *A, int n)
     indx=imat(n,1); B=mat(n,n); matcpy(B,A,n,n);
     if (ludcmp(B,n,indx,&d)) {free(indx); free(B); return -1;}
     for (j=0;j<n;j++) {
-        for (i=0;i<n;i++) A[i+j*n]=0.0; A[j+j*n]=1.0;
+        for (i=0;i<n;i++) 
+        	A[i+j*n]=0.0; 
+        A[j+j*n]=1.0;
         lubksb(B,n,indx,A+j*n);
     }
     free(indx); free(B);
@@ -1166,7 +1167,9 @@ extern double str2num(const char *s, int i, int n)
     char str[256],*p=str;
     
     if (i<0||(int)strlen(s)<i||(int)sizeof(str)-1<n) return 0.0;
-    for (s+=i;*s&&--n>=0;s++) *p++=*s=='d'||*s=='D'?'E':*s; *p='\0';
+    for (s+=i;*s&&--n>=0;s++) 
+    	*p++=*s=='d'||*s=='D'?'E':*s; 
+    *p='\0';
     return sscanf(str,"%lf",&value)==1?value:0.0;
 }
 /* string to time --------------------------------------------------------------
@@ -1182,7 +1185,9 @@ extern int str2time(const char *s, int i, int n, gtime_t *t)
     char str[256],*p=str;
     
     if (i<0||(int)strlen(s)<i||(int)sizeof(str)-1<i) return -1;
-    for (s+=i;*s&&--n>=0;) *p++=*s++; *p='\0';
+    for (s+=i;*s&&--n>=0;) 
+    	*p++=*s++; 
+    *p='\0';
     if (sscanf(str,"%lf %lf %lf %lf %lf %lf",ep,ep+1,ep+2,ep+3,ep+4,ep+5)<6)
         return -1;
     if (ep[0]<100.0) ep[0]+=ep[0]<80.0?2000.0:1900.0;

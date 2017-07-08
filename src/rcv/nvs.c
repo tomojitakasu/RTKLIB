@@ -35,7 +35,6 @@
 #define ID_XD7SMOOTH   0xd7     /* */
 #define ID_XD5BIT      0xd5     /* */
 
-static const char rcsid[]="$Id: nvs.c,v 1.0 2012/01/30 00:05:05 MBAVA Exp $";
 
 /* get fields (little-endian) ------------------------------------------------*/
 #define U1(p) (*((unsigned char *)(p)))

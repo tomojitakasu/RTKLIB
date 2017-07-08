@@ -32,7 +32,6 @@
 #include "rtklib.h"
 #include <stdint.h>
 
-static const char rcsid[]="$Id:$";
 
 #define P2_66       1.355252715606881E-20 /* 2^-66 for BeiDou ephemeris */
 
@@ -546,12 +545,16 @@ static void decode_gps_subfrm4(const unsigned char *buff, alm_t *alm,
         /* decode as and sv config */
         i=56;
         for (sat=1;sat<=32;sat++) {
-            if (alm) alm[sat-1].svconf=getbitu(buff,i,4); i+=4;
+            if (alm) 
+            	alm[sat-1].svconf=getbitu(buff,i,4); 
+            i+=4;
         }
         /* decode sv health */
         i=186;
         for (sat=25;sat<=32;sat++) {
-            if (alm) alm[sat-1].svh   =getbitu(buff,i,6); i+=6;
+            if (alm) 
+            	alm[sat-1].svh=getbitu(buff,i,6); 
+            i+=6;
         }
     }
     else if (svid==56) { /* page 18 */

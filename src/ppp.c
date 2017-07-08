@@ -39,7 +39,6 @@
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
-static const char rcsid[]="$Id:$";
 
 #define SQR(x)      ((x)*(x))
 #define MIN(x,y)    ((x)<=(y)?(x):(y))

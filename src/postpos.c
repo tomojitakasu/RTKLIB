@@ -30,7 +30,6 @@
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
-static const char rcsid[]="$Id: postpos.c,v 1.1 2008/07/17 21:48:06 ttaka Exp $";
 
 #define MIN(x,y)    ((x)<(y)?(x):(y))
 #define SQRT(x)     ((x)<=0.0?0.0:sqrt(x))
@@ -1215,7 +1214,9 @@ extern int postpos(gtime_t ts, gtime_t te, double ti, double tu,
     else if (ts.time!=0) {
         for (i=0;i<n&&i<MAXINFILE;i++) {
             if (!(ifile[i]=(char *)malloc(1024))) {
-                for (;i>=0;i--) free(ifile[i]); return -1;
+                for (;i>=0;i--) 
+                	free(ifile[i]); 
+                return -1;
             }
             reppath(infile[i],ifile[i],ts,"","");
             index[i]=i;

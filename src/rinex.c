@@ -84,7 +84,6 @@
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
-static const char rcsid[]="$Id:$";
 
 /* constants/macros ----------------------------------------------------------*/
 
@@ -1586,7 +1585,9 @@ extern int readrnxc(const char *file, nav_t *nav)
     
     for (i=0;i<MAXEXFILE;i++) {
         if (!(files[i]=(char *)malloc(1024))) {
-            for (i--;i>=0;i--) free(files[i]); return 0;
+            for (i--;i>=0;i--) 
+            	free(files[i]); 
+            return 0;
         }
     }
     /* expand wild-card */

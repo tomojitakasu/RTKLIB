@@ -19,7 +19,6 @@
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
-static const char rcsid[]="$Id:$";
 
 /* system options buffer -----------------------------------------------------*/
 static prcopt_t prcopt_;
