@@ -29,8 +29,6 @@
 #define ID_LEXRAW   0x0002      /* lex receiver message id: raw measurement */
 #define ID_LEXMSG   0x0015      /* lex receiver message id: lex message */
 
-static const char rcsid[]="$Id:$";
-
 /* extract field (big-endian) ------------------------------------------------*/
 #define U1(p)       (*((unsigned char *)(p)))
 #define I1(p)       (*((signed char *)(p)))

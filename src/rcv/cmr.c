@@ -419,9 +419,6 @@ typedef struct {                    /* CMR information struct type */
     unsigned char SlipV[MAXSAT][2]; /* Slip counts valid indicator */
 } cmr_t;
 
-/* Static global literals: */
-static const char rcsid[]="$Id:$";
-
 /* CMR 0x93 message types: */
 static const char *CMRTable[] = {
     /* 0 */ "GPS Observables",

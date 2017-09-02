@@ -34,8 +34,6 @@
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
-static const char rcsid[]="$Id:$";
-
 #define NOUTFILE        9       /* number of output files */
 #define NSATSYS         7       /* number of satellite systems */
 #define TSTARTMARGIN    60.0    /* time margin for file name replacement */

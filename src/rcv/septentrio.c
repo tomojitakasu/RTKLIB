@@ -35,13 +35,12 @@
 *           2016/05/25  1.7  rtk_crc24q() -> crc24q() by T.T
 *           2016/07/29  1.8  crc24q() -> rtk_crc24q() by T.T
 *           2017/04/11  1.9  (char *) -> (signed char *) by T.T
+*           2017/09/01  1.10 suppress warnings
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
 #include <math.h>
 #include <stdint.h>
-
-static const char rcsid[]="$Id: Septentrio SBF,v 1.1 2016/02/11 FT $";
 
 extern const sbsigpband_t igpband1[][8]; /* SBAS IGP band 0-8 */
 extern const sbsigpband_t igpband2[][5]; /* SBAS IGP band 9-10 */
@@ -570,6 +569,8 @@ static double getSigFreq(int _signType, int freqNo){
     return FREQ1;
 }
 
+#if 0 /* UNUSED */
+
 /* adjust weekly rollover of gps time ----------------------------------------*/
 static gtime_t adjweek(gtime_t time, double tow)
 {
@@ -580,6 +581,8 @@ static gtime_t adjweek(gtime_t time, double tow)
     else if (tow>tow_p+302400.0) tow-=604800.0;
     return gpst2time(week,tow);
 }
+
+#endif /* UNUSED */
 
 /* return the Septentrio signal type -----------------------------------------*/
 static int getSignalCode(int signType){
@@ -1039,6 +1042,8 @@ static int decode_sbasnav(raw_t *raw){
     return 2;
 }
 
+#if 0 /* UNUSED */
+
 /* decode SBF nav message for Compass/Beidou (navigation data) --------------------------*/
 static int decode_cmpnav(raw_t *raw){
 
@@ -1185,6 +1190,8 @@ static int decode_qzssnav(raw_t *raw){
     raw->ephsat=sat;
     return 2;
 }
+
+#endif /* UNUSED */
 
 /* decode SBF raw nav message (raw navigation data) --------------------------*/
 static int decode_rawnav(raw_t *raw, int sys){
@@ -1492,6 +1499,8 @@ static int decode_glorawcanav(raw_t *raw){
     return 2;
 }
 
+#if 0 /* UNUSED */
+
 /* decode SBF raw nav message (raw navigation data) for COMPASS ---------*/
 static int decode_cmpraw(raw_t *raw){
     eph_t eph={0};
@@ -1558,6 +1567,7 @@ static int decode_cmpraw(raw_t *raw){
             return 2;
 }
 
+#endif /* UNUSED */
 
 /* decode SBF gloutc --------------------------------------------------------*/
 static int decode_gloutc(raw_t *raw)
@@ -1747,6 +1757,8 @@ static int decode_galalm(raw_t *raw)
 
     return 9;
 }
+
+#if 0 /* UNUSED */
 
 /* type 2-5,0: fast corrections ---------------------------------------*/
 static int decode_sbsfast(raw_t *raw)
@@ -2077,6 +2089,8 @@ static int decode_sbslongcorrh(raw_t* raw)
     return 0;
 }
 
+#endif /* UNUSED */
+
 /* decode SBF raw message --------------------------------------------------*/
 static int decode_sbf(raw_t *raw)
 {
@@ -2135,7 +2149,7 @@ static int decode_sbf(raw_t *raw)
 #ifdef ENAQZS
         case ID_QZSSL1CA:
         case ID_QZSSL2C:
-        case ID_QZSSL5:         return decode_rawnav(raw, SYS_QZS);l
+        case ID_QZSSL5:         return decode_rawnav(raw, SYS_QZS);
         case ID_QZSS_NAV:       return decode_qzssnav(raw);
 #endif
 
@@ -2145,7 +2159,7 @@ static int decode_sbf(raw_t *raw)
 #endif
 #endif
 
-#if 0 /* not yet supported by RTKLIB */
+#if 0 /* UNUSED */
         case ID_GEOMT00:        return decode_sbsfast(raw);
         case ID_GEOPRNMASK:     return decode_sbsprnmask(raw);
         case ID_GEOFASTCORR:    return decode_sbsfast(raw);
@@ -2154,16 +2168,16 @@ static int decode_sbf(raw_t *raw)
         case ID_GEOIGPMASK:     return decode_sbsigpmask(raw);
         case ID_GEOLONGTERMCOR: return decode_sbslongcorrh(raw);
         case ID_GEOIONODELAY:   return decode_sbsionodelay(raw);
-#endif
+#endif /* UNUSED */
 
-#if 0 /* unused */
+#if 0 /* UNUSED */
         case ID_GALRAWFNAV:     return decode_galrawfnav(raw); /* not yet supported in RTKLIB */
         case ID_GLOALM:         return decode_glosalm(raw); /* not yet supported in RTKLIB */
 
         case ID_PVTGEOD:        return decode_pvtgeod(raw);
         case ID_RXSETUP:        return decode_rxsetup(raw);
         case ID_COMMENT:        return decode_comment(raw);
-#endif
+#endif /* UNUSED */
         default:
             trace(3,"decode_sbf: unused frame type=%04x len=%d\n",type,raw->len);
         /* there are many more SBF blocks to be extracted */

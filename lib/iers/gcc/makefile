@@ -9,7 +9,7 @@ OBS = cal2jd.o dat.o dehanttideinel.o gmf.o gpt.o norm8.o sprod.o st1idiu.o \
       st1isem.o st1l1.o step2diu.o step2lon.o vmf1.o vmf1_ht.o zero_vec8.o
 
 iers.a     : $(OBS)
-	ar ru iers.a $(OBS)
+	ar r iers.a $(OBS)
 cal2jd.o   : $(SRC)/cal2jd.f
 	$(F77) -c $(F77FLAGS) $(SRC)/cal2jd.f
 dat.o      : $(SRC)/dat.f

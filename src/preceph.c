@@ -44,8 +44,6 @@
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
-static const char rcsid[]="$Id:$";
-
 #define SQR(x)      ((x)*(x))
 
 #define NMAX        10              /* order of polynomial interpolation */

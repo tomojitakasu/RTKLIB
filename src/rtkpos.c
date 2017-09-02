@@ -43,8 +43,6 @@
 #include <stdarg.h>
 #include "rtklib.h"
 
-static const char rcsid[]="$Id:$";
-
 /* constants/macros ----------------------------------------------------------*/
 
 #define SQR(x)      ((x)*(x))
@@ -486,7 +484,8 @@ static void udpos(rtk_t *rtk, double tt)
         return;
     }
     /* check variance of estimated postion */
-    for (i=0;i<3;i++) var+=rtk->P[i+i*rtk->nx]; var/=3.0;
+    for (i=0;i<3;i++) var+=rtk->P[i+i*rtk->nx];
+    var/=3.0;
     
     if (var>VAR_POS) {
         /* reset position with large variance */

@@ -47,8 +47,6 @@
 #include <ctype.h>
 #include "rtklib.h"
 
-static const char rcsid[]="$Id: solution.c,v 1.1 2008/07/17 21:48:06 ttaka Exp $";
-
 /* constants and macros ------------------------------------------------------*/
 
 #define SQR(x)     ((x)<0.0?-(x)*(x):(x)*(x))

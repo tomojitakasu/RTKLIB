@@ -12,8 +12,6 @@
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
-static const char rcsid[]="$Id:$";
-
 #define TERSUSSYNC1 0xAA        /* tersus message start sync code 1 */
 #define TERSUSSYNC2 0x44        /* tersus message start sync code 2 */
 #define TERSUSSYNC3 0x12        /* tersus message start sync code 3 */

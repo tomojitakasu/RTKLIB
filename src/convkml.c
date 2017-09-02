@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * convkml.c : google earth kml converter
 *
-*          Copyright (C) 2007-2010 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2007-2017 by T.TAKASU, All rights reserved.
 *
 * references :
 *     [1] Open Geospatial Consortium Inc., OGC 07-147r2, OGC(R) KML, 2008-04-14
@@ -21,16 +21,15 @@
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
-static const char rcsid[]="$Id: convkml.c,v 1.1 2008/07/17 21:48:06 ttaka Exp $";
-
 /* constants -----------------------------------------------------------------*/
 
 #define SIZP     0.2            /* mark size of rover positions */
 #define SIZR     0.3            /* mark size of reference position */
 #define TINT     60.0           /* time label interval (sec) */
-#define HEADKML1 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-#define HEADKML2 "<kml xmlns=\"http://earth.google.com/kml/2.1\">"
-#define MARKICON "http://maps.google.com/mapfiles/kml/pal2/icon18.png"
+
+static const char *head1="<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+static const char *head2="<kml xmlns=\"http://earth.google.com/kml/2.1\">";
+static const char *mark="http://maps.google.com/mapfiles/kml/pal2/icon18.png";
 
 /* output track --------------------------------------------------------------*/
 static void outtrack(FILE *f, const solbuf_t *solbuf, const char *color,
@@ -106,14 +105,14 @@ static int savekml(const char *file, const solbuf_t *solbuf, int tcolor,
         fprintf(stderr,"file open error : %s\n",file);
         return 0;
     }
-    fprintf(fp,"%s\n%s\n",HEADKML1,HEADKML2);
+    fprintf(fp,"%s\n%s\n",head1,head2);
     fprintf(fp,"<Document>\n");
     for (i=0;i<6;i++) {
         fprintf(fp,"<Style id=\"P%d\">\n",i);
         fprintf(fp,"  <IconStyle>\n");
         fprintf(fp,"    <color>%s</color>\n",color[i]);
         fprintf(fp,"    <scale>%.1f</scale>\n",i==0?SIZR:SIZP);
-        fprintf(fp,"    <Icon><href>%s</href></Icon>\n",MARKICON);
+        fprintf(fp,"    <Icon><href>%s</href></Icon>\n",mark);
         fprintf(fp,"  </IconStyle>\n");
         fprintf(fp,"</Style>\n");
     }

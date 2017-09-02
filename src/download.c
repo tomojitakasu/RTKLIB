@@ -13,8 +13,6 @@
 
 #include "rtklib.h"
 
-static const char rcsid[]="$Id:$";
-
 #define NMAX_STA    2048            /* max number of stations */
 #define NMAX_TYPE   256             /* max number of data types */
 #define NMAX_URL    1024            /* max number of urls in opptions file */

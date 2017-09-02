@@ -42,8 +42,6 @@
 #include <stdarg.h>
 #include "rtklib.h"
 
-static const char rcsid[]="$Id: convbin.c,v 1.1 2008/07/17 22:13:04 ttaka Exp $";
-
 #define PRGNAME   "CONVBIN"
 #define TRACEFILE "convbin.trace"
 #define NOUTFILE        9       /* number of output files */

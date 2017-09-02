@@ -19,8 +19,6 @@
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
-static const char rcsid[]="$Id:$";
-
 #define BNXSYNC1    0xC2    /* binex sync (little-endian,regular-crc) */
 #define BNXSYNC2    0xE2    /* binex sync (big-endian   ,regular-crc) */
 #define BNXSYNC3    0xC8    /* binex sync (little-endian,enhanced-crc) */

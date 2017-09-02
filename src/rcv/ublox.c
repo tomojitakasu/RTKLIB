@@ -88,8 +88,6 @@
 
 #define ROUND(x)    (int)floor((x)+0.5)
 
-static const char rcsid[]="$Id: ublox.c,v 1.2 2008/07/14 00:05:05 TTAKA Exp $";
-
 /* get fields (little-endian) ------------------------------------------------*/
 #define U1(p) (*((unsigned char *)(p)))
 #define I1(p) (*((signed char *)(p)))

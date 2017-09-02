@@ -79,8 +79,6 @@
 #include <netdb.h>
 #endif
 
-static const char rcsid[]="$Id$";
-
 /* constants -----------------------------------------------------------------*/
 
 #define TINTACT             200         /* period for stream active (ms) */

@@ -54,8 +54,6 @@
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
-static const char rcsid[]="$Id: novatel.c,v 1.2 2008/07/14 00:05:05 TTAKA Exp $";
-
 #define OEM4SYNC1   0xAA        /* oem4 message start sync code 1 */
 #define OEM4SYNC2   0x44        /* oem4 message start sync code 2 */
 #define OEM4SYNC3   0x12        /* oem4 message start sync code 3 */

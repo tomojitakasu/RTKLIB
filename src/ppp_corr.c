@@ -9,8 +9,6 @@
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
-static const char rcsid[]="$Id:$";
-
 /* read ppp corrections --------------------------------------------------------
 * read ppp correction data from external file
 * args   : pppcorr_t *corr  IO  ppp correction data
