@@ -1,12 +1,14 @@
 //---------------------------------------------------------------------------
 // rtknavi : real-time positioning ap
 //
-//          Copyright (C) 2007-2016 by T.TAKASU, All rights reserved.
+//          Copyright (C) 2007-2017 by T.TAKASU, All rights reserved.
 //
-// options : rtknavi [-t title][-i file]
+// options : rtknavi [-t title][-i file][-auto][-tray]
 //
 //           -t title   window title
 //           -i file    ini file path
+//           -auto      auto start
+//           -tray      start as task tray icon
 //
 // version : $Revision:$ $Date:$
 // history : 2008/07/14  1.0 new
@@ -16,6 +18,7 @@
 //           2011/06/10  1.4 rtklib 2.4.1
 //           2012/04/03  1.5 rtklib 2.4.2
 //           2014/09/06  1.6 rtklib 2.4.3
+//           2017/09/01  1.7 add option -auto and -tray
 //---------------------------------------------------------------------------
 #include <vcl.h>
 #include <inifiles.hpp>
@@ -69,7 +72,7 @@ TMainForm *MainForm;
 #define SPLITTER_WIDTH 6                // splitter width
 #define MAXPANELMODE 7                  // max panel mode
 
-#define SQRT(x)     ((x)<0.0?0.0:sqrt(x))
+#define SQRT(x)     ((x)<0.0||(x)!=(x)?0.0:sqrt(x))
 #define MIN(x,y)    ((x)<(y)?(x):(y))
 
 //---------------------------------------------------------------------------
@@ -153,7 +156,7 @@ __fastcall TMainForm::TMainForm(TComponent* Owner)
 void __fastcall TMainForm::FormCreate(TObject *Sender)
 {
     char *p,*argv[32],buff[1024],file[1024]="rtknavi.exe";
-    int argc=0;
+    int argc=0,autorun=0,tasktray=0;
     
     trace(3,"FormCreate\n");
     
@@ -187,10 +190,20 @@ void __fastcall TMainForm::FormCreate(TObject *Sender)
     
     for (int i=1;i<argc;i++) {
         if (!strcmp(argv[i],"-t")&&i+1<argc) Caption=argv[++i];
+        else if (!strcmp(argv[i],"-auto")) autorun=1;
+        else if (!strcmp(argv[i],"-tray")) tasktray=1;
     }
     LoadNav(&rtksvr.nav);
     
     OpenMoniPort(MoniPort);
+    
+    if (tasktray) {
+        Application->ShowMainForm=false;
+        TrayIcon->Visible=true;
+    }
+    if (autorun) {
+        SvrStart();
+    }
 }
 // callback on form show ----------------------------------------------------
 void __fastcall TMainForm::FormShow(TObject *Sender)

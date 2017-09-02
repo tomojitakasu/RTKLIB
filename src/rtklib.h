@@ -58,7 +58,7 @@ extern "C" {
 
 #define VER_RTKLIB  "2.4.3"             /* library version */
 
-#define PATCH_LEVEL "b28"               /* patch level */
+#define PATCH_LEVEL "b29"               /* patch level */
 
 #define COPYRIGHT_RTKLIB \
             "Copyright (C) 2007-2017 T.Takasu\nAll rights reserved."
@@ -222,7 +222,11 @@ extern "C" {
 #endif
 #define MAXRCV      64                  /* max receiver number (1 to MAXRCV) */
 #define MAXOBSTYPE  64                  /* max number of obs type in RINEX */
+#ifdef OBS_100HZ
 #define DTTOL       0.005               /* tolerance of time difference (s) */
+#else
+#define DTTOL       0.025               /* tolerance of time difference (s) */
+#endif
 #define MAXDTOE     7200.0              /* max time difference to GPS Toe (s) */
 #define MAXDTOE_QZS 7200.0              /* max time difference to QZSS Toe (s) */
 #define MAXDTOE_GAL 10800.0             /* max time difference to Galileo Toe (s) */
@@ -469,6 +473,12 @@ extern "C" {
 #define DLOPT_KEEPCMP 0x02              /* download option: keep compressed file */
 #define DLOPT_HOLDERR 0x04              /* download option: hold on error file */
 #define DLOPT_HOLDLST 0x08              /* download option: hold on listing file */
+
+#define LLI_SLIP    0x01                /* LLI: cycle-slip */
+#define LLI_HALFC   0x02                /* LLI: half-cycle not resovled */
+#define LLI_BOCTRK  0x04                /* LLI: boc tracking of mboc signal */
+#define LLI_HALFA   0x40                /* LLI: half-cycle added */
+#define LLI_HALFS   0x80                /* LLI: half-cycle subtracted */
 
 #define IMUFMT_KVH  1                   /* imu data format KVH */
 
@@ -906,6 +916,7 @@ typedef struct {        /* solution type */
     float  qr[6];       /* position variance/covariance (m^2) */
                         /* {c_xx,c_yy,c_zz,c_xy,c_yz,c_zx} or */
                         /* {c_ee,c_nn,c_uu,c_en,c_nu,c_ue} */
+    float  qv[6];       /* velocity variance/covariance (m^2/s^2) */
     double dtr[6];      /* receiver clock bias to time systems (s) */
     unsigned char type; /* type (0:xyz-ecef,1:enu-baseline) */
     unsigned char stat; /* solution status (SOLQ_???) */
@@ -1088,6 +1099,7 @@ typedef struct {        /* solution options type */
     int degf;           /* latitude/longitude format (0:ddd.ddd,1:ddd mm ss) */
     int outhead;        /* output header (0:no,1:yes) */
     int outopt;         /* output processing options (0:no,1:yes) */
+    int outvel;         /* output velocity options (0:no,1:yes) */
     int datum;          /* datum (0:WGS84,1:Tokyo) */
     int height;         /* height (0:ellipsoidal,1:geodetic) */
     int geoid;          /* geoid model (0:EGM96,1:JGD2000) */
@@ -1119,6 +1131,7 @@ typedef struct {        /* file options type */
 typedef struct {        /* RINEX options type */
     gtime_t ts,te;      /* time start/end */
     double tint;        /* time interval (s) */
+    double ttol;        /* time tolerance (s) */
     double tunit;       /* time unit for multiple-session (s) */
     double rnxver;      /* RINEX version */
     int navsys;         /* navigation system */
@@ -1211,7 +1224,7 @@ typedef struct half_cyc_tag {  /* half-cycle correction list type */
 
 typedef struct {        /* receiver raw data control type */
     gtime_t time;       /* message time */
-    gtime_t tobs;       /* observation data time */
+    gtime_t tobs[MAXSAT][NFREQ+NEXOBS]; /* observation data time */
     obs_t obs;          /* observation data */
     obs_t obuf;         /* observation data buffer */
     nav_t nav;          /* satellite ephemerides */

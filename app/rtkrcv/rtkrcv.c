@@ -34,6 +34,7 @@
 *           2016/09/05 1.19 support ntrip caster for output stream
 *           2016/09/19 1.20 support multiple remote console connections
 *                           add option -w
+*           2017/09/01 1.21 add command ssr
 *-----------------------------------------------------------------------------*/
 #include <stdlib.h>
 #include <signal.h>
@@ -70,7 +71,7 @@ static const char rcsid[]="$Id:$";
 #define ESC_RESET   "\033[0m"           /* ansi/vt100: reset attribute */
 #define ESC_BOLD    "\033[1m"           /* ansi/vt100: bold */
 
-#define SQRT(x)     ((x)<=0.0?0.0:sqrt(x))
+#define SQRT(x)     ((x)<=0.0||(x)!=(x)?0.0:sqrt(x))
 
 /* type defintions -----------------------------------------------------------*/
 
@@ -148,6 +149,7 @@ static const char *helptxt[]={
     "observ [-n] [cycle]   : show observation data",
     "navidata [cycle]      : show navigation data",
     "stream [cycle]        : show stream status",
+    "ssr [cycle]           : show ssr corrections",
     "error                 : show error/warning messages",
     "option [opt]          : show option(s)",
     "set opt [val]         : set option",
@@ -950,6 +952,41 @@ static void prstream(vt_t *vt)
             stream[i].path,stream[i].msg);
     }
 }
+/* print ssr correction ------------------------------------------------------*/
+static void prssr(vt_t *vt)
+{
+    static char buff[128*MAXSAT];
+    gtime_t time;
+    ssr_t ssr[MAXSAT];
+    int i,valid;
+    char tstr[64],id[32],*p=buff;
+    
+    rtksvrlock(&svr);
+    time=svr.rtk.sol.time;
+    for (i=0;i<MAXSAT;i++) {
+        ssr[i]=svr.nav.ssr[i];
+    }
+    rtksvrunlock(&svr);
+    
+    p+=sprintf(p,"\n%s%3s %3s %3s %3s %3s %19s %6s %6s %6s %6s %6s %6s %8s "
+               "%6s %6s %6s%s\n",
+               ESC_BOLD,"SAT","S","UDI","IOD","URA","T0","D0-A","D0-C","D0-R",
+               "D1-A","D1-C","D1-R","C0","C1","C2","C-HR",ESC_RESET);
+    for (i=0;i<MAXSAT;i++) {
+        if (!ssr[i].t0[0].time) continue;
+        satno2id(i+1,id);
+        valid=fabs(timediff(time,ssr[i].t0[0]))<=1800.0;
+        time2str(ssr[i].t0[0],tstr,0);
+        p+=sprintf(p,"%3s %3s %3.0f %3d %3d %19s %6.3f %6.3f %6.3f %6.3f %6.3f "
+                   "%6.3f %8.3f %6.3f %6.4f %6.3f\n",
+                   id,valid?"OK":"-",ssr[i].udi[0],ssr[i].iode,ssr[i].ura,tstr,
+                   ssr[i].deph[0],ssr[i].deph[1],ssr[i].deph[2],
+                   ssr[i].ddeph[0]*1E3,ssr[i].ddeph[1]*1E3,ssr[i].ddeph[2]*1E3,
+                   ssr[i].dclk[0],ssr[i].dclk[1]*1E3,ssr[i].dclk[2]*1E3,
+                   ssr[i].hrclk);
+    }
+    vt_puts(vt,buff);
+}
 /* start command -------------------------------------------------------------*/
 static void cmd_start(char **args, int narg, vt_t *vt)
 {
@@ -1087,6 +1124,22 @@ static void cmd_stream(char **args, int narg, vt_t *vt)
     while (!vt_chkbrk(vt)) {
         if (cycle>0) vt_printf(vt,ESC_CLEAR);
         prstream(vt);
+        if (cycle>0) sleepms(cycle); else return;
+    }
+    vt_printf(vt,"\n");
+}
+/* ssr command ---------------------------------------------------------------*/
+static void cmd_ssr(char **args, int narg, vt_t *vt)
+{
+    int cycle=0;
+    
+    trace(3,"cmd_ssr:\n");
+    
+    if (narg>1) cycle=(int)(atof(args[1])*1000.0);
+    
+    while (!vt_chkbrk(vt)) {
+        if (cycle>0) vt_printf(vt,ESC_CLEAR);
+        prssr(vt);
         if (cycle>0) sleepms(cycle); else return;
     }
     vt_printf(vt,"\n");
@@ -1280,8 +1333,8 @@ static void *con_thread(void *arg)
 {
     const char *cmds[]={
         "start","stop","restart","solution","status","satellite","observ",
-        "navidata","stream","error","option","set","load","save","log","help",
-        "?","exit","shutdown",""
+        "navidata","stream","ssr","error","option","set","load","save","log",
+        "help","?","exit","shutdown",""
     };
     con_t *con=(con_t *)arg;
     int i,j,narg;
@@ -1329,18 +1382,19 @@ static void *con_thread(void *arg)
             case  6: cmd_observ   (args,narg,con->vt); break;
             case  7: cmd_navidata (args,narg,con->vt); break;
             case  8: cmd_stream   (args,narg,con->vt); break;
-            case  9: cmd_error    (args,narg,con->vt); break;
-            case 10: cmd_option   (args,narg,con->vt); break;
-            case 11: cmd_set      (args,narg,con->vt); break;
-            case 12: cmd_load     (args,narg,con->vt); break;
-            case 13: cmd_save     (args,narg,con->vt); break;
-            case 14: cmd_log      (args,narg,con->vt); break;
-            case 15: cmd_help     (args,narg,con->vt); break;
+            case  9: cmd_ssr      (args,narg,con->vt); break;
+            case 10: cmd_error    (args,narg,con->vt); break;
+            case 11: cmd_option   (args,narg,con->vt); break;
+            case 12: cmd_set      (args,narg,con->vt); break;
+            case 13: cmd_load     (args,narg,con->vt); break;
+            case 14: cmd_save     (args,narg,con->vt); break;
+            case 15: cmd_log      (args,narg,con->vt); break;
             case 16: cmd_help     (args,narg,con->vt); break;
-            case 17: /* exit */
+            case 17: cmd_help     (args,narg,con->vt); break;
+            case 18: /* exit */
                 if (con->vt->type) con->state=0;
                 break;
-            case 18: /* shutdown */
+            case 19: /* shutdown */
                 if (!strcmp(args[0],"shutdown")) {
                     vt_printf(con->vt,"rtk server shutdown ...\n");
                     sleepms(1000);

@@ -63,7 +63,7 @@ const QChar up2Char(0262);              // character code of ^2     (UTF-8)
 #define QCERRFILE   "rtkplot_qc.err"    // error file for qc
 
 #define SQR(x)      ((x)*(x))
-#define SQRT(x)     ((x)<0.0?0.0:sqrt(x))
+#define SQRT(x)     ((x)<0.0||(x)!=(x)?0.0:sqrt(x))
 #define MAX(x,y)    ((x)>(y)?(x):(y))
 #define MIN(x,y)    ((x)<(y)?(x):(y))
 

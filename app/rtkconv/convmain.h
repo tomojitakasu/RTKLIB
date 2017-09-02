@@ -197,7 +197,7 @@ public:
 	AnsiString RunBy,Marker,MarkerNo,MarkerType,Name[2],Rec[3],Ant[3];
 	AnsiString RnxCode,Comment[2],RcvOption,ExSats;
 	AnsiString CodeMask[7];
-	double AppPos[3],AntDel[3];
+	double AppPos[3],AntDel[3],TimeTol;
 	int RnxVer,RnxFile,NavSys,ObsType,FreqType,TraceLevel,EventEna;
 	int AutoPos,ScanObs,HalfCyc,OutIono,OutTime,OutLeaps,SepNav;
 	

@@ -54,6 +54,7 @@
 *           2017/04/11 1.23 (char *) -> (signed char *)
 *                           fix bug on week handover in decode_trkmeas/trkd5()
 *                           fix bug on prn for geo in decode_cnav()
+*           2017/06/10 1.24 output half-cycle-subtracted flag
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -311,18 +312,30 @@ static int decode_rxmrawx(raw_t *raw)
         
         lockt=U2(p+24);    /* lock time count (ms) */
         slip=lockt==0||lockt<raw->lockt[sat-1][0]?1:0;
+#if 0
         if (std_slip>0) {
             slip|=(cpstd>=std_slip)?1:0; /* slip by std-dev of cp */
         }
+#else
+        if (std_slip>0) {
+            cp1=0.0;
+        }
+#endif
         halfv=tstat&4?1:0; /* half cycle valid */
         halfc=tstat&8?1:0; /* half cycle subtracted from phase */
         
         if (cp1!=0.0) { /* carrier-phase valid */
             
             /* LLI: bit1=loss-of-lock,bit2=half-cycle-invalid */
-            raw->obs.data[n].LLI[0]|=slip;
+            raw->obs.data[n].LLI[0]|=slip?LLI_SLIP:0;
+#if 0
             raw->obs.data[n].LLI[0]|=halfc!=raw->halfc[sat-1][0]?1:0;
-            raw->obs.data[n].LLI[0]|=halfv?0:2;
+#elif 1
+            raw->obs.data[n].LLI[0]|=halfc?LLI_HALFA:0; /* half-cycle subtraced */
+#else
+            raw->obs.data[n].LLI[0]|=halfc?LLI_HALFS:0; /* half-cycle subtraced */
+#endif
+            raw->obs.data[n].LLI[0]|=halfv?0:LLI_HALFC;
             raw->lockt[sat-1][0]=lockt;
             raw->halfc[sat-1][0]=halfc;
         }

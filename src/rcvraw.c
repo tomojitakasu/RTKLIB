@@ -865,14 +865,17 @@ extern int init_raw(raw_t *raw, int format)
     
     trace(3,"init_raw: format=%d\n",format);
     
-    raw->time=raw->tobs=time0;
+    raw->time=time0;
     raw->ephsat=0;
     raw->sbsmsg=sbsmsg0;
     raw->msgtype[0]='\0';
     for (i=0;i<MAXSAT;i++) {
-        for (j=0;j<380  ;j++) raw->subfrm[i][j]=0;
-        for (j=0;j<NFREQ;j++) raw->lockt[i][j]=0.0;
-        for (j=0;j<NFREQ;j++) raw->halfc[i][j]=0;
+        for (j=0;j<380;j++) raw->subfrm[i][j]=0;
+        for (j=0;j<NFREQ+NEXOBS;j++) {
+            raw->tobs [i][j]=time0;
+            raw->lockt[i][j]=0.0;
+            raw->halfc[i][j]=0;
+        }
         raw->icpp[i]=raw->off[i]=raw->prCA[i]=raw->dpCA[i]=0.0;
     }
     for (i=0;i<MAXOBS;i++) raw->freqn[i]=0;

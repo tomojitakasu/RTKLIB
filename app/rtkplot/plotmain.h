@@ -72,7 +72,7 @@
 #define QCERRFILE   "rtkplot_qc.err"    // error file for qc
 
 #define SQR(x)      ((x)*(x))
-#define SQRT(x)     ((x)<0.0?0.0:sqrt(x))
+#define SQRT(x)     ((x)<0.0||(x)!=(x)?0.0:sqrt(x))
 #define MAX(x,y)    ((x)>(y)?(x):(y))
 #define MIN(x,y)    ((x)<(y)?(x):(y))
 
@@ -263,6 +263,8 @@ __published:
 	TPanel *StrStatus;
 	TSpeedButton *BtnShowGrid;
 	TMenuItem *MenuShowGrid;
+	TPanel *Panel4;
+	TSpeedButton *BtnUdList;
 	
 	void __fastcall FormCreate			(TObject *Sender);
 	void __fastcall FormShow			(TObject *Sender);
@@ -385,6 +387,7 @@ __published:
 	void __fastcall MenuBrowseClick(TObject *Sender);
 	void __fastcall MenuShowGridClick(TObject *Sender);
 	void __fastcall BtnShowGridClick(TObject *Sender);
+	void __fastcall BtnUdListClick(TObject *Sender);
 
 
 protected:

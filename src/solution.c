@@ -42,6 +42,7 @@
 *           2016/01/17  1.14 support reading NMEA GxZDA
 *                            ignore NMEA talker ID
 *           2016/07/30  1.15 suppress output if std is over opt->maxsolstd
+*           2017/06/13  1.16 support output/input of velocity solution
 *-----------------------------------------------------------------------------*/
 #include <ctype.h>
 #include "rtklib.h"
@@ -51,7 +52,7 @@ static const char rcsid[]="$Id: solution.c,v 1.1 2008/07/17 21:48:06 ttaka Exp $
 /* constants and macros ------------------------------------------------------*/
 
 #define SQR(x)     ((x)<0.0?-(x)*(x):(x)*(x))
-#define SQRT(x)    ((x)<0.0?0.0:sqrt(x))
+#define SQRT(x)    ((x)<0.0||(x)!=(x)?0.0:sqrt(x))
 
 #define MAXFIELD   64           /* max number of fields in a record */
 #define MAXNMEA    256          /* max length of nmea sentence */
@@ -123,6 +124,26 @@ static void covtosol(const double *P, sol_t *sol)
     sol->qr[3]=(float)P[1]; /* xy or en */
     sol->qr[4]=(float)P[5]; /* yz or nu */
     sol->qr[5]=(float)P[2]; /* zx or ue */
+}
+/* solution to velocity covariance -------------------------------------------*/
+static void soltocov_vel(const sol_t *sol, double *P)
+{
+    P[0]     =sol->qv[0]; /* xx */
+    P[4]     =sol->qv[1]; /* yy */
+    P[8]     =sol->qv[2]; /* zz */
+    P[1]=P[3]=sol->qv[3]; /* xy */
+    P[5]=P[7]=sol->qv[4]; /* yz */
+    P[2]=P[6]=sol->qv[5]; /* zx */
+}
+/* velocity covariance to solution -------------------------------------------*/
+static void covtosol_vel(const double *P, sol_t *sol)
+{
+    sol->qv[0]=(float)P[0]; /* xx */
+    sol->qv[1]=(float)P[4]; /* yy */
+    sol->qv[2]=(float)P[8]; /* zz */
+    sol->qv[3]=(float)P[1]; /* xy */
+    sol->qv[4]=(float)P[5]; /* yz */
+    sol->qv[5]=(float)P[2]; /* zx */
 }
 /* decode nmea gxrmc: recommended minumum data for gps -----------------------*/
 static int decode_nmearmc(char **val, int n, sol_t *sol)
@@ -370,7 +391,27 @@ static int decode_solxyz(char *buff, const solopt_t *opt, sol_t *sol)
     }
     if (i<n) sol->stat=(unsigned char)val[i++];
     if (i<n) sol->ns  =(unsigned char)val[i++];
-    if (i+3<n) {
+    if (i+3<=n) {
+        P[0]=val[i]*val[i]; i++; /* sdx */
+        P[4]=val[i]*val[i]; i++; /* sdy */
+        P[8]=val[i]*val[i]; i++; /* sdz */
+        if (i+3<=n) {
+            P[1]=P[3]=SQR(val[i]); i++; /* sdxy */
+            P[5]=P[7]=SQR(val[i]); i++; /* sdyz */
+            P[2]=P[6]=SQR(val[i]); i++; /* sdzx */
+        }
+        covtosol(P,sol);
+    }
+    if (i<n) sol->age  =(float)val[i++];
+    if (i<n) sol->ratio=(float)val[i++];
+    
+    if (i+3<=n) { /* velocity */
+        for (j=0;j<3;j++) {
+            sol->rr[j+3]=val[i++]; /* xyz */
+        }
+    }
+    if (i+3<=n) {
+        for (j=0;j<9;j++) P[j]=0.0;
         P[0]=val[i]*val[i]; i++; /* sdx */
         P[4]=val[i]*val[i]; i++; /* sdy */
         P[8]=val[i]*val[i]; i++; /* sdz */
@@ -379,11 +420,8 @@ static int decode_solxyz(char *buff, const solopt_t *opt, sol_t *sol)
             P[5]=P[7]=SQR(val[i]); i++; /* sdyz */
             P[2]=P[6]=SQR(val[i]); i++; /* sdzx */
         }
-        covtosol(P,sol);
+        covtosol_vel(P,sol);
     }
-    if (i<n) sol->age  =(float)val[i++];
-    if (i<n) sol->ratio=(float)val[i];
-    
     sol->type=0; /* postion type = xyz */
     
     if (MAXSOLQ<sol->stat) sol->stat=SOLQ_NONE;
@@ -392,8 +430,8 @@ static int decode_solxyz(char *buff, const solopt_t *opt, sol_t *sol)
 /* decode lat/lon/height -----------------------------------------------------*/
 static int decode_solllh(char *buff, const solopt_t *opt, sol_t *sol)
 {
-    double val[MAXFIELD],pos[3],Q[9]={0},P[9];
-    int i=0,n;
+    double val[MAXFIELD],pos[3],vel[3],Q[9]={0},P[9];
+    int i=0,j,n;
     const char *sep=opt2sep(opt);
     
     trace(4,"decode_solllh:\n");
@@ -416,7 +454,7 @@ static int decode_solllh(char *buff, const solopt_t *opt, sol_t *sol)
     pos2ecef(pos,sol->rr);
     if (i<n) sol->stat=(unsigned char)val[i++];
     if (i<n) sol->ns  =(unsigned char)val[i++];
-    if (i+3<n) {
+    if (i+3<=n) {
         Q[4]=val[i]*val[i]; i++; /* sdn */
         Q[0]=val[i]*val[i]; i++; /* sde */
         Q[8]=val[i]*val[i]; i++; /* sdu */
@@ -429,8 +467,27 @@ static int decode_solllh(char *buff, const solopt_t *opt, sol_t *sol)
         covtosol(P,sol);
     }
     if (i<n) sol->age  =(float)val[i++];
-    if (i<n) sol->ratio=(float)val[i];
+    if (i<n) sol->ratio=(float)val[i++];
     
+    if (i+3<=n) { /* velocity */
+        vel[1]=val[i++]; /* vel-n */
+        vel[0]=val[i++]; /* vel-e */
+        vel[2]=val[i++]; /* vel-u */
+        enu2ecef(pos,vel,sol->rr+3);
+    }
+    if (i+3<=n) {
+        for (j=0;j<9;j++) Q[j]=0.0;
+        Q[4]=val[i]*val[i]; i++; /* sdn */
+        Q[0]=val[i]*val[i]; i++; /* sde */
+        Q[8]=val[i]*val[i]; i++; /* sdu */
+        if (i+3<=n) {
+            Q[1]=Q[3]=SQR(val[i]); i++; /* sdne */
+            Q[2]=Q[6]=SQR(val[i]); i++; /* sdeu */
+            Q[5]=Q[7]=SQR(val[i]); i++; /* sdun */
+        }
+        covecef(pos,Q,P);
+        covtosol_vel(P,sol);
+    }
     sol->type=0; /* postion type = xyz */
     
     if (MAXSOLQ<sol->stat) sol->stat=SOLQ_NONE;
@@ -452,11 +509,11 @@ static int decode_solenu(char *buff, const solopt_t *opt, sol_t *sol)
     }
     if (i<n) sol->stat=(unsigned char)val[i++];
     if (i<n) sol->ns  =(unsigned char)val[i++];
-    if (i+3<n) {
+    if (i+3<=n) {
         Q[0]=val[i]*val[i]; i++; /* sde */
         Q[4]=val[i]*val[i]; i++; /* sdn */
         Q[8]=val[i]*val[i]; i++; /* sdu */
-        if (i+3<n) {
+        if (i+3<=n) {
             Q[1]=Q[3]=SQR(val[i]); i++; /* sden */
             Q[5]=Q[7]=SQR(val[i]); i++; /* sdnu */
             Q[2]=Q[6]=SQR(val[i]); i++; /* sdue */
@@ -464,7 +521,7 @@ static int decode_solenu(char *buff, const solopt_t *opt, sol_t *sol)
         covtosol(Q,sol);
     }
     if (i<n) sol->age  =(float)val[i++];
-    if (i<n) sol->ratio=(float)val[i];
+    if (i<n) sol->ratio=(float)val[i++];
     
     sol->type=1; /* postion type = enu */
     
@@ -757,7 +814,7 @@ extern int readsolt(char *files[], int nfile, gtime_t ts, gtime_t te,
     
     for (i=0;i<nfile;i++) {
         if (!(fp=fopen(files[i],"rb"))) {
-            trace(1,"readsolt: file open error %s\n",files[i]);
+            trace(2,"readsolt: file open error %s\n",files[i]);
             continue;
         }
         /* read solution options in header */
@@ -766,7 +823,7 @@ extern int readsolt(char *files[], int nfile, gtime_t ts, gtime_t te,
         
         /* read solution data */
         if (!readsoldata(fp,ts,te,tint,qflag,&opt,solbuf)) {
-            trace(1,"readsolt: no solution in %s\n",files[i]);
+            trace(2,"readsolt: no solution in %s\n",files[i]);
         }
         fclose(fp);
     }
@@ -1024,12 +1081,12 @@ extern int readsolstatt(char *files[], int nfile, gtime_t ts, gtime_t te,
     for (i=0;i<nfile;i++) {
         sprintf(path,"%s.stat",files[i]);
         if (!(fp=fopen(path,"r"))) {
-            trace(1,"readsolstatt: file open error %s\n",path);
+            trace(2,"readsolstatt: file open error %s\n",path);
             continue;
         }
         /* read solution status data */
         if (!readsolstatdata(fp,ts,te,tint,statbuf)) {
-            trace(1,"readsolt: no solution in %s\n",path);
+            trace(2,"readsolstatt: no solution in %s\n",path);
         }
         fclose(fp);
     }
@@ -1052,18 +1109,27 @@ static int outecef(unsigned char *buff, const char *s, const sol_t *sol,
     
     trace(3,"outecef:\n");
     
-    p+=sprintf(p,"%s%s%14.4f%s%14.4f%s%14.4f%s%3d%s%3d%s%8.4f%s%8.4f%s%8.4f%s%8.4f%s%8.4f%s%8.4f%s%6.2f%s%6.1f\n",
+    p+=sprintf(p,"%s%s%14.4f%s%14.4f%s%14.4f%s%3d%s%3d%s%8.4f%s%8.4f%s%8.4f%s%8.4f%s%8.4f%s%8.4f%s%6.2f%s%6.1f",
                s,sep,sol->rr[0],sep,sol->rr[1],sep,sol->rr[2],sep,sol->stat,sep,
                sol->ns,sep,SQRT(sol->qr[0]),sep,SQRT(sol->qr[1]),sep,SQRT(sol->qr[2]),
                sep,sqvar(sol->qr[3]),sep,sqvar(sol->qr[4]),sep,sqvar(sol->qr[5]),
                sep,sol->age,sep,sol->ratio);
+    
+    if (opt->outvel) { /* output velocity */
+        p+=sprintf(p,"%s%10.5f%s%10.5f%s%10.5f%s%9.5f%s%8.5f%s%8.5f%s%8.5f%s%8.5f%s%8.5f",
+                   sep,sol->rr[3],sep,sol->rr[4],sep,sol->rr[5],sep,
+                   SQRT(sol->qv[0]),sep,SQRT(sol->qv[1]),sep,SQRT(sol->qv[2]),
+                   sep,sqvar(sol->qv[3]),sep,sqvar(sol->qv[4]),sep,
+                   sqvar(sol->qv[5]));
+    }
+    p+=sprintf(p,"\n");
     return p-(char *)buff;
 }
 /* output solution as the form of lat/lon/height -----------------------------*/
 static int outpos(unsigned char *buff, const char *s, const sol_t *sol,
                   const solopt_t *opt)
 {
-    double pos[3],dms1[3],dms2[3],P[9],Q[9];
+    double pos[3],vel[3],dms1[3],dms2[3],P[9],Q[9];
     const char *sep=opt2sep(opt);
     char *p=(char *)buff;
     
@@ -1082,11 +1148,24 @@ static int outpos(unsigned char *buff, const char *s, const sol_t *sol,
                    dms1[0],sep,dms1[1],sep,dms1[2],sep,dms2[0],sep,dms2[1],sep,
                    dms2[2]);
     }
-    else p+=sprintf(p,"%s%s%14.9f%s%14.9f",s,sep,pos[0]*R2D,sep,pos[1]*R2D);
-    p+=sprintf(p,"%s%10.4f%s%3d%s%3d%s%8.4f%s%8.4f%s%8.4f%s%8.4f%s%8.4f%s%8.4f%s%6.2f%s%6.1f\n",
+    else {
+        p+=sprintf(p,"%s%s%14.9f%s%14.9f",s,sep,pos[0]*R2D,sep,pos[1]*R2D);
+    }
+    p+=sprintf(p,"%s%10.4f%s%3d%s%3d%s%8.4f%s%8.4f%s%8.4f%s%8.4f%s%8.4f%s%8.4f%s%6.2f%s%6.1f",
                sep,pos[2],sep,sol->stat,sep,sol->ns,sep,SQRT(Q[4]),sep,
                SQRT(Q[0]),sep,SQRT(Q[8]),sep,sqvar(Q[1]),sep,sqvar(Q[2]),
                sep,sqvar(Q[5]),sep,sol->age,sep,sol->ratio);
+    
+    if (opt->outvel) { /* output velocity */
+        soltocov_vel(sol,P);
+        ecef2enu(pos,sol->rr+3,vel);
+        covenu(pos,P,Q);
+        p+=sprintf(p,"%s%10.5f%s%10.5f%s%10.5f%s%9.5f%s%8.5f%s%8.5f%s%8.5f%s%8.5f%s%8.5f",
+                   sep,vel[1],sep,vel[0],sep,vel[2],sep,SQRT(Q[4]),sep,
+                   SQRT(Q[0]),sep,SQRT(Q[8]),sep,sqvar(Q[1]),sep,sqvar(Q[2]),
+                   sep,sqvar(Q[5]));
+    }
+    p+=sprintf(p,"\n");
     return p-(char *)buff;
 }
 /* output solution as the form of e/n/u-baseline -----------------------------*/
@@ -1138,7 +1217,9 @@ extern int outnmea_rmc(unsigned char *buff, const sol_t *sol)
         if (dir<0.0) dir+=360.0;
         dirp=dir;
     }
-    else dir=dirp;
+    else {
+        dir=dirp;
+    }
     deg2dms(fabs(pos[0])*R2D,dms1,7);
     deg2dms(fabs(pos[1])*R2D,dms2,7);
     p+=sprintf(p,"$GPRMC,%02.0f%02.0f%05.2f,A,%02.0f%010.7f,%s,%03.0f%010.7f,%s,%4.2f,%4.2f,%02.0f%02.0f%02d,%.1f,%s,%s",
@@ -1456,30 +1537,42 @@ extern int outsolheads(unsigned char *buff, const solopt_t *opt)
     
     if (opt->posf==SOLF_LLH) { /* lat/lon/hgt */
         if (opt->degf) {
-            p+=sprintf(p,"%16s%s%16s%s%10s%s%3s%s%3s%s%8s%s%8s%s%8s%s%8s%s%8s%s%8s%s%6s%s%6s\n",
+            p+=sprintf(p,"%16s%s%16s%s%10s%s%3s%s%3s%s%8s%s%8s%s%8s%s%8s%s%8s%s%8s%s%6s%s%6s",
                        "latitude(d'\")",sep,"longitude(d'\")",sep,"height(m)",sep,
                        "Q",sep,"ns",sep,"sdn(m)",sep,"sde(m)",sep,"sdu(m)",sep,
                        "sdne(m)",sep,"sdeu(m)",sep,"sdue(m)",sep,"age(s)",sep,"ratio");
         }
         else {
-            p+=sprintf(p,"%14s%s%14s%s%10s%s%3s%s%3s%s%8s%s%8s%s%8s%s%8s%s%8s%s%8s%s%6s%s%6s\n",
+            p+=sprintf(p,"%14s%s%14s%s%10s%s%3s%s%3s%s%8s%s%8s%s%8s%s%8s%s%8s%s%8s%s%6s%s%6s",
                        "latitude(deg)",sep,"longitude(deg)",sep,"height(m)",sep,
                        "Q",sep,"ns",sep,"sdn(m)",sep,"sde(m)",sep,"sdu(m)",sep,
                        "sdne(m)",sep,"sdeu(m)",sep,"sdun(m)",sep,"age(s)",sep,"ratio");
         }
+        if (opt->outvel) {
+            p+=sprintf(p,"%s%10s%s%10s%s%10s%s%9s%s%8s%s%8s%s%8s%s%8s%s%8s",
+                       sep,"vn(m/s)",sep,"ve(m/s)",sep,"vu(m/s)",sep,"sdvn",sep,
+                       "sdve",sep,"sdvu",sep,"sdvne",sep,"sdveu",sep,"sdvun");
+        }
     }
     else if (opt->posf==SOLF_XYZ) { /* x/y/z-ecef */
-        p+=sprintf(p,"%14s%s%14s%s%14s%s%3s%s%3s%s%8s%s%8s%s%8s%s%8s%s%8s%s%8s%s%6s%s%6s\n",
+        p+=sprintf(p,"%14s%s%14s%s%14s%s%3s%s%3s%s%8s%s%8s%s%8s%s%8s%s%8s%s%8s%s%6s%s%6s",
                    "x-ecef(m)",sep,"y-ecef(m)",sep,"z-ecef(m)",sep,"Q",sep,"ns",sep,
                    "sdx(m)",sep,"sdy(m)",sep,"sdz(m)",sep,"sdxy(m)",sep,
                    "sdyz(m)",sep,"sdzx(m)",sep,"age(s)",sep,"ratio");
+        
+        if (opt->outvel) {
+            p+=sprintf(p,"%s%10s%s%10s%s%10s%s%9s%s%8s%s%8s%s%8s%s%8s%s%8s",
+                       sep,"vx(m/s)",sep,"vy(m/s)",sep,"vz(m/s)",sep,"sdvx",sep,
+                       "sdvy",sep,"sdvz",sep,"sdvxy",sep,"sdvyz",sep,"sdvzx");
+        }
     }
     else if (opt->posf==SOLF_ENU) { /* e/n/u-baseline */
-        p+=sprintf(p,"%14s%s%14s%s%14s%s%3s%s%3s%s%8s%s%8s%s%8s%s%8s%s%8s%s%8s%s%6s%s%6s\n",
+        p+=sprintf(p,"%14s%s%14s%s%14s%s%3s%s%3s%s%8s%s%8s%s%8s%s%8s%s%8s%s%8s%s%6s%s%6s",
                    "e-baseline(m)",sep,"n-baseline(m)",sep,"u-baseline(m)",sep,
                    "Q",sep,"ns",sep,"sde(m)",sep,"sdn(m)",sep,"sdu(m)",sep,
                    "sden(m)",sep,"sdnu(m)",sep,"sdue(m)",sep,"age(s)",sep,"ratio");
     }
+    p+=sprintf(p,"\n");
     return p-(char *)buff;
 }
 /* std-dev of soltuion -------------------------------------------------------*/

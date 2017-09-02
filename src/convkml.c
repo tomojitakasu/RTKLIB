@@ -17,6 +17,7 @@
 *           2009/01/19  1.3  fix bug on display mark with by-q-flag option
 *           2010/05/10  1.4  support api readsolt() change
 *           2010/08/14  1.5  fix bug on readsolt() (2.4.0_p3)
+*           2017/06/10  1.6  support wild-card in input file
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -26,7 +27,7 @@ static const char rcsid[]="$Id: convkml.c,v 1.1 2008/07/17 21:48:06 ttaka Exp $"
 
 #define SIZP     0.2            /* mark size of rover positions */
 #define SIZR     0.3            /* mark size of reference position */
-#define TINT     30.0           /* time label interval (sec) */
+#define TINT     60.0           /* time label interval (sec) */
 #define HEADKML1 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
 #define HEADKML2 "<kml xmlns=\"http://earth.google.com/kml/2.1\">"
 #define MARKICON "http://maps.google.com/mapfiles/kml/pal2/icon18.png"
@@ -73,7 +74,7 @@ static void outpoint(FILE *fp, gtime_t time, const double *pos,
         else if (outtime==3) time=timeadd(gpst2utc(time),9*3600.0);
         time2epoch(time,ep);
         if (!*label&&fmod(ep[5]+0.005,TINT)<0.01) {
-            sprintf(str,"%02.0f:%02.0f:%02.0f",ep[3],ep[4],ep[5]);
+            sprintf(str,"%02.0f:%02.0f",ep[3],ep[4]);
             fprintf(fp,"<name>%s</name>\n",str);
         }
         sprintf(str,"%04.0f-%02.0f-%02.0fT%02.0f:%02.0f:%05.2fZ",
@@ -140,7 +141,7 @@ static int savekml(const char *file, const solbuf_t *solbuf, int tcolor,
 }
 /* convert to google earth kml file --------------------------------------------
 * convert solutions to google earth kml file
-* args   : char   *infile   I   input solutions file
+* args   : char   *infile   I   input solutions file (wild-card (*) is expanded)
 *          char   *outfile  I   output google earth kml file ("":<infile>.kml)
 *          gtime_t ts,te    I   start/end time (gpst)
 *          int    tint      I   time interval (s) (0.0:all)
@@ -161,11 +162,22 @@ extern int convkml(const char *infile, const char *outfile, gtime_t ts,
 {
     solbuf_t solbuf={0};
     double rr[3]={0},pos[3],dr[3];
-    int i,j;
-    char *p,file[1024];
+    int i,j,nfile,stat;
+    char *p,file[1024],*files[MAXEXFILE]={0};
     
     trace(3,"convkml : infile=%s outfile=%s\n",infile,outfile);
     
+    /* expand wild-card of infile */
+    for (i=0;i<MAXEXFILE;i++) {
+        if (!(files[i]=(char *)malloc(1024))) {
+            for (i--;i>=0;i--) free(files[i]);
+            return -4;
+        }
+    }
+    if ((nfile=expath(infile,files,MAXEXFILE))<=0) {
+        for (i=0;i<MAXEXFILE;i++) free(files[i]);
+        return -3;
+    }
     if (!*outfile) {
         if ((p=strrchr(infile,'.'))) {
             strncpy(file,infile,p-infile);
@@ -176,8 +188,13 @@ extern int convkml(const char *infile, const char *outfile, gtime_t ts,
     else strcpy(file,outfile);
     
     /* read solution file */
-    if (!readsolt((char **)&infile,1,ts,te,tint,qflg,&solbuf)) return -1;
+    stat=readsolt(files,nfile,ts,te,tint,qflg,&solbuf);
     
+    for (i=0;i<MAXEXFILE;i++) free(files[i]);
+    
+    if (!stat) {
+        return -1;
+    }
     /* mean position */
     for (i=0;i<3;i++) {
         for (j=0;j<solbuf.n;j++) rr[i]+=solbuf.data[j].rr[i];

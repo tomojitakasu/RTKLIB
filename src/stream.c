@@ -57,7 +57,7 @@
 *                           add api strsetsel(),strgetsel()
 *           2016/09/06 1.23 fix bug on ntrip caster socket and request handling
 *           2016/09/27 1.24 support udp server and client
-*           2016/10/10 1.25 support ::P=,::Q= option in path for STR_FILE
+*           2016/10/10 1.25 support ::P={4|8} option in path for STR_FILE
 *-----------------------------------------------------------------------------*/
 #include <ctype.h>
 #include "rtklib.h"
@@ -136,12 +136,12 @@ typedef struct {            /* file control type */
     int repmode;            /* replay mode (0:master,1:slave) */
     int offset;             /* time offset (ms) for slave */
     int size_fpos;          /* file position size (bytes) */
-    int size_time;          /* time_t size (bytes) */
     gtime_t time;           /* start time */
     gtime_t wtime;          /* write time */
     unsigned int tick;      /* start tick */
     unsigned int tick_f;    /* start tick in file */
-    unsigned int fpos;      /* current file position */
+    size_t fpos_n;          /* next file position */
+    unsigned int tick_n;    /* next tick */
     double start;           /* start offset (s) */
     double speed;           /* replay speed (time factor) */
     double swapintv;        /* swap interval (hr) (0: no swap) */
@@ -553,8 +553,6 @@ static int statexserial(serial_t *serial, char *msg)
 static int openfile_(file_t *file, gtime_t time, char *msg)
 {    
     FILE *fp;
-    double time_sec;
-    unsigned int time_buf[2];
     char *rw,tagpath[MAXSTRPATH+4]="";
     char tagh[TIMETAGH_LEN+1]="";
     
@@ -562,7 +560,8 @@ static int openfile_(file_t *file, gtime_t time, char *msg)
     
     file->time=utc2gpst(timeget());
     file->tick=file->tick_f=tickget();
-    file->fpos=0;
+    file->fpos_n=0;
+    file->tick_n=0;
     
     /* use stdin or stdout if file path is null */
     if (!*file->path) {
@@ -599,14 +598,8 @@ static int openfile_(file_t *file, gtime_t time, char *msg)
         
         if (file->mode&STR_MODE_R) {
             if (fread(&tagh,TIMETAGH_LEN,1,file->fp_tag)==1&&
-                fread(&time_buf,file->size_time,1,file->fp_tag)==1&&
-                fread(&time_sec,sizeof(double),1,file->fp_tag)==1) {
+                fread(&file->time,sizeof(file->time),1,file->fp_tag)==1) {
                 memcpy(&file->tick_f,tagh+TIMETAGH_LEN-4,sizeof(file->tick_f));
-                file->time.time=(time_t)time_buf[0];
-                if (file->size_time==8&&sizeof(time_t)==8) {
-                    file->time.time+=((time_t)time_buf[1])<<32;
-                }
-                file->time.sec=time_sec;
                 file->wtime=file->time;
             }
             else {
@@ -621,7 +614,7 @@ static int openfile_(file_t *file, gtime_t time, char *msg)
             fwrite(&tagh,1,TIMETAGH_LEN,file->fp_tag);
             fwrite(&file->time,1,sizeof(file->time),file->fp_tag);
             /* time tag file structure   */
-            /*   HEADER(60)+TICK(4)+TIME(4/8+8)+ */
+            /*   HEADER(60)+TICK(4)+TIME(12)+ */
             /*   TICK0(4)+FPOS0(4/8)+    */
             /*   TICK1(4)+FPOS1(4/8)+... */
         }
@@ -645,14 +638,14 @@ static void closefile_(file_t *file)
     if (file->fp_tag_tmp) fclose(file->fp_tag_tmp);
     file->fp=file->fp_tag=file->fp_tmp=file->fp_tag_tmp=NULL;
 }
-/* open file (path=filepath[::T[::+<off>][::x<speed>]][::S=swapintv][::P={4|8}][::Q={4|8}] */
+/* open file (path=filepath[::T[::+<off>][::x<speed>]][::S=swapintv][::P={4|8}] */
 static file_t *openfile(const char *path, int mode, char *msg)
 {
     file_t *file;
     gtime_t time,time0={0};
     double speed=0.0,start=0.0,swapintv=0.0;
     char *p;
-    int timetag=0,size_fpos=(int)sizeof(size_t),size_time=(int)sizeof(time_t);
+    int timetag=0,size_fpos=(int)sizeof(size_t);
     
     tracet(3,"openfile: path=%s mode=%d\n",path,mode);
     
@@ -665,7 +658,6 @@ static file_t *openfile(const char *path, int mode, char *msg)
         else if (*(p+2)=='x') sscanf(p+2,"x%lf",&speed);
         else if (*(p+2)=='S') sscanf(p+2,"S=%lf",&swapintv);
         else if (*(p+2)=='P') sscanf(p+2,"P=%d",&size_fpos);
-        else if (*(p+2)=='Q') sscanf(p+2,"Q=%d",&size_time);
     }
     if (start<=0.0) start=0.0;
     if (swapintv<=0.0) swapintv=0.0;
@@ -680,10 +672,9 @@ static file_t *openfile(const char *path, int mode, char *msg)
     file->timetag=timetag;
     file->repmode=0;
     file->offset=0;
-    file->size_fpos=size_fpos==8?8:4; /* 4 or 8 */
-    file->size_time=size_time==8?8:4; /* 4 or 8 */
+    file->size_fpos=size_fpos;
     file->time=file->wtime=time0;
-    file->tick=file->tick_f=file->fpos=0;
+    file->tick=file->tick_f=file->tick_n=file->fpos_n=0;
     file->start=start;
     file->speed=speed;
     file->swapintv=swapintv;
@@ -776,10 +767,10 @@ static int readfile(file_t *file, unsigned char *buff, int nmax, char *msg)
 {
     struct timeval tv={0};
     fd_set rs;
-    unsigned int fpos_buff[2];
-    unsigned int t,tick;
+    unsigned long fpos_8B;
+    unsigned int t,tick,fpos_4B;
+    long pos,n;
     int nr=0;
-    size_t fpos;
     
     tracet(4,"readfile: fp=%d nmax=%d\n",file->fp,nmax);
     
@@ -805,67 +796,36 @@ static int readfile(file_t *file, unsigned char *buff, int nmax, char *msg)
         else { /* master */
             t=(unsigned int)((tickget()-file->tick)*file->speed+file->start*1000.0);
         }
-#if 0
-        for (;;) { /* seek file position */
-            if (fread(&tick,sizeof(tick),1,file->fp_tag)<1||
-                fread(fpos_buff,file->size_fpos,1,file->fp_tag)<1) {
-                fseek(file->fp,0,SEEK_END);
-                sprintf(msg,"end");
+        /* seek time-tag file to get next tick and file position */
+        while (file->tick_n<=t) {
+            
+            if (fread(&file->tick_n,sizeof(tick),1,file->fp_tag)<1||
+                fread(file->size_fpos==4?(void *)&fpos_4B:(void *)&fpos_8B,
+                      file->size_fpos,1,file->fp_tag)<1) {
+                file->tick_n=(unsigned int)(-1);
+                pos=ftell(file->fp);
+                fseek(file->fp,0L,SEEK_END);
+                file->fpos_n=(size_t)ftell(file->fp);
+                fseek(file->fp,pos,SEEK_SET);
                 break;
             }
-            fpos=(size_t)fpos_buff[0];
-            if (file->size_fpos==8&&sizeof(size_t)==8) {
-                fpos+=((size_t)fpos_buff[1]<<32);
-            }
-            /* skip if overload */
-            if (file->repmode||file->speed>0.0) {
-                if ((int)(tick-t)<1) continue;
-            }
-            if (!file->repmode) tick_master=tick;
-            
-            sprintf(msg,"T%+.1fs",(int)tick<0?0.0:(int)tick/1000.0);
-            file->wtime = timeadd(file->time,tick*0.001);
-            
-            /* skip if buffer overflow */
-            if ((int)(fpos-file->fpos)>=nmax) {
-               fseek(file->fp,fpos,SEEK_SET);
-               file->fpos=fpos;
-               return 0;
-            }
-            nmax=(int)(fpos-file->fpos);
-            
-            if (file->repmode||file->speed>0.0) {
-                fseek(file->fp_tag,-(long)(sizeof(tick)+file->size_fpos),SEEK_CUR);
-            }
-            break;
+            file->fpos_n=file->size_fpos==4?(size_t)fpos_4B:(size_t)fpos_8B;
         }
-#else
-        /* next file position */
-        if (fread(&tick,sizeof(tick),1,file->fp_tag)<1||
-            fread(fpos_buff,file->size_fpos,1,file->fp_tag)<1) {
-            fseek(file->fp,0,SEEK_END);
-            sprintf(msg,"end");
-            return 0;
-        }
-        fpos=(size_t)fpos_buff[0];
-        if (file->size_fpos==8&&sizeof(size_t)==8) {
-            fpos+=((size_t)fpos_buff[1]<<32);
-        }
-        sprintf(msg,"T%+.1fs",tick<=0?0.0:tick*0.001);
-        file->wtime = timeadd(file->time,tick*0.001);
+        sprintf(msg,"T%+.1fs",(int)t*0.001);
+        file->wtime = timeadd(file->time,(int)t*0.001);
+        timeset(timeadd(file->time,(int)file->tick_n*0.001));
         
-        if ((int)(tick-t)>0) {
-            fseek(file->fp_tag,-(long)(sizeof(tick)+file->size_fpos),SEEK_CUR);
+        if ((n=file->fpos_n-ftell(file->fp))<nmax) {
+            nmax=n;
         }
-        nmax = MIN(nmax,(int)(fpos-file->fpos));
-#endif
     }
     if (nmax>0) {
         nr=(int)fread(buff,1,nmax,file->fp);
-        file->fpos+=nr;
-        if (nr<=0) sprintf(msg,"end");
     }
-    tracet(5,"readfile: fp=%d nr=%d fpos=%d\n",file->fp,nr,file->fpos);
+    if (feof(file->fp)) {
+        sprintf(msg,"end");
+    }
+    tracet(5,"readfile: fp=%d nr=%d\n",file->fp,nr);
     return nr;
 }
 /* write file ----------------------------------------------------------------*/
