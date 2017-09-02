@@ -13,6 +13,8 @@
 *         Protocol Specification V15.00-17.00, Nov 3, 2014
 *     [4] ublox-AG, UBX-13003221-R09, u-blox 8 /u-blox M8 Receiver Description
 *         including Protocol Specification V15.00-18.00, January, 2016
+*     [5] ublox-AG, UBX-13003221-R013, u-blox 8 /u-blox M8 Receiver Description
+*         including Protocol Specification V15-20.30,22-23.01, July 6, 2017
 *
 * version : $Revision: 1.2 $ $Date: 2008/07/14 00:05:05 $
 * history : 2007/10/08 1.0  new
@@ -1231,7 +1233,8 @@ extern int gen_ubx(const char *msg, unsigned char *buff)
         {FU1,FU1},                                /* RINV */
         {FU1,FU1,FU2,FU2,FU1,FU1,FU2,FU2,FU2,FU2,FU4}, /* SMGR */
         {FU1,FU1,FU2,FI4,FI4,FI4,FU4,FU4,FU4},    /* TMODE2 */
-        {FU1,FU1,FU2,FI4,FI4,FI4,FU4,FU4,FU4},    /* TMODE3 */
+        {FU1,FU1,FU2,FI4,FI4,FI4,FI1,FI1,FI1,FU1,FU4,FU4,FU4,FU1,FU1,FU1,FU1,FU1,
+         FU1,FU1,FU1},                            /* TMODE3 */
         {FU1,FU1,FU1,FU1,FI2,FI2,FU4,FU4,FU4,FU4,FI4,FU4}, /* TPS */
         {FU1,FU1,FU1,FU1,FU4,FU4,FU4,FU4,FU4}     /* TXSLOT */
     };
