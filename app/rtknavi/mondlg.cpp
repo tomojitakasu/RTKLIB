@@ -8,7 +8,7 @@
 #pragma package(smart_init)
 #pragma resource "*.dfm"
 
-#define SQRT(x)     ((x)<0.0?sqrt(-(x)):sqrt(x))
+#define SQRT(x)     ((x)<0.0||(x)!=(x)?0.0:sqrt(x))
 #define TOPMARGIN	2
 #define LEFTMARGIN	3
 #define MAXLINE		2048

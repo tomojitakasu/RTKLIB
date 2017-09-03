@@ -89,6 +89,7 @@ void ConvOptDialog::showEvent(QShowEvent *event)
     ExSats->setText(mainWindow->ExSats);
     TraceLevel->setCurrentIndex(mainWindow->TraceLevel);
     ChkSepNav->setChecked(mainWindow->SepNav);
+    TimeTol->setValue(mainWindow->TimeTol);
 
 	UpdateEnable();
 }
@@ -158,6 +159,7 @@ void ConvOptDialog::BtnOkClick()
     mainWindow->ExSats = ExSats->text();
     mainWindow->TraceLevel = TraceLevel->currentIndex();
     mainWindow->SepNav=ChkSepNav->isChecked();
+    mainWindow->TimeTol=TimeTol->value();
 
     accept();
 }

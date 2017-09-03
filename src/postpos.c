@@ -38,13 +38,12 @@
 *           2016/07/31  1.20 fix error message problem in rnx2rtkp
 *           2016/08/29  1.21 suppress warnings
 *           2016/10/10  1.22 fix bug on identification of file fopt->blq
+*           2017/06/13  1.23 add smoother of velocity solution
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
-static const char rcsid[]="$Id: postpos.c,v 1.1 2008/07/17 21:48:06 ttaka Exp $";
-
 #define MIN(x,y)    ((x)<(y)?(x):(y))
-#define SQRT(x)     ((x)<=0.0?0.0:sqrt(x))
+#define SQRT(x)     ((x)<=0.0||(x)!=(x)?0.0:sqrt(x))
 
 #define MAXPRCDAYS  100          /* max days of continuous processing */
 #define MAXINFILE   1000         /* max number of input files */
@@ -257,6 +256,9 @@ static int inputobs(obsd_t *obs, int solq, const prcopt_t *popt)
                 if (timediff(obss.data[i].time,obss.data[iobsu].time)>DTTOL) break;
         }
         nr=nextobsf(&obss,&iobsr,2);
+        if (nr<=0) {
+            nr=nextobsf(&obss,&iobsr,2);
+        }
         for (i=0;i<nu&&n<MAXOBS*2;i++) obs[n++]=obss.data[iobsu+i];
         for (i=0;i<nr&&n<MAXOBS*2;i++) obs[n++]=obss.data[iobsr+i];
         iobsu+=nu;
@@ -517,6 +519,27 @@ static void combres(FILE *fp, const prcopt_t *popt, const solopt_t *sopt)
             sols.qr[3]=(float)Qs[1];
             sols.qr[4]=(float)Qs[5];
             sols.qr[5]=(float)Qs[2];
+            
+            /* smoother for velocity solution */
+            if (popt->dynamics) {
+                for (k=0;k<3;k++) {
+                    Qf[k+k*3]=solf[i].qv[k];
+                    Qb[k+k*3]=solb[j].qv[k];
+                }
+                Qf[1]=Qf[3]=solf[i].qv[3];
+                Qf[5]=Qf[7]=solf[i].qv[4];
+                Qf[2]=Qf[6]=solf[i].qv[5];
+                Qb[1]=Qb[3]=solb[j].qv[3];
+                Qb[5]=Qb[7]=solb[j].qv[4];
+                Qb[2]=Qb[6]=solb[j].qv[5];
+                if (smoother(solf[i].rr+3,Qf,solb[j].rr+3,Qb,3,sols.rr+3,Qs)) continue;
+                sols.qv[0]=(float)Qs[0];
+                sols.qv[1]=(float)Qs[4];
+                sols.qv[2]=(float)Qs[8];
+                sols.qv[3]=(float)Qs[1];
+                sols.qv[4]=(float)Qs[5];
+                sols.qv[5]=(float)Qs[2];
+            }
         }
         if (!solstatic) {
             outsol(fp,&sols,rbs,sopt);
@@ -1314,7 +1337,8 @@ extern int postpos(gtime_t ts, gtime_t te, double ti, double tu,
     else if (ts.time!=0) {
         for (i=0;i<n&&i<MAXINFILE;i++) {
             if (!(ifile[i]=(char *)malloc(1024))) {
-                for (;i>=0;i--) free(ifile[i]); return -1;
+                for (;i>=0;i--) free(ifile[i]);
+                return -1;
             }
             reppath(infile[i],ifile[i],ts,"","");
             index[i]=i;

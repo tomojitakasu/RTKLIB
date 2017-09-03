@@ -914,7 +914,8 @@ int MainForm::GetOption(prcopt_t &prcopt, solopt_t &solopt,
     prcopt.posopt[3]=PosOpt[3];
     prcopt.posopt[4]=PosOpt[4];
     prcopt.posopt[5]=PosOpt[5];
-    prcopt.dynamics =DynamicModel;
+    prcopt.dynamics =PosMode==PMODE_KINEMA||
+                     PosMode==PMODE_PPP_KINEMA;
     prcopt.tidecorr =TideCorr;
     prcopt.armaxiter=ARIter;
     prcopt.niter    =NumIter;

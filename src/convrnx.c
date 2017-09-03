@@ -29,21 +29,35 @@
 *           2016/07/04 1.11 support IRNSS
 *           2016/10/10 1.12 support event output by staid change in rtcm
 *                           support separted navigation files for ver.3
+*           2017/06/06 1.13 fix bug on array overflow in set_obstype() and
+*                           scan_obstype()
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
-static const char rcsid[]="$Id:$";
-
 #define NOUTFILE        9       /* number of output files */
+#define NSATSYS         7       /* number of satellite systems */
 #define TSTARTMARGIN    60.0    /* time margin for file name replacement */
 
 /* type definition -----------------------------------------------------------*/
 
 typedef struct stas_tag {       /* station list type */
     int    staid;               /* station id */
+    gtime_t time;               /* first epoch time */
     sta_t  sta;                 /* station parameters */
     struct stas_tag *next;      /* next list */
 } stas_t;
+
+typedef struct halfd_tag {      /* half-cycle ambiguity data type */
+    gtime_t ts,te;              /* start/end time (gpst) */
+    unsigned char stat;         /* status (0:unresolved,1:half-cycle added, */
+                                /*         2:half-cycle not added) */
+    struct halfd_tag *next;     /* next list */
+} halfd_t;
+
+typedef struct {                /* half-cycle ambiguity status type */
+    int stat[MAXSAT][NFREQ+NEXOBS];
+    halfd_t *data[MAXSAT][NFREQ+NEXOBS];
+} halfc_t;
 
 typedef struct {                /* stream file type */
     int    format;              /* stream format (STRFMT_???) */
@@ -155,15 +169,18 @@ static void rtcm2opt(const rtcm_t *rtcm, const stas_t *stas, rnxopt_t *opt)
     
     trace(3,"rtcm2opt:\n");
     
+    /* search first epoch station info */
     for (p=stas;p;p=p->next) {
         sta=&p->sta;
         staid=p->staid;
+        if (timediff(p->time,opt->tstart)<DTTOL) break;
     }
     if (!sta) {
         sta=&rtcm->sta;
     }
     /* comment */
     if (staid>=0) {
+        if (!*opt->marker) sprintf(opt->marker,"%04d",staid);
         sprintf(opt->comment[1]+strlen(opt->comment[1]),", station ID: %d",
                 staid);
     }
@@ -481,22 +498,101 @@ static void update_stas(stas_t **stas, strfile_t *str)
     }
     if (!(p=(stas_t *)calloc(sizeof(stas_t),1))) return;
     p->staid=str->rtcm.staid;
+    p->time=str->rtcm.time;
     p->sta=str->rtcm.sta;
     p->next=*stas;
     *stas=p;
-    trace(2,"update_stas: staid=%d\n",str->rtcm.staid);
+    trace(2,"update_stas: staid=%d time=%s\n",str->rtcm.staid,
+          time_str(str->rtcm.time,0));
+}
+/* update half-cycle ambiguity status ----------------------------------------*/
+static void update_halfc(halfc_t *halfc, obsd_t *obs)
+{
+    halfd_t *p;
+    int i;
+    
+    for (i=0;i<NFREQ+NEXOBS;i++) {
+        if (obs->LLI[i]&LLI_SLIP) {
+            halfc->stat[obs->sat-1][i]=0;
+        }
+        if (obs->LLI[i]&LLI_HALFC) {
+            if (!halfc->stat[obs->sat-1][i]) {
+                if (!(p=(halfd_t *)calloc(sizeof(halfd_t),1))) return;
+                p->ts=p->te=obs->time;
+                p->next=halfc->data[obs->sat-1][i];
+                halfc->data[obs->sat-1][i]=p;
+                halfc->stat[obs->sat-1][i]=1;
+            }
+            else if ((p=halfc->data[obs->sat-1][i])) {
+                p->te=obs->time;
+            }
+        }
+        else if (halfc->stat[obs->sat-1][i]&&obs->L[i]!=0.0&&
+                 (p=halfc->data[obs->sat-1][i])) {
+            
+            if (obs->LLI[i]&LLI_HALFA) {
+                p->stat=2; /* resolved with half-cycle added */
+            }
+            else if (obs->LLI[i]&LLI_HALFS) {
+                p->stat=3; /* resolved with half-cycle subtracted */
+            }
+            else {
+                p->stat=1; /* resolved wihout half-cycle added */
+            }
+        }
+    }
+}
+/* dump half-cycle ambiguity status ------------------------------------------*/
+#if 1
+static void dump_halfc(halfc_t *halfc)
+{
+    halfd_t *p;
+    char s0[32],s1[32],s2[32];
+    int i,j;
+    
+    for (i=0;i<MAXSAT;i++) for (j=0;j<NFREQ+NEXOBS;j++) {
+        for (p=halfc->data[i][j];p;p=p->next) {
+            satno2id(i+1,s0);
+            time2str(p->ts,s1,2);
+            time2str(p->te,s2,2);
+            trace(2,"%s L%d : %s - %s : %d\n",s0,j+1,s1,s2,p->stat);
+        }
+    }
+}
+#endif
+/* resolve half-cycle ambiguity ----------------------------------------------*/
+static void resolve_halfc(halfc_t *halfc, obsd_t *obs)
+{
+    halfd_t *p;
+    int i;
+    
+    for (i=0;i<NFREQ+NEXOBS;i++) {
+        for (p=halfc->data[obs->sat-1][i];p;p=p->next) {
+            if (!p->stat) continue;
+            if (timediff(obs->time,p->ts)<-DTTOL||
+                timediff(obs->time,p->te)> DTTOL) continue;
+            
+            if (p->stat==2) {
+                obs->L[i]-=0.5;
+            }
+            else if (p->stat==3) {
+                obs->L[i]+=0.5;
+            }
+            obs->LLI[i]&=~LLI_HALFC;
+        }
+    }
 }
 /* scan observation types and station parameters -----------------------------*/
 static int scan_obstype(int format, char **files, int nf, rnxopt_t *opt,
-                        stas_t **stas, gtime_t *time)
+                        stas_t **stas, halfc_t *halfc, gtime_t *time)
 {
     strfile_t *str;
-    unsigned char codes[8][33]={{0}};
-    unsigned char types[8][33]={{0}};
+    unsigned char codes[NSATSYS][33]={{0}};
+    unsigned char types[NSATSYS][33]={{0}};
     char msg[128];
-    int i,j,k,l,m,c=0,type,sys,abort=0,n[NOUTFILE]={0};
+    int i,j,k,l,m,c=0,type,sys,abort=0,n[NSATSYS]={0};
     
-    trace(3,"scan_obstype: nf=%s, opt=%s\n",nf,opt);
+    trace(3,"scan_obstype: nf=%d, opt=%s\n",nf,opt);
     
     if (!(str=gen_strfile(format,opt->rcvopt,*time))) return 0;
     
@@ -537,6 +633,8 @@ static int scan_obstype(int format, char **files, int nf, rnxopt_t *opt,
                             if (str->obs->data[i].SNR[j]!=0) types[l][k]|=8;
                         }
                     }
+                    /* update half-cycle ambiguity status */
+                    update_halfc(halfc,str->obs->data+i);
                 }
                 if (!time->time) *time=str->obs->data[0].time;
             }
@@ -559,10 +657,10 @@ static int scan_obstype(int format, char **files, int nf, rnxopt_t *opt,
         trace(2,"aborted in scan\n");
         return 0;
     }
-    for (i=0;i<NOUTFILE;i++) for (j=0;j<n[i];j++) {
+    for (i=0;i<NSATSYS;i++) for (j=0;j<n[i];j++) {
         trace(2,"scan_obstype: sys=%d code=%s type=%d\n",i,code2obs(codes[i][j],NULL),types[i][j]);
     }
-    for (i=0;i<NOUTFILE;i++) {
+    for (i=0;i<NSATSYS;i++) {
         
         /* sort codes */
         sort_codes(codes[i],types[i],n[i]);
@@ -580,7 +678,7 @@ static int scan_obstype(int format, char **files, int nf, rnxopt_t *opt,
 static void set_obstype(int format, rnxopt_t *opt)
 {
     /* default supported codes for {GPS,GLO,GAL,QZS,SBS,CMP,IRN} */
-    static const unsigned char codes_rtcm2[NOUTFILE][8]={ /* rtcm2 */
+    static const unsigned char codes_rtcm2[NSATSYS][8]={ /* rtcm2 */
         {CODE_L1C,CODE_L1P,CODE_L2C,CODE_L2P},
         {CODE_L1C,CODE_L1P,CODE_L2C,CODE_L2P},
         {0},
@@ -589,7 +687,7 @@ static void set_obstype(int format, rnxopt_t *opt)
         {0},
         {0}
     };
-    static const unsigned char codes_rtcm3[NOUTFILE][8]={ /* rtcm3 */
+    static const unsigned char codes_rtcm3[NSATSYS][8]={ /* rtcm3 */
         {CODE_L1C,CODE_L1W,CODE_L2W,CODE_L2X,CODE_L5X},
         {CODE_L1C,CODE_L1P,CODE_L2C,CODE_L2P},
         {CODE_L1X,CODE_L5X,CODE_L7X,CODE_L8X},
@@ -598,7 +696,7 @@ static void set_obstype(int format, rnxopt_t *opt)
         {CODE_L1I,CODE_L7I},
         {0}
     };
-    static const unsigned char codes_oem3[NOUTFILE][8]={ /* novatel oem3 */
+    static const unsigned char codes_oem3[NSATSYS][8]={ /* novatel oem3 */
         {CODE_L1C,CODE_L2P},
         {0},
         {0},
@@ -607,7 +705,7 @@ static void set_obstype(int format, rnxopt_t *opt)
         {0},
         {0}
     };
-    static const unsigned char codes_oem4[NOUTFILE][8]={ /* novatel oem6 */
+    static const unsigned char codes_oem4[NSATSYS][8]={ /* novatel oem6 */
         {CODE_L1C,CODE_L1P,CODE_L2D,CODE_L2X,CODE_L5Q},
         {CODE_L1C,CODE_L2C,CODE_L2P},
         {CODE_L1B,CODE_L1C,CODE_L5Q,CODE_L7Q,CODE_L8Q},
@@ -616,7 +714,7 @@ static void set_obstype(int format, rnxopt_t *opt)
         {CODE_L1I,CODE_L7I},
         {0}
     };
-    static const unsigned char codes_cres[NOUTFILE][8]={ /* hemisphere */
+    static const unsigned char codes_cres[NSATSYS][8]={ /* hemisphere */
         {CODE_L1C,CODE_L2P},
         {CODE_L1C,CODE_L2P},
         {0},
@@ -625,7 +723,7 @@ static void set_obstype(int format, rnxopt_t *opt)
         {0},
         {0}
     };
-    static const unsigned char codes_javad[NOUTFILE][8]={ /* javad */
+    static const unsigned char codes_javad[NSATSYS][8]={ /* javad */
         {CODE_L1C,CODE_L1W,CODE_L1X,CODE_L2X,CODE_L2W,CODE_L5X},
         {CODE_L1C,CODE_L1P,CODE_L2C,CODE_L2P},
         {CODE_L1X,CODE_L5X,CODE_L7X,CODE_L8X,CODE_L6X},
@@ -634,7 +732,7 @@ static void set_obstype(int format, rnxopt_t *opt)
         {CODE_L1I,CODE_L7I},
         {0}
     };
-    static const unsigned char codes_rinex[NOUTFILE][32]={ /* rinex and binex */
+    static const unsigned char codes_rinex[NSATSYS][32]={ /* rinex and binex */
         {CODE_L1C,CODE_L1P,CODE_L1W,CODE_L1Y,CODE_L1M,CODE_L1N,CODE_L1S,CODE_L1L,
          CODE_L2C,CODE_L2D,CODE_L2S,CODE_L2L,CODE_L2X,CODE_L2P,CODE_L2W,CODE_L2Y,
          CODE_L2M,CODE_L2N,CODE_L5I,CODE_L5Q,CODE_L5X},
@@ -649,7 +747,7 @@ static void set_obstype(int format, rnxopt_t *opt)
          CODE_L6X},
         {CODE_L5A,CODE_L5B,CODE_L5C,CODE_L5X,CODE_L9A,CODE_L9B,CODE_L9C,CODE_L9X}
     };
-    static const unsigned char codes_rt17[NOUTFILE][8]={ /* rt17 */
+    static const unsigned char codes_rt17[NSATSYS][8]={ /* rt17 */
         {CODE_L1C,CODE_L1P,CODE_L2C,CODE_L2P,CODE_L2W},
         {0},
         {0},
@@ -658,7 +756,7 @@ static void set_obstype(int format, rnxopt_t *opt)
         {0},
         {0},
     };
-    static const unsigned char codes_cmr[NOUTFILE][8]={ /* cmr */
+    static const unsigned char codes_cmr[NSATSYS][8]={ /* cmr */
         {CODE_L1C,CODE_L1P,CODE_L2C,CODE_L2P,CODE_L2W},
         {CODE_L1C,CODE_L1P,CODE_L2C,CODE_L2P},
         {0},
@@ -667,7 +765,7 @@ static void set_obstype(int format, rnxopt_t *opt)
         {0},
         {0},
     };
-    static const unsigned char codes_other[NOUTFILE][8]={ /* others */
+    static const unsigned char codes_other[NSATSYS][8]={ /* others */
         {CODE_L1C},
         {CODE_L1C},
         {CODE_L1C},
@@ -681,7 +779,7 @@ static void set_obstype(int format, rnxopt_t *opt)
     
     trace(3,"set_obstype: format=%d\n",format);
     
-    for (i=0;i<NOUTFILE;i++) {
+    for (i=0;i<NSATSYS;i++) {
         switch (format) {
             case STRFMT_RTCM2: codes=codes_rtcm2[i]; break;
             case STRFMT_RTCM3: codes=codes_rtcm3[i]; break;
@@ -797,9 +895,10 @@ static void outrnxevent(FILE *fp, rnxopt_t *opt, int staid, stas_t *stas)
     }
     fprintf(fp,"%31s%d%3d\n","",3,p?6:2); /* new site occupation event */
     fprintf(fp,"station ID: %4d%44s%-20s\n",staid,"","COMMENT");
-    fprintf(fp,"%-60s%-20s\n",opt->marker,"MARKER NAME");
-    if (!p) return;
-    
+    fprintf(fp,"%04d%-56s%-20s\n",staid,"","MARKER NAME");
+    if (!p) {
+        return;
+    }
     fprintf(fp,"%-20.20s%-20.20s%-20.20s%-20s\n",p->sta.recsno,
             p->sta.rectype,p->sta.recver,"REC # / TYPE / VERS");
     fprintf(fp,"%-20.20s%-20.20s%-20.20s%-20s\n",p->sta.antsno,
@@ -830,11 +929,23 @@ static void outrnxevent(FILE *fp, rnxopt_t *opt, int staid, stas_t *stas)
     fprintf(fp,"%14.4f%14.4f%14.4f%-18s%-20s\n",del[0],del[1],del[2],"",
             "ANTENNA: DELTA H/E/N");
 }
+/* screen time with time tolerance -------------------------------------------*/
+static int screent_ttol(gtime_t time, gtime_t ts, gtime_t te, double tint,
+                        double ttol)
+{
+    if (ttol==0.0) ttol=DTTOL;
+    
+    return (tint<=0.0||fmod(time2gpst(time,NULL)+DTTOL,tint)<=ttol*2.0)&&
+           (ts.time==0||timediff(time,ts)>=-ttol)&&
+           (te.time==0||timediff(time,te)<  ttol);
+}
 /* convert obs message -------------------------------------------------------*/
 static void convobs(FILE **ofp, rnxopt_t *opt, strfile_t *str, int *staid,
-                    stas_t *stas, int *n, unsigned char slips[][NFREQ+NEXOBS])
+                    stas_t *stas, halfc_t *halfc, int *n,
+                    unsigned char slips[][NFREQ+NEXOBS])
 {
     gtime_t time;
+    int i;
     
     trace(3,"convobs :\n");
     
@@ -842,21 +953,29 @@ static void convobs(FILE **ofp, rnxopt_t *opt, strfile_t *str, int *staid,
     
     time=str->obs->data[0].time;
     
+    if (opt->ts.time!=0&&timediff(time,opt->ts)<-opt->ttol) return;
+    
     /* save slips */
     saveslips(slips,str->obs->data,str->obs->n);
     
-    if (!screent(time,opt->ts,opt->te,opt->tint)) return;
+    if (!screent_ttol(time,opt->ts,opt->te,opt->tint,opt->ttol)) return;
     
     /* restore slips */
     restslips(slips,str->obs->data,str->obs->n);
     
-    /* output event if staid changed */
+    /* output event if station changed */
     if ((str->format==STRFMT_RTCM2||str->format==STRFMT_RTCM3)&&
         str->rtcm.staid!=*staid) {
         if (*staid>=0) {
             outrnxevent(ofp[0],opt,str->rtcm.staid,stas);
         }
         *staid=str->rtcm.staid;
+    }
+    /* half-cycle ambiguity correction */
+    if (opt->halfcyc) {
+        for (i=0;i<str->obs->n;i++) {
+            resolve_halfc(halfc,str->obs->data+i);
+        }
     }
     /* output rinex obs */
     outrnxobsb(ofp[0],opt,str->obs->data,str->obs->n,0);
@@ -1100,6 +1219,7 @@ static int convrnx_s(int sess, int format, rnxopt_t *opt, const char *file,
     FILE *ofp[NOUTFILE]={NULL};
     strfile_t *str;
     stas_t *stas=NULL,*p,*next;
+    halfc_t halfc={{{0}}};
     gtime_t ts={0},te={0},tend={0},time={0};
     unsigned char slips[MAXSAT][NFREQ+NEXOBS]={{0}};
     int i,j,nf,type,n[NOUTFILE+1]={0},staid=-1,abort=0;
@@ -1130,12 +1250,15 @@ static int convrnx_s(int sess, int format, rnxopt_t *opt, const char *file,
     if (opt->scanobs) {
         
         /* scan observation types and station parameters */
-        if (!scan_obstype(format,epath,nf,opt,&stas,&time)) return 0;
+        if (!scan_obstype(format,epath,nf,opt,&stas,&halfc,&time)) return 0;
     }
     else {
         /* set observation types by format */
         set_obstype(format,opt);
     }
+#if 1
+    dump_halfc(&halfc);
+#endif
     if (!(str=gen_strfile(format,opt->rcvopt,time))) {
         for (i=0;i<MAXEXFILE;i++) free(epath[i]);
         return 0;
@@ -1173,7 +1296,7 @@ static int convrnx_s(int sess, int format, rnxopt_t *opt, const char *file,
             
             /* convert message */
             switch (type) {
-                case  1: convobs(ofp,opt,str,&staid,stas,n,slips); break;
+                case  1: convobs(ofp,opt,str,&staid,stas,&halfc,n,slips); break;
                 case  2: convnav(ofp,opt,str,n); break;
                 case  3: convsbs(ofp,opt,str,n); break;
                 case 31: convlex(ofp,opt,str,n); break;
@@ -1185,7 +1308,7 @@ static int convrnx_s(int sess, int format, rnxopt_t *opt, const char *file,
             if (type==1&&!opt->autopos&&norm(opt->apppos,3)<=0.0) {
                 setapppos(str,opt);
             }
-            if (opt->te.time&&timediff(te,opt->te)>10.0) break;
+            if (opt->te.time&&timediff(te,opt->te)>=-opt->ttol) break;
         }
         /* close stream file */
         close_strfile(str);
@@ -1211,13 +1334,13 @@ static int convrnx_s(int sess, int format, rnxopt_t *opt, const char *file,
     }
     if (ts.time>0) showstat(sess,ts,te,n);
     
-    for (i=0;i<MAXEXFILE;i++) free(epath[i]);
-    
     for (p=stas;p;p=next) {
         next=p->next;
         free(p);
     }
     free_strfile(str);
+    
+    for (i=0;i<MAXEXFILE;i++) free(epath[i]);
     
     if (opt->tstart.time==0) opt->tstart=opt->ts;
     if (opt->tend  .time==0) opt->tend  =opt->te;

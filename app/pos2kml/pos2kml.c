@@ -17,8 +17,6 @@
 #include <stdarg.h>
 #include "rtklib.h"
 
-static const char rcsid[]="$Id: pos2kml.c,v 1.1 2008/07/17 21:54:53 ttaka Exp $";
-
 /* help text -----------------------------------------------------------------*/
 static const char *help[]={
 "",

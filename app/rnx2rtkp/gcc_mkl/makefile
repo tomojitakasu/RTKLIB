@@ -20,7 +20,8 @@ OPTS    = -DTRACE -DENAGLO -DENAQZS -DENAGAL -DENACMP -DENAIRN -DNFREQ=3
 # for mkl
 #MKLDIR  = /opt/intel/mkl
 MKLDIR  = /proj/madoca/lib/mkl
-CFLAGS  = -O3 -ansi -pedantic -Wno-unused-but-set-variable -I$(SRC) $(OPTS) -DMKL
+#CFLAGS  = -O3 -ansi -pedantic -Wno-unused-but-set-variable -I$(SRC) $(OPTS) -DMKL -g
+CFLAGS  = -O2 -ansi -pedantic -Wno-unused-but-set-variable -I$(SRC) $(OPTS) -DMKL -g
 LDLIBS  = -L$(MKLDIR)/intel64 -lmkl_intel_lp64 -lmkl_core -lmkl_gnu_thread -lpthread -lgomp -lm -lrt
 
 all        : rnx2rtkp

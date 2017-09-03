@@ -238,6 +238,8 @@ int Plot::ReadObsRnx(const QStringList &files, obs_t *obs, nav_t *nav,
             strcpy(p, ".hnav"); readrnxt(navfile, 1, ts, te, tint, opt, NULL, nav, NULL);
             strcpy(p, ".qnav"); readrnxt(navfile, 1, ts, te, tint, opt, NULL, nav, NULL);
             strcpy(p, ".lnav"); readrnxt(navfile, 1, ts, te, tint, opt, NULL, nav, NULL);
+            strcpy(p, ".cnav"); readrnxt(navfile, 1, ts, te, tint, opt, NULL, nav, NULL);
+            strcpy(p, ".inav"); readrnxt(navfile, 1, ts, te, tint, opt, NULL, nav, NULL);
         } else if (!strcmp(p + 3, "o") || !strcmp(p + 3, "d") ||
                !strcmp(p + 3, "O") || !strcmp(p + 3, "D")) {
             n = nav->n;
@@ -247,6 +249,8 @@ int Plot::ReadObsRnx(const QStringList &files, obs_t *obs, nav_t *nav,
             strcpy(p + 3, "H"); readrnxt(navfile, 1, ts, te, tint, opt, NULL, nav, NULL);
             strcpy(p + 3, "Q"); readrnxt(navfile, 1, ts, te, tint, opt, NULL, nav, NULL);
             strcpy(p + 3, "L"); readrnxt(navfile, 1, ts, te, tint, opt, NULL, nav, NULL);
+            strcpy(p + 3, "C"); readrnxt(navfile, 1, ts, te, tint, opt, NULL, nav, NULL);
+            strcpy(p + 3, "I"); readrnxt(navfile, 1, ts, te, tint, opt, NULL, nav, NULL);
             strcpy(p + 3, "P"); readrnxt(navfile, 1, ts, te, tint, opt, NULL, nav, NULL);
 
             if (nav->n > n || !(q = strrchr(navfile, '\\'))) continue;

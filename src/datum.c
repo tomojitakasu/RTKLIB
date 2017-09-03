@@ -8,8 +8,6 @@
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
-static const char rcsid[]="$Id: datum.c,v 1.1 2008/07/17 21:48:06 ttaka Exp $";
-
 #define MAXPRM  400000              /* max number of parameter records */
 
 typedef struct {                    /* datum trans parameter type */

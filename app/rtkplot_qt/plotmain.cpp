@@ -3059,4 +3059,4 @@ void Plot::FilterClick()
     fileModel->setNameFilters(filter.split(" "));
     DirSelector->setVisible(false);
 }
-//--
+//---------------------------------------------------------------------------

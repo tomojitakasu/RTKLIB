@@ -9,7 +9,7 @@
 
 //---------------------------------------------------------------------------
 
-#define SQRT(x)     ((x)<0.0?sqrt(-(x)):sqrt(x))
+#define SQRT(x)     ((x)<0.0||(x)!=(x)?0.0:sqrt(x))
 #define TOPMARGIN	2
 #define LEFTMARGIN	3
 #define MAXLINE		128

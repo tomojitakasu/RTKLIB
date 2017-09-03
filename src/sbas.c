@@ -38,8 +38,6 @@
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
-static const char rcsid[]="$Id: sbas.c,v 1.1 2008/07/17 21:48:06 ttaka Exp $";
-
 /* constants -----------------------------------------------------------------*/
 
 #define WEEKOFFSET  1024        /* gps week offset for NovAtel OEM-3 */

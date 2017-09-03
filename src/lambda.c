@@ -16,8 +16,6 @@
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
-static const char rcsid[]="$Id: lambda.c,v 1.1 2008/07/17 21:48:06 ttaka Exp $";
-
 /* constants/macros ----------------------------------------------------------*/
 
 #define LOOPMAX     10000           /* maximum count of search loop */

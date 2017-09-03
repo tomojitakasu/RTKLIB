@@ -59,10 +59,8 @@
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
-static const char rcsid[]="$Id:$";
-
 #define SQR(x)      ((x)*(x))
-#define SQRT(x)     ((x)<=0.0?0.0:sqrt(x))
+#define SQRT(x)     ((x)<=0.0||(x)!=(x)?0.0:sqrt(x))
 #define MAX(x,y)    ((x)>(y)?(x):(y))
 #define MIN(x,y)    ((x)<(y)?(x):(y))
 #define ROUND(x)    (int)floor((x)+0.5)
@@ -75,6 +73,8 @@ static const char rcsid[]="$Id:$";
 #define THRES_MW_JUMP 10.0
 
 #define VAR_POS     SQR(60.0)       /* init variance receiver position (m^2) */
+#define VAR_VEL     SQR(10.0)       /* init variance of receiver vel ((m/s)^2) */
+#define VAR_ACC     SQR(10.0)       /* init variance of receiver acc ((m/ss)^2) */
 #define VAR_CLK     SQR(60.0)       /* init variance receiver clock (m^2) */
 #define VAR_ZTD     SQR( 0.6)       /* init variance ztd (m^2) */
 #define VAR_GRA     SQR(0.01)       /* init variance gradient (m^2) */
@@ -477,7 +477,8 @@ static void detslp_mw(rtk_t *rtk, const obsd_t *obs, int n, const nav_t *nav)
 /* temporal update of position -----------------------------------------------*/
 static void udpos_ppp(rtk_t *rtk)
 {
-    int i;
+    double *F,*P,*FP,*x,*xp,pos[3],Q[9]={0},Qv[9];
+    int i,j,*ix,nx;
     
     trace(3,"udpos_ppp:\n");
     
@@ -489,6 +490,10 @@ static void udpos_ppp(rtk_t *rtk)
     /* initialize position for first epoch */
     if (norm(rtk->x,3)<=0.0) {
         for (i=0;i<3;i++) initx(rtk,rtk->sol.rr[i],VAR_POS,i);
+        if (rtk->opt.dynamics) {
+            for (i=3;i<6;i++) initx(rtk,rtk->sol.rr[i],VAR_VEL,i);
+            for (i=6;i<9;i++) initx(rtk,1E-6,VAR_ACC,i);
+        }
     }
     /* static ppp mode */
     if (rtk->opt.mode==PMODE_PPP_STATIC) {
@@ -498,9 +503,56 @@ static void udpos_ppp(rtk_t *rtk)
         return;
     }
     /* kinmatic mode without dynamics */
-    for (i=0;i<3;i++) {
-        initx(rtk,rtk->sol.rr[i],VAR_POS,i);
+    if (!rtk->opt.dynamics) {
+        for (i=0;i<3;i++) {
+            initx(rtk,rtk->sol.rr[i],VAR_POS,i);
+        }
+        return;
     }
+    /* generate valid state index */
+    ix=imat(rtk->nx,1);
+    for (i=nx=0;i<rtk->nx;i++) {
+        if (rtk->x[i]!=0.0&&rtk->P[i+i*rtk->nx]>0.0) ix[nx++]=i;
+    }
+    if (nx<9) {
+        free(ix);
+        return;
+    }
+    /* state transition of position/velocity/acceleration */
+    F=eye(nx); P=mat(nx,nx); FP=mat(nx,nx); x=mat(nx,1); xp=mat(nx,1);
+    
+    for (i=0;i<6;i++) {
+        F[i+(i+3)*nx]=rtk->tt;
+    }
+    for (i=0;i<3;i++) {
+        F[i+(i+6)*nx]=SQR(rtk->tt)/2.0;
+    }
+    for (i=0;i<nx;i++) {
+        x[i]=rtk->x[ix[i]];
+        for (j=0;j<nx;j++) {
+            P[i+j*nx]=rtk->P[ix[i]+ix[j]*rtk->nx];
+        }
+    }
+    /* x=F*x, P=F*P*F+Q */
+    matmul("NN",nx,1,nx,1.0,F,x,0.0,xp);
+    matmul("NN",nx,nx,nx,1.0,F,P,0.0,FP);
+    matmul("NT",nx,nx,nx,1.0,FP,F,0.0,P);
+    
+    for (i=0;i<nx;i++) {
+        rtk->x[ix[i]]=xp[i];
+        for (j=0;j<nx;j++) {
+            rtk->P[ix[i]+ix[j]*rtk->nx]=P[i+j*nx];
+        }
+    }
+    /* process noise added to only acceleration */
+    Q[0]=Q[4]=SQR(rtk->opt.prn[3])*fabs(rtk->tt);
+    Q[8]=SQR(rtk->opt.prn[4])*fabs(rtk->tt);
+    ecef2pos(rtk->x,pos);
+    covecef(pos,Q,Qv);
+    for (i=0;i<3;i++) for (j=0;j<3;j++) {
+        rtk->P[i+6+(j+6)*rtk->nx]+=Qv[i+j*3];
+    }
+    free(ix); free(F); free(P); free(FP); free(x); free(xp);
 }
 /* temporal update of clock --------------------------------------------------*/
 static void udclk_ppp(rtk_t *rtk)

@@ -40,8 +40,6 @@
 #define SNR2CN0_L1  30.0        /* hemis snr to c/n0 offset (db) L1 */
 #define SNR2CN0_L2  30.0        /* hemis snr to c/n0 offset (db) L2 */
 
-static const char rcsid[]="$Id: crescent.c,v 1.2 2008/07/14 00:05:05 TTAKA Exp $";
-
 /* get fields (little-endian) ------------------------------------------------*/
 #define U1(p) (*((unsigned char *)(p)))
 #define I1(p) (*((signed char *)(p)))

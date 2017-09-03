@@ -4,10 +4,12 @@
 //          Copyright (C) 2007-2016 by T.TAKASU, All rights reserved.
 //          ported to Qt by Jens Reimann
 //
-// options : rtknavi [-t title][-i file]
+// options : rtknavi [-t title][-i file][-auto][-tray]
 //
 //           -t title   window title
 //           -i file    ini file path
+//           -auto      auto start
+//           -tray      start as task tray icon
 //
 // version : $Revision:$ $Date:$
 // history : 2008/07/14  1.0 new
@@ -18,6 +20,7 @@
 //           2012/04/03  1.5 rtklib 2.4.2
 //           2014/09/06  1.6 rtklib 2.4.3
 //           2016/01/31  2.0 ported to Qt
+//           2017/09/01  1.7 add option -auto and -tray
 //---------------------------------------------------------------------------
 #include <stdio.h>
 #include <math.h>
@@ -74,7 +77,7 @@ MainWindow *mainForm;
 #define MAXTRKSCALE 23                  // track scale
 #define MAXPANELMODE 7                  // max panel mode
 
-#define SQRT(x)     ((x)<0.0?0.0:sqrt(x))
+#define SQRT(x)     ((x)<0.0||(x)!=(x)?0.0:sqrt(x))
 #define MIN(x,y)    ((x)<(y)?(x):(y))
 
 const QChar degreeChar(0260);           // character code of degree (UTF-8)
@@ -186,6 +189,7 @@ MainWindow::~MainWindow()
 // callback on form create --------------------------------------------------
 void MainWindow::showEvent(QShowEvent *event)
 {
+    int autorun, tasktray;
     if (event->spontaneous()) return;
 
     trace(3, "FormCreate\n");
@@ -265,10 +269,21 @@ void MainWindow::showEvent(QShowEvent *event)
                      QCoreApplication::translate("main", "ini file"));
     parser.addOption(iniFileOption);
 
+    QCommandLineOption trayOption(QStringList() << "tray",
+                      QCoreApplication::translate("main", "start as task tray icon."));
+    parser.addOption(trayOption);
+
+    QCommandLineOption autoOption(QStringList() << "auto",
+                      QCoreApplication::translate("main", "auto start."));
+    parser.addOption(autoOption);
+
     parser.process(*QApplication::instance());
 
     if (parser.isSet(iniFileOption))
         IniFile = parser.value(iniFileOption);
+
+    if (parser.isSet(autoOption)) autorun = 1;
+    if (parser.isSet(trayOption)) tasktray = 1;
 
     LoadOpt();
 
@@ -280,6 +295,13 @@ void MainWindow::showEvent(QShowEvent *event)
         tle_read(qPrintable(TLEFileF), &TLEData);
     if (TLESatFileF != "")
         tle_name_read(qPrintable(TLESatFileF), &TLEData);
+
+    if (tasktray) {
+        setVisible(false);
+        systemTray->setVisible(true);
+    }
+    if (autorun)
+        SvrStart();
 
     UpdatePanel();
     UpdateTimeSys();

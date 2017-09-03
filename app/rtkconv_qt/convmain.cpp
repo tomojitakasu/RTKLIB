@@ -909,6 +909,7 @@ void MainWindow::ConvertFile(void)
     conversionThread->rnxopt.outtime = OutTime;
     conversionThread->rnxopt.outleaps = OutLeaps;
     conversionThread->rnxopt.sep_nav = SepNav;
+    conversionThread->rnxopt.ttol = TimeTol;
 
     QStringList exsatsLst = ExSats.split(" ");
     foreach(const QString &sat, exsatsLst){
@@ -1039,6 +1040,7 @@ void MainWindow::LoadOpt(void)
     OutTime = ini.value("opt/outtime", 0).toInt();
     OutLeaps = ini.value("opt/outleaps", 0).toInt();
     SepNav = ini.value("opt/sepnav", 0).toInt();
+    TimeTol	= ini.value("opt/timetol", 0.005).toInt();
 
     TimeStartF->setChecked(ini.value("set/timestartf", 0).toBool());
     TimeEndF->setChecked(ini.value("set/timeendf", 0).toBool());
@@ -1133,6 +1135,7 @@ void MainWindow::SaveOpt(void)
     ini.setValue("opt/outtime", OutTime);
     ini.setValue("opt/outleaps", OutLeaps);
     ini.setValue("opt/sepnav", SepNav);
+    ini.setValue("opt/timetol", TimeTol);
 
     ini.setValue("set/timestartf", TimeStartF->isChecked());
     ini.setValue("set/timeendf", TimeEndF->isChecked());
