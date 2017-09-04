@@ -23,8 +23,6 @@
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
-static const char rcsid[]="$Id:$";
-
 #define SQR(x)      ((x)*(x))
 
 #define AS2R        (D2R/3600.0)    /* arc sec to radian */

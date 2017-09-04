@@ -38,8 +38,6 @@
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
-static const char rcsid[]="$Id:$";
-
 /* constants and macros ------------------------------------------------------*/
 
 #define PRUNIT_GPS  299792.458          /* rtcm 3 unit of gps pseudorange (m) */

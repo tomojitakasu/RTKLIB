@@ -139,8 +139,6 @@
 #endif
 #include "rtklib.h"
 
-static const char rcsid[]="$Id: rtkcmn.c,v 1.1 2008/07/17 21:48:06 ttaka Exp ttaka $";
-
 /* constants -----------------------------------------------------------------*/
 
 #define POLYCRC32   0xEDB88320u /* CRC32 polynomial */
@@ -209,7 +207,7 @@ const prcopt_t prcopt_default={ /* defaults processing options */
 };
 const solopt_t solopt_default={ /* defaults solution output options */
     SOLF_LLH,TIMES_GPST,1,3,    /* posf,times,timef,timeu */
-    0,1,0,0,0,0,                /* degf,outhead,outopt,datum,height,geoid */
+    0,1,0,0,0,0,0,              /* degf,outhead,outopt,outvel,datum,height,geoid */
     0,0,0,                      /* solstatic,sstat,trace */
     {0.0,0.0},                  /* nmeaintv */
     " ",""                      /* separator/program name */
@@ -245,7 +243,7 @@ static char *obscodes[]={       /* observation code strings */
     "1A","1B","1X","1Z","2C", "2D","2S","2L","2X","2P", /* 10-19 */
     "2W","2Y","2M","2N","5I", "5Q","5X","7I","7Q","7X", /* 20-29 */
     "6A","6B","6C","6X","6Z", "6S","6L","8L","8Q","8X", /* 30-39 */
-    "2I","2Q","6I","6Q","3I", "3Q","3X","1I","1Q","5A"  /* 40-49 */
+    "2I","2Q","6I","6Q","3I", "3Q","3X","1I","1Q","5A", /* 40-49 */
     "5B","5C","9A","9B","9C", "9X",""  ,""  ,""  ,""    /* 50-59 */
 };
 static unsigned char obsfreqs[]={
@@ -1047,7 +1045,8 @@ extern int matinv(double *A, int n)
     indx=imat(n,1); B=mat(n,n); matcpy(B,A,n,n);
     if (ludcmp(B,n,indx,&d)) {free(indx); free(B); return -1;}
     for (j=0;j<n;j++) {
-        for (i=0;i<n;i++) A[i+j*n]=0.0; A[j+j*n]=1.0;
+        for (i=0;i<n;i++) A[i+j*n]=0.0;
+        A[j+j*n]=1.0;
         lubksb(B,n,indx,A+j*n);
     }
     free(indx); free(B);
@@ -1220,7 +1219,8 @@ extern double str2num(const char *s, int i, int n)
     char str[256],*p=str;
     
     if (i<0||(int)strlen(s)<i||(int)sizeof(str)-1<n) return 0.0;
-    for (s+=i;*s&&--n>=0;s++) *p++=*s=='d'||*s=='D'?'E':*s; *p='\0';
+    for (s+=i;*s&&--n>=0;s++) *p++=*s=='d'||*s=='D'?'E':*s;
+    *p='\0';
     return sscanf(str,"%lf",&value)==1?value:0.0;
 }
 /* string to time --------------------------------------------------------------
@@ -1236,7 +1236,8 @@ extern int str2time(const char *s, int i, int n, gtime_t *t)
     char str[256],*p=str;
     
     if (i<0||(int)strlen(s)<i||(int)sizeof(str)-1<i) return -1;
-    for (s+=i;*s&&--n>=0;) *p++=*s++; *p='\0';
+    for (s+=i;*s&&--n>=0;) *p++=*s++;
+    *p='\0';
     if (sscanf(str,"%lf %lf %lf %lf %lf %lf",ep,ep+1,ep+2,ep+3,ep+4,ep+5)<6)
         return -1;
     if (ep[0]<100.0) ep[0]+=ep[0]<80.0?2000.0:1900.0;
@@ -3387,7 +3388,7 @@ extern double satazel(const double *pos, const double *e, double *azel)
 * return : none
 * notes  : dop[0]-[3] return 0 in case of dop computation error
 *-----------------------------------------------------------------------------*/
-#define SQRT(x)     ((x)<0.0?0.0:sqrt(x))
+#define SQRT(x)     ((x)<0.0||(x)!=(x)?0.0:sqrt(x))
 
 extern void dops(int ns, const double *azel, double elmin, double *dop)
 {

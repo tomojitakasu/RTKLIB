@@ -16,8 +16,6 @@
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
-static const char rcsid[]="$Id:$";
-
 #define LEXFRMLEN       2000            /* lex frame length (bits) */
 #define LEXHDRLEN       49              /* lex header length (bits) */
 #define LEXRSLEN        256             /* lex reed solomon length (bits) */
@@ -239,28 +237,32 @@ static int lex2rtcm(const unsigned char *msg, int i, unsigned char *buff)
         case 1057: ns=getbitu(msg,i+62,6); n=68+ns*135; break; /* gps */
         case 1058: ns=getbitu(msg,i+61,6); n=67+ns* 76; break;
         case 1059: ns=getbitu(msg,i+61,6); n=67;
-                   for (j=0;j<ns;j++) n+=11+getbitu(msg,i+n+6,5)*19; break;
+                   for (j=0;j<ns;j++) n+=11+getbitu(msg,i+n+6,5)*19;
+                   break;
         case 1060: ns=getbitu(msg,i+62,6); n=68+ns*205; break;
         case 1061: ns=getbitu(msg,i+61,6); n=67+ns* 12; break;
         case 1062: ns=getbitu(msg,i+61,6); n=67+ns* 28; break;
         case 1063: ns=getbitu(msg,i+59,6); n=65+ns*134; break; /* glonass */
         case 1064: ns=getbitu(msg,i+58,6); n=64+ns* 75; break;
         case 1065: ns=getbitu(msg,i+58,6); n=64;
-                   for (j=0;j<ns;j++) n+=10+getbitu(msg,i+n+5,5)*19; break;
+                   for (j=0;j<ns;j++) n+=10+getbitu(msg,i+n+5,5)*19;
+                   break;
         case 1066: ns=getbitu(msg,i+59,6); n=65+ns*204; break;
         case 1067: ns=getbitu(msg,i+58,6); n=64+ns* 11; break;
         case 1068: ns=getbitu(msg,i+58,6); n=64+ns* 27; break;
         case 1240: ns=getbitu(msg,i+62,6); n=68+ns*135; break; /* galileo */
         case 1241: ns=getbitu(msg,i+61,6); n=67+ns* 76; break;
         case 1242: ns=getbitu(msg,i+61,6); n=67;
-                   for (j=0;j<ns;j++) n+=11+getbitu(msg,i+n+6,5)*19; break;
+                   for (j=0;j<ns;j++) n+=11+getbitu(msg,i+n+6,5)*19;
+                   break;
         case 1243: ns=getbitu(msg,i+62,6); n=68+ns*205; break;
         case 1244: ns=getbitu(msg,i+61,6); n=67+ns* 12; break;
         case 1245: ns=getbitu(msg,i+61,6); n=67+ns* 28; break;
         case 1246: ns=getbitu(msg,i+62,4); n=66+ns*133; break; /* qzss */
         case 1247: ns=getbitu(msg,i+61,4); n=65+ns* 74; break;
         case 1248: ns=getbitu(msg,i+61,4); n=65;
-                   for (j=0;j<ns;j++) n+=9+getbitu(msg,i+n+4,5)*19; break;
+                   for (j=0;j<ns;j++) n+=9+getbitu(msg,i+n+4,5)*19;
+                   break;
         case 1249: ns=getbitu(msg,i+62,4); n=66+ns*203; break;
         case 1250: ns=getbitu(msg,i+61,4); n=65+ns* 10; break;
         case 1251: ns=getbitu(msg,i+61,4); n=65+ns* 26; break;

@@ -12,8 +12,6 @@
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
-static const char rcsid[]="$Id:$";
-
 #define TERSUSSYNC1 0xAA        /* tersus message start sync code 1 */
 #define TERSUSSYNC2 0x44        /* tersus message start sync code 2 */
 #define TERSUSSYNC3 0x12        /* tersus message start sync code 3 */
@@ -25,7 +23,8 @@ static const char rcsid[]="$Id:$";
 #define ID_IONUTC   8           /* message id: tersus iono and utc data */
 #define ID_GPSEPHEM 7           /* message id: tersus gps ephemeris */
 #define ID_GLOEPHEMERIS 723     /* message id: tersus glonass ephemeris */
-#define ID_BDSEPHEMERIS 1696    /* message id: tersus beidou ephemeris */
+#define ID_BDSEPHEMERIS 1696    /* message id: tersus beidou ephemeris BX306 */
+#define ID_BD2EPHEM 1047        /* message id: tersus beidou ephemeris BX305 */
 
 #define MAXVAL      8388608.0
 
@@ -160,6 +159,7 @@ static int decode_trackstat(unsigned int stat, int *sys, int *code, int *track,
             case  1: freq=1; *code=CODE_L7I; break; /* B2 with D1 */
             case  4: freq=0; *code=CODE_L1I; break; /* B1 with D2 */
             case  5: freq=1; *code=CODE_L7I; break; /* B2 with D2 */
+            case 21: freq=2; *code=CODE_L6I; break; /* B3 */
             default: freq=-1; break;
         }
     }
@@ -250,17 +250,19 @@ static int decode_rangeb(raw_t *raw)
         if (sys==SYS_GLO&&raw->nav.geph[prn-1].sat!=sat) {
             raw->nav.geph[prn-1].frq=gfrq-7;
         }
-        tt=timediff(raw->time,raw->tobs);
-        if (raw->tobs.time!=0) {
-            lli=lockt-raw->lockt[sat-1][pos]+0.05<=tt||
-                halfc!=raw->halfc[sat-1][pos];
+        if (raw->tobs[sat-1][pos].time!=0) {
+            tt=timediff(raw->time,raw->tobs[sat-1][pos]);
+            lli=lockt-raw->lockt[sat-1][pos]+0.05<=tt?LLI_SLIP:0;
         }
         else {
             lli=0;
         }
-        if (!parity) lli|=2;
+        if (!parity) lli|=LLI_HALFC;
+        if (halfc  ) lli|=LLI_HALFA;
+        raw->tobs [sat-1][pos]=raw->time;
         raw->lockt[sat-1][pos]=lockt;
         raw->halfc[sat-1][pos]=halfc;
+        
         if (!clock) psr=0.0;     /* code unlock */
         if (!plock) adr=dop=0.0; /* phase unlock */
         
@@ -277,7 +279,6 @@ static int decode_rangeb(raw_t *raw)
             raw->obs.data[index].code[pos]=code;
         }
     }
-    raw->tobs=raw->time;
     return 1;
 }
 /* decode rangecmpb ----------------------------------------------------------*/
@@ -333,15 +334,16 @@ static int decode_rangecmpb(raw_t *raw)
         
         lockt=(U4(p+18)&0x1FFFFF)/32.0; /* lock time */
         
-        tt=timediff(raw->time,raw->tobs);
-        if (raw->tobs.time!=0) {
-            lli=(lockt<65535.968&&lockt-raw->lockt[sat-1][pos]+0.05<=tt)||
-                halfc!=raw->halfc[sat-1][pos];
+        if (raw->tobs[sat-1][pos].time!=0) {
+            tt=timediff(raw->time,raw->tobs[sat-1][pos]);
+            lli=(lockt<65535.968&&lockt-raw->lockt[sat-1][pos]+0.05<=tt)?LLI_SLIP:0;
         }
         else {
             lli=0;
         }
-        if (!parity) lli|=2;
+        if (!parity) lli|=LLI_HALFC;
+        if (halfc  ) lli|=LLI_HALFA;
+        raw->tobs [sat-1][pos]=raw->time;
         raw->lockt[sat-1][pos]=lockt;
         raw->halfc[sat-1][pos]=halfc;
         
@@ -362,7 +364,6 @@ static int decode_rangecmpb(raw_t *raw)
             raw->obs.data[index].code[pos]=code;
         }
     }
-    raw->tobs=raw->time;
     return 1;
 }
 /* decode gpsphemb -----------------------------------------------------------*/
@@ -571,6 +572,12 @@ static int decode_bdsephemerisb(raw_t *raw)
     raw->ephsat=eph.sat;
     return 2;
 }
+/* decode bd2ephemb ----------------------------------------------------------*/
+static int decode_bd2ephemb(raw_t *raw)
+{
+    trace(2,"tersus bd2ephemb not supported\n");
+    return 0;
+}
 /* decode ionutcb ------------------------------------------------------------*/
 static int decode_ionutcb(raw_t *raw)
 {
@@ -623,6 +630,7 @@ static int decode_tersus(raw_t *raw)
         case ID_GPSEPHEM      : return decode_gpsephemb    (raw);
         case ID_GLOEPHEMERIS  : return decode_gloephemerisb(raw);
         case ID_BDSEPHEMERIS  : return decode_bdsephemerisb(raw);
+        case ID_BD2EPHEM      : return decode_bd2ephemb    (raw);
     }
     return 0;
 }

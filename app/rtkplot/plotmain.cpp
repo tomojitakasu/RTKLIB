@@ -3010,3 +3010,9 @@ void __fastcall TPlot::Splitter1Moved(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+void __fastcall TPlot::BtnUdListClick(TObject *Sender)
+{
+    FileList->Update();
+}
+//---------------------------------------------------------------------------
+

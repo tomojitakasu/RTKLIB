@@ -860,8 +860,8 @@ void __fastcall TMainWindow::ConvertFile(void)
 	if (OutFile5->Enabled&&OutFileEna5->Checked) strcpy(ofile[4],OutFile5_Text.c_str());
 	if (OutFile6->Enabled&&OutFileEna6->Checked) strcpy(ofile[5],OutFile6_Text.c_str());
 	if (OutFile7->Enabled&&OutFileEna7->Checked) strcpy(ofile[6],OutFile7_Text.c_str());
-	if (OutFile8->Enabled&&OutFileEna8->Checked) strcpy(ofile[7],OutFile7_Text.c_str());
-	if (OutFile9->Enabled&&OutFileEna9->Checked) strcpy(ofile[8],OutFile8_Text.c_str());
+	if (OutFile8->Enabled&&OutFileEna8->Checked) strcpy(ofile[7],OutFile8_Text.c_str());
+	if (OutFile9->Enabled&&OutFileEna9->Checked) strcpy(ofile[8],OutFile9_Text.c_str());
 	
 	// check overwrite output file
 	for (i=0;i<9;i++) {
@@ -902,6 +902,7 @@ void __fastcall TMainWindow::ConvertFile(void)
 	rnxopt.outtime=OutTime;
 	rnxopt.outleaps=OutLeaps;
 	rnxopt.sep_nav=SepNav;
+	rnxopt.ttol=TimeTol;
 	
 	strcpy(buff,ExSats.c_str());
 	for (p=strtok(buff," ");p;p=strtok(NULL," ")) {
@@ -1019,6 +1020,7 @@ void __fastcall TMainWindow::LoadOpt(void)
 	OutTime				=ini->ReadInteger("opt","outtime",	   0);
 	OutLeaps			=ini->ReadInteger("opt","outleaps",    0);
 	SepNav				=ini->ReadInteger("opt","sepnav",	   0);
+	TimeTol				=ini->ReadFloat  ("opt","timetol", 0.005);
 	
 	TimeStartF ->Checked=ini->ReadInteger("set","timestartf",  0);
 	TimeEndF   ->Checked=ini->ReadInteger("set","timeendf",    0);
@@ -1117,6 +1119,7 @@ void __fastcall TMainWindow::SaveOpt(void)
 	ini->WriteInteger("opt","outtime",	  OutTime);
 	ini->WriteInteger("opt","outleaps",   OutLeaps);
 	ini->WriteInteger("opt","sepnav",	  SepNav);
+	ini->WriteFloat  ("opt","timetol",	  TimeTol);
 	
 	ini->WriteInteger("set","timestartf", TimeStartF ->Checked);
 	ini->WriteInteger("set","timeendf",   TimeEndF	 ->Checked);

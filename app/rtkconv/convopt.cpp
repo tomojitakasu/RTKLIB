@@ -86,6 +86,7 @@ void __fastcall TConvOptDialog::FormShow(TObject *Sender)
 	ExSats->Text=MainWindow->ExSats;
 	TraceLevel->ItemIndex=MainWindow->TraceLevel;
 	ChkSepNav->Checked=MainWindow->SepNav;
+	TimeTol->Text=s.sprintf("%.4g",MainWindow->TimeTol);
 	
 	UpdateEnable();
 }
@@ -149,6 +150,7 @@ void __fastcall TConvOptDialog::BtnOkClick(TObject *Sender)
 	MainWindow->ExSats=ExSats->Text;
 	MainWindow->TraceLevel=TraceLevel->ItemIndex;
 	MainWindow->SepNav=ChkSepNav->Checked;
+	MainWindow->TimeTol=str2dbl(TimeTol->Text);
 }
 //---------------------------------------------------------------------------
 void __fastcall TConvOptDialog::RnxFileClick(TObject *Sender)

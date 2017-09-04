@@ -89,8 +89,6 @@
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
-static const char rcsid[]="$Id:$";
-
 /* constants/macros ----------------------------------------------------------*/
 
 #define SQR(x)      ((x)*(x))
@@ -594,7 +592,7 @@ static int readrnxh(FILE *fp, double *ver, char *type, int *sys, int *tsys,
     
     trace(3,"readrnxh:\n");
     
-    *ver=2.10; *type=' '; *sys=SYS_GPS; *tsys=TSYS_GPS;
+    *ver=2.10; *type=' '; *sys=SYS_GPS;
     
     while (fgets(buff,MAXRNXLEN,fp)) {
         
@@ -817,7 +815,7 @@ static void saveslips(unsigned char slips[][NFREQ], obsd_t *data)
 {
     int i;
     for (i=0;i<NFREQ;i++) {
-        if (data->LLI[i]&1) slips[data->sat-1][i]|=1;
+        if (data->LLI[i]&1) slips[data->sat-1][i]|=LLI_SLIP;
     }
 }
 /* restore slips -------------------------------------------------------------*/
@@ -825,7 +823,7 @@ static void restslips(unsigned char slips[][NFREQ], obsd_t *data)
 {
     int i;
     for (i=0;i<NFREQ;i++) {
-        if (slips[data->sat-1][i]&1) data->LLI[i]|=1;
+        if (slips[data->sat-1][i]&1) data->LLI[i]|=LLI_SLIP;
         slips[data->sat-1][i]=0;
     }
 }
@@ -946,8 +944,9 @@ static void set_index(double ver, int sys, const char *opt,
 #endif
 }
 /* read rinex obs data body --------------------------------------------------*/
-static int readrnxobsb(FILE *fp, const char *opt, double ver,
-                       char tobs[][MAXOBSTYPE][4], int *flag, obsd_t *data)
+static int readrnxobsb(FILE *fp, const char *opt, double ver, int *tsys,
+                       char tobs[][MAXOBSTYPE][4], int *flag, obsd_t *data,
+                       sta_t *sta)
 {
     gtime_t time={0};
     sigind_t index[7]={{0}};
@@ -983,14 +982,19 @@ static int readrnxobsb(FILE *fp, const char *opt, double ver,
             /* decode obs data */
             if (decode_obsdata(fp,buff,ver,mask,index,data+n)&&n<MAXOBS) n++;
         }
+        else if (*flag==3||*flag==4) { /* new site or header info follows */
+            
+            /* decode obs header */
+            decode_obsh(fp,buff,ver,tsys,tobs,NULL,sta);
+        }
         if (++i>nsat) return n;
     }
     return -1;
 }
 /* read rinex obs ------------------------------------------------------------*/
 static int readrnxobs(FILE *fp, gtime_t ts, gtime_t te, double tint,
-                      const char *opt, int rcv, double ver, int tsys,
-                      char tobs[][MAXOBSTYPE][4], obs_t *obs)
+                      const char *opt, int rcv, double ver, int *tsys,
+                      char tobs[][MAXOBSTYPE][4], obs_t *obs, sta_t *sta)
 {
     obsd_t *data;
     unsigned char slips[MAXSAT][NFREQ]={{0}};
@@ -1003,12 +1007,12 @@ static int readrnxobs(FILE *fp, gtime_t ts, gtime_t te, double tint,
     if (!(data=(obsd_t *)malloc(sizeof(obsd_t)*MAXOBS))) return 0;
     
     /* read rinex obs data body */
-    while ((n=readrnxobsb(fp,opt,ver,tobs,&flag,data))>=0&&stat>=0) {
+    while ((n=readrnxobsb(fp,opt,ver,tsys,tobs,&flag,data,sta))>=0&&stat>=0) {
         
         for (i=0;i<n;i++) {
             
             /* utc -> gpst */
-            if (tsys==TSYS_UTC) data[i].time=utc2gpst(data[i].time);
+            if (*tsys==TSYS_UTC) data[i].time=utc2gpst(data[i].time);
             
             /* save cycle-slip */
             saveslips(slips,data+i);
@@ -1441,7 +1445,7 @@ static int readrnxfp(FILE *fp, gtime_t ts, gtime_t te, double tint,
                      obs_t *obs, nav_t *nav, sta_t *sta)
 {
     double ver;
-    int sys,tsys;
+    int sys,tsys=TSYS_GPS;
     char tobs[NUMSYS][MAXOBSTYPE][4]={{""}};
     
     trace(3,"readrnxfp: flag=%d index=%d\n",flag,index);
@@ -1454,7 +1458,8 @@ static int readrnxfp(FILE *fp, gtime_t ts, gtime_t te, double tint,
     
     /* read rinex body */
     switch (*type) {
-        case 'O': return readrnxobs(fp,ts,te,tint,opt,index,ver,tsys,tobs,obs);
+        case 'O': return readrnxobs(fp,ts,te,tint,opt,index,ver,&tsys,tobs,obs,
+                                    sta);
         case 'N': return readrnxnav(fp,opt,ver,sys    ,nav);
         case 'G': return readrnxnav(fp,opt,ver,SYS_GLO,nav);
         case 'H': return readrnxnav(fp,opt,ver,SYS_SBS,nav);
@@ -1634,7 +1639,8 @@ extern int readrnxc(const char *file, nav_t *nav)
     
     for (i=0;i<MAXEXFILE;i++) {
         if (!(files[i]=(char *)malloc(1024))) {
-            for (i--;i>=0;i--) free(files[i]); return 0;
+            for (i--;i>=0;i--) free(files[i]);
+            return 0;
         }
     }
     /* expand wild-card */
@@ -1770,8 +1776,8 @@ extern int input_rnxctr(rnxctr_t *rnx, FILE *fp)
     
     /* read rinex obs data */
     if (rnx->type=='O') {
-        if ((n=readrnxobsb(fp,rnx->opt,rnx->ver,rnx->tobs,&flag,
-                           rnx->obs.data))<=0) {
+        if ((n=readrnxobsb(fp,rnx->opt,rnx->ver,&rnx->tsys,rnx->tobs,&flag,
+                           rnx->obs.data,&rnx->sta))<=0) {
             rnx->obs.n=0;
             return n<0?-2:0;
         }
@@ -1970,9 +1976,18 @@ extern int outrnxobsh(FILE *fp, const rnxopt_t *opt, const nav_t *nav)
 /* output obs data field -----------------------------------------------------*/
 static void outrnxobsf(FILE *fp, double obs, int lli)
 {
-    if (obs==0.0||obs<=-1E9||obs>=1E9) fprintf(fp,"              ");
-    else fprintf(fp,"%14.3f",obs);
-    if (lli<=0) fprintf(fp,"  "); else fprintf(fp,"%1.1d ",lli);
+    if (obs==0.0||obs<=-1E9||obs>=1E9) {
+        fprintf(fp,"              ");
+    }
+    else {
+        fprintf(fp,"%14.3f",obs);
+    }
+    if (lli<0||!(lli&(LLI_SLIP|LLI_HALFC|LLI_BOCTRK))) {
+        fprintf(fp,"  ");
+    }
+    else {
+        fprintf(fp,"%1.1d ",lli&(LLI_SLIP|LLI_HALFC|LLI_BOCTRK));
+    }
 }
 /* search obs data index -----------------------------------------------------*/
 static int obsindex(double ver, int sys, const unsigned char *code,

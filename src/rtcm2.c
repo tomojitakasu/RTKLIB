@@ -12,8 +12,6 @@
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
-static const char rcsid[]="$Id:$";
-
 /* adjust hourly rollover of rtcm 2 time -------------------------------------*/
 static void adjhour(rtcm_t *rtcm, double zcnt)
 {

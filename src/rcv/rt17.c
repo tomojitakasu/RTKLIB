@@ -295,9 +295,6 @@
 /* Internal structure definitions. */
 typedef union {unsigned short u2; unsigned char c[2];} ENDIAN_TEST; 
 
-/* Static global literals: */
-static const char rcsid[]="$Id:$";
-
 /* GENOUT 0x40 message types: */
 static const char *GSOFTable[] = {
     /* 00 */ NULL,

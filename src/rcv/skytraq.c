@@ -62,8 +62,6 @@
 #define ID_CFGBIN   0x1E        /* skytraq message id: configure binary message */
 #define ID_GETGLOEPH 0x5B       /* skytraq message id: get glonass ephemeris */
 
-static const char rcsid[]="$Id:$";
-
 /* extract field (big-endian) ------------------------------------------------*/
 #define U1(p)       (*((unsigned char *)(p)))
 #define I1(p)       (*((signed char *)(p)))

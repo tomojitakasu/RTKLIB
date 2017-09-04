@@ -15,8 +15,6 @@
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
-static const char rcsid[]="$Id: geoid.c,v 1.1 2008/07/17 21:48:06 ttaka Exp $";
-
 static const double range[4];       /* embedded geoid area range {W,E,S,N} (deg) */
 static const float geoid[361][181]; /* embedded geoid heights (m) (lon x lat) */
 static FILE *fp_geoid=NULL;         /* geoid file pointer */

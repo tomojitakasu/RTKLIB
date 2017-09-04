@@ -44,8 +44,6 @@
 
 #define OFFWEEK     1024        /* week offset for ephemeris */
 
-static const char rcsid[]="$Id:$";
-
 /* extract field (big-endian) ------------------------------------------------*/
 #define U1(p)       (*((unsigned char *)(p)))
 #define I1(p)       (*((signed char *)(p)))

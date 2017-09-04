@@ -2,7 +2,7 @@ object Plot: TPlot
   Left = 0
   Top = 0
   Caption = 'RTKPLOT'
-  ClientHeight = 485
+  ClientHeight = 464
   ClientWidth = 634
   Color = clWindow
   Constraints.MinHeight = 320
@@ -29,7 +29,7 @@ object Plot: TPlot
     Left = 0
     Top = 25
     Width = 634
-    Height = 442
+    Height = 421
     Align = alClient
     BevelOuter = bvNone
     Color = clWhite
@@ -40,7 +40,7 @@ object Plot: TPlot
       Left = 154
       Top = 0
       Width = 479
-      Height = 442
+      Height = 421
       Margins.Left = 1
       Margins.Top = 0
       Margins.Right = 1
@@ -58,23 +58,25 @@ object Plot: TPlot
       OnPaint = DispPaint
       ExplicitLeft = 136
       ExplicitWidth = 497
+      ExplicitHeight = 442
     end
     object Splitter1: TSplitter
       Left = 150
       Top = 0
-      Height = 442
+      Height = 421
       Color = clWhite
       ParentColor = False
       ResizeStyle = rsUpdate
       Visible = False
       OnMoved = Splitter1Moved
       ExplicitLeft = 120
+      ExplicitHeight = 442
     end
     object PanelBrowse: TPanel
       Left = 0
       Top = 0
       Width = 150
-      Height = 442
+      Height = 421
       Align = alLeft
       BevelOuter = bvNone
       Color = clWhite
@@ -128,7 +130,7 @@ object Plot: TPlot
         Left = 0
         Top = 158
         Width = 150
-        Height = 262
+        Height = 241
         Margins.Left = 0
         Margins.Top = 0
         Margins.Right = 0
@@ -144,29 +146,64 @@ object Plot: TPlot
         TabOrder = 2
         OnClick = FileListClick
       end
-      object FileMask: TComboBox
+      object Panel4: TPanel
         Left = 0
-        Top = 421
+        Top = 400
         Width = 150
         Height = 21
         Align = alBottom
-        Style = csDropDownList
-        ItemIndex = 0
-        ParentColor = True
+        BevelOuter = bvNone
+        Caption = 'Panel4'
         TabOrder = 3
-        Text = 'Solution (*.pos)'
-        OnChange = FileMaskChange
-        Items.Strings = (
-          'Solution (*.pos)'
-          'NMEA (*.nmea)'
-          'Solution Status (*.stat)'
-          'All (*.*)')
+        object BtnUdList: TSpeedButton
+          AlignWithMargins = True
+          Left = 131
+          Top = 0
+          Width = 19
+          Height = 21
+          Margins.Left = 2
+          Margins.Top = 0
+          Margins.Right = 0
+          Margins.Bottom = 0
+          Align = alRight
+          Flat = True
+          Glyph.Data = {
+            DE000000424DDE0000000000000076000000280000000D0000000D0000000100
+            0400000000006800000000000000000000001000000000000000000000000000
+            8000008000000080800080000000800080008080000080808000C0C0C0000000
+            FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFFFF00FFFFFFFFFFFF
+            F000FFFFFFFFFFFFF000FFFF00007F0FF000FFF0FFFF000FF000FF7FFFF7000F
+            F000FFFFFFFFF00FF000FF0FFFFFFF0FF000FF00FFFFFFFFF000FF0007FFFF7F
+            F000FF000FFFF0FFF000FF0F70000FFFF000FFFFFFFFFFFFF000FFFFFFFFFFFF
+            F000}
+          OnClick = BtnUdListClick
+          ExplicitLeft = 129
+        end
+        object FileMask: TComboBox
+          Left = 0
+          Top = 0
+          Width = 129
+          Height = 21
+          Align = alClient
+          Style = csDropDownList
+          ItemIndex = 0
+          ParentColor = True
+          TabOrder = 0
+          Text = 'Solution (*.pos)'
+          OnChange = FileMaskChange
+          Items.Strings = (
+            'Solution (*.pos)'
+            'NMEA (*.nmea)'
+            'Solution Status (*.stat)'
+            'All (*.*)')
+          ExplicitWidth = 150
+        end
       end
     end
   end
   object Panel2: TPanel
     Left = 0
-    Top = 467
+    Top = 446
     Width = 634
     Height = 18
     Align = alBottom

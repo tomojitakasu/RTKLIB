@@ -25,8 +25,6 @@
 #define ID_SS2RAW   23          /* ss2 message ID#23 measurement block */
 #define ID_SS2SBAS  67          /* ss2 message ID#67 sbas data */
 
-static const char rcsid[]="$Id: ss2.c,v 1.2 2008/07/14 00:05:05 TTAKA Exp $";
-
 /* get/set fields (little-endian) --------------------------------------------*/
 #define U1(p) (*((unsigned char *)(p)))
 static unsigned short U2(unsigned char *p) {unsigned short u; memcpy(&u,p,2); return u;}

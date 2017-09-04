@@ -18,8 +18,6 @@
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
-static const char rcsid[]="$Id:$";
-
 #define SQR(x)      ((x)*(x))
 #define VAR_NOTEC   SQR(30.0)   /* variance of no tec */
 #define MIN_EL      0.0         /* min elevation angle (rad) */

@@ -23,10 +23,9 @@
 *           2015/12/05  1.8  add misc-pppopt
 *           2016/06/10  1.9  add ant2-maxaveep,ant2-initrst
 *           2016/07/31  1.10 add out-outsingle,out-maxsolstd
+*           2017/06/14  1.11 add out-outvel
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
-
-static const char rcsid[]="$Id:$";
 
 /* system options buffer -----------------------------------------------------*/
 static prcopt_t prcopt_;
@@ -111,6 +110,7 @@ EXPORT opt_t sysopts[]={
     {"out-solformat",   3,  (void *)&solopt_.posf,       SOLOPT },
     {"out-outhead",     3,  (void *)&solopt_.outhead,    SWTOPT },
     {"out-outopt",      3,  (void *)&solopt_.outopt,     SWTOPT },
+    {"out-outvel",      3,  (void *)&solopt_.outvel,     SWTOPT },
     {"out-timesys",     3,  (void *)&solopt_.times,      TSYOPT },
     {"out-timeform",    3,  (void *)&solopt_.timef,      TFTOPT },
     {"out-timendec",    0,  (void *)&solopt_.timeu,      ""     },

@@ -20,8 +20,6 @@
 #include <stdarg.h>
 #include "rtklib.h"
 
-static const char rcsid[]="$Id: rnx2rtkp.c,v 1.1 2008/07/17 21:55:16 ttaka Exp $";
-
 #define PROGNAME    "rnx2rtkp"          /* program name */
 #define MAXFILE     16                  /* max number of input files */
 
@@ -78,8 +76,8 @@ static const char *help[]={
 extern int showmsg(char *format, ...)
 {
     va_list arg;
-//    va_start(arg,format); vfprintf(stderr,format,arg); va_end(arg);
-//    fprintf(stderr,"\r");
+    va_start(arg,format); vfprintf(stderr,format,arg); va_end(arg);
+    fprintf(stderr,"\r");
     return 0;
 }
 extern void settspan(gtime_t ts, gtime_t te) {}

@@ -38,8 +38,6 @@
 #include "rtklib.h"
 #include <stdint.h>
 
-static const char rcsid[]="$Id:$";
-
 #define P2_34       5.820766091346740E-11 /* 2^-34 */
 #define P2_46       1.421085471520200E-14 /* 2^-46 */
 #define P2_59       1.734723475976810E-18 /* 2^-59 */
@@ -660,12 +658,14 @@ static void decode_gps_subfrm4(const unsigned char *buff, alm_t *alm,
         /* decode as and sv config */
         i=56;
         for (sat=1;sat<=32;sat++) {
-            if (alm) alm[sat-1].svconf=getbitu(buff,i,4); i+=4;
+            if (alm) alm[sat-1].svconf=getbitu(buff,i,4);
+            i+=4;
         }
         /* decode sv health */
         i=186;
         for (sat=25;sat<=32;sat++) {
-            if (alm) alm[sat-1].svh   =getbitu(buff,i,6); i+=6;
+            if (alm) alm[sat-1].svh   =getbitu(buff,i,6);
+            i+=6;
         }
     }
     else if (svid==56) { /* page 18 */
@@ -865,14 +865,17 @@ extern int init_raw(raw_t *raw, int format)
     
     trace(3,"init_raw: format=%d\n",format);
     
-    raw->time=raw->tobs=time0;
+    raw->time=time0;
     raw->ephsat=0;
     raw->sbsmsg=sbsmsg0;
     raw->msgtype[0]='\0';
     for (i=0;i<MAXSAT;i++) {
-        for (j=0;j<380  ;j++) raw->subfrm[i][j]=0;
-        for (j=0;j<NFREQ;j++) raw->lockt[i][j]=0.0;
-        for (j=0;j<NFREQ;j++) raw->halfc[i][j]=0;
+        for (j=0;j<380;j++) raw->subfrm[i][j]=0;
+        for (j=0;j<NFREQ+NEXOBS;j++) {
+            raw->tobs [i][j]=time0;
+            raw->lockt[i][j]=0.0;
+            raw->halfc[i][j]=0;
+        }
         raw->icpp[i]=raw->off[i]=raw->prCA[i]=raw->dpCA[i]=0.0;
     }
     for (i=0;i<MAXOBS;i++) raw->freqn[i]=0;
