@@ -28,3 +28,5 @@ RESOURCES += \
     rtklaunch_qt.qrc
 
 RC_FILE = rtklaunch_qt.rc
+
+CONFIG += c++11
