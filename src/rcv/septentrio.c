@@ -45,7 +45,7 @@
 extern const sbsigpband_t igpband1[][8]; /* SBAS IGP band 0-8 */
 extern const sbsigpband_t igpband2[][5]; /* SBAS IGP band 9-10 */
 
-static unsigned char locktime[255][32];
+static uint16_t locktime[255][32];
 
 /* SBF definitions Version 2.9.1 */
 #define SBF_SYNC1   0x24        /* SBF message header sync field 1 (correspond to $) */
@@ -127,7 +127,7 @@ static unsigned char locktime[255][32];
 #define ID_BBSMPS         4040  /* SBF message id: series of successive Rx baseband samples */
 
 /* function prototypes -------------------------------------------------------*/
-static int getSignalCode(int signType);
+static uint8_t getSignalCode(int signType);
 static double getSigFreq(int _signType, int freqNo);
 static int getFreqNo(int signType);
 
@@ -229,14 +229,14 @@ static int decode_measepoch(raw_t *raw){
     gtime_t time;
     double tow,psr, adr, dopplerType1;
     double SNR_DBHZ, SNR2_DBHZ, freqType1, freqType2, alpha;
-    int16_t i,ii,j,n=0,nsat, code, h;
+    int16_t i,ii,j,n=0,nsat, h;
     uint16_t week, prn;
     uint8_t *p=(raw->buff)+8;                   /* jump to TOW location */
     uint8_t SB1length,SB2length;
     int sat, sys;
     uint8_t signType1, signType2, satID;
     uint32_t codeLSB, SB2Num;
-    uint8_t codeMSB, CommonFlags;
+    uint8_t codeMSB, CommonFlags, code;
     int pri;
 
     /* signals for type2 sub-block */
@@ -576,7 +576,7 @@ static double getSigFreq(int _signType, int freqNo){
 }
 
 /* return the Septentrio signal type -----------------------------------------*/
-static int getSignalCode(int signType){
+static uint8_t getSignalCode(int signType){
     int _code=-1;
 
     switch (signType)

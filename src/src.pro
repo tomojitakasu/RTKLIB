@@ -20,6 +20,9 @@ include(../RTKLib.pri)
 win* {
     CONFIG += staticlib
 }
+*msvc* {
+    QMAKE_CFLAGS += -D_CRT_SECURE_NO_WARNINGS
+}
 
 DESTDIR = ../lib
 

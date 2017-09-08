@@ -5,7 +5,10 @@ ROOT_DIRECTORY = $${PWD}/../
 OUTPUT_DIRECTORY = $${OUT_PWD}
 
 LIBS += -L$${ROOT_DIRECTORY}/lib/ -lRTKLib
-LIBS += -liers -lgfortran
+
+IERS_MODEL {
+    LIBS += -liers -lgfortran
+}
 
 win* {
     LIBS += -lWs2_32 -lwinmm
@@ -14,3 +17,5 @@ win* {
 QMAKE_RPATHDIR *= $${ROOT_DIRECTORY}/lib
 
 PRE_TARGETDEPS = $${ROOT_DIRECTORY}/src/rtklib.h
+
+CONFIG += c++11

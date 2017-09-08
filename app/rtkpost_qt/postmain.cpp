@@ -71,7 +71,6 @@
 #ifndef GOOGLE_EARTH
 #define GOOGLE_EARTH ""
 #endif
-static const char version[]="$Revision: 1.1 $ $Date: 2008/07/17 22:14:45 $";
 
 // global variables ---------------------------------------------------------
 static gtime_t tstart_={0,0};         // time start for progress-bar
