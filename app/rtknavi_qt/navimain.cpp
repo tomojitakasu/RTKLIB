@@ -189,7 +189,7 @@ MainWindow::~MainWindow()
 // callback on form create --------------------------------------------------
 void MainWindow::showEvent(QShowEvent *event)
 {
-    int autorun, tasktray;
+    int autorun=0, tasktray=0;
     if (event->spontaneous()) return;
 
     trace(3, "FormCreate\n");
