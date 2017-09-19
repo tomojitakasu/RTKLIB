@@ -117,10 +117,35 @@
 #define socket_t            SOCKET
 typedef int socklen_t;
 #else
+#define INVALID_SOCKET      -1
 #define dev_t               int
 #define socket_t            int
-#define closesocket         close
+//#define closesocket       close
 #endif
+
+static void CloseSocket_(socket_t *a_pSocket)
+{
+    if (*a_pSocket == INVALID_SOCKET) {
+        tracet(1, "tried to close invalid socket\n");
+        return;
+    }
+
+    tracet(4, "closing socket ID:%d\n", *a_pSocket);
+
+#ifdef WIN32
+    int ret = closesocket(*a_pSocket);
+#else
+    int ret = close(*a_pSocket);
+#endif
+    if (ret != 0) {
+        tracet(1, "failed to close socket ID:%d ret:%d \n", *a_pSocket, ret);
+        return;
+    }
+
+    *a_pSocket = INVALID_SOCKET;
+}
+
+#define CloseSocket(x) CloseSocket_(&x)
 
 /* type definition -----------------------------------------------------------*/
 
@@ -955,7 +980,7 @@ static int setsock(socket_t sock, char *msg)
         setsockopt(sock,SOL_SOCKET,SO_SNDTIMEO,(const char *)&tv,sizeof(tv))==-1) {
         sprintf(msg,"sockopt error: notimeo");
         tracet(1,"setsock: setsockopt error 1 sock=%d err=%d\n",sock,errsock());
-        closesocket(sock);
+        CloseSocket(sock);
         return 0;
     }
     if (setsockopt(sock,SOL_SOCKET,SO_RCVBUF,(const char *)&bs,sizeof(bs))==-1||
@@ -1072,7 +1097,7 @@ static int gentcp(tcp_t *tcp, int type, char *msg)
         if (bind(tcp->sock,(struct sockaddr *)&tcp->addr,sizeof(tcp->addr))==-1) {
             sprintf(msg,"bind error (%d) : %d",errsock(),tcp->port);
             tracet(1,"gentcp: bind error port=%d err=%d\n",tcp->port,errsock());
-            closesocket(tcp->sock);
+            CloseSocket(tcp->sock);
             tcp->state=-1;
             return 0;
         }
@@ -1082,7 +1107,7 @@ static int gentcp(tcp_t *tcp, int type, char *msg)
         if (!(hp=gethostbyname(tcp->saddr))) {
             sprintf(msg,"address error (%s)",tcp->saddr);
             tracet(1,"gentcp: gethostbyname error addr=%s err=%d\n",tcp->saddr,errsock());
-            closesocket(tcp->sock);
+            CloseSocket(tcp->sock);
             tcp->state=0;
             tcp->tcon=ticonnect;
             tcp->tdis=tickget();
@@ -1100,7 +1125,7 @@ static void discontcp(tcp_t *tcp, int tcon)
 {
     tracet(3,"discontcp: sock=%d tcon=%d\n",tcp->sock,tcon);
     
-    closesocket(tcp->sock);
+    CloseSocket(tcp->sock);
     tcp->state=0;
     tcp->tcon=tcon;
     tcp->tdis=tickget();
@@ -1137,9 +1162,9 @@ static void closetcpsvr(tcpsvr_t *tcpsvr)
     tracet(3,"closetcpsvr:\n");
     
     for (i=0;i<MAXCLI;i++) {
-        if (tcpsvr->cli[i].state) closesocket(tcpsvr->cli[i].sock);
+        if (tcpsvr->cli[i].state) CloseSocket(tcpsvr->cli[i].sock);
     }
-    closesocket(tcpsvr->svr.sock);
+    CloseSocket(tcpsvr->svr.sock);
     free(tcpsvr);
 }
 /* update tcp server ---------------------------------------------------------*/
@@ -1182,7 +1207,7 @@ static int accsock(tcpsvr_t *tcpsvr, char *msg)
         err=errsock();
         sprintf(msg,"accept error (%d)",err);
         tracet(1,"accsock: accept error sock=%d err=%d\n",tcpsvr->svr.sock,err);
-        closesocket(tcpsvr->svr.sock);
+        CloseSocket(tcpsvr->svr.sock);
         tcpsvr->svr.state=0;
         return 0;
     }
@@ -1321,7 +1346,7 @@ static int consock(tcpcli_t *tcpcli, char *msg)
         err=errsock();
         sprintf(msg,"connect error (%d)",err);
         tracet(1,"consock: connect error sock=%d err=%d\n",tcpcli->svr.sock,err);
-        closesocket(tcpcli->svr.sock);
+        CloseSocket(tcpcli->svr.sock);
         tcpcli->svr.state=0;
         return 0;
     }
@@ -1362,7 +1387,7 @@ static void closetcpcli(tcpcli_t *tcpcli)
 {
     tracet(3,"closetcpcli: sock=%d\n",tcpcli->svr.sock);
     
-    closesocket(tcpcli->svr.sock);
+    CloseSocket(tcpcli->svr.sock);
     free(tcpcli);
 }
 /* wait socket connect -------------------------------------------------------*/
@@ -2130,7 +2155,7 @@ static udp_t *genudp(int type, int port, const char *saddr, char *msg)
         if (bind(udp->sock,(struct sockaddr *)&udp->addr,sizeof(udp->addr))==-1) {
             tracet(2,"genudp: bind error sock=%d port=%d err=%d\n",udp->sock,port,errsock());
             sprintf(msg,"bind error (%d): %d",errsock(),port);
-            closesocket(udp->sock);
+            CloseSocket(udp->sock);
             free(udp);
             return NULL;
         }
@@ -2144,7 +2169,7 @@ static udp_t *genudp(int type, int port, const char *saddr, char *msg)
         }
         if (!(hp=gethostbyname(saddr))) {
             sprintf(msg,"address error (%s)",saddr);
-            closesocket(udp->sock);
+            CloseSocket(udp->sock);
             free(udp);
             return NULL;
         }
@@ -2174,7 +2199,7 @@ static void closeudpsvr(udp_t *udpsvr)
 {
     tracet(3,"closeudpsvr: sock=%d\n",udpsvr->sock);
     
-    closesocket(udpsvr->sock);
+    CloseSocket(udpsvr->sock);
     free(udpsvr);
 }
 /* read udp server -----------------------------------------------------------*/
@@ -2233,7 +2258,7 @@ static void closeudpcli(udp_t *udpcli)
 {
     tracet(3,"closeudpcli: sock=%d\n",udpcli->sock);
     
-    closesocket(udpcli->sock);
+    CloseSocket(udpcli->sock);
     free(udpcli);
 }
 /* write udp client -----------------------------------------------------------*/
