@@ -931,6 +931,7 @@ extern int rtksvrstart(rtksvr_t *svr, int cycle, int buffsize, int *strs,
         strsendcmd(svr->stream+i,cmds[i]);
     }
     /* write solution header to solution streams */
+    svr->state=1;
     for (i=3;i<5;i++) {
         writesolhead(svr->stream+i,svr->solopt+i-3);
     }
@@ -945,7 +946,6 @@ extern int rtksvrstart(rtksvr_t *svr, int cycle, int buffsize, int *strs,
         free_svrbuffs(svr);
         return 0;
     }
-    svr->state=1;
     return 1;
 }
 /* stop rtk server -------------------------------------------------------------
