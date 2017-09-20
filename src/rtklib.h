@@ -1398,7 +1398,7 @@ extern const solopt_t solopt_default; /* default solution output options */
 extern const sbsigpband_t igpband1[9][8]; /* SBAS IGP band 0-8 */
 extern const sbsigpband_t igpband2[2][5]; /* SBAS IGP band 9-10 */
 extern const char *formatstrs[];     /* stream format strings */
-extern opt_t sysopts[];              /* system options table */
+extern const opt_t sysopts[];              /* system options table */
 
 /* satellites, systems, codes functions --------------------------------------*/
 EXPORT int  satno   (int sys, int prn);
@@ -1760,11 +1760,11 @@ EXPORT double sbstropcorr(gtime_t time, const double *pos, const double *azel,
                           double *var);
 
 /* options functions ---------------------------------------------------------*/
-EXPORT opt_t *searchopt(const char *name, const opt_t *opts);
-EXPORT int str2opt(opt_t *opt, const char *str);
+EXPORT const opt_t *searchopt(const char *name, const opt_t *opts);
+EXPORT int str2opt(const opt_t *opt, const char *str);
 EXPORT int opt2str(const opt_t *opt, char *str);
 EXPORT int opt2buf(const opt_t *opt, char *buff);
-EXPORT int loadopts(const char *file, opt_t *opts);
+EXPORT int loadopts(const char *file, const opt_t *opts);
 EXPORT int saveopts(const char *file, const char *mode, const char *comment,
                     const opt_t *opts);
 EXPORT void resetsysopts(void);

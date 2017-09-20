@@ -60,7 +60,7 @@ static char snrmask_[NFREQ][1024];
 #define TIDEOPT "0:off,1:on,2:otl"
 #define PHWOPT  "0:off,1:on,2:precise"
 
-EXPORT opt_t sysopts[]={
+EXPORT const opt_t sysopts[]={
     {"pos1-posmode",    3,  (void *)&prcopt_.mode,       MODOPT },
     {"pos1-frequency",  3,  (void *)&prcopt_.nf,         FRQOPT },
     {"pos1-soltype",    3,  (void *)&prcopt_.soltype,    TYPOPT },
@@ -232,7 +232,7 @@ static int str2enum(const char *str, const char *comment, int *val)
 *                              (terminated with table[i].name="")
 * return : option record (NULL: not found)
 *-----------------------------------------------------------------------------*/
-extern opt_t *searchopt(const char *name, const opt_t *opts)
+extern const opt_t *searchopt(const char *name, const opt_t *opts)
 {
     int i;
     
@@ -249,7 +249,7 @@ extern opt_t *searchopt(const char *name, const opt_t *opts)
 *          char   *str      I  option value string
 * return : status (1:ok,0:error)
 *-----------------------------------------------------------------------------*/
-extern int str2opt(opt_t *opt, const char *str)
+extern int str2opt(const opt_t *opt, const char *str)
 {
     switch (opt->format) {
         case 0: *(int    *)opt->var=atoi(str); break;
@@ -308,10 +308,10 @@ extern int opt2buf(const opt_t *opt, char *buff)
 *                              (terminated with table[i].name="")
 * return : status (1:ok,0:error)
 *-----------------------------------------------------------------------------*/
-extern int loadopts(const char *file, opt_t *opts)
+extern int loadopts(const char *file, const opt_t *opts)
 {
     FILE *fp;
-    opt_t *opt;
+    const opt_t *opt;
     char buff[2048],*p;
     int n=0;
     
