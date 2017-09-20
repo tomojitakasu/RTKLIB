@@ -1214,7 +1214,7 @@ static int showstat(int sess, gtime_t ts, gtime_t te, int *n)
 }
 /* rinex converter for single-session ----------------------------------------*/
 static int convrnx_s(int sess, int format, rnxopt_t *opt, const char *file,
-                     char **ofile)
+                     const char **ofile)
 {
     FILE *ofp[NOUTFILE]={NULL};
     strfile_t *str;
@@ -1370,7 +1370,7 @@ static int convrnx_s(int sess, int format, rnxopt_t *opt, const char *file,
 *          id (%r)
 *          the order of wild-card expanded files must be in-order by time
 *-----------------------------------------------------------------------------*/
-extern int convrnx(int format, rnxopt_t *opt, const char *file, char **ofile)
+extern int convrnx(int format, rnxopt_t *opt, const char *file, const char **ofile)
 {
     gtime_t t0={0};
     rnxopt_t opt_=*opt;
