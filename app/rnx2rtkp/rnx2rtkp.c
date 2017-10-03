@@ -83,7 +83,7 @@ static const char *help[]={
 "           rover latitude/longitude/height for fixed or ppp-fixed mode",
 " -y level  output soltion status (0:off,1:states,2:residuals) [0]",
 " -x level  debug trace level (0:off) [0]",
-" -ws       switch in WAAS study code if SBAS data is available "
+" -ws       switch in WAAS study code if SBAS data is available ",
 " -cs       smooth code ranges by carrier phase, length of smoothing [0] "
 };
 /* show message --------------------------------------------------------------*/
