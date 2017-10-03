@@ -52,6 +52,7 @@ static const char rcsid[]="$Id: postpos.c,v 1.1 2008/07/17 21:48:06 ttaka Exp $"
 /* constants/global variables ------------------------------------------------*/
 
 extern int waas_study, waas_calc; /* protection level */
+extern int code_smooth; /* code smooth by phase */
 
 static pcvs_t pcvss={0};        /* receiver antenna parameters */
 static pcvs_t pcvsr={0};        /* satellite antenna parameters */
@@ -676,6 +677,11 @@ static int readobsnav(gtime_t ts, gtime_t te, double ti, char **infile,
     /* sort observation data */
     nepoch=sortobs(obs);
     
+    /* carrier smoothing, added by TB */
+    if (code_smooth>0) {
+        csmooth(&obss,code_smooth);
+    }
+
     /* delete duplicated ephemeris */
     uniqnav(nav);
     
