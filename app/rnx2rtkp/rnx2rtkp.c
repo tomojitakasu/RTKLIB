@@ -26,6 +26,10 @@ int waas_study = 0;
 /* if = 1, HAI WAAS study code is switched in. */
 int waas_calc = 0;
 
+/* if > 0, TB code data will be smoothed by pahse data */
+int code_smooth = 0;
+
+
 static const char rcsid[]="$Id: rnx2rtkp.c,v 1.1 2008/07/17 21:55:16 ttaka Exp $";
 
 #define PROGNAME    "rnx2rtkp"          /* program name */
@@ -80,6 +84,7 @@ static const char *help[]={
 " -y level  output soltion status (0:off,1:states,2:residuals) [0]",
 " -x level  debug trace level (0:off) [0]",
 " -ws       switch in WAAS study code if SBAS data is available "
+" -cs       smooth code ranges by carrier phase, length of smoothing [0] "
 };
 /* show message --------------------------------------------------------------*/
 extern int showmsg(char *format, ...)
@@ -184,6 +189,7 @@ int main(int argc, char **argv)
         else if (!strcmp(argv[i],"-y")&&i+1<argc) solopt.sstat=atoi(argv[++i]);
         else if (!strcmp(argv[i],"-x")&&i+1<argc) solopt.trace=atoi(argv[++i]);
         else if (!strcmp(argv[i],"-ws")) waas_study=1;
+        else if (!strcmp(argv[i],"-cs")) code_smooth=atoi(argv[++i]);
         else if (*argv[i]=='-') printhelp();
         else if (n<MAXFILE) infile[n++]=argv[i];
     }
