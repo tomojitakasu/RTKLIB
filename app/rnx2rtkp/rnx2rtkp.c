@@ -21,12 +21,12 @@
 #include <stdarg.h>
 #include "rtklib.h"
 
-/* if = 1, HAI WAAS study code will be switched in if SBAS data is available. */
+/* if >= 1, HAI WAAS study code will be switched in if SBAS data is available. */
 int waas_study = 0;
-/* if = 1, HAI WAAS study code is switched in. */
+/* if >= 1, HAI WAAS study code is switched in. */
 int waas_calc = 0;
 
-/* if > 0, TB code data will be smoothed by pahse data */
+/* if >=1, TB code data will be smoothed by phase data */
 int code_smooth = 0;
 
 
