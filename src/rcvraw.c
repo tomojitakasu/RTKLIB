@@ -882,6 +882,7 @@ extern int init_raw(raw_t *raw, int format)
     raw->lexmsg=lexmsg0;
     raw->icpc=0.0;
     raw->nbyte=raw->len=0;
+    raw->complete=0;
     raw->iod=raw->flag=raw->tbase=raw->outtype=0;
     raw->tod=-1;
     for (i=0;i<MAXRAWLEN;i++) raw->buff[i]=0;

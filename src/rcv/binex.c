@@ -1216,6 +1216,11 @@ extern int input_bnx(raw_t *raw, unsigned char data)
     
     trace(5,"input_bnx: data=%02x\n",data);
     
+    /* new message */
+    if (raw->complete) {
+        raw->complete=0;
+        raw->nbyte=0;
+    }
     /* synchronize binex message */
     if (raw->nbyte==0) {
         if (!sync_bnx(raw->buff,data)) return 0;
@@ -1237,7 +1242,7 @@ extern int input_bnx(raw_t *raw, unsigned char data)
     len_c=raw->len-1<128?1:2;
     
     if (raw->nbyte<(int)(raw->len+len_c)) return 0;
-    raw->nbyte=0;
+    raw->complete=1;
     
     /* decode binex message */
     return decode_bnx(raw);
@@ -1255,6 +1260,11 @@ extern int input_bnxf(raw_t *raw, FILE *fp)
     
     trace(4,"input_bnxf\n");
     
+    /* new message */
+    if (raw->complete) {
+        raw->complete=0;
+        raw->nbyte=0;
+    }
     if (raw->nbyte==0) {
         for (i=0;;i++) {
             if ((data=fgetc(fp))==EOF) return -2;
@@ -1278,7 +1288,7 @@ extern int input_bnxf(raw_t *raw, FILE *fp)
     if (fread(raw->buff+6,1,raw->len+len_c-6,fp)<(size_t)(raw->len+len_c-6)) {
         return -2;
     }
-    raw->nbyte=0;
+    raw->complete=1;
     
     /* decode binex message */
     return decode_bnx(raw);

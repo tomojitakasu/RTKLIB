@@ -565,6 +565,11 @@ extern int input_cres(raw_t *raw, unsigned char data)
 {
     trace(5,"input_cres: data=%02x\n",data);
     
+    /* new message */
+    if (raw->complete) {
+        raw->complete=0;
+        raw->nbyte=0;
+    }
     /* synchronize frame */
     if (raw->nbyte==0) {
         if (!sync_cres(raw->buff,data)) return 0;
@@ -581,7 +586,7 @@ extern int input_cres(raw_t *raw, unsigned char data)
         }
     }
     if (raw->nbyte<8||raw->nbyte<raw->len) return 0;
-    raw->nbyte=0;
+    raw->complete=1;
     
     /* decode crescent raw message */
     return decode_cres(raw);
@@ -598,6 +603,11 @@ extern int input_cresf(raw_t *raw, FILE *fp)
     
     trace(4,"input_cresf:\n");
     
+    /* new message */
+    if (raw->complete) {
+        raw->complete=0;
+        raw->nbyte=0;
+    }
     /* synchronize frame */
     if (raw->nbyte==0) {
         for (i=0;;i++) {
@@ -615,7 +625,7 @@ extern int input_cresf(raw_t *raw, FILE *fp)
         return -1;
     }
     if (fread(raw->buff+8,1,raw->len-8,fp)<(size_t)(raw->len-8)) return -2;
-    raw->nbyte=0;
+    raw->complete=1;
     
     /* decode crescent raw message */
     return decode_cres(raw);

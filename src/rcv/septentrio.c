@@ -2203,6 +2203,12 @@ extern int input_sbf(raw_t *raw, unsigned char data)
 {
     trace(5,"input_sbf: data=%02x\n",data);
 
+    /* new message */
+    if (raw->complete) {
+        raw->complete=0;
+        raw->nbyte=0;
+    }
+
     if (raw->nbyte==0) {
         if (sync_sbf(raw->buff,data)) raw->nbyte=2;
         return 0;
@@ -2217,7 +2223,7 @@ extern int input_sbf(raw_t *raw, unsigned char data)
         return -1;
     }
     if (raw->nbyte<raw->len) return 0;
-    raw->nbyte=0;
+    raw->complete=1;
 
     return decode_sbf(raw);
 }
@@ -2232,6 +2238,12 @@ extern int input_sbff(raw_t *raw, FILE *fp)
     int i,data;
 
     trace(4,"input_sbff:\n");
+
+    /* new message */
+    if (raw->complete) {
+        raw->complete=0;
+        raw->nbyte=0;
+    }
 
     /* go to the beginning of the first block */
     if (raw->nbyte==0) {
@@ -2257,7 +2269,7 @@ extern int input_sbff(raw_t *raw, FILE *fp)
     /* let's store in raw->buff the whole block of length len */
     /* 8 bytes have been already read, we read raw->len-8 more */
     if (fread(raw->buff+8,1,raw->len-8,fp)<(size_t)(raw->len-8)) return -2;
-    raw->nbyte=0;           /* this indicates where we point inside raw->buff */
+    raw->complete=1;           /* this indicates where we point inside raw->buff */
 
     /* decode SBF block */
     return decode_sbf(raw);

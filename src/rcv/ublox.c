@@ -1084,6 +1084,11 @@ extern int input_ubx(raw_t *raw, unsigned char data)
 {
     trace(5,"input_ubx: data=%02x\n",data);
     
+    /* new message */
+    if (raw->complete) {
+        raw->complete=0;
+        raw->nbyte=0;
+    }
     /* synchronize frame */
     if (raw->nbyte==0) {
         if (!sync_ubx(raw->buff,data)) return 0;
@@ -1100,7 +1105,7 @@ extern int input_ubx(raw_t *raw, unsigned char data)
         }
     }
     if (raw->nbyte<6||raw->nbyte<raw->len) return 0;
-    raw->nbyte=0;
+    raw->complete=1;
     
     /* decode ublox raw message */
     return decode_ubx(raw);

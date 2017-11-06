@@ -690,6 +690,12 @@ extern int input_stq(raw_t *raw, unsigned char data)
 {
     trace(5,"input_stq: data=%02x\n",data);
     
+    /* new message */
+    if (raw->complete) {
+        raw->complete=0;
+        raw->nbyte=0;
+    }
+
     /* synchronize frame */
     if (raw->nbyte==0) {
         if (!sync_stq(raw->buff,data)) return 0;
@@ -706,7 +712,7 @@ extern int input_stq(raw_t *raw, unsigned char data)
         }
     }
     if (raw->nbyte<4||raw->nbyte<raw->len) return 0;
-    raw->nbyte=0;
+    raw->complete=1;
     
     /* decode skytraq raw message */
     return decode_stq(raw);
@@ -722,7 +728,13 @@ extern int input_stqf(raw_t *raw, FILE *fp)
     int i,data;
     
     trace(4,"input_stqf:\n");
-    
+
+    /* new message */
+    if (raw->complete) {
+        raw->complete=0;
+        raw->nbyte=0;
+    }
+
     /* synchronize frame */
     if (raw->nbyte==0) {
         for (i=0;;i++) {
@@ -740,7 +752,7 @@ extern int input_stqf(raw_t *raw, FILE *fp)
         return -1;
     }
     if (fread(raw->buff+4,1,raw->len-4,fp)<(size_t)(raw->len-4)) return -2;
-    raw->nbyte=0;
+    raw->complete=1;
     
     /* decode skytraq raw message */
     return decode_stq(raw);

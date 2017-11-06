@@ -458,6 +458,12 @@ extern int input_nvs(raw_t *raw, unsigned char data)
 {
     trace(5,"input_nvs: data=%02x\n",data);
     
+    /* new message */
+    if (raw->complete) {
+        raw->complete=0;
+        raw->nbyte=0;
+    }
+
     /* synchronize frame */
     if ((raw->nbyte==0) && (data==NVSSYNC)) {
         
@@ -484,7 +490,7 @@ extern int input_nvs(raw_t *raw, unsigned char data)
     /* Detect ending sequence */
     if ((data==NVSENDMSG) && (raw->flag)) {
         raw->len   = raw->nbyte;
-        raw->nbyte = 0;
+        raw->complete=1;
         
         /* Decode NVS raw message */
         return decode_nvs(raw);
@@ -508,13 +514,18 @@ extern int input_nvsf(raw_t *raw, FILE *fp)
     
     trace(4,"input_nvsf:\n");
     
+    /* new message */
+    if (raw->complete) {
+        raw->complete=0;
+        raw->nbyte=0;
+    }
     /* synchronize frame */
     for (i=0;;i++) {
         if ((data=fgetc(fp))==EOF) return -2;
         
         /* Search a 0x10 */
         if (data==NVSSYNC) {
-            
+
             /* Store the frame begin */
             raw->buff[0] = data;
             if ((data=fgetc(fp))==EOF) return -2;
@@ -545,6 +556,7 @@ extern int input_nvsf(raw_t *raw, FILE *fp)
         trace(2,"nvs length error: len=%d\n",raw->len);
         return -1;
     }
+    raw->complete=1;
     /* decode nvs raw message */
     return decode_nvs(raw);
 }

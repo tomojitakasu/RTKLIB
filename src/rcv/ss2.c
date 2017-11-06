@@ -255,6 +255,12 @@ extern int input_ss2(raw_t *raw, unsigned char data)
 {
     trace(5,"input_ss2: data=%02x\n",data);
     
+    /* new message */
+    if (raw->complete) {
+        raw->complete=0;
+        raw->nbyte=0;
+    }
+
     /* synchronize frame */
     if (raw->nbyte==0) {
         if (!sync_ss2(raw->buff,data)) return 0;
@@ -271,7 +277,7 @@ extern int input_ss2(raw_t *raw, unsigned char data)
         }
     }
     if (raw->nbyte<4||raw->nbyte<raw->len) return 0;
-    raw->nbyte=0;
+    raw->complete=1;
     
     /* decode superstar 2 raw message */
     return decode_ss2(raw);
@@ -288,6 +294,11 @@ extern int input_ss2f(raw_t *raw, FILE *fp)
     
     trace(4,"input_ss2f:\n");
     
+    /* new message */
+    if (raw->complete) {
+        raw->complete=0;
+        raw->nbyte=0;
+    }
     /* synchronize frame */
     if (raw->nbyte==0) {
         for (i=0;;i++) {
@@ -305,7 +316,7 @@ extern int input_ss2f(raw_t *raw, FILE *fp)
         return -1;
     }
     if (fread(raw->buff+4,1,raw->len-4,fp)<(size_t)(raw->len-4)) return -2;
-    raw->nbyte=0;
+    raw->complete=1;
     
     /* decode superstar 2 raw message */
     return decode_ss2(raw);

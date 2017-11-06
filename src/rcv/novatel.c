@@ -1396,6 +1396,11 @@ extern int input_oem4(raw_t *raw, unsigned char data)
 {
     trace(5,"input_oem4: data=%02x\n",data);
     
+    /* new message */
+    if (raw->complete) {
+        raw->complete=0;
+        raw->nbyte=0;
+    }
     /* synchronize frame */
     if (raw->nbyte==0) {
         if (sync_oem4(raw->buff,data)) raw->nbyte=3;
@@ -1409,7 +1414,7 @@ extern int input_oem4(raw_t *raw, unsigned char data)
         return -1;
     }
     if (raw->nbyte<10||raw->nbyte<raw->len+4) return 0;
-    raw->nbyte=0;
+    raw->complete=1;
     
     /* decode oem4 message */
     return decode_oem4(raw);
@@ -1418,6 +1423,11 @@ extern int input_oem3(raw_t *raw, unsigned char data)
 {
     trace(5,"input_oem3: data=%02x\n",data);
     
+    /* new message */
+    if (raw->complete) {
+        raw->complete=0;
+        raw->nbyte=0;
+    }
     /* synchronize frame */
     if (raw->nbyte==0) {
         if (sync_oem3(raw->buff,data)) raw->nbyte=3;
@@ -1431,7 +1441,7 @@ extern int input_oem3(raw_t *raw, unsigned char data)
         return -1;
     }
     if (raw->nbyte<12||raw->nbyte<raw->len) return 0;
-    raw->nbyte=0;
+    raw->complete=1;
     
     /* decode oem3 message */
     return decode_oem3(raw);
@@ -1449,6 +1459,11 @@ extern int input_oem4f(raw_t *raw, FILE *fp)
     
     trace(4,"input_oem4f:\n");
     
+    /* new message */
+    if (raw->complete) {
+        raw->complete=0;
+        raw->nbyte=0;
+    }
     /* synchronize frame */
     if (raw->nbyte==0) {
         for (i=0;;i++) {
@@ -1466,7 +1481,7 @@ extern int input_oem4f(raw_t *raw, FILE *fp)
         return -1;
     }
     if (fread(raw->buff+10,raw->len-6,1,fp)<1) return -2;
-    raw->nbyte=0;
+    raw->complete=1;
     
     /* decode oem4 message */
     return decode_oem4(raw);
@@ -1477,6 +1492,11 @@ extern int input_oem3f(raw_t *raw, FILE *fp)
     
     trace(4,"input_oem3f:\n");
     
+    /* new message */
+    if (raw->complete) {
+        raw->complete=0;
+        raw->nbyte=0;
+    }
     /* synchronize frame */
     if (raw->nbyte==0) {
         for (i=0;;i++) {
@@ -1494,7 +1514,7 @@ extern int input_oem3f(raw_t *raw, FILE *fp)
         return -1;
     }
     if (fread(raw->buff+12,1,raw->len-12,fp)<(size_t)(raw->len-12)) return -2;
-    raw->nbyte=0;
+    raw->complete=1;
     
     /* decode oem3 message */
     return decode_oem3(raw);

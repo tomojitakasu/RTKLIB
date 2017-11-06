@@ -377,6 +377,13 @@ extern int input_gw10(raw_t *raw, unsigned char data)
     int stat;
     trace(5,"input_gw10: data=%02x\n",data);
     
+    /* new message */
+    if (raw->complete) {
+        raw->complete=0;
+        raw->nbyte=0;
+        raw->buff[0]=0;
+    }
+
     raw->buff[raw->nbyte++]=data;
     
     /* synchronize frame */
@@ -399,8 +406,7 @@ extern int input_gw10(raw_t *raw, unsigned char data)
     /* decode gw10 raw message */
     stat=decode_gw10(raw);
     
-    raw->buff[0]=0;
-    raw->nbyte=0;
+    raw->complete=1;
     
     return stat;
 }

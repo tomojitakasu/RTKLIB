@@ -1252,6 +1252,8 @@ typedef struct {        /* receiver raw data control type */
     
     int format;         /* receiver stream format */
     void *rcv_data;     /* receiver dependent data */
+
+    int complete;       /* if message bytes complete in buffer */
 } raw_t;
 
 typedef struct {        /* stream type */

@@ -1772,6 +1772,12 @@ extern int input_javad(raw_t *raw, unsigned char data)
     
     trace(5,"input_javad: data=%02x\n",data);
     
+    /* new message */
+    if (raw->complete) {
+        raw->complete=0;
+        clearbuff(raw);
+    }
+
     /* synchronize message */
     if (raw->nbyte==0) {
         if (!sync_javad(raw->buff,data)) return 0;
@@ -1791,7 +1797,7 @@ extern int input_javad(raw_t *raw, unsigned char data)
     /* decode javad raw message */
     stat=decode_javad(raw);
     
-    clearbuff(raw);
+    raw->complete=1;
     return stat;
 }
 /* start input file ----------------------------------------------------------*/
@@ -1826,6 +1832,13 @@ extern int input_javadf(raw_t *raw, FILE *fp)
         startfile(raw);
         raw->flag=0;
     }
+
+    /* new message */
+    if (raw->complete) {
+        raw->complete=0;
+        clearbuff(raw);
+    }
+
     /* synchronize message */
     if (raw->nbyte==0) {
         for (i=0;;i++) {
@@ -1848,6 +1861,6 @@ extern int input_javadf(raw_t *raw, FILE *fp)
     /* decode javad raw message */
     stat=decode_javad(raw);
     
-    clearbuff(raw);
+    raw->complete=1;
     return stat;
 }

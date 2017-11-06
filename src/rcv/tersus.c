@@ -657,6 +657,12 @@ extern int input_tersus(raw_t *raw, unsigned char data)
 {
     trace(5,"input_tersus: data=%02x\n",data);
     
+    /* new message */
+    if (raw->complete) {
+        raw->complete=0;
+        raw->nbyte=0;
+    }
+
     /* synchronize frame */
     if (raw->nbyte==0) {
         if (sync_tersus(raw->buff,data)) raw->nbyte=3;
@@ -670,7 +676,7 @@ extern int input_tersus(raw_t *raw, unsigned char data)
         return -1;
     }
     if (raw->nbyte<10||raw->nbyte<raw->len+4) return 0;
-    raw->nbyte=0;
+    raw->complete=1;
     
     /* decode tersus message */
     return decode_tersus(raw);
@@ -688,6 +694,12 @@ extern int input_tersusf(raw_t *raw, FILE *fp)
     
     trace(4,"input_tersusf:\n");
     
+    /* new message */
+    if (raw->complete) {
+        raw->complete=0;
+        raw->nbyte=0;
+    }
+
     /* synchronize frame */
     if (raw->nbyte==0) {
         for (i=0;;i++) {
@@ -705,7 +717,7 @@ extern int input_tersusf(raw_t *raw, FILE *fp)
         return -1;
     }
     if (fread(raw->buff+10,raw->len-6,1,fp)<1) return -2;
-    raw->nbyte=0;
+    raw->complete=1;
     
     /* decode tersus message */
     return decode_tersus(raw);
