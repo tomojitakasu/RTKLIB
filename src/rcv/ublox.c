@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * ublox.c : ublox receiver dependent functions
 *
-*          Copyright (C) 2007-2014 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2007-2018 by T.TAKASU, All rights reserved.
 *          Copyright (C) 2014 by T.SUZUKI, All rights reserved.
 *
 * reference :
@@ -11,6 +11,8 @@
 *         Protocol Specification V5, Dec 20, 2013
 *     [3] ublox-AG, UBX-13003221-R07, u-blox M8 Receiver Description including
 *         Protocol Specification V15.00-17.00, Nov 3, 2014
+*     [4] ublox-AG, UBX-13003221-R09, u-blox 8 /u-blox M8 Receiver Description
+*         including Protocol Specification V15.00-18.00, January, 2016
 *
 * version : $Revision: 1.2 $ $Date: 2008/07/14 00:05:05 $
 * history : 2007/10/08 1.0  new
@@ -37,6 +39,22 @@
 *           2014/08/31 1.13 suppress warning
 *           2014/11/04 1.14 support message RXM-RAWX and RXM-SFRBX
 *           2015/03/20 1.15 omit time adjustment for RXM-RAWX
+*           2016/01/22 1.16 add time-tag in raw-message-type
+*           2016/01/26 1.17 support galileo navigation data in RXM-SFRBX
+*                           enable option -TADJ for RXM-RAWX
+*           2016/05/25 1.18 fix bug on crc-buffer-overflow by decoding galileo
+*                           navigation data
+*           2016/07/04 1.19 add half-cycle vaild check for ubx-trk-meas
+*           2016/07/29 1.20 support RXM-CFG-TMODE3 (0x06 0x71) for M8P
+*                           crc24q() -> rtk_crc24q()
+*                           check week number zero for ubx-rxm-raw and rawx
+*           2016/08/20 1.21 add test of std-dev for carrier-phase valid
+*           2016/08/26 1.22 add option -STD_SLIP to test slip by std-dev of cp
+*                           fix on half-cyc valid for sbas in trkmeas
+*           2017/04/11 1.23 (char *) -> (signed char *)
+*                           fix bug on week handover in decode_trkmeas/trkd5()
+*                           fix bug on prn for geo in decode_cnav()
+*           2017/06/10 1.24 output half-cycle-subtracted flag
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -66,13 +84,13 @@
 
 #define P2_10       0.0009765625 /* 2^-10 */
 
-#define ROUND(x)    (int)floor((x)+0.5)
+#define CPSTD_VALID 5           /* std-dev threshold of carrier-phase valid */
 
-static const char rcsid[]="$Id: ublox.c,v 1.2 2008/07/14 00:05:05 TTAKA Exp $";
+#define ROUND(x)    (int)floor((x)+0.5)
 
 /* get fields (little-endian) ------------------------------------------------*/
 #define U1(p) (*((unsigned char *)(p)))
-#define I1(p) (*((char *)(p)))
+#define I1(p) (*((signed char *)(p)))
 static unsigned short U2(unsigned char *p) {unsigned short u; memcpy(&u,p,2); return u;}
 static unsigned int   U4(unsigned char *p) {unsigned int   u; memcpy(&u,p,4); return u;}
 static int            I4(unsigned char *p) {int            u; memcpy(&u,p,4); return u;}
@@ -85,7 +103,7 @@ static double         I8(unsigned char *p) {return I4(p+4)*4294967296.0+U4(p);}
 static void setU1(unsigned char *p, unsigned char  u) {*p=u;}
 static void setU2(unsigned char *p, unsigned short u) {memcpy(p,&u,2);}
 static void setU4(unsigned char *p, unsigned int   u) {memcpy(p,&u,4);}
-static void setI1(unsigned char *p, char           i) {*p=(unsigned char)i;}
+static void setI1(unsigned char *p, signed char    i) {*p=(unsigned char)i;}
 static void setI2(unsigned char *p, short          i) {memcpy(p,&i,2);}
 static void setI4(unsigned char *p, int            i) {memcpy(p,&i,4);}
 static void setR4(unsigned char *p, float          r) {memcpy(p,&r,4);}
@@ -152,7 +170,7 @@ static int decode_rxmraw(raw_t *raw)
         sprintf(raw->msgtype,"UBX RXM-RAW   (%4d): nsat=%d",raw->len,U1(p+6));
     }
     /* time tag adjustment option (-TADJ) */
-    if ((q=strstr(raw->opt,"-TADJ"))) {
+    if ((q=strstr(raw->opt,"-TADJ="))) {
         sscanf(q,"-TADJ=%lf",&tadj);
     }
     nsat=U1(p+6);
@@ -164,6 +182,10 @@ static int decode_rxmraw(raw_t *raw)
     week=U2(p+4);
     time=gpst2time(week,tow*0.001);
     
+    if (week==0) {
+        trace(3,"ubx rxmraw week=0 error: len=%d nsat=%d\n",raw->len,nsat);
+        return 0;
+    }
     /* time tag adjustment */
     if (tadj>0.0) {
         tn=time2gpst(time,&week)/tadj;
@@ -212,15 +234,14 @@ static int decode_rxmraw(raw_t *raw)
 static int decode_rxmrawx(raw_t *raw)
 {
     gtime_t time;
-    double tow,cp1,pr1;
-    int i,j,sys,prn,sat,n=0,nsat,week,tstat,lockt,halfc;
+    double tow,cp1,pr1,tadj=0.0,toff=0.0,freq,tn;
+    int i,j,sys,prn,sat,n=0,nsat,week,tstat,lockt,slip,halfv,halfc,fcn,cpstd;
+    int std_slip=0;
+    char *q;
     unsigned char *p=raw->buff+6;
     
     trace(4,"decode_rxmrawx: len=%d\n",raw->len);
     
-    if (raw->outtype) {
-        sprintf(raw->msgtype,"UBX RXM-RAWX  (%4d): nsat=%d",raw->len,U1(p+11));
-    }
     nsat=U1(p+11);
     if (raw->len<24+32*nsat) {
         trace(2,"ubx rxmrawx length error: len=%d nsat=%d\n",raw->len,nsat);
@@ -230,6 +251,28 @@ static int decode_rxmrawx(raw_t *raw)
     week=U2(p+8);
     time=gpst2time(week,tow);
     
+    if (week==0) {
+        trace(3,"ubx rxmrawx week=0 error: len=%d nsat=%d\n",raw->len,nsat);
+        return 0;
+    }
+    if (raw->outtype) {
+        sprintf(raw->msgtype,"UBX RXM-RAWX  (%4d): time=%s nsat=%d",raw->len,
+                time_str(time,2),U1(p+11));
+    }
+    /* time tag adjustment option (-TADJ) */
+    if ((q=strstr(raw->opt,"-TADJ="))) {
+        sscanf(q,"-TADJ=%lf",&tadj);
+    }
+    /* slip theshold of std-dev of carreir-phase (-STD_SLIP) */
+    if ((q=strstr(raw->opt,"-STD_SLIP="))) {
+        sscanf(q,"-STD_SLIP=%d",&std_slip);
+    }
+    /* time tag adjustment */
+    if (tadj>0.0) {
+        tn=time2gpst(time,&week)/tadj;
+        toff=(tn-floor(tn+0.5))*tadj;
+        time=timeadd(time,-toff);
+    }
     for (i=0,p+=16;i<nsat&&i<MAXOBS;i++,p+=32) {
         
         if (!(sys=ubx_sys(U1(p+20)))) {
@@ -241,28 +284,44 @@ static int decode_rxmrawx(raw_t *raw)
             trace(2,"ubx rxmrawx sat number error: sys=%2d prn=%2d\n",sys,prn);
             continue;
         }
+        cpstd=U1(p+28)&15; /* carrier-phase std-dev */
         tstat=U1(p+30); /* tracking status */
         pr1=tstat&1?R8(p  ):0.0;
         cp1=tstat&2?R8(p+8):0.0;
-        if (cp1==-0.5) cp1=0.0; /* invalid phase */
+        if (cp1==-0.5||cpstd>CPSTD_VALID) cp1=0.0; /* invalid phase */
         raw->obs.data[n].sat=sat;
         raw->obs.data[n].time=time;
         raw->obs.data[n].P[0]=pr1;
         raw->obs.data[n].L[0]=cp1;
+        
+        /* offset by time tag adjustment */
+        if (toff!=0.0) {
+            fcn=(int)U1(p+23)-7;
+            freq=sys==SYS_CMP?FREQ1_CMP:
+                 (sys==SYS_GLO?FREQ1_GLO+DFRQ1_GLO*fcn:FREQ1);
+            raw->obs.data[n].P[0]-=toff*CLIGHT;
+            raw->obs.data[n].L[0]-=toff*freq;
+        }
         raw->obs.data[n].D[0]=R4(p+16);
         raw->obs.data[n].SNR[0]=U1(p+26)*4;
         raw->obs.data[n].LLI[0]=0;
-        raw->obs.data[n].code[0]=sys==SYS_CMP?CODE_L1I:CODE_L1C;
+        raw->obs.data[n].code[0]=
+            sys==SYS_CMP?CODE_L1I:(sys==SYS_GAL?CODE_L1X:CODE_L1C);
         
         lockt=U2(p+24);    /* lock time count (ms) */
+        slip=lockt==0||lockt<raw->lockt[sat-1][0]?1:0;
+        if (std_slip>0) {
+            cp1=0.0;
+        }
+        halfv=tstat&4?1:0; /* half cycle valid */
         halfc=tstat&8?1:0; /* half cycle subtracted from phase */
         
         if (cp1!=0.0) { /* carrier-phase valid */
             
             /* LLI: bit1=loss-of-lock,bit2=half-cycle-invalid */
-            raw->obs.data[n].LLI[0]|=lockt==0||lockt<raw->lockt[sat-1][0]?1:0;
-            raw->obs.data[n].LLI[0]|=halfc!=raw->halfc[sat-1][0]?1:0;
-            raw->obs.data[n].LLI[0]|=tstat&4?0:2;
+            raw->obs.data[n].LLI[0]|=slip?LLI_SLIP:0;
+            raw->obs.data[n].LLI[0]|=halfc?LLI_HALFA:0; /* half-cycle subtraced */
+            raw->obs.data[n].LLI[0]|=halfv?0:LLI_HALFC;
             raw->lockt[sat-1][0]=lockt;
             raw->halfc[sat-1][0]=halfc;
         }
@@ -461,8 +520,8 @@ static int decode_trkmeas(raw_t *raw)
     
     /* adjust week handover */
     t=time2gpst(raw->time,&week);
-    if      (tr<t-302400.0) week--;
-    else if (tr>t+302400.0) week++;
+    if      (tr<t-302400.0) week++;
+    else if (tr>t+302400.0) week--;
     time=gpst2time(week,tr);
     
     utc_gpst=timediff(gpst2utc(time),time);
@@ -527,6 +586,12 @@ static int decode_trkmeas(raw_t *raw)
         raw->obs.data[n].SNR[0]=(unsigned char)(snr*4.0);
         raw->obs.data[n].code[0]=sys==SYS_CMP?CODE_L1I:CODE_L1C;
         raw->obs.data[n].LLI[0]=raw->lockt[sat-1][1]>0.0?1:0;
+        if (sys==SYS_SBS) { /* half-cycle valid */
+            raw->obs.data[n].LLI[0]|=lock2>142?0:2;
+        }
+        else {
+            raw->obs.data[n].LLI[0]|=flag&0x80?0:2;
+        }
         raw->lockt[sat-1][1]=0.0;
         
         for (j=1;j<NFREQ+NEXOBS;j++) {
@@ -577,8 +642,8 @@ static int decode_trkd5(raw_t *raw)
     
     /* adjust week handover */
     t=time2gpst(raw->time,&week);
-    if      (tr<t-302400.0) week--;
-    else if (tr>t+302400.0) week++;
+    if      (tr<t-302400.0) week++;
+    else if (tr>t+302400.0) week--;
     time=gpst2time(week,tr);
     
     trace(4,"time=%s\n",time_str(time,0));
@@ -684,8 +749,72 @@ static int decode_nav(raw_t *raw, int sat, int off)
 /* decode galileo navigation data --------------------------------------------*/
 static int decode_enav(raw_t *raw, int sat, int off)
 {
-    trace(2,"ubx rawsfrbx galileo nav not supported sat=%d\n",sat);
-    return 0;
+    eph_t eph={0};
+    unsigned char *p=raw->buff+6+off,buff[32],crc_buff[26]={0};
+    int i,j,k,part1,page1,part2,page2,type;
+    
+    if (raw->len<44+off) {
+        trace(2,"ubx rawsfrbx length error: sat=%d len=%d\n",sat,raw->len);
+        return -1;
+    }
+    for (i=k=0;i<8;i++,p+=4) for (j=0;j<4;j++) {
+        buff[k++]=p[3-j];
+    }
+    part1=getbitu(buff   ,0,1);
+    page1=getbitu(buff   ,1,1);
+    part2=getbitu(buff+16,0,1);
+    page2=getbitu(buff+16,1,1);
+    
+    /* skip alert page */
+    if (page1==1||page2==1) return 0;
+    
+    /* test even-odd parts */
+    if (part1!=0||part2!=1) {
+        trace(2,"ubx rawsfrbx gal page even/odd error: sat=%2d\n",sat);
+        return -1;
+    }
+    /* test crc (4(pad) + 114 + 82 bits) */
+    for (i=0,j=  4;i<15;i++,j+=8) setbitu(crc_buff,j,8,getbitu(buff   ,i*8,8));
+    for (i=0,j=118;i<11;i++,j+=8) setbitu(crc_buff,j,8,getbitu(buff+16,i*8,8));
+    if (rtk_crc24q(crc_buff,25)!=getbitu(buff+16,82,24)) {
+        trace(2,"ubx rawsfrbx gal page crc error: sat=%2d\n",sat);
+        return -1;
+    }
+    type=getbitu(buff,2,6); /* word type */
+    
+    /* skip word except for ephemeris, iono, utc parameters */
+    if (type>6) return 0;
+    
+    /* clear word 0-6 flags */
+    if (type==2) raw->subfrm[sat-1][112]=0;
+    
+    /* save page data (112 + 16 bits) to frame buffer */
+    k=type*16;
+    for (i=0,j=2;i<14;i++,j+=8) raw->subfrm[sat-1][k++]=getbitu(buff   ,j,8);
+    for (i=0,j=2;i< 2;i++,j+=8) raw->subfrm[sat-1][k++]=getbitu(buff+16,j,8);
+    
+    /* test word 0-6 flags */
+    raw->subfrm[sat-1][112]|=(1<<type);
+    if (raw->subfrm[sat-1][112]!=0x7F) return 0;
+    
+    /* decode galileo inav ephemeris */
+    if (!decode_gal_inav(raw->subfrm[sat-1],&eph)) {
+        return 0;
+    }
+    /* test svid consistency */
+    if (eph.sat!=sat) {
+        trace(2,"ubx rawsfrbx gal svid error: sat=%2d %2d\n",sat,eph.sat);
+        return -1;
+    }
+    if (!strstr(raw->opt,"-EPHALL")) {
+        if (eph.iode==raw->nav.eph[sat-1].iode&& /* unchanged */
+            timediff(eph.toe,raw->nav.eph[sat-1].toe)==0.0&&
+            timediff(eph.toc,raw->nav.eph[sat-1].toc)==0.0) return 0;
+    }
+    eph.sat=sat;
+    raw->nav.eph[sat-1]=eph;
+    raw->ephsat=sat;
+    return 2;
 }
 /* decode beidou navigation data ---------------------------------------------*/
 static int decode_cnav(raw_t *raw, int sat, int off)
@@ -707,7 +836,7 @@ static int decode_cnav(raw_t *raw, int sat, int off)
         trace(2,"ubx rawsfrbx subfrm id error: sat=%2d\n",sat);
         return -1;
     }
-    if (prn>=5) { /* IGSO/MEO */
+    if (prn>5) { /* IGSO/MEO */
         
         for (i=0;i<10;i++) {
             setbitu(raw->subfrm[sat-1]+(id-1)*38,i*30,30,words[i]);
@@ -735,7 +864,9 @@ static int decode_cnav(raw_t *raw, int sat, int off)
         if (!decode_bds_d2(raw->subfrm[sat-1],&eph)) return 0;
     }
     if (!strstr(raw->opt,"-EPHALL")) {
-        if (timediff(eph.toe,raw->nav.eph[sat-1].toe)==0.0) return 0; /* unchanged */
+        if (timediff(eph.toe,raw->nav.eph[sat-1].toe)==0.0&&
+            eph.iode==raw->nav.eph[sat-1].iode&&
+            eph.iodc==raw->nav.eph[sat-1].iodc) return 0; /* unchanged */
     }
     eph.sat=sat;
     raw->nav.eph[sat-1]=eph;
@@ -923,6 +1054,7 @@ static int sync_ubx(unsigned char *buff, unsigned char data)
 *          -EPHALL    : input all ephemerides
 *          -INVCP     : invert polarity of carrier-phase
 *          -TADJ=tint : adjust time tags to multiples of tint (sec)
+*          -STD_SLIP=std: slip by std-dev of carrier phase under std
 *
 *          The supported messages are as follows.
 *
@@ -1029,6 +1161,7 @@ extern int input_ubxf(raw_t *raw, FILE *fp)
 *            "CFG-RINV  flag data ..."
 *            "CFG-SMGR  ..."
 *            "CFG-TMODE2 ..."
+*            "CFG-TMODE3 ..."
 *            "CFG-TPS   ..."
 *            "CFG-TXSLOT ..."
 *          unsigned char *buff O binary message
@@ -1043,13 +1176,13 @@ extern int gen_ubx(const char *msg, unsigned char *buff)
         "PRT","USB","MSG","NMEA","RATE","CFG","TP","NAV2","DAT","INF",
         "RST","RXM","ANT","FXN","SBAS","LIC","TM","TM2","TMODE","EKF",
         "GNSS","ITFM","LOGFILTER","NAV5","NAVX5","ODO","PM2","PWR","RINV","SMGR",
-        "TMODE2","TPS","TXSLOT",""
+        "TMODE2","TMODE3","TPS","TXSLOT",""
     };
     const unsigned char id[]={
         0x00,0x1B,0x01,0x17,0x08,0x09,0x07,0x1A,0x06,0x02,
         0x04,0x11,0x13,0x0E,0x16,0x80,0x10,0x19,0x1D,0x12,
         0x3E,0x39,0x47,0x24,0x23,0x1E,0x3B,0x57,0x34,0x62,
-        0x36,0x31,0x53
+        0x36,0x71,0x31,0x53
     };
     const int prm[][32]={
         {FU1,FU1,FU2,FU4,FU4,FU2,FU2,FU2,FU2},    /* PRT */
@@ -1086,6 +1219,7 @@ extern int gen_ubx(const char *msg, unsigned char *buff)
         {FU1,FU1},                                /* RINV */
         {FU1,FU1,FU2,FU2,FU1,FU1,FU2,FU2,FU2,FU2,FU4}, /* SMGR */
         {FU1,FU1,FU2,FI4,FI4,FI4,FU4,FU4,FU4},    /* TMODE2 */
+        {FU1,FU1,FU2,FI4,FI4,FI4,FU4,FU4,FU4},    /* TMODE3 */
         {FU1,FU1,FU1,FU1,FI2,FI2,FU4,FU4,FU4,FU4,FI4,FU4}, /* TPS */
         {FU1,FU1,FU1,FU1,FU4,FU4,FU4,FU4,FU4}     /* TXSLOT */
     };
@@ -1116,7 +1250,7 @@ extern int gen_ubx(const char *msg, unsigned char *buff)
             case FU1 : setU1(q,j<narg?(unsigned char )atoi(args[j]):0); q+=1; break;
             case FU2 : setU2(q,j<narg?(unsigned short)atoi(args[j]):0); q+=2; break;
             case FU4 : setU4(q,j<narg?(unsigned int  )atoi(args[j]):0); q+=4; break;
-            case FI1 : setI1(q,j<narg?(char          )atoi(args[j]):0); q+=1; break;
+            case FI1 : setI1(q,j<narg?(signed char   )atoi(args[j]):0); q+=1; break;
             case FI2 : setI2(q,j<narg?(short         )atoi(args[j]):0); q+=2; break;
             case FI4 : setI4(q,j<narg?(int           )atoi(args[j]):0); q+=4; break;
             case FR4 : setR4(q,j<narg?(float         )atof(args[j]):0); q+=4; break;
