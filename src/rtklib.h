@@ -443,16 +443,18 @@ extern "C" {
 #define STRFMT_SEPT  13                 /* stream format: Septentrio */
 #define STRFMT_CMR   14                 /* stream format: CMR/CMR+ */
 #define STRFMT_TERSUS 15                /* stream format: TERSUS */
-#define STRFMT_LEXR  16                 /* stream format: Furuno LPY-10000 */
-#define STRFMT_RINEX 17                 /* stream format: RINEX */
-#define STRFMT_SP3   18                 /* stream format: SP3 */
-#define STRFMT_RNXCLK 19                /* stream format: RINEX CLK */
-#define STRFMT_SBAS  20                 /* stream format: SBAS messages */
-#define STRFMT_NMEA  21                 /* stream format: NMEA 0183 */
+#define STRFMT_SBP 16                   /* stream format: Swift Navigation SBP */
+#define STRFMT_SBPJSON 17               /* stream format: Swift Navigation SBP-JSON */
+#define STRFMT_LEXR  18                 /* stream format: Furuno LPY-10000 */
+#define STRFMT_RINEX 19                 /* stream format: RINEX */
+#define STRFMT_SP3   20                 /* stream format: SP3 */
+#define STRFMT_RNXCLK 21                /* stream format: RINEX CLK */
+#define STRFMT_SBAS  22                 /* stream format: SBAS messages */
+#define STRFMT_NMEA  23                 /* stream format: NMEA 0183 */
 #ifndef EXTLEX
-#define MAXRCVFMT    15                 /* max number of receiver format */
+#define MAXRCVFMT    17                 /* max number of receiver format */
 #else
-#define MAXRCVFMT    16
+#define MAXRCVFMT    18
 #endif
 
 #define STR_MODE_R  0x1                 /* stream mode: read */
@@ -978,8 +980,8 @@ typedef struct {        /* RTCM control struct type */
     unsigned short lock[MAXSAT][NFREQ+NEXOBS]; /* lock time */
     unsigned short loss[MAXSAT][NFREQ+NEXOBS]; /* loss of lock count */
     gtime_t lltime[MAXSAT][NFREQ+NEXOBS]; /* last lock time */
-    int nbyte;          /* number of bytes in message buffer */ 
-    int nbit;           /* number of bits in word buffer */ 
+    int nbyte;          /* number of bytes in message buffer */
+    int nbit;           /* number of bits in word buffer */
     int len;            /* message length (bytes) */
     unsigned char buff[1200]; /* message buffer */
     unsigned int word;  /* word buffer for rtcm 2 */
@@ -1239,7 +1241,7 @@ typedef struct {        /* receiver raw data control type */
     double prCA[MAXSAT],dpCA[MAXSAT]; /* L1/CA pseudrange/doppler for javad */
     unsigned char halfc[MAXSAT][NFREQ+NEXOBS]; /* half-cycle add flag */
     char freqn[MAXOBS]; /* frequency number for javad */
-    int nbyte;          /* number of bytes in message buffer */ 
+    int nbyte;          /* number of bytes in message buffer */
     int len;            /* message length (bytes) */
     int iod;            /* issue of data */
     int tod;            /* time of day (ms) */
@@ -1667,6 +1669,7 @@ EXPORT int input_bnx   (raw_t *raw, unsigned char data);
 EXPORT int input_rt17  (raw_t *raw, unsigned char data);
 EXPORT int input_sbf   (raw_t *raw, unsigned char data);
 EXPORT int input_cmr   (raw_t *raw, unsigned char data);
+EXPORT int input_sbp   (raw_t *raw, unsigned char data);
 EXPORT int input_tersus(raw_t *raw, unsigned char data);
 EXPORT int input_lexr  (raw_t *raw, unsigned char data);
 EXPORT int input_oem4f (raw_t *raw, FILE *fp);
@@ -1683,6 +1686,8 @@ EXPORT int input_rt17f (raw_t *raw, FILE *fp);
 EXPORT int input_sbff  (raw_t *raw, FILE *fp);
 EXPORT int input_cmrf  (raw_t *raw, FILE *fp);
 EXPORT int input_tersusf(raw_t *raw, FILE *fp);
+EXPORT int input_sbpf  (raw_t *raw, FILE *fp);
+EXPORT int input_sbpjsonf(raw_t *raw, FILE *fp);
 EXPORT int input_lexrf (raw_t *raw, FILE *fp);
 
 EXPORT int gen_ubx (const char *msg, unsigned char *buff);
