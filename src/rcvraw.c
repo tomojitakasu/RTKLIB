@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * rcvraw.c : receiver raw data functions
 *
-*          Copyright (C) 2009-2014 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2009-2018 by T.TAKASU, All rights reserved.
 *          Copyright (C) 2014 by T.SUZUKI, All rights reserved.
 *
 * references :
@@ -13,6 +13,8 @@
 *         document open service signal (version 2.0), December 2013
 *     [4] Quasi-Zenith Satellite System Navigation Service Interface
 *         Specification for QZSS (IS-QZSS) V.1.5, March 27, 2014
+*     [5] European GNSS (Galileo) Open Service Signal In Space Interface Control
+*         Document, Issue 1.2, November 2015
 *
 * version : $Revision: 1.1 $ $Date: 2008/07/17 21:48:06 $
 * history : 2009/04/10 1.0  new
@@ -28,12 +30,15 @@
 *                           add support input format rt17
 *           2014/08/31 1.9  suppress warning
 *           2014/11/07 1.10 support qzss navigation subframes
+*           2018/01/29 1.11 add api decode_gal_inav() for galileo I/NAV
+*                           improve struct initialization in init_raw()
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 #include <stdint.h>
 
-static const char rcsid[]="$Id:$";
-
+#define P2_34       5.820766091346740E-11 /* 2^-34 */
+#define P2_46       1.421085471520200E-14 /* 2^-46 */
+#define P2_59       1.734723475976810E-18 /* 2^-59 */
 #define P2_66       1.355252715606881E-20 /* 2^-66 for BeiDou ephemeris */
 
 /* get two component bits ----------------------------------------------------*/
@@ -79,6 +84,111 @@ static double getbitg(const unsigned char *buff, int pos, int len)
 {
     double value=getbitu(buff,pos+1,len-1);
     return getbitu(buff,pos,1)?-value:value;
+}
+/* decode Galileo I/NAV ephemeris ----------------------------------------------
+* decode Galileo I/NAV (ref [5] 4.3)
+* args   : unsigned char *buff I Galileo I/NAV subframe bits
+*                                  buff[ 0-15]: I/NAV word type 0 (128 bit)
+*                                  buff[16-31]: I/NAV word type 1
+*                                  buff[32-47]: I/NAV word type 2
+*                                  buff[48-63]: I/NAV word type 3
+*                                  buff[64-79]: I/NAV word type 4
+*                                  buff[80-95]: I/NAV word type 5
+*          eph_t    *eph    IO  ephemeris structure
+* return : status (1:ok,0:error)
+*-----------------------------------------------------------------------------*/
+extern int decode_gal_inav(const unsigned char *buff, eph_t *eph)
+{
+    double tow,toc,tt,sqrtA;
+    int i,time_f,week,svid,e5b_hs,e1b_hs,e5b_dvs,e1b_dvs,type[6],iod_nav[4];
+    
+    i=0; /* word type 0 */
+    type[0]    =getbitu(buff,i, 6);              i+= 6;
+    time_f     =getbitu(buff,i, 2);              i+= 2+88;
+    week       =getbitu(buff,i,12);              i+=12; /* gst-week */
+    tow        =getbitu(buff,i,20);
+    
+    i=128; /* word type 1 */
+    type[1]    =getbitu(buff,i, 6);              i+= 6;
+    iod_nav[0] =getbitu(buff,i,10);              i+=10;
+    eph->toes  =getbitu(buff,i,14)*60.0;         i+=14;
+    eph->M0    =getbits(buff,i,32)*P2_31*SC2RAD; i+=32;
+    eph->e     =getbitu(buff,i,32)*P2_33;        i+=32;
+    sqrtA      =getbitu(buff,i,32)*P2_19;
+    
+    i=128*2; /* word type 2 */
+    type[2]    =getbitu(buff,i, 6);              i+= 6;
+    iod_nav[1] =getbitu(buff,i,10);              i+=10;
+    eph->OMG0  =getbits(buff,i,32)*P2_31*SC2RAD; i+=32;
+    eph->i0    =getbits(buff,i,32)*P2_31*SC2RAD; i+=32;
+    eph->omg   =getbits(buff,i,32)*P2_31*SC2RAD; i+=32;
+    eph->idot  =getbits(buff,i,14)*P2_43*SC2RAD;
+    
+    i=128*3; /* word type 3 */
+    type[3]    =getbitu(buff,i, 6);              i+= 6;
+    iod_nav[2] =getbitu(buff,i,10);              i+=10;
+    eph->OMGd  =getbits(buff,i,24)*P2_43*SC2RAD; i+=24;
+    eph->deln  =getbits(buff,i,16)*P2_43*SC2RAD; i+=16;
+    eph->cuc   =getbits(buff,i,16)*P2_29;        i+=16;
+    eph->cus   =getbits(buff,i,16)*P2_29;        i+=16;
+    eph->crc   =getbits(buff,i,16)*P2_5;         i+=16;
+    eph->crs   =getbits(buff,i,16)*P2_5;         i+=16;
+    eph->sva   =getbitu(buff,i, 8);
+    
+    i=128*4; /* word type 4 */
+    type[4]    =getbitu(buff,i, 6);              i+= 6;
+    iod_nav[3] =getbitu(buff,i,10);              i+=10;
+    svid       =getbitu(buff,i, 6);              i+= 6;
+    eph->cic   =getbits(buff,i,16)*P2_29;        i+=16;
+    eph->cis   =getbits(buff,i,16)*P2_29;        i+=16;
+    toc        =getbitu(buff,i,14)*60.0;         i+=14;
+    eph->f0    =getbits(buff,i,31)*P2_34;        i+=31;
+    eph->f1    =getbits(buff,i,21)*P2_46;        i+=21;
+    eph->f2    =getbits(buff,i, 6)*P2_59;
+    
+    i=128*5; /* word type 5 */
+    type[5]    =getbitu(buff,i, 6);              i+= 6+41;
+    eph->tgd[0]=getbits(buff,i,10)*P2_32;        i+=10; /* BGD E5a/E1 */
+    eph->tgd[1]=getbits(buff,i,10)*P2_32;        i+=10; /* BGD E5b/E1 */
+    e5b_hs     =getbitu(buff,i, 2);              i+= 2;
+    e1b_hs     =getbitu(buff,i, 2);              i+= 2;
+    e5b_dvs    =getbitu(buff,i, 1);              i+= 1;
+    e1b_dvs    =getbitu(buff,i, 1);
+    
+    /* test word types */
+    if (type[0]!=0||type[1]!=1||type[2]!=2||type[3]!=3||type[4]!=4) {
+        trace(3,"decode_gal_inav error: type=%d %d %d %d %d\n",type[0],type[1],
+              type[2],type[3],type[4]);
+        return 0;
+    }
+    /* test word type 0 time field */
+    if (time_f!=2) {
+        trace(3,"decode_gal_inav error: word0-time=%d\n",time_f);
+        return 0;
+    }
+    /* test consistency of iod_nav */
+    if (iod_nav[0]!=iod_nav[1]||iod_nav[0]!=iod_nav[2]||iod_nav[0]!=iod_nav[3]) {
+        trace(3,"decode_gal_inav error: ionav=%d %d %d %d\n",iod_nav[0],
+              iod_nav[1],iod_nav[2],iod_nav[3]);
+        return 0;
+    }
+    if (!(eph->sat=satno(SYS_GAL,svid))) {
+        trace(2,"decode_gal_inav svid error: svid=%d\n",svid);
+        return 0;
+    }
+    eph->A=sqrtA*sqrtA;
+    eph->iode=eph->iodc=iod_nav[0];
+    eph->svh=(e5b_hs<<7)|(e5b_dvs<<6)|(e1b_hs<<1)|e1b_dvs;
+    eph->ttr=gst2time(week,tow);
+    tt=timediff(gst2time(week,eph->toes),eph->ttr); /* week complient to toe */
+    if      (tt> 302400.0) week--;
+    else if (tt<-302400.0) week++;
+    eph->toe=gst2time(week,eph->toes);
+    eph->toc=gst2time(week,toc);
+    eph->week=week+1024; /* gal-week = gst-week + 1024 */
+    eph->code=1;         /* data source = I/NAV E1B */
+    
+    return 1;
 }
 /* decode BeiDou D1 ephemeris --------------------------------------------------
 * decode BeiDou D1 ephemeris (IGSO/MEO satellites) (ref [3] 5.2)
@@ -546,12 +656,14 @@ static void decode_gps_subfrm4(const unsigned char *buff, alm_t *alm,
         /* decode as and sv config */
         i=56;
         for (sat=1;sat<=32;sat++) {
-            if (alm) alm[sat-1].svconf=getbitu(buff,i,4); i+=4;
+            if (alm) alm[sat-1].svconf=getbitu(buff,i,4);
+            i+=4;
         }
         /* decode sv health */
         i=186;
         for (sat=25;sat<=32;sat++) {
-            if (alm) alm[sat-1].svh   =getbitu(buff,i,6); i+=6;
+            if (alm) alm[sat-1].svh   =getbitu(buff,i,6);
+            i+=6;
         }
     }
     else if (svid==56) { /* page 18 */
@@ -750,14 +862,17 @@ extern int init_raw(raw_t *raw)
     
     trace(3,"init_raw:\n");
     
-    raw->time=raw->tobs=time0;
+    raw->time=time0;
     raw->ephsat=0;
     raw->sbsmsg=sbsmsg0;
     raw->msgtype[0]='\0';
     for (i=0;i<MAXSAT;i++) {
-        for (j=0;j<380  ;j++) raw->subfrm[i][j]=0;
-        for (j=0;j<NFREQ;j++) raw->lockt[i][j]=0.0;
-        for (j=0;j<NFREQ;j++) raw->halfc[i][j]=0;
+        for (j=0;j<380;j++) raw->subfrm[i][j]=0;
+        for (j=0;j<NFREQ+NEXOBS;j++) {
+            raw->tobs [i][j]=time0;
+            raw->lockt[i][j]=0.0;
+            raw->halfc[i][j]=0;
+        }
         raw->icpp[i]=raw->off[i]=raw->prCA[i]=raw->dpCA[i]=0.0;
     }
     for (i=0;i<MAXOBS;i++) raw->freqn[i]=0;
