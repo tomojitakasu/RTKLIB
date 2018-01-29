@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * postpos.c : post-processing positioning
 *
-*          Copyright (C) 2007-2014 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2007-2018 by T.TAKASU, All rights reserved.
 *
 * version : $Revision: 1.1 $ $Date: 2008/07/17 21:48:06 $
 * history : 2007/05/08  1.0  new
@@ -27,6 +27,7 @@
 *           2014/06/29  1.14 fix problem on overflow of # of satellites
 *           2015/03/23  1.15 fix bug on ant type replacement by rinex header
 *                            fix bug on combined filter for moving-base mode
+*           2018/01/29  1.16 fix problem on ssr orbit and clock inconsistency
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -184,6 +185,29 @@ static int nextobsb(const obs_t *obs, int *i, int rcv)
     }
     return n;
 }
+
+/* input rtcm3 ssr corrections -----------------------------------------------*/
+static void input_ssr(gtime_t time, rtcm_t *rtcm, nav_t *nav, FILE *fp)
+{
+    int i, stat;
+    
+    while (timediff(rtcm->time, time) < 0.0) {
+        
+        if ((stat = input_rtcm3f(rtcm, fp)) < -1) return;
+        
+        if (stat == 10) { /* ssr correction */
+            
+            for (i = 0; i < MAXSAT; i++) {
+                if (!rtcm->ssr[i].update) continue;
+                if (rtcm->ssr[i].iod[0] != rtcm->ssr[i].iod[1] ||
+                    timediff(time, rtcm->ssr[i].t0[0]) < -1E-3) continue;
+                nav->ssr[i] = rtcm->ssr[i];
+                rtcm->ssr[i].update = 0;
+            }
+        }
+    }
+}
+
 /* input obs data, navigation messages and sbas correction -------------------*/
 static int inputobs(obsd_t *obs, int solq, const prcopt_t *popt)
 {
@@ -249,10 +273,7 @@ static int inputobs(obsd_t *obs, int solq, const prcopt_t *popt)
                 }
             }
             if (fp_rtcm) {
-                while (timediff(rtcm.time,obs[0].time)<0.0) {
-                    if (input_rtcm3f(&rtcm,fp_rtcm)<-1) break;
-                }
-                for (i=0;i<MAXSAT;i++) navs.ssr[i]=rtcm.ssr[i];
+                input_ssr(obs[0].time, &rtcm, &navs, fp_rtcm);
             }
         }
     }
@@ -806,7 +827,7 @@ static void setpcv(gtime_t time, prcopt_t *popt, nav_t *nav, const pcvs_t *pcvs,
         if (!(satsys(i+1,NULL)&popt->navsys)) continue;
         if (!(pcv=searchpcv(i+1,"",time,pcvs))) {
             satno2id(i+1,id);
-            trace(2,"no satellite antenna pcv: %s\n",id);
+            trace(3,"no satellite antenna pcv: %s\n",id);
             continue;
         }
         nav->pcvs[i]=*pcv;
@@ -1215,7 +1236,8 @@ extern int postpos(gtime_t ts, gtime_t te, double ti, double tu,
     else if (ts.time!=0) {
         for (i=0;i<n&&i<MAXINFILE;i++) {
             if (!(ifile[i]=(char *)malloc(1024))) {
-                for (;i>=0;i--) free(ifile[i]); return -1;
+                for (;i>=0;i--) free(ifile[i]);
+                return -1;
             }
             reppath(infile[i],ifile[i],ts,"","");
             index[i]=i;
