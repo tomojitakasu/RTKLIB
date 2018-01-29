@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * crescent.c : hemisphere crescent/eclipse receiver dependent functions
 *
-*          Copyright (C) 2007-2014 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2007-2018 by T.TAKASU, All rights reserved.
 *
 * reference :
 *     [1] Hemisphere GPS, Grescent Integrator's Manual, December, 2005
@@ -22,6 +22,7 @@
 *           2014/05/13 1.7 support bin65 and bin66
 *                          add receiver option -TTCORR
 *           2014/06/21 1.8 move decode_glostr() to rcvraw.c
+*           2017/04/11 1.9 (char *) -> (signed char *)
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -39,11 +40,9 @@
 #define SNR2CN0_L1  30.0        /* hemis snr to c/n0 offset (db) L1 */
 #define SNR2CN0_L2  30.0        /* hemis snr to c/n0 offset (db) L2 */
 
-static const char rcsid[]="$Id: crescent.c,v 1.2 2008/07/14 00:05:05 TTAKA Exp $";
-
 /* get fields (little-endian) ------------------------------------------------*/
 #define U1(p) (*((unsigned char *)(p)))
-#define I1(p) (*((char *)(p)))
+#define I1(p) (*((signed char *)(p)))
 static unsigned short U2(unsigned char *p) {unsigned short u; memcpy(&u,p,2); return u;}
 static unsigned int   U4(unsigned char *p) {unsigned int   u; memcpy(&u,p,4); return u;}
 static short          I2(unsigned char *p) {short          i; memcpy(&i,p,2); return i;}
