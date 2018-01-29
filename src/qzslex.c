@@ -12,6 +12,7 @@
 *           2013/03/27 1.2  support message type 12
 *           2013/05/11 1.3  fix bugs on decoding message type 12
 *           2013/09/01 1.4  consolidate mt 12 handling codes provided by T.O.
+*           2018/01/29 1.5  crc24q() -> rtk_crc24q()
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -280,7 +281,7 @@ static int lex2rtcm(const unsigned char *msg, int i, unsigned char *buff)
     for (j=0;j<n;j++) {
         buff[j+3]=getbitu(msg,i+j*8,8);
     }
-    crc=crc24q(buff,3+n);
+    crc=rtk_crc24q(buff,3+n);
     setbitu(buff,24+n*8,24,crc);
     return n;
 }
