@@ -34,6 +34,7 @@
 *                           (2.4.0_p4)
 *           2011/01/15 1.8  use api ionppp()
 *                           add prn mask of qzss for qzss L1SAIF
+*           2018/01/29 1.9  crc24q() -> rtk_crc24q()
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -912,5 +913,5 @@ extern int sbsdecodemsg(gtime_t time, int prn, const unsigned int *words,
     for (i=28;i>0;i--) f[i]=(sbsmsg->msg[i]>>6)+(sbsmsg->msg[i-1]<<2);
     f[0]=sbsmsg->msg[0]>>6;
     
-    return crc24q(f,29)==(words[7]&0xFFFFFF); /* check crc */
+    return rtk_crc24q(f,29)==(words[7]&0xFFFFFF); /* check crc */
 }
