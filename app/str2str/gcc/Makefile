@@ -16,7 +16,7 @@ all        : str2str
 str2str    : str2str.o stream.o rtkcmn.o solution.o sbas.o geoid.o
 str2str    : rcvraw.o novatel.o ublox.o ss2.o crescent.o skytraq.o gw10.o javad.o
 str2str    : nvs.o binex.o rt17.o rtcm.o rtcm2.o rtcm3.o rtcm3e.o preceph.o streamsvr.o
-str2str    : septentrio.o cmr.o tersus.o
+str2str    : septentrio.o cmr.o tersus.o swiftnav.o
 
 str2str.o  : ../str2str.c
 	$(CC) -c $(CFLAGS) ../str2str.c
@@ -70,33 +70,36 @@ cmr.o      : $(SRC)/rcv/cmr.c
 	$(CC) -c $(CFLAGS) $(SRC)/rcv/cmr.c
 tersus.o   : $(SRC)/rcv/tersus.c
 	$(CC) -c $(CFLAGS) $(SRC)/rcv/tersus.c
+swiftnav.o : $(SRC)/rcv/swiftnav.c
+	$(CC) -c $(CFLAGS) $(SRC)/rcv/swiftnav.c
 
-str2str.o  : $(SRC)/rtklib.h
-stream.o   : $(SRC)/rtklib.h
-streamsvr.o: $(SRC)/rtklib.h
-rtkcmn.o   : $(SRC)/rtklib.h
-solution.o : $(SRC)/rtklib.h
-sbas.o     : $(SRC)/rtklib.h
-geoid.o    : $(SRC)/rtklib.h
-rcvraw.o   : $(SRC)/rtklib.h
-novatel.o  : $(SRC)/rtklib.h
-ublox.o    : $(SRC)/rtklib.h
-ss2.o      : $(SRC)/rtklib.h
-crescent.o : $(SRC)/rtklib.h
-skytraq.o  : $(SRC)/rtklib.h
-gw10.o     : $(SRC)/rtklib.h
-javad.o    : $(SRC)/rtklib.h
-nvs.o      : $(SRC)/rtklib.h
-binex.o    : $(SRC)/rtklib.h
-rt17.o     : $(SRC)/rtklib.h
-rtcm.o     : $(SRC)/rtklib.h
-rtcm2.o    : $(SRC)/rtklib.h
-rtcm3.o    : $(SRC)/rtklib.h
-rtcm3e.o   : $(SRC)/rtklib.h
-preceph.o  : $(SRC)/rtklib.h
-septentrio.o: $(SRC)/rtklib.h
-cmr.o      : $(SRC)/rtklib.h
-tersus.o   : $(SRC)/rtklib.h
+str2str.o  : $(SRC)/rtklib.h Makefile
+stream.o   : $(SRC)/rtklib.h Makefile
+streamsvr.o: $(SRC)/rtklib.h Makefile
+rtkcmn.o   : $(SRC)/rtklib.h Makefile
+solution.o : $(SRC)/rtklib.h Makefile
+sbas.o     : $(SRC)/rtklib.h Makefile
+geoid.o    : $(SRC)/rtklib.h Makefile
+rcvraw.o   : $(SRC)/rtklib.h Makefile
+novatel.o  : $(SRC)/rtklib.h Makefile
+ublox.o    : $(SRC)/rtklib.h Makefile
+ss2.o      : $(SRC)/rtklib.h Makefile
+crescent.o : $(SRC)/rtklib.h Makefile
+skytraq.o  : $(SRC)/rtklib.h Makefile
+gw10.o     : $(SRC)/rtklib.h Makefile
+javad.o    : $(SRC)/rtklib.h Makefile
+nvs.o      : $(SRC)/rtklib.h Makefile
+binex.o    : $(SRC)/rtklib.h Makefile
+rt17.o     : $(SRC)/rtklib.h Makefile
+rtcm.o     : $(SRC)/rtklib.h Makefile
+rtcm2.o    : $(SRC)/rtklib.h Makefile
+rtcm3.o    : $(SRC)/rtklib.h Makefile
+rtcm3e.o   : $(SRC)/rtklib.h Makefile
+preceph.o  : $(SRC)/rtklib.h Makefile
+septentrio.o: $(SRC)/rtklib.h Makefile
+cmr.o      : $(SRC)/rtklib.h Makefile
+tersus.o   : $(SRC)/rtklib.h Makefile
+swiftnav.o   : $(SRC)/rtklib.h Makefile
 
 install:
 	cp str2str $(BINDIR)
