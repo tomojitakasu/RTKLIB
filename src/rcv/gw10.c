@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * gw10.c : furuno GW-10 receiver functions
 *
-*          Copyright (C) 2011-2012 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2011-2018 by T.TAKASU, All rights reserved.
 *
 * reference :
 *     [1] Furuno, SBAS/GPS receiver type GW-10 III manual, July 2004
@@ -10,6 +10,7 @@
 * history : 2011/05/27  1.0  new
 *           2011/07/01  1.1  suppress warning
 *           2012/02/14  1.2  add decode of gps message (0x02)
+*           2017/04/11  1.3  (char *) -> (singed char *)
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -43,11 +44,9 @@
 
 #define OFFWEEK     1024        /* week offset for ephemeris */
 
-static const char rcsid[]="$Id:$";
-
 /* extract field (big-endian) ------------------------------------------------*/
 #define U1(p)       (*((unsigned char *)(p)))
-#define I1(p)       (*((char *)(p)))
+#define I1(p)       (*((signed char *)(p)))
 
 static unsigned short U2(unsigned char *p)
 {
