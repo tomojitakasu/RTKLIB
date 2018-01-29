@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * ppp.c : precise point positioning
 *
-*          Copyright (C) 2010-2013 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2010-2018 by T.TAKASU, All rights reserved.
 *
 * options : -DIERS_MODEL use IERS tide model
 *
@@ -36,6 +36,7 @@
 *           2014/05/23 1.5  add output of trop gradient in solution status
 *           2014/10/13 1.6  fix bug on P0(a[3]) computation in tide_oload()
 *                           fix bug on m2 computation in tide_pole()
+*           2018/01/29 1.7  fix bug on OTL computation (##128)
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -238,7 +239,7 @@ static void tide_oload(gtime_t tut, const double *odisp, double *denu)
     time2epoch(tut,ep);
     fday=ep[3]*3600.0+ep[4]*60.0+ep[5];
     ep[3]=ep[4]=ep[5]=0.0;
-    days=timediff(epoch2time(ep),epoch2time(ep1975))/86400.0;
+    days=timediff(epoch2time(ep),epoch2time(ep1975))/86400.0+1.0;
     t=(27392.500528+1.000000035*days)/36525.0;
     t2=t*t; t3=t2*t;
     
