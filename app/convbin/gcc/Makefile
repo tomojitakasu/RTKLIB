@@ -1,7 +1,6 @@
 #
 # makefile for convbin
 #
-
 BINDIR = /usr/local/bin
 
 SRC    = ../../../src
@@ -9,16 +8,17 @@ SRC    = ../../../src
 INCLUDE= -I$(SRC)
 OPTIONS= -DTRACE -DENAGLO -DENAQZS -DENAGAL -DENACMP -DENAIRN -DNFREQ=7 -DNEXOBS=3
 
+CC=gcc
 CFLAGS = -O3 -ansi -pedantic -Wall -Wno-unused-but-set-variable $(INCLUDE) $(OPTIONS) -g
 
-LDLIBS = -lm -lrt
+LDLIBS = -lm
 
-all  : convbin
+all : convbin
 
 convbin    : convbin.o rtkcmn.o rinex.o sbas.o preceph.o rcvraw.o convrnx.o
 convbin    : rtcm.o rtcm2.o rtcm3.o rtcm3e.o pntpos.o ephemeris.o ionex.o
 convbin    : novatel.o ss2.o ublox.o crescent.o skytraq.o gw10.o javad.o nvs.o
-convbin    : binex.o rt17.o qzslex.o septentrio.o cmr.o tersus.o
+convbin    : binex.o rt17.o qzslex.o septentrio.o cmr.o tersus.o swiftnav.o
 
 convbin.o  : ../convbin.c
 	$(CC) -c $(CFLAGS) ../convbin.c
@@ -70,41 +70,45 @@ rt17.o     : $(SRC)/rcv/rt17.c
 	$(CC) -c $(CFLAGS) $(SRC)/rcv/rt17.c
 qzslex.o   : $(SRC)/qzslex.c
 	$(CC) -c $(CFLAGS) $(SRC)/qzslex.c
+
 septentrio.o: $(SRC)/rcv/septentrio.c
 	$(CC) -c $(CFLAGS) $(SRC)/rcv/septentrio.c
 cmr.o      : $(SRC)/rcv/cmr.c
 	$(CC) -c $(CFLAGS) $(SRC)/rcv/cmr.c
 tersus.o   : $(SRC)/rcv/tersus.c
 	$(CC) -c $(CFLAGS) $(SRC)/rcv/tersus.c
+swiftnav.o : $(SRC)/rcv/swiftnav.c
+	$(CC) -c $(CFLAGS) $(SRC)/rcv/swiftnav.c
 
-convbin.o  : $(SRC)/rtklib.h
-rtkcmn.o   : $(SRC)/rtklib.h
-rinex.o    : $(SRC)/rtklib.h
-sbas.o     : $(SRC)/rtklib.h
-preceph.o  : $(SRC)/rtklib.h
-rcvraw.o   : $(SRC)/rtklib.h
-convrnx.o  : $(SRC)/rtklib.h
-rtcm.o     : $(SRC)/rtklib.h
-rtcm2.o    : $(SRC)/rtklib.h
-rtcm3.o    : $(SRC)/rtklib.h
-rtcm3e.o   : $(SRC)/rtklib.h
-pntpos.o   : $(SRC)/rtklib.h
-ephemeris.o: $(SRC)/rtklib.h
-ionex.o    : $(SRC)/rtklib.h
-novatel.o  : $(SRC)/rtklib.h
-ss2.o      : $(SRC)/rtklib.h
-ublox.o    : $(SRC)/rtklib.h
-crescent.o : $(SRC)/rtklib.h
-skytraq.o  : $(SRC)/rtklib.h
-gw10.o     : $(SRC)/rtklib.h
-javad.o    : $(SRC)/rtklib.h
-nvs.o      : $(SRC)/rtklib.h
-binex.o    : $(SRC)/rtklib.h
-rt17.o     : $(SRC)/rtklib.h
-qzslex.o   : $(SRC)/rtklib.h
-septentrio.o: $(SRC)/rtklib.h
-cmr.o      : $(SRC)/rtklib.h
-tersus.o   : $(SRC)/rtklib.h
+convbin.o  : $(SRC)/rtklib.h Makefile
+rtkcmn.o   : $(SRC)/rtklib.h Makefile
+rinex.o    : $(SRC)/rtklib.h Makefile
+sbas.o     : $(SRC)/rtklib.h Makefile
+preceph.o  : $(SRC)/rtklib.h Makefile
+rcvraw.o   : $(SRC)/rtklib.h Makefile
+convrnx.o  : $(SRC)/rtklib.h Makefile
+rtcm.o     : $(SRC)/rtklib.h Makefile
+rtcm2.o    : $(SRC)/rtklib.h Makefile
+rtcm3.o    : $(SRC)/rtklib.h Makefile
+rtcm3e.o   : $(SRC)/rtklib.h Makefile
+pntpos.o   : $(SRC)/rtklib.h Makefile
+ephemeris.o: $(SRC)/rtklib.h Makefile
+ionex.o    : $(SRC)/rtklib.h Makefile
+novatel.o  : $(SRC)/rtklib.h Makefile
+ss2.o      : $(SRC)/rtklib.h Makefile
+ublox.o    : $(SRC)/rtklib.h Makefile
+crescent.o : $(SRC)/rtklib.h Makefile
+skytraq.o  : $(SRC)/rtklib.h Makefile
+gw10.o     : $(SRC)/rtklib.h Makefile
+javad.o    : $(SRC)/rtklib.h Makefile
+nvs.o      : $(SRC)/rtklib.h Makefile
+binex.o    : $(SRC)/rtklib.h Makefile
+rt17.o     : $(SRC)/rtklib.h Makefile
+qzslex.o   : $(SRC)/rtklib.h Makefile
+septentrio.o: $(SRC)/rtklib.h Makefile
+cmr.o      : $(SRC)/rtklib.h Makefile
+tersus.o   : $(SRC)/rtklib.h Makefile
+swiftnav.o : $(SRC)/rtklib.h Makefile
 
 DATDIR = ../../../test/data/rcvraw
 
