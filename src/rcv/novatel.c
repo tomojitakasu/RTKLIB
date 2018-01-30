@@ -352,7 +352,11 @@ static int decode_rangecmpb(raw_t *raw)
             lli=0;
         }
         if (!parity) lli|=LLI_HALFC;
+#if 0
         if (halfc  ) lli|=LLI_HALFA;
+#else
+        if (halfc!=raw->halfc[sat-1][pos]) lli|=LLI_SLIP;
+#endif
         raw->tobs [sat-1][pos]=raw->time;
         raw->lockt[sat-1][pos]=lockt;
         raw->halfc[sat-1][pos]=halfc;
@@ -441,7 +445,11 @@ static int decode_rangeb(raw_t *raw)
             lli=0;
         }
         if (!parity) lli|=LLI_HALFC;
+#if 0
         if (halfc  ) lli|=LLI_HALFA;
+#else
+        if (halfc!=raw->halfc[sat-1][pos]) lli|=LLI_SLIP;
+#endif
         raw->tobs [sat-1][pos]=raw->time;
         raw->lockt[sat-1][pos]=lockt;
         raw->halfc[sat-1][pos]=halfc;
