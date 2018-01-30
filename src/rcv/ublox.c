@@ -320,7 +320,11 @@ static int decode_rxmrawx(raw_t *raw)
             
             /* LLI: bit1=loss-of-lock,bit2=half-cycle-invalid */
             raw->obs.data[n].LLI[0]|=slip?LLI_SLIP:0;
+#if 0
             raw->obs.data[n].LLI[0]|=halfc?LLI_HALFA:0; /* half-cycle subtraced */
+#else
+            if (halfc!=raw->halfc[sat-1][0]) raw->obs.data[n].LLI[0]|=LLI_SLIP;
+#endif
             raw->obs.data[n].LLI[0]|=halfv?0:LLI_HALFC;
             raw->lockt[sat-1][0]=lockt;
             raw->halfc[sat-1][0]=halfc;
