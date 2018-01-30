@@ -23,6 +23,7 @@
 *                          add receiver option -TTCORR
 *           2014/06/21 1.8 move decode_glostr() to rcvraw.c
 *           2017/04/11 1.9 (char *) -> (signed char *)
+*           2018/01/29 1.10 fix bug on unrecognized glonass obs with bin 96
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -155,6 +156,7 @@ static int decode_cresraw(raw_t *raw)
     }
     raw->time=time;
     raw->obs.n=n;
+    if (strstr(raw->opt,"-ENAGLO")) return 0; /* glonass follows */
     return 1;
 }
 /* decode bin 76 dual-freq raw phase and code --------------------------------*/
