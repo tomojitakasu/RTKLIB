@@ -1217,7 +1217,7 @@ void __fastcall TMonitorDialog::ShowSbsNav(void)
 	Label->Caption="";
 	
 	for (i=0,n=1;i<NSATSBS;i++) {
-		valid=fabs(timediff(time,seph[i].t0)<=MAXDTOE_SBS)&&
+		valid=fabs(timediff(time,seph[i].t0))<=MAXDTOE_SBS&&
 			  seph[i].t0.time&&!seph[i].svh;
 		if (SelSat->ItemIndex==1&&!valid) continue;
 		n++;
@@ -1231,7 +1231,7 @@ void __fastcall TMonitorDialog::ShowSbsNav(void)
 	
 	for (i=0,n=1;i<NSATSBS;i++) {
 		j=0;
-		valid=fabs(timediff(time,seph[i].t0)<=MAXDTOE_SBS)&&
+		valid=fabs(timediff(time,seph[i].t0))<=MAXDTOE_SBS&&
 			  seph[i].t0.time&&!seph[i].svh;
 		if (SelSat->ItemIndex==1&&!valid) continue;
 		prn=MINPRNSBS+i;
@@ -1633,7 +1633,7 @@ void __fastcall TMonitorDialog::ShowSbsFast(void)
 	for (i=0;i<Tbl->RowCount;i++) {
 		j=0;
 		satp=sbssat.sat+i;
-		valid=fabs(timediff(time,satp->fcorr.t0)<=MAXSBSAGEF)&&satp->fcorr.t0.time&&
+		valid=fabs(timediff(time,satp->fcorr.t0))<=MAXSBSAGEF&&satp->fcorr.t0.time&&
 			  0<=satp->fcorr.udre-1&&satp->fcorr.udre-1<14;
 		satno2id(satp->sat,id);
 		Tbl->Cells[j++][i+1]=id;
