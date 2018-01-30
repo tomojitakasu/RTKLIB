@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * str2str.c : console version of stream server
 *
-*          Copyright (C) 2007-2015 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2007-2018 by T.TAKASU, All rights reserved.
 *
 * version : $Revision: 1.1 $ $Date: 2008/07/17 21:54:53 $
 * history : 2009/06/17  1.0  new
@@ -17,6 +17,7 @@
 *           2014/10/14  1.7  use stdin or stdout if option -in or -out omitted
 *           2014/11/08  1.8  add option -a, -i and -o
 *           2015/03/23  1.9  fix bug on parsing of command line options
+*           2018/01/29  1.10 fix bug on invalid sta position by option -p (#126)
 *-----------------------------------------------------------------------------*/
 #include <signal.h>
 #include <unistd.h>
@@ -257,7 +258,7 @@ int main(int argc, char **argv)
         strcpy(conv[i]->out.sta.rectype,rcv[0]);
         strcpy(conv[i]->out.sta.recver ,rcv[1]);
         strcpy(conv[i]->out.sta.recsno ,rcv[2]);
-        matcpy(conv[i]->out.sta.pos,pos,3,1);
+        matcpy(conv[i]->out.sta.pos,stapos,3,1);
         matcpy(conv[i]->out.sta.del,off,3,1);
     }
     signal(SIGTERM,sigfunc);
