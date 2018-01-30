@@ -12,10 +12,10 @@
 
 
 
-USEFORM("browsmain.cpp", MainForm);
+USEFORM("staoptdlg.cpp", StaListDialog);
 USEFORM("..\appcmn\aboutdlg.cpp", AboutDialog);
 USEFORM("..\appcmn\gmview.cpp", GoogleMapView);
-USEFORM("staoptdlg.cpp", StaListDialog);
+USEFORM("browsmain.cpp", MainForm);
 //---------------------------------------------------------------------------
 WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {

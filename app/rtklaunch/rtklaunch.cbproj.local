@@ -6,8 +6,8 @@
     <Transaction>2012/12/27 19:26:45.000.244,C:\Users\ttaka\Documents\RAD Studio\Projects\Project1.cbproj=D:\proj\rtklib\app\launcher\launcher.cbproj</Transaction>
     <Transaction>2012/12/29 11:22:01.000.566,D:\proj\rtklib\app\launcher\rtklaunch.dfm=D:\proj\rtklib\app\launcher\launchmain.dfm</Transaction>
     <Transaction>2012/12/29 11:22:01.000.566,D:\proj\rtklib\app\launcher\rtklaunch.h=D:\proj\rtklib\app\launcher\launchmain.h</Transaction>
-    <Transaction>2012/12/29 11:33:04.000.473,D:\proj\rtklib\app\launcher\Unit1.h=D:\proj\rtklib\app\launcher\launchmain.h</Transaction>
     <Transaction>2012/12/29 11:33:04.000.473,D:\proj\rtklib\app\launcher\Unit1.dfm=D:\proj\rtklib\app\launcher\launchmain.dfm</Transaction>
+    <Transaction>2012/12/29 11:33:04.000.473,D:\proj\rtklib\app\launcher\Unit1.h=D:\proj\rtklib\app\launcher\launchmain.h</Transaction>
     <Transaction>2013/01/01 11:51:56.000.716,D:\proj\rtklib\app\launcher\launcher.cbproj=D:\proj\rtklib\app\launcher\rtklaunch.cbproj</Transaction>
   </Transactions>
 </BorlandProject>

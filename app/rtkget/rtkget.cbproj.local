@@ -1,14 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <BorlandProject>
 	<Transactions>
-    <Transaction>2012/12/25 21:32:22.000.915,D:\proj\rtklib\app\downloader\dloptdlg.dfm=D:\proj\rtklib\app\downloader\Unit1.dfm</Transaction>
     <Transaction>2012/12/25 21:32:22.000.915,D:\proj\rtklib\app\downloader\dloptdlg.h=D:\proj\rtklib\app\downloader\Unit1.h</Transaction>
+    <Transaction>2012/12/25 21:32:22.000.915,D:\proj\rtklib\app\downloader\dloptdlg.dfm=D:\proj\rtklib\app\downloader\Unit1.dfm</Transaction>
     <Transaction>2012/12/30 01:36:05.000.072,D:\proj\rtklib\app\rtkget\rtkget.cbproj=D:\proj\rtklib\app\rtkget\downloader.cbproj</Transaction>
     <Transaction>2012/12/30 01:36:25.000.708,D:\proj\rtklib\app\rtkget\getmain.dfm=D:\proj\rtklib\app\rtkget\dlmain.dfm</Transaction>
     <Transaction>2012/12/30 01:36:25.000.708,D:\proj\rtklib\app\rtkget\getmain.h=D:\proj\rtklib\app\rtkget\dlmain.h</Transaction>
-    <Transaction>2012/12/30 01:36:50.000.174,D:\proj\rtklib\app\rtkget\getoptdlg.dfm=D:\proj\rtklib\app\rtkget\dloptdlg.dfm</Transaction>
     <Transaction>2012/12/30 01:36:50.000.174,D:\proj\rtklib\app\rtkget\getoptdlg.h=D:\proj\rtklib\app\rtkget\dloptdlg.h</Transaction>
-    <Transaction>2013/01/15 05:46:47.000.312,D:\proj\rtklib\app\rtkget\staoptdlg.h=D:\proj\rtklib\app\rtkget\Unit1.h</Transaction>
+    <Transaction>2012/12/30 01:36:50.000.174,D:\proj\rtklib\app\rtkget\getoptdlg.dfm=D:\proj\rtklib\app\rtkget\dloptdlg.dfm</Transaction>
     <Transaction>2013/01/15 05:46:47.000.312,D:\proj\rtklib\app\rtkget\staoptdlg.dfm=D:\proj\rtklib\app\rtkget\Unit1.dfm</Transaction>
+    <Transaction>2013/01/15 05:46:47.000.312,D:\proj\rtklib\app\rtkget\staoptdlg.h=D:\proj\rtklib\app\rtkget\Unit1.h</Transaction>
   </Transactions>
 </BorlandProject>

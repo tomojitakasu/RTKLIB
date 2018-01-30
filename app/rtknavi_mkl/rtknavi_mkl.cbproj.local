@@ -3,5 +3,7 @@
 	<Transactions>
     <Transaction>2012/05/13 18:34:08.000.532,D:\proj\rtklib\app\rtknavi_mkl\rtknavi_mkl.cbproj=D:\proj\rtklib\app\rtknavi\rtknavi.cbproj</Transaction>
     <Transaction>2014/08/26 09:32:22.000.166,=D:\proj\RTKLIB\src\rcv\rt17.c</Transaction>
+    <Transaction>2018/01/29 20:26:00.000.188,=D:\proj\RTKLIB_2.4.2\src\rcv\septentrio.c</Transaction>
+    <Transaction>2018/01/30 09:15:02.000.689,D:\proj\RTKLIB_2.4.2\src\rcv\septentrio.c=</Transaction>
   </Transactions>
 </BorlandProject>

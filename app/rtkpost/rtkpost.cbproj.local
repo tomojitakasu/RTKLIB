@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <BorlandProject>
 	<Transactions>
-    <Transaction>2012/12/27 05:32:09.000.765,D:\proj\rtklib\app\rtkpost\maskoptdlg.cpp=D:\proj\rtklib\app\rtkpost\Unit1.cpp</Transaction>
     <Transaction>2012/12/27 05:32:09.000.765,D:\proj\rtklib\app\rtkpost\maskoptdlg.dfm=D:\proj\rtklib\app\rtkpost\Unit1.dfm</Transaction>
+    <Transaction>2012/12/27 05:32:09.000.765,D:\proj\rtklib\app\rtkpost\maskoptdlg.cpp=D:\proj\rtklib\app\rtkpost\Unit1.cpp</Transaction>
     <Transaction>2012/12/27 05:32:09.000.765,D:\proj\rtklib\app\rtkpost\maskoptdlg.h=D:\proj\rtklib\app\rtkpost\Unit1.h</Transaction>
   </Transactions>
 </BorlandProject>

@@ -60,6 +60,23 @@ object MonitorDialog: TMonitorDialog
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goRangeSelect, goColSizing]
     ParentFont = False
     TabOrder = 0
+    ColWidths = (
+      100
+      100
+      100
+      100
+      100)
+    RowHeights = (
+      15
+      15
+      15
+      15
+      15
+      15
+      15
+      15
+      15
+      15)
   end
   object Panel1: TPanel
     Left = 0
