@@ -48,10 +48,10 @@ extern "C" {
 
 #define VER_RTKLIB  "2.4.2"             /* library version */
 
-#define PATCH_LEVEL "p12"               /* patch level */
+#define PATCH_LEVEL "p13"               /* patch level */
 
 #define COPYRIGHT_RTKLIB \
-            "Copyright (C) 2007-2015 by T.Takasu\nAll rights reserved."
+            "Copyright (C) 2007-2018 by T.Takasu\nAll rights reserved."
 
 #define PI          3.1415926535897932  /* pi */
 #define D2R         (PI/180.0)          /* deg to rad */
@@ -99,7 +99,8 @@ extern "C" {
 #define SYS_GAL     0x08                /* navigation system: Galileo */
 #define SYS_QZS     0x10                /* navigation system: QZSS */
 #define SYS_CMP     0x20                /* navigation system: BeiDou */
-#define SYS_LEO     0x40                /* navigation system: LEO */
+#define SYS_IRN     0x40                /* navigation system: IRNSS */
+#define SYS_LEO     0x80                /* navigation system: LEO */
 #define SYS_ALL     0xFF                /* navigation system: all */
 
 #define TSYS_GPS    0                   /* time system: GPS time */
@@ -136,7 +137,7 @@ extern "C" {
 #endif
 #ifdef ENAGAL
 #define MINPRNGAL   1                   /* min satellite PRN number of Galileo */
-#define MAXPRNGAL   27                  /* max satellite PRN number of Galileo */
+#define MAXPRNGAL   30                  /* max satellite PRN number of Galileo */
 #define NSATGAL    (MAXPRNGAL-MINPRNGAL+1) /* number of Galileo satellites */
 #define NSYSGAL     1
 #else
@@ -421,6 +422,12 @@ extern "C" {
 #define DLOPT_KEEPCMP 0x02              /* download option: keep compressed file */
 #define DLOPT_HOLDERR 0x04              /* download option: hold on error file */
 #define DLOPT_HOLDLST 0x08              /* download option: hold on listing file */
+
+#define LLI_SLIP    0x01                /* LLI: cycle-slip */
+#define LLI_HALFC   0x02                /* LLI: half-cycle not resovled */
+#define LLI_BOCTRK  0x04                /* LLI: boc tracking of mboc signal */
+#define LLI_HALFA   0x40                /* LLI: half-cycle added */
+#define LLI_HALFS   0x80                /* LLI: half-cycle subtracted */
 
 #define P2_5        0.03125             /* 2^-5 */
 #define P2_6        0.015625            /* 2^-6 */
@@ -903,8 +910,8 @@ typedef struct {        /* RTCM control struct type */
     int obsflag;        /* obs data complete flag (1:ok,0:not complete) */
     int ephsat;         /* update satellite of ephemeris */
     double cp[MAXSAT][NFREQ+NEXOBS]; /* carrier-phase measurement */
-    unsigned char lock[MAXSAT][NFREQ+NEXOBS]; /* lock time */
-    unsigned char loss[MAXSAT][NFREQ+NEXOBS]; /* loss of lock count */
+    unsigned short lock[MAXSAT][NFREQ+NEXOBS]; /* lock time */
+    unsigned short loss[MAXSAT][NFREQ+NEXOBS]; /* loss of lock count */
     gtime_t lltime[MAXSAT][NFREQ+NEXOBS]; /* last lock time */
     int nbyte;          /* number of bytes in message buffer */ 
     int nbit;           /* number of bits in word buffer */ 
@@ -1130,7 +1137,7 @@ typedef struct {        /* RTK control/result type */
 
 typedef struct {        /* receiver raw data control type */
     gtime_t time;       /* message time */
-    gtime_t tobs;       /* observation data time */
+    gtime_t tobs[MAXSAT][NFREQ+NEXOBS]; /* observation data time */
     obs_t obs;          /* observation data */
     obs_t obuf;         /* observation data buffer */
     nav_t nav;          /* satellite ephemerides */
@@ -1490,9 +1497,9 @@ extern unsigned int getbitu(const unsigned char *buff, int pos, int len);
 extern int          getbits(const unsigned char *buff, int pos, int len);
 extern void setbitu(unsigned char *buff, int pos, int len, unsigned int data);
 extern void setbits(unsigned char *buff, int pos, int len, int data);
-extern unsigned int crc32  (const unsigned char *buff, int len);
-extern unsigned int crc24q (const unsigned char *buff, int len);
-extern unsigned short crc16(const unsigned char *buff, int len);
+extern unsigned int rtk_crc32  (const unsigned char *buff, int len);
+extern unsigned int rtk_crc24q (const unsigned char *buff, int len);
+extern unsigned short rtk_crc16(const unsigned char *buff, int len);
 extern int decode_word (unsigned int word, unsigned char *data);
 extern int decode_frame(const unsigned char *buff, eph_t *eph, alm_t *alm,
                         double *ion, double *utc, int *leaps);
@@ -1500,6 +1507,7 @@ extern int test_glostr(const unsigned char *buff);
 extern int decode_glostr(const unsigned char *buff, geph_t *geph);
 extern int decode_bds_d1(const unsigned char *buff, eph_t *eph);
 extern int decode_bds_d2(const unsigned char *buff, eph_t *eph);
+extern int decode_gal_inav(const unsigned char *buff, eph_t *eph);
 
 extern int init_raw   (raw_t *raw);
 extern void free_raw  (raw_t *raw);
