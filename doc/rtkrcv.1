@@ -1,0 +1,82 @@
+.TH RTKRCV 1 "July 29 2016"
+.SH NAME
+rtkrcv \- realtime positioning
+.SH SYNOPSIS
+rtkrcv [-s][-p port|-d dev][-o file][-t level]
+
+.SH DESCRIPTION
+A command line version of the real-time positioning AP by RTKLIB. To start or stop RTK server, to
+configure options or to print solution/status, login a console and input commands. As default, stdin/stdout
+are used for the console. Use -p option for network login with telnet protocol. To show the available
+commands, type ? or help on the console. The initial processing options are loaded from default
+configuration file rtkrcv.conf. To change the file, use -o option. To configure the processing options, edit
+the configuration file or use set, load or save command on the console. To shutdown the program, use
+shutdown command on the console or send the USR2 signal to the process.
+
+.SH OPTIONS
+.IP "-s"
+start RTK server on program startup
+.IP "-p port"
+port number for telnet console
+.IP "-m port"
+port number for monitor stream
+.IP "-d dev"
+terminal device for console
+.IP "-o file"
+configuration file
+.IP "-r level"
+output solution status file (0:off,1:states,2:residuals)
+.IP "-t level"
+debug trace level (0:off,1-5:on)
+
+.SH COMMANDS
+.IP "start"
+Start RTK server. No need the command if the program runs with -s option.
+.IP "stop"
+Stop RTK server.
+.IP "restart"
+Restart RTK server. If the processing options are set, execute the command to enable
+the changes. 
+.IP "solution [cycle]"
+Show solutions. Without option, only one solution is shown. With option, the
+solution is displayed at intervals of cycle (s). To stop cyclic display, send break
+(ctr-C).
+.IP "status [cycle]"
+Show RTK status. Use option cycle for cyclic display.
+.IP "satellite [cycle]"
+Show satellite status. Use option cycle for cyclic display.
+.IP "observ [cycle]"
+Show observation data. Use option cycle for cyclic display.
+.IP "navidata [cycle]"
+Show navigation data. Use option cycle for cyclic display.
+.IP "stream [cycle]"
+Show stream status. Use option cycle for cyclic display.
+.IP "error"
+Show error/warning messages. To stop messages, send break (ctr-C).
+.IP "option [opt]"
+Show the values of processing options. Without option, all options are displayed.
+With option, only pattern-matched options are displayed.
+.IP "set opt [val]"
+Set the value of a processing option to val. Without option val, prompt message
+is shown to input the value. The change of the processing option is not enabled
+before RTK server is restarted.
+.IP "load [file]"
+Load processing options from file. Without option, default file rtkrcv.conf is used.
+To enable the changes, restart RTK server. 
+.IP "save [file]"
+Save current processing options to file. Without option, default file rtkrcv.conf
+is used.
+.IP "log [file|off]"
+Record console log to file. To stop recording the log, use option off.
+.IP "help|? [path]"
+Show the command list. With option path, the stream path options are shown.
+.IP "exit"
+Exit and logout console. The status of RTK server is not affected by the command.
+.IP "shutdown"
+Shutdown RTK server and exit the program.
+.IP "!command [arg...]"
+Execute command by the operating system shell. Do not use the interactive command.
+
+.SH NOTES
+Short form of a command is allowed. In case of the short form, the command is
+distinguished according to header characters. 
