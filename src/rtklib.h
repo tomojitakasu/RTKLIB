@@ -377,6 +377,7 @@ extern "C" {
 #define STR_NTRIPCLI 7                  /* stream type: NTRIP client */
 #define STR_FTP      8                  /* stream type: ftp */
 #define STR_HTTP     9                  /* stream type: http */
+#define STR_UNIXSVR  10                 /* stream type: unix domain socket server */
 
 #define STRFMT_RTCM2 0                  /* stream format: RTCM 2 */
 #define STRFMT_RTCM3 1                  /* stream format: RTCM 3 */
