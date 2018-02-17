@@ -12,7 +12,7 @@
 *                          fix bug on inproper header for rtcm2 and rtcm3
 *           2010/07/18 1.3 add option -v, -t, -h, -x
 *           2011/01/15 1.4 add option -ro, -hc, -hm, -hn, -ht, -ho, -hr, -ha,
-*                            -hp, -hd, -y, -c, -q 
+*                            -hp, -hd, -y, -c, -q
 *                          support gw10 and javad receiver, galileo, qzss
 *                          support rinex file name convention
 *           2012/10/22 1.5 add option -scan, -oi, -ot, -ol
@@ -42,7 +42,7 @@ static const char *help[]={
 "",
 " Synopsys",
 "",
-" convbin [option ...] file", 
+" convbin [option ...] file",
 "",
 " Description",
 "",
@@ -164,11 +164,11 @@ static int convbin(int format, rnxopt_t *opt, const char *ifile, char **file,
     char work[1024],ofile_[7][1024],*ofile[7],*p;
     char *extnav=opt->rnxver<=2.99||opt->navsys==SYS_GPS?"N":"P";
     char *extlog=format==STRFMT_LEXR?"lex":"sbs";
-    
+
     def=!file[0]&&!file[1]&&!file[2]&&!file[3]&&!file[4]&&!file[5]&&!file[6];
-    
+
     for (i=0;i<7;i++) ofile[i]=ofile_[i];
-    
+
     if (file[0]) strcpy(ofile[0],file[0]);
     else if (*opt->staid) {
         strcpy(ofile[0],"%r%n0.%yO");
@@ -242,7 +242,7 @@ static int convbin(int format, rnxopt_t *opt, const char *ifile, char **file,
         sprintf(ofile[i],"%s%c%s",dir,FILEPATHSEP,work);
     }
     fprintf(stderr,"input file  : %s (%s)\n",ifile,formatstrs[format]);
-    
+
     if (*ofile[0]) fprintf(stderr,"->rinex obs : %s\n",ofile[0]);
     if (*ofile[1]) fprintf(stderr,"->rinex nav : %s\n",ofile[1]);
     if (*ofile[2]) fprintf(stderr,"->rinex gnav: %s\n",ofile[2]);
@@ -250,7 +250,7 @@ static int convbin(int format, rnxopt_t *opt, const char *ifile, char **file,
     if (*ofile[4]) fprintf(stderr,"->rinex qnav: %s\n",ofile[4]);
     if (*ofile[5]) fprintf(stderr,"->rinex lnav: %s\n",ofile[5]);
     if (*ofile[6]) fprintf(stderr,"->sbas log  : %s\n",ofile[6]);
-    
+
     if (!convrnx(format,opt,ifile,ofile)) {
         fprintf(stderr,"\n");
         return -1;
@@ -266,13 +266,13 @@ static int cmdopts(int argc, char **argv, rnxopt_t *opt, char **ifile,
     double epr[]={2010,1,1,0,0,0},span=0.0;
     int i,j,k,sat,code,nf=2,nc=2,format=-1;
     char *p,*sys,*fmt="",*paths[1],path[1024],buff[1024];
-    
+
     opt->rnxver=2.11;
     opt->obstype=OBSTYPE_PR|OBSTYPE_CP;
     opt->navsys=SYS_GPS|SYS_GLO|SYS_GAL|SYS_QZS|SYS_SBS|SYS_CMP;
-    
+
     for (i=0;i<6;i++) for (j=0;j<64;j++) opt->mask[i][j]='1';
-    
+
     for (i=1;i<argc;i++) {
         if (!strcmp(argv[i],"-ts")&&i+2<argc) {
             sscanf(argv[++i],"%lf/%lf/%lf",eps,eps+1,eps+2);
@@ -408,7 +408,7 @@ static int cmdopts(int argc, char **argv, rnxopt_t *opt, char **ifile,
             *trace=atoi(argv[++i]);
         }
         else if (!strncmp(argv[i],"-",1)) printhelp();
-        
+
         else *ifile=argv[i];
     }
     if (span>0.0&&opt->ts.time) {
@@ -420,7 +420,7 @@ static int cmdopts(int argc, char **argv, rnxopt_t *opt, char **ifile,
     if (nf>=4) opt->freqtype|=FREQTYPE_L6;
     if (nf>=5) opt->freqtype|=FREQTYPE_L7;
     if (nf>=6) opt->freqtype|=FREQTYPE_L8;
-    
+
     if (*fmt) {
         if      (!strcmp(fmt,"rtcm2")) format=STRFMT_RTCM2;
         else if (!strcmp(fmt,"rtcm3")) format=STRFMT_RTCM3;
@@ -434,6 +434,8 @@ static int cmdopts(int argc, char **argv, rnxopt_t *opt, char **ifile,
         else if (!strcmp(fmt,"nvs"  )) format=STRFMT_NVS;
         else if (!strcmp(fmt,"binex")) format=STRFMT_BINEX;
         else if (!strcmp(fmt,"rt17" )) format=STRFMT_RT17;
+        else if (!strcmp(fmt,"sbp"  )) format=STRFMT_SBP;
+        else if (!strcmp(fmt,"json" )) format=STRFMT_SBPJSON;
         else if (!strcmp(fmt,"rinex")) format=STRFMT_RINEX;
     }
     else {
@@ -450,6 +452,8 @@ static int cmdopts(int argc, char **argv, rnxopt_t *opt, char **ifile,
         else if (!strcmp(p,".bnx"  ))  format=STRFMT_BINEX;
         else if (!strcmp(p,".binex"))  format=STRFMT_BINEX;
         else if (!strcmp(p,".rt17" ))  format=STRFMT_RT17;
+        else if (!strcmp(p,".sbp"  ))  format=STRFMT_SBP;
+        else if (!strcmp(p,".json" ))  format=STRFMT_SBPJSON;
         else if (!strcmp(p,".obs"  ))  format=STRFMT_RINEX;
         else if (!strcmp(p+3,"o"   ))  format=STRFMT_RINEX;
         else if (!strcmp(p+3,"O"   ))  format=STRFMT_RINEX;
@@ -462,10 +466,10 @@ int main(int argc, char **argv)
     rnxopt_t opt={{0}};
     int format,trace=0,stat;
     char *ifile="",*ofile[7]={0},*dir="";
-    
+
     /* parse command line options */
     format=cmdopts(argc,argv,&opt,&ifile,ofile,&dir,&trace);
-    
+
     if (!*ifile) {
         fprintf(stderr,"no input file\n");
         return -1;
@@ -486,8 +490,8 @@ int main(int argc, char **argv)
         tracelevel(trace);
     }
     stat=convbin(format,&opt,ifile,ofile,dir);
-    
+
     traceclose();
-    
+
     return stat;
 }

@@ -210,13 +210,15 @@ const char *formatstrs[]={      /* stream format strings */
     "NVS BINR",                 /* 10 */
     "BINEX",                    /* 11 */
     "Trimble RT17",             /* 12 */
-    "LEX Receiver",             /* 13 */
-    "Septentrio",               /* 14 */
-    "RINEX",                    /* 15 */
-    "SP3",                      /* 16 */
-    "RINEX CLK",                /* 17 */
-    "SBAS",                     /* 18 */
-    "NMEA 0183",                /* 19 */
+    "Swiftnav SBP",             /* 13 */
+    "Swiftnav SBP-JSON",        /* 14 */
+    "LEX Receiver",             /* 15 */
+    "Septentrio",               /* 16 */
+    "RINEX",                    /* 17 */
+    "SP3",                      /* 18 */
+    "RINEX CLK",                /* 19 */
+    "SBAS",                     /* 20 */
+    "NMEA 0183",                /* 21 */
     NULL
 };
 static char *obscodes[]={       /* observation code strings */
@@ -1762,7 +1764,7 @@ static void ast_args(double t, double *f)
     };
     double tt[4];
     int i,j;
-    
+
     for (tt[0]=t,i=1;i<4;i++) tt[i]=tt[i-1]*t;
     for (i=0;i<5;i++) {
         f[i]=fc[i][0]*3600.0;

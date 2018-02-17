@@ -391,17 +391,19 @@ extern "C" {
 #define STRFMT_NVS   10                 /* stream format: NVS NVC08C */
 #define STRFMT_BINEX 11                 /* stream format: BINEX */
 #define STRFMT_RT17  12                 /* stream format: Trimble RT17 */
-#define STRFMT_LEXR  13                 /* stream format: Furuno LPY-10000 */
-#define STRFMT_SEPT  14                 /* stream format: Septentrio */
-#define STRFMT_RINEX 15                 /* stream format: RINEX */
-#define STRFMT_SP3   16                 /* stream format: SP3 */
-#define STRFMT_RNXCLK 17                /* stream format: RINEX CLK */
-#define STRFMT_SBAS  18                 /* stream format: SBAS messages */
-#define STRFMT_NMEA  19                 /* stream format: NMEA 0183 */
+#define STRFMT_SBP 13                   /* stream format: Swift Navigation SBP */
+#define STRFMT_SBPJSON 14               /* stream format: Swift Navigation SBP-JSON */
+#define STRFMT_LEXR  15                 /* stream format: Furuno LPY-10000 */
+#define STRFMT_SEPT  16                 /* stream format: Septentrio */
+#define STRFMT_RINEX 17                 /* stream format: RINEX */
+#define STRFMT_SP3   18                 /* stream format: SP3 */
+#define STRFMT_RNXCLK 19                /* stream format: RINEX CLK */
+#define STRFMT_SBAS  20                 /* stream format: SBAS messages */
+#define STRFMT_NMEA  21                 /* stream format: NMEA 0183 */
 #ifndef EXTLEX
-#define MAXRCVFMT    12                 /* max number of receiver format */
+#define MAXRCVFMT    14                 /* max number of receiver format */
 #else
-#define MAXRCVFMT    13
+#define MAXRCVFMT    15
 #endif
 
 #define STR_MODE_R  0x1                 /* stream mode: read */
@@ -913,8 +915,8 @@ typedef struct {        /* RTCM control struct type */
     unsigned short lock[MAXSAT][NFREQ+NEXOBS]; /* lock time */
     unsigned short loss[MAXSAT][NFREQ+NEXOBS]; /* loss of lock count */
     gtime_t lltime[MAXSAT][NFREQ+NEXOBS]; /* last lock time */
-    int nbyte;          /* number of bytes in message buffer */ 
-    int nbit;           /* number of bits in word buffer */ 
+    int nbyte;          /* number of bytes in message buffer */
+    int nbit;           /* number of bits in word buffer */
     int len;            /* message length (bytes) */
     unsigned char buff[1200]; /* message buffer */
     unsigned int word;  /* word buffer for rtcm 2 */
@@ -1152,7 +1154,7 @@ typedef struct {        /* receiver raw data control type */
     double prCA[MAXSAT],dpCA[MAXSAT]; /* L1/CA pseudrange/doppler for javad */
     unsigned char halfc[MAXSAT][NFREQ+NEXOBS]; /* half-cycle add flag */
     char freqn[MAXOBS]; /* frequency number for javad */
-    int nbyte;          /* number of bytes in message buffer */ 
+    int nbyte;          /* number of bytes in message buffer */
     int len;            /* message length (bytes) */
     int iod;            /* issue of data */
     int tod;            /* time of day (ms) */
@@ -1525,6 +1527,7 @@ extern int input_javad (raw_t *raw, unsigned char data);
 extern int input_nvs   (raw_t *raw, unsigned char data);
 extern int input_bnx   (raw_t *raw, unsigned char data);
 extern int input_rt17  (raw_t *raw, unsigned char data);
+extern int input_sbp   (raw_t *raw, unsigned char data);
 extern int input_lexr  (raw_t *raw, unsigned char data);
 extern int input_oem4f (raw_t *raw, FILE *fp);
 extern int input_oem3f (raw_t *raw, FILE *fp);
@@ -1537,6 +1540,8 @@ extern int input_javadf(raw_t *raw, FILE *fp);
 extern int input_nvsf  (raw_t *raw, FILE *fp);
 extern int input_bnxf  (raw_t *raw, FILE *fp);
 extern int input_rt17f (raw_t *raw, FILE *fp);
+extern int input_sbpf  (raw_t *raw, FILE *fp);
+extern int input_sbpjsonf (raw_t *raw, FILE *fp);
 extern int input_lexrf (raw_t *raw, FILE *fp);
 
 extern int gen_ubx (const char *msg, unsigned char *buff);
