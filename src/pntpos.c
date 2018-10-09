@@ -203,7 +203,9 @@ static int rescode(int iter, const obsd_t *obs, int n, const double *rs,
                    double *resp, int *ns)
 {
     double r,dion,dtrp,vmeas,vion,vtrp,rr[3],pos[3],dtr,e[3],P,lam_L1;
-    int i,j,nv=0,sys,mask[4]={0};
+    int i,j,nv=0,sys,mask[4]={0},sva=-1;
+
+    eph_t *eph;
     
     trace(3,"resprng : n=%d\n",n);
     
@@ -230,8 +232,13 @@ static int rescode(int iter, const obsd_t *obs, int n, const double *rs,
         /* psudorange with code bias correction */
         if ((P=prange(obs+i,nav,azel+i*2,iter,opt,&vmeas))==0.0) continue;
         
+        /* if Gal satellite, check SISA is not NAPA*/
+        if (sys==SYS_GAL){
+        	if (!(eph=seleph(obs[i].time,obs[i].sat,-1,nav))) continue;
+        	sva = eph->sva;
+        }
         /* excluded satellite? */
-        if (satexclude(obs[i].sat,svh[i],opt)) continue;
+        if (satexclude(obs[i].sat,svh[i],sva,opt)) continue;
         
         /* ionospheric corrections */
         if (!ionocorr(obs[i].time,nav,obs[i].sat,pos,azel+i*2,

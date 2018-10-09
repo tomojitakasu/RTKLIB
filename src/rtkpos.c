@@ -851,7 +851,9 @@ static int zdres(int base, const obsd_t *obs, int n, const double *rs,
 {
     double r,rr_[3],pos[3],dant[NFREQ]={0},disp[3];
     double zhd,zazel[]={0.0,90.0*D2R};
-    int i,nf=NF(opt);
+    int i,nf=NF(opt),sys,sva=-1;
+
+    eph_t *eph;
     
     trace(3,"zdres   : n=%d\n",n);
     
@@ -874,8 +876,14 @@ static int zdres(int base, const obsd_t *obs, int n, const double *rs,
         if ((r=geodist(rs+i*6,rr_,e+i*3))<=0.0) continue;
         if (satazel(pos,e+i*3,azel+i*2)<opt->elmin) continue;
         
+        /* if Gal satellite, check SISA is not NAPA*/
+        if (!(sys=satsys(obs[i].sat,NULL))) continue;
+        if (sys==SYS_GAL){
+        	if (!(eph=seleph(obs[i].time,obs[i].sat,-1,nav))) continue;
+        	sva = eph->sva;
+        }
         /* excluded satellite? */
-        if (satexclude(obs[i].sat,svh[i],opt)) continue;
+        if (satexclude(obs[i].sat,svh[i],sva,opt)) continue;
         
         /* satellite clock-bias */
         r+=-CLIGHT*dts[i*2];

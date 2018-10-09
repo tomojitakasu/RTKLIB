@@ -37,6 +37,8 @@ static const char rcsid[]="$Id: convbin.c,v 1.1 2008/07/17 22:13:04 ttaka Exp $"
 #define PRGNAME   "CONVBIN"
 #define TRACEFILE "convbin.trace"
 
+int galmessagetype;
+
 /* help text -----------------------------------------------------------------*/
 static const char *help[]={
 "",
@@ -165,6 +167,8 @@ static int convbin(int format, rnxopt_t *opt, const char *ifile, char **file,
     char *extnav=opt->rnxver<=2.99||opt->navsys==SYS_GPS?"N":"P";
     char *extlog=format==STRFMT_LEXR?"lex":"sbs";
     
+    galmessagetype = GALMESS_INAV;
+
     def=!file[0]&&!file[1]&&!file[2]&&!file[3]&&!file[4]&&!file[5]&&!file[6];
     
     for (i=0;i<7;i++) ofile[i]=ofile_[i];

@@ -96,6 +96,15 @@ static double var_uraeph(int ura)
     };
     return ura<0||15<ura?SQR(6144.0):SQR(ura_value[ura]);
 }
+/* variance by sisa ephemeris (ref [7] Issue 1.3 5.1.11) --------------------------*/
+static double var_sisaeph(int ura)
+{
+    if (ura<50) return SQR(ura*0.01);
+    if (ura<75) return SQR(0.50+(ura-50)*0.02);
+    if (ura<100) return SQR(1.0+(ura-75)*0.04);
+    if (ura<=125) return SQR(2.0+(ura-100)*0.16);
+    return -1.0;
+}
 /* variance by ura ssr (ref [4]) ---------------------------------------------*/
 static double var_urassr(int ura)
 {
@@ -246,7 +255,11 @@ extern void eph2pos(gtime_t time, const eph_t *eph, double *rs, double *dts,
     *dts-=2.0*sqrt(mu*eph->A)*eph->e*sinE/SQR(CLIGHT);
     
     /* position and clock error variance */
-    *var=var_uraeph(eph->sva);
+    if (sys==SYS_GAL){
+    	*var=var_sisaeph(eph->sva);
+    } else {
+    	*var=var_uraeph(eph->sva);
+    }
 }
 /* glonass orbit differential equations --------------------------------------*/
 static void deq(const double *x, double *xdot, const double *acc)
@@ -382,25 +395,38 @@ extern void seph2pos(gtime_t time, const seph_t *seph, double *rs, double *dts,
     *var=var_uraeph(seph->sva);
 }
 /* select ephememeris --------------------------------------------------------*/
-static eph_t *seleph(gtime_t time, int sat, int iode, const nav_t *nav)
+extern eph_t *seleph(gtime_t time, int sat, int iode, const nav_t *nav)
 {
     double t,tmax,tmin;
-    int i,j=-1;
-    
+    int i,j=-1,sys;
+
     trace(4,"seleph  : time=%s sat=%2d iode=%d\n",time_str(time,3),sat,iode);
-    
-    switch (satsys(sat,NULL)) {
+
+    sys=satsys(sat,NULL);
+    switch (sys) {
         case SYS_QZS: tmax=MAXDTOE_QZS+1.0; break;
-        case SYS_GAL: tmax=MAXDTOE_GAL+1.0; break;
+        case SYS_GAL: tmax=MAXDTOE_GAL; break;
         case SYS_CMP: tmax=MAXDTOE_CMP+1.0; break;
         default: tmax=MAXDTOE+1.0; break;
     }
     tmin=tmax+1.0;
-    
+
     for (i=0;i<nav->n;i++) {
         if (nav->eph[i].sat!=sat) continue;
         if (iode>=0&&nav->eph[i].iode!=iode) continue;
-        if ((t=fabs(timediff(nav->eph[i].toe,time)))>tmax) continue;
+        if (sys==SYS_GAL){
+        	if (galmessagetype==GALMESS_FNAV){
+        		/* Check if F/NAV ephemeris */
+        		if (!(nav->eph[i].code & 0x02)) continue;
+        	} else {
+        		/* Check if I/NAV ephemeris */
+        		if (!(nav->eph[i].code & 0x05)) continue;
+        	}
+        	if ((t=timediff(time,nav->eph[i].toe))>tmax) continue;
+        	if (t<0) continue;
+        } else {
+        	if ((t=fabs(timediff(nav->eph[i].toe,time)))>tmax) continue;
+        }
         if (iode>=0) return nav->eph+i;
         if (t<=tmin) {j=i; tmin=t;} /* toe closest to time */
     }
@@ -499,7 +525,6 @@ static int ephpos(gtime_t time, gtime_t teph, int sat, const nav_t *nav,
     
     if (sys==SYS_GPS||sys==SYS_GAL||sys==SYS_QZS||sys==SYS_CMP) {
         if (!(eph=seleph(teph,sat,iode,nav))) return 0;
-        
         eph2pos(time,eph,rs,dts,var);
         time=timeadd(time,tt);
         eph2pos(time,eph,rst,dtst,var);

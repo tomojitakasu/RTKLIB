@@ -184,6 +184,36 @@ static int uraindex(double value)
     for (i=0;i<15;i++) if (ura_eph[i]>=value) break;
     return i;
 }
+/* SISA index to SISA value (m) */
+static double sisavalue(int sva)
+{
+	if (sva<50) return sva*0.01;
+	if (sva<75) return 0.50+(sva-50)*0.02;
+	if (sva<100) return 1.0+(sva-75)*0.04;
+	if (sva<=125) return 2.0+(sva-100)*0.16;
+	return -1.0;
+}
+/* SISA value (m) to SISA index */
+static int sisaindex(double value)
+{
+    /* 0.0 m is an impossible value due to the statistical meaning of the SISA
+     * and is identified as NAPA due to some receivers setting the SISA field to
+     * 0.0 m when the SISA is set to NAPA (NAPA is undefined in the RINEX format
+     * definition). */
+    if (value<0.01) return 255;
+    /* index     SISA value
+     * 0..49      0m to 0.49m with 1cm resolution
+     * 50..74     0.50cm to 0.98m with 2cm resolution
+     * 75..99     1.0m to 1.96m with 4cm resolution
+     * 100..125   2.0m to 6.0m with 16cm resolution
+     * 126..254   spare
+     * 255        NAPA */
+    if (value<0.5) return (int)(value/0.01);
+    if (value<1.0) return (int)(50+(value-0.5)/0.02);
+    if (value<2.0) return (int)(75+(value-1.0)/0.04);
+    if (value<=6.0) return (int)(100+(value-2.0)/0.16);
+    return 255;
+}
 /* initialize station parameter ----------------------------------------------*/
 static void init_sta(sta_t *sta)
 {
@@ -1066,7 +1096,7 @@ static int decode_eph(double ver, int sat, gtime_t toc, const double *data,
                                       /* bit   4-5: E5a HS */
                                       /* bit     6: E5b DVS */
                                       /* bit   7-8: E5b HS */
-        eph->sva =uraindex(data[23]); /* ura (m->index) */
+        eph->sva =sisaindex(data[23]); /* ura (m->index) */
         
         eph->tgd[0]=   data[25];      /* BGD E5a/E1 */
         eph->tgd[1]=   data[26];      /* BGD E5b/E1 */
@@ -2270,7 +2300,11 @@ extern int outrnxnavb(FILE *fp, const rnxopt_t *opt, const eph_t *eph)
     outnavf(fp,eph->flag   );
     fprintf(fp,"\n%s",sep  );
     
-    outnavf(fp,uravalue(eph->sva));
+    if (sys==SYS_GAL){
+    	outnavf(fp,sisavalue(eph->sva));
+    } else {
+    	outnavf(fp,uravalue(eph->sva));
+    }
     outnavf(fp,eph->svh    );
     outnavf(fp,eph->tgd[0] ); /* GPS/QZS:TGD, GAL:BGD E5a/E1, BDS: TGD1 B1/B3 */
     if (sys==SYS_GAL||sys==SYS_CMP) {

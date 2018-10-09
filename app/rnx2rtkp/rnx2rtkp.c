@@ -22,6 +22,8 @@ static const char rcsid[]="$Id: rnx2rtkp.c,v 1.1 2008/07/17 21:55:16 ttaka Exp $
 #define PROGNAME    "rnx2rtkp"          /* program name */
 #define MAXFILE     8                   /* max number of input files */
 
+int galmessagetype;
+
 /* help text -----------------------------------------------------------------*/
 static const char *help[]={
 "",
@@ -97,6 +99,8 @@ int main(int argc, char **argv)
     int i,j,n,ret;
     char *infile[MAXFILE],*outfile="";
     
+    galmessagetype = GALMESS_INAV;
+
     prcopt.mode  =PMODE_KINEMA;
     prcopt.navsys=SYS_GPS|SYS_GLO;
     prcopt.refpos=1;
@@ -162,6 +166,8 @@ int main(int argc, char **argv)
         showmsg("error : no input file");
         return -2;
     }
+
+    if (prcopt.ionoopt==IONOOPT_IFLC) galmessagetype=GALMESS_FNAV;
     ret=postpos(ts,te,tint,0.0,&prcopt,&solopt,&filopt,infile,n,outfile,"","");
     
     if (!ret) fprintf(stderr,"%40s\r","");
