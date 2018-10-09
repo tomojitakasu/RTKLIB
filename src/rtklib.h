@@ -137,7 +137,7 @@ extern "C" {
 #endif
 #ifdef ENAGAL
 #define MINPRNGAL   1                   /* min satellite PRN number of Galileo */
-#define MAXPRNGAL   30                  /* max satellite PRN number of Galileo */
+#define MAXPRNGAL   36                  /* max satellite PRN number of Galileo */
 #define NSATGAL    (MAXPRNGAL-MINPRNGAL+1) /* number of Galileo satellites */
 #define NSYSGAL     1
 #else
@@ -199,7 +199,7 @@ extern "C" {
 #define DTTOL       0.005               /* tolerance of time difference (s) */
 #define MAXDTOE     7200.0              /* max time difference to GPS Toe (s) */
 #define MAXDTOE_QZS 7200.0              /* max time difference to QZSS Toe (s) */
-#define MAXDTOE_GAL 10800.0             /* max time difference to Galileo Toe (s) */
+#define MAXDTOE_GAL 14400.0             /* max time difference to Galileo Toe (s) */
 #define MAXDTOE_CMP 21600.0             /* max time difference to BeiDou Toe (s) */
 #define MAXDTOE_GLO 1800.0              /* max time difference to GLONASS Toe (s) */
 #define MAXDTOE_SBS 360.0               /* max time difference to SBAS Toe (s) */
@@ -337,6 +337,9 @@ extern "C" {
 #define IONOOPT_QZS 6                   /* ionosphere option: QZSS broadcast model */
 #define IONOOPT_LEX 7                   /* ionosphere option: QZSS LEX ionospehre */
 #define IONOOPT_STEC 8                  /* ionosphere option: SLANT TEC model */
+
+#define GALMESS_INAV 0                  /* Galileo message type: FNAV */
+#define GALMESS_FNAV 1                  /* Galileo message type: INAV */
 
 #define TROPOPT_OFF 0                   /* troposphere option: correction off */
 #define TROPOPT_SAAS 1                  /* troposphere option: Saastamoinen model */
@@ -1260,6 +1263,7 @@ extern const sbsigpband_t igpband1[][8]; /* SBAS IGP band 0-8 */
 extern const sbsigpband_t igpband2[][5]; /* SBAS IGP band 9-10 */
 extern const char *formatstrs[];        /* stream format strings */
 extern opt_t sysopts[];                 /* system options table */
+extern int galmessagetype;              /* GAL message type */
 
 /* satellites, systems, codes functions --------------------------------------*/
 extern int  satno   (int sys, int prn);
@@ -1268,7 +1272,7 @@ extern int  satid2no(const char *id);
 extern void satno2id(int sat, char *id);
 extern unsigned char obs2code(const char *obs, int *freq);
 extern char *code2obs(unsigned char code, int *freq);
-extern int  satexclude(int sat, int svh, const prcopt_t *opt);
+extern int  satexclude(int sat, int svh, const int sva, const prcopt_t *opt);
 extern int  testsnr(int base, int freq, double el, double snr,
                     const snrmask_t *mask);
 extern void setcodepri(int sys, int freq, const char *pri);
@@ -1491,6 +1495,8 @@ extern int tle_name_read(const char *file, tle_t *tle);
 extern int tle_pos(gtime_t time, const char *name, const char *satno,
                    const char *desig, const tle_t *tle, const erp_t *erp,
                    double *rs);
+extern eph_t *seleph(const gtime_t time, const int sat, const int iode,
+                     const nav_t *nav);
 
 /* receiver raw data functions -----------------------------------------------*/
 extern unsigned int getbitu(const unsigned char *buff, int pos, int len);

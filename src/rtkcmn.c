@@ -468,10 +468,11 @@ extern void satno2id(int sat, char *id)
 * test excluded satellite
 * args   : int    sat       I   satellite number
 *          int    svh       I   sv health flag
+*          int    sva       I   SV URA/SISA
 *          prcopt_t *opt    I   processing options (NULL: not used)
 * return : status (1:excluded,0:not excluded)
 *-----------------------------------------------------------------------------*/
-extern int satexclude(int sat, int svh, const prcopt_t *opt)
+extern int satexclude(int sat, int svh, const int sva, const prcopt_t *opt)
 {
     int sys=satsys(sat,NULL);
     
@@ -483,6 +484,11 @@ extern int satexclude(int sat, int svh, const prcopt_t *opt)
         if (!(sys&opt->navsys)) return 1; /* unselected sat sys */
     }
     if (sys==SYS_QZS) svh&=0xFE; /* mask QZSS LEX health */
+    /* Exclude Galileo satellites with NAPA or invalid SISA */
+    if ((sys==SYS_GAL) && (sva>125)){
+    	trace(3,"Galileo satellite with NAPA or invalid SISA: sat=%3d",sat);
+    	return 1;
+    }
     if (svh) {
         trace(3,"unhealthy satellite: sat=%3d svh=%02X\n",sat,svh);
         return 1;
@@ -2393,7 +2399,7 @@ static int cmpeph(const void *p1, const void *p2)
 static void uniqeph(nav_t *nav)
 {
     eph_t *nav_eph;
-    int i,j;
+    int i,j,sys;
     
     trace(3,"uniqeph: n=%d\n",nav->n);
     
@@ -2402,8 +2408,11 @@ static void uniqeph(nav_t *nav)
     qsort(nav->eph,nav->n,sizeof(eph_t),cmpeph);
     
     for (i=1,j=0;i<nav->n;i++) {
+    	sys = satsys(nav->eph[i].sat,NULL);
         if (nav->eph[i].sat!=nav->eph[j].sat||
-            nav->eph[i].iode!=nav->eph[j].iode) {
+            nav->eph[i].iode!=nav->eph[j].iode||
+            ((sys==SYS_GAL)&&(nav->eph[i].code!=nav->eph[j].code))||
+            (nav->eph[i].toe.sec!=nav->eph[j].toe.sec)) {
             nav->eph[++j]=nav->eph[i];
         }
     }

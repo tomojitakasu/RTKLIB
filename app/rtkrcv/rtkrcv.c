@@ -138,6 +138,8 @@ static const char *pathopts[]={         /* path options help */
 #define SOLOPT  "0:llh,1:xyz,2:enu,3:nmea"
 #define MSGOPT  "0:all,1:rover,2:base,3:corr"
 
+int galmessagetype;
+
 static opt_t rcvopts[]={
     {"console-passwd",  2,  (void *)passwd,              ""     },
     {"console-timetype",3,  (void *)&timetype,           TIMOPT },
@@ -1369,6 +1371,8 @@ int main(int argc, char **argv)
     int i,start=0,port=0,outstat=0,trace=0;
     char *dev="",file[MAXSTR]="";
     
+    galmessagetype = GALMESS_INAV;
+
     for (i=1;i<argc;i++) {
         if      (!strcmp(argv[i],"-s")) start=1;
         else if (!strcmp(argv[i],"-p")&&i+1<argc) port=atoi(argv[++i]);

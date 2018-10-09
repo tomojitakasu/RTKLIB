@@ -884,7 +884,9 @@ static int res_ppp(int iter, const obsd_t *obs, int n, const double *rs,
     prcopt_t *opt=&rtk->opt;
     double r,rr[3],disp[3],pos[3],e[3],meas[2],dtdx[3],dantr[NFREQ]={0};
     double dants[NFREQ]={0},var[MAXOBS*2],dtrp=0.0,vart=0.0,varm[2]={0};
-    int i,j,k,sat,sys,nv=0,nx=rtk->nx,brk,tideopt;
+    int i,j,k,sat,sys,nv=0,nx=rtk->nx,brk,tideopt,sva=-1;
+
+    eph_t *eph;
     
     trace(3,"res_ppp : n=%d nx=%d\n",n,nx);
     
@@ -910,8 +912,14 @@ static int res_ppp(int iter, const obsd_t *obs, int n, const double *rs,
         if ((r=geodist(rs+i*6,rr,e))<=0.0||
             satazel(pos,e,azel+i*2)<opt->elmin) continue;
         
+        /* if Gal satellite, check SISA is not NAPA*/
+        if (sys==SYS_GAL){
+        	if (!(eph=seleph(obs[i].time,obs[i].sat,-1,nav))) continue;
+        	sva = eph->sva;
+        }
+
         /* excluded satellite? */
-        if (satexclude(obs[i].sat,svh[i],opt)) continue;
+        if (satexclude(obs[i].sat,svh[i],sva,opt)) continue;
         
         /* tropospheric delay correction */
         if (opt->tropopt==TROPOPT_SAAS) {
