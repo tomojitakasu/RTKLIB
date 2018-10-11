@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * convbin.c : convert receiver binary log file to rinex obs/nav, sbas messages
 *
-*          Copyright (C) 2007-2016 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2007-2018 by T.TAKASU, All rights reserved.
 *
 * options : -DWIN32 use windows file path separator
 *
@@ -35,6 +35,10 @@
 *           2017/05/26 1.17 add input format tersus
 *           2017/06/06 1.18 fix bug on output beidou and irnss nav files
 *                           add option -tt
+*           2018/10/10 1.19 default options are changed.
+*                             scan input file: off - on
+*                             number of freq: 2 -> 3
+*                           add option -noscan
 *-----------------------------------------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>
@@ -109,7 +113,7 @@ static const char *help[]={
 "                  tersus= TERSUS",
 "                  rinex= RINEX",
 "     -ro opt      receiver options",
-"     -f freq      number of frequencies [2]",
+"     -f freq      number of frequencies [3]",
 "     -hc comment  rinex header: comment line",
 "     -hm marker   rinex header: marker name",
 "     -hn markno   rinex header: marker number",
@@ -125,7 +129,8 @@ static const char *help[]={
 "     -oi          include iono correction in rinex nav header [off]",
 "     -ot          include time correction in rinex nav header [off]",
 "     -ol          include leap seconds in rinex nav header [off]",
-"     -scan        scan input file [off]",
+"     -scan        scan input file [on]",
+"     -noscan      no scan input file [off]",
 "     -halfc       half-cycle ambiguity correction [off]",
 "     -mask   [sig[,...]] signal mask(s) (sig={G|R|E|J|S|C|I}L{1C|1P|1W|...})",
 "     -nomask [sig[,...]] signal no mask (same as above)",
@@ -332,12 +337,13 @@ static int cmdopts(int argc, char **argv, rnxopt_t *opt, char **ifile,
 {
     double eps[]={1980,1,1,0,0,0},epe[]={2037,12,31,0,0,0};
     double epr[]={2010,1,1,0,0,0},span=0.0;
-    int i,j,k,sat,nf=2,nc=2,format=-1;
+    int i,j,k,sat,nf=3,nc=2,format=-1;
     char *p,*sys,*fmt="",*paths[1],path[1024],buff[256];
     
     opt->rnxver=2.11;
     opt->obstype=OBSTYPE_PR|OBSTYPE_CP;
     opt->navsys=SYS_GPS|SYS_GLO|SYS_GAL|SYS_QZS|SYS_SBS|SYS_CMP;
+    opt->scanobs=1;
     
     for (i=0;i<6;i++) for (j=0;j<64;j++) opt->mask[i][j]='1';
     
@@ -437,6 +443,9 @@ static int cmdopts(int argc, char **argv, rnxopt_t *opt, char **ifile,
         }
         else if (!strcmp(argv[i],"-scan")) {
             opt->scanobs=1;
+        }
+        else if (!strcmp(argv[i],"-noscan")) {
+            opt->scanobs=0;
         }
         else if (!strcmp(argv[i],"-halfc")) {
             opt->halfcyc=1;

@@ -16,6 +16,8 @@
 *           2016/07/29 1.5 crc16() -> rtk_crc16()
 *           2017/04/11 1.6 (char *) -> (signed char *)
 *                          fix bug on unchange-test of beidou ephemeris
+*           2018/10/10 1.7 fix problem of sisa handling in galileo ephemeris
+*                          add receiver option -GALINAV, -GALFNAV
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -126,6 +128,15 @@ static int uraindex(double value)
     int i;
     for (i=0;i<15;i++) if (ura_eph[i]>=value) break;
     return i;
+}
+/* galileo sisa value (m) to sisa index --------------------------------------*/
+static int sisaindex(double value)
+{
+    if (value< 0.5) return (int)((value    )/0.01);
+    if (value< 1.0) return (int)((value-0.5)/0.02)+ 50;
+    if (value< 2.0) return (int)((value-1.0)/0.04)+ 75;
+    if (value<=6.0) return (int)((value-2.0)/0.16)+100;
+    return 255; /* NAPA */
 }
 /* decode binex mesaage 0x00-00: comment -------------------------------------*/
 static int decode_bnx_00_00(raw_t *raw, unsigned char *buff, int len)
@@ -464,13 +475,6 @@ static int decode_bnx_01_01(raw_t *raw, unsigned char *buff, int len)
     eph.flag=(flag>>8)&0x01;
     eph.code=(flag>>9)&0x03;
     eph.sva=uraindex(ura);
-{
-char s1[32],s2[32],s3[32];
-time2str(raw->time,s1,0);
-time2str(eph.ttr,s2,0);
-time2str(eph.toe,s3,0);
-trace(1,"binex 0x01-01: sat=%02d time=%s ttr=%s toe=%s iod=%d %d\n",eph.sat,s1,s2,s3,eph.iode,eph.iodc);
-}
     
     if (!strstr(raw->opt,"-EPHALL")) {
         if (raw->nav.eph[eph.sat-1].iode==eph.iode&&
@@ -589,9 +593,12 @@ static int decode_bnx_01_04(raw_t *raw, unsigned char *buff, int len)
     eph_t eph={0};
     unsigned char *p=buff;
     double tow,ura,sqrtA;
-    int prn;
+    int prn,eph_sel=0;
     
     trace(4,"binex 0x01-04: len=%d\n",len);
+    
+    if (strstr(raw->opt,"-GALINAV")) eph_sel=1;
+    if (strstr(raw->opt,"-GALFNAV")) eph_sel=2;
     
     if (len>=127) {
         prn       =U1(p)+1;      p+=1;
@@ -619,9 +626,9 @@ static int decode_bnx_01_04(raw_t *raw, unsigned char *buff, int len)
         eph.i0    =R8(p);        p+=8;
         eph.OMGd  =R4(p)*SC2RAD; p+=4;
         eph.idot  =R4(p)*SC2RAD; p+=4;
-        ura       =R4(p)*0.1;    p+=4;
+        ura       =R4(p);        p+=4;
         eph.svh   =U2(p);        p+=2;
-        eph.code  =U2(p);              /* data source */
+        eph.code  =U2(p); /* data source defined as rinex 3.03 */
     }
     else {
         trace(2,"binex 0x01-04: length error len=%d\n",len);
@@ -631,13 +638,15 @@ static int decode_bnx_01_04(raw_t *raw, unsigned char *buff, int len)
         trace(2,"binex 0x01-04: satellite error prn=%d\n",prn);
         return -1;
     }
+    if (eph_sel==1&&!(eph.code&(1<<9))) return 0; /* only I/NAV */
+    if (eph_sel==2&&!(eph.code&(1<<8))) return 0; /* only F/NAV */
+    
     eph.A=sqrtA*sqrtA;
     eph.iode=eph.iodc;
     eph.toe=gpst2time(eph.week,eph.toes);
     eph.toc=gpst2time(eph.week,eph.toes);
     eph.ttr=adjweek(eph.toe,tow);
-    eph.sva=uraindex(ura);
-    
+    eph.sva=ura<0.0?(int)(-ura)-1:sisaindex(ura); /* sisa index */
     if (!strstr(raw->opt,"-EPHALL")) {
         if (raw->nav.eph[eph.sat-1].iode==eph.iode&&
             raw->nav.eph[eph.sat-1].iodc==eph.iodc) return 0; /* unchanged */
@@ -1207,7 +1216,8 @@ static int sync_bnx(unsigned char *buff, unsigned char data)
 *          -ELss    : select signal ss for GAL (ss=1C,1B,...)
 *          -JLss    : select signal ss for QZS (ss=1C,2C,...)
 *          -CLss    : select signal ss for BDS (ss=2I,2X,...)
-*
+*          -GALINAV : input only I/NAV for galileo ephemeris
+*          -GALFNAV : input only F/NAV for galileo ephemeris
 *-----------------------------------------------------------------------------*/
 extern int input_bnx(raw_t *raw, unsigned char data)
 {

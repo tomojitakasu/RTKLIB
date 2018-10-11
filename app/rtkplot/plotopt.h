@@ -135,6 +135,8 @@ __published:
 	TCheckBox *NavSys7;
 	TEdit *EditTimeSync;
 	TCheckBox *ChkTimeSync;
+	TLabel *Label38;
+	TEdit *ApiKey;
 	void __fastcall BtnOKClick(TObject *Sender);
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall BtnColor1Click(TObject *Sender);

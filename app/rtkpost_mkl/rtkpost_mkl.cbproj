@@ -6,7 +6,7 @@
         <Base>True</Base>
         <Config Condition="'$(Config)'==''">Release</Config>
         <FrameworkType>VCL</FrameworkType>
-        <ProjectVersion>18.2</ProjectVersion>
+        <ProjectVersion>18.4</ProjectVersion>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <TargetedPlatforms>1</TargetedPlatforms>
         <AppType>Application</AppType>
@@ -319,18 +319,18 @@
         <CppCompile Include="..\..\src\tides.c">
             <BuildOrder>38</BuildOrder>
         </CppCompile>
-        <FormResources Include="..\appcmn\viewer.dfm"/>
         <FormResources Include="..\appcmn\timedlg.dfm"/>
+        <FormResources Include="..\appcmn\viewer.dfm"/>
         <FormResources Include="..\appcmn\vieweropt.dfm"/>
-        <FormResources Include="..\rtkpost\kmzconv.dfm"/>
         <FormResources Include="..\rtkpost\extopt.dfm"/>
-        <FormResources Include="..\appcmn\confdlg.dfm"/>
+        <FormResources Include="..\rtkpost\kmzconv.dfm"/>
         <FormResources Include="..\appcmn\aboutdlg.dfm"/>
+        <FormResources Include="..\appcmn\confdlg.dfm"/>
         <FormResources Include="..\appcmn\keydlg.dfm"/>
-        <FormResources Include="..\appcmn\refdlg.dfm"/>
         <FormResources Include="..\appcmn\maskoptdlg.dfm"/>
-        <FormResources Include="..\rtkpost\postopt.dfm"/>
+        <FormResources Include="..\appcmn\refdlg.dfm"/>
         <FormResources Include="..\rtkpost\postmain.dfm"/>
+        <FormResources Include="..\rtkpost\postopt.dfm"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

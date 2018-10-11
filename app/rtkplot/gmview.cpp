@@ -6,8 +6,11 @@
 #include <mshtml.h>
 #include "rtklib.h"
 #include "gmview.h"
+#include "plotmain.h"
 
-#define RTKLIB_GM_FILE L"rtkplot_gm.htm"
+#define RTKLIB_GM_TEMP "rtkplot_gm.htm"
+#define RTKLIB_GM_FILE "rtkplot_gm_a.htm"
+#define URL_GM_API     "http://maps.google.com/maps/api/js"
 
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -23,23 +26,55 @@ __fastcall TGoogleMapView::TGoogleMapView(TComponent* Owner)
 	Lat=Lon=0.0;
 	Zoom=2;
     FixCent=1;
+    WebCreate=0;
 }
 //---------------------------------------------------------------------------
-void __fastcall TGoogleMapView::FormCreate(TObject *Sender)
+void __fastcall TGoogleMapView::FormShow(TObject *Sender)
 {
-    UnicodeString url,exe,dir=L".";
-    wchar_t *p,*q;
+    UnicodeString url;
+    AnsiString exe,dir=".",infile,outfile;
+    FILE *infp, *outfp;
+    char *p,*q,*key=Plot->ApiKey.c_str(),buff[1024];
     
+    if (WebCreate) {
+        return;
+    }
     exe=Application->ExeName; // exe directory
     p=exe.c_str();
-    if ((q=wcsrchr(p,L'\\'))) {
+    if ((q=strrchr(p,'\\'))) {
         dir=exe.SubString(1,q-p);
     }
-    url=L"file://"+dir+L"\\"+RTKLIB_GM_FILE;
+    infile=dir+"\\"+RTKLIB_GM_TEMP;
+    outfile=dir+"\\"+RTKLIB_GM_FILE;
+    
+    if (!(infp=fopen(infile.c_str(),"r"))) {
+        return;
+    }
+    if (!(outfp=fopen(outfile.c_str(),"w"))) {
+        fclose(infp);
+        return;
+    }
+    while (fgets(buff,sizeof(buff),infp)) {
+        
+        if (*key&&(p=strstr(buff,URL_GM_API))) {
+            p+=strlen(URL_GM_API);
+            *p++='\0';
+            fprintf(outfp,"%s?key=%s&%s",buff,key,p);
+        }
+        else {
+            fputs(buff,outfp);
+        }
+    }
+    fclose(infp);
+    fclose(outfp);
+    
+    url="file://"+outfile;
     
     WebBrowser->Navigate(url.c_str());
     
     Timer1->Enabled=true;
+    
+    WebCreate=1;
 }
 //---------------------------------------------------------------------------
 void __fastcall TGoogleMapView::Timer1Timer(TObject *Sender)
@@ -58,6 +93,7 @@ void __fastcall TGoogleMapView::Timer1Timer(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TGoogleMapView::BtnCloseClick(TObject *Sender)
 {
+trace(2,"gmview close\n");
     Close();
 }
 //---------------------------------------------------------------------------
@@ -185,6 +221,10 @@ void __fastcall TGoogleMapView::ExecFunc(AnsiString func)
     ::MultiByteToWideChar(CP_UTF8,0,func.c_str(),-1,func_w,512); 
     hr=win->execScript(func_w,L"javascript",&var);
     VariantClear(&var);
+}
+//---------------------------------------------------------------------------
+void __fastcall TGoogleMapView::FormCreate(TObject *Sender)
+{
 }
 //---------------------------------------------------------------------------
 

@@ -17,6 +17,7 @@ object GoogleMapView: TGoogleMapView
   OldCreateOrder = False
   OnCreate = FormCreate
   OnResize = FormResize
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object Panel1: TPanel

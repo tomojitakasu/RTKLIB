@@ -105,7 +105,7 @@
     <File Path="..\appcmn\vieweropt.cpp"/>
     <File Path="..\appcmn\vieweropt.dfm"/>
     <File Path="..\appcmn\vieweropt.h"/>
-    <File Path="..\..\..\RTKLIB"/>
+    <File Path="Z:\RTKLIB"/>
     <File Path="..\..\src"/>
     <File Path="..\..\src\convgpx.c"/>
     <File Path="..\..\src\convkml.c"/>
