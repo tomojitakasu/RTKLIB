@@ -116,3 +116,7 @@ UPDATE HISTORY
 2017/05/26  2.4.3 b28 fix bug on decoding skytraq extended raw message
                       add rcv/tersus.c to support tersus BX306
 2017/09/02  2.4.3 b29 fix bugs
+2018/10/10  2.4.3 b30 support u-blox zed-f9p
+                      support api-key for gmview of rtkplot
+                      improve galileo sisa, i/nav and f/nav hadling
+                      fix many bugs
