@@ -3101,7 +3101,7 @@ extern int expath(const char *path, char *paths[], int nmax)
     int i,j,n=0;
     char tmp[1024];
 #ifdef WIN32
-    WIN32_FIND_DATA file;
+    WIN32_FIND_DATAA file;
     HANDLE h;
     char dir[1024]="",*p;
     
@@ -3110,12 +3110,12 @@ extern int expath(const char *path, char *paths[], int nmax)
     if ((p=strrchr(path,'\\'))) {
         strncpy(dir,path,p-path+1); dir[p-path+1]='\0';
     }
-    if ((h=FindFirstFile((LPCTSTR)path,&file))==INVALID_HANDLE_VALUE) {
+    if ((h=FindFirstFileA((LPCSTR)path,&file))==INVALID_HANDLE_VALUE) {
         strcpy(paths[0],path);
         return 1;
     }
     sprintf(paths[n++],"%s%s",dir,file.cFileName);
-    while (FindNextFile(h,&file)&&n<nmax) {
+    while (FindNextFileA(h,&file)&&n<nmax) {
         if (file.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY) continue;
         sprintf(paths[n++],"%s%s",dir,file.cFileName);
     }
@@ -3177,7 +3177,7 @@ extern void createdir(const char *path)
     *p='\0';
     
 #ifdef WIN32
-    CreateDirectory(buff,NULL);
+    CreateDirectoryA(buff,NULL);
 #else
     mkdir(buff,0777);
 #endif

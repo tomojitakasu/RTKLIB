@@ -118,7 +118,7 @@ static void outrpos(FILE *fp, const double *r, const solopt_t *opt)
     }
 }
 /* output header -------------------------------------------------------------*/
-static void outheader(FILE *fp, char **file, int n, const prcopt_t *popt,
+static void outheader(FILE *fp, const char **file, int n, const prcopt_t *popt,
                       const solopt_t *sopt)
 {
     const char *s1[]={"GPST","UTC","JST"};
@@ -558,7 +558,7 @@ static void combres(FILE *fp, const prcopt_t *popt, const solopt_t *sopt)
     }
 }
 /* read prec ephemeris, sbas data, lex data, tec grid and open rtcm ----------*/
-static void readpreceph(char **infile, int n, const prcopt_t *prcopt,
+static void readpreceph(const char **infile, int n, const prcopt_t *prcopt,
                         nav_t *nav, sbs_t *sbs, lex_t *lex)
 {
     seph_t seph0={0};
@@ -655,7 +655,7 @@ static void freepreceph(nav_t *nav, sbs_t *sbs, lex_t *lex)
     free_rtcm(&rtcm);
 }
 /* read obs and nav data -----------------------------------------------------*/
-static int readobsnav(gtime_t ts, gtime_t te, double ti, char **infile,
+static int readobsnav(gtime_t ts, gtime_t te, double ti, const char **infile,
                       const int *index, int n, const prcopt_t *prcopt,
                       obs_t *obs, nav_t *nav, sta_t *sta)
 {
@@ -944,7 +944,7 @@ static void readotl(prcopt_t *popt, const char *file, const sta_t *sta)
     }
 }
 /* write header to output file -----------------------------------------------*/
-static int outhead(const char *outfile, char **infile, int n,
+static int outhead(const char *outfile, const char **infile, int n,
                    const prcopt_t *popt, const solopt_t *sopt)
 {
     FILE *fp=stdout;
@@ -976,7 +976,7 @@ static FILE *openfile(const char *outfile)
 /* execute processing session ------------------------------------------------*/
 static int execses(gtime_t ts, gtime_t te, double ti, const prcopt_t *popt,
                    const solopt_t *sopt, const filopt_t *fopt, int flag,
-                   char **infile, const int *index, int n, char *outfile)
+                   const char **infile, const int *index, int n, char *outfile)
 {
     FILE *fp;
     prcopt_t popt_=*popt;
@@ -1102,7 +1102,7 @@ static int execses(gtime_t ts, gtime_t te, double ti, const prcopt_t *popt,
 /* execute processing session for each rover ---------------------------------*/
 static int execses_r(gtime_t ts, gtime_t te, double ti, const prcopt_t *popt,
                      const solopt_t *sopt, const filopt_t *fopt, int flag,
-                     char **infile, const int *index, int n, char *outfile,
+                     const char **infile, const int *index, int n, char *outfile,
                      const char *rov)
 {
     gtime_t t0={0};
@@ -1137,7 +1137,7 @@ static int execses_r(gtime_t ts, gtime_t te, double ti, const prcopt_t *popt,
                 reppath(outfile,ofile,t0,p,"");
                 
                 /* execute processing session */
-                stat=execses(ts,te,ti,popt,sopt,fopt,flag,ifile,index,n,ofile);
+                stat=execses(ts,te,ti,popt,sopt,fopt,flag,(const char**)ifile,index,n,ofile);
             }
             if (stat==1||!q) break;
         }
@@ -1152,7 +1152,7 @@ static int execses_r(gtime_t ts, gtime_t te, double ti, const prcopt_t *popt,
 /* execute processing session for each base station --------------------------*/
 static int execses_b(gtime_t ts, gtime_t te, double ti, const prcopt_t *popt,
                      const solopt_t *sopt, const filopt_t *fopt, int flag,
-                     char **infile, const int *index, int n, char *outfile,
+                     const char **infile, const int *index, int n, char *outfile,
                      const char *rov, const char *base)
 {
     gtime_t t0={0};
@@ -1193,7 +1193,7 @@ static int execses_b(gtime_t ts, gtime_t te, double ti, const prcopt_t *popt,
                 for (i=0;i<n;i++) reppath(infile[i],ifile[i],t0,"",p);
                 reppath(outfile,ofile,t0,"",p);
                 
-                stat=execses_r(ts,te,ti,popt,sopt,fopt,flag,ifile,index,n,ofile,rov);
+                stat=execses_r(ts,te,ti,popt,sopt,fopt,flag,(const char**)ifile,index,n,ofile,rov);
             }
             if (stat==1||!q) break;
         }
@@ -1254,7 +1254,7 @@ static int execses_b(gtime_t ts, gtime_t te, double ti, const prcopt_t *popt,
 *-----------------------------------------------------------------------------*/
 extern int postpos(gtime_t ts, gtime_t te, double ti, double tu,
                    const prcopt_t *popt, const solopt_t *sopt,
-                   const filopt_t *fopt, char **infile, int n, char *outfile,
+                   const filopt_t *fopt, const char **infile, int n, char *outfile,
                    const char *rov, const char *base)
 {
     gtime_t tts,tte,ttte;
@@ -1327,7 +1327,7 @@ extern int postpos(gtime_t ts, gtime_t te, double ti, double tu,
             if (!reppath(outfile,ofile,tts,"","")&&i>0) flag=0;
             
             /* execute processing session */
-            stat=execses_b(tts,tte,ti,popt,sopt,fopt,flag,ifile,index,nf,ofile,
+            stat=execses_b(tts,tte,ti,popt,sopt,fopt,flag,(const char**)ifile,index,nf,ofile,
                            rov,base);
             
             if (stat==1) break;
@@ -1346,7 +1346,7 @@ extern int postpos(gtime_t ts, gtime_t te, double ti, double tu,
         reppath(outfile,ofile,ts,"","");
         
         /* execute processing session */
-        stat=execses_b(ts,te,ti,popt,sopt,fopt,1,ifile,index,n,ofile,rov,
+        stat=execses_b(ts,te,ti,popt,sopt,fopt,1,(const char**)ifile,index,n,ofile,rov,
                        base);
         
         for (i=0;i<n&&i<MAXINFILE;i++) free(ifile[i]);

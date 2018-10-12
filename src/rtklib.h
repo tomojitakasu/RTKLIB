@@ -1401,7 +1401,7 @@ extern const solopt_t solopt_default; /* default solution output options */
 extern const sbsigpband_t igpband1[9][8]; /* SBAS IGP band 0-8 */
 extern const sbsigpband_t igpband2[2][5]; /* SBAS IGP band 9-10 */
 extern const char *formatstrs[];     /* stream format strings */
-extern opt_t sysopts[];              /* system options table */
+extern const opt_t sysopts[];              /* system options table */
 
 /* satellites, systems, codes functions --------------------------------------*/
 EXPORT int  satno   (int sys, int prn);
@@ -1592,7 +1592,7 @@ EXPORT int outrnxnavb (FILE *fp, const rnxopt_t *opt, const eph_t *eph);
 EXPORT int outrnxgnavb(FILE *fp, const rnxopt_t *opt, const geph_t *geph);
 EXPORT int outrnxhnavb(FILE *fp, const rnxopt_t *opt, const seph_t *seph);
 EXPORT int rtk_uncompress(const char *file, char *uncfile);
-EXPORT int convrnx(int format, rnxopt_t *opt, const char *file, char **ofile);
+EXPORT int convrnx(int format, rnxopt_t *opt, const char *file, const char **ofile);
 EXPORT int  init_rnxctr (rnxctr_t *rnx);
 EXPORT void free_rnxctr (rnxctr_t *rnx);
 EXPORT int  open_rnxctr (rnxctr_t *rnx, FILE *fp);
@@ -1764,11 +1764,11 @@ EXPORT double sbstropcorr(gtime_t time, const double *pos, const double *azel,
                           double *var);
 
 /* options functions ---------------------------------------------------------*/
-EXPORT opt_t *searchopt(const char *name, const opt_t *opts);
-EXPORT int str2opt(opt_t *opt, const char *str);
+EXPORT const opt_t *searchopt(const char *name, const opt_t *opts);
+EXPORT int str2opt(const opt_t *opt, const char *str);
 EXPORT int opt2str(const opt_t *opt, char *str);
 EXPORT int opt2buf(const opt_t *opt, char *buff);
-EXPORT int loadopts(const char *file, opt_t *opts);
+EXPORT int loadopts(const char *file, const opt_t *opts);
 EXPORT int saveopts(const char *file, const char *mode, const char *comment,
                     const opt_t *opts);
 EXPORT void resetsysopts(void);
@@ -1838,7 +1838,7 @@ EXPORT int pppcorr_stec(const pppcorr_t *corr, gtime_t time, const double *pos,
 /* post-processing positioning -----------------------------------------------*/
 EXPORT int postpos(gtime_t ts, gtime_t te, double ti, double tu,
                    const prcopt_t *popt, const solopt_t *sopt,
-                   const filopt_t *fopt, char **infile, int n, char *outfile,
+                   const filopt_t *fopt, const char **infile, int n, char *outfile,
                    const char *rov, const char *base);
 
 /* stream server functions ---------------------------------------------------*/
