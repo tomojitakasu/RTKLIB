@@ -59,12 +59,17 @@
 *           2017/06/10 1.24 output half-cycle-subtracted flag
 *           2018/10/09 1.25 support ZED-F9P according to [5]
 *                           beidou C17 is handled as GEO (navigation D2).
+*           2018/11/05 1.26 fix problem on missing QZSS L2C signal
+*                           save signal in obs data by signal index
+*                           suppress warning for cnav in ubx-rxm-sfrbx
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
 #define UBXSYNC1    0xB5        /* ubx message sync code 1 */
 #define UBXSYNC2    0x62        /* ubx message sync code 2 */
 #define UBXCFG      0x06        /* ubx message cfg-??? */
+
+#define PREAMB_CNAV 0x8B        /* cnav preamble */
 
 #define ID_NAVSOL   0x0106      /* ubx message id: nav solution info */
 #define ID_NAVTIME  0x0120      /* ubx message id: nav time gps */
@@ -151,10 +156,14 @@ static int ubx_sys(int gnssid)
 /* ubx sigid to signal ([5] Appendix B) --------------------------------------*/
 static int ubx_sig(int sys, int sigid)
 {
-    if (sys == SYS_GPS || sys == SYS_QZS) {
+    if (sys == SYS_GPS) {
         if (sigid == 0) return CODE_L1C; /* L1C/A */
         if (sigid == 3) return CODE_L2L; /* L2CL */
         if (sigid == 4) return CODE_L2M; /* L2CM */
+    }
+    else if (sys == SYS_GLO) {
+        if (sigid == 0) return CODE_L1C; /* G1C/A (GLO L1 OF) */
+        if (sigid == 2) return CODE_L2C; /* G2C/A (GLO L2 OF) */
     }
     else if (sys == SYS_GAL) {
         if (sigid == 0) return CODE_L1C; /* E1C */
@@ -162,20 +171,51 @@ static int ubx_sig(int sys, int sigid)
         if (sigid == 5) return CODE_L7I; /* E5bI */
         if (sigid == 6) return CODE_L7Q; /* E5bQ */
     }
+    else if (sys == SYS_QZS) {
+        if (sigid == 0) return CODE_L1C; /* L1C/A */
+        if (sigid == 5) return CODE_L2L; /* L2CL (not specified in [5]) */
+    }
     else if (sys == SYS_CMP) {
         if (sigid == 0) return CODE_L1I; /* B1I D1 (rinex 3.02) */
         if (sigid == 1) return CODE_L1I; /* B1I D2 (rinex 3.02) */
         if (sigid == 2) return CODE_L7I; /* B2I D1 */
         if (sigid == 3) return CODE_L7I; /* B2I D2 */
     }
-    else if (sys == SYS_GLO) {
-        if (sigid == 0) return CODE_L1C; /* G1C/A (GLO L1 OF) */
-        if (sigid == 2) return CODE_L2C; /* G2C/A (GLO L2 OF) */
-    }
     else if (sys == SYS_SBS) {
-        return CODE_L1C; /* L1C/A */
+        return CODE_L1C; /* L1C/A (not in [5]) */
     }
     return CODE_NONE;
+}
+/* signal index in obs data --------------------------------------------------*/
+static int sig_idx(int sys, int code)
+{
+    if (sys == SYS_GPS) {
+        if (code==CODE_L1C) return 1;
+        if (code==CODE_L2L) return 2;
+        if (code==CODE_L2M) return NFREQ+1;
+    }
+    else if (sys == SYS_GLO) {
+        if (code==CODE_L1C) return 1;
+        if (code==CODE_L2C) return 2;
+    }
+    else if (sys == SYS_GAL) {
+        if (code==CODE_L1C) return 1;
+        if (code==CODE_L1B) return NFREQ+1;
+        if (code==CODE_L7Q) return (NFREQ>=5)?5:NFREQ+1;
+        if (code==CODE_L7I) return (NFREQ>=5)?NFREQ+1:NFREQ+2;
+    }
+    else if (sys == SYS_QZS) {
+        if (code==CODE_L1C) return 1;
+        if (code==CODE_L2L) return 2;
+    }
+    else if (sys == SYS_CMP) {
+        if (code==CODE_L1I) return 1;
+        if (code==CODE_L7I) return 2;
+    }
+    else if (sys == SYS_SBS) {
+        if (code==CODE_L1C) return 1;
+    }
+    return 0;
 }
 /* freq index to frequency ---------------------------------------------------*/
 static double sig_freq(int sys, int f, int fcn)
@@ -283,7 +323,7 @@ static int decode_rxmrawx(raw_t *raw)
 {
     gtime_t time;
     unsigned char *p=raw->buff+6;
-    char *q;
+    char *q,tstr[64];
     double tow,P,L,D,tn,tadj=0.0,toff=0.0;
     int i,j,k,f,sys,prn,sat,code,slip,halfv,halfc,LLI,n=0,std_slip=0;
     int week,nmeas,ver,gnss,svid,sigid,frqid,lockt,cn0,cpstd,tstat;
@@ -310,8 +350,9 @@ static int decode_rxmrawx(raw_t *raw)
     time=gpst2time(week,tow);
     
     if (raw->outtype) {
+        time2str(time,tstr,2);
         sprintf(raw->msgtype,"UBX RXM-RAWX  (%4d): time=%s nmeas=%d ver=%d",
-                raw->len,time_str(time,2),nmeas,ver);
+                raw->len,tstr,nmeas,ver);
     }
     /* time tag adjustment option (-TADJ) */
     if ((q=strstr(raw->opt,"-TADJ="))) {
@@ -360,10 +401,11 @@ static int decode_rxmrawx(raw_t *raw)
         else {
             code=(sys==SYS_CMP)?CODE_L1I:((sys==SYS_GAL)?CODE_L1X:CODE_L1C);
         }
-        code2obs(code,&f); /* freq index */
+        /* signal index in obs data */
+        f=sig_idx(sys,code);
         
-        if (f==0||f>NFREQ) {
-            trace(2,"ubx rxmrawx signal error: sys=%2d code=%2d\n",sys,code);
+        if (f==0||f>NFREQ+NEXOBS) {
+            trace(2,"ubx rxmrawx signal error: sat=%2d sigid=%d\n",sat,sigid);
             continue;
         }
         /* offset by time tag adjustment */
@@ -799,11 +841,17 @@ static int decode_nav(raw_t *raw, int sat, int off)
         trace(2,"ubx rawsfrbx length error: sat=%d len=%d\n",sat,raw->len);
         return -1;
     }
+    if ((U4(p)>>24)==PREAMB_CNAV) {
+        trace(3,"ubx rawsfrbx cnav not supported sat=%d prn=%d\n",sat,
+              (U4(p)>>18)&0x3F);
+        return 0;
+    }
     for (i=0;i<10;i++,p+=4) words[i]=U4(p)>>6; /* 24 bits without parity */
     
     id=(words[1]>>2)&7;
     if (id<1||5<id) {
-        trace(2,"ubx rawsfrbx subfrm id error: sat=%2d id=%d\n",sat,id);
+        trace(2,"ubx rawsfrbx subfrm id error: sat=%2d id=%d len=%d\n",sat,id,
+              raw->len);
         return -1;
     }
     for (i=0;i<10;i++) {

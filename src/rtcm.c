@@ -48,6 +48,7 @@
 *                           crc24q() -> rtk_crc24q()
 *           2018/10/10 1.10 fix bug on initializing rtcm struct
 *                           add rtcm option -GALINAV, -GALFNAV
+*           2018/11/05 1.11 add notes for api gen_rtcm3()
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -347,6 +348,12 @@ extern int gen_rtcm2(rtcm_t *rtcm, int type, int sync)
 *          int    type    I  message type
 *          int    sync    I  sync flag (1:another message follows)
 * return : status (1:ok,0:error)
+* notes  : For rtcm 3 msm, the {nsat} x {nsig} in rtcm->obs should not exceed
+*          64. If {nsat} x {nsig} of the input obs data exceeds 64, separate
+*          them to multiple ones and call gen_rtcm3() multiple times as user
+*          responsibility.
+*          ({nsat} = number of valid satellites, {nsig} = number of signals in
+*          the obs data) 
 *-----------------------------------------------------------------------------*/
 extern int gen_rtcm3(rtcm_t *rtcm, int type, int sync)
 {

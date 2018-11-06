@@ -36,6 +36,7 @@
 *                           fix problem on eph.code for galileo ephemeris
 *                           change mt for ssr 7 phase biases
 *                           add rtcm option -GALINAV, -GALFNAV
+*           2018/11/05 1.20 fix problem on invalid time in message monitor
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -220,7 +221,7 @@ static int test_staid(rtcm_t *rtcm, int staid)
 static int decode_head1001(rtcm_t *rtcm, int *sync)
 {
     double tow;
-    char *msg;
+    char *msg,tstr[64];
     int i=24,staid,nsat,type;
     
     type=getbitu(rtcm->buff,i,12); i+=12;
@@ -240,13 +241,12 @@ static int decode_head1001(rtcm_t *rtcm, int *sync)
     
     adjweek(rtcm,tow);
     
-    trace(4,"decode_head1001: time=%s nsat=%d sync=%d\n",time_str(rtcm->time,2),
-          nsat,*sync);
+    time2str(rtcm->time,tstr,2);
+    trace(4,"decode_head1001: time=%s nsat=%d sync=%d\n",tstr,nsat,*sync);
     
     if (rtcm->outtype) {
         msg=rtcm->msgtype+strlen(rtcm->msgtype);
-        sprintf(msg," staid=%4d %s nsat=%2d sync=%d",staid,
-                time_str(rtcm->time,2),nsat,*sync);
+        sprintf(msg," staid=%4d %s nsat=%2d sync=%d",staid,tstr,nsat,*sync);
     }
     return nsat;
 }
@@ -523,7 +523,7 @@ static int decode_type1008(rtcm_t *rtcm)
 static int decode_head1009(rtcm_t *rtcm, int *sync)
 {
     double tod;
-    char *msg;
+    char *msg,tstr[64];
     int i=24,staid,nsat,type;
     
     type=getbitu(rtcm->buff,i,12); i+=12;
@@ -543,13 +543,12 @@ static int decode_head1009(rtcm_t *rtcm, int *sync)
     
     adjday_glot(rtcm,tod);
     
-    trace(4,"decode_head1009: time=%s nsat=%d sync=%d\n",time_str(rtcm->time,2),
-          nsat,*sync);
+    time2str(rtcm->time,tstr,2);
+    trace(4,"decode_head1009: time=%s nsat=%d sync=%d\n",tstr,nsat,*sync);
     
     if (rtcm->outtype) {
         msg=rtcm->msgtype+strlen(rtcm->msgtype);
-        sprintf(msg," staid=%4d %s nsat=%2d sync=%d",staid,
-                time_str(rtcm->time,2),nsat,*sync);
+        sprintf(msg," staid=%4d %s nsat=%2d sync=%d",staid,tstr,nsat,*sync);
     }
     return nsat;
 }
@@ -1271,7 +1270,7 @@ static int decode_ssr1_head(rtcm_t *rtcm, int sys, int *sync, int *iod,
                             double *udint, int *refd, int *hsize)
 {
     double tod,tow;
-    char *msg;
+    char *msg,tstr[64];
     int i=24+12,nsat,udi,provid=0,solid=0,ns;
     
     ns=sys==SYS_QZS?4:6;
@@ -1295,13 +1294,14 @@ static int decode_ssr1_head(rtcm_t *rtcm, int sys, int *sync, int *iod,
     nsat  =getbitu(rtcm->buff,i,ns); i+=ns;
     *udint=ssrudint[udi];
     
+    time2str(rtcm->time,tstr,2);
     trace(4,"decode_ssr1_head: time=%s sys=%d nsat=%d sync=%d iod=%d provid=%d solid=%d\n",
-          time_str(rtcm->time,2),sys,nsat,*sync,*iod,provid,solid);
+          tstr,sys,nsat,*sync,*iod,provid,solid);
     
     if (rtcm->outtype) {
         msg=rtcm->msgtype+strlen(rtcm->msgtype);
-        sprintf(msg," %s nsat=%2d iod=%2d udi=%2d sync=%d",
-                time_str(rtcm->time,2),nsat,*iod,udi,*sync);
+        sprintf(msg," %s nsat=%2d iod=%2d udi=%2d sync=%d",tstr,nsat,*iod,udi,
+                *sync);
     }
     *hsize=i;
     return nsat;
@@ -1311,7 +1311,7 @@ static int decode_ssr2_head(rtcm_t *rtcm, int sys, int *sync, int *iod,
                             double *udint, int *hsize)
 {
     double tod,tow;
-    char *msg;
+    char *msg,tstr[64];
     int i=24+12,nsat,udi,provid=0,solid=0,ns;
     
     ns=sys==SYS_QZS?4:6;
@@ -1334,13 +1334,14 @@ static int decode_ssr2_head(rtcm_t *rtcm, int sys, int *sync, int *iod,
     nsat  =getbitu(rtcm->buff,i,ns); i+=ns;
     *udint=ssrudint[udi];
     
+    time2str(rtcm->time,tstr,2);
     trace(4,"decode_ssr2_head: time=%s sys=%d nsat=%d sync=%d iod=%d provid=%d solid=%d\n",
-          time_str(rtcm->time,2),sys,nsat,*sync,*iod,provid,solid);
+          tstr,sys,nsat,*sync,*iod,provid,solid);
     
     if (rtcm->outtype) {
         msg=rtcm->msgtype+strlen(rtcm->msgtype);
-        sprintf(msg," %s nsat=%2d iod=%2d udi=%2d sync=%d",
-                time_str(rtcm->time,2),nsat,*iod,udi,*sync);
+        sprintf(msg," %s nsat=%2d iod=%2d udi=%2d sync=%d",tstr,nsat,*iod,udi,
+                *sync);
     }
     *hsize=i;
     return nsat;
@@ -1650,7 +1651,7 @@ static int decode_ssr7_head(rtcm_t *rtcm, int sys, int *sync, int *iod,
                             double *udint, int *dispe, int *mw, int *hsize)
 {
     double tod,tow;
-    char *msg;
+    char *msg,tstr[64];
     int i=24+12,nsat,udi,provid=0,solid=0,ns;
     
     ns=sys==SYS_QZS?4:6;
@@ -1675,13 +1676,14 @@ static int decode_ssr7_head(rtcm_t *rtcm, int sys, int *sync, int *iod,
     nsat  =getbitu(rtcm->buff,i,ns); i+=ns;
     *udint=ssrudint[udi];
     
+    time2str(rtcm->time,tstr,2);
     trace(4,"decode_ssr7_head: time=%s sys=%d nsat=%d sync=%d iod=%d provid=%d solid=%d\n",
-          time_str(rtcm->time,2),sys,nsat,*sync,*iod,provid,solid);
+          tstr,sys,nsat,*sync,*iod,provid,solid);
     
     if (rtcm->outtype) {
         msg=rtcm->msgtype+strlen(rtcm->msgtype);
-        sprintf(msg," %s nsat=%2d iod=%2d udi=%2d sync=%d",
-                time_str(rtcm->time,2),nsat,*iod,udi,*sync);
+        sprintf(msg," %s nsat=%2d iod=%2d udi=%2d sync=%d",tstr,nsat,*iod,udi,
+                *sync);
     }
     *hsize=i;
     return nsat;
@@ -1897,7 +1899,7 @@ static int decode_msm_head(rtcm_t *rtcm, int sys, int *sync, int *iod,
 {
     msm_h_t h0={0};
     double tow,tod;
-    char *msg;
+    char *msg,tstr[64];
     int i=24,j,dow,mask,staid,type,ncell=0;
     
     type=getbitu(rtcm->buff,i,12); i+=12;
@@ -1959,13 +1961,14 @@ static int decode_msm_head(rtcm_t *rtcm, int sys, int *sync, int *iod,
     }
     *hsize=i;
     
+    time2str(rtcm->time,tstr,2);
     trace(4,"decode_head_msm: time=%s sys=%d staid=%d nsat=%d nsig=%d sync=%d iod=%d ncell=%d\n",
-          time_str(rtcm->time,2),sys,staid,h->nsat,h->nsig,*sync,*iod,ncell);
+          tstr,sys,staid,h->nsat,h->nsig,*sync,*iod,ncell);
     
     if (rtcm->outtype) {
         msg=rtcm->msgtype+strlen(rtcm->msgtype);
         sprintf(msg," staid=%4d %s nsat=%2d nsig=%2d iod=%2d ncell=%2d sync=%d",
-                staid,time_str(rtcm->time,2),h->nsat,h->nsig,*iod,ncell,*sync);
+                staid,tstr,h->nsat,h->nsig,*iod,ncell,*sync);
     }
     return ncell;
 }
