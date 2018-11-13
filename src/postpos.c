@@ -1014,8 +1014,11 @@ static int execses(gtime_t ts, gtime_t te, double ti, const prcopt_t *popt,
         }
     }
     /* read obs and nav data */
-    if (!readobsnav(ts,te,ti,infile,index,n,&popt_,&obss,&navs,stas)) return 0;
-    
+    if (!readobsnav(ts,te,ti,infile,index,n,&popt_,&obss,&navs,stas)) {
+		/* free obs and nav data */
+		freeobsnav(&obss, &navs);
+		return 0;
+	}
     /* read dcb parameters */
     if (*fopt->dcb) {
         reppath(fopt->dcb,path,ts,"","");
