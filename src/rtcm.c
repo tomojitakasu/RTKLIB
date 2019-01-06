@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * rtcm.c : rtcm functions
 *
-*          Copyright (C) 2009-2016 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2009-2018 by T.TAKASU, All rights reserved.
 *
 * references :
 *     [1] RTCM Recommended Standards for Differential GNSS (Global Navigation
@@ -27,6 +27,8 @@
 *          Systems) Services - version 3, with amendment 1/2, november 7, 2013
 *     [16] Proposal of new RTCM SSR Messages (ssr_1_gal_qzss_sbas_dbs_v05)
 *          2014/04/17
+*     [17] RTCM Standard 10403.2, Differential GNSS (Global Navigation Satellite
+*          Systems) Services - version 3, October 7, 2016
 *
 * version : $Revision:$ $Date:$
 * history : 2009/04/10 1.0  new
@@ -42,7 +44,11 @@
 *                           add options to select used codes for msm
 *           2013/04/27 1.7  comply with rtcm 3.2 with amendment 1/2 (ref[15])
 *           2013/12/06 1.8  support SBAS/BeiDou SSR messages (ref[16])
-*           2016/07/29 1.9  crc24q() -> rtk_crc24q()
+*           2018/01/29 1.9  support RTCM 3.3 (ref[17])
+*                           crc24q() -> rtk_crc24q()
+*           2018/10/10 1.10 fix bug on initializing rtcm struct
+*                           add rtcm option -GALINAV, -GALFNAV
+*           2018/11/05 1.11 add notes for api gen_rtcm3()
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -209,9 +215,11 @@ extern int input_rtcm2(rtcm_t *rtcm, unsigned char data)
 *          -ELss    : select signal ss for GAL MSM (ss=1C,1B,...)
 *          -JLss    : select signal ss for QZS MSM (ss=1C,2C,...)
 *          -CLss    : select signal ss for BDS MSM (ss=2I,7I,...)
+*          -GALINAV : input only I/NAV for galileo ephemeris
+*          -GALFNAV : input only F/NAV for galileo ephemeris
 *
 *          supported RTCM 3 messages
-*                  (ref [2][3][4][5][6][7][8][9][10][11][12][13][14][15])
+*             (ref [2][3][4][5][6][7][8][9][10][11][12][13][14][15][16][17])
 *
 *            TYPE       GPS     GLOASS    GALILEO    QZSS     BEIDOU     SBAS
 *         ----------------------------------------------------------------------
@@ -220,16 +228,16 @@ extern int input_rtcm2(rtcm_t *rtcm, unsigned char data)
 *              C-L12 : 1003~     1011~       -         -         -         -
 *              F-L12 : 1004      1012        -         -         -         -
 *
-*          NAV       : 1019      1020      1045*     1044*     1047*       -
-*                        -         -       1046*       -         -         -
+*          NAV       : 1019      1020      1045      1044      1042        -
+*                        -         -       1046        -         63*       -
 *
-*          MSM 1     : 1071~     1081~     1091~     1111*~    1121*~    1101*~
-*              2     : 1072~     1082~     1092~     1112*~    1122*~    1102*~
-*              3     : 1073~     1083~     1093~     1113*~    1123*~    1103*~
-*              4     : 1074      1084      1094      1114*     1124*     1104*
-*              5     : 1075      1085      1095      1115*     1125*     1105*
-*              6     : 1076      1086      1096      1116*     1126*     1106*
-*              7     : 1077      1087      1097      1117*     1127*     1107*
+*          MSM 1     : 1071~     1081~     1091~     1111~     1121~     1101~
+*              2     : 1072~     1082~     1092~     1112~     1122~     1102~
+*              3     : 1073~     1083~     1093~     1113~     1123~     1103~
+*              4     : 1074      1084      1094      1114      1124      1104
+*              5     : 1075      1085      1095      1115      1125      1105
+*              6     : 1076      1086      1096      1116      1126      1106
+*              7     : 1077      1087      1097      1117      1127      1107
 *
 *          SSR OBT   : 1057      1063      1240*     1246*     1258*       -
 *              CLK   : 1058      1064      1241*     1247*     1259*       -
@@ -340,6 +348,12 @@ extern int gen_rtcm2(rtcm_t *rtcm, int type, int sync)
 *          int    type    I  message type
 *          int    sync    I  sync flag (1:another message follows)
 * return : status (1:ok,0:error)
+* notes  : For rtcm 3 msm, the {nsat} x {nsig} in rtcm->obs should not exceed
+*          64. If {nsat} x {nsig} of the input obs data exceeds 64, separate
+*          them to multiple ones and call gen_rtcm3() multiple times as user
+*          responsibility.
+*          ({nsat} = number of valid satellites, {nsig} = number of signals in
+*          the obs data) 
 *-----------------------------------------------------------------------------*/
 extern int gen_rtcm3(rtcm_t *rtcm, int type, int sync)
 {

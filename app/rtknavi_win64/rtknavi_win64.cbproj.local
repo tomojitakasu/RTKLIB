@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <BorlandProject>
 	<Transactions>
-    <Transaction>2012/05/13 18:34:08.000.532,D:\proj\rtklib\app\rtknavi_mkl\rtknavi_mkl.cbproj=D:\proj\rtklib\app\rtknavi\rtknavi.cbproj</Transaction>
+    <Transaction>2012/05/13 18:34:08.000.532,D:\proj\rtklib\app\rtknavi\rtknavi.cbproj=D:\proj\rtklib\app\rtknavi_mkl\rtknavi_mkl.cbproj</Transaction>
     <Transaction>2014/08/26 09:32:22.000.166,=D:\proj\RTKLIB\src\rcv\rt17.c</Transaction>
     <Transaction>2015/05/25 15:33:32.000.188,=D:\proj\RTKLIB\src\ppp_corr.c</Transaction>
     <Transaction>2015/05/25 15:33:32.000.190,=D:\proj\RTKLIB\src\tides.c</Transaction>
@@ -12,7 +12,7 @@
     <Transaction>2016/08/20 15:41:35.000.944,C:\Program Files (x86)\Borland\BDS\4.0\lib\release\vclx.lib=</Transaction>
     <Transaction>2016/08/20 15:55:50.000.950,D:\proj\RTKLIB\lib\omf\mkl_lapack_omf.lib=</Transaction>
     <Transaction>2016/08/20 15:55:51.000.033,D:\proj\RTKLIB\lib\omf\mkl_p4p_omf.lib=</Transaction>
-    <Transaction>2016/08/20 15:57:14.000.348,D:\proj\RTKLIB\app\rtknavi_win64\rtknavi_mkl.cbproj=D:\proj\RTKLIB\app\rtknavi_win64\rtknavi_win64.cbproj</Transaction>
+    <Transaction>2016/08/20 15:57:14.000.348,D:\proj\RTKLIB\app\rtknavi_win64\rtknavi_win64.cbproj=D:\proj\RTKLIB\app\rtknavi_win64\rtknavi_mkl.cbproj</Transaction>
     <Transaction>2017/05/26 21:09:51.000.323,=D:\proj\RTKLIB\src\rcv\tersus.c</Transaction>
   </Transactions>
 </BorlandProject>

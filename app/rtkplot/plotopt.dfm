@@ -4,7 +4,7 @@ object PlotOptDialog: TPlotOptDialog
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Options'
-  ClientHeight = 397
+  ClientHeight = 421
   ClientWidth = 552
   Color = clWhite
   Font.Charset = DEFAULT_CHARSET
@@ -26,12 +26,14 @@ object PlotOptDialog: TPlotOptDialog
     Left = 0
     Top = 0
     Width = 552
-    Height = 395
+    Height = 417
     Align = alTop
     BevelOuter = bvNone
     Color = clWhite
     ParentBackground = False
     TabOrder = 2
+    ExplicitLeft = 4
+    ExplicitTop = -4
     object Label1: TLabel
       Left = 373
       Top = 123
@@ -360,6 +362,13 @@ object PlotOptDialog: TPlotOptDialog
       Width = 67
       Height = 13
       Caption = 'Max Multipath'
+    end
+    object Label38: TLabel
+      Left = 193
+      Top = 369
+      Width = 95
+      Height = 13
+      Caption = 'API Key for GMView'
     end
     object Panel1: TPanel
       Left = 361
@@ -1231,10 +1240,17 @@ object PlotOptDialog: TPlotOptDialog
       TabOrder = 61
       OnClick = ChkTimeSyncClick
     end
+    object ApiKey: TEdit
+      Left = 292
+      Top = 364
+      Width = 253
+      Height = 21
+      TabOrder = 62
+    end
   end
   object BtnCancel: TButton
-    Left = 453
-    Top = 366
+    Left = 455
+    Top = 388
     Width = 92
     Height = 29
     Caption = '&Cancel'
@@ -1242,8 +1258,8 @@ object PlotOptDialog: TPlotOptDialog
     TabOrder = 1
   end
   object BtnOK: TButton
-    Left = 360
-    Top = 366
+    Left = 363
+    Top = 388
     Width = 92
     Height = 29
     Caption = '&OK'
@@ -1252,8 +1268,8 @@ object PlotOptDialog: TPlotOptDialog
     OnClick = BtnOKClick
   end
   object ColorDialog: TColorDialog
-    Left = 118
-    Top = 350
+    Left = 22
+    Top = 374
   end
   object FontDialog: TFontDialog
     Font.Charset = DEFAULT_CHARSET
@@ -1262,15 +1278,15 @@ object PlotOptDialog: TPlotOptDialog
     Font.Name = 'Tahoma'
     Font.Style = []
     Options = []
-    Left = 175
-    Top = 349
+    Left = 95
+    Top = 373
   end
   object OpenDialog: TOpenDialog
     Filter = 
       'Text File (*.txt)|*.txt|Position File (*.pos,*.snx)|*.pos;*.snx|' +
       'All File (*.*)|*.*'
     Options = [ofHideReadOnly, ofNoChangeDir, ofEnableSizing]
-    Left = 148
-    Top = 350
+    Left = 60
+    Top = 374
   end
 end

@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * ppp.c : precise point positioning
 *
-*          Copyright (C) 2010-2016 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2010-2018 by T.TAKASU, All rights reserved.
 *
 * options : -DIERS_MODEL  use IERS tide model
 *           -DOUTSTAT_AMB output ambiguity parameters to solution status
@@ -56,6 +56,7 @@
 *                           support support option opt->pppopt=-GAP_RESION=nnnn
 *           2016/01/22 1.12 delete support for yaw-model bug
 *                           add support for ura of ephemeris
+*           2018/10/10 1.13 support api change of satexclude()
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -956,7 +957,7 @@ static int ppp_res(int post, const obsd_t *obs, int n, const double *rs,
             continue;
         }
         if (!(sys=satsys(sat,NULL))||!rtk->ssat[sat-1].vs||
-            satexclude(obs[i].sat,svh[i],opt)||exc[i]) {
+            satexclude(obs[i].sat,var_rs[i],svh[i],opt)||exc[i]) {
             exc[i]=1;
             continue;
         }

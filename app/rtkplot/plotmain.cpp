@@ -2811,6 +2811,7 @@ void __fastcall TPlot::LoadOpt(void)
     Font->Size=ini->ReadInteger("plot","fontsize",8);
     
     RnxOpts   =ini->ReadString ("plot","rnxopts","");
+    ApiKey    =ini->ReadString ("plot","apikey" ,"");
     
     for (i=0;i<11;i++) {
         geopts[i]=ini->ReadInteger("ge",s.sprintf("geopts_%d",i),0);
@@ -2950,6 +2951,7 @@ void __fastcall TPlot::SaveOpt(void)
     ini->WriteInteger("plot","fontsize",     Font->Size    );
     
     ini->WriteString ("plot","rnxopts",      RnxOpts       );
+    ini->WriteString ("plot","apikey",       ApiKey        );
     
     GoogleEarthView->GetOpts(geopts);
     for (i=0;i<11;i++) {

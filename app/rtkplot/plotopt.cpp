@@ -94,6 +94,7 @@ void __fastcall TPlotOptDialog::FormShow(TObject *Sender)
     EditTimeSync->Text=s.sprintf("%d",Plot->TimeSyncPort);
     QcCmd  ->Text=Plot->QcCmd;
     RnxOpts->Text=Plot->RnxOpts;
+    ApiKey ->Text=Plot->ApiKey;
     TLEFile->Text=Plot->TLEFile;
     TLESatFile->Text=Plot->TLESatFile;
     
@@ -164,6 +165,7 @@ void __fastcall TPlotOptDialog::BtnOKClick(TObject *Sender)
     Plot->ExSats=ExSats->Text;
     Plot->QcCmd =QcCmd->Text;
     Plot->RnxOpts=RnxOpts->Text;
+    Plot->ApiKey=ApiKey->Text;
     Plot->TLEFile=TLEFile->Text;
     Plot->TLESatFile=TLESatFile->Text;
 }

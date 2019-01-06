@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * javad.c : javad receiver dependent functions
 *
-*          Copyright (C) 2011-2014 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2011-2018 by T.TAKASU, All rights reserved.
 *
 * reference :
 *     [1] Javad GNSS, GREIS GNSS Receiver External Interface Specification,
@@ -16,6 +16,8 @@
 *         Reflects Firmware Version 3.5.4, January 30, 2014
 *     [6] Javad GNSS, GREIS GNSS Receiver External Interface Specification,
 *         Reflects Firmware Version 3.6.7, August 25, 2016
+*     [7] Javad GNSS, GREIS GNSS Receiver External Interface Specification,
+*         Reflects Firmware Version 3.7.2, October 11, 2017
 *
 * version : $Revision:$ $Date:$
 * history : 2011/05/27 1.0  new
@@ -36,6 +38,11 @@
 *                           fix bug on unchange-test for beidou ephemeris
 *                           update Asys coef for [r*] short pseudorange by [6]
 *                           (char *) -> (signed char *)
+*           2018/10/10 1.14 update signal allocation by ref [7]
+*                           update Ksys value for galileo by ref [7]
+*                           fix problem to set eph->code for beidou and galileo
+*                           fix bug on saving galileo bgd to ephemeris
+*                           add receiver option -GALINAV, -GALFNAV
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -87,7 +94,7 @@ static int is_meas(char sig)
 /* convert signal to frequency and obs type ----------------------------------*/
 static int tofreq(char sig, int sys, int *type)
 {
-    const unsigned char types[7][6]={ /* ref [6] table 3-7 */
+    const unsigned char types[7][6]={ /* ref [7] table 3-8 */
         /*  c/C       1        2        3        5        l  */
         /* (CA/L1    P/L1     P/L2    CA/L2      L5      L1C) */
         {CODE_L1C,CODE_L1W,CODE_L2W,CODE_L2X,CODE_L5X,CODE_L1X}, /* GPS */
@@ -95,12 +102,12 @@ static int tofreq(char sig, int sys, int *type)
         {CODE_L1C,0       ,0       ,0       ,CODE_L5X,0       }, /* SBS */
         {CODE_L1X,CODE_L8X,CODE_L7X,CODE_L6X,CODE_L5X,0       }, /* GAL */
         {CODE_L1C,CODE_L1P,CODE_L2P,CODE_L2C,CODE_L3X,0       }, /* GLO */
-        {CODE_L1I,0       ,0       ,CODE_L6I,CODE_L7I,0       }, /* BDS */
+        {CODE_L1I,0       ,CODE_L7I,CODE_L6I,CODE_L5X,CODE_L1X}, /* BDS */
         {0       ,0       ,0       ,0       ,CODE_L5X,0       }  /* IRN */
     };
     const int freqs[7][6]={
         {1,1,2,2,3,1}, {1,1,4,2,3,1}, {1,0,0,0,3,0},     /* GPS,QZS,SBS */
-        {1,6,5,4,3,0}, {1,1,2,2,3,0}, {1,0,0,3,2,0},     /* GAL,GLO,BDS */
+        {1,6,5,4,3,0}, {1,1,2,2,3,0}, {1,0,2,3,3,1},     /* GAL,GLO,BDS */
         {0,0,0,0,3,0}                                    /* IRN */
     };
     int i,j;
@@ -470,10 +477,13 @@ static int decode_eph(raw_t *raw, int sys)
     eph_t eph={0};
     double toc,sqrtA,tt;
     char *msg;
-    int prn,tow,flag,week;
+    int prn,tow,flag,week,navtype,sigtype,eph_sel=0;
     unsigned char *p=raw->buff+5;
     
     trace(3,"decode_eph: sys=%2d prn=%3d\n",sys,U1(p));
+    
+    if (strstr(raw->opt,"-GALINAV")) eph_sel=1;
+    if (strstr(raw->opt,"-GALFNAV")) eph_sel=2;
     
     prn       =U1(p);        p+=1;
     tow       =U4(p);        p+=4;
@@ -536,10 +546,16 @@ static int decode_eph(raw_t *raw, int sys)
             trace(2,"javad ephemeris satellite error: sys=%d prn=%d\n",sys,prn);
             return -1;
         }
-        eph.tgd[1]=R4(p); p+=4;    /* BGD: E1-E5A (s) */
-        eph.tgd[2]=R4(p); p+=4+13; /* BGD: E1-E5B (s) */
-        eph.code  =U1(p);          /* navtype: 0:E1B(INAV),1:E5A(FNAV) */
+        eph.tgd[0]=R4(p); p+=4;    /* BGD: E1-E5A (s) */
+        eph.tgd[1]=R4(p); p+=4+13; /* BGD: E1-E5B (s) */
+        navtype   =U1(p);          /* navtype: 0:E1B(INAV),1:E5A(FNAV) */
                                    /*          3:GIOVE E1B,4:GIOVE E5A */
+        
+        /* set data source defined in rinex 3.03 */
+        eph.code=(navtype==0)?((1<<0)|(1<<9)):((navtype==1)?((1<<1)|(1<<8)):0);
+        
+        if (eph_sel==1&&!(eph.code&(1<<9))) return 0; /* only I/NAV */
+        if (eph_sel==2&&!(eph.code&(1<<8))) return 0; /* only F/NAV */
         
         /* gal-week = gst-week + 1024 */
         eph.week=week+1024;
@@ -560,8 +576,8 @@ static int decode_eph(raw_t *raw, int sys)
             return -1;
         }
         eph.tgd[1]=R4(p); p+=4;    /* TGD2 (s) */
-        eph.code  =U1(p);          /* type of nav data */
-        
+        sigtype   =U1(p);          /* signal type: 0:B1,1:B2,2:B3 */
+        eph.code=(sigtype==0)?1:((sigtype==1)?3:((sigtype==2)?5:0));
         eph.week=week;
         eph.toe=bdt2time(week,eph.toes); /* bdt -> gpst */
         eph.toc=bdt2time(week,toc);      /* bdt -> gpst */
@@ -1220,7 +1236,7 @@ static int decode_rx(raw_t *raw, char code)
         if      (sys==SYS_SBS) prm=(pr*1E-11+0.125)*CLIGHT; /* [6] */
         else if (sys==SYS_QZS) prm=(pr*2E-11+0.125)*CLIGHT; /* [3] */
         else if (sys==SYS_CMP) prm=(pr*2E-11+0.105)*CLIGHT; /* [4] */
-        else if (sys==SYS_GAL) prm=(pr*1E-11+0.085)*CLIGHT; /* [6] */
+        else if (sys==SYS_GAL) prm=(pr*2E-11+0.085)*CLIGHT; /* [7] */
         else if (sys==SYS_IRN) prm=(pr*2E-11+0.105)*CLIGHT; /* [6] */
         else                   prm=(pr*1E-11+0.075)*CLIGHT;
         
@@ -1764,6 +1780,8 @@ static void clearbuff(raw_t *raw)
 *          -JL1Z   : select 1Z for QZS L1 (default 1C)
 *          -JL1X   : select 1X for QZS L1 (default 1C)
 *          -NOET   : discard epoch time message ET (::)
+*          -GALINAV: input only I/NAV for galileo ephemeris
+*          -GALFNAV: input only F/NAV for galileo ephemeris
 *
 *-----------------------------------------------------------------------------*/
 extern int input_javad(raw_t *raw, unsigned char data)

@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * solution.c : solution functions
 *
-*          Copyright (C) 2007-2015 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2007-2018 by T.TAKASU, All rights reserved.
 *
 * reference :
 *     [1] National Marine Electronic Association and International Marine
@@ -43,6 +43,7 @@
 *                            ignore NMEA talker ID
 *           2016/07/30  1.15 suppress output if std is over opt->maxsolstd
 *           2017/06/13  1.16 support output/input of velocity solution
+*           2018/10/10  1.17 support reading solution status file
 *-----------------------------------------------------------------------------*/
 #include <ctype.h>
 #include "rtklib.h"
@@ -1068,7 +1069,7 @@ extern int readsolstatt(char *files[], int nfile, gtime_t ts, gtime_t te,
                         double tint, solstatbuf_t *statbuf)
 {
     FILE *fp;
-    char path[1024];
+    char path[1024],*p;
     int i;
     
     trace(3,"readsolstatt: nfile=%d\n",nfile);
@@ -1077,7 +1078,12 @@ extern int readsolstatt(char *files[], int nfile, gtime_t ts, gtime_t te,
     statbuf->data=NULL;
     
     for (i=0;i<nfile;i++) {
-        sprintf(path,"%s.stat",files[i]);
+        if ((p=strrchr(files[i],'.'))&&!strcmp(p,".stat")) {
+            sprintf(path,"%s",files[i]);
+        }
+        else {
+            sprintf(path,"%s.stat",files[i]);
+        }
         if (!(fp=fopen(path,"r"))) {
             trace(2,"readsolstatt: file open error %s\n",path);
             continue;

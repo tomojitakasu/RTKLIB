@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * streamsvr.c : stream server functions
 *
-*          Copyright (C) 2010-2017 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2010-2018 by T.TAKASU, All rights reserved.
 *
 * options : -DWIN32    use WIN32 API
 *
@@ -23,6 +23,8 @@
 *                           fix bug on rtcm cyclic output of beidou ephemeris 
 *           2016/10/01 1.12 change api startstrserver()
 *           2017/04/11 1.13 fix bug on search of next satellite in nextsat()
+*           2018/11/05 1.14 update message type of beidou ephemeirs
+*                           support multiple msm messages if nsat x nsig > 64
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -38,7 +40,7 @@ static int is_obsmsg(int msg)
 static int is_navmsg(int msg)
 {
     return msg==1019||msg==1020||msg==1044||msg==1045||msg==1046||
-           msg==1047||msg==63;
+           msg==1042||msg==63;
 }
 /* test station info message -------------------------------------------------*/
 static int is_stamsg(int msg)
@@ -193,6 +195,55 @@ static void rtcm2rtcm(rtcm_t *out, const rtcm_t *rtcm, int ret, int stasel)
         out->nav.leaps=rtcm->nav.leaps;
     }
 }
+/* write rtcm3 msm to stream -------------------------------------------------*/
+static void write_rtcm3_msm(stream_t *str, rtcm_t *out, int msg, int sync)
+{
+    obsd_t *data,buff[MAXOBS];
+    int i,j,n,ns,sys,nobs,code,nsat=0,nsig=0,nmsg,mask[MAXCODE]={0};
+    
+    if      (1071<=msg&&msg<=1077) sys=SYS_GPS;
+    else if (1081<=msg&&msg<=1087) sys=SYS_GLO;
+    else if (1091<=msg&&msg<=1097) sys=SYS_GAL;
+    else if (1101<=msg&&msg<=1107) sys=SYS_SBS;
+    else if (1111<=msg&&msg<=1117) sys=SYS_QZS;
+    else if (1121<=msg&&msg<=1127) sys=SYS_CMP;
+    else return;
+    
+    data=out->obs.data;
+    nobs=out->obs.n;
+    
+    /* count number of satellites and signals */
+    for (i=0;i<nobs&&i<MAXOBS;i++) {
+        if (satsys(data[i].sat,NULL)!=sys) continue;
+        nsat++;
+        for (j=0;j<NFREQ+NEXOBS;j++) {
+            if (!(code=data[i].code[j])||mask[code-1]) continue;
+            mask[code-1]=1;
+            nsig++;
+        }
+    }
+    if (nsig<=0||nsig>64) return;
+    
+    /* pack data to multiple messages if nsat x nsig > 64 */
+    ns=64/nsig;         /* max number of sats in a message */
+    nmsg=(nsat-1)/ns+1; /* number of messages */
+    
+    out->obs.data=buff;
+    
+    for (i=j=0;i<nmsg;i++) {
+        for (n=0;n<ns&&j<nobs&&j<MAXOBS;j++) {
+            if (satsys(data[j].sat,NULL)!=sys) continue;
+            out->obs.data[n++]=data[j];
+        }
+        out->obs.n=n;
+        
+        if (gen_rtcm3(out,msg,i<nmsg-1?1:sync)) {
+            strwrite(str,out->buff,out->nbyte);
+        }
+    }
+    out->obs.data=data;
+    out->obs.n=nobs;
+}
 /* write obs data messages ---------------------------------------------------*/
 static void write_obs(gtime_t time, stream_t *str, strconv_t *conv)
 {
@@ -209,14 +260,19 @@ static void write_obs(gtime_t time, stream_t *str, strconv_t *conv)
         /* generate messages */
         if (conv->otype==STRFMT_RTCM2) {
             if (!gen_rtcm2(&conv->out,conv->msgs[i],i!=j)) continue;
+            
+            /* write messages to stream */
+            strwrite(str,conv->out.buff,conv->out.nbyte);
         }
         else if (conv->otype==STRFMT_RTCM3) {
-            if (!gen_rtcm3(&conv->out,conv->msgs[i],i!=j)) continue;
+            if (conv->msgs[i]<=1012) {
+                if (!gen_rtcm3(&conv->out,conv->msgs[i],i!=j)) continue;
+                strwrite(str,conv->out.buff,conv->out.nbyte);
+            }
+            else { /* write rtcm3 msm to stream */
+                write_rtcm3_msm(str,&conv->out,conv->msgs[i],i!=j);
+            }
         }
-        else continue;
-        
-        /* write messages to stream */
-        strwrite(str,conv->out.buff,conv->out.nbyte);
     }
 }
 /* write nav data messages ---------------------------------------------------*/
@@ -252,7 +308,7 @@ static int nextsat(nav_t *nav, int sat, int msg)
         case 1045:
         case 1046: sys=SYS_GAL; p1=MINPRNGAL; p2=MAXPRNGAL; break;
         case   63:
-        case 1047: sys=SYS_CMP; p1=MINPRNCMP; p2=MAXPRNCMP; break;
+        case 1042: sys=SYS_CMP; p1=MINPRNCMP; p2=MAXPRNCMP; break;
         default: return 0;
     }
     if (satsys(sat,&p0)!=sys) return satno(sys,p1);
