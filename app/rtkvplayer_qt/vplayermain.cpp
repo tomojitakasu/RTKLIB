@@ -17,7 +17,7 @@
 #include <QMimeData>
 
 #include "vplayermain.h"
-//#include "vpoptdlg.h"
+#include "vpoptdlg.h"
 #include "rtklib.h"
 
 #define VIDEO_TYPE_NONE  0
@@ -36,10 +36,13 @@ extern void settime(gtime_t) {}
 extern void settspan(gtime_t, gtime_t) {}
 }
 
+MainForm *mainForm;
+
 //---------------------------------------------------------------------------
 MainForm::MainForm(QWidget *parent)
     : QDialog(parent)
 {
+    mainForm=this;
     setupUi(this);
     setAcceptDrops(true);
     double ep[]={2000,1,1,0,0,0};
@@ -305,13 +308,13 @@ void MainForm::SaveOptions(void)
 
 }
 //---------------------------------------------------------------------------
-void MainForm::BtnOptionClick()
+void MainForm::BtnOptionsClick()
 {
-/*    VideoPlayerOptDialog *videoPlayerOptDialog= new VideoPlayerOptDialog(this);
+    VideoPlayerOptDialog *videoPlayerOptDialog= new VideoPlayerOptDialog(this);
 
     videoPlayerOptDialog->exec();
 
-    delete videoPlayerOptDialog;*/
+    delete videoPlayerOptDialog;
 }
 //---------------------------------------------------------------------------
 

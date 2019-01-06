@@ -223,20 +223,20 @@ void MonitorDialog::Timer2Timer()
 
     if (index < 3) { // input buffer
         len = rtksvr.npb[index];
-        if (len > 0 && (msg = (unsigned char *)malloc(len))) {
-            memcpy(msg, rtksvr.pbuf[index], len);
+        if (len > 0 && (msg = (unsigned char *)malloc(size_t(len)))) {
+            memcpy(msg, rtksvr.pbuf[index], size_t(len));
             rtksvr.npb[index] = 0;
 		}
     } else if (index < 5) { // solution buffer
         len = rtksvr.nsb[index - 3];
-        if (len > 0 && (msg = (unsigned char *)malloc(len))) {
-            memcpy(msg, rtksvr.sbuf[index - 3], len);
+        if (len > 0 && (msg = (unsigned char *)malloc(size_t(len)))) {
+            memcpy(msg, rtksvr.sbuf[index - 3], size_t(len));
             rtksvr.nsb[index - 3] = 0;
 		}
     } else { // error message buffer
         len = rtksvr.rtk.neb;
-        if (len > 0 && (msg = (unsigned char *)malloc(len))) {
-            memcpy(msg, rtksvr.rtk.errbuf, len);
+        if (len > 0 && (msg = (unsigned char *)malloc(size_t(len)))) {
+            memcpy(msg, rtksvr.rtk.errbuf, size_t(len));
             rtksvr.rtk.neb = 0;
 		}
 	}
@@ -362,7 +362,8 @@ void MonitorDialog::ShowRtk(void)
     double azel[MAXSAT * 2], pos[3], vel[3];
     int i, j, k, cycle, state, rtkstat, nsat0, nsat1, prcout, nave;
     unsigned long thread;
-    int cputime, nb[3] = { 0 }, nmsg[3][10] = { { 0 } }, ne;
+    int cputime, nb[3] = { 0 }, ne;
+    unsigned int nmsg[3][10] = { { 0 } };
     char tstr[64], id[32], s1[64] = "-", s2[64] = "-", s3[64] = "-";
     char file[1024] = "";
     const QString ionoopt[] = { tr("OFF"), tr("Broadcast"), tr("SBAS"), tr("Dual-Frequency"), tr("Estimate STEC"), tr("IONEX TEC"), tr("QZSS LEX"), "" };
@@ -792,7 +793,7 @@ void MonitorDialog::SetEst(void)
 void MonitorDialog::ShowEst(void)
 {
 	gtime_t time;
-    int i, nx, na, n;
+    unsigned int i, nx, na, n;
     double *x, *P = NULL, *xa = NULL, *Pa = NULL;
     QString s0 = "-";
 	char tstr[64];
@@ -800,8 +801,8 @@ void MonitorDialog::ShowEst(void)
 	rtksvrlock(&rtksvr);
 
     time = rtksvr.rtk.sol.time;
-    nx = rtksvr.rtk.nx;
-    na = rtksvr.rtk.na;
+    nx = (unsigned int)rtksvr.rtk.nx;
+    na = (unsigned int)rtksvr.rtk.na;
     if ((x = (double *)malloc(sizeof(double) * nx)) &&
         (P = (double *)malloc(sizeof(double) * nx * nx)) &&
         (xa = (double *)malloc(sizeof(double) * na)) &&
@@ -1830,7 +1831,7 @@ void MonitorDialog::SetRtcmSsr(void)
     for (i = 0; i < 18; i++)
         Console->setColumnWidth(i, width[i] * FontScale / 96);
     for (i = 18; i < Console->columnCount(); i++) {
-        char *code = code2obs(i - 17, NULL);
+        char *code = code2obs((unsigned char)(i - 17), NULL);
         Console->setColumnWidth(i, 40 * FontScale / 96);
         header << QString(tr("BL%1(m)")).arg(code);
         Console->setItem(1, i, new QTableWidgetItem(""));

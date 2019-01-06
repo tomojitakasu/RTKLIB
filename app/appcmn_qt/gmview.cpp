@@ -17,7 +17,9 @@
 #include "gmview.h"
 #include "rtklib.h"
 
-#define RTKLIB_GM_FILE "rtklib_gm.htm"
+#define RTKLIB_GM_TEMP "rtklib_gm.htm"
+#define RTKLIB_GM_FILE "rtklib_gm_a.htm"
+#define URL_GM_API     "http://maps.google.com/maps/api/js"
 
 //---------------------------------------------------------------------------
 GoogleMapView::GoogleMapView(QWidget *parent)
@@ -51,16 +53,37 @@ GoogleMapView::GoogleMapView(QWidget *parent)
     Lat = Lon = 0.0;
     Zoom = 2;
     FixCent = 1;
-
-    QTimer::singleShot(0, this, SLOT(FormCreate()));
 }
+
 //---------------------------------------------------------------------------
-void GoogleMapView::FormCreate()
+int GoogleMapView::setApiKey(QString ApiKey)
 {
-    QString dir;
+    QString dir,exe,infile,outfile;
+    QFile infp, outfp;
 
     dir = qApp->applicationDirPath(); // exe directory
-    dir = dir + "/" + RTKLIB_GM_FILE;
+
+    infile=dir+"/"+RTKLIB_GM_TEMP;
+    outfile=dir+"/"+RTKLIB_GM_FILE;
+
+    infp.setFileName(infile);
+    outfp.setFileName(outfile);
+    if (!infp.open(QIODevice::ReadOnly)) {
+        return -1;
+    }
+    if (!outfp.open(QIODevice::WriteOnly)) {
+        return -1;
+    }
+    while (!infp.atEnd()) {
+        QByteArray line=infp.readLine();
+        int idx=line.indexOf(URL_GM_API);
+        if (idx!=-1){
+            line=line.insert(idx+QString(URL_GM_API).length()+1,"key="+ApiKey+"&");
+        }
+        outfp.write(line);
+    }
+
+    dir = dir + "/" + outfile;
 
 #ifdef QWEBKIT
     WebBrowser->load(QUrl::fromLocalFile(dir));
@@ -77,10 +100,13 @@ void GoogleMapView::FormCreate()
     WebBrowser->show();
 #endif
     Timer1.start(300);
+
+    return 0;
 }
 //---------------------------------------------------------------------------
 void GoogleMapView::BtnCloseClick()
 {
+    trace(2,"gmview close\n");
     close();
 }
 //---------------------------------------------------------------------------

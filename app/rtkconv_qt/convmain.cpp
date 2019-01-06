@@ -680,14 +680,14 @@ void MainWindow::GetTime(gtime_t *ts, gtime_t *te, double *tint,
         QDateTime start(dateTime1->dateTime());
         ts->time = start.toTime_t(); ts->sec = start.time().msec() / 1000;
     } else {
-        ts->time = ts->sec = 0;
+        ts->time = 0; ts->sec = 0;
     }
 
     if (TimeEndF->isChecked()) {
         QDateTime end(dateTime2->dateTime());
         te->time = end.toTime_t(); te->sec = end.time().msec() / 1000;
     } else {
-        te->time = te->sec = 0;
+        te->time = 0; te->sec = 0;
     }
 
     if (TimeIntF->isChecked())
@@ -1120,7 +1120,7 @@ void MainWindow::SaveOpt(void)
     ini.setValue("opt/freqtype", FreqType);
     ini.setValue("opt/exsats", ExSats);
     ini.setValue("opt/tracelevel", TraceLevel);
-    ini.setValue("opt/rnxtime", (int)RnxTime.time);
+    ini.setValue("opt/rnxtime", (int)(RnxTime.time));
     ini.setValue("opt/codemask_1", CodeMask[0]);
     ini.setValue("opt/codemask_2", CodeMask[1]);
     ini.setValue("opt/codemask_3", CodeMask[2]);

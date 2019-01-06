@@ -1107,7 +1107,7 @@ void MainWindow::SvrStart(void)
                 ex = 1;
             }
             if (!(sat = satid2no(p))) continue;
-            PrcOpt.exsats[sat - 1] = ex;
+            PrcOpt.exsats[sat - 1] = (unsigned char)ex;
         }
     }
     if ((RovAntPcvF || RefAntPcvF) && !readpcv(qPrintable(AntPcvFileF), &pcvr)) {

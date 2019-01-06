@@ -29,6 +29,7 @@ public slots:
     void Timer1Timer();
     void BtnSyncClick();
     void BtnPosStartClick();
+    void BtnOptionsClick();
 
 protected:
     void showEvent(QShowEvent*);

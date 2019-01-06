@@ -649,7 +649,7 @@ void MainForm::LoadUrl(QString file)
 {
     url_t *urls;
     QString subtype, basetype;
-    char *sel[1];
+    const char *sel[1];
     int i, n;
 
     sel[0]=(char*)"*";

@@ -538,6 +538,8 @@ void Plot::showEvent(QShowEvent *event)
         if (CheckObs(OpenFiles.at(0)) || OpenRaw) ReadObs(OpenFiles);
         else ReadSol(OpenFiles, 0);
     }
+
+    googleMapView->setApiKey(ApiKey);
 }
 // callback on form-close ---------------------------------------------------
 void Plot::closeEvent(QCloseEvent *)
@@ -2841,6 +2843,7 @@ void Plot::LoadOpt(void)
     Font.setPointSize(settings.value("plot/fontsize", 8).toInt());
 
     RnxOpts = settings.value("plot/rnxopts", "").toString();
+    ApiKey  = settings.value ("plot/apikey" ,"").toString();
 
     for (i = 0; i < 11; i++)
         geopts[i] = settings.value(QString("ge/geopts_%1").arg(i), 0).toInt();
@@ -2974,6 +2977,7 @@ void Plot::SaveOpt(void)
     settings.setValue("plot/fontsize", Font.pointSize());
 
     settings.setValue("plot/rnxopts", RnxOpts);
+    settings.setValue("plot/apikey", ApiKey);
 
     googleEarthView->GetOpts(geopts);
     for (i = 0; i < 11; i++)

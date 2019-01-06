@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>770</width>
-    <height>385</height>
+    <width>820</width>
+    <height>424</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -739,19 +739,6 @@
      </property>
     </widget>
    </item>
-   <item row="7" column="13">
-    <widget class="QSpinBox" name="EditMaxBL">
-     <property name="suffix">
-      <string> km</string>
-     </property>
-     <property name="maximum">
-      <number>999</number>
-     </property>
-     <property name="value">
-      <number>10</number>
-     </property>
-    </widget>
-   </item>
    <item row="7" column="10">
     <widget class="QLabel" name="LabelMaxBL">
      <property name="text">
@@ -766,6 +753,19 @@
     <widget class="QCheckBox" name="Chk64Bit">
      <property name="text">
       <string>64bit</string>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="13">
+    <widget class="QDoubleSpinBox" name="EditMaxBL">
+     <property name="suffix">
+      <string> km</string>
+     </property>
+     <property name="maximum">
+      <double>99999.990000000005239</double>
+     </property>
+     <property name="value">
+      <double>10.000000000000000</double>
      </property>
     </widget>
    </item>

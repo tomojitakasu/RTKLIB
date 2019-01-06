@@ -24,7 +24,7 @@ public:
 	gtime_t Time;
     QString FileName;
 
-    explicit StartDialog(QWidget *parent=0);
+    explicit StartDialog(QWidget *parent=NULL);
 };
 //---------------------------------------------------------------------------
 #endif

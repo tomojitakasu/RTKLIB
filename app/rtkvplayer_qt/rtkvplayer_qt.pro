@@ -16,14 +16,17 @@ INCLUDEPATH += ../../src/ ../appcmn_qt
 SOURCES += \
 #    mjpgplayer.cpp \
     vplayermain.cpp \ 
-    rtkvplayer.cpp
+    rtkvplayer.cpp \
+    vpoptdlg.cpp
 
 HEADERS  += \
-    vplayermain.h
+    vplayermain.h \
+    vpoptdlg.h
     #mjpgplayer.h
 
 FORMS    += \
-    vplayermain.ui 
+    vplayermain.ui \ 
+    vpoptdlg.ui
 
 RESOURCES += \
     rtkvplayer_qt.qrc

@@ -402,6 +402,7 @@ public:
     QString MapImageFile;
     QString SkyImageFile;
     QString RnxOpts;
+    QString ApiKey;
     tle_t TLEData;
     QFont Font;
     gis_t Gis;

@@ -140,6 +140,7 @@ void PlotOptDialog::showEvent(QShowEvent *event)
     EditTimeSync->setValue(plot->TimeSyncPort);
     QcCmd->setText(plot->QcCmd);
     RnxOpts->setText(plot->RnxOpts);
+    ApiKey ->setText(plot->ApiKey);
     TLEFile->setText(plot->TLEFile);
     TLESatFile->setText(plot->TLESatFile);
 
@@ -201,6 +202,7 @@ void PlotOptDialog::BtnOKClick()
     plot->ExSats = ExSats->text();
     plot->QcCmd = QcCmd->text();
     plot->RnxOpts = RnxOpts->text();
+    plot->ApiKey = ApiKey->text();
     plot->TLEFile = TLEFile->text();
     plot->TLESatFile = TLESatFile->text();
 

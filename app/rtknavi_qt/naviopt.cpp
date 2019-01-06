@@ -968,7 +968,7 @@ void OptDialog::SaveOpt(const QString &file)
                 ex = 1;
             }
             if (!(sat = satid2no(p))) continue;
-            prcopt.exsats[sat - 1] = ex;
+            prcopt.exsats[sat - 1] = (unsigned char)ex;
 		}
 	}
     prcopt.navsys = (NavSys1->isChecked() ? SYS_GPS : 0) |
