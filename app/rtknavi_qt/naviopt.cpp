@@ -197,7 +197,7 @@ void OptDialog::BtnSaveClick()
 {
     QString file;
 
-    file = QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Save Options..."), QString(), tr("Options File (*.conf);;All (*.*)")));
+    file = QDir::toNativeSeparators(QFileDialog::getSaveFileName(this, tr("Save Options..."), QString(), tr("Options File (*.conf);;All (*.*)")));
 
     if (!file.contains('.')) file += ".conf";
 
