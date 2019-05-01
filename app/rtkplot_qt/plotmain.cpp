@@ -73,7 +73,7 @@
 #define YLIM_AGE    10.0        // ylimit of age of differential
 #define YLIM_RATIO  20.0        // ylimit of raito factor
 
-static int RefreshTime = 10;    // update only every 200ms
+static int RefreshTime = 100;    // update only every 100ms
 
 extern QString color2String(const QColor &c);
 
@@ -2113,6 +2113,10 @@ void Plot::TimerTimer()
     }
 
     UpdateTime();
+
+    if (updateTime.elapsed() < RefreshTime) return;
+    updateTime.restart();
+
     UpdatePlot();
 }
 // set center of x-axis -----------------------------------------------------

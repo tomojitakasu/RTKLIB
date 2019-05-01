@@ -210,7 +210,7 @@ void MainForm::Timer1Timer()
         sprintf(msg, "%s\r\n", time_str(time, 2));
         strwrite(&StrTimeSync, (unsigned char *)msg, (int)strlen(msg));
     }
-    ProgressBar->setValue(GetVideoPos()*1000);
+    ProgressBar->setValue(int(GetVideoPos()*1000));
     Message1->setText(str);
 
     Message2->setText(FileName);
@@ -238,7 +238,7 @@ void MainForm::OpenVideo(const QStringList &file)
 //---------------------------------------------------------------------------
 void MainForm::ClearVideo(void)
 {
-    MjpgPlayer->setMedia(0);
+    MjpgPlayer->setMedia(nullptr);
     FileName = "";
 }
 //---------------------------------------------------------------------------
@@ -274,7 +274,7 @@ float MainForm::GetVideoPos(void)
 //---------------------------------------------------------------------------
 void MainForm::SetVideoPos(float pos)
 {
-    MjpgPlayer->setPosition(MjpgPlayer->duration() * pos);
+    MjpgPlayer->setPosition(qint64(MjpgPlayer->duration() * pos));
 }
 //---------------------------------------------------------------------------
 void MainForm::GetVideoTime(double &time, double &period)

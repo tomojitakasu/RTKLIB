@@ -214,7 +214,6 @@ void MainWindow::showEvent(QShowEvent *event)
     connect(BtnExit, SIGNAL(clicked()), this, SLOT(BtnExitClick()));
     connect(BtnStart, SIGNAL(clicked()), this, SLOT(BtnStartClick()));
     connect(BtnStop, SIGNAL(clicked()), this, SLOT(BtnStopClick()));
-    connect(BtnPlot, SIGNAL(clicked()), this, SLOT(BtnPlotClick()));
     connect(BtnAbout, SIGNAL(clicked(bool)), this, SLOT(BtnAboutClick()));
     connect(BtnFreqType1, SIGNAL(clicked(bool)), this, SLOT(BtnFreqType1Click()));
     connect(BtnFreqType2, SIGNAL(clicked(bool)), this, SLOT(BtnFreqType2Click()));
@@ -252,10 +251,14 @@ void MainWindow::showEvent(QShowEvent *event)
     Timer.setSingleShot(false);
     Timer.start();
 
+#if 1
     QString file = QApplication::applicationFilePath();
     QFileInfo fi(file);
     IniFile = fi.absolutePath() + "/" + fi.baseName() + ".ini";
-
+#else // use unix config path
+    QSettings tempSettings(QSettings::IniFormat, QSettings::UserScope, "rtknavi-qt", "rtklib");
+    IniFile = tempSettings.fileName();
+#endif
     InitSolBuff();
     strinitcom();
 
@@ -403,6 +406,7 @@ void MainWindow::BtnStopClick()
 void MainWindow::BtnPlotClick()
 {
     QString cmd;
+    QString cmd1 = "rtkplot_qt", cmd2 = "..\\..\\..\\bin\\rtkplot_qt", cmd3 = "..\\rtkplot_qt\\rtkplot_qt", opts;
 
     trace(3, "BtnPlotClick\n");
 
@@ -410,9 +414,10 @@ void MainWindow::BtnPlotClick()
         QMessageBox::critical(this, tr("Error"), tr("monitor port not open"));
         return;
     }
-    cmd = QString("rtkplot_qt -p tcpcli://localhost:%1 -t \"%2 %3\"").arg(OpenPort)
+
+    opts = QString(" -p tcpcli://localhost:%1 -t \"%2 %3\"").arg(OpenPort)
           .arg(windowTitle()).arg(": RTKPLOT QT");
-    if (!ExecCmd(cmd, 1))
+    if (!ExecCmd(cmd + opts, 1) && !ExecCmd(cmd2 + opts, 1) && !ExecCmd(cmd3 + opts, 1))
         QMessageBox::critical(this, tr("Error"), tr("error: rtkplot execution"));
 }
 // callback on button-options -----------------------------------------------

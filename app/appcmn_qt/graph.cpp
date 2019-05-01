@@ -56,13 +56,12 @@ int Graph::IsInArea(QPoint &p)
     return X <= p.x() && p.x() < X + Width && Y <= p.y() && p.y() < Y + Height;
 }
 //---------------------------------------------------------------------------
-int Graph::ToPoint(double x, double y, QPoint &p)
+int Graph::ToPoint(const double &x, const double &y, QPoint &p)
 {
     const double xt = 0.1;
 
-    x = X + (Width - 1) / 2.0 + (x - XCent) / XScale;
-    y = Y + (Height - 1) / 2.0 - (y - YCent) / YScale;
-    p.setX((int)floor(x + 0.5)); p.setY((int)floor(y + 0.5));
+    p.setX(int((X + (Width - 1) / 2.0 + (x - XCent) / XScale) + 0.5));
+    p.setY(int((Y + (Height - 1) / 2.0 - (y - YCent) / YScale) + 0.5));
     return (X - xt < x) && (x < X + Width - 1 + xt) && (Y - xt < y) && (y < Y + Height - 1 + xt);
 }
 //---------------------------------------------------------------------------

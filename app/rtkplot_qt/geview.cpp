@@ -95,6 +95,8 @@ extern Plot *plot;
      connect(&Timer1, SIGNAL(timeout()), this, SLOT(Timer1Timer()));
      connect(&Timer2, SIGNAL(timeout()), this, SLOT(Timer2Timer()));
 
+     Timer1.setInterval(1000); // 1s
+
      QTimer::singleShot(0, this, SLOT(FormCreate()));
  }
 //---------------------------------------------------------------------------

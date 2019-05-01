@@ -31,7 +31,7 @@ public:
         explicit Graph(QPaintDevice *parent);
 
         int IsInArea(QPoint &p);
-        int ToPoint(double x, double y, QPoint &p);
+        int ToPoint(const double &x, const double &y, QPoint &p);
         int OnAxis(const QPoint &p);
         QString NumText(double x, double dx);
         QString TimeText(double x, double dx);

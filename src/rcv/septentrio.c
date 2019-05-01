@@ -129,7 +129,7 @@ static uint16_t locktime[255][32];
 /* function prototypes -------------------------------------------------------*/
 static uint8_t getSignalCode(int signType);
 static double getSigFreq(int _signType, int freqNo);
-static int getFreqNo(int signType);
+static int16_t getFreqNo(int signType);
 
 /* get fields (little-endian) ------------------------------------------------*/
 #define U1(p) (*((unsigned char *)(p)))
@@ -142,7 +142,7 @@ static signed int     I4(unsigned char *p) {signed int     u; memcpy(&u,p,4); re
 static short          I2(unsigned char *p) {short          i; memcpy(&i,p,2); return i;}
 
 /* checksum lookup table -----------------------------------------------------*/
-static const unsigned int CRC_16CCIT_LookUp[256] = {
+static const unsigned short CRC_16CCIT_LookUp[256] = {
   0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50a5, 0x60c6, 0x70e7,
   0x8108, 0x9129, 0xa14a, 0xb16b, 0xc18c, 0xd1ad, 0xe1ce, 0xf1ef,
   0x1231, 0x0210, 0x3273, 0x2252, 0x52b5, 0x4294, 0x72f7, 0x62d6,
@@ -291,7 +291,7 @@ static int decode_measepoch(raw_t *raw){
         codeLSB = U4(p+4);                        /* code phase LSB           */
 
         if (raw->outtype) {
-            sprintf(raw->msgtype,"%s%d, ",raw->msgtype, prn);
+            sprintf(raw->msgtype + strlen(raw->msgtype),"%d, ", prn);
         }
 
         /* code pseudorange in m */
@@ -374,7 +374,7 @@ static int decode_measepoch(raw_t *raw){
             p = p + SB1length; /* skip data */
             p = p + SB2length*SB2Num;
             continue;
-        };
+        }
 
         raw->obs.data[n].sat=satID;
 
@@ -422,7 +422,7 @@ static int decode_measepoch(raw_t *raw){
                 if (locktime[sat][signType1]>LockTime) raw->obs.data[n].LLI[h]|=LLI_SLIP;
                 raw->lockt[sat][h]       = (unsigned char)LockTime;
                 locktime[sat][signType1] = LockTime;
-            };
+            }
         }
 
         /* decode all Type2 sub-blocks (if there is any) */
@@ -503,7 +503,7 @@ static int decode_measepoch(raw_t *raw){
                     if (locktime[sat][signType2]>LockTime2) raw->obs.data[n].LLI[h]|=LLI_SLIP;
                     raw->lockt[sat][h]       = (unsigned char)LockTime2;
                     locktime[sat][signType2] = (unsigned char)LockTime2;
-                };
+                }
             }
 
             /* get to the beginning of next Type 2 block */
@@ -577,7 +577,7 @@ static double getSigFreq(int _signType, int freqNo){
 
 /* return the Septentrio signal type -----------------------------------------*/
 static uint8_t getSignalCode(int signType){
-    int _code=-1;
+    uint8_t _code;
 
     switch (signType)
     {
@@ -660,8 +660,8 @@ static uint8_t getSignalCode(int signType){
     return _code;
 }
 /* return the signal type -----------------------------------------*/
-static int getFreqNo(int signType){
-    int _freq;
+static int16_t getFreqNo(int signType){
+    int16_t _freq;
 
     switch (signType)
     {
@@ -1523,7 +1523,7 @@ static int decode_glorawcanav(raw_t *raw){
 
     raw->nav.geph[prn-1]=geph;
     raw->ephsat=sat;
-    raw->nav.glo_fcn[prn-1] = geph.frq + 8; /* savbe frequency number */
+    raw->nav.glo_fcn[prn-1] = geph.frq + 8; /* save frequency number */
 
     return 2;
 }
