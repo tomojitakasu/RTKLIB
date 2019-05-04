@@ -83,15 +83,13 @@ int GoogleMapView::setApiKey(QString ApiKey)
         outfp.write(line);
     }
 
-    dir = dir + "/" + outfile;
-
 #ifdef QWEBKIT
     WebBrowser->load(QUrl::fromLocalFile(dir));
     WebBrowser->show();
     loaded = true;
 #endif
 #ifdef QWEBENGINE
-    WebBrowser->load(QUrl::fromLocalFile(dir));
+    WebBrowser->load(QUrl::fromLocalFile(outfile));
     QWebChannel *channel = new QWebChannel(this);
     channel->registerObject(QStringLiteral("state"), pageState);
 
