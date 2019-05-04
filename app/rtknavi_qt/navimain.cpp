@@ -405,7 +405,6 @@ void MainWindow::BtnStopClick()
 // callback on button-plot --------------------------------------------------
 void MainWindow::BtnPlotClick()
 {
-    QString cmd;
     QString cmd1 = "rtkplot_qt", cmd2 = "..\\..\\..\\bin\\rtkplot_qt", cmd3 = "..\\rtkplot_qt\\rtkplot_qt", opts;
 
     trace(3, "BtnPlotClick\n");
@@ -417,7 +416,7 @@ void MainWindow::BtnPlotClick()
 
     opts = QString(" -p tcpcli://localhost:%1 -t \"%2 %3\"").arg(OpenPort)
           .arg(windowTitle()).arg(": RTKPLOT QT");
-    if (!ExecCmd(cmd + opts, 1) && !ExecCmd(cmd2 + opts, 1) && !ExecCmd(cmd3 + opts, 1))
+    if (!ExecCmd(cmd1 + opts, 1) && !ExecCmd(cmd2 + opts, 1) && !ExecCmd(cmd3 + opts, 1))
         QMessageBox::critical(this, tr("Error"), tr("error: rtkplot execution"));
 }
 // callback on button-options -----------------------------------------------
