@@ -259,7 +259,6 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
     fileModel = new QFileSystemModel(this);
     fileModel->setFilter((fileModel->filter() & ~QDir::Dirs & ~QDir::AllDirs));
     fileModel->setNameFilterDisables(false);
-    qWarning()<<fileModel->iconProvider();
     FileList->setModel(fileModel);
 
 
@@ -1241,8 +1240,9 @@ void Plot::MenuPlotGEClick()
     this->resize(rect.width() / 2 - thisDecoration.width(), rect.height() - thisDecoration.height());
 
     QSize GEDecoration = googleEarthView->frameSize() - googleEarthView->size();
-    googleEarthView->move(rect.x(), rect.y());
-    googleEarthView->resize(rect.width() - GEDecoration.width(), rect.height() - GEDecoration.height());
+    googleEarthView->resize(rect.width()/2 - GEDecoration.width(), rect.height() - GEDecoration.height());
+    googleEarthView->move(rect.x() + rect.width() / 2, rect.y());
+
     googleEarthView->setVisible(true);
     googleMapView->setVisible(false);
 }
@@ -1257,8 +1257,9 @@ void Plot::MenuPlotGMClick()
     this->resize(rect.width() / 2 - thisDecoration.width(), rect.height() - thisDecoration.height());
 
     QSize GMDecoration = googleMapView->frameSize() - googleMapView->size();
-    googleMapView->move(rect.x() + rect.width() / 2, rect.y());
     googleMapView->resize(rect.width() / 2 - GMDecoration.width(), rect.height() - GMDecoration.height());
+    googleMapView->move(rect.x() + rect.width() / 2, rect.y());
+
     googleEarthView->setVisible(false);;
     googleMapView->setVisible(true);
 }
@@ -1273,16 +1274,15 @@ void Plot::MenuPlotGEGMClick()
     this->resize(rect.width() / 2 - thisDecoration.width(), rect.height() - thisDecoration.height());
 
     QSize GMDecoration = googleMapView->frameSize() - googleMapView->size();
+    googleMapView->resize(rect.width() / 2 - GMDecoration.width(), rect.height() / 2 - GMDecoration.height());
     googleMapView->move(rect.x() + rect.width() / 2, rect.y());
-    googleMapView->resize(rect.width() / 2 - GMDecoration.width(), rect.height() - GMDecoration.height());
-    googleEarthView->setVisible(true);
-    googleMapView->setVisible(true);
 
     QSize GEDecoration = googleEarthView->frameSize() - googleEarthView->size();
-    googleEarthView->move(rect.x() + rect.width() / 2, rect.y());
     googleEarthView->resize(rect.width() / 2 - GEDecoration.width(), rect.height() / 2 - GEDecoration.height());
-    googleMapView->move(rect.x() + rect.width() / 2, rect.y() + rect.height() / 2);
-    googleMapView->resize(rect.width() / 2 - GMDecoration.width(), rect.height() / 2 - GMDecoration.height());
+    googleEarthView->move(rect.x() + rect.width() / 2, rect.y() + rect.height() / 2);
+
+    googleEarthView->setVisible(true);
+    googleMapView->setVisible(true);
 }
 //---------------------------------------------------------------------------
 #if 0

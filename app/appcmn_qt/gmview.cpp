@@ -58,29 +58,25 @@ GoogleMapView::GoogleMapView(QWidget *parent)
 //---------------------------------------------------------------------------
 int GoogleMapView::setApiKey(QString ApiKey)
 {
-    QString dir,exe,infile,outfile;
-    QFile infp, outfp;
+    QString dir,exe,infile;
+    QFile infp;
+    QByteArray htmlPage;
 
     dir = qApp->applicationDirPath(); // exe directory
 
     infile=dir+"/"+RTKLIB_GM_TEMP;
-    outfile=dir+"/"+RTKLIB_GM_FILE;
 
     infp.setFileName(infile);
-    outfp.setFileName(outfile);
     if (!infp.open(QIODevice::ReadOnly)) {
         return -1;
     }
-    if (!outfp.open(QIODevice::WriteOnly)) {
-        return -1;
-    }
     while (!infp.atEnd()) {
-        QByteArray line=infp.readLine();
+        QByteArray line = infp.readLine();
         int idx=line.indexOf(URL_GM_API);
-        if (idx!=-1){
-            line=line.insert(idx+QString(URL_GM_API).length()+1,"key="+ApiKey+"&");
+        if (idx != -1){
+            line = line.insert(idx+QString(URL_GM_API).length()+1,"key="+ApiKey+"&");
         }
-        outfp.write(line);
+	htmlPage.append(line);
     }
 
 #ifdef QWEBKIT
@@ -89,7 +85,7 @@ int GoogleMapView::setApiKey(QString ApiKey)
     loaded = true;
 #endif
 #ifdef QWEBENGINE
-    WebBrowser->load(QUrl::fromLocalFile(outfile));
+    WebBrowser->setContent(htmlPage, "text/html;charset=ISO-8859-1");
     QWebChannel *channel = new QWebChannel(this);
     channel->registerObject(QStringLiteral("state"), pageState);
 

@@ -97,6 +97,8 @@ extern Plot *plot;
 
      Timer1.setInterval(1000); // 1s
 
+     setWindowTitle("Google Earth View");
+
      QTimer::singleShot(0, this, SLOT(FormCreate()));
  }
 //---------------------------------------------------------------------------
