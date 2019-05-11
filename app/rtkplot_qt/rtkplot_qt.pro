@@ -75,6 +75,7 @@ HEADERS  += \
     ../appcmn_qt/tspandlg.h \
     fileseldlg.h \
     ../appcmn_qt/gmview.h \
+    ../appcmn_qt/gm_template.h \
     vmapdlg.h
 
 FORMS    += \

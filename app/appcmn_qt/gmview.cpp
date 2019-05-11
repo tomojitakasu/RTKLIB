@@ -17,9 +17,7 @@
 #include "gmview.h"
 #include "rtklib.h"
 
-#define RTKLIB_GM_TEMP "rtklib_gm.htm"
-#define RTKLIB_GM_FILE "rtklib_gm_a.htm"
-#define URL_GM_API     "http://maps.google.com/maps/api/js"
+#include "gm_template.h"
 
 //---------------------------------------------------------------------------
 GoogleMapView::GoogleMapView(QWidget *parent)
@@ -58,34 +56,14 @@ GoogleMapView::GoogleMapView(QWidget *parent)
 //---------------------------------------------------------------------------
 int GoogleMapView::setApiKey(QString ApiKey)
 {
-    QString dir,exe,infile;
-    QFile infp;
-    QByteArray htmlPage;
-
-    dir = qApp->applicationDirPath(); // exe directory
-
-    infile=dir+"/"+RTKLIB_GM_TEMP;
-
-    infp.setFileName(infile);
-    if (!infp.open(QIODevice::ReadOnly)) {
-        return -1;
-    }
-    while (!infp.atEnd()) {
-        QByteArray line = infp.readLine();
-        int idx=line.indexOf(URL_GM_API);
-        if (idx != -1){
-            line = line.insert(idx+QString(URL_GM_API).length()+1,"key="+ApiKey+"&");
-        }
-	htmlPage.append(line);
-    }
-
+    htmlPage.replace("_APIKEY_", ApiKey);
 #ifdef QWEBKIT
     WebBrowser->load(QUrl::fromLocalFile(dir));
     WebBrowser->show();
     loaded = true;
 #endif
 #ifdef QWEBENGINE
-    WebBrowser->setContent(htmlPage, "text/html;charset=ISO-8859-1");
+    WebBrowser->setHtml(htmlPage);
     QWebChannel *channel = new QWebChannel(this);
     channel->registerObject(QStringLiteral("state"), pageState);
 
