@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * rtcm3.c : rtcm ver.3 message decorder functions
 *
-*          Copyright (C) 2009-2018 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2009-2019 by T.TAKASU, All rights reserved.
 *
 * references :
 *     see rtcm.c
@@ -37,6 +37,7 @@
 *                           change mt for ssr 7 phase biases
 *                           add rtcm option -GALINAV, -GALFNAV
 *           2018/11/05 1.20 fix problem on invalid time in message monitor
+*           2019/05/10 1.21 save galileo E5b data to obs index 2
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -1823,10 +1824,13 @@ static void save_msm_obs(rtcm_t *rtcm, int sys, msm_h_t *h, const double *r,
         /* signal to rinex obs type */
         code[i]=obs2code(sig[i],freq+i);
         
-        /* freqency index for beidou */
+        /* freqency index for beidou and galileo */
         if (sys==SYS_CMP) {
             if      (freq[i]==5) freq[i]=2; /* B2 */
             else if (freq[i]==4) freq[i]=3; /* B3 */
+        }
+        else if (sys==SYS_GAL) {
+            if (freq[i]==5) freq[i]=2; /* E5b */
         }
         if (code[i]!=CODE_NONE) {
             if (q) q+=sprintf(q,"L%s%s",sig[i],i<h->nsig-1?",":"");

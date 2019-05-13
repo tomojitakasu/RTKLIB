@@ -1,5 +1,4 @@
 # makefile for rnx2rtkp
-
 BINDIR  = /usr/local/bin
 SRC     = ../../../src
 

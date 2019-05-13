@@ -62,6 +62,9 @@
 *           2018/11/05 1.26 fix problem on missing QZSS L2C signal
 *                           save signal in obs data by signal index
 *                           suppress warning for cnav in ubx-rxm-sfrbx
+*           2019/05/10 1.27 disable half-cyc-subtract flag on LLI for RXM-RAWX
+*                           save galileo E5b data to obs index 2
+*                           handle C17 as no-GEO (MEO/IGSO)
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -201,8 +204,8 @@ static int sig_idx(int sys, int code)
     else if (sys == SYS_GAL) {
         if (code==CODE_L1C) return 1;
         if (code==CODE_L1B) return NFREQ+1;
-        if (code==CODE_L7Q) return (NFREQ>=5)?5:NFREQ+1;
-        if (code==CODE_L7I) return (NFREQ>=5)?NFREQ+1:NFREQ+2;
+        if (code==CODE_L7I) return 2; /* E5bI */
+        if (code==CODE_L7Q) return 2; /* E5bQ */
     }
     else if (sys == SYS_QZS) {
         if (code==CODE_L1C) return 1;
@@ -419,7 +422,7 @@ static int decode_rxmrawx(raw_t *raw)
              halfc!=raw->halfc[sat-1][f-1]||(std_slip&&cpstd>=std_slip);
         raw->lockt[sat-1][f-1]=lockt*1E-3;
         raw->halfc[sat-1][f-1]=halfc;
-        LLI=(slip?LLI_SLIP:0)|(halfc?LLI_HALFS:0)|(!halfv?LLI_HALFC:0);
+        LLI=(slip?LLI_SLIP:0)|(!halfv?LLI_HALFC:0);
         
         for (j=0;j<n;j++) {
             if (raw->obs.data[j].sat==sat) break;
@@ -955,7 +958,7 @@ static int decode_cnav(raw_t *raw, int sat, int off)
         trace(2,"ubx rawsfrbx subfrm id error: sat=%2d\n",sat);
         return -1;
     }
-    if (prn>5&&prn!=17) { /* IGSO/MEO */
+    if (prn>5&&prn<59) { /* IGSO/MEO */
         
         for (i=0;i<10;i++) {
             setbitu(raw->subfrm[sat-1]+(id-1)*38,i*30,30,words[i]);
@@ -965,7 +968,7 @@ static int decode_cnav(raw_t *raw, int sat, int off)
         /* decode beidou D1 ephemeris */
         if (!decode_bds_d1(raw->subfrm[sat-1],&eph)) return 0;
     }
-    else { /* GEO (C01-05,C17) */
+    else { /* GEO (C01-05, C59-63) */
         if (id!=1) return 0;
         
         /* subframe 1 */

@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * notvatel.c : NovAtel OEM6/OEM5/OEM4/OEM3 receiver functions
 *
-*          Copyright (C) 2007-2018 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2007-2019 by T.TAKASU, All rights reserved.
 *
 * reference :
 *     [1] NovAtel, OM-20000094 Rev6 OEMV Family Firmware Reference Manual, 2008
@@ -54,6 +54,7 @@
 *           2018/10/10 1.16 fix problem on data souce for galileo ephemeris
 *                           output L2W instead of L2D for L2Pcodeless
 *                           test toc difference to output beidou ephemeris
+*           2019/05/10 1.17 save galileo E5b data to obs index 2
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -244,7 +245,7 @@ static int decode_trackstat(unsigned int stat, int *sys, int *code, int *track,
             case  1: freq=0; *code=CODE_L1B; break; /* E1B  (OEM6) */
             case  2: freq=0; *code=CODE_L1C; break; /* E1C  (OEM6) */
             case 12: freq=2; *code=CODE_L5Q; break; /* E5aQ (OEM6) */
-            case 17: freq=4; *code=CODE_L7Q; break; /* E5bQ (OEM6) */
+            case 17: freq=1; *code=CODE_L7Q; break; /* E5bQ (OEM6) */
             case 20: freq=5; *code=CODE_L8Q; break; /* AltBOCQ (OEM6) */
             default: freq=-1; break;
         }
@@ -289,7 +290,6 @@ static int checkpri(const char *opt, int sys, int code, int freq)
     else if (sys==SYS_GAL) {
         if (strstr(opt,"-EL1B")&&freq==0) return code==CODE_L1B?0:-1;
         if (code==CODE_L1B) return nex<1?-1:NFREQ;
-        if (code==CODE_L7Q) return nex<2?-1:NFREQ+1;
         if (code==CODE_L8Q) return nex<3?-1:NFREQ+2;
     }
     return freq<NFREQ?freq:-1;

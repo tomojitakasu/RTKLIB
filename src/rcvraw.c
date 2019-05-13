@@ -36,6 +36,7 @@
 *           2017/05/26 1.14 support TERSUS
 *           2018/10/10 1.15 update reference [5]
 *                           add set of eph->code/flag for galileo and beidou
+*           2018/12/05 1.16 add test of galileo i/nav word type 5
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 #include <stdint.h>
@@ -160,9 +161,9 @@ extern int decode_gal_inav(const unsigned char *buff, eph_t *eph)
     e1b_dvs    =getbitu(buff,i, 1);
     
     /* test word types */
-    if (type[0]!=0||type[1]!=1||type[2]!=2||type[3]!=3||type[4]!=4) {
-        trace(3,"decode_gal_inav error: type=%d %d %d %d %d\n",type[0],type[1],
-              type[2],type[3],type[4]);
+    if (type[0]!=0||type[1]!=1||type[2]!=2||type[3]!=3||type[4]!=4||type[5]!=5) {
+        trace(3,"decode_gal_inav error: type=%d %d %d %d %d %d\n",type[0],
+              type[1],type[2],type[3],type[4],type[5]);
         return 0;
     }
     /* test word type 0 time field */
