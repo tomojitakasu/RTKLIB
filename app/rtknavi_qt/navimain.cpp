@@ -2526,6 +2526,10 @@ void MainWindow::LoadOpt(void)
     TrkScale[1] = settings.value("setting/trkscale2", 5).toInt();
     TrkScale[2] = settings.value("setting/trkscale3", 5).toInt();
     TrkScale[3] = settings.value("setting/trkscale4", 5).toInt();
+    FreqType1 = settings.value("setting/freqtype1", 0).toInt();
+    FreqType2 = settings.value("setting/freqtype2", 0).toInt();
+    FreqType3 = settings.value("setting/freqtype3", 0).toInt();
+    FreqType4 = settings.value("setting/freqtype4", 0).toInt();
     BLMode[0] = settings.value("setting/blmode1", 0).toInt();
     BLMode[1] = settings.value("setting/blmode2", 0).toInt();
     BLMode[2] = settings.value("setting/blmode3", 0).toInt();
@@ -2734,6 +2738,10 @@ void MainWindow::SaveOpt(void)
     settings.setValue("setting/trkscale2", TrkScale[1]);
     settings.setValue("setting/trkscale3", TrkScale[2]);
     settings.setValue("setting/trkscale4", TrkScale[3]);
+    settings.setValue("setting/freqtype1", FreqType1);
+    settings.setValue("setting/freqtype2", FreqType2);
+    settings.setValue("setting/freqtype3", FreqType3);
+    settings.setValue("setting/freqtype4", FreqType4);
     settings.setValue("setting/blmode1", BLMode[0]);
     settings.setValue("setting/blmode2", BLMode[1]);
     settings.setValue("setting/blmode3", BLMode[2]);

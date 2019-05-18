@@ -149,6 +149,7 @@ public:
     int TrkType[4];
     int TrkScale[4];
     int BLMode[4];
+    int FreqType1,FreqType2,FreqType3,FreqType4;
     int MoniPort, OpenPort;
 	
     int PSol, PSolS, PSolE, Nsat[2], SolCurrentStat;
