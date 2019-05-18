@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * stream.c : stream input/output functions
 *
-*          Copyright (C) 2008-2018 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2008-2019 by T.TAKASU, All rights reserved.
 *
 * options : -DWIN32    use WIN32 API
 *           -DSVR_REUSEADDR reuse tcp server address
@@ -62,6 +62,7 @@
 *                           fix bug on file playback as slave mode
 *                           fix bug on timeset() in gpst instead of utc
 *                           update trace levels and buffer sizes
+*           2019/05/10 1.27 fix bug on dropping message on tcp stream (#144)
 *-----------------------------------------------------------------------------*/
 #include <ctype.h>
 #include "rtklib.h"
@@ -1238,7 +1239,6 @@ static int readtcpsvr(tcpsvr_t *tcpsvr, unsigned char *buff, int n, char *msg)
             }
             discontcp(&tcpsvr->cli[i],ticonnect);
             updatetcpsvr(tcpsvr,msg);
-            return 0;
         }
         if (nr>0) {
             tcpsvr->cli[i].tact=tickget();
@@ -1266,7 +1266,6 @@ static int writetcpsvr(tcpsvr_t *tcpsvr, unsigned char *buff, int n, char *msg)
             }
             discontcp(&tcpsvr->cli[i],ticonnect);
             updatetcpsvr(tcpsvr,msg);
-            return 0;
         }
         if (ns>0) tcpsvr->cli[i].tact=tickget();
     }

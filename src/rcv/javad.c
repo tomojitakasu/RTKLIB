@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * javad.c : javad receiver dependent functions
 *
-*          Copyright (C) 2011-2018 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2011-2019 by T.TAKASU, All rights reserved.
 *
 * reference :
 *     [1] Javad GNSS, GREIS GNSS Receiver External Interface Specification,
@@ -43,6 +43,7 @@
 *                           fix problem to set eph->code for beidou and galileo
 *                           fix bug on saving galileo bgd to ephemeris
 *                           add receiver option -GALINAV, -GALFNAV
+*           2019/05/10 1.15 save galileo E5b data to obs index 2
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -107,7 +108,7 @@ static int tofreq(char sig, int sys, int *type)
     };
     const int freqs[7][6]={
         {1,1,2,2,3,1}, {1,1,4,2,3,1}, {1,0,0,0,3,0},     /* GPS,QZS,SBS */
-        {1,6,5,4,3,0}, {1,1,2,2,3,0}, {1,0,2,3,3,1},     /* GAL,GLO,BDS */
+        {1,6,2,4,3,0}, {1,1,2,2,3,0}, {1,0,2,3,3,1},     /* GAL,GLO,BDS */
         {0,0,0,0,3,0}                                    /* IRN */
     };
     int i,j;
@@ -182,6 +183,9 @@ static double freq_sys(int sys, int freq, int freqn)
             case 2: return FREQ3_CMP; /* B3 */
         }
         return 0.0;
+    }
+    else if (sys==SYS_GAL&&freq==1) { /* Galileo E5b */
+        return FREQ7;
     }
     else {
         return CLIGHT/lam_carr[freq];

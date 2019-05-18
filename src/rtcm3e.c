@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * rtcm3e.c : rtcm ver.3 message encoder functions
 *
-*          Copyright (C) 2012-2018 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2012-2019 by T.TAKASU, All rights reserved.
 *
 * references :
 *     see rtcm.c
@@ -34,6 +34,7 @@
 *           2017/04/11 1.16 fix bug on gst-week in MT1045/1046
 *           2018/10/10 1.17 merge changes for 2.4.2 p13
 *                           change mt for ssr 7 phase biases
+*           2019/05/10 1.21 save galileo E5b data to obs index 2
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -1741,10 +1742,13 @@ static int to_sigid(int sys, unsigned char code, int *freq)
         case SYS_CMP: msm_sig=msm_sig_cmp; break;
         default: return 0;
     }
-    /* freqency index for beidou */
+    /* freqency index for beidou and galileo */
     if (sys==SYS_CMP) {
         if      (*freq==5) *freq=2; /* B2 */
         else if (*freq==4) *freq=3; /* B3 */
+    }
+    else if (sys==SYS_GAL) {
+        if (*freq==5) *freq=2; /* E5b */
     }
     for (i=0;i<32;i++) {
         if (!strcmp(sig,msm_sig[i])) return i+1;
