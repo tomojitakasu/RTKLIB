@@ -201,10 +201,19 @@ static double uravalue(int sys, int sva)
     }
 }
 /* ura value (m) to ura index ------------------------------------------------*/
-static int uraindex(double value)
+static int uraindex(int sys,double value)
 {
     int i;
-    for (i=0;i<15;i++) if (ura_eph[i]>=value) break;
+    if (sys==SYS_GAL) {
+        if (value<0.0 || value>6.0) i=255; /* unknown or NAPA */
+        else if (value<=0.5) i=value/0.01;
+        else if (value<=1.0) i=(value-0.5)/0.02+50;
+        else if (value<=2.0) i=(value-1.0)/0.04+75;
+        else i=(value-2.0)/0.16+100;
+    }
+    else {  
+        for (i=0;i<15;i++) if (ura_eph[i]>=value) break;
+    }
     return i;
 }
 /* initialize station parameter ----------------------------------------------*/
@@ -1091,7 +1100,7 @@ static int decode_eph(double ver, int sat, gtime_t toc, const double *data,
         
         eph->code=(int)data[20];      /* GPS: codes on L2 ch */
         eph->svh =(int)data[24];      /* sv health */
-        eph->sva=uraindex(data[23]);  /* ura (m->index) */
+        eph->sva=uraindex(sys,data[23]);  /* ura (m->index) */
         eph->flag=(int)data[22];      /* GPS: L2 P data flag */
         
         eph->tgd[0]=   data[25];      /* TGD */
@@ -1122,7 +1131,7 @@ static int decode_eph(double ver, int sat, gtime_t toc, const double *data,
                                       /* bit   4-5: E5a HS */
                                       /* bit     6: E5b DVS */
                                       /* bit   7-8: E5b HS */
-        eph->sva =uraindex(data[23]); /* ura (m->index) */
+        eph->sva =uraindex(sys,data[23]); /* ura (m->index) */
         
         eph->tgd[0]=   data[25];      /* BGD E5a/E1 */
         eph->tgd[1]=   data[26];      /* BGD E5b/E1 */
@@ -1139,7 +1148,7 @@ static int decode_eph(double ver, int sat, gtime_t toc, const double *data,
         eph->ttr=adjweek(eph->ttr,toc);
         
         eph->svh =(int)data[24];      /* satH1 */
-        eph->sva=uraindex(data[23]);  /* ura (m->index) */
+        eph->sva=uraindex(sys,data[23]);  /* ura (m->index) */
         
         eph->tgd[0]=   data[25];      /* TGD1 B1/B3 */
         eph->tgd[1]=   data[26];      /* TGD2 B2/B3 */
@@ -1151,7 +1160,7 @@ static int decode_eph(double ver, int sat, gtime_t toc, const double *data,
         eph->toe=adjweek(gpst2time(eph->week,data[11]),toc);
         eph->ttr=adjweek(gpst2time(eph->week,data[27]),toc);
         eph->svh =(int)data[24];      /* sv health */
-        eph->sva=uraindex(data[23]);  /* ura (m->index) */
+        eph->sva=uraindex(sys,data[23]);  /* ura (m->index) */
         eph->tgd[0]=   data[25];      /* TGD */
     }
     if (eph->iode<0||1023<eph->iode) {
@@ -1221,11 +1230,12 @@ static int decode_seph(double ver, int sat, gtime_t toc, double *data,
                        seph_t *seph)
 {
     seph_t seph0={0};
-    int week;
+    int week,sys;
     
     trace(4,"decode_seph: ver=%.2f sat=%2d\n",ver,sat);
     
-    if (satsys(sat,NULL)!=SYS_SBS) {
+    sys=satsys(sat,NULL);
+    if (sys!=SYS_SBS) {
         trace(3,"geo ephemeris error: invalid satellite sat=%2d\n",sat);
         return 0;
     }
@@ -1245,7 +1255,7 @@ static int decode_seph(double ver, int sat, gtime_t toc, double *data,
     seph->acc[0]=data[5]*1E3; seph->acc[1]=data[9]*1E3; seph->acc[2]=data[13]*1E3;
     
     seph->svh=(int)data[6];
-    seph->sva=uraindex(data[10]);
+    seph->sva=uraindex(sys,data[10]);
     
     return 1;
 }
