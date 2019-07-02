@@ -11,7 +11,7 @@ IERS_MODEL {
 }
 
 win* {
-    LIBS += -lWs2_32 -lwinmm
+    LIBS += -lws2_32 -lwinmm
 }
 
 QMAKE_RPATHDIR *= $${ROOT_DIRECTORY}/lib
