@@ -286,7 +286,6 @@ void PlotOptDialog::BtnFontClick()
 {
     QFontDialog dialog(this);
 
-    FontOpt = dialog.selectedFont();
     dialog.setCurrentFont(FontOpt);
     dialog.exec();
 
