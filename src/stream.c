@@ -63,6 +63,7 @@
 *                           fix bug on timeset() in gpst instead of utc
 *                           update trace levels and buffer sizes
 *           2019/05/10 1.27 fix bug on dropping message on tcp stream (#144)
+*           2019/08/19 1.28 support 460800 and 921600 bps for serial
 *-----------------------------------------------------------------------------*/
 #include <ctype.h>
 #include "rtklib.h"
@@ -335,7 +336,8 @@ static DWORD WINAPI serialthread(void *arg)
 static serial_t *openserial(const char *path, int mode, char *msg)
 {
     const int br[]={
-        300,600,1200,2400,4800,9600,19200,38400,57600,115200,230400
+        300,600,1200,2400,4800,9600,19200,38400,57600,115200,230400,460800,
+        921600
     };
     serial_t *serial;
     int i,brate=9600,bsize=8,stopb=1,tcp_port=0;
@@ -347,7 +349,8 @@ static serial_t *openserial(const char *path, int mode, char *msg)
     char dcb[64]="";
 #else
     const speed_t bs[]={
-        B300,B600,B1200,B2400,B4800,B9600,B19200,B38400,B57600,B115200,B230400
+        B300,B600,B1200,B2400,B4800,B9600,B19200,B38400,B57600,B115200,B230400,
+        B460800,B921600
     };
     struct termios ios={0};
     int rw=0;
@@ -365,8 +368,8 @@ static serial_t *openserial(const char *path, int mode, char *msg)
     if ((p=strchr(path,'#'))) {
         sscanf(p,"#%d",&tcp_port);
     }
-    for (i=0;i<11;i++) if (br[i]==brate) break;
-    if (i>=12) {
+    for (i=0;i<13;i++) if (br[i]==brate) break;
+    if (i>=14) {
         sprintf(msg,"bitrate error (%d)",brate);
         tracet(1,"openserial: %s path=%s\n",msg,path);
         free(serial);
