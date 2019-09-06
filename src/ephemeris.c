@@ -178,15 +178,16 @@ extern void alm2pos(gtime_t time, const alm_t *alm, double *rs, double *dts)
 *-----------------------------------------------------------------------------*/
 extern double eph2clk(gtime_t time, const eph_t *eph)
 {
-    double t;
+    double t,t0;
     int i;
     
     trace(4,"eph2clk : time=%s sat=%2d\n",time_str(time,3),eph->sat);
     
-    t=timediff(time,eph->toc);
+    t0=timediff(time,eph->toc);
+    t=t0;
     
     for (i=0;i<2;i++) {
-        t-=eph->f0+eph->f1*t+eph->f2*t*t;
+        t=t0-(eph->f0+eph->f1*t+eph->f2*t*t);
     }
     return eph->f0+eph->f1*t+eph->f2*t*t;
 }
@@ -312,15 +313,16 @@ static void glorbit(double t, double *x, const double *acc)
 *-----------------------------------------------------------------------------*/
 extern double geph2clk(gtime_t time, const geph_t *geph)
 {
-    double t;
+    double t,t0;
     int i;
     
     trace(4,"geph2clk: time=%s sat=%2d\n",time_str(time,3),geph->sat);
     
-    t=timediff(time,geph->toe);
+    t0=timediff(time,geph->toe);
+    t=t0;
     
     for (i=0;i<2;i++) {
-        t-=-geph->taun+geph->gamn*t;
+        t=t0-(-geph->taun+geph->gamn*t);
     }
     return -geph->taun+geph->gamn*t;
 }
