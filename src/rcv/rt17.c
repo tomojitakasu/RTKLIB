@@ -436,7 +436,7 @@ static void UnwrapGenout(rt17_t *rt17);
 /* Public functions (in alphabetical order): */
 
 /* free_rt17 - Free up RT17 dependent private storage */
-EXPORT void free_rt17(raw_t *Raw)
+void free_rt17(raw_t *Raw)
 {
     rt17_t *rt17 = NULL;
     
@@ -466,7 +466,7 @@ EXPORT void free_rt17(raw_t *Raw)
 }
 
 /* init_rt17 = Initialize RT17 dependent private storage */
-EXPORT int init_rt17(raw_t *Raw)
+int init_rt17(raw_t *Raw)
 {
 	rt17_t *rt17 = NULL;
     unsigned char *MessageBuffer = NULL, *PacketBuffer = NULL;
@@ -515,7 +515,7 @@ EXPORT int init_rt17(raw_t *Raw)
 | and the packet ends with a 2-byte trailer. Byte 3 is set to 0 (00h) when the packet
 | contains no data.
 */
-EXPORT int input_rt17(raw_t *Raw, unsigned char Data)
+int input_rt17(raw_t *Raw, unsigned char Data)
 {
     rt17_t *rt17 = (rt17_t*) Raw->rcv_data;
     unsigned char *MessageBuffer = rt17->MessageBuffer;
@@ -723,7 +723,7 @@ EXPORT int input_rt17(raw_t *Raw, unsigned char Data)
 |  2: input ephemeris
 |  9: input ion/utc parameter
 */
-EXPORT int input_rt17f(raw_t *Raw, FILE *fp)
+int input_rt17f(raw_t *Raw, FILE *fp)
 {
     int i, Data, Ret;
     

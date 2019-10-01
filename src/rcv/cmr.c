@@ -1370,7 +1370,7 @@ static unsigned int ubitn(const unsigned char *Address, int BitPosition, int Bit
 */
 
 /* free_cmr - Free up CMR dependent private storage */
-EXPORT void free_cmr(raw_t *Raw)
+void free_cmr(raw_t *Raw)
 {
     cmr_t *Cmr = NULL;
     
@@ -1409,7 +1409,7 @@ EXPORT void free_cmr(raw_t *Raw)
 }
 
 /* init_cmr = Initialize CMR dependent private storage */
-EXPORT int init_cmr(raw_t *Raw)
+int init_cmr(raw_t *Raw)
 {
     cmr_t *Cmr = NULL;
     obsr_t *RoverObservables = NULL;
@@ -1473,7 +1473,7 @@ EXPORT int init_cmr(raw_t *Raw)
 |
 | Supported CMR messages: 0, 1, 2, 3, 4; CMR+ messages 1, 2, 3.
 */
-EXPORT int input_cmr(raw_t *Raw, unsigned char Data)
+int input_cmr(raw_t *Raw, unsigned char Data)
 {
     cmr_t *Cmr = (cmr_t*) Raw->rcv_data;
     unsigned char *MessageBuffer = Cmr->MessageBuffer;
