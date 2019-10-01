@@ -38,20 +38,27 @@
 #include <math.h>
 #include <time.h>
 #include <ctype.h>
+
 #ifdef WIN32
 #include <winsock2.h>
 #include <windows.h>
 #else
 #include <pthread.h>
 #endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#ifdef WIN_DLL
-#define EXPORT __declspec(dllexport) /* for Windows DLL */
-#else
-#define EXPORT
+
+#ifdef WIN_DLL 
+    #if defined _MSC_VER
+        #define EXPORT __declspec(dllexport)
+    #else /* Not WINDOWS but want to export */
+        #define EXPORT __attribute__((__visibility__("default")))
+    #endif
+#else /*WINDLL Not exported */
+	#define EXPORT
 #endif
 
 /* constants -----------------------------------------------------------------*/
