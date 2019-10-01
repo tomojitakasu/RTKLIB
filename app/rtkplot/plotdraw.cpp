@@ -15,7 +15,7 @@
 // update plot --------------------------------------------------------------
 void __fastcall TPlot::UpdatePlot(void)
 {
-    trace(3,"UpdatePlot\n");
+    rtk_trace(3,"UpdatePlot\n");
     
     UpdateInfo();
     Refresh();
@@ -23,7 +23,7 @@ void __fastcall TPlot::UpdatePlot(void)
 // refresh plot -------------------------------------------------------------
 void __fastcall TPlot::Refresh(void)
 {
-    trace(3,"Refresh\n");
+    rtk_trace(3,"Refresh\n");
     
     Flush=1;
     Disp->Invalidate();
@@ -35,7 +35,7 @@ void __fastcall TPlot::UpdateDisp(void)
     TRect r=Disp->ClientRect;
     int level=Drag?0:1;
     
-    trace(3,"UpdateDisp\n");
+    rtk_trace(3,"UpdateDisp\n");
     
     if (Flush) {
         c->Pen  ->Color=CColor[0];
@@ -78,7 +78,7 @@ void __fastcall TPlot::DrawTrk(int level)
     double xt,yt,sx,sy,opos[3],pnt[3],rr[3],enu[3]={0},cent[3];
     int i,j,index,sel=!BtnSol1->Down&&BtnSol2->Down?1:0,p=0;
     
-    trace(3,"DrawTrk: level=%d\n",level);
+    rtk_trace(3,"DrawTrk: level=%d\n",level);
     
     if (BtnShowTrack->Down&&BtnFixCent->Down) {
         if (!BtnSol12->Down) {
@@ -279,7 +279,7 @@ void __fastcall TPlot::DrawTrkImage(int level)
     TPoint p1,p2;
     double pos[3]={0},rr[3],xyz[3]={0},x1,x2,y1,y2;
     
-    trace(3,"DrawTrkImage: level=%d\n",level);
+    rtk_trace(3,"DrawTrkImage: level=%d\n",level);
     
     pos[0]=MapLat*D2R;
     pos[1]=MapLon*D2R;
@@ -318,7 +318,7 @@ void __fastcall TPlot::DrawTrkMap(int level)
     double bound[4]={PI/2.0,-PI/2.0,PI,-PI};
     int i,j,n,m;
     
-    trace(3,"DrawTrkMap: level=%d\n",level);
+    rtk_trace(3,"DrawTrkMap: level=%d\n",level);
     
     // get map boundary
     GraphT->GetLim(xl,yl);
@@ -416,7 +416,7 @@ void __fastcall TPlot::DrawTrkPnt(const TIMEPOS *pos, int level, int style)
     TColor *color;
     int i;
     
-    trace(3,"DrawTrkPnt: level=%d style=%d\n",level,style);
+    rtk_trace(3,"DrawTrkPnt: level=%d style=%d\n",level,style);
     
     if (level) DrawTrkArrow(pos);
     
@@ -445,7 +445,7 @@ void __fastcall TPlot::DrawTrkPos(const double *rr, int type, int siz,
     TPoint p1;
     double xyz[3],xs,ys;
     
-    trace(3,"DrawTrkPos: type=%d\n",type);
+    rtk_trace(3,"DrawTrkPos: type=%d\n",type);
     
     if (norm(rr,3)>0.0) {
         GraphT->GetScale(xs,ys);
@@ -466,7 +466,7 @@ void __fastcall TPlot::DrawTrkStat(const TIMEPOS *pos, AnsiString header, int p)
     double *d,ave[4],std[4],rms[4],opos[3];
     int i,n=0,fonth=(int)(Disp->Font->Size*1.5);
     
-    trace(3,"DrawTrkStat: p=%d\n",p);
+    rtk_trace(3,"DrawTrkStat: p=%d\n",p);
     
     if (!ShowStats) return;
     
@@ -506,7 +506,7 @@ void __fastcall TPlot::DrawTrkError(const TIMEPOS *pos, int style)
     double xc[37],yc[37],a,b,s,c;
     int i,j;
     
-    trace(3,"DrawTrkError: style=%d\n",style);
+    rtk_trace(3,"DrawTrkError: style=%d\n",style);
     
     if (!ShowErr) return;
     
@@ -533,7 +533,7 @@ void __fastcall TPlot::DrawTrkArrow(const TIMEPOS *pos)
     double tt,d[2],dist,dt,vel;
     int i,off=8;
     
-    trace(3,"DrawTrkArrow\n");
+    rtk_trace(3,"DrawTrkArrow\n");
     
     if (!ShowArrow) return;
     
@@ -560,7 +560,7 @@ void __fastcall TPlot::DrawTrkVel(const TIMEPOS *vel)
     TPoint p1,p2;
     double v=0.0,dir=0.0;
     
-    trace(3,"DrawTrkVel\n");
+    rtk_trace(3,"DrawTrkVel\n");
     
     if (vel&&vel->n>0) {
         if ((v=SQRT(SQR(vel->x[0])+SQR(vel->y[0])))>1.0) {
@@ -590,7 +590,7 @@ void __fastcall TPlot::DrawSol(int level, int type)
     double xc,yc,xl[2],yl[2],off,y;
     int i,j,k,sel=!BtnSol1->Down&&BtnSol2->Down?1:0,p=0;
     
-    trace(3,"DrawSol: level=%d\n",level);
+    rtk_trace(3,"DrawSol: level=%d\n",level);
     
     if (BtnShowTrack->Down&&(BtnFixHoriz->Down||BtnFixVert->Down)) {
         
@@ -709,7 +709,7 @@ void __fastcall TPlot::DrawSolPnt(const TIMEPOS *pos, int level, int style)
     double *x,*y,*s,xs,ys,*yy;
     int i,j;
     
-    trace(3,"DrawSolPnt: level=%d style=%d\n",level,style);
+    rtk_trace(3,"DrawSolPnt: level=%d style=%d\n",level,style);
     
     x=new double [pos->n];
     
@@ -765,7 +765,7 @@ void __fastcall TPlot::DrawSolStat(const TIMEPOS *pos, AnsiString unit, int p)
     char *u;
     AnsiString label,s;
     
-    trace(3,"DrawSolStat: p=%d\n",p);
+    rtk_trace(3,"DrawSolStat: p=%d\n",p);
     
     if (!ShowStats||pos->n<=0) return;
     
@@ -806,7 +806,7 @@ void __fastcall TPlot::DrawNsat(int level)
     double xc,yc,y,xl[2],yl[2],off;
     int i,j,k,sel=!BtnSol1->Down&&BtnSol2->Down?1:0;
     
-    trace(3,"DrawNsat: level=%d\n",level);
+    rtk_trace(3,"DrawNsat: level=%d\n",level);
     
     if (BtnShowTrack->Down&&BtnFixHoriz->Down) {
         
@@ -890,7 +890,7 @@ void __fastcall TPlot::DrawObs(int level)
     int i,j,m=0,sats[MAXSAT]={0},ind=ObsIndex,prn;
     char id[16];
     
-    trace(3,"DrawObs: level=%d\n",level);
+    rtk_trace(3,"DrawObs: level=%d\n",level);
     
     for (i=0;i<Obs.n;i++) {
         if (SatMask[Obs.data[i].sat-1]) continue;
@@ -990,7 +990,7 @@ void __fastcall TPlot::DrawObsSlip(double *yp)
     const char *code;
     int i,j,slip;
     
-    trace(3,"DrawObsSlip\n");
+    rtk_trace(3,"DrawObsSlip\n");
     
     code=ObsType->ItemIndex?ObsTypeText.c_str()+1:"";
     
@@ -1049,7 +1049,7 @@ void __fastcall TPlot::DrawObsEphem(double *yp)
     TPoint ps[3];
     int i,j,k,in,svh,off[MAXSAT]={0};
     
-    trace(3,"DrawObsEphem\n");
+    rtk_trace(3,"DrawObsEphem\n");
     
     if (!ShowEph) return;
     
@@ -1109,7 +1109,7 @@ void __fastcall TPlot::DrawSkyImage(int level)
     TPoint p1,p2;
     double xl[2],yl[2],r,s,mx[190],my[190];
     
-    trace(3,"DrawSkyImage: level=%d\n",level);
+    rtk_trace(3,"DrawSkyImage: level=%d\n",level);
     
     if (SkySize[0]<=0||SkySize[1]<=0) return;
     
@@ -1151,7 +1151,7 @@ void __fastcall TPlot::DrawSky(int level)
     const char *code=ObsType->ItemIndex?ObsTypeText.c_str()+1:"";
     char id[16];
     
-    trace(3,"DrawSky: level=%d\n",level);
+    rtk_trace(3,"DrawSky: level=%d\n",level);
     
     GraphS->GetLim(xl,yl);
     r=(xl[1]-xl[0]<yl[1]-yl[0]?xl[1]-xl[0]:yl[1]-yl[0])*0.45;
@@ -1339,7 +1339,7 @@ void __fastcall TPlot::DrawDop(int level)
     int i,j,*ns,prn,n=0;
     int ind=ObsIndex,doptype=DopType->ItemIndex;
     
-    trace(3,"DrawDop: level=%d\n",level);
+    rtk_trace(3,"DrawDop: level=%d\n",level);
     
     GraphR->XLPos=TimeLabel?6:1; 
     GraphR->YLPos=1;
@@ -1471,7 +1471,7 @@ void __fastcall TPlot::DrawDopStat(double *dop, int *ns, int n)
     int i,j,m=0;
     int ndop[4]={0},nsat[MAXOBS]={0},fonth=(int)(Disp->Font->Size*1.5);
     
-    trace(3,"DrawDopStat: n=%d\n",n);
+    rtk_trace(3,"DrawDopStat: n=%d\n",n);
     
     if (!ShowStats) return;
     
@@ -1529,7 +1529,7 @@ void __fastcall TPlot::DrawSnr(int level)
     char *code=ObsTypeText.c_str()+1;
     int i,j,k,l,n,np,c,sat,ind=ObsIndex,nrms[3]={0};
     
-    trace(3,"DrawSnr: level=%d\n",level);
+    rtk_trace(3,"DrawSnr: level=%d\n",level);
     
     if (0<=ind&&ind<NObs&&BtnShowTrack->Down) {
         time=Obs.data[IndexObs[ind]].time;
@@ -1670,7 +1670,7 @@ void __fastcall TPlot::DrawSnrE(int level)
     int i,j,k,n[2],np[2]={0},sat,ind=ObsIndex,hh=(int)(Disp->Font->Size*1.5);
     int nrms=0;
     
-    trace(3,"DrawSnrE: level=%d\n",level);
+    rtk_trace(3,"DrawSnrE: level=%d\n",level);
     
     yl[1][0]=-MaxMP; yl[1][1]=MaxMP;
     
@@ -1809,7 +1809,7 @@ void __fastcall TPlot::DrawMpS(int level)
     int i,j,sat,ind=ObsIndex;
     char *code=ObsTypeText.c_str()+1,id[32];
     
-    trace(3,"DrawSnrS: level=%d\n",level);
+    rtk_trace(3,"DrawSnrS: level=%d\n",level);
     
     GraphS->GetLim(xl,yl);
     r=(xl[1]-xl[0]<yl[1]-yl[0]?xl[1]-xl[0]:yl[1]-yl[0])*0.45;
@@ -1887,7 +1887,7 @@ void __fastcall TPlot::DrawRes(int level)
     int i,j,sel=!BtnSol1->Down&&BtnSol2->Down?1:0,ind=SolIndex[sel];
     int frq=FrqType->ItemIndex+1;
     
-    trace(3,"DrawRes: level=%d\n",level);
+    rtk_trace(3,"DrawRes: level=%d\n",level);
     
     if (0<=ind&&ind<SolData[sel].n&&BtnShowTrack->Down&&BtnFixHoriz->Down) {
         

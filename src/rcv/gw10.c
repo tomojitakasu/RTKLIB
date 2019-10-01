@@ -124,20 +124,20 @@ static int decode_gw10raw(raw_t *raw)
     int i,j,n,prn,flg,sat,snr;
     unsigned char *p=raw->buff+2;
     
-    trace(4,"decode_gw10raw: len=%d\n",raw->len);
+    rtk_trace(4,"decode_gw10raw: len=%d\n",raw->len);
     
     tow=R8(p);
     tows=floor(tow*1000.0+0.5)/1000.0; /* round by 10ms */
     toff=CLIGHT*(tows-tow);            /* time tag offset (m) */
     if (!adjweek(raw,tows)) {
-        trace(2,"decode_gw10raw: no gps week infomation\n");
+        rtk_trace(2,"decode_gw10raw: no gps week infomation\n");
         return 0;
     }
     for (i=n=0,p+=8;i<16&&n<MAXOBS;i++,p+=23) {
         if (U1(p+1)!=1) continue;
         prn=U1(p);
         if (!(sat=satno(prn<=MAXPRNGPS?SYS_GPS:SYS_SBS,prn))) {
-            trace(2,"gw10raw satellite number error: prn=%d\n",prn);
+            rtk_trace(2,"gw10raw satellite number error: prn=%d\n",prn);
             continue;
         }
         pr =R8(p+ 2)-toff;
@@ -145,7 +145,7 @@ static int decode_gw10raw(raw_t *raw)
         cp =-(int)(U4(p+18))/256.0-toff/lam_carr[0];
         flg=U1(p+22);
         if (flg&0x3) {
-            trace(2,"gw10raw raw data invalid: prn=%d\n",prn);
+            rtk_trace(2,"gw10raw raw data invalid: prn=%d\n",prn);
             continue;
         }
         raw->obs.data[n].time=raw->time;
@@ -195,12 +195,12 @@ static int decode_gw10gps(raw_t *raw)
     int i,prn,sat,id,leaps;
     unsigned char *p=raw->buff+2,subfrm[30];
     
-    trace(4,"decode_gw10gps: len=%d\n",raw->len);
+    rtk_trace(4,"decode_gw10gps: len=%d\n",raw->len);
     
     tow=U4(p)/1000.0; p+=4;
     prn=U1(p);        p+=1;
     if (!(sat=satno(SYS_GPS,prn))) {
-        trace(2,"gw10 gps satellite number error: tow=%.1f prn=%d\n",tow,prn);
+        rtk_trace(2,"gw10 gps satellite number error: tow=%.1f prn=%d\n",tow,prn);
         return -1;
     }
     for (i=0;i<10;i++) {
@@ -208,7 +208,7 @@ static int decode_gw10gps(raw_t *raw)
         
         /* check parity of word */
         if (!check_parity(buff,subfrm+i*3)) {
-            trace(2,"gw10 gps frame parity error: tow=%.1f prn=%2d word=%2d\n",
+            rtk_trace(2,"gw10 gps frame parity error: tow=%.1f prn=%2d word=%2d\n",
                  tow,prn,i+1);
             return -1;
         }
@@ -216,7 +216,7 @@ static int decode_gw10gps(raw_t *raw)
     id=getbitu(subfrm,43,3); /* subframe id */
     
     if (id<1||5<id) {
-        trace(2,"gw10 gps frame id error: tow=%.1f prn=%2d id=%d\n",tow,prn,id);
+        rtk_trace(2,"gw10 gps frame id error: tow=%.1f prn=%2d id=%d\n",tow,prn,id);
         return -1;
     }
     for (i=0;i<30;i++) raw->subfrm[sat-1][i+(id-1)*30]=subfrm[i];
@@ -255,12 +255,12 @@ static int decode_gw10sbs(raw_t *raw)
     int i,prn;
     unsigned char *p=raw->buff+2;
     
-    trace(4,"decode_gw10sbs : len=%d\n",raw->len);
+    rtk_trace(4,"decode_gw10sbs : len=%d\n",raw->len);
     
     tow=U4(p)/1000.0;
     prn=U1(p+4);
     if (prn<MINPRNSBS||MAXPRNSBS<prn) {
-        trace(2,"gw10 sbs satellite number error: prn=%d\n",prn);
+        rtk_trace(2,"gw10 sbs satellite number error: prn=%d\n",prn);
         return -1;
     }
     raw->sbsmsg.prn=prn;
@@ -283,11 +283,11 @@ static int decode_gw10reph(raw_t *raw)
     int i,week,prn,sat;
     unsigned char *p=raw->buff+2,buff[90];
     
-    trace(4,"decode_gw10reph: len=%d\n",raw->len);
+    rtk_trace(4,"decode_gw10reph: len=%d\n",raw->len);
     
     prn=U1(p);
     if (!(sat=satno(SYS_GPS,prn))) {
-        trace(2,"gw10 raw ephemeris satellite number error: prn=%d\n",prn);
+        rtk_trace(2,"gw10 raw ephemeris satellite number error: prn=%d\n",prn);
         return -1;
     }
     for (i=0;i<90;i++) {
@@ -296,7 +296,7 @@ static int decode_gw10reph(raw_t *raw)
     if (decode_frame(buff    ,&eph,NULL,NULL,NULL,NULL)!=1||
         decode_frame(buff+ 30,&eph,NULL,NULL,NULL,NULL)!=2||
         decode_frame(buff+ 60,&eph,NULL,NULL,NULL,NULL)!=3) {
-        trace(2,"gw10 raw ephemeris navigation frame error: prn=%d\n",prn);
+        rtk_trace(2,"gw10 raw ephemeris navigation frame error: prn=%d\n",prn);
         return -1;
     }
     /* set time if no time avaliable */
@@ -320,10 +320,10 @@ static int decode_gw10sol(raw_t *raw)
     double ep[6]={0},sec;
     unsigned char *p=raw->buff+6;
     
-    trace(4,"decode_gw10sol : len=%d\n",raw->len);
+    rtk_trace(4,"decode_gw10sol : len=%d\n",raw->len);
     
     if (U2(p+42)&0xC00) { /* time valid? */
-        trace(2,"gw10 sol time/day invalid\n");
+        rtk_trace(2,"gw10 sol time/day invalid\n");
         return 0;
     }
     sec=U4(p+27)/16384.0;
@@ -344,7 +344,7 @@ static int decode_gw10(raw_t *raw)
 {
     int type=U1(raw->buff+1);
     
-    trace(3,"decode_gw10: type=0x%02X len=%d\n",type,raw->len);
+    rtk_trace(3,"decode_gw10: type=0x%02X len=%d\n",type,raw->len);
     
     if (raw->outtype) {
         sprintf(raw->msgtype,"GW10 0x%02X (%4d):",type,raw->len);
@@ -375,7 +375,7 @@ static int decode_gw10(raw_t *raw)
 extern int input_gw10(raw_t *raw, unsigned char data)
 {
     int stat;
-    trace(5,"input_gw10: data=%02x\n",data);
+    rtk_trace(5,"input_gw10: data=%02x\n",data);
     
     raw->buff[raw->nbyte++]=data;
     
@@ -414,7 +414,7 @@ extern int input_gw10f(raw_t *raw, FILE *fp)
 {
     int i,data,ret;
     
-    trace(4,"input_gw10f:\n");
+    rtk_trace(4,"input_gw10f:\n");
     
     for (i=0;i<4096;i++) {
         if ((data=fgetc(fp))==EOF) return -2;

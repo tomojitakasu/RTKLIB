@@ -230,7 +230,7 @@ static int settag(obsd_t *data, gtime_t time)
     
     if (data->time.time!=0&&fabs(timediff(data->time,time))>5E-4) {
         time2str(data->time,s1,4); time2str(time,s2,4);
-        trace(2,"time inconsistent: time=%s %s sat=%2d\n",s1,s2,data->sat);
+        rtk_trace(2,"time inconsistent: time=%s %s sat=%2d\n",s1,s2,data->sat);
         return 0;
     }
     data->time=time;
@@ -242,7 +242,7 @@ static int flushobuf(raw_t *raw)
     gtime_t time0={0};
     int i,j,n=0;
     
-    trace(3,"flushobuf: n=%d\n",raw->obuf.n);
+    rtk_trace(3,"flushobuf: n=%d\n",raw->obuf.n);
     
     /* copy observation data buffer */
     for (i=0;i<raw->obuf.n&&i<MAXOBS;i++) {
@@ -273,11 +273,11 @@ static int decode_RT(raw_t *raw)
     unsigned char *p=raw->buff+5;
     
     if (!checksum(raw->buff,raw->len)) {
-        trace(2,"javad RT error: len=%d\n",raw->len);
+        rtk_trace(2,"javad RT error: len=%d\n",raw->len);
         return -1;
     }
     if (raw->len<10) {
-        trace(2,"javad RT length error: len=%d\n",raw->len);
+        rtk_trace(2,"javad RT length error: len=%d\n",raw->len);
         return -1;
     }
     raw->tod=U4(p);
@@ -291,7 +291,7 @@ static int decode_RT(raw_t *raw)
     if (raw->tbase>=1) time=utc2gpst(time); /* utc->gpst */
     raw->time=time;
     
-    trace(3,"decode_RT: time=%s\n",time_str(time,3));
+    rtk_trace(3,"decode_RT: time=%s\n",time_str(time,3));
     
     if (raw->outtype) {
         msg=raw->msgtype+strlen(raw->msgtype);
@@ -306,15 +306,15 @@ static int decode_ET(raw_t *raw)
     unsigned char *p=raw->buff+5;
     
     if (!checksum(raw->buff,raw->len)) {
-        trace(2,"javad ET checksum error: len=%d\n",raw->len);
+        rtk_trace(2,"javad ET checksum error: len=%d\n",raw->len);
         return -1;
     }
     if (raw->len<10) {
-        trace(2,"javad ET length error: len=%d\n",raw->len);
+        rtk_trace(2,"javad ET length error: len=%d\n",raw->len);
         return -1;
     }
     if (raw->tod!=(int)U4(p)) {
-        trace(2,"javad ET inconsistent tod: tod=%d %d\n",raw->tod,U4(p));
+        rtk_trace(2,"javad ET inconsistent tod: tod=%d %d\n",raw->tod,U4(p));
         return -1;
     }
     raw->tod=-1; /* end of epoch */
@@ -330,11 +330,11 @@ static int decode_RD(raw_t *raw)
     unsigned char *p=raw->buff+5;
     
     if (!checksum(raw->buff,raw->len)) {
-        trace(2,"javad RD checksum error: len=%d\n",raw->len);
+        rtk_trace(2,"javad RD checksum error: len=%d\n",raw->len);
         return -1;
     }
     if (raw->len<11) {
-        trace(2,"javad RD length error: len=%d\n",raw->len);
+        rtk_trace(2,"javad RD length error: len=%d\n",raw->len);
         return -1;
     }
     ep[0]=U2(p); p+=2;
@@ -347,13 +347,13 @@ static int decode_RD(raw_t *raw)
         sprintf(msg," %04.0f/%02.0f/%02.0f base=%d",ep[0],ep[1],ep[2],raw->tbase);
     }
     if (raw->tod<0) {
-        trace(2,"javad RD lack of preceding RT\n");
+        rtk_trace(2,"javad RD lack of preceding RT\n");
         return 0;
     }
     raw->time=timeadd(epoch2time(ep),raw->tod*0.001);
     if (raw->tbase>=1) raw->time=utc2gpst(raw->time); /* utc->gpst */
     
-    trace(3,"decode_RD: time=%s\n",time_str(raw->time,3));
+    rtk_trace(3,"decode_RD: time=%s\n",time_str(raw->time,3));
     
     return 0;
 }
@@ -365,7 +365,7 @@ static int decode_SI(raw_t *raw)
     unsigned char *p=raw->buff+5;
     
     if (!checksum(raw->buff,raw->len)) {
-        trace(2,"javad SI checksum error: len=%d\n",raw->len);
+        rtk_trace(2,"javad SI checksum error: len=%d\n",raw->len);
         return -1;
     }
     raw->obuf.n=raw->len-6;
@@ -391,7 +391,7 @@ static int decode_SI(raw_t *raw)
         /* glonass fcn (frequency channel number) */
         if (sat==255) raw->freqn[i]=usi-45;
     }
-    trace(4,"decode_SI: nsat=raw->obuf.n\n");
+    rtk_trace(4,"decode_SI: nsat=raw->obuf.n\n");
     
     if (raw->outtype) {
         msg=raw->msgtype+strlen(raw->msgtype);
@@ -407,7 +407,7 @@ static int decode_NN(raw_t *raw)
     int i,n,ns,slot,sat,index[MAXOBS];
     
     if (!checksum(raw->buff,raw->len)) {
-        trace(2,"javad NN checksum error: len=%d\n",raw->len);
+        rtk_trace(2,"javad NN checksum error: len=%d\n",raw->len);
         return -1;
     }
     for (i=n=0;i<raw->obuf.n&&i<MAXOBS;i++) {
@@ -429,49 +429,49 @@ static int decode_NN(raw_t *raw)
 /* decode [GA] gps almanac ---------------------------------------------------*/
 static int decode_GA(raw_t *raw)
 {
-    trace(2,"javad GA not supported\n");
+    rtk_trace(2,"javad GA not supported\n");
     
     return 0;
 }
 /* decode [NA] glonass almanac -----------------------------------------------*/
 static int decode_NA(raw_t *raw)
 {
-    trace(2,"javad NA not supported\n");
+    rtk_trace(2,"javad NA not supported\n");
     
     return 0;
 }
 /* decode [EA] galileo almanac -----------------------------------------------*/
 static int decode_EA(raw_t *raw)
 {
-    trace(2,"javad EA not supported\n");
+    rtk_trace(2,"javad EA not supported\n");
     
     return 0;
 }
 /* decode [WA] waas almanac --------------------------------------------------*/
 static int decode_WA(raw_t *raw)
 {
-    trace(2,"javad WA not supported\n");
+    rtk_trace(2,"javad WA not supported\n");
     
     return 0;
 }
 /* decode [QA] qzss almanac --------------------------------------------------*/
 static int decode_QA(raw_t *raw)
 {
-    trace(2,"javad QA not supported\n");
+    rtk_trace(2,"javad QA not supported\n");
     
     return 0;
 }
 /* decode [CA] beidou almanac ------------------------------------------------*/
 static int decode_CA(raw_t *raw)
 {
-    trace(2,"javad CA not supported\n");
+    rtk_trace(2,"javad CA not supported\n");
     
     return 0;
 }
 /* decode [IA] irnss almanac -------------------------------------------------*/
 static int decode_IA(raw_t *raw)
 {
-    trace(2,"javad IA not supported\n");
+    rtk_trace(2,"javad IA not supported\n");
     
     return 0;
 }
@@ -484,7 +484,7 @@ static int decode_eph(raw_t *raw, int sys)
     int prn,tow,flag,week,navtype,sigtype,eph_sel=0;
     unsigned char *p=raw->buff+5;
     
-    trace(3,"decode_eph: sys=%2d prn=%3d\n",sys,U1(p));
+    rtk_trace(3,"decode_eph: sys=%2d prn=%3d\n",sys,U1(p));
     
     if (strstr(raw->opt,"-GALINAV")) eph_sel=1;
     if (strstr(raw->opt,"-GALFNAV")) eph_sel=2;
@@ -527,7 +527,7 @@ static int decode_eph(raw_t *raw, int sys)
     }
     if (sys==SYS_GPS||sys==SYS_QZS||sys==SYS_IRN) {
         if (!(eph.sat=satno(sys,prn))) {
-            trace(2,"javad ephemeris satellite error: sys=%d prn=%d\n",sys,prn);
+            rtk_trace(2,"javad ephemeris satellite error: sys=%d prn=%d\n",sys,prn);
             return -1;
         }
         eph.flag=(flag>>1)&1;
@@ -547,7 +547,7 @@ static int decode_eph(raw_t *raw, int sys)
     }
     else if (sys==SYS_GAL) {
         if (!(eph.sat=satno(sys,prn))) {
-            trace(2,"javad ephemeris satellite error: sys=%d prn=%d\n",sys,prn);
+            rtk_trace(2,"javad ephemeris satellite error: sys=%d prn=%d\n",sys,prn);
             return -1;
         }
         eph.tgd[0]=R4(p); p+=4;    /* BGD: E1-E5A (s) */
@@ -576,7 +576,7 @@ static int decode_eph(raw_t *raw, int sys)
     }
     else if (sys==SYS_CMP) {
         if (!(eph.sat=satno(sys,prn))) {
-            trace(2,"javad ephemeris satellite error: sys=%d prn=%d\n",sys,prn);
+            rtk_trace(2,"javad ephemeris satellite error: sys=%d prn=%d\n",sys,prn);
             return -1;
         }
         eph.tgd[1]=R4(p); p+=4;    /* TGD2 (s) */
@@ -602,11 +602,11 @@ static int decode_eph(raw_t *raw, int sys)
 static int decode_GE(raw_t *raw)
 {
     if (!checksum(raw->buff,raw->len)) {
-        trace(2,"javad GE checksum error: len=%d\n",raw->len);
+        rtk_trace(2,"javad GE checksum error: len=%d\n",raw->len);
         return -1;
     }
     if (raw->len<128) {
-        trace(2,"javad GE length error: len=%d\n",raw->len);
+        rtk_trace(2,"javad GE length error: len=%d\n",raw->len);
         return -1;
     }
     return decode_eph(raw,SYS_GPS);
@@ -621,7 +621,7 @@ static int decode_NE(raw_t *raw)
     unsigned char *p=raw->buff+5;
     
     if (!checksum(raw->buff,raw->len)) {
-        trace(2,"javad NE checksum error: len=%d\n",raw->len);
+        rtk_trace(2,"javad NE checksum error: len=%d\n",raw->len);
         return -1;
     }
     if (raw->len>=85) { /* firmware v 2.6.0 [2] */
@@ -644,7 +644,7 @@ static int decode_NE(raw_t *raw)
         geph.gamn  =R4(p);     p+=4;
     }
     else {
-        trace(2,"javad NE length error: len=%d\n",raw->len);
+        rtk_trace(2,"javad NE length error: len=%d\n",raw->len);
         return -1;
     }
     if (raw->len>=93) { /* firmware v 3.2.0 [1] */
@@ -656,7 +656,7 @@ static int decode_NE(raw_t *raw)
         sprintf(msg," prn=%2d frq=%2d tk=%6d tb=%4d",prn,geph.frq,tk,tb);
     }
     if (!(geph.sat=satno(SYS_GLO,prn))) {
-        trace(2,"javad NE satellite error: prn=%d\n",prn);
+        rtk_trace(2,"javad NE satellite error: prn=%d\n",prn);
         return 0;
     }
     if (raw->time.time==0) return 0;
@@ -667,13 +667,13 @@ static int decode_NE(raw_t *raw)
     /* check illegal ephemeris by toe */
     tt=timediff(raw->time,geph.toe);
     if (fabs(tt)>3600.0) {
-        trace(3,"javad NE illegal toe: prn=%2d tt=%6.0f\n",prn,tt);
+        rtk_trace(3,"javad NE illegal toe: prn=%2d tt=%6.0f\n",prn,tt);
         return 0;
     }
     /* check illegal ephemeris by frequency number consistency */
     if (raw->nav.geph[prn-MINPRNGLO].toe.time&&
         geph.frq!=raw->nav.geph[prn-MINPRNGLO].frq) {
-        trace(2,"javad NE illegal freq change: prn=%2d frq=%2d->%2d\n",prn,
+        rtk_trace(2,"javad NE illegal freq change: prn=%2d frq=%2d->%2d\n",prn,
               raw->nav.geph[prn-MINPRNGLO].frq,geph.frq);
         return -1;
     }
@@ -689,11 +689,11 @@ static int decode_NE(raw_t *raw)
 static int decode_EN(raw_t *raw)
 {
     if (!checksum(raw->buff,raw->len)) {
-        trace(2,"javad EN checksum error: len=%d\n",raw->len);
+        rtk_trace(2,"javad EN checksum error: len=%d\n",raw->len);
         return -1;
     }
     if (raw->len<150) {
-        trace(2,"javad EN length error: len=%d\n",raw->len);
+        rtk_trace(2,"javad EN length error: len=%d\n",raw->len);
         return -1;
     }
     return decode_eph(raw,SYS_GAL);
@@ -708,11 +708,11 @@ static int decode_WE(raw_t *raw)
     unsigned char *p=raw->buff+5;
     
     if (!checksum(raw->buff,raw->len)) {
-        trace(2,"javad WE checksum error: len=%d\n",raw->len);
+        rtk_trace(2,"javad WE checksum error: len=%d\n",raw->len);
         return -1;
     }
     if (raw->len<44) {
-        trace(2,"javad WE length error: len=%d\n",raw->len);
+        rtk_trace(2,"javad WE length error: len=%d\n",raw->len);
         return -1;
     }
     prn     =U1(p); p+=1+1+1;
@@ -731,7 +731,7 @@ static int decode_WE(raw_t *raw)
         sprintf(msg," prn=%3d tod=%6d",prn,tod);
     }
     if (!(seph.sat=satno(SYS_SBS,prn))) {
-        trace(2,"javad WE satellite error: prn=%d\n",prn);
+        rtk_trace(2,"javad WE satellite error: prn=%d\n",prn);
         return -1;
     }
     seph.tof=gpst2time(adjgpsweek(week),tow);
@@ -749,11 +749,11 @@ static int decode_WE(raw_t *raw)
 static int decode_QE(raw_t *raw)
 {
     if (!checksum(raw->buff,raw->len)) {
-        trace(2,"javad QE checksum error: len=%d\n",raw->len);
+        rtk_trace(2,"javad QE checksum error: len=%d\n",raw->len);
         return -1;
     }
     if (raw->len<128) {
-        trace(2,"javad QE length error: len=%d\n",raw->len);
+        rtk_trace(2,"javad QE length error: len=%d\n",raw->len);
         return -1;
     }
     return decode_eph(raw,SYS_QZS);
@@ -762,11 +762,11 @@ static int decode_QE(raw_t *raw)
 static int decode_CN(raw_t *raw)
 {
     if (!checksum(raw->buff,raw->len)) {
-        trace(2,"javad CN checksum error: len=%d\n",raw->len);
+        rtk_trace(2,"javad CN checksum error: len=%d\n",raw->len);
         return -1;
     }
     if (raw->len<133) {
-        trace(2,"javad QE length error: len=%d\n",raw->len);
+        rtk_trace(2,"javad QE length error: len=%d\n",raw->len);
         return -1;
     }
     return decode_eph(raw,SYS_CMP);
@@ -775,11 +775,11 @@ static int decode_CN(raw_t *raw)
 static int decode_IE(raw_t *raw)
 {
     if (!checksum(raw->buff,raw->len)) {
-        trace(2,"javad IE checksum error: len=%d\n",raw->len);
+        rtk_trace(2,"javad IE checksum error: len=%d\n",raw->len);
         return -1;
     }
     if (raw->len<129) {
-        trace(2,"javad IE length error: len=%d\n",raw->len);
+        rtk_trace(2,"javad IE length error: len=%d\n",raw->len);
         return -1;
     }
     return decode_eph(raw,SYS_IRN);
@@ -790,11 +790,11 @@ static int decode_UO(raw_t *raw)
     unsigned char *p=raw->buff+5;
     
     if (!checksum(raw->buff,raw->len)) {
-        trace(2,"javad UO checksum error: len=%d\n",raw->len);
+        rtk_trace(2,"javad UO checksum error: len=%d\n",raw->len);
         return -1;
     }
     if (raw->len<29) {
-        trace(2,"javad UO length error: len=%d\n",raw->len);
+        rtk_trace(2,"javad UO length error: len=%d\n",raw->len);
         return -1;
     }
     raw->nav.utc_gps[0]=R8(p); p+=8;
@@ -807,28 +807,28 @@ static int decode_UO(raw_t *raw)
 /* decode [NU] glonass utc and gps time parameters ---------------------------*/
 static int decode_NU(raw_t *raw)
 {
-    trace(2,"javad NU not supported\n");
+    rtk_trace(2,"javad NU not supported\n");
     
     return 0;
 }
 /* decode [EU] galileo utc and gps time parameters ---------------------------*/
 static int decode_EU(raw_t *raw)
 {
-    trace(2,"javad EU not supported\n");
+    rtk_trace(2,"javad EU not supported\n");
     
     return 0;
 }
 /* decode [WU] waas utc time parameters --------------------------------------*/
 static int decode_WU(raw_t *raw)
 {
-    trace(2,"javad WU not supported\n");
+    rtk_trace(2,"javad WU not supported\n");
     
     return 0;
 }
 /* decode [QU] qzss utc and gps time parameters ------------------------------*/
 static int decode_QU(raw_t *raw)
 {
-    trace(2,"javad QU not supported\n");
+    rtk_trace(2,"javad QU not supported\n");
     
     return 0;
 }
@@ -839,11 +839,11 @@ static int decode_IO(raw_t *raw)
     unsigned char *p=raw->buff+5;
     
     if (!checksum(raw->buff,raw->len)) {
-        trace(2,"javad IO checksum error: len=%d\n",raw->len);
+        rtk_trace(2,"javad IO checksum error: len=%d\n",raw->len);
         return -1;
     }
     if (raw->len<44) {
-        trace(2,"javad IO length error: len=%d\n",raw->len);
+        rtk_trace(2,"javad IO length error: len=%d\n",raw->len);
         return -1;
     }
     p+=4+2;
@@ -862,7 +862,7 @@ static int decode_L1nav(unsigned char *buff, int len, int sat, raw_t *raw)
     int i,j,sys,week,leaps=0,id=(U4((unsigned char*)buff+4)>>8)&7;
     
     if (id<1||5<id) {
-        trace(2,"navigation subframe format error: id=%d\n",id);
+        rtk_trace(2,"navigation subframe format error: id=%d\n",id);
         return 0;
     }
     subfrm=raw->subfrm[sat-1];
@@ -920,7 +920,7 @@ static int decode_L2nav(unsigned char *buff, int len, int sat, raw_t *raw)
     unsigned char msg[1024]={0};
     int i,j,preamb,prn,msgid,tow,alert;
     
-    trace(3,"decode_L2nav len=%2d sat=%2d L5 CNAV\n",len,sat);
+    rtk_trace(3,"decode_L2nav len=%2d sat=%2d L5 CNAV\n",len,sat);
     
     for (i=0;i<len;i++) for (j=0;j<4;j++) {
         msg[3-j+i*4]=buff[j+i*4];
@@ -933,10 +933,10 @@ static int decode_L2nav(unsigned char *buff, int len, int sat, raw_t *raw)
     alert =getbitu(msg,i, 1); i+= 1;
     
     if (preamb!=PREAMB_CNAV) {
-        trace(2,"javad *d sat=%2d L2 CNAV preamble error preamb=%02X\n",preamb);
+        rtk_trace(2,"javad *d sat=%2d L2 CNAV preamble error preamb=%02X\n",preamb);
         return -1;
     }
-    trace(3,"L2CNAV: sat=%2d prn=%2d msgid=%2d tow=%6d alert=%d\n",sat,prn,
+    rtk_trace(3,"L2CNAV: sat=%2d prn=%2d msgid=%2d tow=%6d alert=%d\n",sat,prn,
           msgid,tow,alert);
     
     return 0;
@@ -947,7 +947,7 @@ static int decode_L5nav(unsigned char *buff, int len, int sat, raw_t *raw)
     unsigned char msg[1024]={0};
     int i,j,preamb,prn,msgid,tow,alert;
     
-    trace(3,"decode_L5nav len=%2d sat=%2d L5 CNAV\n",len,sat);
+    rtk_trace(3,"decode_L5nav len=%2d sat=%2d L5 CNAV\n",len,sat);
     
     for (i=0;i<len;i++) for (j=0;j<4;j++) {
         msg[3-j+i*4]=buff[j+i*4];
@@ -960,10 +960,10 @@ static int decode_L5nav(unsigned char *buff, int len, int sat, raw_t *raw)
     alert =getbitu(msg,i, 1); i+= 1;
     
     if (preamb!=PREAMB_CNAV) {
-        trace(2,"javad *d sat=%2d L5 CNAV preamble error preamb=%02X\n",preamb);
+        rtk_trace(2,"javad *d sat=%2d L5 CNAV preamble error preamb=%02X\n",preamb);
         return -1;
     }
-    trace(3,"L5CNAV: sat=%2d prn=%2d msgid=%2d tow=%6d alert=%d\n",sat,prn,
+    rtk_trace(3,"L5CNAV: sat=%2d prn=%2d msgid=%2d tow=%6d alert=%d\n",sat,prn,
           msgid,tow,alert);
     
     return 0;
@@ -971,7 +971,7 @@ static int decode_L5nav(unsigned char *buff, int len, int sat, raw_t *raw)
 /* decode raw L1C CNAV2 data -------------------------------------------------*/
 static int decode_L1Cnav(unsigned char *buff, int len, int sat, raw_t *raw)
 {
-    trace(2,"javad *d len=%2d sat=%2d L1C CNAV2 not supported\n",len,sat);
+    rtk_trace(2,"javad *d len=%2d sat=%2d L1C CNAV2 not supported\n",len,sat);
     
     return 0;
 }
@@ -982,22 +982,22 @@ static int decode_nD(raw_t *raw, int sys)
     unsigned char *p=raw->buff+5;
     
     if (!checksum(raw->buff,raw->len)) {
-        trace(2,"javad nD checksum error: sys=%d len=%d\n",sys,raw->len);
+        rtk_trace(2,"javad nD checksum error: sys=%d len=%d\n",sys,raw->len);
         return -1;
     }
     siz=U1(p); p+=1;
     n=(raw->len-7)/siz;
     
     if (n<=0) {
-        trace(2,"javad nD length error: sys=%d len=%d\n",sys,raw->len);
+        rtk_trace(2,"javad nD length error: sys=%d len=%d\n",sys,raw->len);
         return -1;
     }
     for (i=0;i<n;i++,p+=siz) {
-        trace(3,"decode_*D: sys=%2d prn=%3d\n",sys,U1(p));
+        rtk_trace(3,"decode_*D: sys=%2d prn=%3d\n",sys,U1(p));
         
         prn=U1(p);
         if (!(sat=satno(sys,prn))) {
-            trace(2,"javad nD satellite error: sys=%d prn=%d\n",sys,prn);
+            rtk_trace(2,"javad nD satellite error: sys=%d prn=%d\n",sys,prn);
             continue;
         }
         stat=decode_L1nav(p+2,0,sat,raw);
@@ -1012,17 +1012,17 @@ static int decode_nd(raw_t *raw, int sys)
     int sat,prn,time,type,len;
     
     if (!checksum(raw->buff,raw->len)) {
-        trace(2,"javad nd checksum error: sys=%d len=%d\n",sys,raw->len);
+        rtk_trace(2,"javad nd checksum error: sys=%d len=%d\n",sys,raw->len);
         return -1;
     }
-    trace(3,"decode_*d: sys=%2d prn=%3d\n",sys,U1(p));
+    rtk_trace(3,"decode_*d: sys=%2d prn=%3d\n",sys,U1(p));
     
     prn =U1(p); p+=1;
     time=U4(p); p+=4;
     type=U1(p); p+=1;
     len =U1(p); p+=1;
     if (raw->len!=13+len*4) {
-        trace(2,"javad nd length error: sys=%d len=%d\n",sys,raw->len);
+        rtk_trace(2,"javad nd length error: sys=%d len=%d\n",sys,raw->len);
         return -1;
     }
     if (raw->outtype) {
@@ -1030,10 +1030,10 @@ static int decode_nd(raw_t *raw, int sys)
         sprintf(msg," prn=%3d time=%7d type=%d",prn,time,type);
     }
     if (!(sat=satno(sys,prn))) {
-        trace(2,"javad nd satellite error: sys=%d prn=%d\n",sys,prn);
+        rtk_trace(2,"javad nd satellite error: sys=%d prn=%d\n",sys,prn);
         return 0;
     }
-    trace(4,"sat=%2d time=%7d type=%d len=%3d\n",sat,time,type,len);
+    rtk_trace(4,"sat=%2d time=%7d type=%d len=%3d\n",sat,time,type,len);
     
     switch (type) {
         case 0: return decode_L1nav (p,len,sat,raw); /* L1  NAV */
@@ -1047,7 +1047,7 @@ static int decode_nd(raw_t *raw, int sys)
 /* decode [LD] glonass raw navigation data -----------------------------------*/
 static int decode_LD(raw_t *raw)
 {
-    trace(2,"javad LD not supported\n");
+    rtk_trace(2,"javad LD not supported\n");
     
     return 0;
 }
@@ -1060,10 +1060,10 @@ static int decode_lD(raw_t *raw)
     int i,sat,prn,frq,time,type,len,id;
     
     if (!checksum(raw->buff,raw->len)) {
-        trace(2,"javad lD checksum error: len=%d\n",raw->len);
+        rtk_trace(2,"javad lD checksum error: len=%d\n",raw->len);
         return -1;
     }
-    trace(3,"decode_lD: prn=%3d\n",U1(p));
+    rtk_trace(3,"decode_lD: prn=%3d\n",U1(p));
     
     prn =U1(p); p+=1;
     frq =I1(p); p+=1;
@@ -1072,7 +1072,7 @@ static int decode_lD(raw_t *raw)
     len =U1(p); p+=1;
     
     if (raw->len!=14+len*4) {
-        trace(2,"javad lD length error: len=%d\n",raw->len);
+        rtk_trace(2,"javad lD length error: len=%d\n",raw->len);
         return -1;
     }
     if (raw->outtype) {
@@ -1080,11 +1080,11 @@ static int decode_lD(raw_t *raw)
         sprintf(msg," prn=%2d frq=%2d time=%7d type=%d",prn,frq,time,type);
     }
     if (!(sat=satno(SYS_GLO,prn))) {
-        trace(2,"javad lD satellite error: prn=%d\n",prn);
+        rtk_trace(2,"javad lD satellite error: prn=%d\n",prn);
         return 0;
     }
     if (type!=0) {
-        trace(3,"javad lD type not supported: type=%d\n",type);
+        rtk_trace(3,"javad lD type not supported: type=%d\n",type);
         return 0;
     }
     if ((id=(U4(p)>>20)&0xF)<1) return 0;
@@ -1111,21 +1111,21 @@ static int decode_lD(raw_t *raw)
 /* decode [ED] galileo raw navigation data -----------------------------------*/
 static int decode_ED(raw_t *raw)
 {
-    trace(2,"javad ED not supported\n");
+    rtk_trace(2,"javad ED not supported\n");
     
     return 0;
 }
 /* decode [cd] beidou raw navigation data ------------------------------------*/
 static int decode_cd(raw_t *raw)
 {
-    trace(2,"javad cd not supported\n");
+    rtk_trace(2,"javad cd not supported\n");
     
     return 0;
 }
 /* decode [id] irnss raw navigation data -------------------------------------*/
 static int decode_id(raw_t *raw)
 {
-    trace(2,"javad id not supported\n");
+    rtk_trace(2,"javad id not supported\n");
     
     return 0;
 }
@@ -1137,14 +1137,14 @@ static int decode_WD(raw_t *raw)
     unsigned char *p=raw->buff+5;
     
     if (!checksum(raw->buff,raw->len)) {
-        trace(2,"javad WD checksum error: len=%d\n",raw->len);
+        rtk_trace(2,"javad WD checksum error: len=%d\n",raw->len);
         return -1;
     }
     if (raw->len<45) {
-        trace(2,"javad WD length error: len=%d\n",raw->len);
+        rtk_trace(2,"javad WD length error: len=%d\n",raw->len);
         return -1;
     }
-    trace(3,"decode_WD: prn=%3d\n",U1(p));
+    rtk_trace(3,"decode_WD: prn=%3d\n",U1(p));
     
     prn=U1(p); p+=1;
     tow=U4(p); p+=4+2;
@@ -1154,7 +1154,7 @@ static int decode_WD(raw_t *raw)
         sprintf(msg," prn=%3d tow=%6d",prn,tow);
     }
     if ((prn<MINPRNSBS||MAXPRNSBS<prn)&&(prn<MINPRNQZS||MAXPRNQZS<prn)) {
-        trace(2,"javad WD satellite error: prn=%d\n",prn);
+        rtk_trace(2,"javad WD satellite error: prn=%d\n",prn);
         return 0;
     }
     raw->sbsmsg.prn=prn;
@@ -1183,11 +1183,11 @@ static int decode_Rx(raw_t *raw, char code)
     if (!is_meas(code)||raw->tod<0||raw->obuf.n==0) return 0;
     
     if (!checksum(raw->buff,raw->len)) {
-        trace(2,"javad R%c checksum error: len=%d\n",code,raw->len);
+        rtk_trace(2,"javad R%c checksum error: len=%d\n",code,raw->len);
         return -1;
     }
     if (raw->len!=raw->obuf.n*8+6) {
-        trace(2,"javad R%c length error: n=%d len=%d\n",code,raw->obuf.n,raw->len);
+        rtk_trace(2,"javad R%c length error: n=%d len=%d\n",code,raw->obuf.n,raw->len);
         return -1;
     }
     for (i=0;i<raw->obuf.n&&i<MAXOBS;i++) {
@@ -1220,11 +1220,11 @@ static int decode_rx(raw_t *raw, char code)
     if (!is_meas(code)||raw->tod<0||raw->obuf.n==0) return 0;
     
     if (!checksum(raw->buff,raw->len)) {
-        trace(2,"javad r%c checksum error: len=%d\n",code,raw->len);
+        rtk_trace(2,"javad r%c checksum error: len=%d\n",code,raw->len);
         return -1;
     }
     if (raw->len!=raw->obuf.n*4+6) {
-        trace(2,"javad r%c length error: n=%d len=%d\n",code,raw->obuf.n,raw->len);
+        rtk_trace(2,"javad r%c length error: n=%d len=%d\n",code,raw->obuf.n,raw->len);
         return -1;
     }
     for (i=0;i<raw->obuf.n&&i<MAXOBS;i++) {
@@ -1233,7 +1233,7 @@ static int decode_rx(raw_t *raw, char code)
         if (!(sys=satsys(sat,NULL))) continue;
         
         if (pr==0x7FFFFFFF) {
-            trace(2,"javad r%c value missing: sat=%2d\n",code,sat);
+            rtk_trace(2,"javad r%c value missing: sat=%2d\n",code,sat);
             continue;
         }
         /*                             Ksys  Asys */
@@ -1266,11 +1266,11 @@ static int decode_xR(raw_t *raw, char code)
     if (!is_meas(code)||raw->tod<0||raw->obuf.n==0) return 0;
     
     if (!checksum(raw->buff,raw->len)) {
-        trace(2,"javad %cR checksum error: len=%d\n",code,raw->len);
+        rtk_trace(2,"javad %cR checksum error: len=%d\n",code,raw->len);
         return -1;
     }
     if (raw->len!=raw->obuf.n*4+6) {
-        trace(2,"javad %cR length error: n=%d len=%d\n",code,raw->obuf.n,raw->len);
+        rtk_trace(2,"javad %cR length error: n=%d len=%d\n",code,raw->obuf.n,raw->len);
         return -1;
     }
     for (i=0;i<raw->obuf.n&&i<MAXOBS;i++) {
@@ -1300,11 +1300,11 @@ static int decode_xr(raw_t *raw, char code)
     if (!is_meas(code)||raw->tod<0||raw->obuf.n==0) return 0;
     
     if (!checksum(raw->buff,raw->len)) {
-        trace(2,"javad %cr checksum error: len=%d\n",code,raw->len);
+        rtk_trace(2,"javad %cr checksum error: len=%d\n",code,raw->len);
         return -1;
     }
     if (raw->len!=raw->obuf.n*2+6) {
-        trace(2,"javad %cR length error: n=%d len=%d\n",code,raw->obuf.n,raw->len);
+        rtk_trace(2,"javad %cR length error: n=%d len=%d\n",code,raw->obuf.n,raw->len);
         return -1;
     }
     for (i=0;i<raw->obuf.n&&i<MAXOBS;i++) {
@@ -1335,11 +1335,11 @@ static int decode_Px(raw_t *raw, char code)
     if (!is_meas(code)||raw->tod<0||raw->obuf.n==0) return 0;
     
     if (!checksum(raw->buff,raw->len)) {
-        trace(2,"javad P%c checksum error: len=%d\n",code,raw->len);
+        rtk_trace(2,"javad P%c checksum error: len=%d\n",code,raw->len);
         return -1;
     }
     if (raw->len!=raw->obuf.n*8+6) {
-        trace(2,"javad P%c length error: n=%d len=%d\n",code,raw->obuf.n,raw->len);
+        rtk_trace(2,"javad P%c length error: n=%d len=%d\n",code,raw->obuf.n,raw->len);
         return -1;
     }
     for (i=0;i<raw->obuf.n&&i<MAXOBS;i++) {
@@ -1367,11 +1367,11 @@ static int decode_px(raw_t *raw, char code)
     if (!is_meas(code)||raw->tod<0||raw->obuf.n==0) return 0;
     
     if (!checksum(raw->buff,raw->len)) {
-        trace(2,"javad p%c checksum error: len=%d\n",code,raw->len);
+        rtk_trace(2,"javad p%c checksum error: len=%d\n",code,raw->len);
         return -1;
     }
     if (raw->len!=raw->obuf.n*4+6) {
-        trace(2,"javad p%c length error: n=%d len=%d\n",code,raw->obuf.n,raw->len);
+        rtk_trace(2,"javad p%c length error: n=%d len=%d\n",code,raw->obuf.n,raw->len);
         return -1;
     }
     for (i=0;i<raw->obuf.n&&i<MAXOBS;i++) {
@@ -1399,11 +1399,11 @@ static int decode_xP(raw_t *raw, char code)
     if (!is_meas(code)||raw->tod<0||raw->obuf.n==0) return 0;
     
     if (!checksum(raw->buff,raw->len)) {
-        trace(2,"javad %cP checksum error: len=%d\n",code,raw->len);
+        rtk_trace(2,"javad %cP checksum error: len=%d\n",code,raw->len);
         return -1;
     }
     if (raw->len!=raw->obuf.n*4+6) {
-        trace(2,"javad %cP length error: n=%d len=%d\n",code,raw->obuf.n,raw->len);
+        rtk_trace(2,"javad %cP length error: n=%d len=%d\n",code,raw->obuf.n,raw->len);
         return -1;
     }
     for (i=0;i<raw->obuf.n&&i<MAXOBS;i++) {
@@ -1436,11 +1436,11 @@ static int decode_xp(raw_t *raw, char code)
     if (!is_meas(code)||raw->tod<0||raw->obuf.n==0) return 0;
     
     if (!checksum(raw->buff,raw->len)) {
-        trace(2,"javad %cp checksum error: len=%d\n",code,raw->len);
+        rtk_trace(2,"javad %cp checksum error: len=%d\n",code,raw->len);
         return -1;
     }
     if (raw->len!=raw->obuf.n*4+6) {
-        trace(2,"javad %cp length error: n=%d len=%d\n",code,raw->obuf.n,raw->len);
+        rtk_trace(2,"javad %cp length error: n=%d len=%d\n",code,raw->obuf.n,raw->len);
         return -1;
     }
     for (i=0;i<raw->obuf.n&&i<MAXOBS;i++) {
@@ -1473,11 +1473,11 @@ static int decode_Dx(raw_t *raw, char code)
     if (!is_meas(code)||raw->tod<0||raw->obuf.n==0) return 0;
     
     if (!checksum(raw->buff,raw->len)) {
-        trace(2,"javad D%c checksum error: len=%d\n",code,raw->len);
+        rtk_trace(2,"javad D%c checksum error: len=%d\n",code,raw->len);
         return -1;
     }
     if (raw->len!=raw->obuf.n*4+6) {
-        trace(2,"javad D%c length error: n=%d len=%d\n",code,raw->obuf.n,raw->len);
+        rtk_trace(2,"javad D%c length error: n=%d len=%d\n",code,raw->obuf.n,raw->len);
         return -1;
     }
     for (i=0;i<raw->obuf.n&&i<MAXOBS;i++) {
@@ -1510,11 +1510,11 @@ static int decode_xd(raw_t *raw, char code)
     if (!is_meas(code)||raw->tod<0||raw->obuf.n==0) return 0;
     
     if (!checksum(raw->buff,raw->len)) {
-        trace(2,"javad %cd checksum error: len=%d\n",code,raw->len);
+        rtk_trace(2,"javad %cd checksum error: len=%d\n",code,raw->len);
         return -1;
     }
     if (raw->len!=raw->obuf.n*2+6) {
-        trace(2,"javad %cd length error: n=%d len=%d\n",code,raw->obuf.n,raw->len);
+        rtk_trace(2,"javad %cd length error: n=%d len=%d\n",code,raw->obuf.n,raw->len);
         return -1;
     }
     for (i=0;i<raw->obuf.n&&i<MAXOBS;i++) {
@@ -1546,11 +1546,11 @@ static int decode_Ex(raw_t *raw, char code)
     if (!is_meas(code)||raw->tod<0||raw->obuf.n==0) return 0;
     
     if (!checksum(raw->buff,raw->len)) {
-        trace(2,"javad E%c checksum error: len=%d\n",code,raw->len);
+        rtk_trace(2,"javad E%c checksum error: len=%d\n",code,raw->len);
         return -1;
     }
     if (raw->len!=raw->obuf.n+6) {
-        trace(2,"javad E%c length error: n=%d len=%d\n",code,raw->obuf.n,raw->len);
+        rtk_trace(2,"javad E%c length error: n=%d len=%d\n",code,raw->obuf.n,raw->len);
         return -1;
     }
     for (i=0;i<raw->obuf.n&&i<MAXOBS;i++) {
@@ -1577,11 +1577,11 @@ static int decode_xE(raw_t *raw, char code)
     if (!is_meas(code)||raw->tod<0||raw->obuf.n==0) return 0;
     
     if (!checksum(raw->buff,raw->len)) {
-        trace(2,"javad %cE checksum error: len=%d\n",code,raw->len);
+        rtk_trace(2,"javad %cE checksum error: len=%d\n",code,raw->len);
         return -1;
     }
     if (raw->len!=raw->obuf.n+6) {
-        trace(2,"javad %cE length error: n=%d len=%d\n",code,raw->obuf.n,raw->len);
+        rtk_trace(2,"javad %cE length error: n=%d len=%d\n",code,raw->obuf.n,raw->len);
         return -1;
     }
     for (i=0;i<raw->obuf.n&&i<MAXOBS;i++) {
@@ -1608,11 +1608,11 @@ static int decode_Fx(raw_t *raw, char code)
     if (!is_meas(code)||raw->tod<0||raw->obuf.n==0) return 0;
     
     if (!checksum(raw->buff,raw->len)) {
-        trace(2,"javad F%c checksum error: len=%d\n",code,raw->len);
+        rtk_trace(2,"javad F%c checksum error: len=%d\n",code,raw->len);
         return -1;
     }
     if (raw->len!=raw->obuf.n*2+6) {
-        trace(2,"javad F%c length error: n=%d len=%d\n",code,raw->obuf.n,raw->len);
+        rtk_trace(2,"javad F%c length error: n=%d len=%d\n",code,raw->obuf.n,raw->len);
         return -1;
     }
     for (i=0;i<raw->obuf.n&&i<MAXOBS;i++) {
@@ -1647,11 +1647,11 @@ static int decode_TC(raw_t *raw)
     if (raw->obuf.n==0) return 0;
     
     if (!checksum(raw->buff,raw->len)) {
-        trace(2,"javad TC checksum error: len=%d\n",raw->len);
+        rtk_trace(2,"javad TC checksum error: len=%d\n",raw->len);
         return -1;
     }
     if (raw->len!=raw->obuf.n*2+6) {
-        trace(2,"javad TC length error: n=%d len=%d\n",raw->obuf.n,raw->len);
+        rtk_trace(2,"javad TC length error: n=%d len=%d\n",raw->obuf.n,raw->len);
         return -1;
     }
     for (i=0;i<raw->obuf.n&&i<MAXOBS;i++) {
@@ -1662,11 +1662,11 @@ static int decode_TC(raw_t *raw)
         sat=raw->obuf.data[i].sat;
         tt_p=(unsigned short)raw->lockt[sat-1][0];
         
-        trace(4,"%s: sat=%2d tt=%6d->%6d\n",time_str(raw->time,3),sat,tt_p,tt);
+        rtk_trace(4,"%s: sat=%2d tt=%6d->%6d\n",time_str(raw->time,3),sat,tt_p,tt);
         
         /* loss-of-lock detected by lock-time counter */
         if (tt==0||tt<tt_p) {
-            trace(3,"decode_TC: loss-of-lock detected: t=%s sat=%2d tt=%6d->%6d\n",
+            rtk_trace(3,"decode_TC: loss-of-lock detected: t=%s sat=%2d tt=%6d->%6d\n",
                   time_str(raw->time,3),sat,tt_p,tt);
             raw->obuf.data[i].LLI[0]|=1;
         }
@@ -1679,7 +1679,7 @@ static int decode_javad(raw_t *raw)
 {
     char *p=(char *)raw->buff;
     
-    trace(3,"decode_javad: type=%2.2s len=%3d\n",p,raw->len);
+    rtk_trace(3,"decode_javad: type=%2.2s len=%3d\n",p,raw->len);
     
     if (raw->outtype) {
         sprintf(raw->msgtype,"JAVAD %2.2s (%4d)",p,raw->len);
@@ -1792,13 +1792,13 @@ extern int input_javad(raw_t *raw, unsigned char data)
 {
     int len,stat;
     
-    trace(5,"input_javad: data=%02x\n",data);
+    rtk_trace(5,"input_javad: data=%02x\n",data);
     
     /* synchronize message */
     if (raw->nbyte==0) {
         if (!sync_javad(raw->buff,data)) return 0;
         if (!(len=decodelen(raw->buff+2))||len>MAXRAWLEN-5) {
-            trace(2,"javad message length error: len=%d\n",len);
+            rtk_trace(2,"javad message length error: len=%d\n",len);
             clearbuff(raw);
             return -1;
         }
@@ -1841,7 +1841,7 @@ extern int input_javadf(raw_t *raw, FILE *fp)
 {
     int i,data,len,stat;
     
-    trace(4,"input_javadf:\n");
+    rtk_trace(4,"input_javadf:\n");
     
     /* start input file */
     if (raw->flag) {
@@ -1857,7 +1857,7 @@ extern int input_javadf(raw_t *raw, FILE *fp)
         }
     }
     if (!(len=decodelen(raw->buff+2))||len>MAXRAWLEN-5) {
-        trace(2,"javad message length error: len=%3.3s\n",raw->buff+2);
+        rtk_trace(2,"javad message length error: len=%3.3s\n",raw->buff+2);
         clearbuff(raw);
         return -1;
     }

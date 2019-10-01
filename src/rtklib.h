@@ -1433,7 +1433,7 @@ EXPORT int  solve (const char *tr, const double *A, const double *Y, int n,
                    int m, double *X);
 EXPORT int  lsq   (const double *A, const double *y, int n, int m, double *x,
                    double *Q);
-EXPORT int  filter(double *x, double *P, const double *H, const double *v,
+EXPORT int  rtk_filter(double *x, double *P, const double *H, const double *v,
                    const double *R, int n, int m);
 EXPORT int  smoother(const double *xf, const double *Qf, const double *xb,
                      const double *Qb, int n, double *xs, double *Qs);
@@ -1506,7 +1506,7 @@ EXPORT int  geterp (const erp_t *erp, gtime_t time, double *val);
 EXPORT void traceopen(const char *file);
 EXPORT void traceclose(void);
 EXPORT void tracelevel(int level);
-EXPORT void trace    (int level, const char *format, ...);
+EXPORT void rtk_trace    (int level, const char *format, ...);
 EXPORT void tracet   (int level, const char *format, ...);
 EXPORT void tracemat (int level, const double *A, int n, int m, int p, int q);
 EXPORT void traceobs (int level, const obsd_t *obs, int n);

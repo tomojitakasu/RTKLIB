@@ -17,7 +17,7 @@
 // update plot --------------------------------------------------------------
 void Plot::UpdatePlot(void)
 {
-    trace(3,"UpdatePlot\n");
+    rtk_trace(3,"UpdatePlot\n");
     
     UpdateInfo();
     Refresh();
@@ -25,7 +25,7 @@ void Plot::UpdatePlot(void)
 // refresh plot -------------------------------------------------------------
 void Plot::Refresh(void)
 {
-    trace(3,"Refresh\n");
+    rtk_trace(3,"Refresh\n");
     
     Flush=1;
     UpdateDisp();
@@ -36,7 +36,7 @@ void Plot::UpdateDisp(void)
 {
     int level=Drag?0:1;
     
-    trace(3,"UpdateDisp\n");
+    rtk_trace(3,"UpdateDisp\n");
     
     if (Flush) {
         Buff=QPixmap(Disp->size());
@@ -80,7 +80,7 @@ void Plot::DrawTrk(QPainter &c,int level)
     double xt,yt,sx,sy,opos[3],pnt[3],rr[3],enu[3],cent[3];
     int i,sel=!BtnSol1->isChecked()&&BtnSol2->isChecked()?1:0,p=0;
     
-    trace(3,"DrawTrk: level=%d\n",level);
+    rtk_trace(3,"DrawTrk: level=%d\n",level);
     
     if (BtnShowTrack->isChecked()&&BtnFixCent->isChecked()) {
         if (!BtnSol12->isChecked()) {
@@ -280,7 +280,7 @@ void Plot::DrawTrkImage(QPainter &c,int level)
     QPoint p1,p2;
     double pos[3]={0},rr[3],xyz[3]={0},x1,x2,y1,y2;
     
-    trace(3,"DrawTrkImage: level=%d\n",level);
+    rtk_trace(3,"DrawTrkImage: level=%d\n",level);
     
     pos[0]=MapLat*D2R;
     pos[1]=MapLon*D2R;
@@ -308,7 +308,7 @@ void Plot::DrawTrkMap(QPainter &c,int level)
     double xyz[3],S;
     int i,j,n,m;
     
-    trace(3,"DrawTrkPath: level=%d\n",level);    
+    rtk_trace(3,"DrawTrkPath: level=%d\n",level);    
 
     for (i=MAXMAPLAYER-1;i>=0;i--) {
         if (!Gis.flag[i]) continue;
@@ -364,7 +364,7 @@ void Plot::DrawTrkPnt(QPainter &c,const TIMEPOS *pos, int level, int style)
     QVector<QColor> color;
     int i;
     
-    trace(3,"DrawTrkPnt: level=%d style=%d\n",level,style);
+    rtk_trace(3,"DrawTrkPnt: level=%d style=%d\n",level,style);
     
     if (level) DrawTrkArrow(c,pos);
     
@@ -392,7 +392,7 @@ void Plot::DrawTrkPos(QPainter &c,const double *rr, int type, int siz,
     QPoint p1;
     double xyz[3],xs,ys;
     
-    trace(3,"DrawTrkPos: type=%d\n",type);
+    rtk_trace(3,"DrawTrkPos: type=%d\n",type);
     
     if (norm(rr,3)>0.0) {
         GraphT->GetScale(xs,ys);
@@ -413,7 +413,7 @@ void Plot::DrawTrkStat(QPainter &c,const TIMEPOS *pos, const QString &header, in
     double *d,ave[4],std[4],rms[4];
     int i,n=0,fonth=static_cast<int>(Disp->font().pointSize()*1.5);
     
-    trace(3,"DrawTrkStat: p=%d\n",p);
+    rtk_trace(3,"DrawTrkStat: p=%d\n",p);
     
     if (!ShowStats) return;
     
@@ -453,7 +453,7 @@ void Plot::DrawTrkError(QPainter &c,const TIMEPOS *pos, int style)
     double xc[37],yc[37],a,b,s,cc;
     int i,j;
     
-    trace(3,"DrawTrkError: style=%d\n",style);
+    rtk_trace(3,"DrawTrkError: style=%d\n",style);
     
     if (!ShowErr) return;
     
@@ -480,7 +480,7 @@ void Plot::DrawTrkArrow(QPainter &c,const TIMEPOS *pos)
     double tt,d[2],dist,dt,vel;
     int i,off=8;
     
-    trace(3,"DrawTrkArrow\n");
+    rtk_trace(3,"DrawTrkArrow\n");
     
     if (!ShowArrow) return;
     
@@ -507,7 +507,7 @@ void Plot::DrawTrkVel(QPainter &c,const TIMEPOS *vel)
     QPoint p1,p2;
     double v=0.0,dir=0.0;
     
-    trace(3,"DrawTrkVel\n");
+    rtk_trace(3,"DrawTrkVel\n");
     
     if (vel&&vel->n>0) {
         if ((v=sqrt(SQR(vel->x[0])+SQR(vel->y[0])))>1.0) {
@@ -537,7 +537,7 @@ void Plot::DrawSol(QPainter &c,int level, int type)
     double xc,yc,xl[2],yl[2],off,y;
     int i,j,k,sel=!BtnSol1->isChecked()&&BtnSol2->isChecked()?1:0,p=0;
     
-    trace(3,"DrawSol: level=%d\n",level);
+    rtk_trace(3,"DrawSol: level=%d\n",level);
     
     if (BtnShowTrack->isChecked()&&(BtnFixHoriz->isChecked()||BtnFixVert->isChecked())) {
         
@@ -656,7 +656,7 @@ void Plot::DrawSolPnt(QPainter &c,const TIMEPOS *pos, int level, int style)
     double *x,*y,*s,xs,ys,*yy;
     int i,j;
     
-    trace(3,"DrawSolPnt: level=%d style=%d\n",level,style);
+    rtk_trace(3,"DrawSolPnt: level=%d style=%d\n",level,style);
     
     x=new double [pos->n];
     
@@ -710,7 +710,7 @@ void Plot::DrawSolStat(QPainter &c,const TIMEPOS *pos, const QString &unit, int 
     int i,j=0,k=0,fonth=static_cast<int>(Disp->font().pointSize()*1.5);
     QString label,s;
     
-    trace(3,"DrawSolStat: p=%d\n",p);
+    rtk_trace(3,"DrawSolStat: p=%d\n",p);
     
     if (!ShowStats||pos->n<=0) return;
     
@@ -750,7 +750,7 @@ void Plot::DrawNsat(QPainter &c,int level)
     double xc,yc,y,xl[2],yl[2],off;
     int i,j,k,sel=!BtnSol1->isChecked()&&BtnSol2->isChecked()?1:0;
     
-    trace(3,"DrawNsat: level=%d\n",level);
+    rtk_trace(3,"DrawNsat: level=%d\n",level);
     
     if (BtnShowTrack->isChecked()&&BtnFixHoriz->isChecked()) {
         
@@ -834,7 +834,7 @@ void Plot::DrawObs(QPainter &c,int level)
     int i,j,m=0,sats[MAXSAT]={0},ind=ObsIndex;
     char id[16];
     
-    trace(3,"DrawObs: level=%d\n",level);
+    rtk_trace(3,"DrawObs: level=%d\n",level);
     
     for (i=0;i<Obs.n;i++) {
         if (SatMask[Obs.data[i].sat-1]) continue;
@@ -934,7 +934,7 @@ void Plot::DrawObsSlip(QPainter &c,double *yp)
     char code[32];
     int i,j,slip;
     
-    trace(3,"DrawObsSlip\n");
+    rtk_trace(3,"DrawObsSlip\n");
     
     strncpy(code,ObsType->currentIndex()?qPrintable(ObsTypeText)+1:"",32);
     
@@ -983,7 +983,7 @@ void Plot::DrawObsEphem(QPainter &c,double *yp)
     QPoint ps[3];
     int i,j,k,in,svh,off[MAXSAT]={0};
     
-    trace(3,"DrawObsEphem\n");
+    rtk_trace(3,"DrawObsEphem\n");
     
     if (!ShowEph) return;
     
@@ -1042,7 +1042,7 @@ void Plot::DrawSkyImage(QPainter &c,int level)
     QPoint p1,p2;
     double xl[2],yl[2],r,s,mx[190],my[190];
     
-    trace(3,"DrawSkyImage: level=%d\n",level);
+    rtk_trace(3,"DrawSkyImage: level=%d\n",level);
     
     if (SkySize[0]<=0||SkySize[1]<=0) return;
     
@@ -1086,7 +1086,7 @@ void Plot::DrawSky(QPainter &c,int level)
     
     strncpy(code,ObsType->currentIndex()?qPrintable(ObsTypeText)+1:"",32);
 
-    trace(3,"DrawSky: level=%d\n",level);
+    rtk_trace(3,"DrawSky: level=%d\n",level);
     
     GraphS->GetLim(xl,yl);
     r=(xl[1]-xl[0]<yl[1]-yl[0]?xl[1]-xl[0]:yl[1]-yl[0])*0.45;
@@ -1273,7 +1273,7 @@ void Plot::DrawDop(QPainter &c,int level)
     int i,j,*ns,n=0;
     int ind=ObsIndex,doptype=DopType->currentIndex();
     
-    trace(3,"DrawDop: level=%d\n",level);
+    rtk_trace(3,"DrawDop: level=%d\n",level);
     
     GraphR->XLPos=TimeLabel?6:1; 
     GraphR->YLPos=1;
@@ -1405,7 +1405,7 @@ void Plot::DrawDopStat(QPainter &c,double *dop, int *ns, int n)
     int i,j,m=0;
     int ndop[4]={0},nsat[MAXOBS]={0},fonth=static_cast<int>(Disp->font().pointSize()*1.5);
     
-    trace(3,"DrawDopStat: n=%d\n",n);
+    rtk_trace(3,"DrawDopStat: n=%d\n",n);
     
     if (!ShowStats) return;
     
@@ -1465,7 +1465,7 @@ void Plot::DrawSnr(QPainter &c,int level)
     
     strncpy(code,qPrintable(ObsTypeText.mid(1)),32);
 
-    trace(3,"DrawSnr: level=%d\n",level);
+    rtk_trace(3,"DrawSnr: level=%d\n",level);
     
     if (0<=ind&&ind<NObs&&BtnShowTrack->isChecked()) {
         time=Obs.data[IndexObs[ind]].time;
@@ -1608,7 +1608,7 @@ void Plot::DrawSnrE(QPainter &c,int level)
 
     strncpy(code,qPrintable(ObsTypeText.mid(1)),32);
 
-    trace(3,"DrawSnrE: level=%d\n",level);
+    rtk_trace(3,"DrawSnrE: level=%d\n",level);
     
     yl[1][0]=-MaxMP; yl[1][1]=MaxMP;
     
@@ -1750,7 +1750,7 @@ void Plot::DrawMpS(QPainter &c,int level)
     
     strncpy(code,qPrintable(ObsTypeText.mid(1)),32);
 
-    trace(3,"DrawSnrS: level=%d\n",level);
+    rtk_trace(3,"DrawSnrS: level=%d\n",level);
     
     GraphS->GetLim(xl,yl);
     r=(xl[1]-xl[0]<yl[1]-yl[0]?xl[1]-xl[0]:yl[1]-yl[0])*0.45;
@@ -1828,7 +1828,7 @@ void Plot::DrawRes(QPainter &c,int level)
     int i,j,sel=!BtnSol1->isChecked()&&BtnSol2->isChecked()?1:0,ind=SolIndex[sel];
     int frq=FrqType->currentIndex()+1;
     
-    trace(3,"DrawRes: level=%d\n",level);
+    rtk_trace(3,"DrawRes: level=%d\n",level);
     
     if (0<=ind&&ind<SolData[sel].n&&BtnShowTrack->isChecked()&&BtnFixHoriz->isChecked()) {
         

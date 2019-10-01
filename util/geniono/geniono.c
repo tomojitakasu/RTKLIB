@@ -307,7 +307,7 @@ static int est_iono(obs_t *obs, nav_t *nav, const pcv_t *pcv, double *rr,
             continue;
         }
         /* filter */
-        if ((info=filter(ekf->x,ekf->P,H,v,R,ekf->nx,nv))) {
+        if ((info=rtk_filter(ekf->x,ekf->P,H,v,R,ekf->nx,nv))) {
             fprintf(stderr,"filter error: info=%d\n",info);
             break;
         }

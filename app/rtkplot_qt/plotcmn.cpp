@@ -43,7 +43,7 @@ void Plot::TimeSpan(gtime_t *ts, gtime_t *te, double *tint)
 {
     gtime_t t0={0,0};
     
-    trace(3,"TimeSpan\n");
+    rtk_trace(3,"TimeSpan\n");
     
     *ts=*te=t0; *tint=0.0;
     if (TimeEna[0]) *ts=TimeStart;
@@ -73,7 +73,7 @@ void Plot::ShowLegend(QString msgs[])
     QLabel *ql[]={QL1,QL2,QL3,QL4,QL5,QL6,QL7};
     int i,sel=!BtnSol1->isChecked()&&BtnSol2->isChecked()?1:0;
     
-    trace(3,"ShowLegend\n");
+    rtk_trace(3,"ShowLegend\n");
     
     for (i=0;i<7;i++) {
         if (!msgs||msgs[i]==NULL) {
@@ -94,7 +94,7 @@ int Plot::GetCurrentPos(double *rr)
     sol_t *data;
     int i,sel=!BtnSol1->isChecked()&&BtnSol2->isChecked()?1:0;
     
-    trace(3,"GetCurrentPos\n");
+    rtk_trace(3,"GetCurrentPos\n");
     
     if (PLOT_OBS<=PlotType&&PlotType<=PLOT_DOP) return 0;
     if (!(data=getsol(SolData+sel,SolIndex[sel]))) return 0;
@@ -110,7 +110,7 @@ int Plot::GetCenterPos(double *rr)
     double xc,yc,opos[3],pos[3],enu[3]={0},dr[3];
     int i,j;
     
-    trace(3,"GetCenterPos\n");
+    rtk_trace(3,"GetCenterPos\n");
     
     if (PLOT_OBS<=PlotType&&PlotType<=PLOT_DOP&&PlotType!=PLOT_TRK) return 0;
     if (norm(OPos,3)<=0.0) return 0;
@@ -138,7 +138,7 @@ TIMEPOS * Plot::SolToPos(solbuf_t *sol, int index, int qflag, int type)
     double tint,xyz[3],xyzs[4];
     int i;
     
-    trace(3,"SolToPos: n=%d\n",sol->n);
+    rtk_trace(3,"SolToPos: n=%d\n",sol->n);
     
     pos=new TIMEPOS(index<0?sol->n:3,1);
     
@@ -187,7 +187,7 @@ TIMEPOS * Plot::SolToNsat(solbuf_t *sol, int index, int qflag)
     sol_t *data;
     int i;
     
-    trace(3,"SolToNsat: n=%d\n",sol->n);
+    rtk_trace(3,"SolToNsat: n=%d\n",sol->n);
     
     ns=new TIMEPOS(index<0?sol->n:3,1);
     
@@ -213,7 +213,7 @@ void Plot::PosToXyz(gtime_t time, const double *rr, int type,
     double opos[3],pos[3],r[3],enu[3];
     int i;
     
-    trace(4,"SolToXyz:\n");
+    rtk_trace(4,"SolToXyz:\n");
     
     if (type==0) { // xyz
         for (i=0;i<3;i++) {
@@ -240,7 +240,7 @@ void Plot::CovToXyz(const double *rr, const float *qr, int type,
 {
     double pos[3],P[9],Q[9];
     
-    trace(4,"CovToXyz:\n");
+    rtk_trace(4,"CovToXyz:\n");
     
     if (type==0) { // xyz
         ecef2pos(rr,pos);
@@ -270,7 +270,7 @@ void Plot::CalcStats(const double *x, int n,
     double sum=0.0,sumsq=0.0;
     int i;
     
-    trace(3,"CalcStats: n=%d\n",n);
+    rtk_trace(3,"CalcStats: n=%d\n",n);
     
     if (n<=0) {
         ave=std=rms=0.0;
@@ -309,7 +309,7 @@ QColor Plot::ObsColor(const obsd_t *obs, double az, double el)
     
     code[0]='\0';
 
-    trace(4,"ObsColor\n");
+    rtk_trace(4,"ObsColor\n");
     
     if (!SatSel[obs->sat-1]) return Qt::black;
     
@@ -404,7 +404,7 @@ int Plot::SearchPos(int x, int y)
     double xp,yp,xs,ys,r,xyz[3];
     int i,sel=!BtnSol1->isChecked()&&BtnSol2->isChecked()?1:0;
     
-    trace(3,"SearchPos: x=%d y=%d\n",x,y);
+    rtk_trace(3,"SearchPos: x=%d y=%d\n",x,y);
     
     if (!BtnShowTrack->isChecked()||(!BtnSol1->isChecked()&&!BtnSol2->isChecked())) return -1;
     

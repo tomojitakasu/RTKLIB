@@ -362,7 +362,7 @@ void Plot::showEvent (QShowEvent *event)
     if (event->spontaneous()) return;
     QString path1="",path2="";
 
-    trace(3,"FormShow\n");
+    rtk_trace(3,"FormShow\n");
 
 #ifdef QT5
     QCommandLineParser parser;
@@ -459,7 +459,7 @@ void Plot::showEvent (QShowEvent *event)
 // callback on form-close ---------------------------------------------------
 void Plot::closeEvent(QCloseEvent *)
 {
-    trace(3,"FormClose\n");
+    rtk_trace(3,"FormClose\n");
     
     RangeList->setVisible(false);
 
@@ -476,7 +476,7 @@ void Plot::paintEvent(QPaintEvent *)
 // callback on form-resize --------------------------------------------------
 void Plot::resizeEvent(QResizeEvent *)
 {
-    trace(3,"FormResize\n");
+    rtk_trace(3,"FormResize\n");
     
     // suppress repeated resize callback
     if (FormWidth==width()&&FormHeight==height()) return;
@@ -500,7 +500,7 @@ void Plot::dropEvent(QDropEvent *event)
     QStringList files;
     int n;
     
-    trace(3,"DropFiles\n");
+    rtk_trace(3,"DropFiles\n");
     
     if (ConnectState||!event->mimeData()->hasUrls()){
         return;
@@ -533,28 +533,28 @@ void Plot::dropEvent(QDropEvent *event)
 // callback on menu-open-solution-1 -----------------------------------------
 void Plot::MenuOpenSol1Click()
 {
-    trace(3,"MenuOpenSol1Click\n");
+    rtk_trace(3,"MenuOpenSol1Click\n");
     
     ReadSol(QStringList(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Open Solution 1"),QString(),tr("Solution File (*.pos *.stat *.nmea *.txt *.ubx);;All (*.*)")))),0);
 }
 // callback on menu-open-solution-2 -----------------------------------------
 void Plot::MenuOpenSol2Click()
 {
-    trace(3,"MenuOpenSol2Click\n");
+    rtk_trace(3,"MenuOpenSol2Click\n");
     
     ReadSol(QStringList(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Open Solution 2"),QString(),tr("Solution File (*.pos *.stat *.nmea *.txt *.ubx);;All (*.*)")))),1);
 }
 // callback on menu-open-map-image ------------------------------------------
 void Plot::MenuOpenMapImageClick()
 {
-    trace(3,"MenuOpenMapImage\n");
+    rtk_trace(3,"MenuOpenMapImage\n");
     
     ReadMapData(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Open Map Image"),MapImageFile,tr("JPEG File (*.jpg *.jpeg);;All (*.*)"))));
 }
 // callback on menu-open-track-points ---------------------------------------
 void Plot::MenuOpenShapeClick()
 {
-    trace(3,"MenuOpenShapePath\n");
+    rtk_trace(3,"MenuOpenShapePath\n");
     
     QStringList files=QFileDialog::getOpenFileNames(this,tr("Open Shape File"),QString(),tr("Shape File (*.shp);;All (*.*)"));
     for (int i=0;i<files.size();i++)
@@ -565,35 +565,35 @@ void Plot::MenuOpenShapeClick()
 // callback on menu-open-sky-image ------------------------------------------
 void Plot::MenuOpenSkyImageClick()
 {
-    trace(3,"MenuOpenSkyImage\n");
+    rtk_trace(3,"MenuOpenSkyImage\n");
     
     ReadSkyData(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Open Sky Image"),SkyImageFile,tr("JPEG File (*.jpg *.jpeg);;All (*.*)"))));
 }
 // callback on menu-oepn-waypoint -------------------------------------------
 void Plot::MenuOpenWaypointClick()
 {
-    trace(3,"MenuOpenWaypointClick\n");
+    rtk_trace(3,"MenuOpenWaypointClick\n");
 
     ReadWaypoint(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Open Waypoint"),SkyImageFile,tr("GPX File (*.gpx);;All (*.*)"))));
 }
 // callback on menu-open-obs-data -------------------------------------------
 void Plot::MenuOpenObsClick()
 {
-    trace(3,"MenuOpenObsClick\n");
+    rtk_trace(3,"MenuOpenObsClick\n");
     
     ReadObs(QFileDialog::getOpenFileNames(this,tr("Open Obs/Nav Data"),QString(),tr("RINEX OBS (*.obs *.*o *.*d *.*o.gz *.*o.Z *.d.gz *.d.Z);;All (*.*)")));
 }
 // callback on menu-open-nav-data -------------------------------------------
 void Plot::MenuOpenNavClick()
 {
-    trace(3,"MenuOpenNavClick\n");
+    rtk_trace(3,"MenuOpenNavClick\n");
     
     ReadNav(QFileDialog::getOpenFileNames(this,tr("Open Raw Obs/Nav Messages"),QString(),tr("RINEX NAV (*.nav *.gnav *.hnav *.qnav *.*n *.*g *.*h *.*q *.*p);;All (*.*)")));
 }
 // callback on menu-open-elev-mask ------------------------------------------
 void Plot::MenuOpenElevMaskClick()
 {
-    trace(3,"MenuOpenElevMaskClick\n");
+    rtk_trace(3,"MenuOpenElevMaskClick\n");
     
     ReadElMaskData(QDir::toNativeSeparators(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Opene Elevation Mask"),QString(),tr("Text File (*.txt);;All (*.*)")))));
 }
@@ -627,7 +627,7 @@ void Plot::MenuVisAnaClick()
 // callback on menu-sol-browse ----------------------------------------------
 void Plot::MenuFileSelClick()
 {
-    trace(3,"MenuFileSelClick\n");
+    rtk_trace(3,"MenuFileSelClick\n");
     
     fileSelDialog->show();
 }
@@ -639,42 +639,42 @@ void Plot::MenuSaveImageClick()
 // callback on menu-save-waypoint -------------------------------------------
 void Plot::MenuSaveWaypointClick()
 {
-    trace(3,"MenuSaveWaypointClick\n");
+    rtk_trace(3,"MenuSaveWaypointClick\n");
 
     SaveWaypoint(QDir::toNativeSeparators(QFileDialog::getSaveFileName(this,tr("Save Waypoint"),QString(),tr("GPX File (*.gpx);;All (*.*)"))));
 }
 // callback on menu-save-# of sats/dop --------------------------------------
 void Plot::MenuSaveDopClick()
 {
-    trace(3,"MenuSaveDopClick\n");
+    rtk_trace(3,"MenuSaveDopClick\n");
     
     SaveDop(QDir::toNativeSeparators(QFileDialog::getSaveFileName(this,tr("Save Data"),QString(),tr("All (*.*);;Text File (*.txt)"))));
 }
 // callback on menu-save-snr,azel -------------------------------------------
 void Plot::MenuSaveSnrMpClick()
 {
-    trace(3,"MenuSaveSnrMpClick\n");
+    rtk_trace(3,"MenuSaveSnrMpClick\n");
     
     SaveSnrMp(QDir::toNativeSeparators(QFileDialog::getSaveFileName(this,tr("Save Data"),QString(),tr("All (*.*);;Text File (*.txt)"))));
 }
 // callback on menu-save-elmask ---------------------------------------------
 void Plot::MenuSaveElMaskClick()
 {
-    trace(3,"MenuSaveElMaskClick\n");
+    rtk_trace(3,"MenuSaveElMaskClick\n");
     
     SaveElMask(QDir::toNativeSeparators(QFileDialog::getSaveFileName(this,tr("Save Data"),QString(),tr("All (*.*);;Text File (*.txt)"))));
 }
 // callback on menu-connect -------------------------------------------------
 void Plot::MenuConnectClick()
 {
-    trace(3,"MenuConnectClick\n");
+    rtk_trace(3,"MenuConnectClick\n");
     
     Connect();
 }
 // callback on menu-disconnect ----------------------------------------------
 void Plot::MenuDisconnectClick()
 {
-    trace(3,"MenuDisconnectClick\n");
+    rtk_trace(3,"MenuDisconnectClick\n");
     
     Disconnect();
 }
@@ -683,7 +683,7 @@ void Plot::MenuPortClick()
 {
     int i;
     
-    trace(3,"MenuPortClick\n");
+    rtk_trace(3,"MenuPortClick\n");
     
     connectDialog->Stream1 =RtStream[0];
     connectDialog->Stream2 =RtStream[1];
@@ -736,21 +736,21 @@ void Plot::MenuPortClick()
 // callback on menu-reload --------------------------------------------------
 void Plot::MenuReloadClick()
 {
-    trace(3,"MenuReloadClick\n");
+    rtk_trace(3,"MenuReloadClick\n");
     
     Reload();
 }
 // callback on menu-clear ---------------------------------------------------
 void Plot::MenuClearClick()
 {
-    trace(3,"MenuClearClick\n");
+    rtk_trace(3,"MenuClearClick\n");
     
     Clear();
 }
 // callback on menu-exit-----------------------------------------------------
 void Plot::MenuQuitClick()
 {
-    trace(3,"MenuQuitClick\n");
+    rtk_trace(3,"MenuQuitClick\n");
     
     close();
 }
@@ -760,7 +760,7 @@ void Plot::MenuTimeClick()
     sol_t *sols,*sole;
     int i;
     
-    trace(3,"MenuTimeClick\n");
+    rtk_trace(3,"MenuTimeClick\n");
     
     if (!TimeEna[0]) {
         if (Obs.n>0) {
@@ -820,21 +820,21 @@ void Plot::MenuTimeClick()
 // callback on menu-map-image -----------------------------------------------
 void Plot::MenuMapImgClick()
 {
-    trace(3,"MenuMapImgClick\n");
+    rtk_trace(3,"MenuMapImgClick\n");
     
     mapAreaDialog->show();
 }
 // callback on menu-sky image -----------------------------------------------
 void Plot::MenuSkyImgClick()
 {
-    trace(3,"MenuSkyImgClick\n");
+    rtk_trace(3,"MenuSkyImgClick\n");
     
     skyImgDialog->show();
 }
 // callback on menu-vec map -------------------------------------------------
 void Plot::MenuMapLayerClick()
 {
-    trace(3,"MenuMapLayerClick\n");
+    rtk_trace(3,"MenuMapLayerClick\n");
 
     vecMapDialog= new VecMapDialog(this);
     vecMapDialog->exec();
@@ -850,7 +850,7 @@ void Plot::MenuSrcSolClick()
 {
     int sel=!BtnSol1->isChecked()&&BtnSol2->isChecked();
     
-    trace(3,"MenuSrcSolClick\n");
+    rtk_trace(3,"MenuSrcSolClick\n");
     
     if (SolFiles[sel].count()<=0) return;
     viewer->setWindowTitle(SolFiles[sel].at(0));
@@ -865,7 +865,7 @@ void Plot::MenuSrcObsClick()
     char file[1024],tmpfile[1024];
     int cstat;
     
-    trace(3,"MenuSrcObsClick\n");
+    rtk_trace(3,"MenuSrcObsClick\n");
     
     if (ObsFiles.count()<=0) return;
     
@@ -885,7 +885,7 @@ void Plot::MenuQcObsClick()
     QString cmd=QcCmd,cmdexec,tmpfile=QCTMPFILE,errfile=QCERRFILE;
     int i,stat;
     
-    trace(3,"MenuQcObsClick\n");
+    rtk_trace(3,"MenuQcObsClick\n");
     
     if (ObsFiles.count()<=0||cmd=="") return;
     
@@ -907,7 +907,7 @@ void Plot::MenuQcObsClick()
 // callback on menu-copy-to-clipboard ---------------------------------------
 void Plot::MenuCopyClick()
 {
-    trace(3,"MenuCopyClick\n");
+    rtk_trace(3,"MenuCopyClick\n");
     
     QClipboard *clipboard = QApplication::clipboard();
 
@@ -919,7 +919,7 @@ void Plot::MenuOptionsClick()
     QString tlefile=TLEFile,tlesatfile=TLESatFile;
     double oopos[3],range;
     
-    trace(3,"MenuOptionsClick\n");
+    rtk_trace(3,"MenuOptionsClick\n");
     
     int i,rcvpos=RcvPos;
     for (i=0;i<3;i++) oopos[i]=OOPos[i];
@@ -970,7 +970,7 @@ void Plot::MenuOptionsClick()
 // callback on menu-show-tool-bar -------------------------------------------
 void Plot::MenuToolBarClick()
 {
-    trace(3,"MenuToolBarClick\n");
+    rtk_trace(3,"MenuToolBarClick\n");
     
     toolBar->setVisible(MenuToolBar->isChecked());
 
@@ -980,7 +980,7 @@ void Plot::MenuToolBarClick()
 // callback on menu-show-status-bar -----------------------------------------
 void Plot::MenuStatusBarClick()
 {
-    trace(3,"MenuStatusBarClick\n");
+    rtk_trace(3,"MenuStatusBarClick\n");
     
     statusbar->setVisible(MenuStatusBar->isChecked());
     UpdateSize();
@@ -989,14 +989,14 @@ void Plot::MenuStatusBarClick()
 // callback on menu-waypoints -----------------------------------------------
 void Plot::MenuWaypointClick()
 {
-    trace(3,"MenuWaypointClick\n");
+    rtk_trace(3,"MenuWaypointClick\n");
     
     pntDialog->show();
 }
 // callback on menu-input-monitor-1 -----------------------------------------
 void Plot::MenuMonitor1Click()
 {
-    trace(3,"MenuMonitor1Click\n");
+    rtk_trace(3,"MenuMonitor1Click\n");
     
     Console1->setWindowTitle(tr("Monitor RT Input 1"));
     Console1->show();
@@ -1004,7 +1004,7 @@ void Plot::MenuMonitor1Click()
 // callback on menu-input-monitor-2 -----------------------------------------
 void Plot::MenuMonitor2Click()
 {
-    trace(3,"MenuMonitor2Click\n");
+    rtk_trace(3,"MenuMonitor2Click\n");
     
     Console2->setWindowTitle(tr("Monitor RT Input 2"));
     Console2->show();
@@ -1012,7 +1012,7 @@ void Plot::MenuMonitor2Click()
 // callback on menu-google-earth-view ---------------------------------------
 void Plot::MenuGEClick()
 {
-    trace(3,"MenuGEClick\n");
+    rtk_trace(3,"MenuGEClick\n");
     
     googleEarthView->setWindowTitle(
         QString(tr("%1 ver.%2 %3: Google Earth View")).arg(PRGNAME).arg(VER_RTKLIB).arg(PATCH_LEVEL));
@@ -1028,7 +1028,7 @@ void Plot::MenuGMClick()
 // callback on menu-center-origin -------------------------------------------
 void Plot::MenuCenterOriClick()
 {
-    trace(3,"MenuCenterOriClick\n");
+    rtk_trace(3,"MenuCenterOriClick\n");
     
     SetRange(0,YRange);
     Refresh();
@@ -1036,7 +1036,7 @@ void Plot::MenuCenterOriClick()
 // callback on menu-fit-horizontal ------------------------------------------
 void Plot::MenuFitHorizClick()
 {
-    trace(3,"MenuFitHorizClick\n");
+    rtk_trace(3,"MenuFitHorizClick\n");
     
     if (PlotType==PLOT_TRK) FitRange(0); else FitTime();
     Refresh();
@@ -1044,7 +1044,7 @@ void Plot::MenuFitHorizClick()
 // callback on menu-fit-vertical --------------------------------------------
 void Plot::MenuFitVertClick()
 {
-    trace(3,"MenuFitVertClick\n");
+    rtk_trace(3,"MenuFitVertClick\n");
     
     FitRange(0);
     Refresh();
@@ -1052,7 +1052,7 @@ void Plot::MenuFitVertClick()
 // callback on menu-show-skyplot --------------------------------------------
 void Plot::MenuShowSkyplotClick()
 {
-    trace(3,"MenuShowSkyplotClick\n");
+    rtk_trace(3,"MenuShowSkyplotClick\n");
     
     UpdatePlot();
     UpdateEnable();
@@ -1060,7 +1060,7 @@ void Plot::MenuShowSkyplotClick()
 // callback on menu-show-map-image ------------------------------------------
 void Plot::MenuShowImgClick()
 {
-    trace(3,"MenuShowMapClick\n");
+    rtk_trace(3,"MenuShowMapClick\n");
     
     UpdatePlot();
     UpdateEnable();
@@ -1068,7 +1068,7 @@ void Plot::MenuShowImgClick()
 // callback on menu-show-track-points ---------------------------------------
 void Plot::MenuShowTrackClick()
 {
-    trace(3,"MenuShowTrackClick\n");
+    rtk_trace(3,"MenuShowTrackClick\n");
     
     if (!MenuShowTrack->isChecked()) {
         MenuFixHoriz->setChecked(false);
@@ -1080,7 +1080,7 @@ void Plot::MenuShowTrackClick()
 // callback on menu-fix-center ----------------------------------------------
 void Plot::MenuFixCentClick()
 {
-    trace(3,"MenuFixCentClick\n");
+    rtk_trace(3,"MenuFixCentClick\n");
     
     UpdatePlot();
     UpdateEnable();
@@ -1088,7 +1088,7 @@ void Plot::MenuFixCentClick()
 // callback on menu-fix-horizontal ------------------------------------------
 void Plot::MenuFixHorizClick()
 {
-    trace(3,"MenuFixHorizClick\n");
+    rtk_trace(3,"MenuFixHorizClick\n");
     
     Xcent=0.0;
     UpdatePlot();
@@ -1097,7 +1097,7 @@ void Plot::MenuFixHorizClick()
 // callback on menu-fix-vertical --------------------------------------------
 void Plot::MenuFixVertClick()
 {
-    trace(3,"MenuFixVertClick\n");
+    rtk_trace(3,"MenuFixVertClick\n");
     
     UpdatePlot();
     UpdateEnable();
@@ -1105,7 +1105,7 @@ void Plot::MenuFixVertClick()
 // callback on menu-show-map -------------------------------------------------
 void Plot::MenuShowMapClick()
 {
-    trace(3,"MenuShowMapClick\n");
+    rtk_trace(3,"MenuShowMapClick\n");
 
 #if 0
     if (BtnShowMap->isChecked()) UpdatePntsGE();
@@ -1207,17 +1207,17 @@ void Plot::DispGesture()
 // callback on menu-animation-start -----------------------------------------
 void Plot::MenuAnimStartClick()
 {
-    trace(3,"MenuAnimStartClick\n");
+    rtk_trace(3,"MenuAnimStartClick\n");
 }
 // callback on menu-animation-stop ------------------------------------------
 void Plot::MenuAnimStopClick()
 {
-    trace(3,"MenuAnimStopClick\n");
+    rtk_trace(3,"MenuAnimStopClick\n");
 }
 // callback on menu-about ---------------------------------------------------
 void Plot::MenuAboutClick()
 {
-    trace(3,"MenuAboutClick\n");
+    rtk_trace(3,"MenuAboutClick\n");
     
     aboutDialog->About=PRGNAME;
     aboutDialog->IconIndex=2;
@@ -1226,7 +1226,7 @@ void Plot::MenuAboutClick()
 // callback on button-connect/disconnect ------------------------------------
 void Plot::BtnConnectClick()
 {
-    trace(3,"BtnConnectClick\n");
+    rtk_trace(3,"BtnConnectClick\n");
     
     if (!ConnectState) MenuConnectClick();
     else MenuDisconnectClick();
@@ -1234,7 +1234,7 @@ void Plot::BtnConnectClick()
 // callback on button-solution-1 --------------------------------------------
 void Plot::BtnSol1Click()
 {
-    trace(3,"BtnSol1Click\n");
+    rtk_trace(3,"BtnSol1Click\n");
     
     BtnSol12->setChecked(false);
     UpdateTime();
@@ -1244,7 +1244,7 @@ void Plot::BtnSol1Click()
 // callback on button-solution-2 --------------------------------------------
 void Plot::BtnSol2Click()
 {
-    trace(3,"BtnSol2Click\n");
+    rtk_trace(3,"BtnSol2Click\n");
     
     BtnSol12->setChecked(false);
     UpdateTime();
@@ -1254,7 +1254,7 @@ void Plot::BtnSol2Click()
 // callback on button-solution-1-2 ------------------------------------------
 void Plot::BtnSol12Click()
 {
-    trace(3,"BtnSol12Click\n");
+    rtk_trace(3,"BtnSol12Click\n");
     
     BtnSol1->setChecked(false);
     BtnSol2->setChecked(false);
@@ -1265,14 +1265,14 @@ void Plot::BtnSol12Click()
 // callback on button-solution-1 double-click -------------------------------
 void Plot::BtnSol1DblClick()
 {
-    trace(3,"BtnSol1DblClick\n");
+    rtk_trace(3,"BtnSol1DblClick\n");
     
     MenuOpenSol1Click();
 }
 // callback on button-solution-2 double-click -------------------------------
 void Plot::BtnSol2DblClick()
 {
-    trace(3,"BtnSol2DblClick\n");
+    rtk_trace(3,"BtnSol2DblClick\n");
     
     MenuOpenSol2Click();
 }
@@ -1280,7 +1280,7 @@ void Plot::BtnSol2DblClick()
 // callback on button-plot-1-onoff ------------------------------------------
 void Plot::BtnOn1Click()
 {
-    trace(3,"BtnOn1Click\n");
+    rtk_trace(3,"BtnOn1Click\n");
     
     UpdateSize();
     Refresh();
@@ -1288,7 +1288,7 @@ void Plot::BtnOn1Click()
 // callback on button-plot-2-onoff-------------------------------------------
 void Plot::BtnOn2Click()
 {
-    trace(3,"BtnOn2Click\n");
+    rtk_trace(3,"BtnOn2Click\n");
     
     UpdateSize();
     Refresh();
@@ -1296,7 +1296,7 @@ void Plot::BtnOn2Click()
 // callback on button-plot-3-onoff ------------------------------------------
 void Plot::BtnOn3Click()
 {
-    trace(3,"BtnOn3Click\n");
+    rtk_trace(3,"BtnOn3Click\n");
     
     UpdateSize();
     Refresh();
@@ -1304,7 +1304,7 @@ void Plot::BtnOn3Click()
 // callback on button-range-list --------------------------------------------
 void Plot::BtnRangeListClick()
 {
-    trace(3,"BtnRangeListClick\n");
+    rtk_trace(3,"BtnRangeListClick\n");
     
     QPoint pos=BtnRangeList->mapToGlobal(BtnRangeList->pos());
     pos.rx()-=BtnRangeList->width();
@@ -1320,7 +1320,7 @@ void Plot::RangeListClick()
     bool okay;
     QListWidgetItem *i;
     
-    trace(3,"RangeListClick\n");
+    rtk_trace(3,"RangeListClick\n");
     
     RangeList->setVisible(false);
     if ((i=RangeList->currentItem())==NULL) return;
@@ -1337,7 +1337,7 @@ void Plot::RangeListClick()
 // callback on button-animation ---------------------------------------------
 void Plot::BtnAnimateClick()
 {
-    trace(3,"BtnAnimateClick\n");
+    rtk_trace(3,"BtnAnimateClick\n");
     
     UpdateEnable();
 }
@@ -1351,7 +1351,7 @@ void Plot::PlotTypeSChange()
 {
     int i;
     
-    trace(3,"PlotTypeSChnage\n");
+    rtk_trace(3,"PlotTypeSChnage\n");
     
     for (i=0;PTypes[i]!=NULL;i++) {
         if (PlotTypeS->currentText()==PTypes[i]) UpdateType(i);
@@ -1363,7 +1363,7 @@ void Plot::PlotTypeSChange()
 // callback on quality-flag selection change --------------------------------
 void Plot::QFlagChange()
 {
-    trace(3,"QFlagChange\n");
+    rtk_trace(3,"QFlagChange\n");
     
     UpdatePlot();
     UpdateEnable();
@@ -1371,7 +1371,7 @@ void Plot::QFlagChange()
 // callback on obs-type selection change ------------------------------------
 void Plot::ObsTypeChange()
 {
-    trace(3,"ObsTypeChange\n");
+    rtk_trace(3,"ObsTypeChange\n");
     
     UpdatePlot();
     UpdateEnable();
@@ -1379,7 +1379,7 @@ void Plot::ObsTypeChange()
 // callback on dop-type selection change ------------------------------------
 void Plot::DopTypeChange()
 {
-    trace(3,"DopTypeChange\n");
+    rtk_trace(3,"DopTypeChange\n");
     
     UpdatePlot();
     UpdateEnable();
@@ -1387,7 +1387,7 @@ void Plot::DopTypeChange()
 // callback on satellite-list selection change ------------------------------
 void Plot::SatListChange()
 {
-    trace(3,"SatListChange\n");
+    rtk_trace(3,"SatListChange\n");
     
     UpdateSatSel();
     UpdatePlot();
@@ -1398,7 +1398,7 @@ void Plot::TimeScrollChange()
 {
     int sel=!BtnSol1->isChecked()&&BtnSol2->isChecked()?1:0;
     
-    trace(3,"TimeScrollChange\n");
+    rtk_trace(3,"TimeScrollChange\n");
     
     if (PlotType<=PLOT_NSAT||PlotType==PLOT_RES) {
         SolIndex[sel]=TimeScroll->value();
@@ -1413,7 +1413,7 @@ void Plot::mousePressEvent(QMouseEvent *event)
 {
     X0=event->globalX(); Y0=event->globalY(); Xcent0=Xcent;
 
-    trace(3,"DispMouseDown: X=%d Y=%d\n",event->globalX(),event->globalY());
+    rtk_trace(3,"DispMouseDown: X=%d Y=%d\n",event->globalX(),event->globalY());
     
     Drag=event->buttons().testFlag(Qt::LeftButton)?1:(event->buttons().testFlag(Qt::RightButton)?11:0);
     
@@ -1437,7 +1437,7 @@ void Plot::mouseMoveEvent(QMouseEvent *event)
     
     if ((abs(event->globalX()-Xn)<1)&&(abs(event->globalY()-Yn)<1)) return;
     
-    trace(4,"DispMouseMove: X=%d Y=%d\n",event->globalX(),event->globalY());
+    rtk_trace(4,"DispMouseMove: X=%d Y=%d\n",event->globalX(),event->globalY());
 
     if (Drag==0) {
         UpdatePoint(event->globalX(),event->globalY());
@@ -1463,7 +1463,7 @@ void Plot::mouseMoveEvent(QMouseEvent *event)
 // callback on mouse-up event -----------------------------------------------
 void Plot::mouseReleaseEvent(QMouseEvent *event)
 {
-    trace(3,"DispMouseUp: X=%d Y=%d\n",event->globalX(),event->globalY());
+    rtk_trace(3,"DispMouseUp: X=%d Y=%d\n",event->globalX(),event->globalY());
     
     Drag=0;
     setCursor(Qt::ArrowCursor);
@@ -1478,7 +1478,7 @@ void Plot::mouseReleaseEvent(QMouseEvent *event)
 
      if (event->button() != Qt::LeftButton) return;
 
-     trace(3,"DispDblClick X=%d Y=%d\n",p.x(),p.y());
+     rtk_trace(3,"DispDblClick X=%d Y=%d\n",p.x(),p.y());
 
      if (BtnFixHoriz->isChecked()) return;
 
@@ -1502,7 +1502,7 @@ void Plot::mouseReleaseEvent(QMouseEvent *event)
 // callback on mouse-leave event --------------------------------------------
 void Plot::leaveEvent(QEvent*)
 {
-    trace(3,"DispMouseLeave\n");
+    rtk_trace(3,"DispMouseLeave\n");
     
     Xn=Yn=-1;
     Message2->setVisible(false);
@@ -1513,7 +1513,7 @@ void Plot::MouseDownTrk(int X, int Y)
 {
     int i,sel=!BtnSol1->isChecked()&&BtnSol2->isChecked()?1:0;
     
-    trace(3,"MouseDownTrk: X=%d Y=%d\n",X,Y);
+    rtk_trace(3,"MouseDownTrk: X=%d Y=%d\n",X,Y);
     
     if (Drag==1&&(i=SearchPos(X,Y))>=0) {
         SolIndex[sel]=i;
@@ -1538,7 +1538,7 @@ void Plot::MouseDownSol(int X, int Y)
     double x,xl[2],yl[2];
     int i,area=-1,sel=!BtnSol1->isChecked()&&BtnSol2->isChecked()?1:0;
     
-    trace(3,"MouseDownSol: X=%d Y=%d\n",X,Y);
+    rtk_trace(3,"MouseDownSol: X=%d Y=%d\n",X,Y);
     
     if (PlotType==PLOT_SNR) {
         if (0<=ObsIndex&&ObsIndex<NObs) time=Obs.data[IndexObs[ObsIndex]].time;
@@ -1592,7 +1592,7 @@ void Plot::MouseDownObs(int X, int Y)
     double x,xl[2],yl[2];
     int area;
     
-    trace(3,"MouseDownObs: X=%d Y=%d\n",X,Y);
+    rtk_trace(3,"MouseDownObs: X=%d Y=%d\n",X,Y);
     
     if (0<=ObsIndex&&ObsIndex<NObs&&!MenuFixHoriz->isChecked()) {
         
@@ -1622,7 +1622,7 @@ void Plot::MouseDownObs(int X, int Y)
 void Plot::MouseMoveTrk(int X, int Y, double dx, double dy,
     double dxs, double dys)
 {
-    trace(4,"MouseMoveTrk: X=%d Y=%d\n",X,Y);
+    rtk_trace(4,"MouseMoveTrk: X=%d Y=%d\n",X,Y);
     
     Q_UNUSED(dxs);
 
@@ -1647,7 +1647,7 @@ void Plot::MouseMoveSol(int X, int Y, double dx, double dy,
     double x,y,xs,ys;
     int i,sel=!BtnSol1->isChecked()&&BtnSol2->isChecked()?1:0;
     
-    trace(4,"MouseMoveSol: X=%d Y=%d\n",X,Y);
+    rtk_trace(4,"MouseMoveSol: X=%d Y=%d\n",X,Y);
     
     if (Drag<=4) {
         for (i=0;i<3;i++) {
@@ -1719,7 +1719,7 @@ void Plot::MouseMoveObs(int X, int Y, double dx, double dy,
     
     Q_UNUSED(dys);
 
-    trace(4,"MouseMoveObs: X=%d Y=%d\n",X,Y);
+    rtk_trace(4,"MouseMoveObs: X=%d Y=%d\n",X,Y);
     
     if (Drag<=4) {
         GraphR->GetCent(x,y);
@@ -1764,7 +1764,7 @@ void Plot::wheelEvent(QWheelEvent *event)
     
     event->accept();
     
-    trace(4,"MouseWheel: WheelDelta=%d\n",event->angleDelta().y());
+    rtk_trace(4,"MouseWheel: WheelDelta=%d\n",event->angleDelta().y());
     
     if (Xn<0||Yn<0) return;
     
@@ -1810,7 +1810,7 @@ void Plot::keyPressEvent(QKeyEvent* event)
     double xc,yc,yc1,yc2,yc3,xs,ys,ys1,ys2,ys3;
     int key=event->modifiers().testFlag(Qt::ControlModifier)?10:0;
     
-    trace(3,"FormKeyDown:\n");
+    rtk_trace(3,"FormKeyDown:\n");
     
     switch (event->key()) {
         case Qt::Key_Up   : key+=1; break;
@@ -1886,7 +1886,7 @@ void Plot::TimerTimer()
     int sel=!BtnSol1->isChecked()&&BtnSol2->isChecked()?1:0;
     char msg[MAXSTRMSG]="";
     
-    trace(4,"TimeTimer\n");
+    rtk_trace(4,"TimeTimer\n");
     
     if (ConnectState) { // real-time input mode
         for (i=0;i<2;i++) {
@@ -1962,7 +1962,7 @@ void Plot::SetCentX(double c)
     double x,y;
     int i;
     
-    trace(3,"SetCentX: c=%.3f:\n",c);
+    rtk_trace(3,"SetCentX: c=%.3f:\n",c);
     
     GraphR->GetCent(x,y);
     GraphR->SetCent(c,y);
@@ -1977,7 +1977,7 @@ void Plot::SetScaleX(double s)
     double xs,ys;
     int i;
     
-    trace(3,"SetScaleX: s=%.3f:\n",s);
+    rtk_trace(3,"SetScaleX: s=%.3f:\n",s);
     
     GraphR->GetScale(xs,ys);
     GraphR->SetScale(s ,ys);
@@ -1989,7 +1989,7 @@ void Plot::SetScaleX(double s)
 // update plot-type with fit-range ------------------------------------------
 void Plot::UpdateType(int type)
 {
-    trace(3,"UpdateType: type=%d\n",type);
+    rtk_trace(3,"UpdateType: type=%d\n",type);
     
     PlotType=type;
     
@@ -2009,7 +2009,7 @@ void Plot::UpdateSize(void)
     double xs,ys;
     int i,n,h,tmargin,bmargin,rmargin,lmargin;
     
-    trace(3,"UpdateSize\n");
+    rtk_trace(3,"UpdateSize\n");
     
     tmargin=5;                                     // top margin
     bmargin=static_cast<int>(Disp->font().pointSize()*1.5)+3; // bottom
@@ -2059,7 +2059,7 @@ void Plot::UpdateColor(void)
 {
     int i;
     
-    trace(3,"UpdateColor\n");
+    rtk_trace(3,"UpdateColor\n");
     
     for (i=0;i<3;i++) {
         GraphT   ->Color[i]=CColor[i];
@@ -2079,7 +2079,7 @@ void Plot::UpdateTime(void)
     double tt;
     int i,sel=!BtnSol1->isChecked()&&BtnSol2->isChecked()?1:0;
     
-    trace(3,"UpdateTime\n");
+    rtk_trace(3,"UpdateTime\n");
     
     // time-cursor change on solution-plot
     if (PlotType<=PLOT_NSAT||PlotType<=PLOT_RES) {
@@ -2139,7 +2139,7 @@ void Plot::UpdateOrigin(void)
     int i,j,n=0,sel=!BtnSol1->isChecked()&&BtnSol2->isChecked()?1:0;
     QString sta;
     
-    trace(3,"UpdateOrigin\n");
+    rtk_trace(3,"UpdateOrigin\n");
     
     if (Origin==ORG_STARTPOS) {
         if (!(sol=getsol(SolData,0))||sol->type!=0) return;
@@ -2215,7 +2215,7 @@ void Plot::UpdateSatMask(void)
     int sat,prn;
     char buff[256],*p;
     
-    trace(3,"UpdateSatMask\n");
+    rtk_trace(3,"UpdateSatMask\n");
     
     for (sat=1;sat<=MAXSAT;sat++) SatMask[sat-1]=0;
     for (sat=1;sat<=MAXSAT;sat++) {
@@ -2255,7 +2255,7 @@ void Plot::UpdateEnable(void)
     bool plot=(PLOT_SOLP<=PlotType)&&(PlotType<=PLOT_NSAT);
     bool sel=(!BtnSol1->isChecked())&&(BtnSol2->isChecked())?1:0;
     
-    trace(3,"UpdateEnable\n");
+    rtk_trace(3,"UpdateEnable\n");
     
     Panel1         ->setVisible(MenuToolBar  ->isChecked());
     Panel21        ->setVisible(MenuStatusBar->isChecked());
@@ -2377,7 +2377,7 @@ int Plot::FitPos(gtime_t *time, double *opos, double *ovel)
     int i,j;
     double t,x[2],Ay[3][2]={{0}},AA[3][4]={{0}};
     
-    trace(3,"FitPos\n");
+    rtk_trace(3,"FitPos\n");
     
     if (SolData[0].n<=0) return 0;
     
@@ -2409,7 +2409,7 @@ void Plot::FitTime(void)
     double tl[2]={86400.0*7,0.0},tp[2],xl[2],yl[2],zl[2];
     int sel=!BtnSol1->isChecked()&&BtnSol2->isChecked()?1:0;
     
-    trace(3,"FitTime\n");
+    rtk_trace(3,"FitTime\n");
     
     sols=getsol(SolData+sel,0);
     sole=getsol(SolData+sel,SolData[sel].n-1);
@@ -2449,7 +2449,7 @@ void Plot::SetRange(int all, double range)
     double zl[]={-range,range};
     double xs,ys,tl[2],xp[2],pos[3];
     
-    trace(3,"SetRange: all=%d range=%.3f\n",all,range);
+    rtk_trace(3,"SetRange: all=%d range=%.3f\n",all,range);
     
     if (all||PlotType==PLOT_TRK) {
         GraphT->SetLim(xl,yl);
@@ -2505,7 +2505,7 @@ void Plot::FitRange(int all)
     double lat,lon,lats[2]={90,-90},lons[2]={180,-180},llh[3];
     int i,type=PlotType-PLOT_SOLP;
     
-    trace(3,"FitRange: all=%d\n",all);
+    rtk_trace(3,"FitRange: all=%d\n",all);
     
     MenuFixHoriz->setChecked(false);
     
@@ -2620,7 +2620,7 @@ void Plot::LoadOpt(void)
     double range;
     int i,geopts[12];
     
-    trace(3,"LoadOpt\n");
+    rtk_trace(3,"LoadOpt\n");
     
     PlotType     =settings.value("plot/plottype",      0).toInt();
     TimeLabel    =settings.value("plot/timelabel",     1).toInt();
@@ -2752,7 +2752,7 @@ void Plot::SaveOpt(void)
     QSettings settings(IniFile,QSettings::IniFormat);
     int i,geopts[12];
     
-    trace(3,"SaveOpt\n");
+    rtk_trace(3,"SaveOpt\n");
     
     settings.setValue("plot/plottype",     PlotType     );
     settings.setValue("plot/timelabel",    TimeLabel    );

@@ -158,7 +158,7 @@ void __fastcall TMainForm::FormCreate(TObject *Sender)
     char *p,*argv[32],buff[1024],file[1024]="rtknavi.exe";
     int argc=0,autorun=0,tasktray=0;
     
-    trace(3,"FormCreate\n");
+    rtk_trace(3,"FormCreate\n");
     
     ::GetModuleFileName(NULL,file,sizeof(file));
     if (!(p=strrchr(file,'.'))) p=file+strlen(file);
@@ -208,7 +208,7 @@ void __fastcall TMainForm::FormCreate(TObject *Sender)
 // callback on form show ----------------------------------------------------
 void __fastcall TMainForm::FormShow(TObject *Sender)
 {
-    trace(3,"FormShow\n");
+    rtk_trace(3,"FormShow\n");
     
     if (TLEFileF!="") {
         tle_read(TLEFileF.c_str(),&TLEData);
@@ -226,7 +226,7 @@ void __fastcall TMainForm::FormShow(TObject *Sender)
 // callback on form close ---------------------------------------------------
 void __fastcall TMainForm::FormClose(TObject *Sender, TCloseAction &Action)
 {
-    trace(3,"FormClose\n");
+    rtk_trace(3,"FormClose\n");
     
     if (OpenPort>0) {
         // send disconnect message
@@ -240,7 +240,7 @@ void __fastcall TMainForm::FormClose(TObject *Sender, TCloseAction &Action)
 // callback panel 21 resize --------------------------------------------------
 void __fastcall TMainForm::Panel21Resize(TObject *Sender)
 {
-    trace(3,"Panel21Resize\n");
+    rtk_trace(3,"Panel21Resize\n");
     
     BtnSolType->Left=Panel21->Width-BtnSolType->Width-2;
 }
@@ -250,7 +250,7 @@ void __fastcall TMainForm::Panel211Resize(TObject *Sender)
     int h=abs(Pos1->Font->Height)-2,w=Panel211->Width;
     int y0,y1,y2,y3,y4,y5;
     
-    trace(3,"Panel211Resize\n");
+    rtk_trace(3,"Panel211Resize\n");
     
     y2=Panel211->Height/2-h/2-6; 
     y1=y2-h-10; y3=y2+h+10; y0=y1-h-12; y4=y3+h+10; y5=y4+14;
@@ -274,7 +274,7 @@ void __fastcall TMainForm::Panel22Resize(TObject *Sender)
 {
     TPanel *panel=(TPanel *)Sender;
     
-    trace(3,"Panel22Resize\n");
+    rtk_trace(3,"Panel22Resize\n");
     
     BtnPlotType1->Left=panel->Width-BtnPlotType1->Width-2;
     BtnFreqType1->Left=BtnPlotType1->Left-BtnFreqType1->Width-2;
@@ -285,7 +285,7 @@ void __fastcall TMainForm::Panel23Resize(TObject *Sender)
 {
     TPanel *panel=(TPanel *)Sender;
     
-    trace(3,"Panel23Resize\n");
+    rtk_trace(3,"Panel23Resize\n");
     
     BtnPlotType2->Left=panel->Width-BtnPlotType2->Width-2;
     BtnFreqType2->Left=BtnPlotType2->Left-BtnFreqType2->Width-2;
@@ -296,7 +296,7 @@ void __fastcall TMainForm::Panel24Resize(TObject *Sender)
 {
     TPanel *panel=(TPanel *)Sender;
     
-    trace(3,"Panel24Resize\n");
+    rtk_trace(3,"Panel24Resize\n");
     
     BtnPlotType3->Left=panel->Width-BtnPlotType3->Width-2;
     BtnFreqType3->Left=BtnPlotType3->Left-BtnFreqType3->Width-2;
@@ -307,7 +307,7 @@ void __fastcall TMainForm::Panel25Resize(TObject *Sender)
 {
     TPanel *panel=(TPanel *)Sender;
     
-    trace(3,"Panel25Resize\n");
+    rtk_trace(3,"Panel25Resize\n");
     
     BtnPlotType4->Left=panel->Width-BtnPlotType4->Width-2;
     BtnFreqType4->Left=BtnPlotType4->Left-BtnFreqType4->Width-2;
@@ -450,21 +450,21 @@ void __fastcall TMainForm::UpdateEnable(void)
 // callback on button-exit --------------------------------------------------
 void __fastcall TMainForm::BtnExitClick(TObject *Sender)
 {
-    trace(3,"BtnExitClick\n");
+    rtk_trace(3,"BtnExitClick\n");
     
     Close();
 }
 // callback on button-start -------------------------------------------------
 void __fastcall TMainForm::BtnStartClick(TObject *Sender)
 {
-    trace(3,"BtnStartClick\n");
+    rtk_trace(3,"BtnStartClick\n");
     
     SvrStart();
 }
 // callback on button-stop --------------------------------------------------
 void __fastcall TMainForm::BtnStopClick(TObject *Sender)
 {
-    trace(3,"BtnStopClick\n");
+    rtk_trace(3,"BtnStopClick\n");
     
     SvrStop();
 }
@@ -473,7 +473,7 @@ void __fastcall TMainForm::BtnPlotClick(TObject *Sender)
 {
     AnsiString cmd,Ansi_Caption=Caption;
     
-    trace(3,"BtnPlotClick\n");
+    rtk_trace(3,"BtnPlotClick\n");
     
     if (OpenPort<=0) {
         ShowMessage("monitor port not open");
@@ -490,7 +490,7 @@ void __fastcall TMainForm::BtnOptClick(TObject *Sender)
 {
     int i,chgmoni=0,panelstack=PanelStack;
     
-    trace(3,"BtnOptClick\n");
+    rtk_trace(3,"BtnOptClick\n");
     
     OptDialog->PrcOpt     =PrcOpt;
     OptDialog->SolOpt     =SolOpt;
@@ -620,7 +620,7 @@ void __fastcall TMainForm::BtnInputStrClick(TObject *Sender)
 {
     int i,j;
     
-    trace(3,"BtnInputStrClick\n");
+    rtk_trace(3,"BtnInputStrClick\n");
     
     for (i=0;i<3;i++) {
         InputStrDialog->StreamC[i]=StreamC[i];
@@ -693,7 +693,7 @@ int __fastcall TMainForm::ConfOverwrite(const char *path)
     int i;
     char buff1[1024],buff2[1024],*p;
     
-    trace(3,"ConfOverwrite\n");
+    rtk_trace(3,"ConfOverwrite\n");
     
     strcpy(buff1,path);
     
@@ -728,7 +728,7 @@ void __fastcall TMainForm::BtnOutputStrClick(TObject *Sender)
     int i,j,str,update[2]={0};
     char *path;
     
-    trace(3,"BtnOutputStrClick\n");
+    rtk_trace(3,"BtnOutputStrClick\n");
     
     for (i=3;i<5;i++) {
         OutputStrDialog->StreamC[i-3]=StreamC[i];
@@ -798,7 +798,7 @@ void __fastcall TMainForm::BtnLogStrClick(TObject *Sender)
     int i,j,str,update[3]={0};
     char *path;
     
-    trace(3,"BtnLogStrClick\n");
+    rtk_trace(3,"BtnLogStrClick\n");
     
     for (i=5;i<8;i++) {
         LogStrDialog->StreamC[i-5]=StreamC[i];
@@ -858,7 +858,7 @@ void __fastcall TMainForm::BtnLogStrClick(TObject *Sender)
 // callback on button-solution-show -----------------------------------------
 void __fastcall TMainForm::BtnPanelClick(TObject *Sender)
 {
-    trace(3,"BtnPanelClick\n");
+    rtk_trace(3,"BtnPanelClick\n");
     
     if (++PanelMode>MAXPANELMODE) PanelMode=0;
     UpdatePanel();
@@ -866,7 +866,7 @@ void __fastcall TMainForm::BtnPanelClick(TObject *Sender)
 // callback on button-plot-type-1 -------------------------------------------
 void __fastcall TMainForm::BtnTimeSysClick(TObject *Sender)
 {
-    trace(3,"BtnTimeSysClick\n");
+    rtk_trace(3,"BtnTimeSysClick\n");
     
     if (++TimeSys>3) TimeSys=0;
     UpdateTimeSys();
@@ -874,7 +874,7 @@ void __fastcall TMainForm::BtnTimeSysClick(TObject *Sender)
 // callback on button-solution-type -----------------------------------------
 void __fastcall TMainForm::BtnSolTypeClick(TObject *Sender)
 {
-    trace(3,"BtnSolTypeClick\n");
+    rtk_trace(3,"BtnSolTypeClick\n");
     
     if (++SolType>4) SolType=0;
     UpdateSolType();
@@ -882,7 +882,7 @@ void __fastcall TMainForm::BtnSolTypeClick(TObject *Sender)
 // callback on button-plottype-1 --------------------------------------------
 void __fastcall TMainForm::BtnPlotType1Click(TObject *Sender)
 {
-    trace(3,"BtnPlotType1Click\n");
+    rtk_trace(3,"BtnPlotType1Click\n");
     
     if (++PlotType1>6) PlotType1=0;
     UpdatePlot();
@@ -892,7 +892,7 @@ void __fastcall TMainForm::BtnPlotType1Click(TObject *Sender)
 // callback on button-plottype-2 --------------------------------------------
 void __fastcall TMainForm::BtnPlotType2Click(TObject *Sender)
 {
-    trace(3,"BtnPlotType2Click\n");
+    rtk_trace(3,"BtnPlotType2Click\n");
     
     if (++PlotType2>6) PlotType2=0;
     UpdatePlot();
@@ -902,7 +902,7 @@ void __fastcall TMainForm::BtnPlotType2Click(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TMainForm::BtnPlotType3Click(TObject *Sender)
 {
-    trace(3,"BtnPlotType3Click\n");
+    rtk_trace(3,"BtnPlotType3Click\n");
     
     if (++PlotType3>6) PlotType3=0;
     UpdatePlot();
@@ -912,7 +912,7 @@ void __fastcall TMainForm::BtnPlotType3Click(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TMainForm::BtnPlotType4Click(TObject *Sender)
 {
-    trace(3,"BtnPlotType4Click\n");
+    rtk_trace(3,"BtnPlotType4Click\n");
     
     if (++PlotType4>6) PlotType4=0;
     UpdatePlot();
@@ -922,7 +922,7 @@ void __fastcall TMainForm::BtnPlotType4Click(TObject *Sender)
 // callback on button frequency-type-1 --------------------------------------
 void __fastcall TMainForm::BtnFreqType1Click(TObject *Sender)
 {
-    trace(3,"BtnFreqType1Click\n");
+    rtk_trace(3,"BtnFreqType1Click\n");
     
     if (PlotType1==6) {
         if (++TrkType1>1) TrkType1=0;
@@ -940,7 +940,7 @@ void __fastcall TMainForm::BtnFreqType1Click(TObject *Sender)
 // callback on button frequency-type-2 --------------------------------------
 void __fastcall TMainForm::BtnFreqType2Click(TObject *Sender)
 {
-    trace(3,"BtnFreqType2Click\n");
+    rtk_trace(3,"BtnFreqType2Click\n");
     
     if (PlotType2==6) {
         if (++TrkType2>1) TrkType2=0;
@@ -958,7 +958,7 @@ void __fastcall TMainForm::BtnFreqType2Click(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TMainForm::BtnFreqType3Click(TObject *Sender)
 {
-    trace(3,"BtnFreqType3Click\n");
+    rtk_trace(3,"BtnFreqType3Click\n");
     
     if (PlotType3==6) {
         if (++TrkType3>1) TrkType3=0;
@@ -976,7 +976,7 @@ void __fastcall TMainForm::BtnFreqType3Click(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TMainForm::BtnFreqType4Click(TObject *Sender)
 {
-    trace(3,"BtnFreqType4Click\n");
+    rtk_trace(3,"BtnFreqType4Click\n");
     
     if (PlotType4==6) {
         if (++TrkType4>1) TrkType4=0;
@@ -1024,7 +1024,7 @@ void __fastcall TMainForm::BtnMonitorClick(TObject *Sender)
 {
     TMonitorDialog *monitor=new TMonitorDialog(Application);
     
-    trace(3,"BtnMonitorClick\n");
+    rtk_trace(3,"BtnMonitorClick\n");
     
     monitor->Caption=Caption+": RTK Monitor";
     monitor->Show();
@@ -1032,7 +1032,7 @@ void __fastcall TMainForm::BtnMonitorClick(TObject *Sender)
 // callback on scroll-solution change ---------------------------------------
 void __fastcall TMainForm::ScbSolChange(TObject *Sender)
 {
-    trace(3,"ScbSolChange\n");
+    rtk_trace(3,"ScbSolChange\n");
     
     PSol=PSolS+ScbSol->Position;
     if (PSol>=SolBuffSize) PSol-=SolBuffSize;
@@ -1043,7 +1043,7 @@ void __fastcall TMainForm::ScbSolChange(TObject *Sender)
 // callback on button-save --------------------------------------------------
 void __fastcall TMainForm::BtnSaveClick(TObject *Sender)
 {
-    trace(3,"BtnSaveClick\n");
+    rtk_trace(3,"BtnSaveClick\n");
     
     SaveLog();
 }
@@ -1052,7 +1052,7 @@ void __fastcall TMainForm::BtnAboutClick(TObject *Sender)
 {
     AnsiString prog=PRGNAME;
     
-    trace(3,"BtnAboutClick\n");
+    rtk_trace(3,"BtnAboutClick\n");
 #ifdef _WIN64
     prog+="_WIN64";
 #endif
@@ -1066,7 +1066,7 @@ void __fastcall TMainForm::BtnAboutClick(TObject *Sender)
 // callback on button-tasktray ----------------------------------------------
 void __fastcall TMainForm::BtnTaskTrayClick(TObject *Sender)
 {
-    trace(3,"BtnTaskTrayClick\n");
+    rtk_trace(3,"BtnTaskTrayClick\n");
     
     Visible=false;
     TrayIcon->Hint=Caption;
@@ -1075,7 +1075,7 @@ void __fastcall TMainForm::BtnTaskTrayClick(TObject *Sender)
 // callback on button-tasktray ----------------------------------------------
 void __fastcall TMainForm::TrayIconDblClick(TObject *Sender)
 {
-    trace(3,"TaskIconDblClick\n");
+    rtk_trace(3,"TaskIconDblClick\n");
     
     Visible=true;
     TrayIcon->Visible=false;
@@ -1083,7 +1083,7 @@ void __fastcall TMainForm::TrayIconDblClick(TObject *Sender)
 // callback on menu-expand --------------------------------------------------
 void __fastcall TMainForm::MenuExpandClick(TObject *Sender)
 {
-    trace(3,"MenuExpandClick\n");
+    rtk_trace(3,"MenuExpandClick\n");
     
     Visible=true;
     TrayIcon->Visible=false;
@@ -1091,35 +1091,35 @@ void __fastcall TMainForm::MenuExpandClick(TObject *Sender)
 // callback on menu-start ---------------------------------------------------
 void __fastcall TMainForm::MenuStartClick(TObject *Sender)
 {
-    trace(3,"MenuStartClick\n");
+    rtk_trace(3,"MenuStartClick\n");
     
     BtnStartClick(Sender);
 }
 // callback on menu-stop ----------------------------------------------------
 void __fastcall TMainForm::MenuStopClick(TObject *Sender)
 {
-    trace(3,"MenuStopClick\n");
+    rtk_trace(3,"MenuStopClick\n");
     
     BtnStopClick(Sender);
 }
 // callback on menu-monitor -------------------------------------------------
 void __fastcall TMainForm::MenuMonitorClick(TObject *Sender)
 {
-    trace(3,"MenuMonitorClick\n");
+    rtk_trace(3,"MenuMonitorClick\n");
     
     BtnMonitorClick(Sender);
 }
 // callback on menu-plot ----------------------------------------------------
 void __fastcall TMainForm::MenuPlotClick(TObject *Sender)
 {
-    trace(3,"MenuPlotClick\n");
+    rtk_trace(3,"MenuPlotClick\n");
     
     BtnPlotClick(Sender);
 }
 // callback on menu-exit ----------------------------------------------------
 void __fastcall TMainForm::MenuExitClick(TObject *Sender)
 {
-    trace(3,"MenuExitClick\n");
+    rtk_trace(3,"MenuExitClick\n");
     
     BtnExitClick(Sender);
 }
@@ -1144,7 +1144,7 @@ void __fastcall TMainForm::SvrStart(void)
     pcvs_t pcvr={0},pcvs={0};
     pcv_t *pcv;
     
-    trace(3,"SvrStart\n");
+    rtk_trace(3,"SvrStart\n");
     
     Message->Caption=""; Message->Parent->Hint="";
     
@@ -1301,7 +1301,7 @@ void __fastcall TMainForm::SvrStart(void)
     if (!rtksvrstart(&rtksvr,SvrCycle,SvrBuffSize,strs,paths,Format,NavSelect,
                      cmds,cmds_periodic,rcvopts,NmeaCycle,NmeaReq,nmeapos,
                      &PrcOpt,solopt,&monistr,errmsg)) {
-        trace(2,"rtksvrstart error %s\n",errmsg);
+        rtk_trace(2,"rtksvrstart error %s\n",errmsg);
         traceclose();
         return;
     }
@@ -1331,7 +1331,7 @@ void __fastcall TMainForm::SvrStop(void)
     char *cmds[3]={0};
     int i,n,m,str;
     
-    trace(3,"SvrStop\n");
+    rtk_trace(3,"SvrStop\n");
     
     for (i=0;i<3;i++) {
         str=rtksvr.stream[i].type;
@@ -1378,7 +1378,7 @@ void __fastcall TMainForm::TimerTimer(TObject *Sender)
     int i,update=0;
     unsigned char buff[8];
     
-    trace(4,"TimerTimer\n");
+    rtk_trace(4,"TimerTimer\n");
     
     rtksvrlock(&rtksvr);
     
@@ -1428,7 +1428,7 @@ void __fastcall TMainForm::UpdateTimeSys(void)
 {
     AnsiString label[]={"GPST","UTC","LT","GPST"};
     
-    trace(3,"UpdateTimeSys\n");
+    rtk_trace(3,"UpdateTimeSys\n");
     
     BtnTimeSys->Caption=label[TimeSys];
     UpdateTime();
@@ -1440,7 +1440,7 @@ void __fastcall TMainForm::UpdateSolType(void)
         "Lat/Lon/Height","Lat/Lon/Height","X/Y/Z-ECEF","E/N/U-Baseline",
         "Pitch/Yaw/Length-Baseline",""
     };
-    trace(3,"UpdateSolType\n");
+    rtk_trace(3,"UpdateSolType\n");
     
     Plabel0->Caption=label[SolType];
     UpdatePos();
@@ -1453,7 +1453,7 @@ void __fastcall TMainForm::UpdateLog(int stat, gtime_t time, double *rr,
     
     if (!stat) return;
     
-    trace(4,"UpdateLog\n");
+    rtk_trace(4,"UpdateLog\n");
     
     SolStat[PSolE]=stat; Time[PSolE]=time; Nvsat[PSolE]=ns; Age[PSolE]=age;
     Ratio[PSolE]=ratio;
@@ -1482,7 +1482,7 @@ void __fastcall TMainForm::UpdateFont(void)
     TColor color=label[7]->Font->Color;
     int i;
     
-    trace(4,"UpdateFont\n");
+    rtk_trace(4,"UpdateFont\n");
     
     for (i=0;i<10;i++) label[i]->Font->Assign(PosFont);
     label[0]->Font->Size=9; label[7]->Font->Color=color;
@@ -1498,7 +1498,7 @@ void __fastcall TMainForm::UpdateTime(void)
     int week;
     char tstr[64];
     
-    trace(4,"UpdateTime\n");
+    rtk_trace(4,"UpdateTime\n");
     
     if      (TimeSys==0) time2str(time,tstr,1);
     else if (TimeSys==1) time2str(gpst2utc(time),tstr,1);
@@ -1526,7 +1526,7 @@ void __fastcall TMainForm::UpdatePos(void)
     double dms1[3]={0},dms2[3]={0},bl[3]={0},enu[3]={0},pitch=0.0,yaw=0.0,len;
     int i,stat=SolStat[PSol];
     
-    trace(4,"UpdatePos\n");
+    rtk_trace(4,"UpdatePos\n");
     
     if (rtksvr.rtk.opt.mode==PMODE_STATIC||rtksvr.rtk.opt.mode==PMODE_PPP_STATIC) {
         ext=" (S)";
@@ -1619,7 +1619,7 @@ void __fastcall TMainForm::UpdateStr(void)
     int i,sstat[MAXSTRRTK]={0};
     char msg[MAXSTRMSG]="";
     
-    trace(4,"UpdateStr\n");
+    rtk_trace(4,"UpdateStr\n");
     
     rtksvrsstat(&rtksvr,sstat,msg);
     for (i=0;i<MAXSTRRTK;i++) {
@@ -1647,7 +1647,7 @@ void __fastcall TMainForm::DrawPlot(TImage *plot, int type, int freq)
     char name[16];
     double az[2][MAXSAT],el[2][MAXSAT],rr[3],rs[6],e[3],pos[3],azel[2];
     
-    trace(4,"DrawPlot\n");
+    rtk_trace(4,"DrawPlot\n");
     
     fstr[NFREQ+1]=(wchar_t *)L"SYS ";
     
@@ -1823,7 +1823,7 @@ void __fastcall TMainForm::DrawSnr(TCanvas *c, int w, int h, int x0, int y0,
     int i,j,k,l,n,x1,x2,y1,y2,y3,k1,hh=h-15,ww,www,snr[NFREQ+1],mask[6]={0};
     char id[16],sys[]="GREJCS",*q;
     
-    trace(4,"DrawSnr: w=%d h=%d x0=%d y0=%d index=%d freq=%d\n",w,h,x0,y0,index,freq);
+    rtk_trace(4,"DrawSnr: w=%d h=%d x0=%d y0=%d index=%d freq=%d\n",w,h,x0,y0,index,freq);
     
     c->Pen->Color=clSilver;
     for (snr[0]=MINSNR+10;snr[0]<MAXSNR;snr[0]+=10) {
@@ -1895,7 +1895,7 @@ void __fastcall TMainForm::DrawSat(TCanvas *c, int w, int h, int x0, int y0,
     int i,j,k,l,d,x[MAXSAT],y[MAXSAT],snr[NFREQ+1],ns=0;
     char id[16],sys[]="GREJCS",*q;
     
-    trace(4,"DrawSat: w=%d h=%d index=%d freq=%d\n",w,h,index,freq);
+    rtk_trace(4,"DrawSat: w=%d h=%d index=%d freq=%d\n",w,h,index,freq);
     
     DrawSky(c,w,h,x0,y0);
     
@@ -1949,7 +1949,7 @@ void __fastcall TMainForm::DrawBL(TImage *plot, int w, int h)
     TColor col=clWhite;
     int i,d1=10,d2=16,d3=10,cy=0,sy=0,cya=0,sya=0,a,x1,x2,y1,y2,r1,digit,mode;
     
-    trace(4,"DrawBL: w=%d h=%d\n",w,h);
+    rtk_trace(4,"DrawBL: w=%d h=%d\n",w,h);
     
 	if 		(plot->Name=="Plot1") mode=BLMode1;
 	else if (plot->Name=="Plot2") mode=BLMode2;
@@ -2046,7 +2046,7 @@ void __fastcall TMainForm::DrawTrk(TImage *plot)
     double *x,*y,xt,yt,sx,sy,ref[3],pos[3],dr[3],enu[3];
     int i,j,k,n=0,type,scl;
     
-    trace(3,"DrawTrk\n");
+    rtk_trace(3,"DrawTrk\n");
     
     type=plot->Name=="Plot1"?TrkType1 :TrkType2 ;
     scl =plot->Name=="Plot1"?TrkScale1:TrkScale2;
@@ -2193,7 +2193,7 @@ void __fastcall TMainForm::OpenMoniPort(int port)
     
     if (port<=0) return;
     
-    trace(3,"OpenMoniPort: port=%d\n",port);
+    rtk_trace(3,"OpenMoniPort: port=%d\n",port);
     
     for (i=0;i<=MAXPORTOFF;i++) {
         
@@ -2215,7 +2215,7 @@ void __fastcall TMainForm::InitSolBuff(void)
     double ep[]={2000,1,1,0,0,0};
     int i,j;
     
-    trace(3,"InitSolBuff\n");
+    rtk_trace(3,"InitSolBuff\n");
     
     delete [] Time;   delete [] SolStat; delete [] Nvsat;  delete [] SolRov;
     delete [] SolRef; delete [] Qr;      delete [] VelRov; delete [] Age;
@@ -2253,7 +2253,7 @@ void __fastcall TMainForm::SaveLog(void)
     char file[1024];
     int i;
     
-    trace(3,"SaveLog\n");
+    rtk_trace(3,"SaveLog\n");
     
     time2epoch(timeget(),ep);
     sprintf(file,"rtk_%04.0f%02.0f%02.0f%02.0f%02.0f%02.0f.txt",
@@ -2300,7 +2300,7 @@ void __fastcall TMainForm::LoadNav(nav_t *nav)
     long toe_time,toc_time,ttr_time;
     int i;
     
-    trace(3,"LoadNav\n");
+    rtk_trace(3,"LoadNav\n");
     
     for (i=0;i<MAXSAT;i++) {
         if ((str=ini->ReadString("navi",s.sprintf("eph_%02d",i),""))=="") continue;
@@ -2367,7 +2367,7 @@ void __fastcall TMainForm::SaveNav(nav_t *nav)
     char id[32];
     int i;
     
-    trace(3,"SaveNav\n");
+    rtk_trace(3,"SaveNav\n");
     
     for (i=0;i<MAXSAT;i++) {
         if (nav->eph[i].ttr.time==0) continue;
@@ -2434,7 +2434,7 @@ void __fastcall TMainForm::LoadOpt(void)
     int i,j,no,strno[]={0,1,6,2,3,4,5,7};
     char *p;
     
-    trace(3,"LoadOpt\n");
+    rtk_trace(3,"LoadOpt\n");
     
     for (i=0;i<8;i++) {
         no=strno[i];
@@ -2682,7 +2682,7 @@ void __fastcall TMainForm::SaveOpt(void)
     int i,j,no,strno[]={0,1,6,2,3,4,5,7};
     char *p;
     
-    trace(3,"SaveOpt\n");
+    rtk_trace(3,"SaveOpt\n");
     
     for (i=0;i<8;i++) {
         no=strno[i];

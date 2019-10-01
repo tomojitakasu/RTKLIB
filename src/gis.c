@@ -268,7 +268,7 @@ static int gis_read_record(FILE *fp, FILE *fp_idx, int type, double *bound,
         typ2=I4_L(buff+8);
         
         if (num!=i+1||len1!=len2||type!=typ2) {
-            trace(2,"shapefile record error n=%d %d len=%d %d type=%d %d\n",
+            rtk_trace(2,"shapefile record error n=%d %d len=%d %d type=%d %d\n",
                   i+1,num,len1,len2,type,typ2);
             continue;
         }
@@ -312,7 +312,7 @@ extern int gis_read(const char *file, gis_t *gis, int layer)
     char path[1024],*p,*q;
     int type1=0,type2=0;
     
-    trace(3,"gis_read file=%s layer=%d\n",file,layer);
+    rtk_trace(3,"gis_read file=%s layer=%d\n",file,layer);
     
     strcpy(path,file);
     
@@ -323,18 +323,18 @@ extern int gis_read(const char *file, gis_t *gis, int layer)
         sprintf(path+strlen(path),".shx");
     }
     if (!(fp=fopen(file,"rb"))) { /* shapefile */
-        trace(2,"shapefile open error: %s\n",file);
+        rtk_trace(2,"shapefile open error: %s\n",file);
         return 0;
     }
     if (!(fp_idx=fopen(path,"rb"))) { /* index file */
         fclose(fp);
-        trace(2,"shapefile index open error: %s\n",path);
+        rtk_trace(2,"shapefile index open error: %s\n",path);
         return 0;
     }
     /* read header */
     if ((type1=read_shape_head(fp))<0||(type2=read_shape_head(fp_idx))<0||
         type1!=type2) {
-        trace(2,"shapefile header error: %s type=%d %d\n",file,type1,type2);
+        rtk_trace(2,"shapefile header error: %s type=%d %d\n",file,type1,type2);
         fclose(fp);
         fclose(fp_idx);
         return 0;

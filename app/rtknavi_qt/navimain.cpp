@@ -184,7 +184,7 @@ void  MainWindow::showEvent(QShowEvent *event)
 {
     if (event->spontaneous()) return;
 
-    trace(3,"FormCreate\n");
+    rtk_trace(3,"FormCreate\n");
 
     UpdatePlot();
 
@@ -278,7 +278,7 @@ void  MainWindow::showEvent(QShowEvent *event)
 // callback on form close ---------------------------------------------------
 void  MainWindow::closeEvent(QCloseEvent *event )
 {
-    trace(3,"FormClose\n");
+    rtk_trace(3,"FormClose\n");
 
     if (event->spontaneous()) return;
 
@@ -326,21 +326,21 @@ void MainWindow::UpdateEnable(void)
 // callback on button-exit --------------------------------------------------
 void  MainWindow::BtnExitClick()
 {
-    trace(3,"BtnExitClick\n");
+    rtk_trace(3,"BtnExitClick\n");
     
     close();
 }
 // callback on button-start -------------------------------------------------
 void  MainWindow::BtnStartClick()
 {
-    trace(3,"BtnStartClick\n");
+    rtk_trace(3,"BtnStartClick\n");
     
     SvrStart();
 }
 // callback on button-stop --------------------------------------------------
 void  MainWindow::BtnStopClick()
 {
-    trace(3,"BtnStopClick\n");
+    rtk_trace(3,"BtnStopClick\n");
     
     SvrStop();
 }
@@ -349,7 +349,7 @@ void  MainWindow::BtnPlotClick()
 {
     QString cmd;
     
-    trace(3,"BtnPlotClick\n");
+    rtk_trace(3,"BtnPlotClick\n");
     
     if (OpenPort<=0) {
         QMessageBox::critical(this,tr("Error"),tr("monitor port not open"));
@@ -366,7 +366,7 @@ void  MainWindow::BtnOptClick()
 {
     int i,chgmoni=0;
     
-    trace(3,"BtnOptClick\n");
+    rtk_trace(3,"BtnOptClick\n");
     
     optDialog->PrcOpt     =PrcOpt;
     optDialog->SolOpt     =SolOpt;
@@ -497,7 +497,7 @@ void  MainWindow::BtnInputStrClick()
 {
     int i,j;
     
-    trace(3,"BtnInputStrClick\n");
+    rtk_trace(3,"BtnInputStrClick\n");
 
     for (i=0;i<3;i++) {
         inputStrDialog->StreamC[i]=StreamC[i];
@@ -560,7 +560,7 @@ int  MainWindow::ConfOverwrite(const QString &path)
     int i;
     QString buff1, buff2;
     
-    trace(3,"ConfOverwrite\n");
+    rtk_trace(3,"ConfOverwrite\n");
     
     buff1=path.mid(path.indexOf("::"));
         
@@ -588,7 +588,7 @@ void  MainWindow::BtnOutputStrClick()
     int i,j,str,update[2]={0};
     char path[1024];
     
-    trace(3,"BtnOutputStrClick\n");
+    rtk_trace(3,"BtnOutputStrClick\n");
     
     for (i=3;i<5;i++) {
         outputStrDialog->StreamC[i-3]=StreamC[i];
@@ -657,7 +657,7 @@ void  MainWindow::BtnLogStrClick()
     int i,j,str,update[3]={0};
     char path[1024];
     
-    trace(3,"BtnLogStrClick\n");
+    rtk_trace(3,"BtnLogStrClick\n");
     
     for (i=5;i<8;i++) {
         logStrDialog->StreamC[i-5]=StreamC[i];
@@ -719,7 +719,7 @@ void  MainWindow::BtnLogStrClick()
 // callback on button-solution-show -----------------------------------------
 void  MainWindow::BtnPanelClick()
 {
-    trace(3,"BtnPanelClick\n");
+    rtk_trace(3,"BtnPanelClick\n");
     
     if (++PanelMode>3) PanelMode=0;
     UpdatePanel();
@@ -727,7 +727,7 @@ void  MainWindow::BtnPanelClick()
 // callback on button-plot-type-1 -------------------------------------------
 void  MainWindow::BtnTimeSysClick()
 {
-    trace(3,"BtnTimeSysClick\n");
+    rtk_trace(3,"BtnTimeSysClick\n");
     
     if (++TimeSys>3) TimeSys=0;
     UpdateTimeSys();
@@ -735,7 +735,7 @@ void  MainWindow::BtnTimeSysClick()
 // callback on button-solution-type -----------------------------------------
 void  MainWindow::BtnSolTypeClick()
 {
-    trace(3,"BtnSolTypeClick\n");
+    rtk_trace(3,"BtnSolTypeClick\n");
     
     if (++SolType>4) SolType=0;
     UpdateSolType();
@@ -743,7 +743,7 @@ void  MainWindow::BtnSolTypeClick()
 // callback on button-plottype-1 --------------------------------------------
 void  MainWindow::BtnPlotType1Click()
 {
-    trace(3,"BtnPlotType1Click\n");
+    rtk_trace(3,"BtnPlotType1Click\n");
     
     if (++PlotType1>6) PlotType1=0;
     UpdatePlot();
@@ -753,7 +753,7 @@ void  MainWindow::BtnPlotType1Click()
 // callback on button-plottype-2 --------------------------------------------
 void  MainWindow::BtnPlotType2Click()
 {
-    trace(3,"BtnPlotType2Click\n");
+    rtk_trace(3,"BtnPlotType2Click\n");
     
     if (++PlotType2>6) PlotType2=0;
 
@@ -764,7 +764,7 @@ void  MainWindow::BtnPlotType2Click()
 // callback on button frequency-type-1 --------------------------------------
 void  MainWindow::BtnFreqType1Click()
 {
-    trace(3,"BtnFreqType1Click\n");
+    rtk_trace(3,"BtnFreqType1Click\n");
     
     if (PlotType1==6) {
         if (++TrkType1>1) TrkType1=0;
@@ -782,7 +782,7 @@ void  MainWindow::BtnFreqType1Click()
 // callback on button frequency-type-2 --------------------------------------
 void  MainWindow::BtnFreqType2Click()
 {
-    trace(3,"BtnFreqType2Click\n");
+    rtk_trace(3,"BtnFreqType2Click\n");
     
     if (PlotType2==6) {
         if (++TrkType2>1) TrkType2=0;
@@ -829,7 +829,7 @@ void MainWindow::BtnShrink2Click()
 void  MainWindow::BtnMonitorClick()
 {
     
-    trace(3,"BtnMonitorClick\n");
+    rtk_trace(3,"BtnMonitorClick\n");
     
     monitor->setWindowTitle(windowTitle()+": RTK Monitor");
     monitor->show();
@@ -837,7 +837,7 @@ void  MainWindow::BtnMonitorClick()
 // callback on scroll-solution change ---------------------------------------
 void  MainWindow::ScbSolChange()
 {
-    trace(3,"ScbSolChange\n");
+    rtk_trace(3,"ScbSolChange\n");
     
     PSol=PSolS+ScbSol->value();
     if (PSol>=SolBuffSize) PSol-=SolBuffSize;
@@ -849,7 +849,7 @@ void  MainWindow::ScbSolChange()
 // callback on button-save --------------------------------------------------
 void  MainWindow::BtnSaveClick()
 {
-    trace(3,"BtnSaveClick\n");
+    rtk_trace(3,"BtnSaveClick\n");
     
     SaveLog();
 }
@@ -858,7 +858,7 @@ void  MainWindow::BtnAboutClick()
 {
     QString prog=PRGNAME;
     
-    trace(3,"BtnAboutClick\n");
+    rtk_trace(3,"BtnAboutClick\n");
 
     aboutDialog=new AboutDialog(this);
     aboutDialog->About=prog;
@@ -870,7 +870,7 @@ void  MainWindow::BtnAboutClick()
 // callback on button-tasktray ----------------------------------------------
 void  MainWindow::BtnTaskTrayClick()
 {
-    trace(3,"BtnTaskTrayClick\n");
+    rtk_trace(3,"BtnTaskTrayClick\n");
     
     setVisible(false);
     systemTray->setToolTip(windowTitle());
@@ -879,7 +879,7 @@ void  MainWindow::BtnTaskTrayClick()
 // callback on button-tasktray ----------------------------------------------
 void  MainWindow::TrayIconClick(QSystemTrayIcon::ActivationReason reason)
 {
-    trace(3,"TaskIconDblClick\n");
+    rtk_trace(3,"TaskIconDblClick\n");
     if (reason!=QSystemTrayIcon::DoubleClick) return;
 
     setVisible(true);
@@ -888,7 +888,7 @@ void  MainWindow::TrayIconClick(QSystemTrayIcon::ActivationReason reason)
 // callback on menu-expand --------------------------------------------------
 void  MainWindow::MenuExpandClick()
 {
-    trace(3,"MenuExpandClick\n");
+    rtk_trace(3,"MenuExpandClick\n");
     
     setVisible(true);
     systemTray->setVisible(false);
@@ -896,35 +896,35 @@ void  MainWindow::MenuExpandClick()
 // callback on menu-start ---------------------------------------------------
 void  MainWindow::MenuStartClick()
 {
-    trace(3,"MenuStartClick\n");
+    rtk_trace(3,"MenuStartClick\n");
     
     BtnStartClick();
 }
 // callback on menu-stop ----------------------------------------------------
 void  MainWindow::MenuStopClick()
 {
-    trace(3,"MenuStopClick\n");
+    rtk_trace(3,"MenuStopClick\n");
     
     BtnStopClick();
 }
 // callback on menu-monitor -------------------------------------------------
 void  MainWindow::MenuMonitorClick()
 {
-    trace(3,"MenuMonitorClick\n");
+    rtk_trace(3,"MenuMonitorClick\n");
     
     BtnMonitorClick();
 }
 // callback on menu-plot ----------------------------------------------------
 void  MainWindow::MenuPlotClick()
 {
-    trace(3,"MenuPlotClick\n");
+    rtk_trace(3,"MenuPlotClick\n");
     
     BtnPlotClick();
 }
 // callback on menu-exit ----------------------------------------------------
 void  MainWindow::MenuExitClick()
 {
-    trace(3,"MenuExitClick\n");
+    rtk_trace(3,"MenuExitClick\n");
     
     BtnExitClick();
 }
@@ -942,7 +942,7 @@ void  MainWindow::SvrStart(void)
     pcvs_t pcvr,pcvs;
     pcv_t *pcv;
     
-    trace(3,"SvrStart\n");
+    rtk_trace(3,"SvrStart\n");
     
     memset(&pcvr,0,sizeof(pcvs_t));
     memset(&pcvs,0,sizeof(pcvs_t));
@@ -1128,7 +1128,7 @@ void  MainWindow::SvrStop(void)
     char *cmds[3]={0};
     int i,n,m,str;
     
-    trace(3,"SvrStop\n");
+    rtk_trace(3,"SvrStop\n");
     
     for (i=0;i<3;i++) {
         cmds[i]=new char[1024];
@@ -1177,7 +1177,7 @@ void  MainWindow::TimerTimer()
     sol_t *sol;
     int i,update=0;
     
-    trace(4,"TimerTimer\n");
+    rtk_trace(4,"TimerTimer\n");
     
     rtksvrlock(&rtksvr);
     
@@ -1229,7 +1229,7 @@ void  MainWindow::UpdateTimeSys(void)
 {
     QString label[]={tr("GPST"),tr("UTC"),tr("LT"),tr("GPST")};
     
-    trace(3,"UpdateTimeSys\n");
+    rtk_trace(3,"UpdateTimeSys\n");
     
     BtnTimeSys->setText(label[TimeSys]);
     UpdateTime();
@@ -1241,7 +1241,7 @@ void  MainWindow::UpdateSolType(void)
         tr("Lat/Lon/Height"),tr("Lat/Lon/Height"),tr("X/Y/Z-ECEF"),tr("E/N/U-Baseline"),
         tr("Pitch/Yaw/Length-Baseline"),""
     };
-    trace(3,"UpdateSolType\n");
+    rtk_trace(3,"UpdateSolType\n");
     
     Plabel0->setText(label[SolType]);
 
@@ -1255,7 +1255,7 @@ void  MainWindow::UpdateLog(int stat, gtime_t time, double *rr,
     
     if (!stat) return;
     
-    trace(4,"UpdateLog\n");
+    rtk_trace(4,"UpdateLog\n");
     
     SolStat[PSolE]=stat; Time[PSolE]=time; Nvsat[PSolE]=ns; Age[PSolE]=age;
     Ratio[PSolE]=ratio;
@@ -1284,7 +1284,7 @@ void  MainWindow::UpdateFont(void)
     QString color=label[7]->styleSheet();
     int i;
     
-    trace(4,"UpdateFont\n");
+    rtk_trace(4,"UpdateFont\n");
     
     for (i=0;i<10;i++) label[i]->setFont(PosFont);
     QFont tmp=PosFont;
@@ -1304,7 +1304,7 @@ void  MainWindow::UpdateTime(void)
     char tstr[64];
     QString str;
     
-    trace(4,"UpdateTime\n");
+    rtk_trace(4,"UpdateTime\n");
     
     if      (TimeSys==0) time2str(time,tstr,1);
     else if (TimeSys==1) time2str(gpst2utc(time),tstr,1);
@@ -1332,7 +1332,7 @@ void  MainWindow::UpdatePos(void)
     double dms1[3]={0},dms2[3]={0},bl[3]={0},enu[3]={0},pitch=0.0,yaw=0.0,len;
     int i,stat=SolStat[PSol];
     
-    trace(4,"UpdatePos\n");
+    rtk_trace(4,"UpdatePos\n");
 
     if (rtksvr.rtk.opt.mode==PMODE_STATIC||rtksvr.rtk.opt.mode==PMODE_PPP_STATIC) {
         ext=" (S)";
@@ -1426,7 +1426,7 @@ void  MainWindow::UpdateStr(void)
     int i,sstat[MAXSTRRTK]={0};
     char msg[MAXSTRMSG]="";
     
-    trace(4,"UpdateStr\n");
+    rtk_trace(4,"UpdateStr\n");
     
     rtksvrsstat(&rtksvr,sstat,msg);
     for (i=0;i<MAXSTRRTK;i++) {
@@ -1462,7 +1462,7 @@ void  MainWindow::DrawPlot(QLabel *plot, int type, int freq)
     char name[16];
     double az[2][MAXSAT],el[2][MAXSAT],rr[3],rs[6],e[3],pos[3],azel[2];
     
-    trace(4,"DrawPlot\n");
+    rtk_trace(4,"DrawPlot\n");
     
     fstr[NFREQ+1]="SYS ";
     
@@ -1624,7 +1624,7 @@ void  MainWindow::DrawSnr(QPainter *c, int w, int h, int x0, int y0,
     int i,j,k,l,n,x1,y1,y2,y3,hh=h-15,ww,www,snr[NFREQ+1],mask[6]={0};
     char id[16],sys[]="GREJCS",*q;
     
-    trace(4,"DrawSnr: w=%d h=%d x0=%d y0=%d index=%d freq=%d\n",w,h,x0,y0,index,freq);
+    rtk_trace(4,"DrawSnr: w=%d h=%d x0=%d y0=%d index=%d freq=%d\n",w,h,x0,y0,index,freq);
     for (snr[0]=MINSNR+10;snr[0]<MAXSNR;snr[0]+=10) {
         y1=y0+hh-(snr[0]-MINSNR)*hh/(MAXSNR-MINSNR);
         c->setPen(QColor(0x0c,0x0c,0x0c));
@@ -1695,7 +1695,7 @@ void  MainWindow::DrawSat(QPainter *c, int w, int h, int x0, int y0,
     int i,k,l,d,x[MAXSAT],y[MAXSAT],ns=0,f=!freq?0:freq-1;
     char id[16],sys[]="GREJCS",*q;
     
-    trace(4,"DrawSat: w=%d h=%d index=%d freq=%d\n",w,h,index,freq);
+    rtk_trace(4,"DrawSat: w=%d h=%d index=%d freq=%d\n",w,h,index,freq);
     
     DrawSky(c,w,h,x0,y0);
     
@@ -1733,7 +1733,7 @@ void  MainWindow::DrawBL(QPainter *c,QLabel *disp, int w, int h)
     QColor col=Qt::white;
     int i,d1=10,d2=16,d3=10,cy=0,sy=0,cya=0,sya=0,a,x1,x2,y1,y2,r1,digit,mode;
     
-    trace(4,"DrawBL: w=%d h=%d\n",w,h);
+    rtk_trace(4,"DrawBL: w=%d h=%d\n",w,h);
     
     mode=disp==Disp1?BLMode1:BLMode2;
 
@@ -1825,7 +1825,7 @@ void MainWindow::DrawTrk(QPainter *c, QLabel *disp, QPixmap &buff)
     double *x,*y,xt,yt,sx,sy,ref[3],pos[3],dr[3],enu[3];
     int i,j,k,n=0,type,scl;
 
-    trace(3,"DrawTrk\n");
+    rtk_trace(3,"DrawTrk\n");
 
     type=disp==Disp1?TrkType1 :TrkType2 ;
     scl =disp==Disp1?TrkScale1:TrkScale2;
@@ -1978,7 +1978,7 @@ void  MainWindow::OpenMoniPort(int port)
     
     if (port<=0) return;
     
-    trace(3,"OpenMoniPort: port=%d\n",port);
+    rtk_trace(3,"OpenMoniPort: port=%d\n",port);
     
     for (i=0;i<=MAXPORTOFF;i++) {
         
@@ -2000,7 +2000,7 @@ void  MainWindow::InitSolBuff(void)
     double ep[]={2000,1,1,0,0,0};
     int i,j;
     
-    trace(3,"InitSolBuff\n");
+    rtk_trace(3,"InitSolBuff\n");
     
     delete [] Time;   delete [] SolStat; delete [] Nvsat;  delete [] SolRov;
     delete [] SolRef; delete [] Qr;      delete [] VelRov; delete [] Age;
@@ -2037,7 +2037,7 @@ void  MainWindow::SaveLog(void)
     QString fileTemplate;
     int i;
     
-    trace(3,"SaveLog\n");
+    rtk_trace(3,"SaveLog\n");
     
     time2epoch(timeget(),ep);
     fileTemplate=QString("rtk_%1%2%3%4%5%6.txt")
@@ -2091,7 +2091,7 @@ void  MainWindow::LoadNav(nav_t *nav)
     char buff[2049],*p;
     int i;
     
-    trace(3,"LoadNav\n");
+    rtk_trace(3,"LoadNav\n");
     
     memset(&eph0,0,sizeof(eph_t));
 
@@ -2155,7 +2155,7 @@ void  MainWindow::SaveNav(nav_t *nav)
     char id[32];
     int i;
     
-    trace(3,"SaveNav\n");
+    rtk_trace(3,"SaveNav\n");
     
     for (i=0;i<MAXSAT;i++) {
         if (nav->eph[i].ttr.time==0) continue;
@@ -2218,7 +2218,7 @@ void  MainWindow::LoadOpt(void)
     QString s;
     int i,j,no,strno[]={0,1,6,2,3,4,5,7};
     
-    trace(3,"LoadOpt\n");
+    rtk_trace(3,"LoadOpt\n");
 
     for (i=0;i<8;i++) {
         no=strno[i];
@@ -2418,7 +2418,7 @@ void  MainWindow::SaveOpt(void)
     QSettings settings(IniFile,QSettings::IniFormat);
     int i,j,no,strno[]={0,1,6,2,3,4,5,7};
     
-    trace(3,"SaveOpt\n");
+    rtk_trace(3,"SaveOpt\n");
     
     for (i=0;i<8;i++) {
         no=strno[i];

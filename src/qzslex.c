@@ -49,7 +49,7 @@ static int decode_lextof(const unsigned char *buff, int i, gtime_t *tof,
     int tow,week;
     char s1[64],s2[64];
     
-    trace(3,"decode_lextof:\n");
+    rtk_trace(3,"decode_lextof:\n");
     
     tow =getbitu(buff,i,20);      i+=20;
     week=getbitu(buff,i,13);      i+=13;
@@ -57,7 +57,7 @@ static int decode_lextof(const unsigned char *buff, int i, gtime_t *tof,
     *tof=gpst2time(week,tow);
     *toe=gpst2time(week,toes);
     
-    trace(3,"decode_lextof: tow=%d week=%d toe=%d\n",tow,week,toes);
+    rtk_trace(3,"decode_lextof: tow=%d week=%d toe=%d\n",tow,week,toes);
     
     tt=timediff(*toe,*tof);
     if      (tt<-302400.0) *toe=timeadd(*toe, 604800.0);
@@ -65,7 +65,7 @@ static int decode_lextof(const unsigned char *buff, int i, gtime_t *tof,
     
     time2str(*tof,s1,3);
     time2str(*toe,s2,3);
-    trace(4,"decode_lextof: tof=%s toe=%s\n",s1,s2);
+    rtk_trace(4,"decode_lextof: tof=%s toe=%s\n",s1,s2);
     return i;
 }
 /* decode signal health field (ref [1] 5.7.2.2.1.1) --------------------------*/
@@ -75,7 +75,7 @@ static int decode_lexhealth(const unsigned char *buff, int i, gtime_t tof,
     int j,sat;
     unsigned char health;
     
-    trace(3,"decode_lexhealth: tof=%s\n",time_str(tof,0));
+    rtk_trace(3,"decode_lexhealth: tof=%s\n",time_str(tof,0));
     
     for (j=0;j<35;j++) {
         health=getbitu(buff,i,5); i+= 5;
@@ -87,7 +87,7 @@ static int decode_lexhealth(const unsigned char *buff, int i, gtime_t tof,
         nav->lexeph[sat-1].tof=tof;
         nav->lexeph[sat-1].health=health;
         
-        trace(4,"sat=%2d health=%d\n",sat,health);
+        rtk_trace(4,"sat=%2d health=%d\n",sat,health);
     }
     return i;
 }
@@ -100,7 +100,7 @@ static int decode_lexeph(const unsigned char *buff, int i, gtime_t toe,
     unsigned char health;
     int j,prn,sat;
     
-    trace(3,"decode_lexeph: toe=%s\n",time_str(toe,0));
+    rtk_trace(3,"decode_lexeph: toe=%s\n",time_str(toe,0));
     
     prn        =getbitu(buff,i, 8);       i+= 8;
     eph.ura    =getbitu(buff,i, 4);       i+= 4;
@@ -127,7 +127,7 @@ static int decode_lexeph(const unsigned char *buff, int i, gtime_t toe,
     if      (  1<=prn&&prn<= 32) sat=satno(SYS_GPS,prn);
     else if (193<=prn&&prn<=195) sat=satno(SYS_QZS,prn);
     else {
-        trace(2,"lex ephemeris prn error prn=%d\n",prn);
+        rtk_trace(2,"lex ephemeris prn error prn=%d\n",prn);
         return i;
     }
     eph.toe=toe;
@@ -138,12 +138,12 @@ static int decode_lexeph(const unsigned char *buff, int i, gtime_t toe,
     nav->lexeph[sat-1].tof   =tof;
     nav->lexeph[sat-1].health=health;
     
-    trace(4,"sat=%2d toe=%s pos=%.3f %.3f %.3f vel=%.5f %.5f %.5f\n",
+    rtk_trace(4,"sat=%2d toe=%s pos=%.3f %.3f %.3f vel=%.5f %.5f %.5f\n",
           sat,time_str(toe,0),eph.pos[0],eph.pos[1],eph.pos[2],
           eph.vel[0],eph.vel[1],eph.vel[2]);
-    trace(4,"clk=%11.3f %8.5f tgd=%7.3f\n",eph.af0*1E9,eph.af1*1E9,
+    rtk_trace(4,"clk=%11.3f %8.5f tgd=%7.3f\n",eph.af0*1E9,eph.af1*1E9,
           eph.tgd*1E9);
-    trace(4,"isc=%6.3f %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f\n",
+    rtk_trace(4,"isc=%6.3f %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f\n",
           eph.isc[0]*1E9,eph.isc[1]*1E9,eph.isc[2]*1E9,eph.isc[3]*1E9,
           eph.isc[4]*1E9,eph.isc[5]*1E9,eph.isc[6]*1E9);
     return i;
@@ -155,7 +155,7 @@ static int decode_lexion(const unsigned char *buff, int i, gtime_t tof,
     lexion_t ion={{0}};
     int tow,week;
     
-    trace(3,"decode_lexion: tof=%s\n",time_str(tof,0));
+    rtk_trace(3,"decode_lexion: tof=%s\n",time_str(tof,0));
     
     tow=getbitu(buff,i,20); i+=20;
     
@@ -175,7 +175,7 @@ static int decode_lexion(const unsigned char *buff, int i, gtime_t tof,
     ion.coef[2][1]=getbits(buff,i,22)*1E-1; i+=22;
     nav->lexion=ion;
     
-    trace(4,"t0=%s tspan=%.0f pos0=%.1f %.1f coef=%.3f %.3f %.3f %.3f %.3f %.3f\n",
+    rtk_trace(4,"t0=%s tspan=%.0f pos0=%.1f %.1f coef=%.3f %.3f %.3f %.3f %.3f %.3f\n",
           time_str(ion.t0,0),ion.tspan,ion.pos0[0]*R2D,ion.pos0[1]*R2D,
           ion.coef[0][0],ion.coef[1][0],ion.coef[2][0],ion.coef[0][1],
           ion.coef[1][1],ion.coef[2][1]);
@@ -187,7 +187,7 @@ static int decode_lextype10(const lexmsg_t *msg, nav_t *nav, gtime_t *tof)
     gtime_t toe;
     int i=0,j;
     
-    trace(3,"decode_lextype10:\n");
+    rtk_trace(3,"decode_lextype10:\n");
     
     /* decode tof and toe field */
     i=decode_lextof(msg->msg,i,tof,&toe);
@@ -207,7 +207,7 @@ static int decode_lextype11(const lexmsg_t *msg, nav_t *nav, gtime_t *tof)
     gtime_t toe;
     int i=0,j;
     
-    trace(3,"decode_lextype11:\n");
+    rtk_trace(3,"decode_lextype11:\n");
     
     /* decode tof and toe field */
     i=decode_lextof(msg->msg,i,tof,&toe);
@@ -267,13 +267,13 @@ static int lex2rtcm(const unsigned char *msg, int i, unsigned char *buff)
         case 1250: ns=getbitu(msg,i+61,4); n=65+ns* 10; break;
         case 1251: ns=getbitu(msg,i+61,4); n=65+ns* 26; break;
         default:
-            if (type) trace(2,"lex 12: unsupported type=%4d\n",type);
+            if (type) rtk_trace(2,"lex 12: unsupported type=%4d\n",type);
             return 0;
     }
     n=(n+7)/8; /* message length (bytes) */
     
     if (i+n*8>LEXFRMLEN-LEXRSLEN) {
-        trace(2,"lex 12: invalid ssr size: len=%4d\n",n);
+        rtk_trace(2,"lex 12: invalid ssr size: len=%4d\n",n);
         return 0;
     }
     /* save rtcm message to buffer */
@@ -296,7 +296,7 @@ static int decode_lextype12(const lexmsg_t *msg, nav_t *nav, gtime_t *tof)
     unsigned char buff[1200];
     int i=0,j,k,l,n,week;
     
-    trace(3,"decode_lextype12:\n");
+    rtk_trace(3,"decode_lextype12:\n");
     
     tow =getbitu(msg->msg,i,20); i+=20;
     week=getbitu(msg->msg,i,13); i+=13;
@@ -374,7 +374,7 @@ static int decode_lextype12(const lexmsg_t *msg, nav_t *nav, gtime_t *tof)
 /* decode type 20: gsi experiment message (ref [1] 5.7.2.2.2) ----------------*/
 static int decode_lextype20(const lexmsg_t *msg, nav_t *nav, gtime_t *tof)
 {
-    trace(3,"decode_lextype20:\n");
+    rtk_trace(3,"decode_lextype20:\n");
     
     return 0; /* not supported */
 }
@@ -387,7 +387,7 @@ static int decode_lextype20(const lexmsg_t *msg, nav_t *nav, gtime_t *tof)
 *-----------------------------------------------------------------------------*/
 extern int lexupdatecorr(const lexmsg_t *msg, nav_t *nav, gtime_t *tof)
 {
-    trace(3,"lexupdatecorr: type=%d\n",msg->type);
+    rtk_trace(3,"lexupdatecorr: type=%d\n",msg->type);
     
     switch (msg->type) {
         case 10: return decode_lextype10(msg,nav,tof); /* jaxa */
@@ -395,7 +395,7 @@ extern int lexupdatecorr(const lexmsg_t *msg, nav_t *nav, gtime_t *tof)
         case 12: return decode_lextype12(msg,nav,tof); /* jaxa */
         case 20: return decode_lextype20(msg,nav,tof); /* gsi */
     }
-    trace(2,"unsupported lex message: type=%2d\n",msg->type);
+    rtk_trace(2,"unsupported lex message: type=%2d\n",msg->type);
     return 0;
 }
 /* read qzss lex message log file ----------------------------------------------
@@ -414,12 +414,12 @@ extern int lexreadmsg(const char *file, int sel, lex_t *lex)
     char buff[1024],*p;
     FILE *fp;
     
-    trace(3,"readmsgs: file=%s sel=%d\n",file,sel);
+    rtk_trace(3,"readmsgs: file=%s sel=%d\n",file,sel);
     
     if (!(p=strrchr(file,'.'))||(strcmp(p,".lex")&&strcmp(p,".LEX"))) return 0;
     
     if (!(fp=fopen(file,"r"))) {
-        trace(2,"lex message log open error: %s\n",file);
+        rtk_trace(2,"lex message log open error: %s\n",file);
         return 0;
     }
     while (fgets(buff,sizeof(buff),fp)) {
@@ -427,7 +427,7 @@ extern int lexreadmsg(const char *file, int sel, lex_t *lex)
             p+=2;
         }
         else {
-            trace(2,"invalid lex log: %s\n",buff);
+            rtk_trace(2,"invalid lex log: %s\n",buff);
             continue;
         }
         if (sel!=0&&sel!=prn) continue;
@@ -435,7 +435,7 @@ extern int lexreadmsg(const char *file, int sel, lex_t *lex)
         if (lex->n>=lex->nmax) {
             lex->nmax=lex->nmax==0?1024:lex->nmax*2;
             if (!(lex_msgs=(lexmsg_t *)realloc(lex->msgs,lex->nmax*sizeof(lexmsg_t)))) {
-                trace(1,"lexreadmsg malloc error: nmax=%d\n",lex->nmax);
+                rtk_trace(1,"lexreadmsg malloc error: nmax=%d\n",lex->nmax);
                 free(lex->msgs); lex->msgs=NULL; lex->n=lex->nmax=0;
                 return 0;
             }
@@ -465,7 +465,7 @@ extern void lexoutmsg(FILE *fp, const lexmsg_t *msg)
 {
     int i;
     
-    trace(4,"lexoutmsg:\n");
+    rtk_trace(4,"lexoutmsg:\n");
     
     fprintf(fp,"%3d %2d %1d : ",msg->prn,msg->type,msg->alert);
     for (i=0;i<212;i++) fprintf(fp,"%02X",msg->msg[i]);
@@ -490,14 +490,14 @@ extern int lexconvbin(int type, int format, const char *infile,
     int i,j,n=0;
     size_t len=(format?LEXHEADLEN:0)+LEXFRMLEN/8;
     
-    trace(3,"lexconvbin:type=%d infile=%s outfile=%s\n",type,infile,outfile);
+    rtk_trace(3,"lexconvbin:type=%d infile=%s outfile=%s\n",type,infile,outfile);
     
     if (!(ifp=fopen(infile,"rb"))) {
-        trace(1,"lexconvbin infile open error: %s\n",infile);
+        rtk_trace(1,"lexconvbin infile open error: %s\n",infile);
         return 0;
     }
     if (!(ofp=fopen(outfile,"w"))) {
-        trace(1,"lexconvbin outfile open error: %s\n",outfile);
+        rtk_trace(1,"lexconvbin outfile open error: %s\n",outfile);
         fclose(ifp);
         return 0;
     }
@@ -508,7 +508,7 @@ extern int lexconvbin(int type, int format, const char *infile,
         msg.type =getbitu(buff,i, 8); i+= 8;
         msg.alert=getbitu(buff,i, 1); i+= 1;
         if (preamb!=LEXFRMPREAMB) {
-            trace(1,"lex frame preamble error: preamb=%08X\n",preamb);
+            rtk_trace(1,"lex frame preamble error: preamb=%08X\n",preamb);
             continue;
         }
         for (j=0;j<212;j++) {
@@ -551,24 +551,24 @@ extern int lexeph2pos(gtime_t time, int sat, const nav_t *nav, double *rs,
     double t,t2,t3;
     int i;
     
-    trace(3,"lexsatpos: time=%s sat=%2d\n",time_str(time,3),sat);
+    rtk_trace(3,"lexsatpos: time=%s sat=%2d\n",time_str(time,3),sat);
     
     if (!sat) return 0;
     
     eph=nav->lexeph+sat-1;
     
     if (eph->sat!=sat||eph->toe.time==0) {
-         trace(2,"no lex ephemeris: time=%s sat=%2d\n",time_str(time,0),sat);
+         rtk_trace(2,"no lex ephemeris: time=%s sat=%2d\n",time_str(time,0),sat);
          return 0;
     }
     if (fabs(t=timediff(time,eph->toe))>LEXEPHMAXAGE) {
-         trace(2,"lex ephemeris age error: time=%s sat=%2d t=%.3f\n",
+         rtk_trace(2,"lex ephemeris age error: time=%s sat=%2d t=%.3f\n",
                time_str(time,0),sat,t);
          return 0;
     }
 #if 0
     if (eph->health&0x18) {
-         trace(2,"lex ephemeris unhealthy: sat=%2d health=0x%02X\n",sat,eph->health);
+         rtk_trace(2,"lex ephemeris unhealthy: sat=%2d health=0x%02X\n",sat,eph->health);
          return 0;
     }
 #endif
@@ -611,7 +611,7 @@ extern int lexioncorr(gtime_t time, const nav_t *nav, const double *pos,
     double dlat,dlon,Enm,F;
     int n,m;
     
-    trace(4,"lexioncorr: time=%s pos=%.3f %.3f azel=%.3f %.3f\n",time_str(time,3),
+    rtk_trace(4,"lexioncorr: time=%s pos=%.3f %.3f azel=%.3f %.3f\n",time_str(time,3),
           pos[0]*R2D,pos[1]*R2D,azel[0]*R2D,azel[1]*R2D);
     
     *delay=*var=0.0;
@@ -622,7 +622,7 @@ extern int lexioncorr(gtime_t time, const nav_t *nav, const double *pos,
     
     /* check time span */
     if (fabs(tt)>nav->lexion.tspan) {
-        trace(2,"lex iono age error: tt=%.0f tspan=%.0f\n",tt,nav->lexion.tspan);
+        rtk_trace(2,"lex iono age error: tt=%.0f tspan=%.0f\n",tt,nav->lexion.tspan);
         return 0;
     }
     /* check user position range (ref [1] 4.1.5) */
@@ -631,7 +631,7 @@ extern int lexioncorr(gtime_t time, const nav_t *nav, const double *pos,
         pos[1]>146.0*D2R||
         pos[1]<129.0*D2R+dl1*(pos[0]-34.7*D2R)||
         pos[1]<126.7*D2R+dl2*(pos[0]-26.0*D2R)) {
-        trace(2,"lex iono out of coverage pos=%.3f %.3f\n",pos[0]*R2D,pos[1]*R2D);
+        rtk_trace(2,"lex iono out of coverage pos=%.3f %.3f\n",pos[0]*R2D,pos[1]*R2D);
         return 0;
     }
 #endif
@@ -648,7 +648,7 @@ extern int lexioncorr(gtime_t time, const nav_t *nav, const double *pos,
     latpp=asin(sinlat*cosap+coslat*sinap*cosaz);
     lonpp=pos[1]+atan(sinap*sinaz/(cosap*coslat-sinap*cosaz*sinlat));
     
-    trace(4,"lexioncorr: pppos=%.3f %.3f\n",latpp*R2D,lonpp*R2D);
+    rtk_trace(4,"lexioncorr: pppos=%.3f %.3f\n",latpp*R2D,lonpp*R2D);
     
     /* inclination factor */
     F=1.0/sqrt(1.0-rp*rp);
@@ -656,7 +656,7 @@ extern int lexioncorr(gtime_t time, const nav_t *nav, const double *pos,
     /* delta latitude/longitude (rad) */
     dlat=latpp-nav->lexion.pos0[0];
     dlon=lonpp-nav->lexion.pos0[1];
-    trace(4,"lexioncorr: pos0=%.1f %.1f dlat=%.1f dlon=%.1f\n",
+    rtk_trace(4,"lexioncorr: pos0=%.1f %.1f dlat=%.1f dlon=%.1f\n",
           nav->lexion.pos0[0]*R2D,nav->lexion.pos0[1]*R2D,dlat*R2D,dlon*R2D);
     
     /* slant ionosphere delay (L1) */
@@ -664,10 +664,10 @@ extern int lexioncorr(gtime_t time, const nav_t *nav, const double *pos,
         Enm=nav->lexion.coef[n][m];
         *delay+=F*Enm*pow(dlat,n)*pow(dlon,m);
         
-        trace(5,"lexioncorr: F=%8.3f Enm[%d][%d]=%8.3f delay=%8.3f\n",F,n,m,Enm,
+        rtk_trace(5,"lexioncorr: F=%8.3f Enm[%d][%d]=%8.3f delay=%8.3f\n",F,n,m,Enm,
               F*Enm*pow(dlat,n)*pow(dlon,m));
     }
-    trace(4,"lexioncorr: time=%s delay=%.3f\n",time_str(time,0),*delay);
+    rtk_trace(4,"lexioncorr: time=%s delay=%.3f\n",time_str(time,0),*delay);
     
     return 1;
 }

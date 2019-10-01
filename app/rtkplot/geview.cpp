@@ -438,7 +438,7 @@ void __fastcall TGoogleEarthView::ExecFunc(AnsiString func)
     hr=win->execScript(func_w,L"javascript",&var);
     VariantClear(&var);
 #if 1 // for debug
-    trace(2,"GE: %s\n",func.c_str());
+    rtk_trace(2,"GE: %s\n",func.c_str());
 #endif
 }
 //---------------------------------------------------------------------------

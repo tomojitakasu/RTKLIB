@@ -12,7 +12,7 @@ void __fastcall TPlot::UpdateInfo(void)
     int showobs=(PLOT_OBS<=PlotType&&PlotType<=PLOT_DOP)||
                 PlotType==PLOT_SNR||PlotType==PLOT_SNRE||PlotType==PLOT_MPS;
     
-    trace(3,"UpdateInfo:\n");
+    rtk_trace(3,"UpdateInfo:\n");
     
     if (BtnShowTrack->Down) {
         if (showobs) UpdateTimeObs(); else UpdateTimeSol();
@@ -33,7 +33,7 @@ void __fastcall TPlot::UpdateTimeObs(void)
     int i,ns=0,no=0,ind=ObsIndex;
     char tstr[64];
     
-    trace(3,"UpdateTimeObs\n");
+    rtk_trace(3,"UpdateTimeObs\n");
     
     if (BtnSol1->Down&&0<=ind&&ind<NObs) {
         
@@ -86,7 +86,7 @@ void __fastcall TPlot::UpdateTimeSol(void)
     int sel=BtnSol1->Down||!BtnSol2->Down?0:1,ind=SolIndex[sel];
     char tstr[64];
     
-    trace(3,"UpdateTimeSol\n");
+    rtk_trace(3,"UpdateTimeSol\n");
     
     if ((BtnSol1->Down||BtnSol2->Down||BtnSol12->Down)&&
         (data=getsol(SolData+sel,ind))) {
@@ -138,7 +138,7 @@ void __fastcall TPlot::UpdateInfoObs(void)
     int i,n=0,ne=0;
     char s1[64],s2[64];
     
-    trace(3,"UpdateInfoObs:\n");
+    rtk_trace(3,"UpdateInfoObs:\n");
     
     if (BtnSol1->Down) {
         for (i=0;i<Obs.n;i++) {
@@ -182,7 +182,7 @@ void __fastcall TPlot::UpdateInfoSol(void)
     int i,j,n=0,nq[8]={0},sel=BtnSol1->Down||!BtnSol2->Down?0:1;
     char s1[64],s2[64];
     
-    trace(3,"UpdateInfoSol:\n");
+    rtk_trace(3,"UpdateInfoSol:\n");
     
     if (BtnSol1->Down||BtnSol2->Down) {
         pos=SolToPos(SolData+sel,-1,0,0);
@@ -242,7 +242,7 @@ void __fastcall TPlot::UpdatePlotType(void)
 {
     int i;
     
-    trace(3,"UpdatePlotType\n");
+    rtk_trace(3,"UpdatePlotType\n");
     
     PlotTypeS->Clear();
     if (SolData[0].n>0||SolData[1].n>0||
@@ -279,7 +279,7 @@ void __fastcall TPlot::UpdateSatList(void)
     int i,j,sys,sysp=0,sat,smask[MAXSAT]={0};
     char s[8];
     
-    trace(3,"UpdateSatList\n");
+    rtk_trace(3,"UpdateSatList\n");
     
     for (i=0;i<2;i++) for (j=0;j<SolStat[i].n;j++) {
         sat=SolStat[i].data[j].sat;
@@ -321,7 +321,7 @@ void __fastcall TPlot::UpdateObsType(void)
     char *codes[MAXCODE+1],freqs[]="125678";
     int i,j,n=0,cmask[MAXCODE+1]={0},fmask[6]={0};
     
-    trace(3,"UpdateObsType\n");
+    rtk_trace(3,"UpdateObsType\n");
     
     for (i=0;i<Obs.n;i++) for (j=0;j<NFREQ+NEXOBS;j++) {
         cmask[Obs.data[i].code[j]]=1;
@@ -357,7 +357,7 @@ void __fastcall TPlot::UpdatePoint(int x, int y)
     char tstr[64];
     AnsiString msg;
     
-    trace(4,"UpdatePoint: x=%d y=%d\n",x,y);
+    rtk_trace(4,"UpdatePoint: x=%d y=%d\n",x,y);
     
     if (PlotType==PLOT_TRK) { // track-plot
         

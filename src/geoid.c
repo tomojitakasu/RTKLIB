@@ -33,7 +33,7 @@ static double geoidh_emb(const double *pos)
     int i1,i2,j1,j2;
     
     if (pos[1]<range[0]||range[1]<pos[1]||pos[0]<range[2]||range[3]<pos[0]) {
-        trace(2,"out of geoid model range: lat=%.3f lon=%.3f\n",pos[0],pos[1]);
+        rtk_trace(2,"out of geoid model range: lat=%.3f lon=%.3f\n",pos[0],pos[1]);
         return 0.0;
     }
     a=(pos[1]-range[0])/dlon;
@@ -51,7 +51,7 @@ static short fget2b(FILE *fp, long off)
 {
     unsigned char v[2];
     if (fseek(fp,off,SEEK_SET)==EOF||fread(v,2,1,fp)<1) {
-        trace(2,"geoid data file range error: off=%ld\n",off);
+        rtk_trace(2,"geoid data file range error: off=%ld\n",off);
     }
     return ((short)v[0]<<8)+v[1]; /* big-endian */
 }
@@ -80,7 +80,7 @@ static float fget4f(FILE *fp, long off)
 {
     float v=0.0;
     if (fseek(fp,off,SEEK_SET)==EOF||fread(&v,4,1,fp)<1) {
-        trace(2,"geoid data file range error: off=%ld\n",off);
+        rtk_trace(2,"geoid data file range error: off=%ld\n",off);
     }
     return v; /* small-endian */
 }
@@ -141,11 +141,11 @@ static double fgetgsi(FILE *fp, int nlon, int nlat, int i, int j)
     char buff[16]="";
     
     if (fseek(fp,off,SEEK_SET)==EOF||fread(buff,wf,1,fp)<1) {
-        trace(2,"out of range for gsi geoid: i=%d j=%d\n",i,j);
+        rtk_trace(2,"out of range for gsi geoid: i=%d j=%d\n",i,j);
         return 0.0;
     }
     if (sscanf(buff,"%lf",&v)<1) {
-        trace(2,"gsi geoid data format error: i=%d j=%d buff=%s\n",i,j,buff);
+        rtk_trace(2,"gsi geoid data format error: i=%d j=%d buff=%s\n",i,j,buff);
         return 0.0;
     }
     return v;
@@ -160,7 +160,7 @@ static double geoidh_gsi(const double *pos)
     int i1,i2,j1,j2;
     
     if (!fp_geoid||pos[1]<lon0||lon1<pos[1]||pos[0]<lat0||lat1<pos[0]) {
-        trace(2,"out of range for gsi geoid: lat=%.3f lon=%.3f\n",pos[0],pos[1]);
+        rtk_trace(2,"out of range for gsi geoid: lat=%.3f lon=%.3f\n",pos[0],pos[1]);
         return 0.0;
     }
     a=(pos[1]-lon0)/dlon;
@@ -172,7 +172,7 @@ static double geoidh_gsi(const double *pos)
     y[2]=fgetgsi(fp_geoid,nlon,nlat,i1,j2);
     y[3]=fgetgsi(fp_geoid,nlon,nlat,i2,j2);
     if (y[0]==999.0||y[1]==999.0||y[2]==999.0||y[3]==999.0) {
-        trace(2,"geoidh_gsi: data outage (lat=%.3f lon=%.3f)\n",pos[0],pos[1]);
+        rtk_trace(2,"geoidh_gsi: data outage (lat=%.3f lon=%.3f)\n",pos[0],pos[1]);
         return 0.0;
     }
     return interpb(y,a,b);
@@ -196,7 +196,7 @@ static double geoidh_gsi(const double *pos)
 *-----------------------------------------------------------------------------*/
 extern int opengeoid(int model, const char *file)
 {
-    trace(3,"opengeoid: model=%d file=%s\n",model,file);
+    rtk_trace(3,"opengeoid: model=%d file=%s\n",model,file);
     
     closegeoid();
     if (model==GEOID_EMBEDDED) {
@@ -204,11 +204,11 @@ extern int opengeoid(int model, const char *file)
     }
     if (model!=GEOID_EGM96_M150 &&model!=GEOID_EGM2008_M25&&
         model!=GEOID_EGM2008_M10&&model!=GEOID_GSI2000_M15) {
-        trace(2,"invalid geoid model: model=%d file=%s\n",model,file);
+        rtk_trace(2,"invalid geoid model: model=%d file=%s\n",model,file);
         return 0;
     }
     if (!(fp_geoid=fopen(file,"rb"))) {
-        trace(2,"geoid model file open error: model=%d file=%s\n",model,file);
+        rtk_trace(2,"geoid model file open error: model=%d file=%s\n",model,file);
         return 0;
     }
     model_geoid=model;
@@ -221,7 +221,7 @@ extern int opengeoid(int model, const char *file)
 *-----------------------------------------------------------------------------*/
 extern void closegeoid(void)
 {
-    trace(3,"closegoid:\n");
+    rtk_trace(3,"closegoid:\n");
     
     if (fp_geoid) fclose(fp_geoid);
     fp_geoid=NULL;
@@ -242,7 +242,7 @@ extern double geoidh(const double *pos)
     posd[1]=pos[1]*R2D; posd[0]=pos[0]*R2D; if (posd[1]<0.0) posd[1]+=360.0;
     
     if (posd[1]<0.0||360.0-1E-12<posd[1]||posd[0]<-90.0||90.0<posd[0]) {
-        trace(2,"out of range for geoid model: lat=%.3f lon=%.3f\n",posd[0],posd[1]);
+        rtk_trace(2,"out of range for geoid model: lat=%.3f lon=%.3f\n",posd[0],posd[1]);
         return 0.0;
     }
     switch (model_geoid) {
@@ -254,7 +254,7 @@ extern double geoidh(const double *pos)
         default: return 0.0;
     }
     if (fabs(h)>200.0) {
-        trace(2,"invalid geoid model: lat=%.3f lon=%.3f h=%.3f\n",posd[0],posd[1],h);
+        rtk_trace(2,"invalid geoid model: lat=%.3f lon=%.3f h=%.3f\n",posd[0],posd[1],h);
         return 0.0;
     }
     return h;

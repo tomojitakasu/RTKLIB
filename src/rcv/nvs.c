@@ -72,7 +72,7 @@ static int decode_xf5raw(raw_t *raw)
     unsigned char *p=raw->buff+2;
     char *q,tstr[32],flag;
     
-    trace(4,"decode_xf5raw: len=%d\n",raw->len);
+    rtk_trace(4,"decode_xf5raw: len=%d\n",raw->len);
     
     /* time tag adjustment option (-TADJ) */
     if ((q=strstr(raw->opt,"-tadj"))) {
@@ -86,7 +86,7 @@ static int decode_xf5raw(raw_t *raw)
     
     /* check gps week range */
     if (week>=4096) {
-        trace(2,"nvs xf5raw obs week error: week=%d\n",week);
+        rtk_trace(2,"nvs xf5raw obs week error: week=%d\n",week);
         return -1;
     }
     week=adjgpsweek(week);
@@ -94,7 +94,7 @@ static int decode_xf5raw(raw_t *raw)
     if ((raw->len - 31)%30) {
         
         /* Message length is not correct: there could be an error in the stream */
-        trace(2,"nvs xf5raw len=%d seems not be correct\n",raw->len);
+        rtk_trace(2,"nvs xf5raw len=%d seems not be correct\n",raw->len);
         return -1;
     }
     nsat = (raw->len - 31)/30;
@@ -115,11 +115,11 @@ static int decode_xf5raw(raw_t *raw)
     /* check time tag jump and output warning */
     if (raw->time.time&&fabs(timediff(time,raw->time))>86400.0) {
         time2str(time,tstr,3);
-        trace(2,"nvs xf5raw time tag jump warning: time=%s\n",tstr);
+        rtk_trace(2,"nvs xf5raw time tag jump warning: time=%s\n",tstr);
     }
     if (fabs(timediff(time,raw->time))<=1e-3) {
         time2str(time,tstr,3);
-        trace(2,"nvs xf5raw time tag duplicated: time=%s\n",tstr);
+        rtk_trace(2,"nvs xf5raw time tag duplicated: time=%s\n",tstr);
         return 0;
     }
     for (i=0,p+=27;(i<nsat) && (n<MAXOBS); i++,p+=30) {
@@ -128,7 +128,7 @@ static int decode_xf5raw(raw_t *raw)
         prn = U1(p+1);
         if (sys == SYS_SBS) prn += 120; /* Correct this */
         if (!(sat=satno(sys,prn))) {
-            trace(2,"nvs xf5raw satellite number error: sys=%d prn=%d\n",sys,prn);
+            rtk_trace(2,"nvs xf5raw satellite number error: sys=%d prn=%d\n",sys,prn);
             continue;
         }
         carrNo = I1(p+2);
@@ -138,7 +138,7 @@ static int decode_xf5raw(raw_t *raw)
         
         /* check range error */
         if (L1<-1E10||L1>1E10||P1<-1E10||P1>1E10||D1<-1E5||D1>1E5) {
-            trace(2,"nvs xf5raw obs range error: sat=%2d L1=%12.5e P1=%12.5e D1=%12.5e\n",
+            rtk_trace(2,"nvs xf5raw obs range error: sat=%2d L1=%12.5e P1=%12.5e D1=%12.5e\n",
                   sat,L1,P1,D1);
             continue;
         }
@@ -159,7 +159,7 @@ static int decode_xf5raw(raw_t *raw)
 #if 0
         if (raw->obs.data[n].SNR[0] > 160) {
             time2str(time,tstr,3);
-            trace(2,"%s, obs.data[%d]: SNR=%.3f  LLI=0x%02x\n",  tstr,
+            rtk_trace(2,"%s, obs.data[%d]: SNR=%.3f  LLI=0x%02x\n",  tstr,
                 n, (raw->obs.data[n].SNR[0])/4.0, U1(p+28) );
         }
 #endif
@@ -186,7 +186,7 @@ static int decode_gpsephem(int sat, raw_t *raw)
     unsigned short week;
     double toc;
     
-    trace(4,"decode_ephem: sat=%2d\n",sat);
+    rtk_trace(4,"decode_ephem: sat=%2d\n",sat);
     
     eph.crs    = R4(&puiTmp[  2]);
     eph.deln   = R4(&puiTmp[  6]) * 1e+3;
@@ -218,7 +218,7 @@ static int decode_gpsephem(int sat, raw_t *raw)
     eph.fit    = 0;
     
     if (week>=4096) {
-        trace(2,"nvs gps ephemeris week error: sat=%2d week=%d\n",sat,week);
+        rtk_trace(2,"nvs gps ephemeris week error: sat=%2d week=%d\n",sat,week);
         return -1;
     }
     eph.week=adjgpsweek(week);
@@ -271,11 +271,11 @@ static int decode_gloephem(int sat, raw_t *raw)
         geph.age   =I2(p+91);
     }
     else {
-        trace(2,"nvs NE length error: len=%d\n",raw->len);
+        rtk_trace(2,"nvs NE length error: len=%d\n",raw->len);
         return -1;
     }
     if (!(geph.sat=satno(SYS_GLO,prn))) {
-        trace(2,"nvs NE satellite error: prn=%d\n",prn);
+        rtk_trace(2,"nvs NE satellite error: prn=%d\n",prn);
         return -1;
     }
     if (raw->time.time==0) return 0;
@@ -287,7 +287,7 @@ static int decode_gloephem(int sat, raw_t *raw)
     /* check illegal ephemeris by toe */
     tt=timediff(raw->time,geph.toe);
     if (fabs(tt)>3600.0) {
-        trace(3,"nvs NE illegal toe: prn=%2d tt=%6.0f\n",prn,tt);
+        rtk_trace(3,"nvs NE illegal toe: prn=%2d tt=%6.0f\n",prn,tt);
         return 0;
     }
 #endif
@@ -295,7 +295,7 @@ static int decode_gloephem(int sat, raw_t *raw)
     /* check illegal ephemeris by frequency number consistency */
     if (raw->nav.geph[prn-MINPRNGLO].toe.time&&
         geph.frq!=raw->nav.geph[prn-MINPRNGLO].frq) {
-        trace(2,"nvs NE illegal freq change: prn=%2d frq=%2d->%2d\n",prn,
+        rtk_trace(2,"nvs NE illegal freq change: prn=%2d frq=%2d->%2d\n",prn,
               raw->nav.geph[prn-MINPRNGLO].frq,geph.frq);
         return -1;
     }
@@ -315,16 +315,16 @@ static int decode_xf7eph(raw_t *raw)
     int prn,sat,sys;
     unsigned char *p=raw->buff;
     
-    trace(4,"decode_xf7eph: len=%d\n",raw->len);
+    rtk_trace(4,"decode_xf7eph: len=%d\n",raw->len);
     
     if ((raw->len)<93) {
-        trace(2,"nvs xf7eph length error: len=%d\n",raw->len);
+        rtk_trace(2,"nvs xf7eph length error: len=%d\n",raw->len);
         return -1;
     }
     sys = (U1(p+2)==1)?SYS_GPS:((U1(p+2)==2)?SYS_GLO:SYS_NONE);
     prn = U1(p+3);
     if (!(sat=satno(sys==1?SYS_GPS:SYS_GLO,prn))) {
-        trace(2,"nvs xf7eph satellite number error: prn=%d\n",prn);
+        rtk_trace(2,"nvs xf7eph satellite number error: prn=%d\n",prn);
         return -1;
     }
     if (sys==SYS_GPS) {
@@ -344,20 +344,20 @@ static int decode_xe5bit(raw_t *raw)
     unsigned char uiDataBlocks, uiDataType;
     unsigned char *p=raw->buff;
     
-    trace(4,"decode_xe5bit: len=%d\n",raw->len);
+    rtk_trace(4,"decode_xe5bit: len=%d\n",raw->len);
     
     p += 2;         /* Discard preamble and message identifier */
     uiDataBlocks = U1(p);
     
     if (uiDataBlocks>=16) {
-        trace(2,"nvs xf5bit message error: data blocks %u\n", uiDataBlocks);
+        rtk_trace(2,"nvs xf5bit message error: data blocks %u\n", uiDataBlocks);
         return -1;
     }
     iBlkStartIdx = 1;
     for (iIdx = 0; iIdx < uiDataBlocks; iIdx++) {
         iExpLen = (iBlkStartIdx+10);
         if ((raw->len) < iExpLen) {
-            trace(2,"nvs xf5bit message too short (expected at least %d)\n", iExpLen);
+            rtk_trace(2,"nvs xf5bit message too short (expected at least %d)\n", iExpLen);
             return -1;
         }
         uiDataType = U1(p+iBlkStartIdx+1);
@@ -381,7 +381,7 @@ static int decode_xe5bit(raw_t *raw)
                 words[7] >>= 6;
                 return sbsdecodemsg(raw->time,prn,words,&raw->sbsmsg) ? 3 : 0;
             default:
-                trace(2,"nvs xf5bit SNS type unknown (got %d)\n", uiDataType);
+                rtk_trace(2,"nvs xf5bit SNS type unknown (got %d)\n", uiDataType);
                 return -1;
         }
     }
@@ -392,7 +392,7 @@ static int decode_x4aiono(raw_t *raw)
 {
     unsigned char *p=raw->buff+2;
     
-    trace(4,"decode_x4aiono: len=%d\n", raw->len);
+    rtk_trace(4,"decode_x4aiono: len=%d\n", raw->len);
     
     raw->nav.ion_gps[0] = R4(p   );
     raw->nav.ion_gps[1] = R4(p+ 4);
@@ -410,7 +410,7 @@ static int decode_x4btime(raw_t *raw)
 {
     unsigned char *p=raw->buff+2;
     
-    trace(4,"decode_x4btime: len=%d\n", raw->len);
+    rtk_trace(4,"decode_x4btime: len=%d\n", raw->len);
     
     raw->nav.utc_gps[1] = R8(p   );
     raw->nav.utc_gps[0] = R8(p+ 8);
@@ -425,7 +425,7 @@ static int decode_nvs(raw_t *raw)
 {
     int type=U1(raw->buff+1);
     
-    trace(3,"decode_nvs: type=%02x len=%d\n",type,raw->len);
+    rtk_trace(3,"decode_nvs: type=%02x len=%d\n",type,raw->len);
     
     sprintf(raw->msgtype,"NVS: type=%2d len=%3d",type,raw->len);
     
@@ -456,7 +456,7 @@ static int decode_nvs(raw_t *raw)
 *-----------------------------------------------------------------------------*/
 extern int input_nvs(raw_t *raw, unsigned char data)
 {
-    trace(5,"input_nvs: data=%02x\n",data);
+    rtk_trace(5,"input_nvs: data=%02x\n",data);
     
     /* synchronize frame */
     if ((raw->nbyte==0) && (data==NVSSYNC)) {
@@ -490,7 +490,7 @@ extern int input_nvs(raw_t *raw, unsigned char data)
         return decode_nvs(raw);
     }
     if (raw->nbyte == MAXRAWLEN) {
-        trace(2,"nvs message size error: len=%d\n",raw->nbyte);
+        rtk_trace(2,"nvs message size error: len=%d\n",raw->nbyte);
         raw->nbyte=0;
         return -1;
     }
@@ -506,7 +506,7 @@ extern int input_nvsf(raw_t *raw, FILE *fp)
 {
     int i,data, odd=0;
     
-    trace(4,"input_nvsf:\n");
+    rtk_trace(4,"input_nvsf:\n");
     
     /* synchronize frame */
     for (i=0;;i++) {
@@ -542,7 +542,7 @@ extern int input_nvsf(raw_t *raw, FILE *fp)
     }
     raw->len = raw->nbyte;
     if ((raw->len) > MAXRAWLEN) {
-        trace(2,"nvs length error: len=%d\n",raw->len);
+        rtk_trace(2,"nvs length error: len=%d\n",raw->len);
         return -1;
     }
     /* decode nvs raw message */
@@ -567,7 +567,7 @@ extern int gen_nvs(const char *msg, unsigned char *buff)
     int iRate,n,narg=0;
     unsigned char ui100Ms;
     
-    trace(4,"gen_nvs: msg=%s\n",msg);
+    rtk_trace(4,"gen_nvs: msg=%s\n",msg);
     
     strcpy(mbuff,msg);
     for (p=strtok(mbuff," ");p&&narg<32;p=strtok(NULL," ")) {

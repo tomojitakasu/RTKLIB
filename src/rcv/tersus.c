@@ -123,7 +123,7 @@ static int decode_trackstat(unsigned int stat, int *sys, int *code, int *track,
         case 4: *sys=SYS_CMP; break;
         case 5: *sys=SYS_QZS; break;
         default:
-            trace(2,"tersus unknown system: sys=%d\n",satsys);
+            rtk_trace(2,"tersus unknown system: sys=%d\n",satsys);
             return -1;
     }
     if (*sys==SYS_GPS||*sys==SYS_QZS) {
@@ -172,7 +172,7 @@ static int decode_trackstat(unsigned int stat, int *sys, int *code, int *track,
         }
     }
     if (freq<0) {
-        trace(2,"tersus signal type error: sys=%d sigtype=%d\n",*sys,sigtype);
+        rtk_trace(2,"tersus signal type error: sys=%d sigtype=%d\n",*sys,sigtype);
         return -1;
     }
     return freq;
@@ -208,7 +208,7 @@ static int decode_rangeb(raw_t *raw)
     int track,plock,clock,parity,halfc,lli,gfrq;
     unsigned char *p=raw->buff+TERSUSHLEN;
     
-    trace(3,"decode_rangeb: len=%d\n",raw->len);
+    rtk_trace(3,"decode_rangeb: len=%d\n",raw->len);
     
     nobs=U4(p);
     
@@ -217,7 +217,7 @@ static int decode_rangeb(raw_t *raw)
         sprintf(msg," nobs=%2d",nobs);
     }
     if (raw->len<TERSUSHLEN+4+nobs*44) {
-        trace(2,"tersus rangeb length error: len=%d nobs=%d\n",raw->len,nobs);
+        rtk_trace(2,"tersus rangeb length error: len=%d nobs=%d\n",raw->len,nobs);
         return -1;
     }
     for (i=0,p+=4;i<nobs;i++,p+=44) {
@@ -234,7 +234,7 @@ static int decode_rangeb(raw_t *raw)
         else if (sys==SYS_CMP) prn-=160;
         
         if (!(sat=satno(sys,prn))) {
-            trace(3,"tersus rangeb satellite number error: sys=%d,prn=%d\n",sys,prn);
+            rtk_trace(3,"tersus rangeb satellite number error: sys=%d,prn=%d\n",sys,prn);
             continue;
         }
         if (sys==SYS_GLO&&!parity) continue; /* invalid if GLO parity unknown */
@@ -290,7 +290,7 @@ static int decode_rangecmpb(raw_t *raw)
     char *msg;
     unsigned char *p=raw->buff+TERSUSHLEN;
     
-    trace(3,"decode_rangecmpb: len=%d\n",raw->len);
+    rtk_trace(3,"decode_rangecmpb: len=%d\n",raw->len);
     
     nobs=U4(p);
     
@@ -299,7 +299,7 @@ static int decode_rangecmpb(raw_t *raw)
         sprintf(msg," nobs=%2d",nobs);
     }
     if (raw->len<TERSUSHLEN+4+nobs*24) {
-        trace(2,"tersus rangecmpb length error: len=%d nobs=%d\n",raw->len,nobs);
+        rtk_trace(2,"tersus rangecmpb length error: len=%d nobs=%d\n",raw->len,nobs);
         return -1;
     }
     for (i=0,p+=4;i<nobs;i++,p+=24) {
@@ -316,7 +316,7 @@ static int decode_rangecmpb(raw_t *raw)
         else if (sys==SYS_CMP) prn-=160;
         
         if (!(sat=satno(sys,prn))) {
-            trace(3,"tersus rangecmpb satellite number error: sys=%d,prn=%d\n",sys,prn);
+            rtk_trace(3,"tersus rangecmpb satellite number error: sys=%d,prn=%d\n",sys,prn);
             continue;
         }
         if (sys==SYS_GLO&&!parity) continue; /* invalid if GLO parity unknown */
@@ -375,10 +375,10 @@ static int decode_gpsephemb(raw_t *raw)
     double tow,toc,n,ura,tt;
     int prn,week,zweek,iode2,as;
     
-    trace(3,"decode_gpsephemb: len=%d\n",raw->len);
+    rtk_trace(3,"decode_gpsephemb: len=%d\n",raw->len);
     
     if (raw->len<TERSUSHLEN+224) {
-        trace(2,"tersus gpsephemb length error: len=%d\n",raw->len);
+        rtk_trace(2,"tersus gpsephemb length error: len=%d\n",raw->len);
         return -1;
     }
     prn        =U2(p); p+=4;
@@ -388,7 +388,7 @@ static int decode_gpsephemb(raw_t *raw)
         sprintf(msg," prn=%3d",prn);
     }
     if (!(eph.sat=satno(SYS_GPS,prn))) {
-        trace(2,"tersus gpsephemb prn error: prn=%d\n",prn);
+        rtk_trace(2,"tersus gpsephemb prn error: prn=%d\n",prn);
         return -1;
     }
     tow        =R8(p); p+=8;
@@ -424,7 +424,7 @@ static int decode_gpsephemb(raw_t *raw)
     ura        =R8(p); p+=8;
     
     if (eph.iode!=iode2) {
-        trace(2,"tersus gpsephemb iode error: iode=%d %d\n",eph.iode,iode2);
+        rtk_trace(2,"tersus gpsephemb iode error: iode=%d %d\n",eph.iode,iode2);
         return -1;
     }
     eph.week=adjgpsweek(week);
@@ -455,10 +455,10 @@ static int decode_gloephemerisb(raw_t *raw)
     double tow,tof,toff;
     int prn,sat,week;
     
-    trace(3,"decode_gloephemerisb: len=%d\n",raw->len);
+    rtk_trace(3,"decode_gloephemerisb: len=%d\n",raw->len);
     
     if (raw->len<TERSUSHLEN+144) {
-        trace(2,"tersus gloephemerisb length error: len=%d\n",raw->len);
+        rtk_trace(2,"tersus gloephemerisb length error: len=%d\n",raw->len);
         return -1;
     }
     prn        =U2(p)-37;
@@ -468,7 +468,7 @@ static int decode_gloephemerisb(raw_t *raw)
         sprintf(msg," prn=%3d",prn);
     }
     if (!(sat=satno(SYS_GLO,prn))) {
-        trace(2,"tersus gloephemerisb prn error: prn=%d\n",prn);
+        rtk_trace(2,"tersus gloephemerisb prn error: prn=%d\n",prn);
         return -1;
     }
     geph.frq   =U2(p+  2)+OFF_FRQNO;
@@ -514,10 +514,10 @@ static int decode_bdsephemerisb(raw_t *raw)
     char *msg;
     int prn,toc;
     
-    trace(3,"decode_bdsephemerisb: len=%d\n",raw->len);
+    rtk_trace(3,"decode_bdsephemerisb: len=%d\n",raw->len);
     
     if (raw->len<TERSUSHLEN+196) {
-        trace(2,"tersus bdsephemrisb length error: len=%d\n",raw->len);
+        rtk_trace(2,"tersus bdsephemrisb length error: len=%d\n",raw->len);
         return -1;
     }
     prn       =U4(p)-160; p+=4;
@@ -556,7 +556,7 @@ static int decode_bdsephemerisb(raw_t *raw)
         sprintf(msg," prn=%3d iod=%3d toes=%6.0f",prn,eph.iode,eph.toes);
     }
     if (!(eph.sat=satno(SYS_CMP,prn))) {
-        trace(2,"tersus bdsephemeris satellite error: prn=%d\n",prn);
+        rtk_trace(2,"tersus bdsephemeris satellite error: prn=%d\n",prn);
         return -1;
     }
     eph.toe=bdt2gpst(bdt2time(eph.week,eph.toes)); /* bdt -> gpst */
@@ -575,7 +575,7 @@ static int decode_bdsephemerisb(raw_t *raw)
 /* decode bd2ephemb ----------------------------------------------------------*/
 static int decode_bd2ephemb(raw_t *raw)
 {
-    trace(2,"tersus bd2ephemb not supported\n");
+    rtk_trace(2,"tersus bd2ephemb not supported\n");
     return 0;
 }
 /* decode ionutcb ------------------------------------------------------------*/
@@ -584,10 +584,10 @@ static int decode_ionutcb(raw_t *raw)
     unsigned char *p=raw->buff+TERSUSHLEN;
     int i;
     
-    trace(3,"decode_ionutcb: len=%d\n",raw->len);
+    rtk_trace(3,"decode_ionutcb: len=%d\n",raw->len);
     
     if (raw->len<TERSUSHLEN+108) {
-        trace(2,"tersus ionutcb length error: len=%d\n",raw->len);
+        rtk_trace(2,"tersus ionutcb length error: len=%d\n",raw->len);
         return -1;
     }
     for (i=0;i<8;i++) raw->nav.ion_gps[i]=R8(p+i*8);
@@ -604,11 +604,11 @@ static int decode_tersus(raw_t *raw)
     double tow;
     int msg,week,type=U2(raw->buff+4);
     
-    trace(3,"decode_tersus: type=%3d len=%d\n",type,raw->len);
+    rtk_trace(3,"decode_tersus: type=%3d len=%d\n",type,raw->len);
     
     /* check crc32 */
     if (rtk_crc32(raw->buff,raw->len)!=U4(raw->buff+raw->len)) {
-        trace(2,"tersus crc error: type=%3d len=%d\n",type,raw->len);
+        rtk_trace(2,"tersus crc error: type=%3d len=%d\n",type,raw->len);
         return -1;
     }
     msg =(U1(raw->buff+6)>>4)&0x3;
@@ -655,7 +655,7 @@ static int sync_tersus(unsigned char *buff, unsigned char data)
 *-----------------------------------------------------------------------------*/
 extern int input_tersus(raw_t *raw, unsigned char data)
 {
-    trace(5,"input_tersus: data=%02x\n",data);
+    rtk_trace(5,"input_tersus: data=%02x\n",data);
     
     /* synchronize frame */
     if (raw->nbyte==0) {
@@ -665,7 +665,7 @@ extern int input_tersus(raw_t *raw, unsigned char data)
     raw->buff[raw->nbyte++]=data;
     
     if (raw->nbyte==10&&(raw->len=U2(raw->buff+8)+TERSUSHLEN)>MAXRAWLEN-4) {
-        trace(2,"tersus length error: len=%d\n",raw->len);
+        rtk_trace(2,"tersus length error: len=%d\n",raw->len);
         raw->nbyte=0;
         return -1;
     }
@@ -686,7 +686,7 @@ extern int input_tersusf(raw_t *raw, FILE *fp)
 {
     int i,data;
     
-    trace(4,"input_tersusf:\n");
+    rtk_trace(4,"input_tersusf:\n");
     
     /* synchronize frame */
     if (raw->nbyte==0) {
@@ -700,7 +700,7 @@ extern int input_tersusf(raw_t *raw, FILE *fp)
     raw->nbyte=10;
     
     if ((raw->len=U2(raw->buff+8)+TERSUSHLEN)>MAXRAWLEN-4) {
-        trace(2,"tersus length error: len=%d\n",raw->len);
+        rtk_trace(2,"tersus length error: len=%d\n",raw->len);
         raw->nbyte=0;
         return -1;
     }

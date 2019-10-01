@@ -32,7 +32,7 @@ void __fastcall TPlot::ReadSol(TStrings *files, int sel)
     int i,n=0;
     char *paths[MAXNFILE];
     
-    trace(3,"ReadSol: sel=%d\n",sel);
+    rtk_trace(3,"ReadSol: sel=%d\n",sel);
     
     for (i=0;i<MAXNFILE;i++) paths[i]=path_str[i];
     
@@ -125,7 +125,7 @@ void __fastcall TPlot::ReadSolStat(TStrings *files, int sel)
     int i,n=0;
     char *paths[MAXNFILE],id[32];
     
-    trace(3,"ReadSolStat\n");
+    rtk_trace(3,"ReadSolStat\n");
     
     freesolstatbuf(SolStat+sel);
     
@@ -153,7 +153,7 @@ void __fastcall TPlot::ReadObs(TStrings *files)
     char file[1024];
     int i,nobs;
     
-    trace(3,"ReadObs\n");
+    rtk_trace(3,"ReadObs\n");
     
     if (files->Count<=0) return;
     
@@ -209,7 +209,7 @@ int __fastcall TPlot::ReadObsRnx(TStrings *files, obs_t *obs, nav_t *nav,
     int i,n;
     char obsfile[1024],navfile[1024]="",*p,*q,*opt=RnxOpts.c_str();
     
-    trace(3,"ReadObsRnx\n");
+    rtk_trace(3,"ReadObsRnx\n");
     
     TimeSpan(&ts,&te,&tint);
     
@@ -278,7 +278,7 @@ void __fastcall TPlot::ReadNav(TStrings *files)
     char navfile[1024],*opt=RnxOpts.c_str();
     int i;
     
-    trace(3,"ReadNav\n");
+    rtk_trace(3,"ReadNav\n");
     
     if (files->Count<=0) return;
     
@@ -322,7 +322,7 @@ void __fastcall TPlot::ReadElMaskData(AnsiString file)
     int i,j;
     char buff[256];
     
-    trace(3,"ReadElMaskData\n");
+    rtk_trace(3,"ReadElMaskData\n");
     
     for (i=0;i<=360;i++) ElMaskData[i]=0.0;
     
@@ -356,7 +356,7 @@ void __fastcall TPlot::GenVisData(void)
     int i,j,nobs=0;
     char name[16];
     
-    trace(3,"GenVisData\n");
+    rtk_trace(3,"GenVisData\n");
     
     ClearObs();
     SimObs=1;
@@ -429,7 +429,7 @@ void __fastcall TPlot::ReadMapData(AnsiString file)
     AnsiString s;
     double pos[3];
     
-    trace(3,"ReadMapData\n");
+    rtk_trace(3,"ReadMapData\n");
     
     ShowMsg(s.sprintf("reading map image... %s",file.c_str()));
     
@@ -603,7 +603,7 @@ void __fastcall TPlot::ReadSkyTag(AnsiString file)
     FILE *fp;
     char buff[1024],*p;
     
-    trace(3,"ReadSkyTag\n");
+    rtk_trace(3,"ReadSkyTag\n");
     
     if (!(fp=fopen(file.c_str(),"r"))) return;
     
@@ -639,7 +639,7 @@ void __fastcall TPlot::ReadSkyData(AnsiString file)
     AnsiString s;
     int i,w,h,wr;
     
-    trace(3,"ReadSkyData\n");
+    rtk_trace(3,"ReadSkyData\n");
     
     ShowMsg(s.sprintf("reading sky image... %s",file.c_str()));
     
@@ -683,7 +683,7 @@ void __fastcall TPlot::ReadMapTag(AnsiString file)
     FILE *fp;
     char buff[1024],*p;
     
-    trace(3,"ReadMapTag\n");
+    rtk_trace(3,"ReadMapTag\n");
     
     file=file+".tag";
     
@@ -867,7 +867,7 @@ void __fastcall TPlot::SaveDop(AnsiString file)
     int i,j,ns,week;
     char tstr[64],*tlabel;
     
-    trace(3,"SaveDop: file=%s\n",file.c_str());
+    rtk_trace(3,"SaveDop: file=%s\n",file.c_str());
     
     if (!(fp=fopen(file.c_str(),"w"))) return;
     
@@ -919,7 +919,7 @@ void __fastcall TPlot::SaveSnrMp(AnsiString file)
     char sat[32],mp[32],tstr[64],*tlabel,*code=ObsTypeText.c_str()+1;
     int i,j,k,week;
     
-    trace(3,"SaveSnrMp: file=%s\n",file.c_str());
+    rtk_trace(3,"SaveSnrMp: file=%s\n",file.c_str());
     
     if (!(fp=fopen(file.c_str(),"w"))) return;
     
@@ -969,7 +969,7 @@ void __fastcall TPlot::SaveElMask(AnsiString file)
     double el,el0=0.0;
     int az;
     
-    trace(3,"SaveElMask: file=%s\n",file.c_str());
+    rtk_trace(3,"SaveElMask: file=%s\n",file.c_str());
     
     if (!(fp=fopen(file.c_str(),"w"))) return;
     
@@ -991,7 +991,7 @@ void __fastcall TPlot::Connect(void)
     char *cmd,*path,buff[MAXSTRPATH],*name[2]={"",""},*p;
     int i,mode=STR_MODE_R;
     
-    trace(3,"Connect\n");
+    rtk_trace(3,"Connect\n");
     
     if (ConnectState) return;
     
@@ -1016,7 +1016,7 @@ void __fastcall TPlot::Connect(void)
         if (!stropen(Stream+i,RtStream[i],mode,path)) {
             ShowMsg(s.sprintf("connect error: %s",name));
             ShowLegend(NULL);
-            trace(1,"stream open error: ch=%d type=%d path=%s\n",i+1,RtStream[i],path);
+            rtk_trace(1,"stream open error: ch=%d type=%d path=%s\n",i+1,RtStream[i],path);
             continue;
         }
         strsettimeout(Stream+i,RtTimeOutTime,RtReConnTime);
@@ -1052,7 +1052,7 @@ void __fastcall TPlot::Disconnect(void)
     char *cmd,caption[1024];
     int i;
     
-    trace(3,"Disconnect\n");
+    rtk_trace(3,"Disconnect\n");
     
     if (!ConnectState) return;
     
@@ -1082,7 +1082,7 @@ int __fastcall TPlot::CheckObs(AnsiString file)
 {
     char *p;
     
-    trace(3,"CheckObs\n");
+    rtk_trace(3,"CheckObs\n");
     
     if (!(p=strrchr(file.c_str(),'.'))) return 0;
     if (!strcmp(p,".z")||!strcmp(p,".gz")||!strcmp(p,".zip")||
@@ -1104,7 +1104,7 @@ void __fastcall TPlot::UpdateObs(int nobs)
     int i,j,k,svh,per,per_=-1;
     char msg[128],name[16];
     
-    trace(3,"UpdateObs\n");
+    rtk_trace(3,"UpdateObs\n");
     
     delete [] IndexObs; IndexObs=NULL;
     delete [] Az; Az=NULL;
@@ -1184,7 +1184,7 @@ void __fastcall TPlot::UpdateMp(void)
     double lam1,lam2,I,C,B;
     int i,j,k,f1,f2,sat,sys,per,per_=-1,n;
     
-    trace(3,"UpdateMp\n");
+    rtk_trace(3,"UpdateMp\n");
     
     for (i=0;i<NFREQ+NEXOBS;i++) {
         delete [] Mp[i]; Mp[i]=NULL;
@@ -1269,7 +1269,7 @@ void __fastcall TPlot::ConnectPath(const char *path, int ch)
 {
     const char *p;
     
-    trace(3,"ConnectPath: path=%s ch=%d\n",path,ch);
+    rtk_trace(3,"ConnectPath: path=%s ch=%d\n",path,ch);
     
     RtStream[ch]=STR_NONE;
     
@@ -1336,7 +1336,7 @@ void __fastcall TPlot::Clear(void)
     double ep[]={2010,1,1,0,0,0};
     int i;
     
-    trace(3,"Clear\n");
+    rtk_trace(3,"Clear\n");
     
     Week=0;
     
@@ -1380,7 +1380,7 @@ void __fastcall TPlot::Reload(void)
 {
     TStrings *obsfiles,*navfiles;
     
-    trace(3,"Reload\n");
+    rtk_trace(3,"Reload\n");
     
     if (SimObs) {
         GenVisData();

@@ -83,7 +83,7 @@ static int simobs(gtime_t ts, gtime_t te, double tint, const double *rr,
     
     double pref[]={36.106114294,140.087190410,70.3010}; /* ref station */
     
-    trace(3,"simobs:nnav=%d ngnav=%d\n",nav->n,nav->ng);
+    rtk_trace(3,"simobs:nnav=%d ngnav=%d\n",nav->n,nav->ng);
     
     for (i=0;i<2;i++) pref[i]*=D2R;
     pos2ecef(pref,rref);

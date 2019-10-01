@@ -45,7 +45,7 @@ static void updatertcm(gtime_t time, rtcm_t *rtcm, nav_t *nav, FILE *fp)
     while (input_rtcm3f(rtcm,fp)>=0) {
         time2str(time      ,s1,0);
         time2str(rtcm->time,s2,0);
-        trace(2,"rtcm.time=%s time=%s\n",s1,s2);
+        rtk_trace(2,"rtcm.time=%s time=%s\n",s1,s2);
         
         if (timediff(rtcm->time,time)>=5.0) break;
     }

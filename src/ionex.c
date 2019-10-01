@@ -50,7 +50,7 @@ static tec_t *addtec(const double *lats, const double *lons, const double *hgts,
     gtime_t time0={0};
     int i,n,ndata[3];
     
-    trace(3,"addtec  :\n");
+    rtk_trace(3,"addtec  :\n");
     
     ndata[0]=nitem(lats);
     ndata[1]=nitem(lons);
@@ -60,7 +60,7 @@ static tec_t *addtec(const double *lats, const double *lons, const double *hgts,
     if (nav->nt>=nav->ntmax) {
         nav->ntmax+=256;
         if (!(nav_tec=(tec_t *)realloc(nav->tec,sizeof(tec_t)*nav->ntmax))) {
-            trace(1,"readionex malloc error ntmax=%d\n",nav->ntmax);
+            rtk_trace(1,"readionex malloc error ntmax=%d\n",nav->ntmax);
             free(nav->tec); nav->tec=NULL; nav->nt=nav->ntmax=0;
             return NULL;
         }
@@ -94,7 +94,7 @@ static void readionexdcb(FILE *fp, double *dcb, double *rms)
     int i,sat;
     char buff[1024],id[32],*label;
     
-    trace(3,"readionexdcb:\n");
+    rtk_trace(3,"readionexdcb:\n");
     
     for (i=0;i<MAXSAT;i++) dcb[i]=rms[i]=0.0;
     
@@ -107,7 +107,7 @@ static void readionexdcb(FILE *fp, double *dcb, double *rms)
             strncpy(id,buff+3,3); id[3]='\0';
             
             if (!(sat=satid2no(id))) {
-                trace(2,"ionex invalid satellite: %s\n",id);
+                rtk_trace(2,"ionex invalid satellite: %s\n",id);
                 continue;
             }
             dcb[sat-1]=str2num(buff, 6,10);
@@ -123,7 +123,7 @@ static double readionexh(FILE *fp, double *lats, double *lons, double *hgts,
     double ver=0.0;
     char buff[1024],*label;
     
-    trace(3,"readionexh:\n");
+    rtk_trace(3,"readionexh:\n");
     
     while (fgets(buff,sizeof(buff),fp)) {
         
@@ -174,7 +174,7 @@ static int readionexb(FILE *fp, const double *lats, const double *lons,
     int i,j,k,n,m,index,type=0;
     char buff[1024],*label=buff+60;
     
-    trace(3,"readionexb:\n");
+    rtk_trace(3,"readionexb:\n");
     
     while (fgets(buff,sizeof(buff),fp)) {
         
@@ -197,7 +197,7 @@ static int readionexb(FILE *fp, const double *lats, const double *lons,
         }
         else if (strstr(label,"EPOCH OF CURRENT MAP")==label) {
             if (str2time(buff,0,36,&time)) {
-                trace(2,"ionex epoch invalid: %-36.36s\n",buff);
+                rtk_trace(2,"ionex epoch invalid: %-36.36s\n",buff);
                 continue;
             }
             if (type==2) {
@@ -241,7 +241,7 @@ static void combtec(nav_t *nav)
     tec_t tmp;
     int i,j,n=0;
     
-    trace(3,"combtec : nav->nt=%d\n",nav->nt);
+    rtk_trace(3,"combtec : nav->nt=%d\n",nav->nt);
     
     for (i=0;i<nav->nt-1;i++) {
         for (j=i+1;j<nav->nt;j++) {
@@ -263,7 +263,7 @@ static void combtec(nav_t *nav)
     }
     nav->nt=n;
     
-    trace(4,"combtec : nav->nt=%d\n",nav->nt);
+    rtk_trace(4,"combtec : nav->nt=%d\n",nav->nt);
 }
 /* read ionex tec grid file ----------------------------------------------------
 * read ionex ionospheric tec grid file
@@ -283,7 +283,7 @@ extern void readtec(const char *file, nav_t *nav, int opt)
     int i,n;
     char *efiles[MAXEXFILE];
     
-    trace(3,"readtec : file=%s\n",file);
+    rtk_trace(3,"readtec : file=%s\n",file);
     
     /* clear of tec grid data option */
     if (!opt) {
@@ -300,12 +300,12 @@ extern void readtec(const char *file, nav_t *nav, int opt)
     
     for (i=0;i<n;i++) {
         if (!(fp=fopen(efiles[i],"r"))) {
-            trace(2,"ionex file open error %s\n",efiles[i]);
+            rtk_trace(2,"ionex file open error %s\n",efiles[i]);
             continue;
         }
         /* read ionex header */
         if (readionexh(fp,lats,lons,hgts,&rb,&nexp,dcb,rms)<=0.0) {
-            trace(2,"ionex file format error %s\n",efiles[i]);
+            rtk_trace(2,"ionex file format error %s\n",efiles[i]);
             continue;
         }
         /* read ionex body */
@@ -330,7 +330,7 @@ static int interptec(const tec_t *tec, int k, const double *posp, double *value,
     double dlat,dlon,a,b,d[4]={0},r[4]={0};
     int i,j,n,index;
     
-    trace(3,"interptec: k=%d posp=%.2f %.2f\n",k,posp[0]*R2D,posp[1]*R2D);
+    rtk_trace(3,"interptec: k=%d posp=%.2f %.2f\n",k,posp[0]*R2D,posp[1]*R2D);
     *value=*rms=0.0;
     
     if (tec->lats[2]==0.0||tec->lons[2]==0.0) return 0;
@@ -378,7 +378,7 @@ static int iondelay(gtime_t time, const tec_t *tec, const double *pos,
     double fs,posp[3]={0},vtec,rms,hion,rp;
     int i;
     
-    trace(3,"iondelay: time=%s pos=%.1f %.1f azel=%.1f %.1f\n",time_str(time,0),
+    rtk_trace(3,"iondelay: time=%s pos=%.1f %.1f azel=%.1f %.1f\n",time_str(time,0),
           pos[0]*R2D,pos[1]*R2D,azel[0]*R2D,azel[1]*R2D);
     
     *delay=*var=0.0;
@@ -405,7 +405,7 @@ static int iondelay(gtime_t time, const tec_t *tec, const double *pos,
         *delay+=fact*fs*vtec;
         *var+=fact*fact*fs*fs*rms*rms;
     }
-    trace(4,"iondelay: delay=%7.2f std=%6.2f\n",*delay,sqrt(*var));
+    rtk_trace(4,"iondelay: delay=%7.2f std=%6.2f\n",*delay,sqrt(*var));
     
     return 1;
 }
@@ -430,7 +430,7 @@ extern int iontec(gtime_t time, const nav_t *nav, const double *pos,
     double dels[2],vars[2],a,tt;
     int i,stat[2];
     
-    trace(3,"iontec  : time=%s pos=%.1f %.1f azel=%.1f %.1f\n",time_str(time,0),
+    rtk_trace(3,"iontec  : time=%s pos=%.1f %.1f azel=%.1f %.1f\n",time_str(time,0),
           pos[0]*R2D,pos[1]*R2D,azel[0]*R2D,azel[1]*R2D);
     
     if (azel[1]<MIN_EL||pos[2]<MIN_HGT) {
@@ -442,11 +442,11 @@ extern int iontec(gtime_t time, const nav_t *nav, const double *pos,
         if (timediff(nav->tec[i].time,time)>0.0) break;
     }
     if (i==0||i>=nav->nt) {
-        trace(2,"%s: tec grid out of period\n",time_str(time,0));
+        rtk_trace(2,"%s: tec grid out of period\n",time_str(time,0));
         return 0;
     }
     if ((tt=timediff(nav->tec[i].time,nav->tec[i-1].time))==0.0) {
-        trace(2,"tec grid time interval error\n");
+        rtk_trace(2,"tec grid time interval error\n");
         return 0;
     }
     /* ionospheric delay by tec grid data */
@@ -454,7 +454,7 @@ extern int iontec(gtime_t time, const nav_t *nav, const double *pos,
     stat[1]=iondelay(time,nav->tec+i  ,pos,azel,opt,dels+1,vars+1);
     
     if (!stat[0]&&!stat[1]) {
-        trace(2,"%s: tec grid out of area pos=%6.2f %7.2f azel=%6.1f %5.1f\n",
+        rtk_trace(2,"%s: tec grid out of area pos=%6.2f %7.2f azel=%6.1f %5.1f\n",
               time_str(time,0),pos[0]*R2D,pos[1]*R2D,azel[0]*R2D,azel[1]*R2D);
         return 0;
     }
@@ -471,6 +471,6 @@ extern int iontec(gtime_t time, const nav_t *nav, const double *pos,
         *delay=dels[1];
         *var  =vars[1];
     }
-    trace(3,"iontec  : delay=%5.2f std=%5.2f\n",*delay,sqrt(*var));
+    rtk_trace(3,"iontec  : delay=%5.2f std=%5.2f\n",*delay,sqrt(*var));
     return 1;
 }

@@ -247,7 +247,7 @@ static int decode_measepoch(raw_t *raw){
     double SB1_WaveLength, SB1_Code = 0.0;
     short SB1_FreqNr;
 
-    trace(4,"SBF decode_measepoch: len=%d\n",raw->len);
+    rtk_trace(4,"SBF decode_measepoch: len=%d\n",raw->len);
 
     /* Get time information */
     tow =U4(p);                                            /*       TOW in ms */
@@ -314,7 +314,7 @@ static int decode_measepoch(raw_t *raw){
         }
 
         /* debug */
-        trace(4,"signal type = %2d, \n",signType1);
+        rtk_trace(4,"signal type = %2d, \n",signType1);
 
         /* from the signal tiype get the type of RTKLIB signal code*/
         code = getSignalCode(signType1);
@@ -774,10 +774,10 @@ static int decode_gpsnav(raw_t *raw){
     uint8_t prn, sat;
     uint16_t week;
 
-    trace(4,"SBF decode_gpsnav: len=%d\n",raw->len);
+    rtk_trace(4,"SBF decode_gpsnav: len=%d\n",raw->len);
 
     if ((raw->len)<120) {
-        trace(2,"SBF decode_gpsnav frame length error: len=%d\n",raw->len);
+        rtk_trace(2,"SBF decode_gpsnav frame length error: len=%d\n",raw->len);
         return -1;
     }
 
@@ -787,7 +787,7 @@ static int decode_gpsnav(raw_t *raw){
     if (sat == 0) return -1;
 
     if (!((prn>=1)&&(prn<=37))){
-        trace(2,"SBF decode_gpsnav prn error: sat=%d\n",prn);
+        rtk_trace(2,"SBF decode_gpsnav prn error: sat=%d\n",prn);
         return -1;
     }
 
@@ -821,7 +821,7 @@ static int decode_gpsnav(raw_t *raw){
     week       = U2(puiTmp +  10); /* WN */
 
     if (week>=4096) {
-        trace(2,"SBF gps ephemeris week error: sat=%2d week=%d\n",sat,week);
+        rtk_trace(2,"SBF gps ephemeris week error: sat=%2d week=%d\n",sat,week);
         return -1;
     }
 
@@ -850,10 +850,10 @@ static int decode_galnav(raw_t *raw){
     uint16_t week_oe, week_oc;
     uint32_t tow;
 
-    trace(4,"SBF decode_galnav: len=%d\n",raw->len);
+    rtk_trace(4,"SBF decode_galnav: len=%d\n",raw->len);
 
     if ((raw->len)<152) {
-        trace(2,"SBF decode_galnav frame length error: len=%d\n",raw->len);
+        rtk_trace(2,"SBF decode_galnav frame length error: len=%d\n",raw->len);
         return -1;
     }
 
@@ -863,7 +863,7 @@ static int decode_galnav(raw_t *raw){
     if (sat == 0) return -1;
 
     if (!((prn>=1)&&(prn<=36))){
-        trace(2,"SBF decode_galnav prn error: sat=%d\n",prn);
+        rtk_trace(2,"SBF decode_galnav prn error: sat=%d\n",prn);
         return -1;
     }
 
@@ -933,10 +933,10 @@ static int decode_glonav(raw_t *raw){
     int prn, sat;
     uint16_t week;
 
-    trace(4,"SBF decode_glonav: len=%d\n",raw->len);
+    rtk_trace(4,"SBF decode_glonav: len=%d\n",raw->len);
 
     if ((raw->len)<96) {
-        trace(2,"SBF decode_glonav frame length error: len=%d\n",raw->len);
+        rtk_trace(2,"SBF decode_glonav frame length error: len=%d\n",raw->len);
         return -1;
     }
     prn = U1(puiTmp+8)-37;
@@ -945,7 +945,7 @@ static int decode_glonav(raw_t *raw){
     if (sat == 0) return -1;
 
     if (!((prn>=1)&&(prn<=24))){
-        trace(2,"SBF decode_glonav prn error: sat=%d\n",prn);
+        rtk_trace(2,"SBF decode_glonav prn error: sat=%d\n",prn);
         return -1;
     }
 
@@ -992,17 +992,17 @@ static int decode_sbasnav(raw_t *raw){
     uint16_t week;
     uint32_t tod,tow;
 
-    trace(4,"SBF decode_sbasnav: len=%d\n",raw->len);
+    rtk_trace(4,"SBF decode_sbasnav: len=%d\n",raw->len);
 
     if ((raw->len)<104) {
-        trace(2,"SBF decode_sbasnav frame length error: len=%d\n",raw->len);
+        rtk_trace(2,"SBF decode_sbasnav frame length error: len=%d\n",raw->len);
         return -1;
     }
     prn = U1(puiTmp+8);
     sat = satno(SYS_SBS,prn);
 
     if (!((prn>=120)&&(prn<=140))){
-        trace(2,"SBF decode_sbasnav prn error: sat=%d\n",prn);
+        rtk_trace(2,"SBF decode_sbasnav prn error: sat=%d\n",prn);
         return -1;
     }
 
@@ -1028,7 +1028,7 @@ static int decode_sbasnav(raw_t *raw){
     eph.af1    = R4(puiTmp +  94);
 
     /* debug */
-    trace(2,"sat=%2d, week=%d, tow=%f\n",sat,week,U4(puiTmp +  2)/1000);
+    rtk_trace(2,"sat=%2d, week=%d, tow=%f\n",sat,week,U4(puiTmp +  2)/1000);
 
     if (!strstr(raw->opt,"-EPHALL")) {
         if (fabs(timediff(eph.t0,raw->nav.seph[prn-120].t0))<1.0&&
@@ -1053,10 +1053,10 @@ static int decode_cmpnav(raw_t *raw){
     int prn, sat;
     uint16_t week_oc,week_oe;
 
-    trace(4,"SBF decode_cmpnav: len=%d\n",raw->len);
+    rtk_trace(4,"SBF decode_cmpnav: len=%d\n",raw->len);
 
     if ((raw->len)<140) {
-        trace(2,"SBF decode_cmpnav frame length error: len=%d\n",raw->len);
+        rtk_trace(2,"SBF decode_cmpnav frame length error: len=%d\n",raw->len);
         return -1;
     }
 
@@ -1066,7 +1066,7 @@ static int decode_cmpnav(raw_t *raw){
     if (sat == 0) return -1;
 
     if (!((prn>=1)&&(prn<=32))){
-        trace(2,"SBF decode_cmpnav prn error: sat=%d\n",prn);
+        rtk_trace(2,"SBF decode_cmpnav prn error: sat=%d\n",prn);
         return -1;
     }
 
@@ -1127,10 +1127,10 @@ static int decode_qzssnav(raw_t *raw){
     int prn, sat;
     uint16_t week_oc,week_oe;
 
-    trace(4,"SBF decode_qzssnav: len=%d\n",raw->len);
+    rtk_trace(4,"SBF decode_qzssnav: len=%d\n",raw->len);
 
     if ((raw->len)<140) {
-        trace(2,"SBF decode_qzssnav frame length error: len=%d\n",raw->len);
+        rtk_trace(2,"SBF decode_qzssnav frame length error: len=%d\n",raw->len);
         return -1;
     }
 
@@ -1140,7 +1140,7 @@ static int decode_qzssnav(raw_t *raw){
     if (sat == 0) return -1;
 
     if (!((prn>=1)&&(prn<=7))){
-        trace(2,"SBF decode_qzssnav prn error: sat=%d\n",prn);
+        rtk_trace(2,"SBF decode_qzssnav prn error: sat=%d\n",prn);
         return -1;
     }
 
@@ -1207,10 +1207,10 @@ static int decode_rawnav(raw_t *raw, int sys){
     uint8_t _buf[30]={0};
     int i=0,ii=0;
 
-    trace(3,"SBF decode_gpsrawcanav: len=%d\n",raw->len);
+    rtk_trace(3,"SBF decode_gpsrawcanav: len=%d\n",raw->len);
 
     if (raw->len<58) {
-        trace(2,"SBF decode_gpsrawcanav block length error: len=%d\n",raw->len);
+        rtk_trace(2,"SBF decode_gpsrawcanav block length error: len=%d\n",raw->len);
         return -1;
     }
 
@@ -1282,7 +1282,7 @@ static int decode_rawnav(raw_t *raw, int sys){
          return 9;
      };
 
-     trace(4,"SBF, decode_gpsrawcanav: sat=%2d\n",sat);
+     rtk_trace(4,"SBF, decode_gpsrawcanav: sat=%2d\n",sat);
      return 0;
 }
 /* decode SBF raw nav message (raw navigation data) --------------------------*/
@@ -1294,10 +1294,10 @@ static int decode_georaw(raw_t *raw){
     int i=0;
     uint32_t tmp,crc;
 
-    trace(3,"SBF decode_georaw: len=%d\n",raw->len);
+    rtk_trace(3,"SBF decode_georaw: len=%d\n",raw->len);
 
     if (raw->len<52) {
-        trace(2,"SBF decode_georaw block length error: len=%d\n",raw->len);
+        rtk_trace(2,"SBF decode_georaw block length error: len=%d\n",raw->len);
         return -1;
     }
 
@@ -1349,7 +1349,7 @@ static int decode_galrawinav(raw_t *raw){
     if (sat == 0) return -1;
 
     if (raw->len<52) {
-        trace(2,"SBF decode_galrawinav length error: sat=%d len=%d\n",sat,raw->len);
+        rtk_trace(2,"SBF decode_galrawinav length error: sat=%d len=%d\n",sat,raw->len);
         return -1;
     }
 
@@ -1378,13 +1378,13 @@ static int decode_galrawinav(raw_t *raw){
 
     /* test even-odd parts */
     if (part1!=0||part2!=1) {
-        trace(2,"decode_galrawinav gal page even/odd error: sat=%2d\n",sat);
+        rtk_trace(2,"decode_galrawinav gal page even/odd error: sat=%2d\n",sat);
         return -1;
     }
     /* test crc */
     for (i=0,j=  4;i<49;i++,j+=4) setbitu(crc_buff,j,4,getbitu(buff,i*4,4));
     if (rtk_crc24q(crc_buff,25)!=getbitu(buff,196,24)) {
-        trace(2,"decode_galrawinav gal page crc error: sat=%2d\n",sat);
+        rtk_trace(2,"decode_galrawinav gal page crc error: sat=%2d\n",sat);
         return -1;
     }
 
@@ -1417,7 +1417,7 @@ static int decode_galrawinav(raw_t *raw){
     }
     /* test svid consistency */
     if (eph.sat!=sat) {
-        trace(2,"decode_galrawinav gal svid error: sat=%2d %2d\n",sat,eph.sat);
+        rtk_trace(2,"decode_galrawinav gal svid error: sat=%2d %2d\n",sat,eph.sat);
         return -1;
     }
     if (!strstr(raw->opt,"-EPHALL")) {
@@ -1442,7 +1442,7 @@ static int decode_glorawcanav(raw_t *raw){
 
     if (raw->len<12)
     {
-        trace(1,"SBF decode_glorawcanav: Block too short\n");
+        rtk_trace(1,"SBF decode_glorawcanav: Block too short\n");
         return -1;
     }
 
@@ -1464,18 +1464,18 @@ static int decode_glorawcanav(raw_t *raw){
     if (sat == 0) return -1;
 
     if (raw->len<32) {
-        trace(2,"SBF decode_gpsrawcanav block length error: len=%d\n",raw->len);
+        rtk_trace(2,"SBF decode_gpsrawcanav block length error: len=%d\n",raw->len);
         return -1;
     }
 
     /* test hamming of glonass string */
     if (!test_glostr(buff)) {
-        trace(2,"septentrio glo string hamming error: sat=%2d\n",sat);
+        rtk_trace(2,"septentrio glo string hamming error: sat=%2d\n",sat);
         return -1;
     }
     m=getbitu(buff,1,4);
     if (m<1||15<m) {
-        trace(2,"septentrio glo string no error: sat=%2d\n",sat);
+        rtk_trace(2,"septentrio glo string no error: sat=%2d\n",sat);
         return -1;
     }
 
@@ -1515,7 +1515,7 @@ static int decode_cmpraw(raw_t *raw){
     if (sat == 0) return -1;
 
     if (raw->len<60) {
-        trace(2,"SBF decode_cmprawinav length error: sat=%d len=%d\n",sat,raw->len);
+        rtk_trace(2,"SBF decode_cmprawinav length error: sat=%d len=%d\n",sat,raw->len);
         return -1;
     }
 
@@ -1528,7 +1528,7 @@ static int decode_cmpraw(raw_t *raw){
     satsys(sat,&prn);
     id=(words[0]>>12)&0x07; /* subframe id (3bit) */
     if (id<1||5<id) {
-        trace(2,"SBF decode_cmprawinav length error: sat=%2d\n",sat);
+        rtk_trace(2,"SBF decode_cmprawinav length error: sat=%2d\n",sat);
         return -1;
     }
     if (prn>=5) { /* IGSO/MEO */
@@ -1547,7 +1547,7 @@ static int decode_cmpraw(raw_t *raw){
         /* subframe 1 */
         pgn=(words[1]>>14)&0x0F; /* page number (4bit) */
         if (pgn<1||10<pgn) {
-            trace(2,"ubx rawsfrbx page number error: sat=%2d\n",sat);
+            rtk_trace(2,"ubx rawsfrbx page number error: sat=%2d\n",sat);
             return -1;
         }
         for (i=0;i<10;i++) {
@@ -1574,11 +1574,11 @@ static int decode_gloutc(raw_t *raw)
 {
     uint8_t *p=(raw->buff)+8;                 /* points at TOW location */
 
-    trace(4,"SBF decode_gloutc: len=%d\n", raw->len);
+    rtk_trace(4,"SBF decode_gloutc: len=%d\n", raw->len);
 
     if (raw->len<40)
     {
-        trace(1,"SBF decode_gloutc: Block too short\n");
+        rtk_trace(1,"SBF decode_gloutc: Block too short\n");
         return -1;
     }
 
@@ -1594,11 +1594,11 @@ static int decode_gloutc(raw_t *raw)
 static int decode_gpsion(raw_t *raw){
     uint8_t *p=(raw->buff)+8;            /* points at TOW location */
 
-    trace(4,"SBF decode_gpsion: len=%d\n", raw->len);
+    rtk_trace(4,"SBF decode_gpsion: len=%d\n", raw->len);
 
     if (raw->len<48)
     {
-        trace(1,"SBF decode_gpsion: Block too short\n");
+        rtk_trace(1,"SBF decode_gpsion: Block too short\n");
         return -1;
     }
 
@@ -1617,11 +1617,11 @@ static int decode_gpsion(raw_t *raw){
 static int decode_galion(raw_t *raw){
     uint8_t *p=(raw->buff)+6;            /* points at TOW location */
 
-    trace(4,"SBF decode_galion: len=%d\n", raw->len);
+    rtk_trace(4,"SBF decode_galion: len=%d\n", raw->len);
 
     if (raw->len<29)
     {
-        trace(1,"SBF decode_galion: Block too short\n");
+        rtk_trace(1,"SBF decode_galion: Block too short\n");
         return -1;
     }
 
@@ -1638,11 +1638,11 @@ static int decode_gpsutc(raw_t *raw)
 {
     uint8_t *p=(raw->buff)+8;                 /* points at TOW location */
 
-    trace(4,"SBF decode_gpsutc: len=%d\n", raw->len);
+    rtk_trace(4,"SBF decode_gpsutc: len=%d\n", raw->len);
 
     if (raw->len<37)
     {
-        trace(1,"SBF decode_gpsutc: Block too short\n");
+        rtk_trace(1,"SBF decode_gpsutc: Block too short\n");
         return -1;
     }
 
@@ -1666,11 +1666,11 @@ static int decode_gpsalm(raw_t *raw)
     uint8_t *p=(raw->buff)+8;                 /* points at TOW location */
     alm_t alm;
 
-    trace(4,"SBF decode_gpsalm: len=%d\n", raw->len);
+    rtk_trace(4,"SBF decode_gpsalm: len=%d\n", raw->len);
 
     if (raw->len<60)
     {
-        trace(1,"SBF decode_gpsalm: Block too short\n");
+        rtk_trace(1,"SBF decode_gpsalm: Block too short\n");
         return -1;
     }
 
@@ -1701,11 +1701,11 @@ static int decode_galutc(raw_t *raw)
 {
     uint8_t *p=(raw->buff)+8;                 /* points at TOW location */
 
-    trace(4,"SBF decode_galutc: len=%d\n", raw->len);
+    rtk_trace(4,"SBF decode_galutc: len=%d\n", raw->len);
 
     if (raw->len<36)
     {
-        trace(1,"SBF decode_galutc: Block too short\n");
+        rtk_trace(1,"SBF decode_galutc: Block too short\n");
         return -1;
     }
 
@@ -1728,11 +1728,11 @@ static int decode_galalm(raw_t *raw)
     uint8_t *p=(raw->buff)+8;                 /* points at TOW location */
     alm_t alm;
 
-    trace(4,"SBF decode_galalm: len=%d\n", raw->len);
+    rtk_trace(4,"SBF decode_galalm: len=%d\n", raw->len);
 
     if (raw->len<62)
     {
-        trace(1,"SBF decode_galalm: Block too short\n");
+        rtk_trace(1,"SBF decode_galalm: Block too short\n");
         return -1;
     }
 
@@ -1772,11 +1772,11 @@ static int decode_sbsfast(raw_t *raw)
     uint16_t week;
     uint8_t *p=(raw->buff)+6;
 
-    trace(4,"SBF decode_sbsfast: len=%d\n", raw->len);
+    rtk_trace(4,"SBF decode_sbsfast: len=%d\n", raw->len);
 
     if (raw->len<20)
     {
-        trace(1,"SBF decode_sbsfast: Block too short\n");
+        rtk_trace(1,"SBF decode_sbsfast: Block too short\n");
         return -1;
     }
 
@@ -1820,7 +1820,7 @@ static int decode_sbsfast(raw_t *raw)
         }
         raw->nav.sbssat.sat[j].fcorr.iodf=iodf;
     }
-    trace(5,"SBF decode_sbsfast: type=%d iodf=%d\n",U1(p+9),iodf);
+    rtk_trace(5,"SBF decode_sbsfast: type=%d iodf=%d\n",U1(p+9),iodf);
     return 0;
 }
 
@@ -1831,11 +1831,11 @@ static int decode_sbsprnmask(raw_t *raw)
     uint8_t *p=(raw->buff)+6;
 
 
-    trace(4,"SBF decode_sbsprnmask:\n");
+    rtk_trace(4,"SBF decode_sbsprnmask:\n");
 
     if (raw->len<18)
     {
-        trace(1,"SBF decode_sbsprnmask: Block too short\n");
+        rtk_trace(1,"SBF decode_sbsprnmask: Block too short\n");
         return -1;
     }
 
@@ -1860,7 +1860,7 @@ static int decode_sbsprnmask(raw_t *raw)
     }
     raw->nav.sbssat.iodp=U1(p+9);
 
-    trace(5,"SBF decode_sbsprnmask: nprn=%d iodp=%d\n",n,raw->nav.sbssat.iodp);
+    rtk_trace(5,"SBF decode_sbsprnmask: nprn=%d iodp=%d\n",n,raw->nav.sbssat.iodp);
     return 0;
 }
 
@@ -1872,11 +1872,11 @@ static int decode_sbsintegriy(raw_t *raw)
     uint8_t iodf[4],udre;
 
 
-    trace(4,"decode_sbsintegriy:\n");
+    rtk_trace(4,"decode_sbsintegriy:\n");
 
     if (raw->len<71)
     {
-        trace(1,"SBF decode_sbsintegriy: Block too short\n");
+        rtk_trace(1,"SBF decode_sbsintegriy: Block too short\n");
         return -1;
     }
 
@@ -1893,7 +1893,7 @@ static int decode_sbsintegriy(raw_t *raw)
         udre=U1(p+14+i);
         raw->nav.sbssat.sat[i].fcorr.udre=udre;
     }
-    trace(5,"SBF decode_sbsintegriy: iodf=%d %d %d %d\n",iodf[0],iodf[1],iodf[2],iodf[3]);
+    rtk_trace(5,"SBF decode_sbsintegriy: iodf=%d %d %d %d\n",iodf[0],iodf[1],iodf[2],iodf[3]);
     return 0;
 }
 
@@ -1904,11 +1904,11 @@ static int decode_sbsfastcorrdegr(raw_t *raw)
     uint8_t *p=(raw->buff)+6;
 
 
-    trace(4,"SBF decode_sbsfastcorrdegr:\n");
+    rtk_trace(4,"SBF decode_sbsfastcorrdegr:\n");
 
     if (raw->len<68)
     {
-        trace(1,"SBF decode_sbsfastcorrdegr: Block too short\n");
+        rtk_trace(1,"SBF decode_sbsfastcorrdegr: Block too short\n");
         return -1;
     }
 
@@ -1936,11 +1936,11 @@ static int decode_sbsionodelay(raw_t *raw)
     uint16_t week;
     uint32_t tow;
 
-    trace(4,"SBF decode_sbsionodelay:\n");
+    rtk_trace(4,"SBF decode_sbsionodelay:\n");
 
     if (raw->len<20)
     {
-        trace(1,"SBF decode_sbsionodelay: Block too short\n");
+        rtk_trace(1,"SBF decode_sbsionodelay: Block too short\n");
         return -1;
     }
 
@@ -1962,7 +1962,7 @@ static int decode_sbsionodelay(raw_t *raw)
 
     if (count!=15)
     {
-        trace(1,"SBF decode_sbsionodelay: wrong number of IDC blocks: %d\n",count);
+        rtk_trace(1,"SBF decode_sbsionodelay: wrong number of IDC blocks: %d\n",count);
         return -1;
     }
 
@@ -1978,7 +1978,7 @@ static int decode_sbsionodelay(raw_t *raw)
             raw->nav.sbsion[band].igp[j].give=0;
         }
     }
-    trace(5,"decode_sbsionodelay: band=%d\n",band);
+    rtk_trace(5,"decode_sbsionodelay: band=%d\n",band);
     return 0;
 }
 
@@ -1991,11 +1991,11 @@ static int decode_sbsigpmask(raw_t *raw) /* TODO: verify this function */
 
     uint8_t *p=(raw->buff)+6;
 
-    trace(4,"SBF decode_sbsigpmask:\n");
+    rtk_trace(4,"SBF decode_sbsigpmask:\n");
 
     if (raw->len<20)
     {
-        trace(1,"SBF decode_sbsigpmask: Block too short\n");
+        rtk_trace(1,"SBF decode_sbsigpmask: Block too short\n");
         return -1;
     }
 
@@ -2024,7 +2024,7 @@ static int decode_sbsigpmask(raw_t *raw) /* TODO: verify this function */
         }
     }
 
-    trace(5,"decode_sbsigpmask: band=%d nigp=%d\n",band,n);
+    rtk_trace(5,"decode_sbsigpmask: band=%d nigp=%d\n",band,n);
     return 0;
 }
 /* decode long term correction ------------------------------------------*/
@@ -2037,11 +2037,11 @@ static int decode_sbslongcorrh(raw_t* raw)
     uint16_t week;
     int64_t t;
 
-    trace(4,"SBF decode_sbslongcorrh:\n");
+    rtk_trace(4,"SBF decode_sbslongcorrh:\n");
 
     if (raw->len<20)
     {
-        trace(1,"SBF decode_sbslongcorrh: Block too short\n");
+        rtk_trace(1,"SBF decode_sbslongcorrh: Block too short\n");
         return -1;
     }
 
@@ -2101,14 +2101,14 @@ static int decode_sbf(raw_t *raw)
     int revision = U2(raw->buff+4) >> 13;
     (void)revision;
 
-    trace(3,"decode_sbf: type=%04x len=%d\n",type,raw->len);
+    rtk_trace(3,"decode_sbf: type=%04x len=%d\n",type,raw->len);
 
     /* read the SBF block CRC */
     crc = U2(raw->buff+2);
 
     /* checksum skipping first 4 bytes */
     if (sbf_checksum(raw->buff+4, raw->len-4) !=  crc){
-        trace(2,"sbf checksum error: type=%04x len=%d\n",type, raw->len);
+        rtk_trace(2,"sbf checksum error: type=%04x len=%d\n",type, raw->len);
         return -1;
     }
 
@@ -2179,7 +2179,7 @@ static int decode_sbf(raw_t *raw)
         case ID_COMMENT:        return decode_comment(raw);
 #endif /* UNUSED */
         default:
-            trace(3,"decode_sbf: unused frame type=%04x len=%d\n",type,raw->len);
+            rtk_trace(3,"decode_sbf: unused frame type=%04x len=%d\n",type,raw->len);
         /* there are many more SBF blocks to be extracted */
     }
     return 0;
@@ -2201,7 +2201,7 @@ static int sync_sbf(unsigned char *buff, unsigned char data)
 *-----------------------------------------------------------------------------*/
 extern int input_sbf(raw_t *raw, unsigned char data)
 {
-    trace(5,"input_sbf: data=%02x\n",data);
+    rtk_trace(5,"input_sbf: data=%02x\n",data);
 
     if (raw->nbyte==0) {
         if (sync_sbf(raw->buff,data)) raw->nbyte=2;
@@ -2212,7 +2212,7 @@ extern int input_sbf(raw_t *raw, unsigned char data)
     if (raw->nbyte<8) return 0;
 
     if ((raw->len=U2(raw->buff+6))>MAXRAWLEN) {
-        trace(2,"sbf length error: len=%d\n",raw->len);
+        rtk_trace(2,"sbf length error: len=%d\n",raw->len);
         raw->nbyte=0;
         return -1;
     }
@@ -2231,7 +2231,7 @@ extern int input_sbff(raw_t *raw, FILE *fp)
 {
     int i,data;
 
-    trace(4,"input_sbff:\n");
+    rtk_trace(4,"input_sbff:\n");
 
     /* go to the beginning of the first block */
     if (raw->nbyte==0) {
@@ -2249,7 +2249,7 @@ extern int input_sbff(raw_t *raw, FILE *fp)
 
     /* decode the length of the block and store it in len*/
     if ((raw->len=U2(raw->buff+6))>MAXRAWLEN) {
-        trace(2,"sbf length error: len=%d\n",raw->len);
+        rtk_trace(2,"sbf length error: len=%d\n",raw->len);
         raw->nbyte=0;
         return -1;
     }

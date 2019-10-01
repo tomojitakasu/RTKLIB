@@ -144,217 +144,217 @@ static int sisaindex(double value)
 /* decode binex mesaage 0x00-00: comment -------------------------------------*/
 static int decode_bnx_00_00(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x00-00: not supported message\n");
+    rtk_trace(2,"binex 0x00-00: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x00-01: program or software package -----------------*/
 static int decode_bnx_00_01(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x00-01: not supported message\n");
+    rtk_trace(2,"binex 0x00-01: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x00-02: program operator ----------------------------*/
 static int decode_bnx_00_02(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x00-02: not supported message\n");
+    rtk_trace(2,"binex 0x00-02: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x00-03: reserved ------------------------------------*/
 static int decode_bnx_00_03(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x00-03: not supported message\n");
+    rtk_trace(2,"binex 0x00-03: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x00-04: site name/description -----------------------*/
 static int decode_bnx_00_04(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x00-04: not supported message\n");
+    rtk_trace(2,"binex 0x00-04: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x00-05: site number ---------------------------------*/
 static int decode_bnx_00_05(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x00-05: not supported message\n");
+    rtk_trace(2,"binex 0x00-05: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x00-06: monumnent name ------------------------------*/
 static int decode_bnx_00_06(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x00-06: not supported message\n");
+    rtk_trace(2,"binex 0x00-06: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x00-07: monumnent number ----------------------------*/
 static int decode_bnx_00_07(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x00-07: not supported message\n");
+    rtk_trace(2,"binex 0x00-07: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x00-08: marker name ---------------------------------*/
 static int decode_bnx_00_08(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x00-08: not supported message\n");
+    rtk_trace(2,"binex 0x00-08: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x00-09: marker number -------------------------------*/
 static int decode_bnx_00_09(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x00-09: not supported message\n");
+    rtk_trace(2,"binex 0x00-09: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x00-0a: reference point name ------------------------*/
 static int decode_bnx_00_0a(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x00-0a: not supported message\n");
+    rtk_trace(2,"binex 0x00-0a: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x00-0b: reference point number ----------------------*/
 static int decode_bnx_00_0b(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x00-0b: not supported message\n");
+    rtk_trace(2,"binex 0x00-0b: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x00-0c: date esttablished ---------------------------*/
 static int decode_bnx_00_0c(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x00-0c: not supported message\n");
+    rtk_trace(2,"binex 0x00-0c: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x00-0d: reserved ------------------------------------*/
 static int decode_bnx_00_0d(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x00-0d: not supported message\n");
+    rtk_trace(2,"binex 0x00-0d: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x00-0e: reserved ------------------------------------*/
 static int decode_bnx_00_0e(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x00-0e: not supported message\n");
+    rtk_trace(2,"binex 0x00-0e: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x00-0f: 4-character id ------------------------------*/
 static int decode_bnx_00_0f(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x00-0f: not supported message\n");
+    rtk_trace(2,"binex 0x00-0f: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x00-10: project name --------------------------------*/
 static int decode_bnx_00_10(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x00-10: not supported message\n");
+    rtk_trace(2,"binex 0x00-10: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x00-11: principal investigator for this project -----*/
 static int decode_bnx_00_11(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x00-11: not supported message\n");
+    rtk_trace(2,"binex 0x00-11: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x00-12: pi's agency/institution ---------------------*/
 static int decode_bnx_00_12(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x00-12: not supported message\n");
+    rtk_trace(2,"binex 0x00-12: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x00-13: pi's contact information --------------------*/
 static int decode_bnx_00_13(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x00-13: not supported message\n");
+    rtk_trace(2,"binex 0x00-13: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x00-14: site operator -------------------------------*/
 static int decode_bnx_00_14(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x00-14: not supported message\n");
+    rtk_trace(2,"binex 0x00-14: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x00-15: site operator's agency/institution ----------*/
 static int decode_bnx_00_15(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x00-15: not supported message\n");
+    rtk_trace(2,"binex 0x00-15: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x00-16: site operator's contact information ---------*/
 static int decode_bnx_00_16(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x00-16: not supported message\n");
+    rtk_trace(2,"binex 0x00-16: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x00-17: antenna type --------------------------------*/
 static int decode_bnx_00_17(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x00-17: not supported message\n");
+    rtk_trace(2,"binex 0x00-17: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x00-18: antenna number ------------------------------*/
 static int decode_bnx_00_18(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x00-18: not supported message\n");
+    rtk_trace(2,"binex 0x00-18: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x00-19: receiver type -------------------------------*/
 static int decode_bnx_00_19(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x00-19: not supported message\n");
+    rtk_trace(2,"binex 0x00-19: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x00-1a: receiver number -----------------------------*/
 static int decode_bnx_00_1a(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x00-1a: not supported message\n");
+    rtk_trace(2,"binex 0x00-1a: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x00-1b: receiver firmware version -------------------*/
 static int decode_bnx_00_1b(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x00-1b: not supported message\n");
+    rtk_trace(2,"binex 0x00-1b: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x00-1c: antenna mount description -------------------*/
 static int decode_bnx_00_1c(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x00-1c: not supported message\n");
+    rtk_trace(2,"binex 0x00-1c: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x00-1d: antenna xyz position ------------------------*/
 static int decode_bnx_00_1d(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x00-1d: not supported message\n");
+    rtk_trace(2,"binex 0x00-1d: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x00-1e: antenna geographic position -----------------*/
 static int decode_bnx_00_1e(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x00-1e: not supported message\n");
+    rtk_trace(2,"binex 0x00-1e: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x00-1f: antenna offset from reference point ---------*/
 static int decode_bnx_00_1f(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x00-1f: not supported message\n");
+    rtk_trace(2,"binex 0x00-1f: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x00-20: antenna radome type -------------------------*/
 static int decode_bnx_00_20(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x00-20: not supported message\n");
+    rtk_trace(2,"binex 0x00-20: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x00-21: antenna radome number -----------------------*/
 static int decode_bnx_00_21(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x00-21: not supported message\n");
+    rtk_trace(2,"binex 0x00-21: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x00-22: geocode -------------------------------------*/
 static int decode_bnx_00_22(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x00-22: not supported message\n");
+    rtk_trace(2,"binex 0x00-22: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x00-7f: notes/additional information ----------------*/
 static int decode_bnx_00_7f(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x00-7f: not supported message\n");
+    rtk_trace(2,"binex 0x00-7f: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x00: site/monument/marker/ref point/setup metadata --*/
@@ -419,7 +419,7 @@ static int decode_bnx_00(raw_t *raw, unsigned char *buff, int len)
 /* decode binex mesaage 0x01-00: coded (raw bytes) gnss ephemeris ------------*/
 static int decode_bnx_01_00(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x01-00: not supported message\n");
+    rtk_trace(2,"binex 0x01-00: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x01-01: decoded gps ephmemeris ----------------------*/
@@ -430,7 +430,7 @@ static int decode_bnx_01_01(raw_t *raw, unsigned char *buff, int len)
     double tow,ura,sqrtA;
     int prn,flag;
     
-    trace(4,"binex 0x01-01: len=%d\n",len);
+    rtk_trace(4,"binex 0x01-01: len=%d\n",len);
     
     if (len>=127) {
         prn       =U1(p)+1;      p+=1;
@@ -463,11 +463,11 @@ static int decode_bnx_01_01(raw_t *raw, unsigned char *buff, int len)
         flag      =U2(p);
     }
     else {
-        trace(2,"binex 0x01-01: length error len=%d\n",len);
+        rtk_trace(2,"binex 0x01-01: length error len=%d\n",len);
         return -1;
     }
     if (!(eph.sat=satno(SYS_GPS,prn))) {
-        trace(2,"binex 0x01-01: satellite error prn=%d\n",prn);
+        rtk_trace(2,"binex 0x01-01: satellite error prn=%d\n",prn);
         return -1;
     }
     eph.A=sqrtA*sqrtA;
@@ -495,7 +495,7 @@ static int decode_bnx_01_02(raw_t *raw, unsigned char *buff, int len)
     double tod,tof,tau_gps;
     int prn,day,leap;
     
-    trace(4,"binex 0x01-02: len=%d\n",len);
+    rtk_trace(4,"binex 0x01-02: len=%d\n",len);
     
     if (len>=119) {
         prn        =U1(p)+1;   p+=1;
@@ -521,11 +521,11 @@ static int decode_bnx_01_02(raw_t *raw, unsigned char *buff, int len)
         geph.dtaun =R8(p);
     }
     else {
-        trace(2,"binex 0x01-02: length error len=%d\n",len);
+        rtk_trace(2,"binex 0x01-02: length error len=%d\n",len);
         return -1;
     }
     if (!(geph.sat=satno(SYS_GLO,prn))) {
-        trace(2,"binex 0x01-02: satellite error prn=%d\n",prn);
+        rtk_trace(2,"binex 0x01-02: satellite error prn=%d\n",prn);
         return -1;
     }
     if (raw->time.time==0) return 0;
@@ -549,7 +549,7 @@ static int decode_bnx_01_03(raw_t *raw, unsigned char *buff, int len)
     double tow,tod,tof;
     int prn,week,iodn;
     
-    trace(4,"binex 0x01-03: len=%d\n",len);
+    rtk_trace(4,"binex 0x01-03: len=%d\n",len);
     
     if (len>=98) {
         prn        =U1(p);     p+=1;
@@ -572,11 +572,11 @@ static int decode_bnx_01_03(raw_t *raw, unsigned char *buff, int len)
         iodn       =U1(p);
     }
     else {
-        trace(2,"binex 0x01-03 length error: len=%d\n",len);
+        rtk_trace(2,"binex 0x01-03 length error: len=%d\n",len);
         return -1;
     }
     if (!(seph.sat=satno(SYS_SBS,prn))) {
-        trace(2,"binex 0x01-03 satellite error: prn=%d\n",prn);
+        rtk_trace(2,"binex 0x01-03 satellite error: prn=%d\n",prn);
         return -1;
     }
     seph.t0=gpst2time(week,tow);
@@ -598,7 +598,7 @@ static int decode_bnx_01_04(raw_t *raw, unsigned char *buff, int len)
     double tow,ura,sqrtA;
     int prn,eph_sel=0;
     
-    trace(4,"binex 0x01-04: len=%d\n",len);
+    rtk_trace(4,"binex 0x01-04: len=%d\n",len);
     
     if (strstr(raw->opt,"-GALINAV")) eph_sel=1;
     if (strstr(raw->opt,"-GALFNAV")) eph_sel=2;
@@ -634,11 +634,11 @@ static int decode_bnx_01_04(raw_t *raw, unsigned char *buff, int len)
         eph.code  =U2(p); /* data source defined as rinex 3.03 */
     }
     else {
-        trace(2,"binex 0x01-04: length error len=%d\n",len);
+        rtk_trace(2,"binex 0x01-04: length error len=%d\n",len);
         return -1;
     }
     if (!(eph.sat=satno(SYS_GAL,prn))) {
-        trace(2,"binex 0x01-04: satellite error prn=%d\n",prn);
+        rtk_trace(2,"binex 0x01-04: satellite error prn=%d\n",prn);
         return -1;
     }
     if (eph_sel==1&&!(eph.code&(1<<9))) return 0; /* only I/NAV */
@@ -672,7 +672,7 @@ static int decode_bnx_01_05(raw_t *raw, unsigned char *buff, int len)
     double tow,toc,sqrtA;
     int prn,flag1,flag2;
     
-    trace(4,"binex 0x01-05: len=%d\n",len);
+    rtk_trace(4,"binex 0x01-05: len=%d\n",len);
     
     if (len>=117) {
         prn       =U1(p);        p+=1;
@@ -702,11 +702,11 @@ static int decode_bnx_01_05(raw_t *raw, unsigned char *buff, int len)
         flag2     =U4(p);
     }
     else {
-        trace(2,"binex 0x01-05: length error len=%d\n",len);
+        rtk_trace(2,"binex 0x01-05: length error len=%d\n",len);
         return -1;
     }
     if (!(eph.sat=satno(SYS_CMP,prn))) {
-        trace(2,"binex 0x01-05: satellite error prn=%d\n",prn);
+        rtk_trace(2,"binex 0x01-05: satellite error prn=%d\n",prn);
         return 0;
     }
     eph.A=sqrtA*sqrtA;
@@ -740,7 +740,7 @@ static int decode_bnx_01_06(raw_t *raw, unsigned char *buff, int len)
     double tow,ura,sqrtA;
     int prn,flag;
     
-    trace(4,"binex 0x01-06: len=%d\n",len);
+    rtk_trace(4,"binex 0x01-06: len=%d\n",len);
     
     if (len>=127) {
         prn       =U1(p);        p+=1;
@@ -773,11 +773,11 @@ static int decode_bnx_01_06(raw_t *raw, unsigned char *buff, int len)
         flag      =U2(p);
     }
     else {
-        trace(2,"binex 0x01-06: length error len=%d\n",len);
+        rtk_trace(2,"binex 0x01-06: length error len=%d\n",len);
         return -1;
     }
     if (!(eph.sat=satno(SYS_QZS,prn))) {
-        trace(2,"binex 0x01-06: satellite error prn=%d\n",prn);
+        rtk_trace(2,"binex 0x01-06: satellite error prn=%d\n",prn);
         return 0;
     }
     eph.A=sqrtA*sqrtA;
@@ -804,7 +804,7 @@ static int decode_bnx_01_14(raw_t *raw, unsigned char *buff, int len)
     double tow,ura,sqrtA;
     int prn,tocs,eph_sel=0;
     
-    trace(4,"binex 0x01-14: len=%d\n",len);
+    rtk_trace(4,"binex 0x01-14: len=%d\n",len);
     
     if (strstr(raw->opt,"-GALINAV")) eph_sel=1;
     if (strstr(raw->opt,"-GALFNAV")) eph_sel=2;
@@ -841,11 +841,11 @@ static int decode_bnx_01_14(raw_t *raw, unsigned char *buff, int len)
         eph.code  =U2(p); /* data source defined as rinex 3.03 */
     }
     else {
-        trace(2,"binex 0x01-14: length error len=%d\n",len);
+        rtk_trace(2,"binex 0x01-14: length error len=%d\n",len);
         return -1;
     }
     if (!(eph.sat=satno(SYS_GAL,prn))) {
-        trace(2,"binex 0x01-14: satellite error prn=%d\n",prn);
+        rtk_trace(2,"binex 0x01-14: satellite error prn=%d\n",prn);
         return -1;
     }
     if (eph_sel==1&&!(eph.code&(1<<9))) return 0; /* only I/NAV */
@@ -891,55 +891,55 @@ static int decode_bnx_01(raw_t *raw, unsigned char *buff, int len)
 /* decode binex mesaage 0x02: generalized gnss data --------------------------*/
 static int decode_bnx_02(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x02: not supported message\n");
+    rtk_trace(2,"binex 0x02: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x03: generalized ancillary site data ----------------*/
 static int decode_bnx_03(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x03: not supported message\n");
+    rtk_trace(2,"binex 0x03: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x7d: receiver internal state prototyping ------------*/
 static int decode_bnx_7d(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x7d: not supported message\n");
+    rtk_trace(2,"binex 0x7d: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x7e: ancillary site data prototyping ----------------*/
 static int decode_bnx_7e(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x7e: not supported message\n");
+    rtk_trace(2,"binex 0x7e: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x7f-00: jpl fiducial site ---------------------------*/
 static int decode_bnx_7f_00(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x7f-00: not supported message\n");
+    rtk_trace(2,"binex 0x7f-00: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x7f-01: ucar cosmic ---------------------------------*/
 static int decode_bnx_7f_01(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x7f-01: not supported message\n");
+    rtk_trace(2,"binex 0x7f-01: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x7f-02: trimble 4700 --------------------------------*/
 static int decode_bnx_7f_02(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x7f-02: not supported message\n");
+    rtk_trace(2,"binex 0x7f-02: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x7f-03: trimble netrs -------------------------------*/
 static int decode_bnx_7f_03(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x7f-03: not supported message\n");
+    rtk_trace(2,"binex 0x7f-03: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x7f-04: trimble netrs -------------------------------*/
 static int decode_bnx_7f_04(raw_t *raw, unsigned char *buff, int len)
 {
-    trace(2,"binex 0x7f-04: not supported message\n");
+    rtk_trace(2,"binex 0x7f-04: not supported message\n");
     return 0;
 }
 /* decode binex mesaage 0x7f-05: trimble netr8 obs data ----------------------*/
@@ -987,7 +987,7 @@ static unsigned char *decode_bnx_7f_05_obs(raw_t *raw, unsigned char *buff,
     unsigned char flag,flags[4];
     int i,j,k,sys,fcn=-10,code[8],slip[8],pri[8],freq[8],slipcnt[8]={0},mask[8]={0};
     
-    trace(5,"decode_bnx_7f_05_obs: sat=%2d nobs=%2d\n",sat,nobs);
+    rtk_trace(5,"decode_bnx_7f_05_obs: sat=%2d nobs=%2d\n",sat,nobs);
     
     sys=satsys(sat,NULL);
     
@@ -1048,9 +1048,9 @@ static unsigned char *decode_bnx_7f_05_obs(raw_t *raw, unsigned char *buff,
                 slipcnt[i]=U1(p); p+=1;
             }
         }
-        trace(5,"(%d) CODE=%2d S=%d F=%02X %02X %02X %02X\n",i+1,
+        rtk_trace(5,"(%d) CODE=%2d S=%d F=%02X %02X %02X %02X\n",i+1,
               code[i],slip[i],flags[0],flags[1],flags[2],flags[3]);
-        trace(5,"(%d) P=%13.3f L=%13.3f D=%7.1f SNR=%4.1f SCNT=%2d\n",
+        rtk_trace(5,"(%d) P=%13.3f L=%13.3f D=%7.1f SNR=%4.1f SCNT=%2d\n",
               i+1,range[i],phase[i],dopp[i],cnr[i],slipcnt[i]);
     }
     if (!codes) {
@@ -1136,7 +1136,7 @@ static int decode_bnx_7f_05(raw_t *raw, unsigned char *buff, int len)
     unsigned int flag;
     int i,nsat,nobs,prn,sys,sat,clkrst=0,rsys=0,nsys=0,tsys[16]={0};
     
-    trace(4,"decode_bnx_7f_05\n");
+    rtk_trace(4,"decode_bnx_7f_05\n");
     
     raw->obs.n=0;
     flag=U1(p++);
@@ -1159,7 +1159,7 @@ static int decode_bnx_7f_05(raw_t *raw, unsigned char *buff, int len)
         nobs=getbitu(p,1,3);
         sys =getbitu(p,4,4); p++;
         
-        trace(5,"binex 0x7F-05 PRN=%3d SYS=%d NOBS=%d\n",prn,sys,nobs);
+        rtk_trace(5,"binex 0x7F-05 PRN=%3d SYS=%d NOBS=%d\n",prn,sys,nobs);
         
         switch (sys) {
             case 0: sat=satno(SYS_GPS,prn); break;
@@ -1174,7 +1174,7 @@ static int decode_bnx_7f_05(raw_t *raw, unsigned char *buff, int len)
         if (!(p=decode_bnx_7f_05_obs(raw,p,sat,nobs,&data))) return -1;
         
         if ((int)(p-buff)>len) {
-            trace(2,"binex 0x7F-05 length error: nsat=%2d len=%d\n",nsat,len);
+            rtk_trace(2,"binex 0x7F-05 length error: nsat=%2d len=%d\n",nsat,len);
             return -1;
         }
         /* save obs data to obs buffer */
@@ -1226,7 +1226,7 @@ static int decode_bnx(raw_t *raw)
     /* record and header length */
     len_h=getbnxi(raw->buff+2,&len);
     
-    trace(5,"decode_bnx: rec=%02x len=%d\n",rec,len);
+    rtk_trace(5,"decode_bnx: rec=%02x len=%d\n",rec,len);
     
     /* check parity */
     if (raw->len-1<128) {
@@ -1238,7 +1238,7 @@ static int decode_bnx(raw_t *raw)
         cs2=rtk_crc16(raw->buff+1,raw->len-1);
     }
     if (cs1!=cs2) {
-        trace(2,"binex 0x%02X parity error CS=%X %X\n",rec,cs1,cs2);
+        rtk_trace(2,"binex 0x%02X parity error CS=%X %X\n",rec,cs1,cs2);
         return -1;
     }
     if (raw->outtype) {
@@ -1300,7 +1300,7 @@ extern int input_bnx(raw_t *raw, unsigned char data)
     unsigned int len;
     int len_h,len_c;
     
-    trace(5,"input_bnx: data=%02x\n",data);
+    rtk_trace(5,"input_bnx: data=%02x\n",data);
     
     /* synchronize binex message */
     if (raw->nbyte==0) {
@@ -1316,7 +1316,7 @@ extern int input_bnx(raw_t *raw, unsigned char data)
     raw->len=len+len_h+2; /* length without crc */
     
     if (raw->len-1>4096) {
-        trace(2,"binex length error: len=%d\n",raw->len-1);
+        rtk_trace(2,"binex length error: len=%d\n",raw->len-1);
         raw->nbyte=0;
         return -1;
     }
@@ -1339,7 +1339,7 @@ extern int input_bnxf(raw_t *raw, FILE *fp)
     unsigned int len;
     int i,data,len_h,len_c;
     
-    trace(4,"input_bnxf\n");
+    rtk_trace(4,"input_bnxf\n");
     
     if (raw->nbyte==0) {
         for (i=0;;i++) {
@@ -1355,7 +1355,7 @@ extern int input_bnxf(raw_t *raw, FILE *fp)
     raw->len=len+len_h+2;
     
     if (raw->len-1>4096) {
-        trace(2,"binex length error: len=%d\n",raw->len-1);
+        rtk_trace(2,"binex length error: len=%d\n",raw->len-1);
         raw->nbyte=0;
         return -1;
     }

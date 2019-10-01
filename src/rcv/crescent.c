@@ -57,7 +57,7 @@ static int chksum(const unsigned char *buff, int len)
     int i;
     
     for (i=8;i<len-4;i++) sum+=buff[i];
-    trace(4,"checksum=%02X%02X %02X%02X:%02X%02X\n",
+    rtk_trace(4,"checksum=%02X%02X %02X%02X:%02X%02X\n",
           sum>>8,sum&0xFF,buff[len-3],buff[len-4],buff[len-2],buff[len-1]);
     return (sum>>8)==buff[len-3]&&(sum&0xFF)==buff[len-4]&&
            buff[len-2]==0x0D&&buff[len-1]==0x0A;
@@ -70,10 +70,10 @@ static int decode_crespos(raw_t *raw)
     char tstr[64];
     unsigned char *p=raw->buff+8;
     
-    trace(4,"decode_crespos: len=%d\n",raw->len);
+    rtk_trace(4,"decode_crespos: len=%d\n",raw->len);
     
     if (raw->len!=64) {
-        trace(2,"crescent bin 1 message length error: len=%d\n",raw->len);
+        rtk_trace(2,"crescent bin 1 message length error: len=%d\n",raw->len);
         return -1;
     }
     ns  =U1(p+1);
@@ -88,7 +88,7 @@ static int decode_crespos(raw_t *raw)
     std =R4(p+44);
     mode=U2(p+48);
     time2str(gpst2time(week,tow),tstr,3);
-    trace(3,"$BIN1 %s %13.9f %14.9f %10.4f %4d %3d %.3f\n",tstr,pos[0],pos[1],
+    rtk_trace(3,"$BIN1 %s %13.9f %14.9f %10.4f %4d %3d %.3f\n",tstr,pos[0],pos[1],
           pos[2],mode==6?1:(mode>4?2:(mode>1?5:0)),ns,std);
     return 0;
 }
@@ -101,10 +101,10 @@ static int decode_cresraw(raw_t *raw)
     unsigned int word1,sn,sc;
     unsigned char *p=raw->buff+8;
     
-    trace(4,"decode_cresraw: len=%d\n",raw->len);
+    rtk_trace(4,"decode_cresraw: len=%d\n",raw->len);
     
     if (raw->len!=312) {
-        trace(2,"crescent bin 96 message length error: len=%d\n",raw->len);
+        rtk_trace(2,"crescent bin 96 message length error: len=%d\n",raw->len);
         return -1;
     }
     week=U2(p+2);
@@ -121,7 +121,7 @@ static int decode_cresraw(raw_t *raw)
         word2=I4(p+4);
         if ((prn=word1&0xFF)==0) continue; /* if 0, no data */
         if (!(sat=satno(prn<=MAXPRNGPS?SYS_GPS:SYS_SBS,prn))) {
-            trace(2,"creasent bin 96 satellite number error: prn=%d\n",prn);
+            rtk_trace(2,"creasent bin 96 satellite number error: prn=%d\n",prn);
             continue;
         }
         pr=R8(p+ 8)-toff;
@@ -166,10 +166,10 @@ static int decode_cresraw2(raw_t *raw)
     unsigned int word1,word2,word3,sc,sn;
     unsigned char *p=raw->buff+8;
     
-    trace(4,"decode_cresraw2: len=%d\n",raw->len);
+    rtk_trace(4,"decode_cresraw2: len=%d\n",raw->len);
     
     if (raw->len!=460) {
-        trace(2,"crescent bin 76 message length error: len=%d\n",raw->len);
+        rtk_trace(2,"crescent bin 76 message length error: len=%d\n",raw->len);
         return -1;
     }
     tow =R8(p);
@@ -188,7 +188,7 @@ static int decode_cresraw2(raw_t *raw)
         word1=U4(p+324+4*i); /* L1CACodeMSBsPRN */
         if ((prn=word1&0xFF)==0) continue; /* if 0, no data */
         if (!(sat=satno(prn<=MAXPRNGPS?SYS_GPS:SYS_SBS,prn))) {
-            trace(2,"creasent bin 76 satellite number error: prn=%d\n",prn);
+            rtk_trace(2,"creasent bin 76 satellite number error: prn=%d\n",prn);
             continue;
         }
         pr1=(word1>>13)*256.0; /* upper 19bit of L1CA pseudorange */
@@ -277,15 +277,15 @@ static int decode_creseph(raw_t *raw)
     int i,j,k,prn,sat;
     unsigned char *p=raw->buff+8,buff[90];
     
-    trace(4,"decode_creseph: len=%d\n",raw->len);
+    rtk_trace(4,"decode_creseph: len=%d\n",raw->len);
     
     if (raw->len!=140) {
-        trace(2,"crescent bin 95 message length error: len=%d\n",raw->len);
+        rtk_trace(2,"crescent bin 95 message length error: len=%d\n",raw->len);
         return -1;
     }
     prn=U2(p);
     if (!(sat=satno(SYS_GPS,prn))) {
-        trace(2,"crescent bin 95 satellite number error: prn=%d\n",prn);
+        rtk_trace(2,"crescent bin 95 satellite number error: prn=%d\n",prn);
         return -1;
     }
     for (i=0;i<3;i++) for (j=0;j<10;j++) {
@@ -295,7 +295,7 @@ static int decode_creseph(raw_t *raw)
     if (decode_frame(buff   ,&eph,NULL,NULL,NULL,NULL)!=1||
         decode_frame(buff+30,&eph,NULL,NULL,NULL,NULL)!=2||
         decode_frame(buff+60,&eph,NULL,NULL,NULL,NULL)!=3) {
-        trace(2,"crescent bin 95 navigation frame error: prn=%d\n",prn);
+        rtk_trace(2,"crescent bin 95 navigation frame error: prn=%d\n",prn);
         return -1;
     }
     if (!strstr(raw->opt,"-EPHALL")) {
@@ -312,10 +312,10 @@ static int decode_cresionutc(raw_t *raw)
     int i;
     unsigned char *p=raw->buff+8;
     
-    trace(4,"decode_cresionutc: len=%d\n",raw->len);
+    rtk_trace(4,"decode_cresionutc: len=%d\n",raw->len);
     
     if (raw->len!=108) {
-        trace(2,"crescent bin 94 message length error: len=%d\n",raw->len);
+        rtk_trace(2,"crescent bin 94 message length error: len=%d\n",raw->len);
         return -1;
     }
     for (i=0;i<8;i++) raw->nav.ion_gps[i]=R8(p+i*8);
@@ -334,15 +334,15 @@ static int decode_creswaas(raw_t *raw)
     int i,j,k,prn;
     unsigned char *p=raw->buff+8;
     
-    trace(4,"decode_creswaas: len=%d\n",raw->len);
+    rtk_trace(4,"decode_creswaas: len=%d\n",raw->len);
     
     if (raw->len!=52) {
-        trace(2,"creasent bin 80 message length error: len=%d\n",raw->len);
+        rtk_trace(2,"creasent bin 80 message length error: len=%d\n",raw->len);
         return -1;
     }
     prn=U2(p);
     if (prn<MINPRNSBS||MAXPRNSBS<prn) {
-        trace(2,"creasent bin 80 satellite number error: prn=%d\n",prn);
+        rtk_trace(2,"creasent bin 80 satellite number error: prn=%d\n",prn);
         return -1;
     }
     raw->sbsmsg.prn=prn;
@@ -367,12 +367,12 @@ static int decode_cresgloraw(raw_t *raw)
     unsigned int word1,word2,word3,sc,sn;
     unsigned char *p=raw->buff+8;
     
-    trace(4,"decode_cregloraw: len=%d\n",raw->len);
+    rtk_trace(4,"decode_cregloraw: len=%d\n",raw->len);
     
     if (!strstr(raw->opt,"-ENAGLO")) return 0;
     
     if (raw->len!=364) {
-        trace(2,"crescent bin 66 message length error: len=%d\n",raw->len);
+        rtk_trace(2,"crescent bin 66 message length error: len=%d\n",raw->len);
         return -1;
     }
     tow =R8(p);
@@ -391,7 +391,7 @@ static int decode_cresgloraw(raw_t *raw)
         word1=U4(p+288+4*i); /* L1CACodeMSBsSlot */
         if ((prn=word1&0xFF)==0) continue; /* if 0, no data */
         if (!(sat=satno(SYS_GLO,prn))) {
-            trace(2,"creasent bin 66 satellite number error: prn=%d\n",prn);
+            rtk_trace(2,"creasent bin 66 satellite number error: prn=%d\n",prn);
             continue;
         }
         pr1=(word1>>13)*256.0; /* upper 19bit of L1CA pseudorange */
@@ -477,7 +477,7 @@ static int decode_cresgloeph(raw_t *raw)
     unsigned char *p=raw->buff+8,str[12];
     int i,j,k,sat,prn,frq,time,no;
     
-    trace(4,"decode_cregloeph: len=%d\n",raw->len);
+    rtk_trace(4,"decode_cregloeph: len=%d\n",raw->len);
     
     if (!strstr(raw->opt,"-ENAGLO")) return 0;
     
@@ -486,7 +486,7 @@ static int decode_cresgloeph(raw_t *raw)
     time=U4(p);   p+=4;
     
     if (!(sat=satno(SYS_GLO,prn))) {
-        trace(2,"creasent bin 65 satellite number error: prn=%d\n",prn);
+        rtk_trace(2,"creasent bin 65 satellite number error: prn=%d\n",prn);
         return -1;
     }
     for (i=0;i<5;i++) {
@@ -494,7 +494,7 @@ static int decode_cresgloeph(raw_t *raw)
             str[k+j*4]=U1(p++);
         }
         if ((no=getbitu(str,1,4))!=i+1) {
-            trace(2,"creasent bin 65 string no error: sat=%2d no=%d %d\n",sat,
+            rtk_trace(2,"creasent bin 65 string no error: sat=%2d no=%d %d\n",sat,
                   i+1,no);
             return -1;
         }
@@ -517,10 +517,10 @@ static int decode_cres(raw_t *raw)
 {
     int type=U2(raw->buff+4);
     
-    trace(3,"decode_cres: type=%2d len=%d\n",type,raw->len);
+    rtk_trace(3,"decode_cres: type=%2d len=%d\n",type,raw->len);
     
     if (!chksum(raw->buff,raw->len)) {
-        trace(2,"crescent checksum error: type=%2d len=%d\n",type,raw->len);
+        rtk_trace(2,"crescent checksum error: type=%2d len=%d\n",type,raw->len);
         return -1;
     }
     if (raw->outtype) {
@@ -563,7 +563,7 @@ static int sync_cres(unsigned char *buff, unsigned char data)
 *-----------------------------------------------------------------------------*/
 extern int input_cres(raw_t *raw, unsigned char data)
 {
-    trace(5,"input_cres: data=%02x\n",data);
+    rtk_trace(5,"input_cres: data=%02x\n",data);
     
     /* synchronize frame */
     if (raw->nbyte==0) {
@@ -575,7 +575,7 @@ extern int input_cres(raw_t *raw, unsigned char data)
     
     if (raw->nbyte==8) {
         if ((raw->len=U2(raw->buff+6)+12)>MAXRAWLEN) {
-            trace(2,"cresent length error: len=%d\n",raw->len);
+            rtk_trace(2,"cresent length error: len=%d\n",raw->len);
             raw->nbyte=0;
             return -1;
         }
@@ -596,7 +596,7 @@ extern int input_cresf(raw_t *raw, FILE *fp)
 {
     int i,data;
     
-    trace(4,"input_cresf:\n");
+    rtk_trace(4,"input_cresf:\n");
     
     /* synchronize frame */
     if (raw->nbyte==0) {
@@ -610,7 +610,7 @@ extern int input_cresf(raw_t *raw, FILE *fp)
     raw->nbyte=8;
     
     if ((raw->len=U2(raw->buff+6)+12)>MAXRAWLEN) {
-        trace(2,"crescent length error: len=%d\n",raw->len);
+        rtk_trace(2,"crescent length error: len=%d\n",raw->len);
         raw->nbyte=0;
         return -1;
     }

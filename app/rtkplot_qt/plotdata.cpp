@@ -35,7 +35,7 @@ void Plot::ReadSol(const QStringList &files, int sel)
     int i,n=0;
     char *paths[MAXNFILE];
     
-    trace(3,"ReadSol: sel=%d\n",sel);
+    rtk_trace(3,"ReadSol: sel=%d\n",sel);
 
     setlocale(LC_NUMERIC,"C"); // use point as decimal separator in formated output
 
@@ -114,7 +114,7 @@ void Plot::ReadSolStat(const QStringList &files, int sel)
     int i,n=0;
     char *paths[MAXNFILE];
     
-    trace(3,"ReadSolStat\n");
+    rtk_trace(3,"ReadSolStat\n");
     
     setlocale(LC_NUMERIC,"C"); // use point as decimal separator in formated output
 
@@ -142,7 +142,7 @@ void Plot::ReadObs(const QStringList &files)
     sta_t sta;
     int nobs;
     
-    trace(3,"ReadObs\n");
+    rtk_trace(3,"ReadObs\n");
     
     setlocale(LC_NUMERIC,"C"); // use point as decimal separator in formated output
 
@@ -204,7 +204,7 @@ int Plot::ReadObsRnx(const QStringList &files, obs_t *obs, nav_t *nav,
     char obsfile[1024],navfile[1024]="",*p,*q,opt[2048];
     strcpy(opt,qPrintable(RnxOpts));
     
-    trace(3,"ReadObsRnx\n");
+    rtk_trace(3,"ReadObsRnx\n");
     
     setlocale(LC_NUMERIC,"C"); // use point as decimal separator in formated output
 
@@ -272,7 +272,7 @@ void Plot::ReadNav(const QStringList &files)
     int i;
     strcpy(opt,qPrintable(RnxOpts));
 
-    trace(3,"ReadNav\n");
+    rtk_trace(3,"ReadNav\n");
     
     if (files.size()<=0) return;
     
@@ -320,7 +320,7 @@ void Plot::ReadElMaskData(const QString &file)
     int i,j;
     QByteArray buff;
     
-    trace(3,"ReadElMaskData\n");
+    rtk_trace(3,"ReadElMaskData\n");
     
     for (i=0;i<=360;i++) ElMaskData[i]=0.0;
     
@@ -359,7 +359,7 @@ void Plot::GenVisData(void)
     int nobs=0;
     char name[16];
     
-    trace(3,"GenVisData\n");
+    rtk_trace(3,"GenVisData\n");
     
     memset(&data,0,sizeof(obsd_t));
 
@@ -432,7 +432,7 @@ void Plot::ReadMapData(const QString &file)
 {
     QImage image;
     
-    trace(3,"ReadMapData\n");
+    rtk_trace(3,"ReadMapData\n");
 
     ShowMsg(QString("reading map image... %1").arg(file));
     
@@ -596,7 +596,7 @@ void Plot::ReadSkyTag(const QString &file)
     QFile fp(file);
     QByteArray buff;
     
-    trace(3,"ReadSkyTag\n");
+    rtk_trace(3,"ReadSkyTag\n");
     
     if (!fp.open(QIODevice::ReadOnly)) return;
     
@@ -632,7 +632,7 @@ void Plot::ReadSkyData(const QString &file)
     QImage image;
     int i,w,h,wr;
     
-    trace(3,"ReadSkyData\n");
+    rtk_trace(3,"ReadSkyData\n");
     
     ShowMsg(QString("reading sky data... %1").arg(file));
 
@@ -672,7 +672,7 @@ void Plot::ReadMapTag(const QString &file)
     QFile fp(file+".tag");
     QByteArray buff;
     
-    trace(3,"ReadMapTag\n");
+    rtk_trace(3,"ReadMapTag\n");
     
     if (!(fp.open(QIODevice::ReadOnly))) return;
     
@@ -858,7 +858,7 @@ void Plot::SaveDop(const QString &file)
     char tstr[64];
     QString tlabel;
     
-    trace(3,"SaveDop: file=%s\n",qPrintable(file));
+    rtk_trace(3,"SaveDop: file=%s\n",qPrintable(file));
     
     if (!(fp.open(QIODevice::WriteOnly))) return;
     
@@ -913,7 +913,7 @@ void Plot::SaveSnrMp(const QString &file)
     int i,j,k,week;
     strcpy(code,qPrintable(ObsTypeText.mid(1)));
     
-    trace(3,"SaveSnrMp: file=%s\n",qPrintable(file));
+    rtk_trace(3,"SaveSnrMp: file=%s\n",qPrintable(file));
     
     if (!(fp.open(QIODevice::WriteOnly))) return;
 
@@ -965,7 +965,7 @@ void Plot::SaveElMask(const QString &file)
     double el,el0=0.0;
     int az;
     
-    trace(3,"SaveElMask: file=%s\n",qPrintable(file));
+    rtk_trace(3,"SaveElMask: file=%s\n",qPrintable(file));
     
     if (!(fp.open(QIODevice::WriteOnly))) return;
     
@@ -986,7 +986,7 @@ void Plot::Connect(void)
     char cmd[1024],path[1024],buff[MAXSTRPATH],*name[2]={"",""},*p;
     int i,mode=STR_MODE_R;
     
-    trace(3,"Connect\n");
+    rtk_trace(3,"Connect\n");
     
     if (ConnectState) return;
     
@@ -1011,7 +1011,7 @@ void Plot::Connect(void)
         if (!stropen(Stream+i,RtStream[i],mode,path)) {
             ShowMsg(QString(tr("connect error: %1")).arg(name[0]));
             ShowLegend(NULL);
-            trace(1,"stream open error: ch=%d type=%d path=%s\n",i+1,RtStream[i],path);
+            rtk_trace(1,"stream open error: ch=%d type=%d path=%s\n",i+1,RtStream[i],path);
             continue;
         }
         strsettimeout(Stream+i,RtTimeOutTime,RtReConnTime);
@@ -1044,7 +1044,7 @@ void Plot::Disconnect(void)
     char cmd[1024];
     int i;
     
-    trace(3,"Disconnect\n");
+    rtk_trace(3,"Disconnect\n");
     
     if (!ConnectState) return;
     
@@ -1094,7 +1094,7 @@ void Plot::UpdateObs(int nobs)
     int i,j,k,svh,per,per_=-1;
     char msg[128],name[16];
     
-    trace(3,"UpdateObs\n");
+    rtk_trace(3,"UpdateObs\n");
     
     memset(&sol,0,sizeof(sol_t));
 
@@ -1175,7 +1175,7 @@ void Plot::UpdateMp(void)
     double lam1,lam2,I,C,B;
     int i,j,k,f1,f2,sat,sys,per,per_=-1,n;
     
-    trace(3,"UpdateMp\n");
+    rtk_trace(3,"UpdateMp\n");
     
     for (i=0;i<NFREQ+NEXOBS;i++) {
         delete [] Mp[i]; Mp[i]=NULL;
@@ -1259,7 +1259,7 @@ void Plot::UpdateMp(void)
 // set connect path ---------------------------------------------------------
 void Plot::ConnectPath(const QString &path, int ch)
 {
-    trace(3,"ConnectPath: path=%s ch=%d\n",qPrintable(path),ch);
+    rtk_trace(3,"ConnectPath: path=%s ch=%d\n",qPrintable(path),ch);
     
     RtStream[ch]=STR_NONE;
     
@@ -1327,7 +1327,7 @@ void Plot::Clear(void)
     double ep[]={2010,1,1,0,0,0};
     int i;
     
-    trace(3,"Clear\n");
+    rtk_trace(3,"Clear\n");
     
     Week=0;
     
@@ -1370,7 +1370,7 @@ void Plot::Reload(void)
 {
     QStringList obsfiles,navfiles;
     
-    trace(3,"Reload\n");
+    rtk_trace(3,"Reload\n");
     
     if (SimObs) {
         GenVisData();

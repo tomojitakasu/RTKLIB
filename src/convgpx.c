@@ -141,7 +141,7 @@ extern int convgpx(const char *infile, const char *outfile, gtime_t ts,
     int i,j;
     char *p,file[1024];
     
-    trace(3,"convgpx : infile=%s outfile=%s\n",infile,outfile);
+    rtk_trace(3,"convgpx : infile=%s outfile=%s\n",infile,outfile);
     
     if (!*outfile) {
         if ((p=strrchr(infile,'.'))) {

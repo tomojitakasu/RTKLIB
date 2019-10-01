@@ -13,7 +13,7 @@ void Plot::UpdateInfo(void)
     int showobs=(PLOT_OBS<=PlotType&&PlotType<=PLOT_DOP)||
                 PlotType==PLOT_SNR||PlotType==PLOT_SNRE||PlotType==PLOT_MPS;
     
-    trace(3,"UpdateInfo:\n");
+    rtk_trace(3,"UpdateInfo:\n");
     
     if (BtnShowTrack->isChecked()) {
         if (showobs) UpdateTimeObs(); else UpdateTimeSol();
@@ -35,7 +35,7 @@ void Plot::UpdateTimeObs(void)
     int i,ns=0,no=0,ind=ObsIndex;
     QString tstr;
     
-    trace(3,"UpdateTimeObs\n");
+    rtk_trace(3,"UpdateTimeObs\n");
     
     if (BtnSol1->isChecked()&&0<=ind&&ind<NObs) {
         
@@ -89,7 +89,7 @@ void Plot::UpdateTimeSol(void)
     int sel=BtnSol1->isChecked()||!BtnSol2->isChecked()?0:1,ind=SolIndex[sel];
     QString tstr;
     
-    trace(3,"UpdateTimeSol\n");
+    rtk_trace(3,"UpdateTimeSol\n");
     
     if ((BtnSol1->isChecked()||BtnSol2->isChecked()||BtnSol12->isChecked())&&
         (data=getsol(SolData+sel,ind))) {
@@ -142,7 +142,7 @@ void Plot::UpdateInfoObs(void)
     int i,n=0,ne=0;
     QString s1,s2;
     
-    trace(3,"UpdateInfoObs:\n");
+    rtk_trace(3,"UpdateInfoObs:\n");
     
     if (BtnSol1->isChecked()) {
         for (i=0;i<Obs.n;i++) {
@@ -187,7 +187,7 @@ void Plot::UpdateInfoSol(void)
     int i,j,n=0,nq[8]={0},sel=BtnSol1->isChecked()||!BtnSol2->isChecked()?0:1;
     QString s1,s2;
     
-    trace(3,"UpdateInfoSol:\n");
+    rtk_trace(3,"UpdateInfoSol:\n");
     
     if (BtnSol1->isChecked()||BtnSol2->isChecked()) {
         pos=SolToPos(SolData+sel,-1,0,0);
@@ -248,7 +248,7 @@ void Plot::UpdatePlotType(void)
 {
     int i;
     
-    trace(3,"UpdatePlotType\n");
+    rtk_trace(3,"UpdatePlotType\n");
     
     PlotTypeS->blockSignals(true);
     PlotTypeS->clear();
@@ -289,7 +289,7 @@ void Plot::UpdateSatList(void)
     int i,j,sys,sysp=0,sat,smask[MAXSAT]={0};
     char s[8];
     
-    trace(3,"UpdateSatList\n");
+    rtk_trace(3,"UpdateSatList\n");
     
     for (i=0;i<2;i++) for (j=0;j<SolStat[i].n;j++) {
         sat=SolStat[i].data[j].sat;
@@ -330,7 +330,7 @@ void Plot::UpdateObsType(void)
     char *codes[MAXCODE+1],freqs[]="125678";
     int i,j,n=0,cmask[MAXCODE+1]={0},fmask[6]={0};
     
-    trace(3,"UpdateObsType\n");
+    rtk_trace(3,"UpdateObsType\n");
     
     for (i=0;i<Obs.n;i++) for (j=0;j<NFREQ+NEXOBS;j++) {
         cmask[Obs.data[i].code[j]]=1;
@@ -366,7 +366,7 @@ void Plot::UpdatePoint(int x, int y)
     QString tstr;
     QString msg;
     
-    trace(4,"UpdatePoint: x=%d y=%d\n",x,y);
+    rtk_trace(4,"UpdatePoint: x=%d y=%d\n",x,y);
     
     if (PlotType==PLOT_TRK) { // track-plot
         
