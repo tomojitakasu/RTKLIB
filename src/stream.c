@@ -276,7 +276,7 @@ static int readseribuff(serial_t *serial, unsigned char *buff, int nmax)
     
     tracet(5,"readseribuff: dev=%d\n",serial->dev);
     
-    lock(&serial->lock);
+    rtk_lock(&serial->lock);
     for (ns=0;serial->rp!=serial->wp&&ns<nmax;ns++) {
        buff[ns]=serial->buff[serial->rp];
        if (++serial->rp>=serial->buffsize) serial->rp=0;
@@ -291,7 +291,7 @@ static int writeseribuff(serial_t *serial, unsigned char *buff, int n)
     
     tracet(5,"writeseribuff: dev=%d n=%d\n",serial->dev,n);
     
-    lock(&serial->lock);
+    rtk_lock(&serial->lock);
     for (ns=0;ns<n;ns++) {
         serial->buff[wp=serial->wp]=buff[ns];
         if (++wp>=serial->buffsize) wp=0;
@@ -1816,7 +1816,7 @@ static int test_mntpnt(ntripc_t *ntripc, const char *mntpnt)
 {
     char *p,str[256];
     
-    lock(&ntripc->lock_srctbl);
+    rtk_lock(&ntripc->lock_srctbl);
     
     if (!ntripc->srctbl) {
         unlock(&ntripc->lock_srctbl);
@@ -1835,7 +1835,7 @@ static void send_srctbl(ntripc_t *ntripc, socket_t sock)
     char buff[1024],*p=buff;
     int len;
     
-    lock(&ntripc->lock_srctbl);
+    rtk_lock(&ntripc->lock_srctbl);
     
     len=ntripc->srctbl?strlen(ntripc->srctbl):0;
     p+=sprintf(p,"%s",NTRIP_RSP_SRCTBL);
@@ -2571,7 +2571,7 @@ static int readmembuf(membuf_t *membuf, unsigned char *buff, int n, char *msg)
     
     if (!membuf) return 0;
     
-    lock(&membuf->lock);
+    rtk_lock(&membuf->lock);
     
     for (i=membuf->rp;i!=membuf->wp&&nr<n;i++) {
         if (i>=membuf->bufsize) i=0;
@@ -2590,7 +2590,7 @@ static int writemembuf(membuf_t *membuf, unsigned char *buff, int n, char *msg)
     
     if (!membuf) return 0;
     
-    lock(&membuf->lock);
+    rtk_lock(&membuf->lock);
     
     for (i=0;i<n;i++) {
         membuf->buf[membuf->wp++]=buff[i];
@@ -2863,7 +2863,7 @@ extern void strsync(stream_t *stream1, stream_t *stream2)
 * args   : stream_t *stream I  stream
 * return : none
 *-----------------------------------------------------------------------------*/
-extern void strlock  (stream_t *stream) {lock  (&stream->lock);}
+extern void strlock  (stream_t *stream) {rtk_lock  (&stream->lock);}
 extern void strunlock(stream_t *stream) {unlock(&stream->lock);}
 
 /* read stream -----------------------------------------------------------------
@@ -3147,7 +3147,7 @@ extern int strsetsrctbl(stream_t *stream, const char *file)
     fclose(fp);
     tracet(3,"strsetsrctbl: n=%d\n",n);
     
-    lock(&ntripc->lock_srctbl);
+    rtk_lock(&ntripc->lock_srctbl);
     
     free(ntripc->srctbl);
     ntripc->srctbl=srctbl;

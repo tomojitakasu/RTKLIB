@@ -2860,7 +2860,7 @@ static void traceswap(void)
     gtime_t time=utc2gpst(timeget());
     char path[1024];
     
-    lock(&lock_trace);
+    rtk_lock(&lock_trace);
     
     if ((int)(time2gpst(time      ,NULL)/INT_SWAP_TRAC)==
         (int)(time2gpst(time_trace,NULL)/INT_SWAP_TRAC)) {
