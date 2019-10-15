@@ -744,10 +744,11 @@ static int decode_trkd5(raw_t *raw)
         default: off=78; len=56; break;
     }
     for (i=0,p=raw->buff+off;p-raw->buff<raw->len-2;i++,p+=len) {
-        if (U1(p+41)<4) continue;
+        qi =U1(p+41)&7;
+        if (qi<4||7<qi) continue;
         t=I8(p)*P2_32/1000.0;
         if (ubx_sys(U1(p+56))==SYS_GLO) t-=10800.0+utc_gpst;
-        if (t>tr) tr=t;
+        if (t>tr) {tr=t; break; };
     }
     if (tr<0.0) return 0;
     
