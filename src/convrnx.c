@@ -880,8 +880,8 @@ static void closefile(FILE **ofp, const rnxopt_t *opt, nav_t *nav)
             case 3: outrnxhnavh(ofp[3],opt,nav); break;
             case 4: outrnxqnavh(ofp[4],opt,nav); break;
             case 5: outrnxlnavh(ofp[5],opt,nav); break;
-            case 6: outrnxlnavh(ofp[6],opt,nav); break;
-            case 7: outrnxlnavh(ofp[7],opt,nav); break;
+            case 6: outrnxcnavh(ofp[6],opt,nav); break;
+            case 7: outrnxinavh(ofp[7],opt,nav); break;
         }
         fclose(ofp[i]);
     }
