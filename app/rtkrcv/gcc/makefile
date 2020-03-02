@@ -15,7 +15,7 @@ rtkrcv     : rtkrcv.o vt.o rtkcmn.o rtksvr.o rtkpos.o geoid.o solution.o lambda.
 rtkrcv     : sbas.o stream.o rcvraw.o rtcm.o preceph.o options.o pntpos.o ppp.o ppp_ar.o
 rtkrcv     : novatel.o ublox.o ss2.o crescent.o skytraq.o gw10.o javad.o nvs.o binex.o
 rtkrcv     : rt17.o ephemeris.o rinex.o ionex.o rtcm2.o rtcm3.o rtcm3e.o qzslex.o
-rtkrcv     : ppp_corr.o tides.o septentrio.o cmr.o tersus.o
+rtkrcv     : ppp_corr.o tides.o septentrio.o cmr.o
 
 rtkrcv.o   : ../rtkrcv.c
 	$(CC) -c $(CFLAGS) ../rtkrcv.c
@@ -93,8 +93,6 @@ septentrio.o: $(SRC)/rcv/septentrio.c
 	$(CC) -c $(CFLAGS) $(SRC)/rcv/septentrio.c
 cmr.o      : $(SRC)/rcv/cmr.c
 	$(CC) -c $(CFLAGS) $(SRC)/rcv/cmr.c
-tersus.o   : $(SRC)/rcv/tersus.c
-	$(CC) -c $(CFLAGS) $(SRC)/rcv/tersus.c
 
 rtkrcv.o   : $(SRC)/rtklib.h ../vt.h
 rtkcmn.o   : $(SRC)/rtklib.h
