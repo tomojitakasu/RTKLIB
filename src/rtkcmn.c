@@ -1525,6 +1525,27 @@ extern int read_leaps(const char *file)
     fclose(fp);
     return 1;
 }
+
+
+/* print leap seconds table -----------------------------------------------------
+* print leap seconds table
+* args   : none
+* return : none
+* notes  : 
+*-----------------------------------------------------------------------------*/
+extern void print_leaps(void)
+{
+    int i;
+    
+    fprintf(stderr,"Leap seconds table:\n");
+    fprintf(stderr,"   y  m  d  h  m  s utc-gpst\n");
+    for (i=0;leaps[i][0]>0;i++) {
+        fprintf(stderr,"%4d %2d %2d %2d %2d %2d %3d\n", (int)leaps[i][0], (int)leaps[i][1], (int)leaps[i][2], (int)leaps[i][3], (int)leaps[i][4], (int)leaps[i][5], (int)leaps[i][6]);
+    }
+    fprintf(stderr,"\n");
+}
+
+
 /* gpstime to utc --------------------------------------------------------------
 * convert gpstime to utc considering leap seconds
 * args   : gtime_t t        I   time expressed in gpstime
