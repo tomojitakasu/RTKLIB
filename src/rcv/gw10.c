@@ -153,7 +153,7 @@ static int decode_gw10raw(raw_t *raw)
         raw->obs.data[n].P[0]=pr;
         raw->obs.data[n].L[0]=(flg&0x80)?0.0:((flg&0x40)?cp-0.5:cp);
         raw->obs.data[n].D[0]=0.0;
-        raw->obs.data[n].SNR[0]=(unsigned char)(snr*4.0+0.5);
+        raw->obs.data[n].SNR[0]=(unsigned short)(snr*RTK_SNR_SCALE+0.5);
         raw->obs.data[n].LLI[0]=(flg&0x80)?1:0;
         raw->obs.data[n].code[0]=CODE_L1C;
         

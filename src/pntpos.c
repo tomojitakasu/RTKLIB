@@ -72,13 +72,13 @@ static double prange(const obsd_t *obs, const nav_t *nav, const double *azel,
     
     /* test snr mask */
     if (iter>0) {
-        if (testsnr(0,i,azel[1],obs->SNR[i]*0.25,&opt->snrmask)) {
+        if (testsnr(0,i,azel[1],obs->SNR[i]*1.0/RTK_SNR_SCALE,&opt->snrmask)) {
             trace(4,"snr mask: %s sat=%2d el=%.1f snr=%.1f\n",
-                  time_str(obs->time,0),obs->sat,azel[1]*R2D,obs->SNR[i]*0.25);
+                  time_str(obs->time,0),obs->sat,azel[1]*R2D,obs->SNR[i]*1.0/RTK_SNR_SCALE);
             return 0.0;
         }
         if (opt->ionoopt==IONOOPT_IFLC) {
-            if (testsnr(0,j,azel[1],obs->SNR[j]*0.25,&opt->snrmask)) return 0.0;
+            if (testsnr(0,j,azel[1],obs->SNR[j]*1.0/RTK_SNR_SCALE,&opt->snrmask)) return 0.0;
         }
     }
     gamma=SQR(lam[j])/SQR(lam[i]); /* f1^2/f2^2 */

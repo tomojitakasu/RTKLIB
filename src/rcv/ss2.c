@@ -128,7 +128,7 @@ static int decode_ss2meas(raw_t *raw)
         raw->icpp[sat-1]=icp;
         raw->obs.data[n].L[0]=icp+raw->icpc;
         raw->obs.data[n].D[0]=0.0;
-        raw->obs.data[n].SNR[0]=(unsigned char)(floor(U1(p+1)+0.5));
+        raw->obs.data[n].SNR[0]=(unsigned short)(floor(U1(p+1)+0.5)*RTK_SNR_SCALE/4.0);
         sc=U1(p+10);
         raw->obs.data[n].LLI[0]=(int)((unsigned char)sc-(unsigned char)raw->lockt[sat-1][0])>0;
         raw->obs.data[n].LLI[0]|=U1(p+6)&1?2:0;

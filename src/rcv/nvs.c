@@ -142,7 +142,7 @@ static int decode_xf5raw(raw_t *raw)
                   sat,L1,P1,D1);
             continue;
         }
-        raw->obs.data[n].SNR[0]=(unsigned char)(I1(p+3)*4.0+0.5);
+        raw->obs.data[n].SNR[0]=(unsigned short)(I1(p+3)*RTK_SNR_SCALE+0.5);
         if (sys==SYS_GLO) {
             raw->obs.data[n].L[0]  =  L1 - toff*(FREQ1_GLO+DFRQ1_GLO*carrNo);
         } else {
@@ -160,7 +160,7 @@ static int decode_xf5raw(raw_t *raw)
         if (raw->obs.data[n].SNR[0] > 160) {
             time2str(time,tstr,3);
             trace(2,"%s, obs.data[%d]: SNR=%.3f  LLI=0x%02x\n",  tstr,
-                n, (raw->obs.data[n].SNR[0])/4.0, U1(p+28) );
+                n, (raw->obs.data[n].SNR[0])/RTK_SNR_SCALE, U1(p+28) );
         }
 #endif
         raw->obs.data[n].code[0] = CODE_L1C;

@@ -829,7 +829,7 @@ static int decode_obsdata(FILE *fp, char *buff, double ver, int mask,
             case 0: obs->P[p[i]]=val[i]; obs->code[p[i]]=ind->code[i]; break;
             case 1: obs->L[p[i]]=val[i]; obs->LLI [p[i]]=lli[i];       break;
             case 2: obs->D[p[i]]=(float)val[i];                        break;
-            case 3: obs->SNR[p[i]]=(unsigned char)(val[i]*4.0+0.5);    break;
+            case 3: obs->SNR[p[i]]=(unsigned char)(val[i]*RTK_SNR_SCALE+0.5);    break;
         }
     }
     trace(4,"decode_obsdata: time=%s sat=%2d\n",time_str(obs->time,0),obs->sat);
@@ -2162,7 +2162,7 @@ extern int outrnxobsb(FILE *fp, const rnxopt_t *opt, const obsd_t *obs, int n,
                 case 'P': outrnxobsf(fp,obs[ind[i]].P[k],-1); break;
                 case 'L': outrnxobsf(fp,obs[ind[i]].L[k],obs[ind[i]].LLI[k]); break;
                 case 'D': outrnxobsf(fp,obs[ind[i]].D[k],-1); break;
-                case 'S': outrnxobsf(fp,obs[ind[i]].SNR[k]*0.25,-1); break;
+                case 'S': outrnxobsf(fp,obs[ind[i]].SNR[k]*(1.0/RTK_SNR_SCALE),-1); break;
             }
         }
         if (opt->rnxver>2.99&&fprintf(fp,"\n")==EOF) return 0;

@@ -111,7 +111,7 @@ static int decode_lexraw(raw_t *raw)
         
         if (raw->lexmsg.prn==prn) {
             raw->lexmsg.stat=stat;
-            raw->lexmsg.snr=(unsigned char)(cn0*0.04+0.5);
+            raw->lexmsg.snr=(unsigned short)(cn0*0.04+0.5);
             raw->lexmsg.ttt=ttt;
         }
         trace(4,"satid=%3d nsig=%d type=0x%02X node=%d prn=%3d stat=%d\n",
@@ -146,7 +146,7 @@ static int decode_lexraw(raw_t *raw)
             raw->obs.data[n].P[3]=pr;
             raw->obs.data[n].L[3]=adr;
             raw->obs.data[n].D[3]=dop;
-            raw->obs.data[n].SNR[3]=(unsigned char)(cn0*0.04+0.5);
+            raw->obs.data[n].SNR[3]=(unsigned short)(cn0*0.04+0.5);
             raw->obs.data[n].LLI[3]=lli;
             raw->obs.data[n].code[3]=
                 type==0x1A?CODE_L6S:(type==0x1B?CODE_L6L:CODE_NONE);

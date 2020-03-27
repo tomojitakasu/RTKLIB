@@ -2943,7 +2943,7 @@ extern void traceobs(int level, const obsd_t *obs, int n)
         fprintf(fp_trace," (%2d) %s %-3s rcv%d %13.3f %13.3f %13.3f %13.3f %d %d %d %d %3.1f %3.1f\n",
               i+1,str,id,obs[i].rcv,obs[i].L[0],obs[i].L[1],obs[i].P[0],
               obs[i].P[1],obs[i].LLI[0],obs[i].LLI[1],obs[i].code[0],
-              obs[i].code[1],obs[i].SNR[0]*0.25,obs[i].SNR[1]*0.25);
+              obs[i].code[1],obs[i].SNR[0]*1.0/RTK_SNR_SCALE,obs[i].SNR[1]*1.0/RTK_SNR_SCALE);
     }
     fflush(fp_trace);
 }

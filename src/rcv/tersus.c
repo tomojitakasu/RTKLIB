@@ -274,7 +274,7 @@ static int decode_rangeb(raw_t *raw)
             raw->obs.data[index].P  [pos]=psr;
             raw->obs.data[index].D  [pos]=(float)dop;
             raw->obs.data[index].SNR[pos]=
-                0.0<=snr&&snr<255.0?(unsigned char)(snr*4.0+0.5):0;
+                0.0<=snr&&snr<255.0?(unsigned short)(snr*RTK_SNR_SCALE+0.5):0;
             raw->obs.data[index].LLI[pos]=(unsigned char)lli;
             raw->obs.data[index].code[pos]=code;
         }
@@ -359,7 +359,7 @@ static int decode_rangecmpb(raw_t *raw)
             raw->obs.data[index].P  [pos]=psr;
             raw->obs.data[index].D  [pos]=(float)dop;
             raw->obs.data[index].SNR[pos]=
-                0.0<=snr&&snr<255.0?(unsigned char)(snr*4.0+0.5):0;
+                0.0<=snr&&snr<255.0?(unsigned short)(snr*RTK_SNR_SCALE+0.5):0;
             raw->obs.data[index].LLI[pos]=(unsigned char)lli;
             raw->obs.data[index].code[pos]=code;
         }

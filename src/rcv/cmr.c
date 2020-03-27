@@ -361,7 +361,7 @@
 #define MAXTIMEDIFF             60.0 /* Maximum tolerable time difference in seconds */
 
 /* Utility macros: */
-#define SNRATIO(snr) (unsigned char)((snr<=0.0)||(snr>=255.5))?(0.0):((snr*4.0)+0.5)
+#define SNRATIO(snr) (unsigned char)((snr<=0.0)||(snr>=255.5))?(0.0):((snr*RTK_SNR_SCALE)+0.5)
 
 /*
 | Typedefs:
@@ -389,9 +389,9 @@ typedef struct {                    /* Base observables data record */
     unsigned int  Slot;             /* Slot number */ 
     unsigned char Sat;              /* Satellite number */
     unsigned char Code[2];          /* L1/L2 code indicators (CODE_???) */
-    unsigned char SNR[2];           /* L1/L2 signal strengths */
     unsigned char Slip[2];          /* L1/L2 slip counts */
     unsigned char LLI[2];           /* L1/L2 loss of lock indicators */
+    unsigned short SNR[2];           /* L1/L2 signal strengths */
 } obsbd_t;
 
 typedef struct {                    /* Base observables header record */
@@ -1326,11 +1326,24 @@ static const rcv_t ReceiversTable[] = {
 | Signal to noise ratio conversion for CMR type 3 (GLONASS) observables.
 | See reference #3.
 */
-static const unsigned char SnrTable[][2] =
-    {{0,0},  {30,4},   {32,8}, {34,12},
-    {36,16}, {38,20}, {40,24}, {42,28},
-    {44,32}, {46,36}, {48,40}, {50,44},
-    {52,48}, {54,52}, {56,56}, {58,60}
+static const unsigned short SnrTable[][2] =
+    {
+    {0 *RTK_SNR_SCALE/4.0,0 *RTK_SNR_SCALE/4.0},  
+    {30*RTK_SNR_SCALE/4.0,4 *RTK_SNR_SCALE/4.0},   
+    {32*RTK_SNR_SCALE/4.0,8 *RTK_SNR_SCALE/4.0}, 
+    {34*RTK_SNR_SCALE/4.0,12*RTK_SNR_SCALE/4.0},
+    {36*RTK_SNR_SCALE/4.0,16*RTK_SNR_SCALE/4.0}, 
+    {38*RTK_SNR_SCALE/4.0,20*RTK_SNR_SCALE/4.0}, 
+    {40*RTK_SNR_SCALE/4.0,24*RTK_SNR_SCALE/4.0}, 
+    {42*RTK_SNR_SCALE/4.0,28*RTK_SNR_SCALE/4.0},
+    {44*RTK_SNR_SCALE/4.0,32*RTK_SNR_SCALE/4.0}, 
+    {46*RTK_SNR_SCALE/4.0,36*RTK_SNR_SCALE/4.0}, 
+    {48*RTK_SNR_SCALE/4.0,40*RTK_SNR_SCALE/4.0}, 
+    {50*RTK_SNR_SCALE/4.0,44*RTK_SNR_SCALE/4.0},
+    {52*RTK_SNR_SCALE/4.0,48*RTK_SNR_SCALE/4.0}, 
+    {54*RTK_SNR_SCALE/4.0,52*RTK_SNR_SCALE/4.0}, 
+    {56*RTK_SNR_SCALE/4.0,56*RTK_SNR_SCALE/4.0}, 
+    {58*RTK_SNR_SCALE/4.0,60*RTK_SNR_SCALE/4.0}
 };
 
 /*

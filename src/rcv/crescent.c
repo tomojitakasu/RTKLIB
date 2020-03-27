@@ -141,7 +141,7 @@ static int decode_cresraw(raw_t *raw)
         raw->obs.data[n].P[0]=pr;
         raw->obs.data[n].L[0]=cp/lam_carr[0];
         raw->obs.data[n].D[0]=-(float)(dop/lam_carr[0]);
-        raw->obs.data[n].SNR[0]=(unsigned char)(snr*4.0+0.5);
+        raw->obs.data[n].SNR[0]=(unsigned short)(snr*RTK_SNR_SCALE+0.5);
         raw->obs.data[n].LLI[0]=(unsigned char)lli;
         raw->obs.data[n].code[0]=CODE_L1C;
         
@@ -251,7 +251,7 @@ static int decode_cresraw2(raw_t *raw)
                 raw->obs.data[n].P[j]=pr[j]==0.0?0.0:pr[j]-toff;
                 raw->obs.data[n].L[j]=cp[j]==0.0?0.0:cp[j]-toff/lam_carr[j];
                 raw->obs.data[n].D[j]=-(float)dop[j];
-                raw->obs.data[n].SNR[j]=(unsigned char)(snr[j]*4.0+0.5);
+                raw->obs.data[n].SNR[j]=(unsigned char)(snr[j]*RTK_SNR_SCALE+0.5);
                 raw->obs.data[n].LLI[j]=(unsigned char)lli[j];
                 raw->obs.data[n].code[j]=j==0?CODE_L1C:CODE_L2P;
             }
@@ -453,7 +453,7 @@ static int decode_cresgloraw(raw_t *raw)
                 raw->obs.data[n].P[j]=pr[j]==0.0?0.0:pr[j]-toff;
                 raw->obs.data[n].L[j]=cp[j]==0.0?0.0:cp[j]-toff/lam_carr[j];
                 raw->obs.data[n].D[j]=-(float)dop[j];
-                raw->obs.data[n].SNR[j]=(unsigned char)(snr[j]*4.0+0.5);
+                raw->obs.data[n].SNR[j]=(unsigned short)(snr[j]*RTK_SNR_SCALE+0.5);
                 raw->obs.data[n].LLI[j]=(unsigned char)lli[j];
                 raw->obs.data[n].code[j]=j==0?CODE_L1C:CODE_L2P;
             }

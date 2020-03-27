@@ -1875,7 +1875,7 @@ static void gen_msm_sig(rtcm_t *rtcm, int sys, int nsat, int nsig, int ncell,
             if (rate &&rate_s !=0.0) rate [cell-1]=rate_s;
             if (lock) lock[cell-1]=lt;
             if (half) half[cell-1]=(data->LLI[j]&2)?1:0;
-            if (cnr ) cnr [cell-1]=(float)(data->SNR[j]*0.25);
+            if (cnr ) cnr [cell-1]=(float)(data->SNR[j]*1.0/RTK_SNR_SCALE);
         }
     }
 }

@@ -169,9 +169,9 @@ static int lossoflock(rtcm_t *rtcm, int sat, int freq, int lock)
     return lli;
 }
 /* s/n ratio -----------------------------------------------------------------*/
-static unsigned char snratio(double snr)
+static unsigned short snratio(double snr)
 {
-    return (unsigned char)(snr<=0.0||255.5<=snr?0.0:snr*4.0+0.5);
+    return (unsigned short)(snr<=0.0||255.5<=snr?0.0:snr*RTK_SNR_SCALE+0.5);
 }
 /* get observation data index ------------------------------------------------*/
 static int obsindex(obs_t *obs, gtime_t time, int sat)
@@ -297,7 +297,7 @@ static int decode_type1002(rtcm_t *rtcm)
             rtcm->obs.data[index].L[0]=pr1/lam_carr[0]+cp1;
         }
         rtcm->obs.data[index].LLI[0]=lossoflock(rtcm,sat,0,lock1);
-        rtcm->obs.data[index].SNR[0]=snratio(cnr1*0.25);
+        rtcm->obs.data[index].SNR[0]=snratio(cnr1*(1/RTK_SNR_SCALE));
         rtcm->obs.data[index].code[0]=code?CODE_L1P:CODE_L1C;
     }
     return sync?0:1;
@@ -355,7 +355,7 @@ static int decode_type1004(rtcm_t *rtcm)
             rtcm->obs.data[index].L[0]=pr1/lam_carr[0]+cp1;
         }
         rtcm->obs.data[index].LLI[0]=lossoflock(rtcm,sat,0,lock1);
-        rtcm->obs.data[index].SNR[0]=snratio(cnr1*0.25);
+        rtcm->obs.data[index].SNR[0]=snratio(cnr1*(1.0/RTK_SNR_SCALE));
         rtcm->obs.data[index].code[0]=code1?CODE_L1P:CODE_L1C;
         
         if (pr21!=(int)0xFFFFE000) {
@@ -366,7 +366,7 @@ static int decode_type1004(rtcm_t *rtcm)
             rtcm->obs.data[index].L[1]=pr1/lam_carr[1]+cp2;
         }
         rtcm->obs.data[index].LLI[1]=lossoflock(rtcm,sat,1,lock2);
-        rtcm->obs.data[index].SNR[1]=snratio(cnr2*0.25);
+        rtcm->obs.data[index].SNR[1]=snratio(cnr2*(1.0/RTK_SNR_SCALE));
         rtcm->obs.data[index].code[1]=L2codes[code2];
     }
     rtcm->obsflag=!sync;
@@ -595,7 +595,7 @@ static int decode_type1010(rtcm_t *rtcm)
             rtcm->obs.data[index].L[0]=pr1/lam1+cp1;
         }
         rtcm->obs.data[index].LLI[0]=lossoflock(rtcm,sat,0,lock1);
-        rtcm->obs.data[index].SNR[0]=snratio(cnr1*0.25);
+        rtcm->obs.data[index].SNR[0]=snratio(cnr1*(1/RTK_SNR_SCALE));
         rtcm->obs.data[index].code[0]=code?CODE_L1P:CODE_L1C;
     }
     return sync?0:1;
@@ -648,7 +648,7 @@ static int decode_type1012(rtcm_t *rtcm)
             rtcm->obs.data[index].L[0]=pr1/lam1+cp1;
         }
         rtcm->obs.data[index].LLI[0]=lossoflock(rtcm,sat,0,lock1);
-        rtcm->obs.data[index].SNR[0]=snratio(cnr1*0.25);
+        rtcm->obs.data[index].SNR[0]=snratio(cnr1*(1.0/RTK_SNR_SCALE));
         rtcm->obs.data[index].code[0]=code1?CODE_L1P:CODE_L1C;
         
         if (pr21!=(int)0xFFFFE000) {
@@ -660,7 +660,7 @@ static int decode_type1012(rtcm_t *rtcm)
             rtcm->obs.data[index].L[1]=pr1/lam2+cp2;
         }
         rtcm->obs.data[index].LLI[1]=lossoflock(rtcm,sat,1,lock2);
-        rtcm->obs.data[index].SNR[1]=snratio(cnr2*0.25);
+        rtcm->obs.data[index].SNR[1]=snratio(cnr2*(1.0/RTK_SNR_SCALE));
         rtcm->obs.data[index].code[1]=code2?CODE_L2P:CODE_L2C;
     }
     rtcm->obsflag=!sync;
@@ -1890,7 +1890,7 @@ static void save_msm_obs(rtcm_t *rtcm, int sys, msm_h_t *h, const double *r,
                 }
                 rtcm->obs.data[index].LLI[ind[k]]=
                     lossoflock(rtcm,sat,ind[k],lock[j])+(half[j]?3:0);
-                rtcm->obs.data[index].SNR [ind[k]]=(unsigned char)(cnr[j]*4.0);
+                rtcm->obs.data[index].SNR [ind[k]]=(unsigned short)(cnr[j]*RTK_SNR_SCALE);
                 rtcm->obs.data[index].code[ind[k]]=code[k];
             }
             j++;

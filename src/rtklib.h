@@ -530,12 +530,13 @@ typedef struct {        /* time struct */
     double sec;         /* fraction of second under 1 s */
 } gtime_t;
 
+#define RTK_SNR_SCALE (1000.0)
 typedef struct {        /* observation data record */
     gtime_t time;       /* receiver sampling time (GPST) */
     unsigned char sat,rcv; /* satellite/receiver number */
-    unsigned char SNR [NFREQ+NEXOBS]; /* signal strength (0.25 dBHz) */
     unsigned char LLI [NFREQ+NEXOBS]; /* loss of lock indicator */
     unsigned char code[NFREQ+NEXOBS]; /* code indicator (CODE_???) */
+    unsigned short SNR [NFREQ+NEXOBS]; /* signal strength (1/RTK_SNR_SCALE dBHz) */
     double L[NFREQ+NEXOBS]; /* observation data carrier-phase (cycle) */
     double P[NFREQ+NEXOBS]; /* observation data pseudorange (m) */
     float  D[NFREQ+NEXOBS]; /* observation data doppler frequency (Hz) */
@@ -792,7 +793,7 @@ typedef struct {        /* QZSS LEX message type */
     int type;           /* message type */
     int alert;          /* alert flag */
     unsigned char stat; /* signal tracking status */
-    unsigned char snr;  /* signal C/N0 (0.25 dBHz) */
+    unsigned short snr;  /* signal C/N0 (1.0/RTK_SNR_SCALE dBHz) */
     unsigned int ttt;   /* tracking time (ms) */
     unsigned char msg[212]; /* LEX message data part 1695 bits */
 } lexmsg_t;
@@ -948,7 +949,7 @@ typedef struct {        /* solution status type */
     float resp;         /* pseudorange residual (m) */
     float resc;         /* carrier-phase residual (m) */
     unsigned char flag; /* flags: (vsat<<5)+(slip<<3)+fix */
-    unsigned char snr;  /* signal strength (0.25 dBHz) */
+    unsigned short snr;  /* signal C/N0 (1.0/RTK_SNR_SCALE dBHz) */
     unsigned short lock;  /* lock counter */
     unsigned short outc;  /* outage counter */
     unsigned short slipc; /* slip counter */
@@ -1176,10 +1177,10 @@ typedef struct {        /* satellite status type */
     double resp[NFREQ]; /* residuals of pseudorange (m) */
     double resc[NFREQ]; /* residuals of carrier-phase (m) */
     unsigned char vsat[NFREQ]; /* valid satellite flag */
-    unsigned char snr [NFREQ]; /* signal strength (0.25 dBHz) */
     unsigned char fix [NFREQ]; /* ambiguity fix flag (1:fix,2:float,3:hold) */
     unsigned char slip[NFREQ]; /* cycle-slip flag */
     unsigned char half[NFREQ]; /* half-cycle valid flag */
+    unsigned short snr [NFREQ]; /* signal strength (1.0/RTK_SNR_SCALE dBHz) */
     int lock [NFREQ];   /* lock counter of phase */
     unsigned int outc [NFREQ]; /* obs outage counter of phase */
     unsigned int slipc[NFREQ]; /* cycle-slip counter */

@@ -374,7 +374,7 @@ static void corr_meas(const obsd_t *obs, const nav_t *nav, const double *azel,
     for (i=0;i<NFREQ;i++) {
         L[i]=P[i]=0.0;
         if (lam[i]==0.0||obs->L[i]==0.0||obs->P[i]==0.0) continue;
-        if (testsnr(0,0,azel[1],obs->SNR[i]*0.25,&opt->snrmask)) continue;
+        if (testsnr(0,0,azel[1],obs->SNR[i]*1.0/RTK_SNR_SCALE,&opt->snrmask)) continue;
         
         /* antenna phase center and phase windup correction */
         L[i]=obs->L[i]*lam[i]-dants[i]-dantr[i]-phw*lam[i];
