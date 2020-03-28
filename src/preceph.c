@@ -66,21 +66,21 @@ static int code2sys(char code)
 static int readsp3h(FILE *fp, gtime_t *time, char *type, int *sats,
                     double *bfact, char *tsys)
 {
-    int i,j,k=0,ns=0,sys,prn;
+    int i=0,j,k=0,ns=0,nl=5,sys,prn;
     char buff[1024];
     
     trace(3,"readsp3h:\n");
     
-    for (i=0;i<22;i++) {
-        if (!fgets(buff,sizeof(buff),fp)) break;
+    while (fgets(buff,sizeof(buff),fp)) {
         
-        if (i==0) {
+        if (buff[0]=='#'&&(buff[1]=='c'||buff[1]=='d')) {
             *type=buff[2];
             if (str2time(buff,3,28,time)) return 0;
         }
-        else if (2<=i&&i<=6) {
+        else if (buff[0]=='+'&&buff[1]==' ') {
             if (i==2) {
-                ns=(int)str2num(buff,4,2);
+                ns=(int)str2num(buff,3,3);
+                if (ns>85) nl=ns/17+(ns%17!=0);
             }
             for (j=0;j<17&&k<ns;j++) {
                 sys=code2sys(buff[9+3*j]);
@@ -88,13 +88,17 @@ static int readsp3h(FILE *fp, gtime_t *time, char *type, int *sats,
                 if (k<MAXSAT) sats[k++]=satno(sys,prn);
             }
         }
-        else if (i==12) {
+        else if (i==2*nl+2) {/* %c */
             strncpy(tsys,buff+9,3); tsys[3]='\0';
         }
-        else if (i==14) {
+        else if (i==2*nl+4) {/* %f */
             bfact[0]=str2num(buff, 3,10);
             bfact[1]=str2num(buff,14,12);
         }
+        else if (i==2*nl+11){/* /* */ 
+            break;/* at end of header */
+        }
+        i=i+1; /* line counter */
     }
     return ns;
 }
