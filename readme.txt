@@ -120,3 +120,20 @@ UPDATE HISTORY
                       support api-key for gmview of rtkplot
                       improve galileo sisa, i/nav and f/nav hadling
                       fix many bugs
+2018/11/05  2.4.3 b31 update rtcm mt for beidou ephemeirs (1047->1042)
+                      fix bug on default stream playback speed (= 0)
+                      fix bug on stream file playback as slave mode
+                      fix bug on timeset() in gpst instead of utc
+                      fix problem on invalid time in message monitor for rtcm 3
+                      fix problem on number of cell-mask overflow for rtcm msm (#143)
+                      fix problem on missing QZSS L2C signal for u-blox rxm-rawx
+2019/05/10  2.4.3 b32 support beidou C36-37 (#145)
+                      fix bug on dropping message on tcp stream (#144)
+                      save galileo E5b data to obs index 2 in struct obs_t
+                      disable ambiguity resolution of gps-qzss for rel-positioning
+                      add test of i/nav word type 5 on reading galileo ephemeris
+                      support u-blox zed-f9p rxm-rawx, rxm-sfrbx
+2019/08/19  2.4.3 b33 support galileo sisa index for reading rinex nav data
+                      support binex upgraded galileo ephemeris (0x01-14)
+                      support 460800 and 921600 bps for serial stream
+                      fix bug on return value of resamb_LAMBDA() error
