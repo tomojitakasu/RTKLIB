@@ -41,6 +41,7 @@
 *           2016/08/20 1.22 fix bug on ddres() function
 *           2018/10/10 1.13 support api change of satexclude()
 *           2018/12/15 1.14 disable ambiguity resolution for gps-qzss
+*           2019/08/19 1.15 fix bug on return value of resamb_LAMBDA()
 *-----------------------------------------------------------------------------*/
 #include <stdarg.h>
 #include "rtklib.h"
@@ -1518,6 +1519,7 @@ static int resamb_LAMBDA(rtk_t *rtk, double *bias, double *xa)
     }
     else {
         errmsg(rtk,"lambda error (info=%d)\n",info);
+        nb=0;
     }
     free(D); free(y); free(Qy); free(DP);
     free(b); free(db); free(Qb); free(Qab); free(QQ);
