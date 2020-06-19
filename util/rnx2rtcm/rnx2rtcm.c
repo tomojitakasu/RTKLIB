@@ -172,7 +172,7 @@ static int conv_rtcm(const int *type, int n, const char *outfile,
     /* gerate rtcm nav data messages */
     gen_rtcm_nav(time0,&rtcm,nav,index,type,n,fp);
     
-    fclose(fp);
+    if(*outfile) fclose(fp);
     
     /* print statistics  */
     fprintf(stderr,"\n  MT  # OF MSGS\n");
