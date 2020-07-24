@@ -846,16 +846,16 @@ typedef struct {        /* stec data type */
 } stec_t;
 
 typedef struct {
-	gtime_t t0;
-	int nlayer;
-	int iod;
-	float quality;
-	double udi;
-	int degree[RTCM_SSR_VTEC_MAX_LAYER];
-	int order[RTCM_SSR_VTEC_MAX_LAYER];
-	float height[RTCM_SSR_VTEC_MAX_LAYER];
-	float c[RTCM_SSR_VTEC_MAX_LAYER][RTCM_SSR_VTEC_MAX_DEG];
-	float s[RTCM_SSR_VTEC_MAX_LAYER][RTCM_SSR_VTEC_MAX_DEG];
+    gtime_t t0;
+    int nlayer;
+    int iod;
+    float quality;
+    double udi;
+    int degree[RTCM_SSR_VTEC_MAX_LAYER];
+    int order[RTCM_SSR_VTEC_MAX_LAYER];
+    float height[RTCM_SSR_VTEC_MAX_LAYER];
+    float c[RTCM_SSR_VTEC_MAX_LAYER][RTCM_SSR_VTEC_MAX_DEG];
+    float s[RTCM_SSR_VTEC_MAX_LAYER][RTCM_SSR_VTEC_MAX_DEG];
     unsigned char update; /* update flag (0:no update,1:update) */
 } vtec_t;
 
@@ -1014,7 +1014,7 @@ typedef struct {        /* RTCM control struct type */
     unsigned char buff[1200]; /* message buffer */
     unsigned int word;  /* word buffer for rtcm 2 */
     unsigned int nmsg2[100]; /* message count of RTCM 2 (1-99:1-99,0:other) */
-    unsigned int nmsg3[400]; /* message count of RTCM 3 (1-299:1001-1299,300-399:2000-2099,0:ohter) */
+    unsigned int nmsg3[400]; /* message count of RTCM 3 (1-299:1001-1299,301-395:4001-4095,0:ohter) */
     char opt[256];      /* RTCM dependent options */
 } rtcm_t;
 
