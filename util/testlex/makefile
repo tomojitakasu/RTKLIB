@@ -9,7 +9,7 @@ all        : convlex dumplex dumpssr outlexion
 
 convlex    : rtkcmn.o preceph.o qzslex.o
 dumplex    : rtkcmn.o preceph.o qzslex.o
-dumpssr    : rtkcmn.o preceph.o rtcm.o rtcm3.o rtcm2.o dumpssr.o
+dumpssr    : rtkcmn.o preceph.o rtcm.o rtcm3.o rtcm2.o rtcm3e.o dumpssr.o
 outlexion  : rtkcmn.o preceph.o qzslex.o
 
 rtkcmn.o   : $(SRC)/rtklib.h $(SRC)/rtkcmn.c
@@ -22,6 +22,8 @@ rtcm.o     : $(SRC)/rtklib.h $(SRC)/rtcm.c
 	$(CC) -c $(CFLAGS) $(SRC)/rtcm.c
 rtcm3.o    : $(SRC)/rtklib.h $(SRC)/rtcm3.c
 	$(CC) -c $(CFLAGS) $(SRC)/rtcm3.c
+rtcm3e.o    : $(SRC)/rtklib.h $(SRC)/rtcm3e.c
+	$(CC) -c $(CFLAGS) $(SRC)/rtcm3e.c
 rtcm2.o    : $(SRC)/rtklib.h $(SRC)/rtcm2.c
 	$(CC) -c $(CFLAGS) $(SRC)/rtcm2.c
 

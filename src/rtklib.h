@@ -336,7 +336,16 @@ extern "C" {
 #define CODE_L9B    53                  /* obs code: SB RS(D)   (IRN) */
 #define CODE_L9C    54                  /* obs code: SC RS(P)   (IRN) */
 #define CODE_L9X    55                  /* obs code: SB+C       (IRN) */
-#define MAXCODE     55                  /* max number of obs code */
+#define CODE_L4A    56                  /* obs code: G1a L1OCd  (GLO) */
+#define CODE_L4B    57                  /* obs code: G1a L1OCp  (GLO) */
+#define CODE_L5D    58                  /* obs code: L5S(I)     (QZS) */
+#define CODE_L5P    59                  /* obs code: L5S(Q)     (QZS) */
+#define CODE_L5Z    60                  /* obs code: L5S(I+Q)   (QZS) */
+#define CODE_L6E    61                  /* obs code: L6(E)      (QZS) */
+#define CODE_L1D    62                  /* obs code: B1a data   (BDS) */
+#define CODE_L8D    63                  /* obs code: B2 data    (BDS) */
+#define CODE_L8P    64                  /* obs code: B2 pilot   (BDS) */
+#define MAXCODE     64                  /* max number of obs code */
 
 #define PMODE_SINGLE 0                  /* positioning mode: single */
 #define PMODE_DGPS   1                  /* positioning mode: DGPS/DGNSS */
@@ -506,6 +515,9 @@ extern "C" {
 #define P2_48       3.552713678800501E-15 /* 2^-48 */
 #define P2_50       8.881784197001252E-16 /* 2^-50 */
 #define P2_55       2.775557561562891E-17 /* 2^-55 */
+
+#define RTCM_SSR_VTEC_MAX_LAYER       4
+#define RTCM_SSR_VTEC_MAX_DEG         16
 
 #ifdef WIN32
 #define thread_t    HANDLE
@@ -833,6 +845,20 @@ typedef struct {        /* stec data type */
     unsigned char flag; /* fix flag */
 } stec_t;
 
+typedef struct {
+	gtime_t t0;
+	int nlayer;
+	int iod;
+	float quality;
+	double udi;
+	int degree[RTCM_SSR_VTEC_MAX_LAYER];
+	int order[RTCM_SSR_VTEC_MAX_LAYER];
+	float height[RTCM_SSR_VTEC_MAX_LAYER];
+	float c[RTCM_SSR_VTEC_MAX_LAYER][RTCM_SSR_VTEC_MAX_DEG];
+	float s[RTCM_SSR_VTEC_MAX_LAYER][RTCM_SSR_VTEC_MAX_DEG];
+    unsigned char update; /* update flag (0:no update,1:update) */
+} vtec_t;
+
 typedef struct {        /* trop data type */
     gtime_t time;       /* time (GPST) */
     double trp[3];      /* zenith tropos delay/gradient (m) */
@@ -972,6 +998,7 @@ typedef struct {        /* RTCM control struct type */
     sta_t sta;          /* station parameters */
     dgps_t *dgps;       /* output of dgps corrections */
     ssr_t ssr[MAXSAT];  /* output of ssr corrections */
+    vtec_t vtec;        /* ssr vtec */
     char msg[128];      /* special message */
     char msgtype[256];  /* last message type */
     char msmtype[6][128]; /* msm signal types */

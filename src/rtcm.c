@@ -27,8 +27,11 @@
 *          Systems) Services - version 3, with amendment 1/2, november 7, 2013
 *     [16] Proposal of new RTCM SSR Messages (ssr_1_gal_qzss_sbas_dbs_v05)
 *          2014/04/17
-*     [17] RTCM Standard 10403.2, Differential GNSS (Global Navigation Satellite
+*     [17] RTCM Standard 10403.3, Differential GNSS (Global Navigation Satellite
 *          Systems) Services - version 3, October 7, 2016
+*     [18] RTCM Standard 10403.3-Amendment 1, Differential GNSS (Global Navigation
+*          Satellite Systems) Services - version 3 with Amendment 1, April 28, 2020
+*     [19] IGS State Space Representation (SSR) Format - version 0.03, June 12, 2020
 *
 * version : $Revision:$ $Date:$
 * history : 2009/04/10 1.0  new
