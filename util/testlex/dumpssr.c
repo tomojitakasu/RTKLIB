@@ -35,18 +35,18 @@ static void printssrmsg(int sat, const ssr_t *ssr, int topt, int mopt)
     char tstr[32],id[16];
     
     if (topt) {
-        time2str(ssr->t0,tstr,0);
+        time2str(ssr->t0[0],tstr,0);
         printf("%s ",tstr);
     }
     else {
-        tow=time2gpst(ssr->t0,&week);
+        tow=time2gpst(ssr->t0[0],&week);
         printf("%4d %6.0f ",week,tow);
     }
     satno2id(sat,id);
     printf("%4s ",id);
     
     if (mopt&1) {
-        printf("%4.0f %3d %3d %3d ",ssr->udint,ssr->iode,ssr->ura,ssr->refd);
+        printf("%4.0f %3d %3d %3d ",ssr->udi[0],ssr->iode,ssr->ura,ssr->refd);
     }
     if (mopt&2) {
         printf("%8.3f %8.3f %8.3f %8.3f %8.3f %8.3f ",ssr->deph[0],ssr->deph[1],
@@ -78,8 +78,8 @@ static void dumpssrmsg(FILE *fp, int sat, int topt, int mopt)
         if (stat!=10) continue; /* ssr message */
         
         for (s=1;s<=MAXSAT;s++) {
-            if (timediff(rtcm.ssr[s-1].t0,t0[s-1])==0.0) continue;
-            t0[s-1]=rtcm.ssr[s-1].t0;
+            if (timediff(rtcm.ssr[s-1].t0[0],t0[s-1])==0.0) continue;
+            t0[s-1]=rtcm.ssr[s-1].t0[0];
             
             if (!sat||s==sat) {
                 printssrmsg(s,rtcm.ssr+s-1,topt,mopt);
