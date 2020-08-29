@@ -210,7 +210,7 @@ extern "C" {
 #define NSYS        (NSYSGPS+NSYSGLO+NSYSGAL+NSYSQZS+NSYSCMP+NSYSIRN+NSYSLEO) /* number of systems */
 
 #define MINPRNSBS   120                 /* min satellite PRN number of SBAS */
-#define MAXPRNSBS   142                 /* max satellite PRN number of SBAS */
+#define MAXPRNSBS   158                 /* max satellite PRN number of SBAS */
 #define NSATSBS     (MAXPRNSBS-MINPRNSBS+1) /* number of SBAS satellites */
 
 #define MAXSAT      (NSATGPS+NSATGLO+NSATGAL+NSATQZS+NSATCMP+NSATIRN+NSATSBS+NSATLEO)
@@ -494,6 +494,9 @@ extern "C" {
 #define P2_5        0.03125             /* 2^-5 */
 #define P2_6        0.015625            /* 2^-6 */
 #define P2_11       4.882812500000000E-04 /* 2^-11 */
+#define P2_12       2.441406250000000E-04 /* 2^-12 */
+#define P2_13       1.220703125000000E-04 /* 2^-13 */
+#define P2_14       6.103515625000000E-05 /* 2^-14 */
 #define P2_15       3.051757812500000E-05 /* 2^-15 */
 #define P2_17       7.629394531250000E-06 /* 2^-17 */
 #define P2_19       1.907348632812500E-06 /* 2^-19 */
@@ -746,7 +749,7 @@ typedef struct {        /* SBAS satellite correction type */
 } sbssatp_t;
 
 typedef struct {        /* SBAS satellite corrections type */
-    int iodp;           /* IODP (issue of date mask) */
+    int iodp;           /* IODP (issue of data mask) */
     int nsat;           /* number of satellites */
     int tlat;           /* system latency (s) */
     sbssatp_t sat[MAXSAT]; /* satellite correction */

@@ -12,6 +12,7 @@
 *     [2] IS-QZSS v.1.1, Quasi-Zenith Satellite System Navigation Service
 *         Interface Specification for QZSS, Japan Aerospace Exploration Agency,
 *         July 31, 2009
+*     [3] ICAO, DFMC SBAS SARPs PART B VERSION 2.0, November 15, 2018
 *
 * version : $Revision: 1.1 $ $Date: 2008/07/17 21:48:06 $
 * history : 2007/10/14 1.0  new
@@ -41,6 +42,8 @@
 /* constants -----------------------------------------------------------------*/
 
 #define WEEKOFFSET  1024        /* gps week offset for NovAtel OEM-3 */
+
+#define PI_S          3.1415926535898  /* pi */
 
 /* sbas igp definition -------------------------------------------------------*/
 static const short
@@ -411,6 +414,319 @@ static int decode_sbstype26(const sbsmsg_t *msg, sbsion_t *sbsion)
     trace(5,"decode_sbstype26: band=%d block=%d\n",band,block);
     return 1;
 }
+
+/*
+ * DFMC SBAS
+ *
+ * GPS: L1C/A+L5Q  LNAV
+ * GLO: L1OC+L3OC  NAV in L1OC
+ * GAL: E1C+E5a-Q  FNAV
+ * BDS: B1C+B2a    B-CNAV2
+ * SBAS: L1+L5     NAV in SBAS L5
+ */
+
+/* decode type 31: prn masks for DFMC --------------------------------------------------*/
+static int decode_sbstype31(const sbsmsg_t *msg, sbssat_t *sbssat)
+{
+    int i,n,sat,ofst=9;
+
+    trace(4,"decode_sbstype31:\n");
+
+    for (i=1,n=0;i<=195&&n<MAXSAT;i++) {
+        if (getbitu(msg->msg,ofst+i,1)) {
+           if      (i<= 37) sat=satno(SYS_GPS,i);    /*   0- 37: gps */
+           else if (i<= 74) sat=satno(SYS_GLO,i-37); /*  38- 74: glonass */
+           else if (i<=111) sat=satno(SYS_GAL,i-74); /*  75-111: gal */
+           else if (i<=119) sat=0;                   /* 112-119: reserved */
+           else if (i<=158) sat=satno(SYS_SBS,i);    /* 120-158: geo/waas */
+           else if (i<=195) sat=satno(SYS_CMP,i-158);/* 159-195: beidou */
+           else             sat=0;                   /* 196-   : reserved */
+           sbssat->sat[n++].sat=sat;
+        }
+    }
+    sbssat->iodp=getbitu(msg->msg,224,2);
+    sbssat->nsat=n;
+
+    trace(5,"decode_sbstype31: nprn=%d iodp=%d\n",n,sbssat->iodp);
+    return 1;
+}
+static int slot2prn(int slot,int *sys)
+{
+	int prn=0;
+	*sys = SYS_NONE;
+    /* 1-32:GPS,38-69:GLO+37,75-110:GAL+74,120-158:SBAS,159-195:BDS+158 */
+	if (slot>=1&&slot<=32) {
+		*sys=SYS_GPS;
+		prn = slot;
+	} else if (slot>=38&&slot<=69) {
+		*sys=SYS_GLO;
+		prn = slot-37;
+	} else if (slot>=75&&slot<=110) {
+		*sys=SYS_GAL;
+		prn = slot-74;
+	} else if (slot>=120&&slot<=158) {
+		*sys=SYS_SBS;
+		prn = slot;
+	} else if (slot>=159&&slot<=195) {
+		*sys=SYS_CMP;
+		prn = slot-158;
+	}
+	return prn;
+}
+static gtime_t tod2time(const sbsmsg_t *msg, double t0)
+{
+	int t;
+	gtime_t time;
+
+	t=(int)t0-(int)msg->tow%86400;
+	if (t<=-43200) t+=86400;
+	else if (t>  43200) t-=86400;
+
+	time=gpst2time(msg->week,msg->tow+t);
+	return time;
+}
+/* decode type32: clock/ephemeris corrections and covariance matrix -------------------------------------*/
+static int decode_sbstype32(const sbsmsg_t *msg, sbssat_t *sbssat)
+{
+    int ofst=4,i=6+ofst,sat,slot,scale,dfrei,prn,sys,n;
+    double t0;
+    float dRcorr,scl,R[4][4];
+
+    trace(4,"decode_sbstype32:\n");
+
+    slot = getbitu(msg->msg,i,8); i+=8;
+    prn=slot2prn(slot,&sys);
+    n=sat=satno(sys,prn);
+
+    if (n==0||n>MAXSAT) return 0;
+
+    sbssat->sat[n-1].lcorr.iode=getbitu(msg->msg,i,10); i+=10;
+
+    for (i=0;i<3;i++) {
+    	sbssat->sat[n-1].lcorr.dpos[i]=getbits(msg->msg,i,11)*0.0625; i+=11;
+    }
+    sbssat->sat[n-1].lcorr.daf0=getbits(msg->msg,i,12)*0.03125/CLIGHT; i+=12;
+    for (i=0;i<3;i++) {
+    	sbssat->sat[n-1].lcorr.dvel[i]=getbits(msg->msg,i,8)*P2_11 ; i+=8;
+    }
+    sbssat->sat[n-1].lcorr.daf1=getbits(msg->msg,i,9)*P2_12/CLIGHT; i+=9;
+    t0=getbitu(msg->msg,i,13)*16.0; i+=13;
+
+    scale=getbitu(msg->msg,i,3); i+=3;
+    scl =pow(2.0,scale-5);
+    R[0][0]=getbitu(msg->msg,i,9)*scl; i+=9;
+    R[1][1]=getbitu(msg->msg,i,9)*scl; i+=9;
+    R[2][2]=getbitu(msg->msg,i,9)*scl; i+=9;
+    R[3][3]=getbitu(msg->msg,i,9)*scl; i+=9;
+    R[0][1]=getbits(msg->msg,i,10)*scl; i+=10;
+    R[0][2]=getbits(msg->msg,i,10)*scl; i+=10;
+    R[0][3]=getbits(msg->msg,i,10)*scl; i+=10;
+    R[1][2]=getbits(msg->msg,i,10)*scl; i+=10;
+    R[1][3]=getbits(msg->msg,i,10)*scl; i+=10;
+    R[2][3]=getbits(msg->msg,i,10)*scl; i+=10;
+
+    dfrei=getbitu(msg->msg,i,4); i+=4;
+    dRcorr=getbitu(msg->msg,i,4)/15.0; i+=4;
+
+    sbssat->sat[n-1].lcorr.t0=tod2time(msg,t0);
+
+    trace(5,"decode_sbstype32: sys=%d prn=%d\n",sys,prn);
+    return 1;
+}
+/* decode type34: integrity information message -------------------------------------*/
+static int decode_sbstype34(const sbsmsg_t *msg, sbssat_t *sbssat)
+{
+    int ofst=4,i=6+ofst,j,iodp;
+    unsigned int dfreci[92],dfrei[7];
+
+    trace(4,"decode_sbstype34:\n");
+
+    /* dual frequency range error change indicator */
+    for (j=0;j<92;j++) { /* 0:unchanged,1:changed,2:incremented,3:DNU */
+    	dfreci[j] = getbitu(msg->msg,i,2); i+=2;
+    }
+    /* dual frequency range error index */
+    for (j=0;j<7;j++) {
+    	dfrei[j] = getbitu(msg->msg,i,4); i+=4;
+    }
+
+    iodp=getbitu(msg->msg,224,2); /* iod mask */
+    return 1;
+}
+/* decode type35: integrity information message -------------------------------------*/
+static int decode_sbstype35(const sbsmsg_t *msg, sbssat_t *sbssat)
+{
+    int ofst=4,i=6+ofst,j,iodp;
+    unsigned int dfrei[92];
+
+    trace(4,"decode_sbstype35:\n");
+
+    for (j=0;j<53;j++) {
+    	dfrei[j] = getbitu(msg->msg,i,4); i+=4;
+    }
+
+    iodp=getbitu(msg->msg,224,2);
+    return 1;
+}
+/* decode type36: integrity information message -------------------------------------*/
+static int decode_sbstype36(const sbsmsg_t *msg, sbssat_t *sbssat)
+{
+    int ofst=4,i=6+ofst,j,iodp;
+    unsigned int dfrei[92];
+
+    trace(4,"decode_sbstype36:\n");
+
+    for (j=53;j<92;j++) {
+    	dfrei[j] = getbitu(msg->msg,i,4); i+=4;
+    }
+
+    iodp=getbitu(msg->msg,224,2);
+    return 1;
+}
+/* decode type37: degradation parameters an DFREI scale table ------------------------*/
+static int decode_sbstype37(const sbsmsg_t *msg, sbssat_t *sbssat)
+{
+    int ofst=4,i=6+ofst,j,tref_id;
+    float Ivalid32,Ivalid3940,CER,Ccov,Icorr[6],Ccorr[6],Rcorr[6];
+    float sig_DFRE[15];
+
+    trace(4,"decode_sbstype37:\n");
+
+    Ivalid32=getbitu(msg->msg,i,6)*6.0+30.0; i+=6;
+    Ivalid3940=getbitu(msg->msg,i,6)*6.0+30.0; i+=6;
+    CER=getbitu(msg->msg,i,6)*0.5; i+=6;
+    Ccov=getbitu(msg->msg,i,7)*0.1; i+=7;
+
+    for (j=0;j<6;j++) {
+    	Icorr[j] = getbitu(msg->msg,i,5)*6.0+30.0; i+=5;
+    	Ccorr[j] = getbitu(msg->msg,i,8)*0.01; i+=8;
+    	Rcorr[j] = getbitu(msg->msg,i,8)*0.2; i+=8;
+    }
+
+    sig_DFRE[0] = getbitu(msg->msg,i,4)*0.0625+0.125; i+=4;
+    sig_DFRE[1] = getbitu(msg->msg,i,4)*0.125+0.25; i+=4;
+    sig_DFRE[2] = getbitu(msg->msg,i,4)*0.125+0.375; i+=4;
+    sig_DFRE[3] = getbitu(msg->msg,i,4)*0.125+0.5; i+=4;
+    sig_DFRE[4] = getbitu(msg->msg,i,4)*0.125+0.625; i+=4;
+    sig_DFRE[5] = getbitu(msg->msg,i,4)*0.25+0.75; i+=4;
+    sig_DFRE[6] = getbitu(msg->msg,i,4)*0.25+1.0; i+=4;
+    sig_DFRE[7] = getbitu(msg->msg,i,4)*0.25+1.25; i+=4;
+    sig_DFRE[8] = getbitu(msg->msg,i,4)*0.25+1.5; i+=4;
+    sig_DFRE[9] = getbitu(msg->msg,i,4)*0.25+1.75; i+=4;
+    sig_DFRE[10] = getbitu(msg->msg,i,4)*0.5+2.0; i+=4;
+    sig_DFRE[11] = getbitu(msg->msg,i,4)*0.5+2.5; i+=4;
+    sig_DFRE[12] = getbitu(msg->msg,i,4)*1.0+3.0; i+=4;
+    sig_DFRE[13] = getbitu(msg->msg,i,4)*3.0+4.0; i+=4;
+    sig_DFRE[14] = getbitu(msg->msg,i,4)*6.0+10.0; i+=4;
+
+    return 1;
+}
+/* decode type39: SBAS satellite clock, ephemeris and covariance matrix 1 ----------*/
+static int decode_sbstype39(const sbsmsg_t *msg, nav_t *nav)
+{
+	eph_t eph;
+    int ofst=4,i=6+ofst,dslot,sbas_id,prn;
+
+    /* sbas provider id
+     *  WAAS:0,EGNOS:1,MSAS:2,GAGAN:3,SDCM:4,BDSBAS:5,KASS:6,A-SBAS:7,AUSBAS:8
+     */
+
+    dslot=getbitu(msg->msg,i,6); i+=6; /* 1-39 -> PRN=120-158 */
+    if (dslot==0) return 0;
+
+    prn=dslot+119;
+    eph.sat=satno(SYS_SBS,prn);
+    eph.iode=getbitu(msg->msg,i,2); i+=2;
+    sbas_id=getbitu(msg->msg,i,5); i+=5;
+
+    eph.cuc=getbits(msg->msg,i,19)*PI*P2_19*1.0e-4; i+=19;
+    eph.cus=getbits(msg->msg,i,19)*PI*P2_19*1.0e-4; i+=19;
+    eph.idot=getbits(msg->msg,i,22)*7.0/6.0*PI*P2_21*1.0e-6; i+=22;
+    eph.omg=getbits(msg->msg,i,34)*PI*P2_33; i+=34;
+    eph.OMG0=getbits(msg->msg,i,34)*PI*P2_33; i+=34;
+    eph.M0=getbits(msg->msg,i,34)*PI*P2_33; i+=34;
+
+    eph.f0=getbits(msg->msg,i,25)*0.02/CLIGHT; i+=25;
+    eph.f1=getbits(msg->msg,i,16)*4e-5/CLIGHT; i+=16;
+
+    trace(4,"decode_sbstype39:\n");
+
+    return 1;
+}
+/* decode type40: SBAS satellite clock, ephemeris and covariance matrix 2 ----------*/
+static int decode_sbstype40(const sbsmsg_t *msg, nav_t *nav)
+{
+	eph_t eph;
+    int ofst=4,i=6+ofst,scale,dfrei;
+    double te,dRcorr;
+    float scl,R[4][4];
+
+    eph.iode=getbitu(msg->msg,i,2); i+=2;
+
+    eph.i0=getbitu(msg->msg,i,33)*PI*P2_33; i+=33;
+    eph.e=getbitu(msg->msg,i,30)*P2_30; i+=30;
+    eph.A=getbitu(msg->msg,i,31)*0.02+6370000.0; i+=31;
+    eph.toes=getbitu(msg->msg,i,13)*16.0; i+=13; /* toe: seconds of day [s] */
+
+    eph.toe=tod2time(msg, eph.toes);
+
+    scale=getbitu(msg->msg,i,3); i+=3;
+    scl =pow(2.0,scale-5);
+    R[0][0]=getbitu(msg->msg,i,9)*scl; i+=9;
+    R[1][1]=getbitu(msg->msg,i,9)*scl; i+=9;
+    R[2][2]=getbitu(msg->msg,i,9)*scl; i+=9;
+    R[3][3]=getbitu(msg->msg,i,9)*scl; i+=9;
+    R[0][1]=getbits(msg->msg,i,10)*scl; i+=10;
+    R[0][2]=getbits(msg->msg,i,10)*scl; i+=10;
+    R[0][3]=getbits(msg->msg,i,10)*scl; i+=10;
+    R[1][2]=getbits(msg->msg,i,10)*scl; i+=10;
+    R[1][3]=getbits(msg->msg,i,10)*scl; i+=10;
+    R[2][3]=getbits(msg->msg,i,10)*scl; i+=10;
+
+    dfrei=getbitu(msg->msg,i,4); i+=4;
+    dRcorr=getbitu(msg->msg,i,4)/15.0; i+=4;
+
+    trace(5,"decode_sbstype40: prn=%d\n",msg->prn);
+    return 1;
+
+    return 1;
+}
+/* decode type47: SBAS satellites almanacs ----------*/
+static int decode_sbstype47(const sbsmsg_t *msg, nav_t *nav)
+{
+	alm_t alm;
+    int ofst=4,i=6+ofst,j,dslot,sbas_id,broadcast,WNROcount,prn;
+
+    for (j=0;j<2;j++) {
+		dslot=getbitu(msg->msg,i,6); i+=6;	/* 0-39 */
+		if (dslot!=0) {
+			prn = dslot+119;
+			alm.sat=satno(SYS_SBS,prn);
+			sbas_id=getbitu(msg->msg,i,5); i+=5;
+			broadcast =getbitu(msg->msg,i,1); i+=1;
+			alm.A=getbitu(msg->msg,i,16)*650.0+6370000.0; i+=16;
+			alm.e=getbitu(msg->msg,i,8)/256.0; i+=8;
+			alm.i0=getbitu(msg->msg,i,13)*PI*P2_13; i+=13;
+			alm.omg=getbits(msg->msg,i,14)*PI*P2_13; i+=14;
+			alm.OMG0=getbits(msg->msg,i,14)*PI*P2_13; i+=14;
+			alm.OMGd=getbits(msg->msg,i,8)*1.0e-9; i+=8;
+			alm.M0=getbits(msg->msg,i,15)*PI*P2_14; i+=15;
+			alm.toas=getbitu(msg->msg,i,6)*1800.0; i+=6; /* time of day */
+			alm.toa=tod2time(msg,alm.toas);
+
+			if (alm.sat!=0) {
+				nav->alm[alm.sat] = alm;
+			}
+		} else {
+			i+=5+1+16+8+13+14+14+8+15+6;
+		}
+    }
+
+    WNROcount=getbitu(msg->msg,i,4); i+=4; /* 15:invalid */
+
+    trace(5,"decode_sbstype47: prn=%d\n",msg->prn);
+    return 1;
+}
 /* update sbas corrections -----------------------------------------------------
 * update sbas correction parameters in navigation data with a sbas message
 * args   : sbsmg_t  *msg    I   sbas message
@@ -429,6 +745,7 @@ extern int sbsupdatecorr(const sbsmsg_t *msg, nav_t *nav)
     if (msg->week==0) return -1;
     
     switch (type) {
+    	/* L1 SBAS */
         case  0: stat=decode_sbstype2 (msg,&nav->sbssat); break;
         case  1: stat=decode_sbstype1 (msg,&nav->sbssat); break;
         case  2:
@@ -442,6 +759,16 @@ extern int sbsupdatecorr(const sbsmsg_t *msg, nav_t *nav)
         case 24: stat=decode_sbstype24(msg,&nav->sbssat); break;
         case 25: stat=decode_sbstype25(msg,&nav->sbssat); break;
         case 26: stat=decode_sbstype26(msg,nav ->sbsion); break;
+        /* DFMC L5 SBAS */
+        case 31: stat=decode_sbstype31(msg,&nav->sbssat); break;
+        case 32: stat=decode_sbstype32(msg,&nav->sbssat); break;
+        case 34: stat=decode_sbstype34(msg,&nav->sbssat); break;
+        case 35: stat=decode_sbstype35(msg,&nav->sbssat); break;
+        case 36: stat=decode_sbstype36(msg,&nav->sbssat); break;
+        case 37: stat=decode_sbstype37(msg,&nav->sbssat); break;
+        case 39: stat=decode_sbstype39(msg,&nav); break;
+        case 40: stat=decode_sbstype40(msg,&nav); break;
+        case 47: stat=decode_sbstype47(msg,&nav); break;
         case 63: break; /* null message */
         
         /*default: trace(2,"unsupported sbas message: type=%d\n",type); break;*/
