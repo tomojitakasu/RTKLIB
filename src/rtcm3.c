@@ -1366,33 +1366,59 @@ static int decode_ssr2_head(rtcm_t *rtcm, int sys, int cmode, int *sync, int *io
     *hsize=i;
     return nsat;
 }
-/* ssr signal and tracking mode ids ------------------------------------------*/
-static const int codes_gps[]={
-    CODE_L1C,CODE_L1P,CODE_L1W,CODE_L1Y,CODE_L1M,CODE_L2C,CODE_L2D,CODE_L2S,
-    CODE_L2L,CODE_L2X,CODE_L2P,CODE_L2W,CODE_L2Y,CODE_L2M,CODE_L5I,CODE_L5Q,
-    CODE_L5X
+/* ssr signal and tracking mode ids for RTCM SSR ------------------------------------------*/
+static const int codes_gps_rtcm[]={
+    CODE_L1C,CODE_L1P,CODE_L1W,CODE_NONE,CODE_NONE,CODE_L2C,CODE_L2D,CODE_L2S,
+    CODE_L2L,CODE_L2X,CODE_L2P,CODE_L2W,CODE_NONE,CODE_NONE,CODE_L5I,CODE_L5Q,
+    CODE_L5X,CODE_L1S,CODE_L1L,CODE_L1X
 };
-static const int codes_glo[]={
-    CODE_L1C,CODE_L1P,CODE_L2C,CODE_L2P,CODE_L4A,CODE_L4B,CODE_L6A,CODE_L6B,
-    CODE_L3I,CODE_L3Q
+static const int codes_glo_rtcm[]={
+    CODE_L1C,CODE_L1P,CODE_L2C,CODE_L2P,CODE_L4A,CODE_L4B,CODE_L4X,CODE_L6A,
+    CODE_L6B,CODE_L6X,CODE_L3I,CODE_L3Q,CODE_L3X
 };
-static const int codes_gal[]={
+static const int codes_gal_rtcm[]={
     CODE_L1A,CODE_L1B,CODE_L1C,CODE_L1X,CODE_L1Z,CODE_L5I,CODE_L5Q,CODE_L5X,
     CODE_L7I,CODE_L7Q,CODE_L7X,CODE_L8I,CODE_L8Q,CODE_L8X,CODE_L6A,CODE_L6B,
     CODE_L6C,CODE_L6X,CODE_L6Z
 };
-static const int codes_qzs[]={
+static const int codes_qzs_rtcm[]={
     CODE_L1C,CODE_L1S,CODE_L1L,CODE_L2S,CODE_L2L,CODE_L2X,CODE_L5I,CODE_L5Q,
     CODE_L5X,CODE_L6S,CODE_L6L,CODE_L6X,CODE_L1X,CODE_L1Z,CODE_L5D,CODE_L5P,
     CODE_L5Z,CODE_L6E,CODE_L6Z
 };
-static const int codes_bds[]={
+static const int codes_bds_rtcm[]={
     CODE_L2I,CODE_L2Q,CODE_L2X,CODE_L6I,CODE_L6Q,CODE_L6X,CODE_L7I,CODE_L7Q,
-    CODE_L7X,CODE_L1D,CODE_L1P,CODE_L1X,CODE_L5D,CODE_L5P,CODE_L5X,CODE_L1A,
-    CODE_L8D,CODE_L8P,CODE_L6A
+    CODE_L7X,CODE_L1D,CODE_L1P,CODE_L1X,CODE_L5D,CODE_L5P,CODE_L5X
 };
-static const int codes_sbs[]={
+static const int codes_sbs_rtcm[]={
     CODE_L1C,CODE_L5I,CODE_L5Q,CODE_L5X
+};
+/* ssr signal and tracking mode ids for IGS SSR ------------------------------------------*/
+static const int codes_gps_igs[]={
+    CODE_L1C,CODE_L1P,CODE_L1W,CODE_L1Y,CODE_L1M,CODE_L2C,CODE_L2D,CODE_L2S,
+    CODE_L2L,CODE_NONE,CODE_L2P,CODE_L2W,CODE_NONE,CODE_NONE,CODE_L5I,CODE_L5Q
+};
+static const int codes_glo_igs[]={
+    CODE_L1C,CODE_L1P,CODE_L2C,CODE_L2P,CODE_L4A,CODE_L4B,CODE_L6A,CODE_L6B,
+    CODE_L3I,CODE_L3Q
+};
+static const int codes_gal_igs[]={
+    CODE_L1A,CODE_L1B,CODE_L1C,CODE_NONE,CODE_NONE,CODE_L5I,CODE_L5Q,CODE_NONE,
+    CODE_L7I,CODE_L7Q,CODE_NONE,CODE_NONE,CODE_NONE,CODE_NONE,CODE_L6A,CODE_L6B,
+    CODE_L6C,CODE_NONE,CODE_NONE
+};
+static const int codes_qzs_igs[]={
+    CODE_L1C,CODE_L1S,CODE_L1L,CODE_L2S,CODE_L2L,CODE_NONE,CODE_L5I,CODE_L5Q,
+    CODE_NONE,CODE_L6S,CODE_L6L,CODE_NONE,CODE_NONE,CODE_NONE,CODE_NONE,CODE_NONE,
+    CODE_NONE,CODE_L6E,CODE_NONE
+};
+static const int codes_bds_igs[]={
+    CODE_L2I,CODE_L2Q,CODE_NONE,CODE_L6I,CODE_L6Q,CODE_NONE,CODE_L7I,CODE_L7Q,
+    CODE_NONE,CODE_L1D,CODE_L1P,CODE_NONE,CODE_L5D,CODE_L5P,CODE_NONE,CODE_L1A,
+    CODE_NONE,CODE_NONE,CODE_L6A
+};
+static const int codes_sbs_igs[]={
+    CODE_L1C,CODE_L5I,CODE_L5Q,CODE_NONE
 };
 /* decode ssr 1: orbit corrections -------------------------------------------*/
 static int decode_ssr1(rtcm_t *rtcm, int sys)
@@ -1509,16 +1535,28 @@ static int decode_ssr3(rtcm_t *rtcm, int sys)
         trace(2,"rtcm3 %d length error: len=%d\n",type,rtcm->len);
         return -1;
     }
-    switch (sys) {
-        case SYS_GPS: np=6; offp=  0; codes=codes_gps; ncode=17; break;
-        case SYS_GLO: np=5; offp=  0; codes=codes_glo; ncode=10; break;
-        case SYS_GAL: np=6; offp=  0; codes=codes_gal; ncode=19; break;
-        case SYS_QZS: np=4; offp=192; codes=codes_qzs; ncode=19; break;
-        case SYS_CMP: np=6; offp=  0; codes=codes_bds; ncode=19; break;
-        case SYS_SBS: np=6; offp=120; codes=codes_sbs; ncode= 4; break;
-        default: return sync?0:10;
+    if (cmode==IGS_SSR) {
+        switch (sys) {
+            case SYS_GPS: offp=  0; codes=codes_gps_igs; ncode=16; break;
+            case SYS_GLO: offp=  0; codes=codes_glo_igs; ncode=10; break;
+            case SYS_GAL: offp=  0; codes=codes_gal_igs; ncode=19; break;
+            case SYS_QZS: offp=192; codes=codes_qzs_igs; ncode=19; break;
+            case SYS_CMP: offp=  0; codes=codes_bds_igs; ncode=19; break;
+            case SYS_SBS: offp=120; codes=codes_sbs_igs; ncode= 4; break;
+            default: return sync?0:10;
+        }
+        np=6;
+    } else { /* RTCM SSR */
+        switch (sys) {
+            case SYS_GPS: np=6; offp=  0; codes=codes_gps_rtcm; ncode=20; break;
+            case SYS_GLO: np=5; offp=  0; codes=codes_glo_rtcm; ncode=13; break;
+            case SYS_GAL: np=6; offp=  0; codes=codes_gal_rtcm; ncode=19; break;
+            case SYS_QZS: np=4; offp=192; codes=codes_qzs_rtcm; ncode=19; break;
+            case SYS_CMP: np=6; offp=  0; codes=codes_bds_rtcm; ncode=15; break;
+            case SYS_SBS: np=6; offp=120; codes=codes_sbs_rtcm; ncode= 4; break;
+            default: return sync?0:10;
+        }
     }
-    if (cmode==IGS_SSR) np=6;
     for (j=0;j<nsat&&i+5+np<=rtcm->len*8;j++) {
         prn  =getbitu(rtcm->buff,i,np)+offp; i+=np;
         nbias=getbitu(rtcm->buff,i, 5);      i+= 5;
@@ -1759,16 +1797,28 @@ static int decode_ssr7(rtcm_t *rtcm, int sys)
         trace(2,"rtcm3 %d length error: len=%d\n",type,rtcm->len);
         return -1;
     }
-    switch (sys) {
-        case SYS_GPS: np=6; offp=  0; codes=codes_gps; ncode=17; break;
-        case SYS_GLO: np=5; offp=  0; codes=codes_glo; ncode=10; break;
-        case SYS_GAL: np=6; offp=  0; codes=codes_gal; ncode=19; break;
-        case SYS_QZS: np=4; offp=192; codes=codes_qzs; ncode=19; break;
-        case SYS_CMP: np=6; offp=  0; codes=codes_bds; ncode=19; break;
-        case SYS_SBS: np=6; offp=  0; codes=codes_sbs; ncode= 4; break;
-        default: return sync?0:10;
+    if (cmode==IGS_SSR) {
+        switch (sys) {
+            case SYS_GPS: offp=  0; codes=codes_gps_igs; ncode=16; break;
+            case SYS_GLO: offp=  0; codes=codes_glo_igs; ncode=10; break;
+            case SYS_GAL: offp=  0; codes=codes_gal_igs; ncode=19; break;
+            case SYS_QZS: offp=192; codes=codes_qzs_igs; ncode=19; break;
+            case SYS_CMP: offp=  0; codes=codes_bds_igs; ncode=19; break;
+            case SYS_SBS: offp=120; codes=codes_sbs_igs; ncode= 4; break;
+            default: return sync?0:10;
+        }
+        np=6;
+    } else { /* RTCM SSR */
+        switch (sys) {
+            case SYS_GPS: np=6; offp=  0; codes=codes_gps_rtcm; ncode=20; break;
+            case SYS_GLO: np=5; offp=  0; codes=codes_glo_rtcm; ncode=13; break;
+            case SYS_GAL: np=6; offp=  0; codes=codes_gal_rtcm; ncode=19; break;
+            case SYS_QZS: np=4; offp=192; codes=codes_qzs_rtcm; ncode=19; break;
+            case SYS_CMP: np=6; offp=  0; codes=codes_bds_rtcm; ncode=15; break;
+            case SYS_SBS: np=6; offp=120; codes=codes_sbs_rtcm; ncode= 4; break;
+            default: return sync?0:10;
+        }
     }
-    if (cmode==IGS_SSR) np=6;
     for (j=0;j<nsat&&i+5+17+np<=rtcm->len*8;j++) {
         prn     =getbitu(rtcm->buff,i,np)+offp; i+=np;
         nbias   =getbitu(rtcm->buff,i, 5);      i+= 5;
