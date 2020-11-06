@@ -1713,7 +1713,7 @@ extern int init_rnxctr(rnxctr_t *rnx)
     if (!(rnx->obs.data=(obsd_t *)malloc(sizeof(obsd_t)*MAXOBS ))||
         !(rnx->nav.eph =(eph_t  *)malloc(sizeof(eph_t )*MAXSAT ))||
         !(rnx->nav.geph=(geph_t *)malloc(sizeof(geph_t)*NSATGLO))||
-        !(rnx->nav.seph=(seph_t *)malloc(sizeof(seph_t)*NSATSBS))) {
+        !(rnx->nav.seph=(seph_t *)malloc(sizeof(seph_t)*2*NSATSBS))) {
         free_rnxctr(rnx);
         return 0;
     }
@@ -1724,11 +1724,11 @@ extern int init_rnxctr(rnxctr_t *rnx)
     rnx->obs.n=0;
     rnx->nav.n=MAXSAT;
     rnx->nav.ng=NSATGLO;
-    rnx->nav.ns=NSATSBS;
+    rnx->nav.ns=2*NSATSBS;
     for (i=0;i<MAXOBS ;i++) rnx->obs.data[i]=data0;
     for (i=0;i<MAXSAT ;i++) rnx->nav.eph [i]=eph0;
     for (i=0;i<NSATGLO;i++) rnx->nav.geph[i]=geph0;
-    for (i=0;i<NSATSBS;i++) rnx->nav.seph[i]=seph0;
+    for (i=0;i<2*NSATSBS;i++) rnx->nav.seph[i]=seph0;
     rnx->ephsat=0;
     rnx->opt[0]='\0';
     
