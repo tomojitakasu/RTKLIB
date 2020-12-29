@@ -14,8 +14,8 @@ int main(int argc, int argv)
 	char ifiles[32]={},*ofile="";
 	char itagfile[1024],otagfile[1024];
     int i,n=0;
-	unsigned int tick0,tick1,tick,fpos;
-	unsigned char buff[4096],tagbuff[64];
+	uint32_t tick0,tick1,tick,fpos;
+	uint8_t buff[4096],tagbuff[64];
     
     for (i=0;i<argc;i++) {
 		if (!strcmp(argv[i],"-o")&&i+1<argc) ofile=argv[++i];
@@ -40,8 +40,8 @@ int main(int argc, int argv)
 			fprintf(stderr,"in tag file read error\n");
 			return -1;
 		}
-		tick1=*(unsigned int *)(tagbuff+60);
-		time1=*(gtime_t      *)(tagbuff+64);
+		tick1=*(uint32_t *)(tagbuff+60);
+		time1=*(gtime_t  *)(tagbuff+64);
 		fprintf(stderr,"tick=%8u: t=%s %s\n",tick1,time1_str(time,3),ifiles[i]);
 		
 		if (i==0) {
@@ -52,8 +52,8 @@ int main(int argc, int argv)
 			tick0=tick1;
 		}
 		for (fpos=0;fread(tagbuff,8,1,itagfp)==1;) {
-			tick=*(unsigned int *)tagbuff+tick1;
-			fpos=*(unsigned int *)(tagbuff+4);
+			tick=*(uint32_t *)tagbuff+tick1;
+			fpos=*(uint32_t *)(tagbuff+4);
 			
 			fprintf(stderr,"tick=%8u: fpos=%8u\n",tick,fpos);
 			

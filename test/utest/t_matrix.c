@@ -64,9 +64,11 @@ void utest2(void)
     for (i=0,d=0.0;i<6;i++) d+=a[i]*b[i];
     c=dot(a,b,0); assert(c==0.0);
     c=dot(a,b,6); assert(fabs(c-d)<1E-14);
-    for (i=0,d=0.0;i<6;i++) d+=a[i]*a[i]; d=sqrt(d);
+    for (i=0,d=0.0;i<6;i++) d+=a[i]*a[i];
+    d=sqrt(d);
     c=norm(a,6);  assert(fabs(c-d)<1E-14);
-    for (i=0,d=0.0;i<6;i++) d+=b[i]*b[i]; d=sqrt(d);
+    for (i=0,d=0.0;i<6;i++) d+=b[i]*b[i];
+    d=sqrt(d);
     c=norm(b,6);  assert(fabs(c-d)<1E-14);
 
     printf("%s utest2 : OK\n",__FILE__);

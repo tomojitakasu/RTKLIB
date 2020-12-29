@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2020/12/01 13:18:15.000.203,=D:\share\RTKLIB\app\winapp\appcmn\mntpoptdlg.cpp</Transaction>
+    <Transaction>2020/12/02 09:04:52.000.938,=D:\share\RTKLIB\app\winapp\rtkplot\Unit1.cpp</Transaction>
+    <Transaction>2020/12/02 09:44:03.000.535,D:\share\RTKLIB\app\winapp\appcmn\freqdlg.h=D:\share\RTKLIB\app\winapp\rtkplot\Unit1.h</Transaction>
+    <Transaction>2020/12/02 09:44:03.000.535,D:\share\RTKLIB\app\winapp\appcmn\freqdlg.dfm=D:\share\RTKLIB\app\winapp\rtkplot\Unit1.dfm</Transaction>
+    <Transaction>2020/12/02 09:44:03.000.535,D:\share\RTKLIB\app\winapp\appcmn\freqdlg.cpp=D:\share\RTKLIB\app\winapp\rtkplot\Unit1.cpp</Transaction>
+    <Transaction>2020/12/03 17:01:13.000.095,D:\share\RTKLIB\app\winapp\appcmn\gmviewopt.cpp=</Transaction>
+    <Transaction>2020/12/03 17:03:10.000.583,=D:\share\RTKLIB\app\winapp\rtkplot\gmviewopt.cpp</Transaction>
+    <Transaction>2020/12/03 17:06:43.000.884,D:\share\RTKLIB\app\winapp\rtkplot\gmviewopt.h=D:\share\RTKLIB\app\winapp\rtkplot\mapviewopt.h</Transaction>
+    <Transaction>2020/12/03 17:06:43.000.884,D:\share\RTKLIB\app\winapp\rtkplot\gmviewopt.cpp=D:\share\RTKLIB\app\winapp\rtkplot\mapviewopt.cpp</Transaction>
+    <Transaction>2020/12/03 17:06:43.000.884,D:\share\RTKLIB\app\winapp\rtkplot\gmviewopt.dfm=D:\share\RTKLIB\app\winapp\rtkplot\mapviewopt.dfm</Transaction>
+    <Transaction>2020/12/03 17:08:34.000.524,D:\share\RTKLIB\app\winapp\rtkplot\mapdlg.cpp=D:\share\RTKLIB\app\winapp\rtkplot\mapoptdlg.cpp</Transaction>
+    <Transaction>2020/12/03 17:08:34.000.524,D:\share\RTKLIB\app\winapp\rtkplot\mapdlg.h=D:\share\RTKLIB\app\winapp\rtkplot\mapoptdlg.h</Transaction>
+    <Transaction>2020/12/03 17:08:34.000.524,D:\share\RTKLIB\app\winapp\rtkplot\mapdlg.dfm=D:\share\RTKLIB\app\winapp\rtkplot\mapoptdlg.dfm</Transaction>
+    <Transaction>2020/12/03 17:25:52.000.270,D:\share\RTKLIB\app\winapp\rtkplot\gmview.cpp=</Transaction>
+    <Transaction>2020/12/03 17:28:22.000.248,=D:\share\RTKLIB\app\winapp\rtkplot\mapview.cpp</Transaction>
+    <Transaction>2020/12/03 17:29:18.000.146,D:\share\RTKLIB\app\winapp\rtkplot\satdlg.cpp=</Transaction>
+  </Transactions>
+</BorlandProject>

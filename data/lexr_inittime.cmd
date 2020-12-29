@@ -1,6 +1,0 @@
-!LEXR CMD-TIME
-
-
-
-
-@

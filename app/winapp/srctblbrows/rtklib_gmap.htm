@@ -1,0 +1,85 @@
+<!------------------------------------------------------------------------------
+* rtklib_gmap.htm: rtklib map view
+*
+* history: 2013/01/20 1.0  new
+*          2020/11/30 1.1  use leaflet and OSM (OpenStreetMap)
+*------------------------------------------------------------------------------>
+<html>
+<head>
+<title>RTKLIB_GM</title>
+
+<meta charset=UTF-8">
+<link rel="stylesheet" href="leaflet/leaflet.css" />
+<script src="leaflet/leaflet.js"></script>
+
+<script>
+
+var map;
+var marks = [];
+var titles = [];
+var LeafIcon = L.Icon.extend({
+    options: {
+        shadowUrl: 'leaflet/images/marker-shadow.png',
+        shadowSize: [41, 41],
+        shadowAnchor: [10, 41],
+        iconSize: [25, 41],
+        iconAnchor: [10, 41],
+        popupAnchor: [3, -40]
+    }
+});
+var icon0 = new LeafIcon({iconUrl: 'image/marker_yellow.png'});
+var icon1 = new LeafIcon({iconUrl: 'image/marker_red.png'});
+
+var osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: "&copy; <a href='https://osm.org/copyright' target='_blank'>OpenStreetMap</a> contributors"
+});
+
+function init() {
+    map = L.map('map');
+    osm.addTo(map);
+    map.zoomControl.setPosition('bottomright');
+    map.setView([0,0],2);
+    document.getElementById('state').value='1';
+}
+
+function ShowHome() {
+    map.setView([0,0],2);
+}
+
+function ClearMark() {
+    for (var i in marks) {
+        marks[i].remove();
+    }
+    marks = [];
+    titles = [];
+}
+
+function AddMark(lat,lon,title,msg) {
+    var mark = L.marker([lat,lon],{icon: icon0, opacity: 0.8}).addTo(map);
+    var popup = L.popup().setContent(msg);
+    mark.bindPopup(popup);
+    marks.push(mark);
+    titles.push(title);
+}
+
+function HighlightMark(title) {
+    for (var i in marks) {
+        if (titles[i] == title) {
+            marks[i].setIcon(icon1);
+            marks[i].setOpacity(1.0);
+        }
+        else {
+            marks[i].setIcon(icon0);
+            marks[i].setOpacity(0.8);
+        }
+    }
+}
+
+</script>
+</head>
+
+<body style="margin: 0;"; scroll="no"; onload="init()">
+    <div id="map" style="height: 100%; width: 100%;"> </div>
+    <input id="state" type="hidden" value="0">
+</body>
+</html>

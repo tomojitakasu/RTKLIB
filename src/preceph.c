@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * preceph.c : precise ephemeris and clock functions
 *
-*          Copyright (C) 2007-2017 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2007-2020 by T.TAKASU, All rights reserved.
 *
 * references :
 *     [1] S.Hilla, The Extended Standard Product 3 Orbit Format (SP3-c),
@@ -11,6 +11,8 @@
 *     [3] D.D.McCarthy, IERS Technical Note 21, IERS Conventions 1996, July 1996
 *     [4] D.A.Vallado, Fundamentals of Astrodynamics and Applications 2nd ed,
 *         Space Technology Library, 2004
+*     [5] S.Hilla, The Extended Standard Product 3 Orbit Format (SP3-d),
+*         February 21, 2016
 *
 * version : $Revision: 1.1 $ $Date: 2008/07/17 21:48:06 $
 * history : 2009/01/18 1.0  new
@@ -41,6 +43,11 @@
 *           2015/05/10 1.15 add api readfcb()
 *                           modify api readdcb()
 *           2017/04/11 1.16 fix bug on antenna offset correction in peph2pos()
+*           2020/11/30 1.17 support SP3-d [5] to accept more than 85 satellites
+*                           support NavIC/IRNSS in API peph2pos()
+*                           LC defined GPS/QZS L1-L2, GLO G1-G2, GAL E1-E5b,
+*                            BDS B1I-B2I and IRN L5-S for API satantoff()
+*                           fix bug on reading SP3 file extension
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -56,13 +63,14 @@ static int code2sys(char code)
 {
     if (code=='G'||code==' ') return SYS_GPS;
     if (code=='R') return SYS_GLO;
-    if (code=='E') return SYS_GAL; /* extension to sp3-c */
-    if (code=='J') return SYS_QZS; /* extension to sp3-c */
-    if (code=='C') return SYS_CMP; /* extension to sp3-c */
-    if (code=='L') return SYS_LEO; /* extension to sp3-c */
+    if (code=='E') return SYS_GAL; /* SP3-d */
+    if (code=='J') return SYS_QZS; /* SP3-d */
+    if (code=='C') return SYS_CMP; /* SP3-d */
+    if (code=='I') return SYS_IRN; /* SP3-d */
+    if (code=='L') return SYS_LEO; /* SP3-d */
     return SYS_NONE;
 }
-/* read sp3 header -----------------------------------------------------------*/
+/* read SP3 header -----------------------------------------------------------*/
 static int readsp3h(FILE *fp, gtime_t *time, char *type, int *sats,
                     double *bfact, char *tsys)
 {
@@ -71,15 +79,15 @@ static int readsp3h(FILE *fp, gtime_t *time, char *type, int *sats,
     
     trace(3,"readsp3h:\n");
     
-    for (i=0;i<22;i++) {
+    for (i=0;;i++) {
         if (!fgets(buff,sizeof(buff),fp)) break;
         
         if (i==0) {
             *type=buff[2];
             if (str2time(buff,3,28,time)) return 0;
         }
-        else if (2<=i&&i<=6) {
-            if (i==2) {
+        else if (!strncmp(buff,"+ ",2)) { /* satellite id */
+            if (ns==0) {
                 ns=(int)str2num(buff,4,2);
             }
             for (j=0;j<17&&k<ns;j++) {
@@ -88,12 +96,26 @@ static int readsp3h(FILE *fp, gtime_t *time, char *type, int *sats,
                 if (k<MAXSAT) sats[k++]=satno(sys,prn);
             }
         }
-        else if (i==12) {
+        else if (!strncmp(buff,"++",2)) { /* orbit accuracy */
+            continue;
+        }
+        else if (!strncmp(buff,"%c",2)) { /* time system */
             strncpy(tsys,buff+9,3); tsys[3]='\0';
         }
-        else if (i==14) {
+        else if (!strncmp(buff,"%f",2)&&bfact[0]==0.0) { /* fp base number */
             bfact[0]=str2num(buff, 3,10);
             bfact[1]=str2num(buff,14,12);
+        }
+        else if (!strncmp(buff,"%i",2)) {
+            continue;
+        }
+        else if (!strncmp(buff,"/*",2)) { /* comment */
+            continue;
+        }
+        else if (!strncmp(buff,"* ",2)) { /* first record */
+            /* roll back file pointer */
+            fseek(fp,-(long)strlen(buff),SEEK_CUR);
+            break;
         }
     }
     return ns;
@@ -115,7 +137,7 @@ static int addpeph(nav_t *nav, peph_t *peph)
     nav->peph[nav->ne++]=*peph;
     return 1;
 }
-/* read sp3 body -------------------------------------------------------------*/
+/* read SP3 body -------------------------------------------------------------*/
 static void readsp3b(FILE *fp, char type, int *sats, int ns, double *bfact,
                      char *tsys, int index, int opt, nav_t *nav)
 {
@@ -273,8 +295,8 @@ extern void readsp3(const char *file, nav_t *nav, int opt)
     for (i=j=0;i<n;i++) {
         if (!(ext=strrchr(efiles[i],'.'))) continue;
         
-        if (!strstr(ext+1,"sp3")&&!strstr(ext+1,".SP3")&&
-            !strstr(ext+1,"eph")&&!strstr(ext+1,".EPH")) continue;
+        if (!strstr(ext,".sp3")&&!strstr(ext,".SP3")&&
+            !strstr(ext,".eph")&&!strstr(ext,".EPH")) continue;
         
         if (!(fp=fopen(efiles[i],"r"))) {
             trace(2,"sp3 file open error %s\n",efiles[i]);
@@ -318,7 +340,7 @@ extern int readsap(const char *file, gtime_t time, nav_t *nav)
     free(pcvs.pcv);
     return 1;
 }
-/* read dcb parameters file --------------------------------------------------*/
+/* read DCB parameters file --------------------------------------------------*/
 static int readdcbf(const char *file, nav_t *nav, const sta_t *sta)
 {
     FILE *fp;
@@ -342,7 +364,7 @@ static int readdcbf(const char *file, nav_t *nav, const sta_t *sta)
         
         if ((cbias=str2num(buff,26,9))==0.0) continue;
         
-        if (sta&&(!strcmp(str1,"G")||!strcmp(str1,"R"))) { /* receiver dcb */
+        if (sta&&(!strcmp(str1,"G")||!strcmp(str1,"R"))) { /* receiver DCB */
             for (i=0;i<MAXRCV;i++) {
                 if (!strcmp(sta[i].name,str2)) break;
             }
@@ -359,14 +381,14 @@ static int readdcbf(const char *file, nav_t *nav, const sta_t *sta)
     
     return 1;
 }
-/* read dcb parameters ---------------------------------------------------------
-* read differential code bias (dcb) parameters
-* args   : char   *file       I   dcb parameters file (wild-card * expanded)
+/* read DCB parameters ---------------------------------------------------------
+* read differential code bias (DCB) parameters
+* args   : char   *file       I   DCB parameters file (wild-card * expanded)
 *          nav_t  *nav        IO  navigation data
-*          sta_t  *sta        I   station info data to inport receiver dcb
+*          sta_t  *sta        I   station info data to inport receiver DCB
 *                                 (NULL: no use)
 * return : status (1:ok,0:error)
-* notes  : currently only p1-c1 bias of code *.dcb file
+* notes  : currently only support P1-P2, P1-C1, P2-C2, bias in DCB file
 *-----------------------------------------------------------------------------*/
 extern int readdcb(const char *file, nav_t *nav, const sta_t *sta)
 {
@@ -391,107 +413,6 @@ extern int readdcb(const char *file, nav_t *nav, const sta_t *sta)
     }
     for (i=0;i<MAXEXFILE;i++) free(efiles[i]);
     
-    return 1;
-}
-/* add satellite fcb ---------------------------------------------------------*/
-static int addfcb(nav_t *nav, gtime_t ts, gtime_t te, int sat,
-                  const double *bias, const double *std)
-{
-    fcbd_t *nav_fcb;
-    int i,j;
-    
-    if (nav->nf>0&&fabs(timediff(ts,nav->fcb[nav->nf-1].ts))<=1e-3) {
-        for (i=0;i<3;i++) {
-            nav->fcb[nav->nf-1].bias[sat-1][i]=bias[i];
-            nav->fcb[nav->nf-1].std [sat-1][i]=std [i];
-        }
-        return 1;
-    }
-    if (nav->nf>=nav->nfmax) {
-        nav->nfmax=nav->nfmax<=0?2048:nav->nfmax*2;
-        if (!(nav_fcb=(fcbd_t *)realloc(nav->fcb,sizeof(fcbd_t)*nav->nfmax))) {
-            free(nav->fcb); nav->nf=nav->nfmax=0;
-            return 0;
-        }
-        nav->fcb=nav_fcb;
-    }
-    for (i=0;i<MAXSAT;i++) for (j=0;j<3;j++) {
-        nav->fcb[nav->nf].bias[i][j]=nav->fcb[nav->nf].std[i][j]=0.0;
-    }
-    for (i=0;i<3;i++) {
-        nav->fcb[nav->nf].bias[sat-1][i]=bias[i];
-        nav->fcb[nav->nf].std [sat-1][i]=std [i];
-    }
-    nav->fcb[nav->nf  ].ts=ts;
-    nav->fcb[nav->nf++].te=te;
-    return 1;
-}
-/* read satellite fcb file ---------------------------------------------------*/
-static int readfcbf(const char *file, nav_t *nav)
-{
-    FILE *fp;
-    gtime_t ts,te;
-    double ep1[6],ep2[6],bias[3]={0},std[3]={0};
-    char buff[1024],str[32],*p;
-    int sat;
-    
-    trace(3,"readfcbf: file=%s\n",file);
-    
-    if (!(fp=fopen(file,"r"))) {
-        trace(2,"fcb parameters file open error: %s\n",file);
-        return 0;
-    }
-    while (fgets(buff,sizeof(buff),fp)) {
-        if ((p=strchr(buff,'#'))) *p='\0';
-        if (sscanf(buff,"%lf/%lf/%lf %lf:%lf:%lf %lf/%lf/%lf %lf:%lf:%lf %s"
-                   "%lf %lf %lf %lf %lf %lf",ep1,ep1+1,ep1+2,ep1+3,ep1+4,ep1+5,
-                   ep2,ep2+1,ep2+2,ep2+3,ep2+4,ep2+5,str,bias,std,bias+1,std+1,
-                   bias+2,std+2)<17) continue;
-        if (!(sat=satid2no(str))) continue;
-        ts=epoch2time(ep1);
-        te=epoch2time(ep2);
-        if (!addfcb(nav,ts,te,sat,bias,std)) return 0;
-    }
-    fclose(fp);
-    return 1;
-}
-/* compare satellite fcb -----------------------------------------------------*/
-static int cmpfcb(const void *p1, const void *p2)
-{
-    fcbd_t *q1=(fcbd_t *)p1,*q2=(fcbd_t *)p2;
-    double tt=timediff(q1->ts,q2->ts);
-    return tt<-1E-3?-1:(tt>1E-3?1:0);
-}
-/* read satellite fcb data -----------------------------------------------------
-* read satellite fractional cycle bias (dcb) parameters
-* args   : char   *file       I   fcb parameters file (wild-card * expanded)
-*          nav_t  *nav        IO  navigation data
-* return : status (1:ok,0:error)
-* notes  : fcb data appended to navigation data
-*-----------------------------------------------------------------------------*/
-extern int readfcb(const char *file, nav_t *nav)
-{
-    char *efiles[MAXEXFILE]={0};
-    int i,n;
-    
-    trace(3,"readfcb : file=%s\n",file);
-    
-    for (i=0;i<MAXEXFILE;i++) {
-        if (!(efiles[i]=(char *)malloc(1024))) {
-            for (i--;i>=0;i--) free(efiles[i]);
-            return 0;
-        }
-    }
-    n=expath(file,efiles,MAXEXFILE);
-    
-    for (i=0;i<n;i++) {
-        readfcbf(efiles[i],nav);
-    }
-    for (i=0;i<MAXEXFILE;i++) free(efiles[i]);
-    
-    if (nav->nf>1) {
-        qsort(nav->fcb,nav->nf,sizeof(fcbd_t),cmpfcb);
-    }
     return 1;
 }
 /* polynomial interpolation by Neville's algorithm ---------------------------*/
@@ -543,16 +464,11 @@ static int pephpos(gtime_t time, int sat, const nav_t *nav, double *rs,
     }
     for (j=0;j<=NMAX;j++) {
         pos=nav->peph[i+j].pos[sat-1];
-#if 0
-        p[0][j]=pos[0];
-        p[1][j]=pos[1];
-#else
         /* correciton for earh rotation ver.2.4.0 */
         sinl=sin(OMGE*t[j]);
         cosl=cos(OMGE*t[j]);
         p[0][j]=cosl*pos[0]-sinl*pos[1];
         p[1][j]=sinl*pos[0]+cosl*pos[1];
-#endif
         p[2][j]=pos[2];
     }
     for (i=0;i<3;i++) {
@@ -652,17 +568,24 @@ static int pephclk(gtime_t time, int sat, const nav_t *nav, double *dts,
 *          double *dant       I   satellite antenna phase center offset (ecef)
 *                                 {dx,dy,dz} (m) (iono-free LC value)
 * return : none
+* notes  : iono-free LC frequencies defined as follows:
+*            GPS/QZSS : L1-L2
+*            GLONASS  : G1-G2
+*            Galileo  : E1-E5b
+*            BDS      : B1I-B2I
+*            NavIC    : L5-S
 *-----------------------------------------------------------------------------*/
 extern void satantoff(gtime_t time, const double *rs, int sat, const nav_t *nav,
                       double *dant)
 {
-    const double *lam=nav->lam[sat-1];
     const pcv_t *pcv=nav->pcvs+sat-1;
-    double ex[3],ey[3],ez[3],es[3],r[3],rsun[3],gmst,erpv[5]={0};
-    double gamma,C1,C2,dant1,dant2;
-    int i,j=0,k=1;
+    double ex[3],ey[3],ez[3],es[3],r[3],rsun[3],gmst,erpv[5]={0},freq[2];
+    double C1,C2,dant1,dant2;
+    int i,sys;
     
     trace(4,"satantoff: time=%s sat=%2d\n",time_str(time,3),sat);
+    
+    dant[0]=dant[1]=dant[2]=0.0;
     
     /* sun position in ecef */
     sunmoonpos(gpst2utc(time),erpv,rsun,NULL,&gmst);
@@ -676,18 +599,37 @@ extern void satantoff(gtime_t time, const double *rs, int sat, const nav_t *nav,
     if (!normv3(r,ey)) return;
     cross3(ey,ez,ex);
     
-    if (NFREQ>=3&&(satsys(sat,NULL)&(SYS_GAL|SYS_SBS))) k=2;
+    /* iono-free LC coefficients */
+    sys=satsys(sat,NULL);
+    if (sys==SYS_GPS||sys==SYS_QZS) { /* L1-L2 */
+        freq[0]=FREQ1;
+        freq[1]=FREQ2;
+    }
+    else if (sys==SYS_GLO) { /* G1-G2 */
+        freq[0]=sat2freq(sat,CODE_L1C,nav);
+        freq[1]=sat2freq(sat,CODE_L2C,nav);
+    }
+    else if (sys==SYS_GAL) { /* E1-E5b */
+        freq[0]=FREQ1;
+        freq[1]=FREQ7;
+    }
+    else if (sys==SYS_CMP) { /* B1I-B2I */
+        freq[0]=FREQ1_CMP;
+        freq[1]=FREQ2_CMP;
+    }
+    else if (sys==SYS_IRN) { /* B1I-B2I */
+        freq[0]=FREQ5;
+        freq[1]=FREQ9;
+    }
+    else return;
     
-    if (NFREQ<2||lam[j]==0.0||lam[k]==0.0) return;
-    
-    gamma=SQR(lam[k])/SQR(lam[j]);
-    C1=gamma/(gamma-1.0);
-    C2=-1.0 /(gamma-1.0);
+    C1= SQR(freq[0])/(SQR(freq[0])-SQR(freq[1]));
+    C2=-SQR(freq[1])/(SQR(freq[0])-SQR(freq[1]));
     
     /* iono-free LC */
     for (i=0;i<3;i++) {
-        dant1=pcv->off[j][0]*ex[i]+pcv->off[j][1]*ey[i]+pcv->off[j][2]*ez[i];
-        dant2=pcv->off[k][0]*ex[i]+pcv->off[k][1]*ey[i]+pcv->off[k][2]*ez[i];
+        dant1=pcv->off[0][0]*ex[i]+pcv->off[0][1]*ey[i]+pcv->off[0][2]*ez[i];
+        dant2=pcv->off[1][0]*ex[i]+pcv->off[1][1]*ey[i]+pcv->off[1][2]*ez[i];
         dant[i]=C1*dant1+C2*dant2;
     }
 }

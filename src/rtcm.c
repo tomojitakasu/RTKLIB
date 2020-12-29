@@ -1,34 +1,22 @@
 /*------------------------------------------------------------------------------
 * rtcm.c : rtcm functions
 *
-*          Copyright (C) 2009-2018 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2009-2020 by T.TAKASU, All rights reserved.
 *
 * references :
-*     [1] RTCM Recommended Standards for Differential GNSS (Global Navigation
-*         Satellite Systems) Service version 2.3, August 20, 2001
-*     [2] RTCM Standard 10403.1 for Differential GNSS (Global Navigation
-*         Satellite Systems) Services - Version 3, Octobar 27, 2006
-*     [3] RTCM 10403.1-Amendment 3, Amendment 3 to RTCM Standard 10403.1
-*     [4] RTCM Paper, April 12, 2010, Proposed SSR Messages for SV Orbit Clock,
-*         Code Biases, URA
-*     [5] RTCM Paper 012-2009-SC104-528, January 28, 2009 (previous ver of [4])
-*     [6] RTCM Paper 012-2009-SC104-582, February 2, 2010 (previous ver of [4])
-*     [7] RTCM Standard 10403.1 - Amendment 5, Differential GNSS (Global
-*         Navigation Satellite Systems) Services - version 3, July 1, 2011
-*     [8] RTCM Paper 019-2012-SC104-689 (draft Galileo ephmeris messages)
-*     [9] RTCM Paper 163-2012-SC104-725 (draft QZSS ephemeris message)
+*     [1]  RTCM Recommended Standards for Differential GNSS (Global Navigation
+*          Satellite Systems) Service version 2.3, August 20, 2001
+*     [7]  RTCM Standard 10403.1 - Amendment 5, Differential GNSS (Global
+*          Navigation Satellite Systems) Services - version 3, July 1, 2011
 *     [10] RTCM Paper 059-2011-SC104-635 (draft Galileo and QZSS ssr messages)
-*     [11] RTCM Paper 034-2012-SC104-693 (draft multiple signal messages)
-*     [12] RTCM Paper 133-2012-SC104-709 (draft QZSS MSM messages)
-*     [13] RTCM Paper 122-2012-SC104-707.r1 (draft MSM messages)
-*     [14] RTCM Standard 10403.2, Differential GNSS (Global Navigation Satellite
-*          Systems) Services - version 3, February 1, 2013
 *     [15] RTCM Standard 10403.2, Differential GNSS (Global Navigation Satellite
-*          Systems) Services - version 3, with amendment 1/2, november 7, 2013
+*          Systems) Services - version 3, with amendment 1/2, November 7, 2013
 *     [16] Proposal of new RTCM SSR Messages (ssr_1_gal_qzss_sbas_dbs_v05)
 *          2014/04/17
-*     [17] RTCM Standard 10403.2, Differential GNSS (Global Navigation Satellite
-*          Systems) Services - version 3, October 7, 2016
+*     [17] RTCM Standard 10403.3, Differential GNSS (Global Navigation Satellite
+*          Systems) Services - version 3, with amendment 1, April 28, 2020
+*     [18] IGS State Space Representation (SSR) Format version 1.00, October 5,
+*          2020
 *
 * version : $Revision:$ $Date:$
 * history : 2009/04/10 1.0  new
@@ -49,13 +37,20 @@
 *           2018/10/10 1.10 fix bug on initializing rtcm struct
 *                           add rtcm option -GALINAV, -GALFNAV
 *           2018/11/05 1.11 add notes for api gen_rtcm3()
+*           2020/11/30 1.12 modify API gen_rtcm3()
+*                           support NavIC/IRNSS MSM and ephemeris (ref [17])
+*                           allocate double size of ephemeris buffer to support
+*                            multiple ephemeris sets in init_rtcm()
+*                           delete references [2]-[6],[8],[9],[11]-[14]
+*                           update reference [17]
+*                           use integer types in stdint.h
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
 /* function prototypes -------------------------------------------------------*/
 extern int decode_rtcm2(rtcm_t *rtcm);
 extern int decode_rtcm3(rtcm_t *rtcm);
-extern int encode_rtcm3(rtcm_t *rtcm, int type, int sync);
+extern int encode_rtcm3(rtcm_t *rtcm, int type, int subtype, int sync);
 
 /* constants -----------------------------------------------------------------*/
 
@@ -65,7 +60,7 @@ extern int encode_rtcm3(rtcm_t *rtcm, int type, int sync);
 /* initialize rtcm control -----------------------------------------------------
 * initialize rtcm control struct and reallocate memory for observation and
 * ephemeris buffer in rtcm control struct
-* args   : rtcm_t *raw   IO     rtcm control struct
+* args   : rtcm_t *raw      IO  rtcm control struct
 * return : status (1:ok,0:memory allocation error)
 *-----------------------------------------------------------------------------*/
 extern int init_rtcm(rtcm_t *rtcm)
@@ -110,24 +105,24 @@ extern int init_rtcm(rtcm_t *rtcm)
     rtcm->nav.eph =NULL;
     rtcm->nav.geph=NULL;
     
-    /* reallocate memory for observation and ephemris buffer */
+    /* reallocate memory for observation and ephemeris buffer */
     if (!(rtcm->obs.data=(obsd_t *)malloc(sizeof(obsd_t)*MAXOBS))||
-        !(rtcm->nav.eph =(eph_t  *)malloc(sizeof(eph_t )*MAXSAT))||
+        !(rtcm->nav.eph =(eph_t  *)malloc(sizeof(eph_t )*MAXSAT*2))||
         !(rtcm->nav.geph=(geph_t *)malloc(sizeof(geph_t)*MAXPRNGLO))) {
         free_rtcm(rtcm);
         return 0;
     }
     rtcm->obs.n=0;
-    rtcm->nav.n=MAXSAT;
+    rtcm->nav.n=MAXSAT*2;
     rtcm->nav.ng=MAXPRNGLO;
     for (i=0;i<MAXOBS   ;i++) rtcm->obs.data[i]=data0;
-    for (i=0;i<MAXSAT   ;i++) rtcm->nav.eph [i]=eph0;
+    for (i=0;i<MAXSAT*2 ;i++) rtcm->nav.eph [i]=eph0;
     for (i=0;i<MAXPRNGLO;i++) rtcm->nav.geph[i]=geph0;
     return 1;
 }
 /* free rtcm control ----------------------------------------------------------
-* free observation and ephemris buffer in rtcm control struct
-* args   : rtcm_t *raw   IO     rtcm control struct
+* free observation and ephemeris buffer in rtcm control struct
+* args   : rtcm_t *raw      IO  rtcm control struct
 * return : none
 *-----------------------------------------------------------------------------*/
 extern void free_rtcm(rtcm_t *rtcm)
@@ -139,10 +134,10 @@ extern void free_rtcm(rtcm_t *rtcm)
     free(rtcm->nav.eph ); rtcm->nav.eph =NULL; rtcm->nav.n=0;
     free(rtcm->nav.geph); rtcm->nav.geph=NULL; rtcm->nav.ng=0;
 }
-/* input rtcm 2 message from stream --------------------------------------------
-* fetch next rtcm 2 message and input a message from byte stream
-* args   : rtcm_t *rtcm IO   rtcm control struct
-*          unsigned char data I stream data (1 byte)
+/* input RTCM 2 message from stream --------------------------------------------
+* fetch next RTCM 2 message and input a message from byte stream
+* args   : rtcm_t *rtcm     IO  rtcm control struct
+*          uint8_t data     I   stream data (1 byte)
 * return : status (-1: error message, 0: no message, 1: input observation data,
 *                  2: input ephemeris, 5: input station pos/ant parameters,
 *                  6: input time parameter, 7: input dgps corrections,
@@ -153,9 +148,9 @@ extern void free_rtcm(rtcm_t *rtcm)
 *          supported msgs RTCM ver.2: 1,3,9,14,16,17,18,19,22
 *          refer [1] for RTCM ver.2
 *-----------------------------------------------------------------------------*/
-extern int input_rtcm2(rtcm_t *rtcm, unsigned char data)
+extern int input_rtcm2(rtcm_t *rtcm, uint8_t data)
 {
-    unsigned char preamb;
+    uint8_t preamb;
     int i;
     
     trace(5,"input_rtcm2: data=%02x\n",data);
@@ -167,7 +162,7 @@ extern int input_rtcm2(rtcm_t *rtcm, unsigned char data)
         
         /* synchronize frame */
         if (rtcm->nbyte==0) {
-            preamb=(unsigned char)(rtcm->word>>22);
+            preamb=(uint8_t)(rtcm->word>>22);
             if (rtcm->word&0x40000000) preamb^=0xFF; /* decode preamble */
             if (preamb!=RTCM2PREAMB) continue;
             
@@ -194,10 +189,10 @@ extern int input_rtcm2(rtcm_t *rtcm, unsigned char data)
     }
     return 0;
 }
-/* input rtcm 3 message from stream --------------------------------------------
-* fetch next rtcm 3 message and input a message from byte stream
-* args   : rtcm_t *rtcm IO   rtcm control struct
-*          unsigned char data I stream data (1 byte)
+/* input RTCM 3 message from stream --------------------------------------------
+* fetch next RTCM 3 message and input a message from byte stream
+* args   : rtcm_t *rtcm     IO  rtcm control struct
+*          uint8_t data     I   stream data (1 byte)
 * return : status (-1: error message, 0: no message, 1: input observation data,
 *                  2: input ephemeris, 5: input station pos/ant parameters,
 *                  10: input ssr messages)
@@ -208,60 +203,64 @@ extern int input_rtcm2(rtcm_t *rtcm, unsigned char data)
 *          to specify input options, set rtcm->opt to the following option
 *          strings separated by spaces.
 *
-*          -EPHALL  : input all ephemerides
-*          -STA=nnn : input only message with STAID=nnn
+*          -EPHALL  : input all ephemerides (default: only new)
+*          -STA=nnn : input only message with STAID=nnn (default: all)
 *          -GLss    : select signal ss for GPS MSM (ss=1C,1P,...)
 *          -RLss    : select signal ss for GLO MSM (ss=1C,1P,...)
 *          -ELss    : select signal ss for GAL MSM (ss=1C,1B,...)
 *          -JLss    : select signal ss for QZS MSM (ss=1C,2C,...)
 *          -CLss    : select signal ss for BDS MSM (ss=2I,7I,...)
-*          -GALINAV : input only I/NAV for galileo ephemeris
-*          -GALFNAV : input only F/NAV for galileo ephemeris
+*          -ILss    : select signal ss for IRN MSM (ss=5A,9A,...)
+*          -GALINAV : select I/NAV for Galileo ephemeris (default: all)
+*          -GALFNAV : select F/NAV for Galileo ephemeris (default: all)
 *
-*          supported RTCM 3 messages
-*             (ref [2][3][4][5][6][7][8][9][10][11][12][13][14][15][16][17])
+*          supported RTCM 3 messages (ref [7][10][15][16][17][18])
 *
-*            TYPE       GPS     GLOASS    GALILEO    QZSS     BEIDOU     SBAS
+*            TYPE       :  GPS   GLONASS Galileo  QZSS     BDS    SBAS    NavIC
 *         ----------------------------------------------------------------------
-*          OBS C-L1  : 1001~     1009~       -         -         -         -
-*              F-L1  : 1002      1010        -         -         -         -
-*              C-L12 : 1003~     1011~       -         -         -         -
-*              F-L12 : 1004      1012        -         -         -         -
+*          OBS COMP L1  : 1001~   1009~     -       -       -       -       -
+*              FULL L1  : 1002    1010      -       -       -       -       -
+*              COMP L1L2: 1003~   1011~     -       -       -       -       -
+*              FULL L1L2: 1004    1012      -       -       -       -       -
 *
-*          NAV       : 1019      1020      1045      1044      1042        -
-*                        -         -       1046        -         63*       -
+*          NAV          : 1019    1020    1045**  1044    1042      -     1041
+*                           -       -     1046**    -       63*     -       -
 *
-*          MSM 1     : 1071~     1081~     1091~     1111~     1121~     1101~
-*              2     : 1072~     1082~     1092~     1112~     1122~     1102~
-*              3     : 1073~     1083~     1093~     1113~     1123~     1103~
-*              4     : 1074      1084      1094      1114      1124      1104
-*              5     : 1075      1085      1095      1115      1125      1105
-*              6     : 1076      1086      1096      1116      1126      1106
-*              7     : 1077      1087      1097      1117      1127      1107
+*          MSM 1        : 1071~   1081~   1091~   1111~   1121~   1101~   1131~
+*              2        : 1072~   1082~   1092~   1112~   1122~   1102~   1132~
+*              3        : 1073~   1083~   1093~   1113~   1123~   1103~   1133~
+*              4        : 1074    1084    1094    1114    1124    1104    1134
+*              5        : 1075    1085    1095    1115    1125    1105    1135 
+*              6        : 1076    1086    1096    1116    1126    1106    1136 
+*              7        : 1077    1087    1097    1117    1127    1107    1137 
 *
-*          SSR OBT   : 1057      1063      1240*     1246*     1258*       -
-*              CLK   : 1058      1064      1241*     1247*     1259*       -
-*              BIAS  : 1059      1065      1242*     1248*     1260*       -
-*              OBTCLK: 1060      1066      1243*     1249*     1261*       -
-*              URA   : 1061      1067      1244*     1250*     1262*       -
-*              HRCLK : 1062      1068      1245*     1251*     1263*       -
+*          SSR ORBIT    : 1057    1063    1240*   1246*   1258*     -       -
+*              CLOCK    : 1058    1064    1241*   1247*   1259*     -       -
+*              CODE BIAS: 1059    1065    1242*   1248*   1260*     -       -
+*              OBT/CLK  : 1060    1066    1243*   1249*   1261*     -       -
+*              URA      : 1061    1067    1244*   1250*   1262*     -       -
+*              HR-CLOCK : 1062    1068    1245*   1251*   1263*     -       -
+*              PHAS BIAS:   11*     -       12*     13*     14*     -       -
 *
-*          ANT INFO  : 1005 1006 1007 1008 1033
+*          ANT/RCV INFO : 1007    1008    1033
+*          STA POSITION : 1005    1006
+*
+*          PROPRIETARY  : 4076 (IGS)
 *         ----------------------------------------------------------------------
-*                                                    (* draft, ~ only encode)
+*                            (* draft, ** 1045:F/NAV,1046:I/NAV, ~ only encode)
 *
 *          for MSM observation data with multiple signals for a frequency,
 *          a signal is selected according to internal priority. to select
 *          a specified signal, use the input options.
 *
-*          rtcm3 message format:
+*          RTCM 3 message format:
 *            +----------+--------+-----------+--------------------+----------+
 *            | preamble | 000000 |  length   |    data message    |  parity  |
 *            +----------+--------+-----------+--------------------+----------+
 *            |<-- 8 --->|<- 6 -->|<-- 10 --->|<--- length x 8 --->|<-- 24 -->|
 *            
 *-----------------------------------------------------------------------------*/
-extern int input_rtcm3(rtcm_t *rtcm, unsigned char data)
+extern int input_rtcm3(rtcm_t *rtcm, uint8_t data)
 {
     trace(5,"input_rtcm3: data=%02x\n",data);
     
@@ -287,10 +286,10 @@ extern int input_rtcm3(rtcm_t *rtcm, unsigned char data)
     /* decode rtcm3 message */
     return decode_rtcm3(rtcm);
 }
-/* input rtcm 2 message from file ----------------------------------------------
-* fetch next rtcm 2 message and input a messsage from file
-* args   : rtcm_t *rtcm IO   rtcm control struct
-*          FILE  *fp    I    file pointer
+/* input RTCM 2 message from file ----------------------------------------------
+* fetch next RTCM 2 message and input a messsage from file
+* args   : rtcm_t *rtcm     IO  rtcm control struct
+*          FILE  *fp        I   file pointer
 * return : status (-2: end of file, -1...10: same as above)
 * notes  : same as above
 *-----------------------------------------------------------------------------*/
@@ -302,14 +301,14 @@ extern int input_rtcm2f(rtcm_t *rtcm, FILE *fp)
     
     for (i=0;i<4096;i++) {
         if ((data=fgetc(fp))==EOF) return -2;
-        if ((ret=input_rtcm2(rtcm,(unsigned char)data))) return ret;
+        if ((ret=input_rtcm2(rtcm,(uint8_t)data))) return ret;
     }
     return 0; /* return at every 4k bytes */
 }
-/* input rtcm 3 message from file ----------------------------------------------
-* fetch next rtcm 3 message and input a messsage from file
-* args   : rtcm_t *rtcm IO   rtcm control struct
-*          FILE  *fp    I    file pointer
+/* input RTCM 3 message from file ----------------------------------------------
+* fetch next RTCM 3 message and input a messsage from file
+* args   : rtcm_t *rtcm     IO  rtcm control struct
+*          FILE  *fp        I   file pointer
 * return : status (-2: end of file, -1...10: same as above)
 * notes  : same as above
 *-----------------------------------------------------------------------------*/
@@ -321,15 +320,15 @@ extern int input_rtcm3f(rtcm_t *rtcm, FILE *fp)
     
     for (i=0;i<4096;i++) {
         if ((data=fgetc(fp))==EOF) return -2;
-        if ((ret=input_rtcm3(rtcm,(unsigned char)data))) return ret;
+        if ((ret=input_rtcm3(rtcm,(uint8_t)data))) return ret;
     }
     return 0; /* return at every 4k bytes */
 }
-/* generate rtcm 2 message -----------------------------------------------------
-* generate rtcm 2 message
-* args   : rtcm_t *rtcm   IO rtcm control struct
-*          int    type    I  message type
-*          int    sync    I  sync flag (1:another message follows)
+/* generate RTCM 2 message -----------------------------------------------------
+* generate RTCM 2 message
+* args   : rtcm_t *rtcm     IO  rtcm control struct
+*          int    type      I   message type
+*          int    sync      I   sync flag (1:another message follows)
 * return : status (1:ok,0:error)
 *-----------------------------------------------------------------------------*/
 extern int gen_rtcm2(rtcm_t *rtcm, int type, int sync)
@@ -342,11 +341,12 @@ extern int gen_rtcm2(rtcm_t *rtcm, int type, int sync)
     
     return 0;
 }
-/* generate rtcm 3 message -----------------------------------------------------
-* generate rtcm 3 message
-* args   : rtcm_t *rtcm   IO rtcm control struct
-*          int    type    I  message type
-*          int    sync    I  sync flag (1:another message follows)
+/* generate RTCM 3 message -----------------------------------------------------
+* generate RTCM 3 message
+* args   : rtcm_t *rtcm     IO  rtcm control struct
+*          int    type      I   message type
+*          int    subtype   I   message subtype
+*          int    sync      I   sync flag (1:another message follows)
 * return : status (1:ok,0:error)
 * notes  : For rtcm 3 msm, the {nsat} x {nsig} in rtcm->obs should not exceed
 *          64. If {nsat} x {nsig} of the input obs data exceeds 64, separate
@@ -355,12 +355,12 @@ extern int gen_rtcm2(rtcm_t *rtcm, int type, int sync)
 *          ({nsat} = number of valid satellites, {nsig} = number of signals in
 *          the obs data) 
 *-----------------------------------------------------------------------------*/
-extern int gen_rtcm3(rtcm_t *rtcm, int type, int sync)
+extern int gen_rtcm3(rtcm_t *rtcm, int type, int subtype, int sync)
 {
-    unsigned int crc;
+    uint32_t crc;
     int i=0;
     
-    trace(4,"gen_rtcm3: type=%d sync=%d\n",type,sync);
+    trace(4,"gen_rtcm3: type=%d subtype=%d sync=%d\n",type,subtype,sync);
     
     rtcm->nbit=rtcm->len=rtcm->nbyte=0;
     
@@ -370,7 +370,7 @@ extern int gen_rtcm3(rtcm_t *rtcm, int type, int sync)
     setbitu(rtcm->buff,i,10,0          ); i+=10;
     
     /* encode rtcm 3 message body */
-    if (!encode_rtcm3(rtcm,type,sync)) return 0;
+    if (!encode_rtcm3(rtcm,type,subtype,sync)) return 0;
     
     /* padding to align 8 bit boundary */
     for (i=rtcm->nbit;i%8;i++) {

@@ -268,7 +268,7 @@ void utest10(void)
 {
     char s1[64],s2[64];
     gtime_t time1,time2;
-    int i,j;
+    int i;
     time1=timeget();
     for (i=0;i<2000000000;i++) j=1;
     time2=timeget();

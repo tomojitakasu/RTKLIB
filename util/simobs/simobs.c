@@ -160,7 +160,7 @@ static int simobs(gtime_t ts, gtime_t te, double tint, const double *rr,
                 if (amb[j][k]==0) amb[j][k]=(int)(-cp/lam[k]);
                 data[j].L[k]=cp/lam[k]+amb[j][k];
                 data[j].P[k]=pr;
-                data[j].SNR[k]=(unsigned char)snr[j][k];
+                data[j].SNR[k]=(uint16_t)(snr[j][k]/SNR_UNIT+0.5);
                 data[j].LLI[k]=data[j].SNR[k]<slipthres?1:0;
             }
             if (obs->nmax<=obs->n) {

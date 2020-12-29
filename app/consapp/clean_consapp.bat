@@ -1,0 +1,9 @@
+cd rnx2rtkp\bcc
+call clean.bat
+cd ..\..
+cd convbin\bcc
+call clean.bat
+cd ..\..
+cd pos2kml\bcc
+call clean.bat
+cd ..\..

@@ -1,10 +1,10 @@
 /*------------------------------------------------------------------------------
 * ss2.c : superstar II receiver dependent functions
 *
-*          Copyright (C) 2007-2013 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2007-2020 by T.TAKASU, All rights reserved.
 *
 * reference:
-*     [1] NovAtel, OM-20000086 Superstar II Firmware Reference Manuall, 2005
+*     [1] NovAtel, OM-20000086 Superstar II Firmware Reference Manual, 2005
 *
 * version : $Revision: 1.2 $ $Date: 2008/07/14 00:05:05 $
 * history : 2008/05/18 1.0 new
@@ -14,6 +14,7 @@
 *                          (2.4.0_p5)
 *           2011/05/27 1.5 fix problem with ARM compiler
 *           2013/02/23 1.6 fix memory access violation problem on arm
+*           2020/11/30 1.7 use integer type in stdint.h
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -26,16 +27,16 @@
 #define ID_SS2SBAS  67          /* ss2 message ID#67 sbas data */
 
 /* get/set fields (little-endian) --------------------------------------------*/
-#define U1(p) (*((unsigned char *)(p)))
-static unsigned short U2(unsigned char *p) {unsigned short u; memcpy(&u,p,2); return u;}
-static unsigned int   U4(unsigned char *p) {unsigned int   u; memcpy(&u,p,4); return u;}
-static double         R8(unsigned char *p) {double         r; memcpy(&r,p,8); return r;}
+#define U1(p) (*((uint8_t *)(p)))
+static uint16_t U2(uint8_t *p) {uint16_t u; memcpy(&u,p,2); return u;}
+static uint32_t U4(uint8_t *p) {uint32_t u; memcpy(&u,p,4); return u;}
+static double   R8(uint8_t *p) {double   r; memcpy(&r,p,8); return r;}
 
 /* checksum ------------------------------------------------------------------*/
-static int chksum(const unsigned char *buff, int len)
+static int chksum(const uint8_t *buff, int len)
 {
     int i;
-    unsigned short sum=0;
+    uint16_t sum=0;
     
     for (i=0;i<len-2;i++) sum+=buff[i];
     return (sum>>8)==buff[len-1]&&(sum&0xFF)==buff[len-2];
@@ -57,7 +58,7 @@ static int adjweek(raw_t *raw, double sec)
 static int decode_ss2llh(raw_t *raw)
 {
 	double ep[6];
-    unsigned char *p=raw->buff+4;
+    uint8_t *p=raw->buff+4;
     
     trace(4,"decode_ss2llh: len=%d\n",raw->len);
     
@@ -73,7 +74,7 @@ static int decode_ss2llh(raw_t *raw)
 /* decode id#21 navigation data (ecef) ---------------------------------------*/
 static int decode_ss2ecef(raw_t *raw)
 {
-    unsigned char *p=raw->buff+4;
+    uint8_t *p=raw->buff+4;
     
     trace(4,"decode_ss2ecef: len=%d\n",raw->len);
     
@@ -90,8 +91,8 @@ static int decode_ss2meas(raw_t *raw)
     const double freqif=1.405396825E6,tslew=1.75E-7;
     double tow,slew,code,icp,d;
     int i,j,n,prn,sat,nobs;
-    unsigned char *p=raw->buff+4;
-    unsigned int sc;
+    uint8_t *p=raw->buff+4;
+    uint32_t sc;
     
     trace(4,"decode_ss2meas: len=%d\n",raw->len);
     
@@ -128,9 +129,9 @@ static int decode_ss2meas(raw_t *raw)
         raw->icpp[sat-1]=icp;
         raw->obs.data[n].L[0]=icp+raw->icpc;
         raw->obs.data[n].D[0]=0.0;
-        raw->obs.data[n].SNR[0]=(unsigned char)(floor(U1(p+1)+0.5));
+        raw->obs.data[n].SNR[0]=(uint16_t)(U1(p+1)*0.25/SNR_UNIT+0.5);
         sc=U1(p+10);
-        raw->obs.data[n].LLI[0]=(int)((unsigned char)sc-(unsigned char)raw->lockt[sat-1][0])>0;
+        raw->obs.data[n].LLI[0]=(int)((uint8_t)sc-(uint8_t)raw->lockt[sat-1][0])>0;
         raw->obs.data[n].LLI[0]|=U1(p+6)&1?2:0;
         raw->obs.data[n].code[0]=CODE_L1C;
         raw->lockt[sat-1][0]=sc;
@@ -150,9 +151,9 @@ static int decode_ss2meas(raw_t *raw)
 static int decode_ss2eph(raw_t *raw)
 {
     eph_t eph={0};
-    unsigned int tow;
+    uint32_t tow;
+    uint8_t *p=raw->buff+4,buff[90]={0};
     int i,j,prn,sat;
-    unsigned char *p=raw->buff+4,buff[90]={0};
     
     trace(4,"decode_ss2eph: len=%d\n",raw->len);
     
@@ -169,24 +170,25 @@ static int decode_ss2eph(raw_t *raw)
         trace(2,"ss2 id#22 week number unknown error\n");
         return -1;
     }
-    tow=(unsigned int)(time2gpst(raw->time,NULL)/6.0);
+    tow=(uint32_t)(time2gpst(raw->time,NULL)/6.0);
     for (i=0;i<3;i++) {
-        buff[30*i+3]=(unsigned char)(tow>>9); /* add tow + subframe id */
-        buff[30*i+4]=(unsigned char)(tow>>1);
-        buff[30*i+5]=(unsigned char)(((tow&1)<<7)+((i+1)<<2));
+        buff[30*i+3]=(uint8_t)(tow>>9); /* add tow + subframe id */
+        buff[30*i+4]=(uint8_t)(tow>>1);
+        buff[30*i+5]=(uint8_t)(((tow&1)<<7)+((i+1)<<2));
         for (j=0;j<24;j++) buff[30*i+6+j]=p[1+24*i+j];
     }
-    if (decode_frame(buff   ,&eph,NULL,NULL,NULL,NULL)!=1||
-        decode_frame(buff+30,&eph,NULL,NULL,NULL,NULL)!=2||
-        decode_frame(buff+60,&eph,NULL,NULL,NULL,NULL)!=3) {
+    if (!decode_frame(buff,&eph,NULL,NULL,NULL)) {
         trace(2,"ss2 id#22 subframe error: prn=%d\n",prn);
         return -1;
     }
-    if (eph.iode==raw->nav.eph[sat-1].iode) return 0; /* unchanged */
+    if (!strstr(raw->opt,"-EPHALL")) {
+        if (eph.iode==raw->nav.eph[sat-1].iode) return 0; /* unchanged */
+    }
     eph.sat=sat;
     eph.ttr=raw->time;
     raw->nav.eph[sat-1]=eph;
     raw->ephsat=sat;
+    raw->ephset=0;
     return 2;
 }
 /* decode id#67 sbas data ----------------------------------------------------*/
@@ -194,7 +196,7 @@ static int decode_ss2sbas(raw_t *raw)
 {
     gtime_t time;
     int i,prn;
-    unsigned char *p=raw->buff+4;
+    uint8_t *p=raw->buff+4;
     
     trace(4,"decode_ss2sbas: len=%d\n",raw->len);
     
@@ -203,7 +205,10 @@ static int decode_ss2sbas(raw_t *raw)
         return -1;
     }
     prn=U4(p+12);
-    if (prn<MINPRNSBS||MAXPRNSBS<prn) return 0;
+    if (prn<MINPRNSBS||MAXPRNSBS<prn) {
+        trace(3,"ss2 id#67 prn error: prn=%d\n",prn);
+        return 0;
+    }
     raw->sbsmsg.week=U4(p);
     raw->sbsmsg.tow=(int)R8(p+4);
     time=gpst2time(raw->sbsmsg.week,raw->sbsmsg.tow);
@@ -214,7 +219,7 @@ static int decode_ss2sbas(raw_t *raw)
 /* decode superstar 2 raw message --------------------------------------------*/
 static int decode_ss2(raw_t *raw)
 {
-    unsigned char *p=raw->buff;
+    uint8_t *p=raw->buff;
     int type=U1(p+1);
     
     trace(3,"decode_ss2: type=%2d\n",type);
@@ -236,7 +241,7 @@ static int decode_ss2(raw_t *raw)
     return 0;
 }
 /* sync code -----------------------------------------------------------------*/
-static int sync_ss2(unsigned char *buff, unsigned char data)
+static int sync_ss2(uint8_t *buff, uint8_t data)
 {
     buff[0]=buff[1]; buff[1]=buff[2]; buff[2]=data;
     return buff[0]==SS2SOH&&(buff[1]^buff[2])==0xFF;
@@ -244,14 +249,14 @@ static int sync_ss2(unsigned char *buff, unsigned char data)
 /* input superstar 2 raw message from stream -----------------------------------
 * input next superstar 2 raw message from stream
 * args   : raw_t *raw   IO     receiver raw data control struct
-*          unsigned char data I stream data (1 byte)
+*          uint8_t data I      stream data (1 byte)
 * return : status (-1: error message, 0: no message, 1: input observation data,
 *                  2: input ephemeris, 3: input sbas message,
 *                  9: input ion/utc parameter)
 * notes  : needs #20 or #21 message to get proper week number of #23 raw
 *          observation data
 *-----------------------------------------------------------------------------*/
-extern int input_ss2(raw_t *raw, unsigned char data)
+extern int input_ss2(raw_t *raw, uint8_t data)
 {
     trace(5,"input_ss2: data=%02x\n",data);
     
@@ -292,7 +297,7 @@ extern int input_ss2f(raw_t *raw, FILE *fp)
     if (raw->nbyte==0) {
         for (i=0;;i++) {
             if ((data=fgetc(fp))==EOF) return -2;
-            if (sync_ss2(raw->buff,(unsigned char)data)) break;
+            if (sync_ss2(raw->buff,(uint8_t)data)) break;
             if (i>=4096) return 0;
         }
     }

@@ -20,7 +20,7 @@ int main(int argc, char **argv)
 {
     int i,j,bits[11],p;
     
-    printf("const unsigned char mask[][11]={\n");
+    printf("const uint8_t mask[][11]={\n");
     for (i=0;i<8;i++) {
         for (j=0;j<11;j++) bits[j]=0;
         for (j=0;pos[i][j];j++) {

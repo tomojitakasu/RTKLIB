@@ -1,0 +1,108 @@
+﻿<!------------------------------------------------------------------------------
+* rtkplot_ll.htm: rtkplot leaflet map view
+*
+* history: 2020/11/30 1.1  new
+*------------------------------------------------------------------------------>
+<html>
+<head>
+<title>RTKPLOT_MAP</title>
+
+<meta charset=UTF-8">
+<link rel="stylesheet" href="leaflet/leaflet.css" />
+<script src="leaflet/leaflet.js"></script>
+
+<script>
+
+var map;
+var marks = [];
+var titles = [];
+
+var LeafIcon = L.Icon.extend({
+    options: {
+        shadowUrl: 'leaflet/images/marker-shadow.png',
+        shadowSize: [41, 41],
+        shadowAnchor: [12, 41],
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [0, -40]
+    }
+});
+var icon0 = new LeafIcon({iconUrl: 'image/marker_yellow.png'});
+var icon1 = new LeafIcon({iconUrl: 'image/marker_red.png'});
+
+// start map tiles
+// end map tiles
+
+function init() {
+    map = L.map('map');
+    tile1.addTo(map);
+    L.control.layers(basemaps).addTo(map);
+    L.control.scale({imperial: false}).addTo(map);
+    map.zoomControl.setPosition('bottomright');
+    document.getElementById('state').value='1';
+}
+
+function SetView(lat,lon,zoom) {
+    map.setView([lat,lon],zoom);
+}
+
+function SetCent(lat,lon) {
+    map.setView([lat,lon],map.getZoom());
+}
+
+function ZoomIn() {
+    map.setZoom(map.getZoom()+1);
+}
+
+function ZoomOut() {
+    map.setZoom(map.getZoom()-1);
+}
+
+function AddMark(lat,lon,title,msg) {
+    var mark = L.marker([lat,lon],{opacity: 0.8}).addTo(map);
+    var popup = L.popup().setContent(msg);
+    if (title=='SOL1') {
+        mark.setIcon(icon0);
+    } else {
+        mark.setIcon(icon1);
+    }
+    mark.bindPopup(popup);
+    marks.push(mark);
+    titles.push(title);
+}
+
+function PosMark(lat,lon,title) {
+    for (var i in marks) {
+        if (titles[i]==title) {
+            marks[i].setLatLng([lat,lon]);
+            break;
+        }
+    }
+}
+
+function ShowMark(title) {
+    for (var i in titles) {
+        if (titles[i]==title) {
+            marks[i].setOpacity(0.8);
+            break;
+        }
+    }
+}
+
+function HideMark(title) {
+    for (var i in titles) {
+        if (titles[i]==title) {
+            marks[i].setOpacity(0.0);
+            break;
+        }
+    }
+}
+
+</script>
+</head>
+
+<body style="margin: 0;"; scroll="no"; onload="init()">
+  <div id="map" style="height: 100%; width: 100%;"> </div>
+  <input id="state" type="hidden" value="0">
+</body>
+</html>
