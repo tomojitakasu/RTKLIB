@@ -246,6 +246,7 @@ typedef struct {
     int l6facility;
     int si_cnt;
     int si_sz;
+    uint8_t flg_cssr_si;
     uint64_t si_data[4];
 	ssrn_t ssrn[CSSR_MAX_NET];
 	uint8_t idx[CSSR_MAX_GNSS][CSSR_MAX_LOCAL_SV];

@@ -340,7 +340,6 @@ extern "C" {
 #define CODE_L9B    53                  /* obs code: SB RS(D)   (IRN) */
 #define CODE_L9C    54                  /* obs code: SC RS(P)   (IRN) */
 #define CODE_L9X    55                  /* obs code: SB+C       (IRN) */
-<<<<<<< HEAD
 #define CODE_L1D    56                  /* obs code: B1D        (BDS) */
 #define CODE_L5D    57                  /* obs code: L5D(L5S),B2aD (QZS,BDS) */
 #define CODE_L5P    58                  /* obs code: L5P(L5S),B2aP (QZS,BDS) */
@@ -355,18 +354,6 @@ extern "C" {
 #define CODE_L4B    67                  /* obs code: G1aL1OCd   (GLO) */
 #define CODE_L4X    68                  /* obs code: G1al1OCd+p (GLO) */
 #define MAXCODE     68                  /* max number of obs code */
-=======
-#define CODE_L4A    56                  /* obs code: G1a L1OCd  (GLO) */
-#define CODE_L4B    57                  /* obs code: G1a L1OCp  (GLO) */
-#define CODE_L5D    58                  /* obs code: L5S(I)     (QZS) */
-#define CODE_L5P    59                  /* obs code: L5S(Q)     (QZS) */
-#define CODE_L5Z    60                  /* obs code: L5S(I+Q)   (QZS) */
-#define CODE_L6E    61                  /* obs code: L6(E)      (QZS) */
-#define CODE_L1D    62                  /* obs code: B1a data   (BDS) */
-#define CODE_L8D    63                  /* obs code: B2 data    (BDS) */
-#define CODE_L8P    64                  /* obs code: B2 pilot   (BDS) */
-#define MAXCODE     64                  /* max number of obs code */
->>>>>>> cce0eb669b448d3742583879c11fc07e4793f009
 
 #define PMODE_SINGLE 0                  /* positioning mode: single */
 #define PMODE_DGPS   1                  /* positioning mode: DGPS/DGNSS */
@@ -804,85 +791,6 @@ typedef struct {        /* SSR correction type */
     uint8_t update;     /* update flag (0:no update,1:update) */
 } ssr_t;
 
-<<<<<<< HEAD
-=======
-typedef struct {        /* QZSS LEX message type */
-    int prn;            /* satellite PRN number */
-    int type;           /* message type */
-    int alert;          /* alert flag */
-    unsigned char stat; /* signal tracking status */
-    unsigned char snr;  /* signal C/N0 (0.25 dBHz) */
-    unsigned int ttt;   /* tracking time (ms) */
-    unsigned char msg[212]; /* LEX message data part 1695 bits */
-} lexmsg_t;
-
-typedef struct {        /* QZSS LEX messages type */
-    int n,nmax;         /* number of LEX messages and allocated */
-    lexmsg_t *msgs;     /* LEX messages */
-} lex_t;
-
-typedef struct {        /* QZSS LEX ephemeris type */
-    gtime_t toe;        /* epoch time (GPST) */
-    gtime_t tof;        /* message frame time (GPST) */
-    int sat;            /* satellite number */
-    unsigned char health; /* signal health (L1,L2,L1C,L5,LEX) */
-    unsigned char ura;  /* URA index */
-    double pos[3];      /* satellite position (m) */
-    double vel[3];      /* satellite velocity (m/s) */
-    double acc[3];      /* satellite acceleration (m/s2) */
-    double jerk[3];     /* satellite jerk (m/s3) */
-    double af0,af1;     /* satellite clock bias and drift (s,s/s) */
-    double tgd;         /* TGD */
-    double isc[8];      /* ISC */
-} lexeph_t;
-
-typedef struct {        /* QZSS LEX ionosphere correction type */
-    gtime_t t0;         /* epoch time (GPST) */
-    double tspan;       /* valid time span (s) */
-    double pos0[2];     /* reference position {lat,lon} (rad) */
-    double coef[3][2];  /* coefficients lat x lon (3 x 2) */
-} lexion_t;
-
-typedef struct {        /* stec data type */
-    gtime_t time;       /* time (GPST) */
-    unsigned char sat;  /* satellite number */
-    double ion;         /* slant ionos delay (m) */
-    float std;          /* std-dev (m) */
-    float azel[2];      /* azimuth/elevation (rad) */
-    unsigned char flag; /* fix flag */
-} stec_t;
-
-typedef struct {
-    gtime_t t0;
-    int nlayer;
-    int iod;
-    float quality;
-    double udi;
-    int degree[RTCM_SSR_VTEC_MAX_LAYER];
-    int order[RTCM_SSR_VTEC_MAX_LAYER];
-    float height[RTCM_SSR_VTEC_MAX_LAYER];
-    float c[RTCM_SSR_VTEC_MAX_LAYER][RTCM_SSR_VTEC_MAX_DEG];
-    float s[RTCM_SSR_VTEC_MAX_LAYER][RTCM_SSR_VTEC_MAX_DEG];
-    unsigned char update; /* update flag (0:no update,1:update) */
-} vtec_t;
-
-typedef struct {        /* trop data type */
-    gtime_t time;       /* time (GPST) */
-    double trp[3];      /* zenith tropos delay/gradient (m) */
-    float std[3];       /* std-dev (m) */
-} trop_t;
-
-typedef struct {        /* ppp corrections type */
-    int nsta;           /* number of stations */
-    char stas[MAXSTA][8]; /* station names */
-    double rr[MAXSTA][3]; /* station ecef positions (m) */
-    int ns[MAXSTA],nsmax[MAXSTA]; /* number of stec data */
-    int nt[MAXSTA],ntmax[MAXSTA]; /* number of trop data */
-    stec_t *stec[MAXSTA]; /* stec data */
-    trop_t *trop[MAXSTA]; /* trop data */
-} pppcorr_t;
-
->>>>>>> cce0eb669b448d3742583879c11fc07e4793f009
 typedef struct {        /* navigation data type */
     int n,nmax;         /* number of broadcast ephemeris */
     int ng,ngmax;       /* number of glonass ephemeris */
@@ -1038,11 +946,7 @@ typedef struct {        /* RTCM control struct type */
     sta_t sta;          /* station parameters */
     dgps_t *dgps;       /* output of dgps corrections */
     ssr_t ssr[MAXSAT];  /* output of ssr corrections */
-<<<<<<< HEAD
     atmos_t atmos[RTCM_SSR_MAX_NET];		/* ssr atmospheric correction */
-=======
-    vtec_t vtec;        /* ssr vtec */
->>>>>>> cce0eb669b448d3742583879c11fc07e4793f009
     char msg[128];      /* special message */
     char msgtype[256];  /* last message type */
     char msmtype[7][128]; /* msm signal types */
@@ -1056,17 +960,10 @@ typedef struct {        /* RTCM control struct type */
     int nbyte;          /* number of bytes in message buffer */ 
     int nbit;           /* number of bits in word buffer */ 
     int len;            /* message length (bytes) */
-<<<<<<< HEAD
     uint8_t buff[1200]; /* message buffer */
     uint32_t word;      /* word buffer for rtcm 2 */
     uint32_t nmsg2[100]; /* message count of RTCM 2 (1-99:1-99,0:other) */
     uint32_t nmsg3[400]; /* message count of RTCM 3 (1-299:1001-1299,300-329:4070-4099,0:ohter) */
-=======
-    unsigned char buff[1200]; /* message buffer */
-    unsigned int word;  /* word buffer for rtcm 2 */
-    unsigned int nmsg2[100]; /* message count of RTCM 2 (1-99:1-99,0:other) */
-    unsigned int nmsg3[400]; /* message count of RTCM 3 (1-299:1001-1299,301-395:4001-4095,0:ohter) */
->>>>>>> cce0eb669b448d3742583879c11fc07e4793f009
     char opt[256];      /* RTCM dependent options */
 } rtcm_t;
 

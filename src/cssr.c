@@ -410,13 +410,13 @@ static int sigmask2sig(int nsat, int *sat, uint16_t *sigmask,
             id = sys2gnss(sys, NULL);
             ofst = 0;
             switch (sys) {
-                case SYS_GPS: codes = (int *)codes_gps; break;
-                case SYS_GLO: codes = (int *)codes_glo; break;
-                case SYS_GAL: codes = (int *)codes_gal; break;
-                case SYS_CMP: codes = (int *)codes_bds; break;
-                case SYS_QZS: codes = (int *)codes_qzs; break;
-                case SYS_SBS: codes = (int *)codes_sbs; break;
-                case SYS_IRN: codes = (int *)codes_irn; break;
+                case SYS_GPS: codes = (uint8_t *)codes_gps; break;
+                case SYS_GLO: codes = (uint8_t *)codes_glo; break;
+                case SYS_GAL: codes = (uint8_t *)codes_gal; break;
+                case SYS_CMP: codes = (uint8_t *)codes_bds; break;
+                case SYS_QZS: codes = (uint8_t *)codes_qzs; break;
+                case SYS_SBS: codes = (uint8_t *)codes_sbs; break;
+                case SYS_IRN: codes = (uint8_t *)codes_irn; break;
             }
             for (k=0,nsig_s=0;k<CSSR_MAX_SIG;k++) {
                 if ((sigmask[id]>>(CSSR_MAX_SIG-1-k))&1) {
@@ -902,7 +902,7 @@ static int check_bit_width_grid(rtcm_t *rtcm, cssr_t *cssr, int i0)
 static int decode_cssr_combo(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
 {
     int i,j,sync,iod,tow,ngnss,sat[CSSR_MAX_SV],nsat,iode,sz;
-    int flg_orbit,flg_clock,flg_net,netid,s,sys,prn,subtype;
+    int flg_orbit,flg_clock,flg_net,netid=0,s,sys,prn;
     uint64_t net_svmask=0;
     double udint;
     ssr_t *ssr=NULL;
@@ -1223,17 +1223,22 @@ static int check_bit_width_atmos(rtcm_t *rtcm, cssr_t *cssr, int i0)
  */
 static int decode_cssr_si(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
 {
-	int i,j,sync,subtype;
+	int i,j,sync,j0;
 
-	i=i0;
-	subtype = getbitu(rtcm->buff,i,4); i+=4;
+	i=i0+4;
 	sync = getbitu(rtcm->buff,i,1); i+=1; /* multiple message indicator */
 	cssr->si_cnt = getbitu(rtcm->buff,i,3); i+=3;  /* information message counter */
-	cssr->si_sz = getbitu(rtcm->buff,i,2); i+=2; /* data size */
+	cssr->si_sz = getbitu(rtcm->buff,i,2)+1; i+=2; /* data size */
 
+	j0=cssr->si_cnt*cssr->si_sz*5;
 	for (j=0;j<cssr->si_sz;j++) {
-		cssr->si_data[j] = (uint64_t)getbitu(rtcm->buff,i,8)<<32; i+=8;
-		cssr->si_data[j] |= getbitu(rtcm->buff,i,32); i+=32;
+		cssr->si_data[j0+j] = (uint64_t)getbitu(rtcm->buff,i,8)<<32; i+=8;
+		cssr->si_data[j0+j] |= getbitu(rtcm->buff,i,32); i+=32;
+	}
+
+	if (sync==0 && cssr->flg_cssr_si == (1<<cssr->si_cnt)-1) {
+		/* decode SI */
+		cssr->flg_cssr_si = 0;
 	}
 
     return sync ? 0: 10;
