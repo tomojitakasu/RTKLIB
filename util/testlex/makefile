@@ -5,32 +5,18 @@ SRC    = ../../src
 CFLAGS = -Wall -O3 -ansi -pedantic -I$(SRC) -DTRACE -DENAQZS -DENAGLO
 LDFLAGS= -lm -lrt
 
-all        : convlex dumplex dumpssr outlexion
+SRCS = rtkcmn.c preceph.c rtcm.c rtcm2.c rtcm3.c rtcm3e.c cssr.c
+OBJS = $(SRCS:.c=.o)
 
-convlex    : rtkcmn.o preceph.o qzslex.o
-dumplex    : rtkcmn.o preceph.o qzslex.o
-dumpssr    : rtkcmn.o preceph.o rtcm.o rtcm3.o rtcm2.o rtcm3e.o dumpssr.o
-outlexion  : rtkcmn.o preceph.o qzslex.o
+all        : dumpssr
 
-rtkcmn.o   : $(SRC)/rtklib.h $(SRC)/rtkcmn.c
-	$(CC) -c $(CFLAGS) $(SRC)/rtkcmn.c
-preceph.o  : $(SRC)/rtklib.h $(SRC)/preceph.c
-	$(CC) -c $(CFLAGS) $(SRC)/preceph.c
-qzslex.o   : $(SRC)/rtklib.h $(SRC)/qzslex.c
-	$(CC) -c $(CFLAGS) $(SRC)/qzslex.c
-rtcm.o     : $(SRC)/rtklib.h $(SRC)/rtcm.c
-	$(CC) -c $(CFLAGS) $(SRC)/rtcm.c
-rtcm3.o    : $(SRC)/rtklib.h $(SRC)/rtcm3.c
-	$(CC) -c $(CFLAGS) $(SRC)/rtcm3.c
-rtcm3e.o    : $(SRC)/rtklib.h $(SRC)/rtcm3e.c
-	$(CC) -c $(CFLAGS) $(SRC)/rtcm3e.c
-rtcm2.o    : $(SRC)/rtklib.h $(SRC)/rtcm2.c
-	$(CC) -c $(CFLAGS) $(SRC)/rtcm2.c
+dumpssr    : dumpssr.o $(OBJS)
+
+%.o : $(SRC)/%.c
+	$(CC) -c $(CFLAGS)  -o $@ $<
 
 install:
-	cp -f convlex.exe /usr/local/bin
-	cp -f dumplex.exe /usr/local/bin
-	cp -f outlexion.exe /usr/local/bin
+	cp -f dumpssr.exe /usr/local/bin
 
 clean:
 	rm -f *.o *.stackdump *.trace *.out *.exe

@@ -2467,7 +2467,7 @@ static int decode_type4073(rtcm_t *rtcm)
     if (rtcm->outtype) {
         sprintf(rtcm->msgtype+strlen(rtcm->msgtype)," subtype=%d",subtype);
     }
-    trace(2,"rtcm3 4073: unsupported message subtype=%d\n",subtype);
+    decode_cssr(rtcm,1);
     return 0;
 }
 /* decode type 4076: proprietary message IGS ---------------------------------*/
