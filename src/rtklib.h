@@ -1827,6 +1827,11 @@ extern int showmsg(const char *format,...);
 extern void settspan(gtime_t ts, gtime_t te);
 extern void settime(gtime_t time);
 
+/* cssr */
+extern int decode_cssr(rtcm_t *rtcm, int i0, int head);
+extern int cssr_check_bitlen(rtcm_t *rtcm,int i);
+extern int decode_cssr_msg(rtcm_t *rtcm, int head, uint8_t *frame);
+
 #ifdef __cplusplus
 }
 #endif

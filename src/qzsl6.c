@@ -9,6 +9,7 @@
 * history : 2021/01/05 1.0  new (based on qzslex.c)
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
+#include "cssr.h"
 
 #define LEXFRMLEN       2000            /* lex frame length (bits) */
 #define LEXHDRLEN       49              /* lex header length (bits) */
@@ -19,6 +20,11 @@
 #define RTCM3PREAMB     0xD3            /* rtcm ver.3 frame preamble */
 
 #define LEXHEADLEN      24              /* lex binary header length (bytes) */
+
+typedef struct {        /* QZSS L6 messages type */
+    int n,nmax;         /* number of L6 messages and allocated */
+    l6msg_t *msgs;     /* QZSS L6 messages */
+} qzsl6_t;
 
 /* convert QZSS L6 message to rtcm ssr message -----------------------------------*/
 static int l6msg2rtcm(const unsigned char *msg, int i, unsigned char *buff)
@@ -84,7 +90,7 @@ static int l6msg2rtcm(const unsigned char *msg, int i, unsigned char *buff)
     return n;
 }
 /* decode type 12: madoca orbit and clock correction -------------------------*/
-static int decode_lextype12(const lexmsg_t *msg, nav_t *nav, gtime_t *tof)
+static int decode_lextype12(const l6msg_t *msg, nav_t *nav, gtime_t *tof)
 {
     static rtcm_t stock_rtcm={0};
     rtcm_t rtcm={0};
@@ -175,7 +181,7 @@ static int decode_lextype12(const lexmsg_t *msg, nav_t *nav, gtime_t *tof)
 *          gtime_t  *tof    O   time of frame
 * return : status (1:ok,0:error or not supported type)
 *-----------------------------------------------------------------------------*/
-extern int l6updatecorr(const lexmsg_t *msg, nav_t *nav, gtime_t *tof)
+extern int l6updatecorr(const l6msg_t *msg, nav_t *nav, gtime_t *tof)
 {
     trace(3,"l6updatecorr: type=%d\n",msg->type);
     
@@ -187,27 +193,27 @@ extern int l6updatecorr(const lexmsg_t *msg, nav_t *nav, gtime_t *tof)
     return 0;
 }
 /* read qzss L6 message log file ----------------------------------------------
-* read sbas message file
-* args   : char     *file   I   qzss lex message file
-*          int      sel     I   qzss lex satellite prn number selection (0:all)
-*          qzslex_t *lex    IO  qzss lex messages
+* read qzss L6 message file
+* args   : char     *file   I   qzss L6 message file
+*          int      sel     I   qzss L6 satellite prn number selection (0:all)
+*          qzslex_t *lex    IO  qzss L6 messages
 * return : status (1:ok,0:error)
-* notes  : only input file with extension .lex or .LEX.
+* notes  : only input file with extension .l6 or .L6.
 *-----------------------------------------------------------------------------*/
-extern int l6readmsg(const char *file, int sel, lex_t *lex)
+extern int l6readmsg(const char *file, int sel, qzsl6_t *qzsl6)
 {
-    lexmsg_t *lex_msgs;
+    l6msg_t *l6_msgs;
     int i,prn,type,alert;
     unsigned int b;
     char buff[1024],*p;
     FILE *fp;
     
-    trace(3,"readmsgs: file=%s sel=%d\n",file,sel);
+    trace(3,"l6readmsgs: file=%s sel=%d\n",file,sel);
     
-    if (!(p=strrchr(file,'.'))||(strcmp(p,".lex")&&strcmp(p,".LEX"))) return 0;
+    if (!(p=strrchr(file,'.'))||(strcmp(p,".l6")&&strcmp(p,".L6"))) return 0;
     
     if (!(fp=fopen(file,"r"))) {
-        trace(2,"lex message log open error: %s\n",file);
+        trace(2,"L6 message log open error: %s\n",file);
         return 0;
     }
     while (fgets(buff,sizeof(buff),fp)) {
@@ -215,54 +221,54 @@ extern int l6readmsg(const char *file, int sel, lex_t *lex)
             p+=2;
         }
         else {
-            trace(2,"invalid lex log: %s\n",buff);
+            trace(2,"invalid L6 log: %s\n",buff);
             continue;
         }
         if (sel!=0&&sel!=prn) continue;
         
-        if (lex->n>=lex->nmax) {
-            lex->nmax=lex->nmax==0?1024:lex->nmax*2;
-            if (!(lex_msgs=(lexmsg_t *)realloc(lex->msgs,lex->nmax*sizeof(lexmsg_t)))) {
-                trace(1,"lexreadmsg malloc error: nmax=%d\n",lex->nmax);
-                free(lex->msgs); lex->msgs=NULL; lex->n=lex->nmax=0;
+        if (qzsl6->n>=qzsl6->nmax) {
+        	qzsl6->nmax=qzsl6->nmax==0?1024:qzsl6->nmax*2;
+            if (!(l6_msgs=(l6msg_t *)realloc(qzsl6->msgs,qzsl6->nmax*sizeof(l6msg_t)))) {
+                trace(1,"l6readmsg malloc error: nmax=%d\n",qzsl6->nmax);
+                free(qzsl6->msgs); qzsl6->msgs=NULL; qzsl6->n=qzsl6->nmax=0;
                 return 0;
             }
-            lex->msgs=lex_msgs;
+            qzsl6->msgs=l6_msgs;
         }
-        lex->msgs[lex->n].prn  =prn;
-        lex->msgs[lex->n].type =type;
-        lex->msgs[lex->n].alert=alert;
-        for (i=0;i<212;i++) lex->msgs[lex->n].msg[i]=0;
+        qzsl6->msgs[qzsl6->n].prn  =prn;
+        qzsl6->msgs[qzsl6->n].type =type;
+        qzsl6->msgs[qzsl6->n].alert=alert;
+        for (i=0;i<212;i++) qzsl6->msgs[qzsl6->n].msg[i]=0;
         for (i=0;*(p-1)&&*p&&i<212;p+=2,i++) {
-            if (sscanf(p,"%2X",&b)==1) lex->msgs[lex->n].msg[i]=(unsigned char)b;
+            if (sscanf(p,"%2X",&b)==1) qzsl6->msgs[qzsl6->n].msg[i]=(unsigned char)b;
         }
-        lex->n++;
+        qzsl6->n++;
     }
     fclose(fp);
     
     return 1;
 }
 /* output L6 messages ---------------------------------------------------------
-* output L6 message record to output file in rtklib lex log format
+* output L6 message record to output file in rtklib L6 log format
 * args   : FILE   *fp       I   output file pointer
-*          lexmsg_t *lexmsg I   lex messages
+*          l6msg_t *l6msg I   L6 messages
 * return : none
 * notes  : see ref [1] 5.7.2.1
 *-----------------------------------------------------------------------------*/
-extern void l6outmsg(FILE *fp, const lexmsg_t *msg)
+extern void l6outmsg(FILE *fp, const l6msg_t *msg)
 {
     int i;
     
-    trace(4,"lexoutmsg:\n");
+    trace(4,"l6outmsg:\n");
     
     fprintf(fp,"%3d %2d %1d : ",msg->prn,msg->type,msg->alert);
     for (i=0;i<212;i++) fprintf(fp,"%02X",msg->msg[i]);
     fprintf(fp,"\n");
 }
-/* convert L6 binary file to lex message log ----------------------------------
-* convert L6 binary file to lex message log
+/* convert L6 binary file to L6 message log ----------------------------------
+* convert L6 binary file to L6 message log
 * args   : int    type      I   output type (0:all)
-*          int    format    I   lex binary format (0:no-headr,1:with-header)
+*          int    format    I   L6 binary format (0:no-header,1:with-header)
 *          char   *infile   I   input file
 *          char   *outfile  I   output file
 * return : status (1:ok,0:no correction)
@@ -272,7 +278,7 @@ extern int l6convbin(int type, int format, const char *infile,
                       const char *outfile)
 {
     FILE *ifp,*ofp;
-    lexmsg_t msg;
+    l6msg_t msg;
     unsigned int preamb;
     unsigned char buff[LEXHEADLEN+LEXFRMLEN/8];
     int i,j,n=0;
@@ -308,7 +314,7 @@ extern int l6convbin(int type, int format, const char *infile,
                 msg.type,msg.alert);
         
         if (type==0||type==msg.type) {
-            lexoutmsg(ofp,&msg);
+            l6outmsg(ofp,&msg);
         }
     }
     fclose(ifp);
@@ -317,98 +323,9 @@ extern int l6convbin(int type, int format, const char *infile,
     return 1;
 }
 
-#if 0
-
+#if 1
 /* decode QZS L6 CLAS stream */
-extern int decode_qzs_msg(rtcm_t *rtcm, int head, uint8_t *frame)
-{
-    static int startdecode = 0;
-    static cssr_t _cssr = {0,};
-    static int savefacility = -1;
-    static int savedelivery = -1;
-
-    cssr_t *cssr = &_cssr;
-    int startbit,week,type,subtype;
-    int i, ret = 0;
-    double tow;
-
-    if (*frame==0x00 || rtcm->nbit==-1) {
-        return 0;
-    }
-
-    i = startbit = cssr->nbit;
-    if (i+16>rtcm->nbit) return 0;
-    type = getbitu(rtcm->buff,i,12); i+= 12;
-    if (type != 4073) {
-        trace(4, "cssr: decode terminate: frame=%02x, nbit=%d, nbit=%d\n",
-        		*frame,rtcm->nbit,cssr->nbit);
-        cssr->nbit = 0;
-        *frame = 0;
-        return 0;
-    }
-    subtype=getbitu(rtcm->buff,i,4);
-    if (subtype!=CSSR_TYPE_MASK && !startdecode) {
-        return 0;
-    }
-
-    cssr_check_bitlen(rtcm,i); i+=4;
-
-    tow = time2gpst(timeget(), &week);
-    trace(4, "cssr: frame=%02x, type=%d, subtype=%d, week=%d, tow=%.2f\n",
-    		*frame,type,subtype, week, tow);
-
-    switch (subtype) {
-        case CSSR_TYPE_MASK:
-            ret=decode_cssr_mask(rtcm, cssr, i, head);
-            if (!startdecode) {
-                trace(2, "start CSSR decode: week=%d, tow=%.2f\n", week, tow);
-            }
-            startdecode = 1;
-            break;
-        case CSSR_TYPE_OC:
-            ret=decode_cssr_oc(rtcm, cssr, i, head);
-            break;
-        case CSSR_TYPE_CC:
-            ret=decode_cssr_cc(rtcm, cssr, i, head);
-            break;
-        case CSSR_TYPE_CB:
-            ret=decode_cssr_cb(rtcm, cssr, i, head);
-            break;
-        case CSSR_TYPE_PB:
-            ret=decode_cssr_pb(rtcm, cssr, i, head);
-            break;
-        case CSSR_TYPE_BIAS:
-            ret=decode_cssr_bias(rtcm, cssr, i, head);
-            break;
-        case CSSR_TYPE_URA:
-            ret=decode_cssr_ura(rtcm, cssr, i, head);
-            break;
-        case CSSR_TYPE_STEC:
-            ret=decode_cssr_stec(rtcm, cssr, i, head);
-            break;
-        case CSSR_TYPE_GRID:
-            ret=decode_cssr_grid(rtcm, cssr, i, head);
-            break;
-        case CSSR_TYPE_OCC:
-            ret=decode_cssr_combo(rtcm, cssr, i, head);
-            break;
-        case CSSR_TYPE_ATMOS:
-            ret=decode_cssr_atmos(rtcm, cssr, i, head);
-            break;
-        case CSSR_TYPE_SI:
-        	ret=decode_cssr_si(rtcm, cssr, i, head);
-            break;
-        default: break;
-    }
-    if (ret==-1) {
-    	cssr->nbit=0;
-    	cssr->iod=-1;
-    	*frame=0;
-    	return 0;
-    }
-
-    return ret;
-}
+#endif
 
 
 #define L6FRMPREAMB 0x1ACFFC1Du /* L6 message frame preamble */
@@ -417,7 +334,7 @@ extern int decode_qzs_msg(rtcm_t *rtcm, int head, uint8_t *frame)
 /* read and decode QZS L6 stream */
 int read_qzs_msg(rtcm_t *rtcm, unsigned char *pbuff, int nframe)
 {
-    int i=0, j, k, jn, jn0 = -1, prn, msgid, alert;
+    int i=0,j,k,jn,jn0=-1,prn,msgid,alert;
     unsigned char *buff;
 
     for (j=0;j<5;j++) {
@@ -433,7 +350,7 @@ int read_qzs_msg(rtcm_t *rtcm, unsigned char *pbuff, int nframe)
         }
     }
 
-    if (jn0 < 0) {
+    if (jn0<0) {
         memset(rtcm->buff, 0x00, sizeof(rtcm->buff));
         return 0;
     }
@@ -455,20 +372,22 @@ int read_qzs_msg(rtcm_t *rtcm, unsigned char *pbuff, int nframe)
     return 0;
 }
 
+#if 1
 /* read list of grid position from ascii file */
-extern int read_grid_def(const char *gridfile)
+extern int read_grid_def(rtcm_t *rtcm, const char *gridfile)
 {
 	int gridsel=0 ;
     int no, lath, latm, lonh, lonm;
     double lat, lon, alt;
     char buff[1024], *temp, *p;
     int inet, grid[CSSR_MAX_NETWORK] = {0,}, isqzss=0, ret;
+    atmos_t *atmos=rtcm->atmos;
     FILE *fp=NULL;
 
     for (inet = 0; inet < CSSR_MAX_NETWORK; ++inet) {
-        clas_grid[inet][0][0] = -1.0;
-        clas_grid[inet][0][1] = -1.0;
-        clas_grid[inet][0][2] = -1.0;
+        atmos[inet].pos[0][0] = -1.0;
+        atmos[inet].pos[0][1] = -1.0;
+        atmos[inet].pos[0][2] = -1.0;
     }
 
     trace(2, "read_grid_def(): gridfile=%s\n", gridfile);
@@ -478,20 +397,7 @@ extern int read_grid_def(const char *gridfile)
     }
 
     while (fgets(buff, sizeof(buff), fp)) {
-        if (strstr(buff, "<CSSR Grid Definition>")) {
-            while (fgets(buff, sizeof(buff), fp)) {
-                if ((temp = strstr(buff, "<Version>"))) {
-                    p = temp + 9;
-                    if ((temp = strstr(buff, "</Version>"))) {
-                        *temp = '\0';
-                    }
-                    gridsel = atoi(p);
-                    trace(2, "grid definition: version=%d\n", gridsel);
-                    break;
-                }
-            }
-            break;
-		} else if (strstr(buff, "Compact Network ID    GRID No.  Latitude     Longitude   Ellipsoidal height")) {
+    	if (strstr(buff, "Compact Network ID    GRID No.  Latitude     Longitude   Ellipsoidal height")) {
             gridsel = 3;
 			isqzss = 1;
             trace(2, "grid definition: IS attached file version%d\n", gridsel);
@@ -508,34 +414,17 @@ extern int read_grid_def(const char *gridfile)
         return -1;
     }
 
-	if (isqzss == 0) {
-        while (fgets(buff, sizeof(buff), fp)) {
-            if (sscanf(buff, "<Network%d>", &inet)) {
-                while (fscanf(fp, "%d\t%d\t%d\t%lf\t%d\t%d\t%lf\t%lf",
-                              &no, &lath, &latm, &lat, &lonh, &lonm, &lon, &alt) > 0) {
-                    if (inet >= 0 && inet < CSSR_MAX_NETWORK) {
-                        clas_grid[inet][grid[inet]][0] = (double)lath + ((double)latm/60.0) + (lat/3600.0);
-                        clas_grid[inet][grid[inet]][1] = (double)lonh + ((double)lonm/60.0) + (lon/3600.0);
-                        clas_grid[inet][grid[inet]][2] = alt;
-                        grid[inet]++;
-                        clas_grid[inet][grid[inet]][0] = -1.0;
-                        clas_grid[inet][grid[inet]][1] = -1.0;
-                        clas_grid[inet][grid[inet]][2] = -1.0;
-                    }
-                }
-            }
-        }
-	} else {
+    {
         fgets(buff, sizeof(buff), fp);
         while ((ret=fscanf(fp, "%d %d %lf %lf %lf", &inet, &no, &lat, &lon, &alt)) != EOF ) {
             if (inet>=0 && inet<CSSR_MAX_NETWORK && ret==5) {
-                clas_grid[inet][grid[inet]][0] = lat;
-                clas_grid[inet][grid[inet]][1] = lon;
-                clas_grid[inet][grid[inet]][2] = alt;
+            	atmos[inet].pos[grid[inet]][0] = lat;
+            	atmos[inet].pos[grid[inet]][1] = lon;
+            	atmos[inet].pos[grid[inet]][2] = alt;
                 grid[inet]++;
-                clas_grid[inet][grid[inet]][0] = -1.0;
-                clas_grid[inet][grid[inet]][1] = -1.0;
-                clas_grid[inet][grid[inet]][2] = -1.0;
+                atmos[inet].pos[grid[inet]][0] = -1.0;
+                atmos[inet].pos[grid[inet]][1] = -1.0;
+                atmos[inet].pos[grid[inet]][2] = -1.0;
             }
             trace(3, "grid_info(fscanf:%d), %d, %d, %lf, %lf, %lf\n", ret, inet, no, lat, lon, alt);
         }
@@ -543,16 +432,17 @@ extern int read_grid_def(const char *gridfile)
     fclose(fp);
     return 0;
 }
+#endif
 
-/* decode cssr messages in the QZS L6 subframe */
-extern int input_l6msg(rtcm_t *rtcm, unsigned char data, uint8_t *frame, lex_t *lex)
+/* decode L6 messages in the QZS L6 subframe */
+extern int input_l6msg(rtcm_t *rtcm, uint8_t data, uint8_t *frame, qzsl6_t *l6)
 {
 	int i,j;
     static uint32_t preamble = 0;
     static uint64_t data_p = 0;
     uint8_t prn, msgid, alert, facility, sidx;
     static int nframe = 0;
-    static unsigned char buff[BLEN_MSG];
+    static uint8_t buff[BLEN_MSG];
     static int decode_start = 0;
 
     trace(5,"input_l6msg: data=%02x\n",data);
@@ -584,10 +474,10 @@ extern int input_l6msg(rtcm_t *rtcm, unsigned char data, uint8_t *frame, lex_t *
     facility = (msgid>>3)&0x3;
     sidx = msgid & 0x1;
 
-    lex->n = facility;
-    lex->msgs[lex->n].prn = prn;
-    lex->msgs[lex->n].type = msgid;
-    lex->msgs[lex->n].alert = alert;
+    l6->n = facility;
+    l6->msgs[l6->n].prn = prn;
+    l6->msgs[l6->n].type = msgid;
+    l6->msgs[l6->n].alert = alert;
 
     if (sidx) {
     	rtcm->nbit=0;
@@ -611,27 +501,26 @@ extern int input_l6msg(rtcm_t *rtcm, unsigned char data, uint8_t *frame, lex_t *
 }
 
 
-/* decode cssr messages from file stream ---------------------------------------------*/
+/* decode L6 messages from file stream ---------------------------------------------*/
 extern int input_l6msgf(rtcm_t *rtcm, FILE *fp)
 {
     int i,data=0,ret;
     static uint8_t frame = 0;
-    static lex_t _lex;
-    lex_t *lex=&_lex;
+    static qzsl6_t _qzsl6;
+    qzsl6_t *qzsl6=&_qzsl6;
 
     trace(4,"input_cssrf: data=%02x\n",data);
 
-    if (!lex->msgs) {
-    	lex->nmax=4;
-    	lex->msgs=(lexmsg_t *)realloc(lex->msgs,lex->nmax*sizeof(lexmsg_t));
+    if (!qzsl6->msgs) {
+    	qzsl6->nmax=4;
+    	qzsl6->msgs=(l6msg_t *)realloc(qzsl6->msgs,qzsl6->nmax*sizeof(l6msg_t));
     }
 
     for (i=0;i<4096;i++) {
-        if ((ret=decode_qzs_msg(rtcm,0,&frame))) return ret;
+        if ((ret=decode_cssr_msg(rtcm,0,&frame))) return ret;
         if ((data=fgetc(fp))==EOF) return -2;
-        input_l6msg(rtcm, (unsigned char)data, &frame,lex);
+        input_l6msg(rtcm, (unsigned char)data, &frame,qzsl6);
     }
     return 0; /* return at every 4k bytes */
 }
 
-#endif

@@ -9,7 +9,7 @@
 /* main ----------------------------------------------------------------------*/
 int main(int argc, char **argv)
 {
-    const char *usage="lexconvbin [-h] [-t type] infile [-o outfile]";
+    const char *usage="convlex [-h] [-t type] infile [-o outfile]";
     char *infile="",*outfile="";
     int i,type=0,format=0;
     
@@ -23,7 +23,7 @@ int main(int argc, char **argv)
         }
         else infile=argv[i];
     }
-    lexconvbin(type,format,infile,outfile);
+    l6convbin(type,format,infile,outfile);
     
     return 0;
 }

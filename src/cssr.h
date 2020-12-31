@@ -263,11 +263,12 @@ typedef struct {
 typedef struct {
 	uint8_t alert;
 	uint8_t prn;
+	uint8_t type;
 	uint8_t vendor_id;
 	uint8_t facility_id;
 	uint8_t subframe_length;
 	int nbit;
-	uint8_t buff[L6MSG_LENGTH];
+	uint8_t msg[250];
 } l6msg_t;
 
 #endif /* CSSR_H */
