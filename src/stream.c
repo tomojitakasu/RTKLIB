@@ -2516,7 +2516,10 @@ static int readmembuf(membuf_t *membuf, uint8_t *buff, int n, char *msg)
     lock(&membuf->lock);
     
     for (i=membuf->rp;i!=membuf->wp&&nr<n;i++) {
-        if (i>=membuf->bufsize) i=0;
+        if (i>=membuf->bufsize) {
+            i=0;
+            if(i==membuf->wp) break;
+        }
         buff[nr++]=membuf->buf[i];
     }
     membuf->rp=i;
