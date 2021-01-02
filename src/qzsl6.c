@@ -384,7 +384,7 @@ extern int read_grid_def(rtcm_t *rtcm, const char *gridfile)
     atmos_t *atmos=rtcm->atmos;
     FILE *fp=NULL;
 
-    for (inet = 0; inet < CSSR_MAX_NETWORK; ++inet) {
+    for (inet=0;inet<CSSR_MAX_NETWORK;inet++) {
         atmos[inet].pos[0][0] = -1.0;
         atmos[inet].pos[0][1] = -1.0;
         atmos[inet].pos[0][2] = -1.0;
@@ -400,7 +400,7 @@ extern int read_grid_def(rtcm_t *rtcm, const char *gridfile)
     	if (strstr(buff, "Compact Network ID    GRID No.  Latitude     Longitude   Ellipsoidal height")) {
             gridsel = 3;
 			isqzss = 1;
-            trace(2, "grid definition: IS attached file version%d\n", gridsel);
+            trace(3, "grid definition: IS attached file version%d\n", gridsel);
             break;
 		} else {
             trace(1, "grid definition: invalid format%d\n", gridsel);
@@ -426,7 +426,8 @@ extern int read_grid_def(rtcm_t *rtcm, const char *gridfile)
                 atmos[inet].pos[grid[inet]][1] = -1.0;
                 atmos[inet].pos[grid[inet]][2] = -1.0;
             }
-            trace(3, "grid_info(fscanf:%d), %d, %d, %lf, %lf, %lf\n", ret, inet, no, lat, lon, alt);
+            trace(4, "grid_info: %2d, %2d, %10.3f, %10.3f, %8.3f\n",
+            		ret,inet,no,lat,lon,alt);
         }
 	}
     fclose(fp);
@@ -444,8 +445,8 @@ extern int input_l6msg(rtcm_t *rtcm, uint8_t data, uint8_t *frame, qzsl6_t *l6)
     static int nframe = 0;
     static uint8_t buff[BLEN_MSG];
     static int decode_start = 0;
-
-    trace(5,"input_l6msg: data=%02x\n",data);
+    extern cssr_t _cssr;
+    cssr_t *cssr=&_cssr;
 
     /* synchronize frame */
     if (rtcm->nbyte==0) {
@@ -479,8 +480,11 @@ extern int input_l6msg(rtcm_t *rtcm, uint8_t data, uint8_t *frame, qzsl6_t *l6)
     l6->msgs[l6->n].type = msgid;
     l6->msgs[l6->n].alert = alert;
 
+    trace(4,"input_l6msg: prn=%3d msgid=%3d frame=%d\n",prn,msgid,*frame);
+
     if (sidx) {
     	rtcm->nbit=0;
+    	cssr->nbit=0;
     	decode_start = 1;
     	*frame = 0;
     	nframe = 0;
@@ -496,6 +500,8 @@ extern int input_l6msg(rtcm_t *rtcm, uint8_t data, uint8_t *frame, qzsl6_t *l6)
     	*frame |= (1<<nframe);
     	nframe++;
     }
+    trace(4,"input_l6msg-2: prn=%3d msgid=%3d frame=%d rtcm-nbit=%d\n",
+    		prn,msgid,*frame,rtcm->nbit);
 
     return 0;
 }

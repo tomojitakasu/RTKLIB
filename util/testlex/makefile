@@ -1,5 +1,5 @@
 # makefile for testlex
-
+CC=gcc
 SRC    = ../../src
 #CFLAGS = -Wall -O3 -ansi -pedantic -I$(SRC) -DTRACE -DENAQZS -DENAGLO -DENALEX
 CFLAGS = -Wall -g -ansi -pedantic -I$(SRC) -DTRACE -DENAQZS -DENAGLO -DENAGAL
