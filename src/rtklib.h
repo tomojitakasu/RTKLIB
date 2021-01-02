@@ -1530,7 +1530,7 @@ EXPORT int tle_name_read(const char *file, tle_t *tle);
 EXPORT int tle_pos(gtime_t time, const char *name, const char *satno,
                    const char *desig, const tle_t *tle, const erp_t *erp,
                    double *rs);
-
+EXPORT  eph_t *seleph(gtime_t time, int sat, int iode, const nav_t *nav);
 /* receiver raw data functions -----------------------------------------------*/
 EXPORT uint32_t getbitu(const uint8_t *buff, int pos, int len);
 EXPORT int32_t  getbits(const uint8_t *buff, int pos, int len);

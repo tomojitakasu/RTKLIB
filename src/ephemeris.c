@@ -419,7 +419,7 @@ extern void seph2pos(gtime_t time, const seph_t *seph, double *rs, double *dts,
     *var=var_uraeph(SYS_SBS,seph->sva);
 }
 /* select ephememeris --------------------------------------------------------*/
-static eph_t *seleph(gtime_t time, int sat, int iode, const nav_t *nav)
+eph_t *seleph(gtime_t time, int sat, int iode, const nav_t *nav)
 {
     double t,tmax,tmin;
     int i,j=-1,sys,sel;
