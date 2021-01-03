@@ -1142,12 +1142,18 @@ extern int decode_cssr(rtcm_t *rtcm, int i0, int head)
     return ret;
 }
 
+/* check message length of CSSR */
 extern int cssr_check_bitlen(rtcm_t *rtcm,int i0)
 {
-	int i=i0,subtype,nbit=0;
+	int i=i0,type,subtype,nbit=0;
     cssr_t *cssr = &_cssr;
+    type = getbitu(rtcm->buff,i,12);
+    if (type!=4073) {
+    	trace(2,"invalid type:%d rtcm-nbit=%d nbit=%d\n",
+    			type,rtcm->nbit,cssr->nbit);
+    	return -1;
+    }
     subtype = getbitu(rtcm->buff,i+12,4);
-
 	switch (subtype) {
 		case CSSR_TYPE_MASK:
 			nbit=check_bit_width_mask(rtcm,cssr,i);

@@ -17,7 +17,7 @@ static void convl6msg(FILE *fp, FILE *fpout)
     
     init_rtcm(rtcm);
     
-    while ((stat=input_l6msgsf(rtcm,fp))>=0) {
+    while ((stat=input_l6msgsf(rtcm,1,fp))>=0) {
         if (stat!=10) continue; /* ssr message */
         i=0;
         while ((nbit=l6msg2rtcm(rtcm,i,buff))) { /* convert to RTCM3 */

@@ -5,6 +5,7 @@
 *-----------------------------------------------------------------------------*/
 #include <stdio.h>
 #include "rtklib.h"
+#include "cssr.h"
 
 /* print ssr messages --------------------------------------------------------*/
 static void printhead(int topt, int mopt)
@@ -65,32 +66,41 @@ static void printssrmsg(int sat, const ssr_t *ssr, int topt, int mopt)
     printf("\n");
 }
 
-extern int input_l6msgf(rtcm_t *rtcm, FILE *fp);
+extern cssr_t _cssr;
 
-/* dump ssr messages ---------------------------------------------------------*/
-static void dumpssrmsg(FILE *fp, int sat, int topt, int mopt)
+/* dump L6 messages ---------------------------------------------------------*/
+static int dumpl6msg(FILE *fp, int sat, int topt, int mopt)
 {
-    static rtcm_t rtcm;
+    static rtcm_t _rtcm;
+    rtcm_t *rtcm=&_rtcm;
     static gtime_t t0[MAXSAT]={{0}};
-    int s,stat;
+    int i=0,s,stat,nbit,ret;
+    cssr_t *cssr = &_cssr;
     const char gridfile[]="clas_grid.def";
     
-    init_rtcm(&rtcm);
-    read_grid_def(&rtcm, gridfile);
-    
-    while ((stat=input_l6msgf(&rtcm,fp))>=0) {
-        
-        if (stat!=10) continue; /* ssr message */
-        
-        for (s=1;s<=MAXSAT;s++) {
-            if (timediff(rtcm.ssr[s-1].t0[0],t0[s-1])==0.0) continue;
-            t0[s-1]=rtcm.ssr[s-1].t0[0];
-            
-            if (!sat||s==sat) {
-                printssrmsg(s,rtcm.ssr+s-1,topt,mopt);
-            }
-        }
+    init_rtcm(rtcm);
+    read_grid_def(rtcm, gridfile);
+    cssr->nbit=0;
+    while ((stat=input_l6msgsf(rtcm,0,fp))>=0) { /* read L6 message */
+    	i=cssr->nbit;
+    	while(1) { /* decode CSSR messages */
+    		if ((nbit=cssr_check_bitlen(rtcm,i))<0) break;
+    		if (i+nbit>rtcm->nbit) break;
+    		if ((ret=decode_cssr(rtcm,i,0))<0) break;
+    		i=cssr->nbit;
+
+    		if (ret!=10) continue; /* ssr message */
+    		for (s=1;s<=MAXSAT;s++) {
+				if (timediff(rtcm->ssr[s-1].t0[0],t0[s-1])==0.0) continue;
+				t0[s-1]=rtcm->ssr[s-1].t0[0];
+
+    		    if (!sat||s==sat) {
+    		       printssrmsg(s,rtcm->ssr+s-1,topt,mopt);
+    		    }
+    		}
+    	}
     }
+    return 0;
 }
 /* main ----------------------------------------------------------------------*/
 int main(int argc, char **argv)
@@ -127,7 +137,7 @@ int main(int argc, char **argv)
     }
     printhead(topt,mopt);
     
-    dumpssrmsg(fp,sat,topt,mopt);
+    dumpl6msg(fp,sat,topt,mopt);
     
     fclose(fp);
     traceclose();
