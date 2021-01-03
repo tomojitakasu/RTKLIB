@@ -1831,6 +1831,12 @@ extern void settime(gtime_t time);
 extern int decode_cssr(rtcm_t *rtcm, int i0, int head);
 extern int cssr_check_bitlen(rtcm_t *rtcm,int i);
 extern int decode_cssr_msg(rtcm_t *rtcm, int head, uint8_t *frame);
+extern int read_grid_def(rtcm_t *rtcm, const char *gridfile);
+
+/* qzsl6 */
+extern int input_l6msgf(rtcm_t *rtcm,FILE *fp);
+extern int input_l6msgsf(rtcm_t *rtcm,FILE *fp);
+extern int l6msg2rtcm(rtcm_t *rtcm,int i0,uint8_t *buff);
 
 #ifdef __cplusplus
 }

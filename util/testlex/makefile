@@ -8,13 +8,15 @@ LDFLAGS= -lm -lrt
 SRCS = rtkcmn.c preceph.c rtcm.c rtcm2.c rtcm3.c rtcm3e.c cssr.c qzsl6.c
 OBJS = $(SRCS:.c=.o)
 
-all        : dumpssr convlex dumpqzsl6
+all        : dumpssr dumpqzsl6 l6msg2rtcm
 
 dumpssr    : dumpssr.o $(OBJS)
 
 dumpqzsl6    : dumpqzsl6.o $(OBJS)
 
-convlex    : convlex.o $(OBJS)
+l6msg2rtcm    : l6msg2rtcm.o $(OBJS)
+
+#convlex    : convlex.o $(OBJS)
 
 %.o : $(SRC)/%.c
 	$(CC) -c $(CFLAGS)  -o $@ $<

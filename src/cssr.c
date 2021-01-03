@@ -225,7 +225,7 @@ static int decode_cssr_mask(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
 /* check if the buffer length is enough to decode the mask message */
 static int check_bit_width_mask(rtcm_t *rtcm, cssr_t *cssr, int i0)
 {
-	int k,i=i0,ngnss=0,cmi=0,nsig,nsat,n;
+	int k,i=i0+12,ngnss=0,cmi=0,nsig,nsat,n;
 	uint16_t sigmask;
 	uint64_t svmask;
 
@@ -254,7 +254,7 @@ static int check_bit_width_mask(rtcm_t *rtcm, cssr_t *cssr, int i0)
 static int decode_cssr_oc(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
 {
     int i,j,k,iod,sync,tow,ngnss,sat[CSSR_MAX_SV],nsat,iode;
-    int prn,sys,gnss=0;
+    int prn,sys;
     double udint;
     ssr_t *ssr=NULL;
 
@@ -298,7 +298,7 @@ static int decode_cssr_oc(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
 /* check if the buffer length is enough to decode the orbit correction message */
 static int check_bit_width_oc(rtcm_t *rtcm, cssr_t *cssr, int i0)
 {
-	int i=i0+25,k,sat[CSSR_MAX_SV],nsat,prn;
+	int i=i0+37,k,sat[CSSR_MAX_SV],nsat,prn;
 
 	if (i>rtcm->nbit) return -1;
 	nsat = svmask2sat(cssr->svmask,sat);
@@ -346,7 +346,7 @@ static int check_bit_width_cc(rtcm_t *rtcm, cssr_t *cssr, int i0)
     int nsat,nbit;
 
     nsat = svmask2sat(cssr->svmask,NULL);
-    nbit = 25+15*nsat;
+    nbit = 37+15*nsat;
     if (nbit+i0>rtcm->nbit) return -1;
     return nbit;
 }
@@ -462,7 +462,7 @@ static int decode_cssr_pb(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
 {
     int i,j,k,s,iod,sync,tow,ngnss,sat[CSSR_MAX_SV],nsat,prn,sys,sdc;
     int nsig[CSSR_MAX_SV];
-    uint8_t sig[CSSR_MAX_SV*CSSR_MAX_SIG];
+    static uint8_t sig[CSSR_MAX_SV*CSSR_MAX_SIG];
     double udint;
     ssr_t *ssr=NULL;
 
@@ -503,7 +503,7 @@ static int check_bit_width_cb(rtcm_t *rtcm, cssr_t *cssr, int i0)
     for (k=0;k<nsat;k++) {
     	nsig_total+=nsig[k];
     }
-    nbit = 25+nsig_total*11;
+    nbit = 37+nsig_total*11;
     if (i0+nbit>rtcm->nbit) return -1;
     return nbit;
 }
@@ -517,7 +517,7 @@ static int check_bit_width_pb(rtcm_t *rtcm, cssr_t *cssr, int i0)
     for (k=0;k<nsat;k++) {
     	nsig_total+=nsig[k];
     }
-    nbit=25+nsig_total*17;
+    nbit=37+nsig_total*17;
     if (i0+nbit>rtcm->nbit) return -1;
     return nbit;
 }
@@ -590,9 +590,11 @@ static int decode_cssr_bias(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
 /* check if the buffer length is sufficient to decode the bias message */
 static int check_bit_width_bias(rtcm_t *rtcm, cssr_t *cssr, int i0)
 {
-    int i=i0+25,k,nsat,slen=0,flg_cb,flg_pb,flg_net,netmask=0;
+    int i=i0+37,j,k,nsat,slen=0,flg_cb,flg_pb,flg_net,netmask=0;
+    static int sat[CSSR_MAX_SV],nsig[CSSR_MAX_SV];
 
-    nsat = svmask2sat(cssr->svmask,NULL);
+    nsat = svmask2sat(cssr->svmask,sat);
+    sigmask2sig(nsat,sat,cssr->sigmask,cssr->cellmask,nsig,NULL);
     if (i+3>rtcm->nbit) return -1;
 
     flg_cb = getbitu(rtcm->buff,i,1); i+=1;
@@ -610,8 +612,10 @@ static int check_bit_width_bias(rtcm_t *rtcm, cssr_t *cssr, int i0)
 
     for (k=0;k<nsat;k++) {
         if (flg_net && !((netmask>>(nsat-1-k))&1)) continue;
-        if (i+slen>rtcm->nbit) return -1;
-        i += slen;
+        for(j=0;j<nsig[k];j++) {
+        	if (i+slen>rtcm->nbit) return -1;
+        	i += slen;
+        }
     }
     return i-i0;
 }
@@ -651,7 +655,7 @@ static int check_bit_width_ura(rtcm_t *rtcm,cssr_t *cssr,int i0)
     int nsat,nbit;
 
     nsat = svmask2sat(cssr->svmask,NULL);
-    nbit=25+6*nsat;
+    nbit=37+6*nsat;
     if(i0+nbit>rtcm->nbit) return -1;
     return nbit;
 }
@@ -716,7 +720,7 @@ static int decode_cssr_stec(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
 /* check if the buffer length is sufficient to decode the stec message */
 static int check_bit_width_stec(rtcm_t *rtcm, cssr_t *cssr, int i0)
 {
-    int i=i0+25,j,sat[CSSR_MAX_SV],nsat,stec_type,slen=0,nsat_local=0;
+    int i=i0+37,j,sat[CSSR_MAX_SV],nsat,stec_type,slen=0,nsat_local=0;
     uint64_t net_svmask;
     const int slen_t[4] = {20,44,54,0};
 
@@ -852,7 +856,7 @@ static int decode_cssr_grid(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
 /* check if the buffer length is sufficient to decode the grid message */
 static int check_bit_width_grid(rtcm_t *rtcm, cssr_t *cssr, int i0)
 {
-    int i=i0+25,k,nsat,trop_type,ngp,sz_trop,sz_idx,sz_stec,nsat_local=0;
+    int i=i0+37,k,nsat,trop_type,ngp,sz_trop,sz_idx,sz_stec,nsat_local=0;
     uint64_t net_svmask;
 
     nsat = svmask2sat(cssr->svmask,NULL);
@@ -948,7 +952,7 @@ static int decode_cssr_combo(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
 /* check if the buffer length is sufficient to decode the orbit/clock combined message */
 static int check_bit_width_combo(rtcm_t *rtcm, cssr_t *cssr, int i0)
 {
-    int i=i0+25,sat[CSSR_MAX_SV],nsat,j,flg_orbit,flg_clock,flg_net,sz;
+    int i=i0+37,sat[CSSR_MAX_SV],nsat,j,flg_orbit,flg_clock,flg_net,sz;
     uint64_t net_svmask=0;
 
     nsat = svmask2sat(cssr->svmask,sat);
@@ -1054,11 +1058,6 @@ static int decode_cssr_atmos(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
             	atmos->trop_wet[j] += trop_ofst;
             	atmos->trop_total[j] += atmos->trop_wet[j];
             }
-#if 0
-            add_grid_idx(nav, ssrg->gp[j].pos, ofst);
-            add_data_trop(nav->zwd+ofst, rtcm->time,
-                ssrg->trop_wet[j], ssrg->trop_total[j], ssrg->quality, 0, valid);
-#endif
             trace(4, "decode_cssr_atmos: net=%2d, tow=%d, quality=%.3f, grid=%2d, pos=%.3f %.3f %.3f, total=%.3f, wet=%.3f\n",
                 atmos->inet,tow,atmos->trop_quality,j,atmos->pos[j][0],atmos->pos[j][1],
 				atmos->pos[j][2],atmos->trop_total[j],atmos->trop_wet[j]);
@@ -1123,10 +1122,6 @@ static int decode_cssr_atmos(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
 
                 atmos->sat[k][s] = sat[j];
                 atmos->nsat[k]++;
-#if 0
-                add_data_stec(nav->stec+ofst,rtcm->time,ssrg->sat[k][s],
-                    0,iono,0.0,0,quality);
-#endif
                 trace(4,"decode_cssr_atmos: net=%2d, tow=%8d, sys=%2d, prn=%3d, quality=%.3f, grid=%2d, stec=%8.3f\n",
                     inet,tow,sys,prn,atmos->stec_quality[s],k,atmos->stec[k][s]);
             }
@@ -1144,15 +1139,14 @@ static int decode_cssr_atmos(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
 /* check if the buffer length is sufficient to decode the atmospheric correction message */
 static int check_bit_width_atmos(rtcm_t *rtcm, cssr_t *cssr, int i0)
 {
-    int i=i0+4,flg_trop,flg_stec,trop_type,stec_type,ngp,sz_idx,sz,j,nsat;
+    int i=i0+37,flg_trop,flg_stec,trop_type,stec_type,ngp,sz_idx,sz,j,nsat;
     uint64_t net_svmask;
     const int dstec_sz_t[4] = {4,4,5,7};
     const int trop_sz_t[3] = {9,23,30};
 	const int stec_sz_t[4] = {14,38,48,64};
     
     nsat = svmask2sat(cssr->svmask,NULL);
-    if (i+36>rtcm->nbit) return -1;
-    i+=21;
+    if (i+15>rtcm->nbit) return -1;
     flg_trop = getbitu(rtcm->buff,i,2); i+=2;
     flg_stec = getbitu(rtcm->buff,i,2); i+=2;
     i+=5;
@@ -1219,7 +1213,7 @@ static int decode_cssr_si(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
 /* check if the buffer length is sufficient to decode the service information message */
 static int check_bit_width_si(rtcm_t *rtcm, cssr_t *cssr, int i0)
 {
-	int i=i0+4,data_sz=0;
+	int i=i0+16,data_sz=0;
 	if (i+6>rtcm->nbit) return -1;
 	i+=4;
 	data_sz = getbitu(rtcm->buff,i,2); i+=2;
@@ -1282,46 +1276,46 @@ extern int decode_cssr(rtcm_t *rtcm, int i0, int head)
 
 extern int cssr_check_bitlen(rtcm_t *rtcm,int i0)
 {
-	int i=i0+12,subtype,nbit=0;
+	int i=i0,subtype,nbit=0;
     cssr_t *cssr = &_cssr;
-    subtype = getbitu(rtcm->buff,i,4);
+    subtype = getbitu(rtcm->buff,i+12,4);
 
 	switch (subtype) {
 		case CSSR_TYPE_MASK:
-			if ((nbit=check_bit_width_mask(rtcm,cssr,i))<0) return nbit;
+			nbit=check_bit_width_mask(rtcm,cssr,i);
 			break;
 		case CSSR_TYPE_OC:
-			if ((nbit=check_bit_width_oc(rtcm,cssr,i))<0) return nbit;
+			nbit=check_bit_width_oc(rtcm,cssr,i);
 			break;
 		case CSSR_TYPE_CC:
-			if ((nbit=check_bit_width_cc(rtcm,cssr,i))<0) return nbit;
+			nbit=check_bit_width_cc(rtcm,cssr,i);
 			break;
 		case CSSR_TYPE_CB:
-			if ((nbit=check_bit_width_cb(rtcm,cssr,i))<0) return nbit;
+			nbit=check_bit_width_cb(rtcm,cssr,i);
 			break;
 		case CSSR_TYPE_PB:
-			if ((nbit=check_bit_width_pb(rtcm,cssr,i))<0) return nbit;
+			nbit=check_bit_width_pb(rtcm,cssr,i);
 			break;
 		case CSSR_TYPE_BIAS:
-			if ((nbit=check_bit_width_bias(rtcm,cssr,i))<0) return nbit;
+			nbit=check_bit_width_bias(rtcm,cssr,i);
 			break;
 		case CSSR_TYPE_URA:
-			if ((nbit=check_bit_width_ura(rtcm,cssr,i))<0) return nbit;
+			nbit=check_bit_width_ura(rtcm,cssr,i);
 			break;
 		case CSSR_TYPE_STEC:
-			if ((nbit=check_bit_width_stec(rtcm,cssr,i))<0) return nbit;
+			nbit=check_bit_width_stec(rtcm,cssr,i);
 			break;
 		case CSSR_TYPE_GRID:
-			if ((nbit=check_bit_width_grid(rtcm,cssr,i))<0) return nbit;
+			nbit=check_bit_width_grid(rtcm,cssr,i);
 			break;
 		case CSSR_TYPE_OCC:
-			if ((nbit=check_bit_width_combo(rtcm,cssr,i))<0) return nbit;
+			nbit=check_bit_width_combo(rtcm,cssr,i);
 			break;
 		case CSSR_TYPE_ATMOS:
-			if ((nbit=check_bit_width_atmos(rtcm,cssr,i))<0) return nbit;
+			nbit=check_bit_width_atmos(rtcm,cssr,i);
 			break;
 		case CSSR_TYPE_SI:
-			if ((nbit=check_bit_width_si(rtcm,cssr,i))<0) return nbit;
+			nbit=check_bit_width_si(rtcm,cssr,i);
 			break;
 		default:
 			trace(2,"invalid subtype:%d nbit=%d\n",subtype,rtcm->nbit);
@@ -1369,5 +1363,50 @@ extern int decode_cssr_msg(rtcm_t *rtcm, int head, uint8_t *frame)
 
     return ret;
 }
+/* read list of grid position from ascii file */
+extern int read_grid_def(rtcm_t *rtcm, const char *gridfile)
+{
+	int gridsel=0 ;
+    int no;
+    double lat, lon, alt;
+    char buff[1024];
+    int inet,grid[CSSR_MAX_NETWORK]={0,},ret;
+    atmos_t *atmos=rtcm->atmos;
+    FILE *fp=NULL;
 
+    for (inet=0;inet<CSSR_MAX_NETWORK;inet++) {
+        atmos[inet].pos[0][0] = -1.0;
+        atmos[inet].pos[0][1] = -1.0;
+        atmos[inet].pos[0][2] = -1.0;
+    }
+
+    trace(4, "read_grid_def(): gridfile=%s\n", gridfile);
+    if(!(fp=fopen(gridfile,"r"))) return -1;
+
+    while (fgets(buff, sizeof(buff), fp)) {
+    	if (strstr(buff, "Compact Network ID    GRID No.  Latitude     Longitude   Ellipsoidal height")) {
+            gridsel = 3;
+            trace(3, "grid definition: IS attached file version%d\n", gridsel);
+            break;
+		} else {
+            trace(1, "grid definition: invalid format%d\n", gridsel);
+            return -1;
+		}
+    }
+	while ((ret=fscanf(fp, "%d %d %lf %lf %lf", &inet, &no, &lat, &lon, &alt)) != EOF ) {
+		if (inet>=0 && inet<CSSR_MAX_NETWORK && ret==5) {
+			atmos[inet].pos[grid[inet]][0] = lat;
+			atmos[inet].pos[grid[inet]][1] = lon;
+			atmos[inet].pos[grid[inet]][2] = alt;
+			grid[inet]++;
+			atmos[inet].pos[grid[inet]][0] = -1.0;
+			atmos[inet].pos[grid[inet]][1] = -1.0;
+			atmos[inet].pos[grid[inet]][2] = -1.0;
+		}
+		trace(4, "grid_info: %2d, %2d, %10.3f, %10.3f, %8.3f\n",
+				ret,inet,no,lat,lon,alt);
+	}
+    fclose(fp);
+    return 0;
+}
 
