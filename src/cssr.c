@@ -1071,13 +1071,12 @@ static int decode_cssr_si(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
 		cssr->si_data[j0+j] = (uint64_t)getbitu(rtcm->buff,i,8)<<32; i+=8;
 		cssr->si_data[j0+j] |= getbitu(rtcm->buff,i,32); i+=32;
 	}
-	if (sync==0 && cssr->flg_cssr_si == (1<<cssr->si_cnt)-1) {
+	if (sync==0 && cssr->flg_cssr_si==(1<<cssr->si_cnt)-1) {
 		/* decode SI */
 		cssr->flg_cssr_si = 0;
 	}
     return sync ? 0:10;
 }
-
 /* check if the buffer length is sufficient to decode the service information message */
 static int check_bit_width_si(rtcm_t *rtcm, cssr_t *cssr, int i0)
 {
@@ -1089,7 +1088,6 @@ static int check_bit_width_si(rtcm_t *rtcm, cssr_t *cssr, int i0)
     if (i>rtcm->nbit) return -1;
     return i-i0;
 }
-
 /* decode type 4073: Melco proprietary messages */
 extern int decode_cssr(rtcm_t *rtcm, int i0, int head)
 {
@@ -1141,7 +1139,6 @@ extern int decode_cssr(rtcm_t *rtcm, int i0, int head)
     }
     return ret;
 }
-
 /* check message length of CSSR */
 extern int cssr_check_bitlen(rtcm_t *rtcm,int i0)
 {
@@ -1196,46 +1193,6 @@ extern int cssr_check_bitlen(rtcm_t *rtcm,int i0)
 			return -1;
 	}
 	return nbit;
-}
-
-extern int decode_cssr_msg(rtcm_t *rtcm, int head, uint8_t *frame)
-{
-    cssr_t *cssr = &_cssr;
-    int startbit,week,type,subtype;
-    int i,blen=0,ret=0;
-    double tow;
-
-    if (*frame==0x00 || rtcm->nbit==-1) {
-        return 0;
-    }
-
-    i = startbit = cssr->nbit;
-    if (i+16>rtcm->nbit) return 0;
-    type = getbitu(rtcm->buff,i,12);
-    if (type != 4073) {
-        trace(4, "cssr: type mismatch: frame=%02x, rtcm-nbit=%d, cssr-nbit=%d\n",
-        		*frame,rtcm->nbit,cssr->nbit);
-        *frame = 0;
-        return 0;
-    }
-    subtype = getbitu(rtcm->buff,i+12,4);
-    if ((blen=cssr_check_bitlen(rtcm,i))<0) return 0;
-    i+=16;
-
-    tow = time2gpst(timeget(), &week);
-    trace(4, "cssr: frame=%02x, type=%d, subtype=%d, week=%d, tow=%.2f blen=%d rtcm-nbit=%d nbit=%d\n",
-    		*frame,type,subtype,week,tow,blen,rtcm->nbit,cssr->nbit);
-
-    ret=decode_cssr(rtcm,cssr->nbit,0);
-
-    if (ret==-1) {
-    	cssr->nbit=0;
-    	cssr->iod=-1;
-    	*frame=0;
-    	return 0;
-    }
-
-    return ret;
 }
 /* read list of grid position from ascii file */
 extern int read_grid_def(rtcm_t *rtcm, const char *gridfile)
