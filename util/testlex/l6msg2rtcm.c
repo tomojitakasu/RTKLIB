@@ -22,7 +22,7 @@ static void convl6msg(FILE *fp, FILE *fpout)
         i=0;
         while ((nbit=l6msg2rtcm(rtcm,i,buff))) { /* convert to RTCM3 */
         	n=(nbit+7)/8;
-        	fwrite(buff,1,n,fpout);
+        	fwrite(buff,1,n+6,fpout); /* rtcm-header(3)+message(n)+cs(3) */
         	i+=nbit;
         }
     }

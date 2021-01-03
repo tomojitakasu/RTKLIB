@@ -27,8 +27,11 @@ install:
 clean:
 	rm -f *.o *.stackdump *.trace *.out *.exe
 
-DIR1=../lexdata
-DIR2=../lexerrdata
-
 test1:
-	./convlex 2020366A.l6 -o 2020366A.txt
+	./l6msg2rtcm 2020366A.l6 -o 2020366A.rtcm3
+	./dumpqzsl6 2020366A.l6
+
+test2:
+	./dumpssr -x 4 2020366A.rtcm3
+
+
