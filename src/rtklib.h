@@ -488,6 +488,9 @@ extern "C" {
 #define P2_5        0.03125             /* 2^-5 */
 #define P2_6        0.015625            /* 2^-6 */
 #define P2_11       4.882812500000000E-04 /* 2^-11 */
+#define P2_12       2.441406250000000E-04 /* 2^-12 */
+#define P2_13       1.220703125000000E-04 /* 2^-13 */
+#define P2_14       6.103515625000000E-05 /* 2^-14 */
 #define P2_15       3.051757812500000E-05 /* 2^-15 */
 #define P2_17       7.629394531250000E-06 /* 2^-17 */
 #define P2_19       1.907348632812500E-06 /* 2^-19 */
@@ -509,6 +512,9 @@ extern "C" {
 #define P2_48       3.552713678800501E-15 /* 2^-48 */
 #define P2_50       8.881784197001252E-16 /* 2^-50 */
 #define P2_55       2.775557561562891E-17 /* 2^-55 */
+
+#define RTCM_SSR_VTEC_MAX_LAYER       4
+#define RTCM_SSR_VTEC_MAX_DEG         16
 
 #ifdef WIN32
 #define thread_t    HANDLE
@@ -732,7 +738,7 @@ typedef struct {        /* SBAS satellite correction type */
 } sbssatp_t;
 
 typedef struct {        /* SBAS satellite corrections type */
-    int iodp;           /* IODP (issue of date mask) */
+    int iodp;           /* IODP (issue of data mask) */
     int nsat;           /* number of satellites */
     int tlat;           /* system latency (s) */
     sbssatp_t sat[MAXSAT]; /* satellite correction */
@@ -889,6 +895,45 @@ typedef struct {        /* solution status buffer type */
     solstat_t *data;    /* solution status data */
 } solstatbuf_t;
 
+#define RTCM_SSR_MAX_GP	64
+#define RTCM_SSR_MAX_SAT 32
+#define RTCM_SSR_MAX_NET 32
+#define RTCM_SSR_MAX_SIG	16
+
+#define RTCM_SSR_VTEC_MAX_LAYER	4
+#define RTCM_SSR_VTEC_MAX_DEG 16
+
+typedef struct {		/* ssr atmospheric correction */
+	int inet;
+	gtime_t time;
+	float udi;
+	uint8_t iod;
+	uint8_t stec_model;
+	uint8_t nlayer;
+	float trop_quality;
+	float stec_quality[RTCM_SSR_MAX_SAT];
+	uint8_t smode[RTCM_SSR_MAX_SAT][RTCM_SSR_MAX_SIG];
+	float pbias[RTCM_SSR_MAX_SAT][RTCM_SSR_MAX_SIG];
+	uint8_t polytype[2];
+	uint8_t ng;	/* number of grids */
+	float pos[RTCM_SSR_MAX_GP][3];
+	float trop_total[RTCM_SSR_MAX_GP];
+	float trop_wet[RTCM_SSR_MAX_GP];
+	uint8_t nsat[RTCM_SSR_MAX_GP];
+	uint8_t sat[RTCM_SSR_MAX_GP][RTCM_SSR_MAX_SAT];
+	uint8_t flag[RTCM_SSR_MAX_SAT];
+	uint8_t nrefs;
+	float stec[RTCM_SSR_MAX_GP][RTCM_SSR_MAX_SAT];
+	float s0c[RTCM_SSR_MAX_GP][RTCM_SSR_MAX_SAT];
+	float s0d[RTCM_SSR_MAX_GP][RTCM_SSR_MAX_SAT];
+	float s0h[RTCM_SSR_MAX_GP][RTCM_SSR_MAX_SAT];
+	float sic[RTCM_SSR_MAX_GP][RTCM_SSR_MAX_SAT];
+	float sid[RTCM_SSR_MAX_GP][RTCM_SSR_MAX_SAT];
+	float ai[RTCM_SSR_MAX_SAT][10];
+	float at[10];
+	uint8_t update;
+} atmos_t;
+
 typedef struct {        /* RTCM control struct type */
     int staid;          /* station id */
     int stah;           /* station health */
@@ -901,6 +946,7 @@ typedef struct {        /* RTCM control struct type */
     sta_t sta;          /* station parameters */
     dgps_t *dgps;       /* output of dgps corrections */
     ssr_t ssr[MAXSAT];  /* output of ssr corrections */
+    atmos_t atmos[RTCM_SSR_MAX_NET];		/* ssr atmospheric correction */
     char msg[128];      /* special message */
     char msgtype[256];  /* last message type */
     char msmtype[7][128]; /* msm signal types */
@@ -1780,6 +1826,16 @@ EXPORT void gis_free(gis_t *gis);
 extern int showmsg(const char *format,...);
 extern void settspan(gtime_t ts, gtime_t te);
 extern void settime(gtime_t time);
+
+/* cssr */
+extern int decode_cssr(rtcm_t *rtcm, int i0, int head);
+extern int cssr_check_bitlen(rtcm_t *rtcm,int i);
+extern int decode_cssr_msg(rtcm_t *rtcm, int head, uint8_t *frame);
+extern int read_grid_def(rtcm_t *rtcm, const char *gridfile);
+
+/* qzsl6 */
+extern int input_l6msgsf(rtcm_t *rtcm,int sf,FILE *fp);
+extern int l6msg2rtcm(rtcm_t *rtcm,int i0,uint8_t *buff);
 
 #ifdef __cplusplus
 }
