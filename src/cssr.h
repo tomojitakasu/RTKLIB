@@ -43,6 +43,8 @@
 
 #define CSSR_TYPE_NUM   14
 
+/* Compact SSR messages */
+#define CSSR_TYPE_TEST  0
 #define CSSR_TYPE_MASK  1
 #define CSSR_TYPE_OC    2
 #define CSSR_TYPE_CC    3
@@ -56,14 +58,17 @@
 #define CSSR_TYPE_OCC   11
 #define CSSR_TYPE_ATMOS 12
 
-#define CSSR_TYPE_TEST 15
-#define CSSR_SUBTYPE_AUTH 1
+/* Service Information */
+#define CSSR_SUBTYPE_SERVICE    1
+#define CSSR_SUBTYPE_OPINFO        2
+#define CSSR_SUBTYPE_GRID        3
+#define CSSR_SUBTYPE_COORDINATE    4
 
 #define CSSR_TYPE_INIT  254
 #define CSSR_TYPE_NULL  255
 
-#define CSSR_SI_GRID 	3
-#define CSSR_SI_COORD	4
+#define CSSR_SI_GRID     3
+#define CSSR_SI_COORD    4
 
 #define P2_S16_MAX 32767
 #define P2_S15_MAX 16383
@@ -80,29 +85,29 @@
 #define CSSR_TROP_HS_REF    2.3
 #define CSSR_TROP_WET_REF   0.252
 
-#define CSSR_UPDATE_TROP	0
-#define CSSR_UPDATE_STEC	1
-#define CSSR_UPDATE_PBIAS	2
+#define CSSR_UPDATE_TROP    0
+#define CSSR_UPDATE_STEC    1
+#define CSSR_UPDATE_PBIAS    2
 
 #define INVALID_VALUE -10000
 
 #define CSSR_BIAS_CBIAS 1
 #define CSSR_BIAS_PBIAS 2
 
-#define CSSR_CTYPE_MASK		1
-#define CSSR_CTYPE_OC		2
-#define CSSR_CTYPE_CC		4
-#define CSSR_CTYPE_BIAS		8
-#define CSSR_CTYPE_STEC		16
-#define CSSR_CTYPE_GRID		32
-#define CSSR_CTYPE_ATM		64
-#define CSSR_CTYPE_OCC		128
+#define CSSR_CTYPE_MASK        1
+#define CSSR_CTYPE_OC        2
+#define CSSR_CTYPE_CC        4
+#define CSSR_CTYPE_BIAS        8
+#define CSSR_CTYPE_STEC        16
+#define CSSR_CTYPE_GRID        32
+#define CSSR_CTYPE_ATM        64
+#define CSSR_CTYPE_OCC        128
 
 #define CSSR_AUTH_OTAR_MAX 64
 
 typedef struct {
-	int msgno;
-	float udint[16];
+    int msgno;
+    float udint[16];
     uint8_t stec_type;
     uint8_t trop_type;
     uint8_t ocb_avail[3];
@@ -147,71 +152,71 @@ typedef struct {
 } ssrn_t;
 
 typedef struct {
-	uint8_t aid;
-	uint8_t fpart;
-	uint8_t npart;
-	uint8_t pid;
-	uint8_t type;
-	uint8_t ngrid;
-	double lat0;
-	double lon0;
-	float slat;
-	float slon;
-	float dlat[CSSR_MAX_GP];
-	float dlon[CSSR_MAX_GP];
-	uint8_t ncount[2];
-	uint8_t fmask;
-	uint64_t mask;
-	uint8_t size[CSSR_MAX_NETWORK];
+    uint8_t aid;
+    uint8_t fpart;
+    uint8_t npart;
+    uint8_t pid;
+    uint8_t type;
+    uint8_t ngrid;
+    double lat0;
+    double lon0;
+    float slat;
+    float slon;
+    float dlat[CSSR_MAX_GP];
+    float dlon[CSSR_MAX_GP];
+    uint8_t ncount[2];
+    uint8_t fmask;
+    uint64_t mask;
+    uint8_t size[CSSR_MAX_NETWORK];
 } cssr_si_grid_t;
 
 typedef struct {
-	uint8_t iod;
-	uint8_t narea;
-	cssr_si_grid_t grd[CSSR_MAX_NETWORK];
-	uint8_t np[CSSR_MAX_NETWORK];
+    uint8_t iod;
+    uint8_t narea;
+    cssr_si_grid_t grd[CSSR_MAX_NETWORK];
+    uint8_t np[CSSR_MAX_NETWORK];
 } cssr_si_area_t;
 
 typedef struct {
-	uint8_t aid;
-	uint8_t avail_f[3];
-	uint8_t avail_g[3];
-	uint8_t f_type[3];
-	uint8_t grid_type[CSSR_MAX_NETWORK];
-	uint8_t aid_custom[CSSR_MAX_NETWORK];
-	uint8_t ngrid[CSSR_MAX_NETWORK];
-	uint8_t sz_grid[CSSR_MAX_NETWORK];
-	double c[CSSR_MAX_NETWORK][5];
-	double d[CSSR_MAX_NETWORK][CSSR_MAX_GP];
+    uint8_t aid;
+    uint8_t avail_f[3];
+    uint8_t avail_g[3];
+    uint8_t f_type[3];
+    uint8_t grid_type[CSSR_MAX_NETWORK];
+    uint8_t aid_custom[CSSR_MAX_NETWORK];
+    uint8_t ngrid[CSSR_MAX_NETWORK];
+    uint8_t sz_grid[CSSR_MAX_NETWORK];
+    double c[CSSR_MAX_NETWORK][5];
+    double d[CSSR_MAX_NETWORK][CSSR_MAX_GP];
 } cssr_si_trans_t;
 
 
 typedef struct {
-	uint8_t type;
-	uint8_t iod;
-	uint8_t src_id;
-	uint8_t dst_id;
-	uint8_t avail_hv;
-	uint16_t ref_week;
-	uint8_t narea;
-	cssr_si_trans_t f[CSSR_MAX_NETWORK];
+    uint8_t type;
+    uint8_t iod;
+    uint8_t src_id;
+    uint8_t dst_id;
+    uint8_t avail_hv;
+    uint16_t ref_week;
+    uint8_t narea;
+    cssr_si_trans_t f[CSSR_MAX_NETWORK];
 } cssr_si_ct_t;
 
 typedef struct {
-	uint8_t type;
-	uint8_t iod;
-	cssr_si_area_t area;
-	cssr_si_ct_t ct;
-	int nbit;
-	uint8_t buff[512];
+    uint8_t type;
+    uint8_t iod;
+    cssr_si_area_t area;
+    cssr_si_ct_t ct;
+    int nbit;
+    uint8_t buff[512];
 } cssr_si_t;
 
 typedef struct {
-	uint8_t num_msg;
-	uint8_t hmac[10];
-	uint8_t key_hmac[128];
-	uint8_t otar_counter;
-	uint8_t otar[CSSR_AUTH_OTAR_MAX];
+    uint8_t num_msg;
+    uint8_t hmac[10];
+    uint8_t key_hmac[128];
+    uint8_t otar_counter;
+    uint8_t otar[CSSR_AUTH_OTAR_MAX];
 } cssr_auth_t;
 
 typedef struct {
@@ -245,30 +250,30 @@ typedef struct {
     int l6delivery;
     int l6facility;
     int si_cnt;
-    int si_sz;
+    uint8_t si_sz[8];
     uint8_t flg_cssr_si;
-    uint64_t si_data[4];
-	ssrn_t ssrn[CSSR_MAX_NET];
-	uint8_t idx[CSSR_MAX_GNSS][CSSR_MAX_LOCAL_SV];
-	cssr_si_t si;
-	cssr_auth_t auth;
+    uint8_t si_data[160];
+    ssrn_t ssrn[CSSR_MAX_NET];
+    uint8_t idx[CSSR_MAX_GNSS][CSSR_MAX_LOCAL_SV];
+    cssr_si_t si;
+    cssr_auth_t auth;
 } cssr_t;
 
-#define CSSR_OTYPE_RTCM3	1
-#define CSSR_OTYPE_L6		2
+#define CSSR_OTYPE_RTCM3    1
+#define CSSR_OTYPE_L6        2
 
-#define L6MSG_LENGTH 	256
-#define LEN_L6MSG_DATA	1695
+#define L6MSG_LENGTH     256
+#define LEN_L6MSG_DATA    1695
 
 typedef struct {
-	uint8_t alert;
-	uint8_t prn;
-	uint8_t type;
-	uint8_t vendor_id;
-	uint8_t facility_id;
-	uint8_t subframe_length;
-	int nbit;
-	uint8_t msg[250];
+    uint8_t alert;
+    uint8_t prn;
+    uint8_t type;
+    uint8_t vendor_id;
+    uint8_t facility_id;
+    uint8_t subframe_length;
+    int nbit;
+    uint8_t msg[250];
 } l6msg_t;
 
 #endif /* CSSR_H */

@@ -29,9 +29,9 @@ static const double ssrudint[16]={
 
 static double decode_sval(unsigned char *buff, int i, int n, double lsb)
 {
-	int slim=-((1<<(n-1))-1)-1,v;
-	v = getbits(buff,i,n);
-	return (v==slim) ? INVALID_VALUE:(double)v*lsb;
+    int slim=-((1<<(n-1))-1)-1,v;
+    v = getbits(buff,i,n);
+    return (v==slim) ? INVALID_VALUE:(double)v*lsb;
 }
 
 static int sys2gnss(int sys, int *prn_min)
@@ -73,9 +73,9 @@ static int svmask2nsat(uint64_t svmask)
 {
     int j,nsat=0;
     for (j=0;j<CSSR_MAX_SV_GNSS;j++) {
-    	if ((svmask>>(CSSR_MAX_SV_GNSS-1-j))&1) {
-    		nsat++;
-    	}
+        if ((svmask>>(CSSR_MAX_SV_GNSS-1-j))&1) {
+            nsat++;
+        }
     }
     return nsat;
 }
@@ -114,9 +114,9 @@ static int svmask2sat(uint64_t *svmask,int *sat)
         sys = gnss2sys(id, &prn_min);
         for (j=0;j<CSSR_MAX_SV_GNSS;j++) {
             if ((svmask[id]>>(CSSR_MAX_SV_GNSS-1-j))&1) {
-            	if (sat)
-            		sat[nsat] = satno(sys,prn_min+j);
-            	nsat++;
+                if (sat)
+                    sat[nsat] = satno(sys,prn_min+j);
+                nsat++;
             }
         }
     }
@@ -139,10 +139,14 @@ static float decode_cssr_quality(uint8_t a, uint8_t b)
 
 /* decode cssr message header */
 static int decode_cssr_head(rtcm_t *rtcm, cssr_t *cssr, int *sync, int *tow,
-       int *iod, int *iod_sv, double *udint, int *ngnss, int i0, int header)
+       int *iod, int *iod_sv, double *udint, int *ngnss, int i0)
 {
-    int i=i0,udi,subtype;
-    subtype = getbitu(rtcm->buff,i,4); i+=4;
+    int i=i0,udi,type,subtype=0;
+
+    type = getbitu(rtcm->buff,i,12); i+=12;
+    if (type==4073) {
+        subtype = getbitu(rtcm->buff,i,4); i+=4;
+    }
     if (subtype ==  CSSR_TYPE_MASK) {
         *tow = getbitu(rtcm->buff,i,20); i+=20; /* gps epoch time */
     } else {
@@ -157,20 +161,20 @@ static int decode_cssr_head(rtcm_t *rtcm, cssr_t *cssr, int *sync, int *tow,
         cssr->iod = *iod;
         *ngnss = getbitu(rtcm->buff,i, 4); i+= 4; /* number of gnss */
     } else {
-    	if (cssr->iod!=*iod) {
-    		trace(4,"decode_cssr_head: iod mismatch subtype=%d epoch=%4d\n",subtype,*tow);
-    		return -1;
-    	}
+        if (cssr->iod!=*iod) {
+            trace(4,"decode_cssr_head: iod mismatch subtype=%d epoch=%4d\n",subtype,*tow);
+            return -1;
+        }
     }
     return i;
 }
 
 /* decode mask message */
-static int decode_cssr_mask(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
+static int decode_cssr_mask(rtcm_t *rtcm, cssr_t *cssr, int i0)
 {
     int i,j,k,sync,tow,iod,nsat_g=0,id,nsig,ncell=0,sat[CSSR_MAX_SV];
     double udint;
-    i = decode_cssr_head(rtcm,cssr,&sync,&tow,&iod,NULL,&udint,&cssr->ngnss,i0,header);
+    i = decode_cssr_head(rtcm,cssr,&sync,&tow,&iod,NULL,&udint,&cssr->ngnss,i0);
     cssr->tow0 = floor(tow/3600.0)*3600.0;
     rtcm->time = gpst2time(cssr->week,tow);
     for (j=0;j<CSSR_MAX_GNSS;j++) {
@@ -192,11 +196,11 @@ static int decode_cssr_mask(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
         nsig = sigmask2nsig(cssr->sigmask[id]);
         nsat_g = svmask2nsatlist(cssr->svmask[id], id, sat);
         for (j=0;j<nsat_g;j++) {
-        	if (cssr->cmi[id]) {
-        		cssr->cellmask[ncell] = getbitu(rtcm->buff,i,nsig); i+=nsig;
-        	} else {
-        		cssr->cellmask[ncell] = (1<<nsig)-1;
-        	}
+            if (cssr->cmi[id]) {
+                cssr->cellmask[ncell] = getbitu(rtcm->buff,i,nsig); i+=nsig;
+            } else {
+                cssr->cellmask[ncell] = (1<<nsig)-1;
+            }
             ncell++;
         }
     }
@@ -207,45 +211,45 @@ static int decode_cssr_mask(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
 /* check if the buffer length is enough to decode the mask message */
 static int check_bit_width_mask(rtcm_t *rtcm, cssr_t *cssr, int i0)
 {
-	int k,i=i0+12,ngnss=0,cmi=0,nsig,nsat,n;
-	uint16_t sigmask;
-	uint64_t svmask;
-	if (i+37>rtcm->nbit) return -1;
-	i+=33;
-	ngnss = getbitu(rtcm->buff,i,4); i+=4;
-	for (k=0;k<ngnss;k++) {
-		if (i+61>rtcm->nbit) return -1;
-		i+=4;
-		svmask = (uint64_t)getbitu(rtcm->buff,i,8)<<32; i+=8;
-		svmask |= (uint64_t)getbitu(rtcm->buff,i,32); i+=32;
-		sigmask = getbitu(rtcm->buff,i,16); i+=16;
-		nsat=svmask2nsat(svmask);
-		nsig=sigmask2nsig(sigmask);
-		cmi = getbitu(rtcm->buff,i,1); i++;
-		if (cmi) {
-			n=nsat*nsig;
-			if (i+n>rtcm->nbit||n>128) return -1;
-			i+=nsat*nsig;
-		}
-	}
+    int k,i=i0+12,ngnss=0,cmi=0,nsig,nsat,n;
+    uint16_t sigmask;
+    uint64_t svmask;
+    if (i+37>rtcm->nbit) return -1;
+    i+=33;
+    ngnss = getbitu(rtcm->buff,i,4); i+=4;
+    for (k=0;k<ngnss;k++) {
+        if (i+61>rtcm->nbit) return -1;
+        i+=4;
+        svmask = (uint64_t)getbitu(rtcm->buff,i,8)<<32; i+=8;
+        svmask |= (uint64_t)getbitu(rtcm->buff,i,32); i+=32;
+        sigmask = getbitu(rtcm->buff,i,16); i+=16;
+        nsat=svmask2nsat(svmask);
+        nsig=sigmask2nsig(sigmask);
+        cmi = getbitu(rtcm->buff,i,1); i++;
+        if (cmi) {
+            n=nsat*nsig;
+            if (i+n>rtcm->nbit||n>128) return -1;
+            i+=nsat*nsig;
+        }
+    }
     return i-i0;
 }
 
 /* decode orbit correction */
-static int decode_cssr_oc(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
+static int decode_cssr_oc(rtcm_t *rtcm, cssr_t *cssr, int i0)
 {
     int i,j,k,iod,sync,tow,ngnss,sat[CSSR_MAX_SV],nsat,iode;
     int prn,sys;
     double udint;
     ssr_t *ssr=NULL;
-    if ((i=decode_cssr_head(rtcm,cssr,&sync,&tow,&iod,NULL,&udint,&ngnss,i0,header))<0)
-    	return -1;
+    if ((i=decode_cssr_head(rtcm,cssr,&sync,&tow,&iod,NULL,&udint,&ngnss,i0))<0)
+        return -1;
     nsat = svmask2sat(cssr->svmask,sat);
     rtcm->time = gpst2time(cssr->week,tow);
     trace(3,"decode_cssr_oc:   sync=%d tow=%d iod=%d\n",sync,tow,iod);
     for (j=0;j<nsat;j++) {
-    	ssr = &rtcm->ssr[sat[j]-1];
-    	sys=satsys(sat[j],&prn);
+        ssr = &rtcm->ssr[sat[j]-1];
+        sys=satsys(sat[j],&prn);
         if (sys==SYS_GAL) {
             iode = getbitu(rtcm->buff,i,10); i+=10; /* iode */
         } else {
@@ -262,7 +266,7 @@ static int decode_cssr_oc(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
         for (k=0;k<3;k++) ssr->ddeph[k]=0.0;
         ssr->update=1;
         trace(4, "ssr orbit: sys=%2d, prn=%3d, tow=%d, udi=%.1f, iod=%2d, orb=%10.4f,%10.4f,%10.4f\n",
-        		sys,prn,tow,udint,cssr->iod,ssr->deph[0],ssr->deph[1],ssr->deph[2]);
+                sys,prn,tow,udint,cssr->iod,ssr->deph[0],ssr->deph[1],ssr->deph[2]);
     }
     cssr->nbit = i;
     return sync ? 0:10;
@@ -271,29 +275,29 @@ static int decode_cssr_oc(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
 /* check if the buffer length is enough to decode the orbit correction message */
 static int check_bit_width_oc(rtcm_t *rtcm, cssr_t *cssr, int i0)
 {
-	int i=i0+37,k,sat[CSSR_MAX_SV],nsat,prn;
-	if (i>rtcm->nbit) return -1;
-	nsat = svmask2sat(cssr->svmask,sat);
-	for (k=0;k<nsat;k++) {
-		i+=(satsys(sat[k],&prn)==SYS_GAL)?51:49;
-		if (i>rtcm->nbit) return -1;
-	}
-	return i-i0;
+    int i=i0+37,k,sat[CSSR_MAX_SV],nsat,prn;
+    if (i>rtcm->nbit) return -1;
+    nsat = svmask2sat(cssr->svmask,sat);
+    for (k=0;k<nsat;k++) {
+        i+=(satsys(sat[k],&prn)==SYS_GAL)?51:49;
+        if (i>rtcm->nbit) return -1;
+    }
+    return i-i0;
 }
 
 /* decode clock correction */
-static int decode_cssr_cc(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
+static int decode_cssr_cc(rtcm_t *rtcm, cssr_t *cssr, int i0)
 {
     int i,j,iod,sync,tow,ngnss,sat[CSSR_MAX_SV],nsat,prn,sys;
     double udint;
     ssr_t *ssr=NULL;
-    if((i=decode_cssr_head(rtcm,cssr,&sync,&tow,&iod,NULL,&udint,&ngnss,i0,header))<0)
-    	return -1;
+    if((i=decode_cssr_head(rtcm,cssr,&sync,&tow,&iod,NULL,&udint,&ngnss,i0))<0)
+        return -1;
     rtcm->time = gpst2time(cssr->week, tow);
     nsat = svmask2sat(cssr->svmask,sat);
     trace(3,"decode_cssr_cc:   sync=%d tow=%d iod=%d\n",sync,tow,iod);
     for (j=0;j<nsat;j++) {
-    	ssr = &rtcm->ssr[sat[j]-1];
+        ssr = &rtcm->ssr[sat[j]-1];
         sys=satsys(sat[j], &prn);
         ssr->t0 [1]=rtcm->time;
         ssr->udi[1]=udint;
@@ -302,7 +306,7 @@ static int decode_cssr_cc(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
         ssr->dclk[1] = ssr->dclk[2] = 0.0;
         ssr->update=1;
         trace(4, "ssr clock: sys=%2d prn=%3d, tow=%d, udi=%.1f, iod=%2d, clk=%8.4f\n",
-        		sys,prn,tow,udint,cssr->iod,ssr->dclk[0]);
+                sys,prn,tow,udint,cssr->iod,ssr->dclk[0]);
     }
     cssr->nbit = i;
     return sync ? 0:10;
@@ -320,7 +324,7 @@ static int check_bit_width_cc(rtcm_t *rtcm, cssr_t *cssr, int i0)
 
 /* decode available signals from sigmask */
 static int sigmask2sig(int nsat, int *sat, uint16_t *sigmask,
-		uint16_t *cellmask, int *nsig, uint8_t *sig)
+        uint16_t *cellmask, int *nsig, uint8_t *sig)
 {
     int j,k,id,sys,sys_p=-1,ofst=0,nsig_s=0;
     uint8_t *codes=NULL,code[CSSR_MAX_SIG];
@@ -344,7 +348,7 @@ static int sigmask2sig(int nsat, int *sat, uint16_t *sigmask,
     const uint8_t codes_bds[CSSR_MAX_SIG]={
         CODE_L2I,CODE_L2Q,CODE_L2X,CODE_L6I,CODE_L6Q,CODE_L6X,
         CODE_L7I,CODE_L7Q,CODE_L7X,CODE_L1D,CODE_L1P,       0,
-		CODE_L5D,CODE_L5P
+        CODE_L5D,CODE_L5P
     };
     const uint8_t codes_sbs[CSSR_MAX_SIG]={
         CODE_L1C,CODE_L5I,CODE_L5Q,CODE_L5X
@@ -377,8 +381,8 @@ static int sigmask2sig(int nsat, int *sat, uint16_t *sigmask,
         sys_p = sys;
         for (k=0, nsig[j]=0;k<nsig_s;k++) {
             if ((cellmask[j]>>(nsig_s-1-k))&1) {
-            	if (sig)
-            		sig[j*CSSR_MAX_SIG+nsig[j]] = code[k];
+                if (sig)
+                    sig[j*CSSR_MAX_SIG+nsig[j]] = code[k];
                 nsig[j]++;
             }
         }
@@ -387,27 +391,27 @@ static int sigmask2sig(int nsat, int *sat, uint16_t *sigmask,
 }
 
 /* decode code bias message */
-static int decode_cssr_cb(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
+static int decode_cssr_cb(rtcm_t *rtcm, cssr_t *cssr, int i0)
 {
     int i,j,k,iod,s,sync,tow,ngnss,sat[CSSR_MAX_SV],nsat,prn,sys;
     int nsig[CSSR_MAX_SV];
     static uint8_t sig[CSSR_MAX_SV*CSSR_MAX_SIG];
     double udint;
     ssr_t *ssr=NULL;
-    if((i=decode_cssr_head(rtcm,cssr,&sync,&tow,&iod,NULL,&udint,&ngnss,i0,header))<0)
-    	return -1;
+    if((i=decode_cssr_head(rtcm,cssr,&sync,&tow,&iod,NULL,&udint,&ngnss,i0))<0)
+        return -1;
     rtcm->time=gpst2time(cssr->week,tow);
     nsat=svmask2sat(cssr->svmask,sat);
     sigmask2sig(nsat,sat,cssr->sigmask,cssr->cellmask,nsig,sig);
     trace(3,"decode_cssr_cb: sync=%d tow=%d iod=%d\n",sync,tow,iod);
     for (k=0;k<nsat;k++) {
-    	ssr=&rtcm->ssr[sat[k]-1];
+        ssr=&rtcm->ssr[sat[k]-1];
         sys=satsys(sat[k],&prn);
         for (j=0;j<nsig[k];j++) {
             if ((s=sig[k*CSSR_MAX_SIG+j])>0) {
-            	ssr->cbias[s-1]=decode_sval(rtcm->buff,i,11,0.02); i+=11;
-            	trace(4, "ssr cbias: sys=%2d prn=%3d, tow=%d, s=%2d, cbias=%8.2f\n",
-            			sys,prn,tow,s,ssr->cbias[s-1]);
+                ssr->cbias[s-1]=decode_sval(rtcm->buff,i,11,0.02); i+=11;
+                trace(4, "ssr cbias: sys=%2d prn=%3d, tow=%d, s=%2d, cbias=%8.2f\n",
+                        sys,prn,tow,s,ssr->cbias[s-1]);
             }
         }
         ssr->t0 [4]=rtcm->time;
@@ -420,28 +424,28 @@ static int decode_cssr_cb(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
 }
 
 /* decode phase bias message */
-static int decode_cssr_pb(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
+static int decode_cssr_pb(rtcm_t *rtcm, cssr_t *cssr, int i0)
 {
     int i,j,k,s,iod,sync,tow,ngnss,sat[CSSR_MAX_SV],nsat,prn,sys,sdc;
     int nsig[CSSR_MAX_SV];
     static uint8_t sig[CSSR_MAX_SV*CSSR_MAX_SIG];
     double udint;
     ssr_t *ssr=NULL;
-    if((i=decode_cssr_head(rtcm,cssr,&sync,&tow,&iod,NULL,&udint,&ngnss,i0,header))<0)
-    	return -1;
+    if((i=decode_cssr_head(rtcm,cssr,&sync,&tow,&iod,NULL,&udint,&ngnss,i0))<0)
+        return -1;
     rtcm->time = gpst2time(cssr->week, tow);
     nsat = svmask2sat(cssr->svmask,sat);
     sigmask2sig(nsat,sat,cssr->sigmask,cssr->cellmask,nsig,sig);
     trace(3,"decode_cssr_pb: sync=%d tow=%d iod=%d\n",sync,tow,iod);
     for (k=0;k<nsat;k++) {
-    	ssr = &rtcm->ssr[sat[k]-1];
+        ssr = &rtcm->ssr[sat[k]-1];
         sys = satsys(sat[k],&prn);
         for (j=0;j<nsig[k];j++) {
             s = sig[k*CSSR_MAX_SIG+j];
             ssr->pbias[s-1] = decode_sval(rtcm->buff,i,15,0.001); i+=15;
             sdc = getbitu(rtcm->buff,i,2); i+=2;
             trace(4, "ssr pbias: sys=%2d prn=%3d, tow=%d, s=%2d, pbias=%10.3f, disc=%d\n",
-            		sys,prn,tow,s,ssr->pbias[s-1],sdc);
+                    sys,prn,tow,s,ssr->pbias[s-1],sdc);
         }
         ssr->t0 [5]=rtcm->time;
         ssr->udi[5]=udint;
@@ -459,7 +463,7 @@ static int check_bit_width_cb(rtcm_t *rtcm, cssr_t *cssr, int i0)
     nsat = svmask2sat(cssr->svmask,sat);
     sigmask2sig(nsat,sat,cssr->sigmask,cssr->cellmask,nsig,NULL);
     for (k=0;k<nsat;k++) {
-    	nsig_total+=nsig[k];
+        nsig_total+=nsig[k];
     }
     nbit = 37+nsig_total*11;
     if (i0+nbit>rtcm->nbit) return -1;
@@ -472,7 +476,7 @@ static int check_bit_width_pb(rtcm_t *rtcm, cssr_t *cssr, int i0)
     nsat = svmask2sat(cssr->svmask,sat);
     sigmask2sig(nsat,sat,cssr->sigmask,cssr->cellmask,nsig,NULL);
     for (k=0;k<nsat;k++) {
-    	nsig_total+=nsig[k];
+        nsig_total+=nsig[k];
     }
     nbit=37+nsig_total*17;
     if (i0+nbit>rtcm->nbit) return -1;
@@ -480,15 +484,15 @@ static int check_bit_width_pb(rtcm_t *rtcm, cssr_t *cssr, int i0)
 }
 
 /* code bias correction */
-static int decode_cssr_bias(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
+static int decode_cssr_bias(rtcm_t *rtcm, cssr_t *cssr, int i0)
 {
     int i,j,k,iod,s,sync,tow,ngnss,sat[CSSR_MAX_SV],nsat,sdc;
     int nsig[CSSR_MAX_SV],flg_cb,flg_pb,flg_net,inet=0,netmask=0,prn,sys;
     uint8_t sig[CSSR_MAX_SV*CSSR_MAX_SIG];
     double udint;
     ssr_t *ssr=NULL;
-    if((i=decode_cssr_head(rtcm,cssr,&sync,&tow,&iod,NULL,&udint,&ngnss,i0,header))<0)
-    	return -1;
+    if((i=decode_cssr_head(rtcm,cssr,&sync,&tow,&iod,NULL,&udint,&ngnss,i0))<0)
+        return -1;
     rtcm->time = gpst2time(cssr->week, tow);
     flg_cb = getbitu(rtcm->buff,i,1); i+=1;
     flg_pb = getbitu(rtcm->buff,i,1); i+=1;
@@ -500,12 +504,12 @@ static int decode_cssr_bias(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
         netmask = getbitu(rtcm->buff,i,nsat); i+=nsat;
         rtcm->staid = inet;
     } else {
-    	rtcm->staid = 0;
+        rtcm->staid = 0;
     }
     trace(3,"decode_cssr_bias: sync=%d tow=%d iod=%d net=%d\n",sync,tow,iod,inet);
     for (k=0;k<nsat;k++) {
         if (flg_net&&(!((netmask>>(nsat-1-k)) & 1))) continue;
-    	ssr = &rtcm->ssr[sat[k]-1];
+        ssr = &rtcm->ssr[sat[k]-1];
         sys = satsys(sat[k],&prn);
         if (flg_cb) {
             ssr->t0 [4]=rtcm->time;
@@ -521,15 +525,15 @@ static int decode_cssr_bias(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
         for (j=0;j<nsig[k];j++) {
             s = sig[k*CSSR_MAX_SIG+j];
             if (flg_cb) { /* code bias */
-            	ssr->cbias[s-1] = decode_sval(rtcm->buff,i,11,0.02); i+=11;
+                ssr->cbias[s-1] = decode_sval(rtcm->buff,i,11,0.02); i+=11;
                 trace(4, "ssr cbias: sys=%2d,prn=%3d, tow=%8d, net=%2d, s=%2d, cbias=%6.2f\n",
-                		sys,prn,tow,inet,s,ssr->cbias[s-1]);
+                        sys,prn,tow,inet,s,ssr->cbias[s-1]);
             }
             if (flg_pb) { /* phase bias */
-            	ssr->pbias[s-1] = decode_sval(rtcm->buff,i,15,0.001); i+=15;
+                ssr->pbias[s-1] = decode_sval(rtcm->buff,i,15,0.001); i+=15;
                 sdc = getbitu(rtcm->buff, i, 2); i+= 2;
                 trace(4, "ssr pbias: sys=%2d,prn=%3d, tow=%8d, net=%2d, s=%2d, pbias=%8.3f, disc=%d\n",
-                		sys,prn,tow,inet,s,ssr->pbias[s-1],sdc);
+                        sys,prn,tow,inet,s,ssr->pbias[s-1],sdc);
             }
         }
     }
@@ -549,35 +553,35 @@ static int check_bit_width_bias(rtcm_t *rtcm, cssr_t *cssr, int i0)
     flg_pb = getbitu(rtcm->buff,i,1); i+=1;
     flg_net = getbitu(rtcm->buff,i,1); i+=1;
     if (flg_net) {
-    	if (i+5+nsat>rtcm->nbit) return -1;
-    	i+=5;
-    	netmask = getbitu(rtcm->buff,i,nsat); i+=nsat;
+        if (i+5+nsat>rtcm->nbit) return -1;
+        i+=5;
+        netmask = getbitu(rtcm->buff,i,nsat); i+=nsat;
     }
     if (flg_cb) slen+=11;
     if (flg_pb) slen+=17;
     for (k=0;k<nsat;k++) {
         if (flg_net && !((netmask>>(nsat-1-k))&1)) continue;
         for(j=0;j<nsig[k];j++) {
-        	if (i+slen>rtcm->nbit) return -1;
-        	i += slen;
+            if (i+slen>rtcm->nbit) return -1;
+            i += slen;
         }
     }
     return i-i0;
 }
 
 /* decode ura correction */
-static int decode_cssr_ura(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
+static int decode_cssr_ura(rtcm_t *rtcm, cssr_t *cssr, int i0)
 {
     int i,j,iod,sync,tow,ngnss,sat[CSSR_MAX_SV],nsat,sys,prn;
     double udint;
     ssr_t *ssr = NULL;
-    if((i=decode_cssr_head(rtcm,cssr,&sync,&tow,&iod,NULL,&udint,&ngnss,i0,header))<0)
-    	return -1;
+    if((i=decode_cssr_head(rtcm,cssr,&sync,&tow,&iod,NULL,&udint,&ngnss,i0))<0)
+        return -1;
     rtcm->time = gpst2time(cssr->week, tow);
     nsat = svmask2sat(cssr->svmask,sat);
     trace(3,"decode_cssr_ura: sync=%d tow=%d iod=%d\n",sync, tow, iod);
     for (j=0;j<nsat;j++) {
-    	ssr = &rtcm->ssr[sat[j]-1];
+        ssr = &rtcm->ssr[sat[j]-1];
         ssr->t0 [3]=rtcm->time;
         ssr->udi[3]=udint;
         ssr->iod[3]=iod;
@@ -585,7 +589,7 @@ static int decode_cssr_ura(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
         ssr->update=1;
         sys = satsys(sat[j],&prn);
         trace(4, "decode_cssr_ura: sys=%2d, prn=%3d, tow=%8d, udi=%5.1f, iod=%2d, ura=%2d\n",
-        		sys,prn,tow,udint,iod,ssr->ura);
+                sys,prn,tow,udint,iod,ssr->ura);
     }
     cssr->nbit = i;
     return sync ? 0:10;
@@ -602,14 +606,14 @@ static int check_bit_width_ura(rtcm_t *rtcm,cssr_t *cssr,int i0)
 }
 
 /* decode stec correction */
-static int decode_cssr_stec(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
+static int decode_cssr_stec(rtcm_t *rtcm, cssr_t *cssr, int i0)
 {
     int i,j,k,iod,s,sync,tow,ngnss,sat[CSSR_MAX_SV],nsat,inet,sys,prn;
     uint8_t a,b;
     double udint;
     atmos_t *atmos=NULL;
-    if((i=decode_cssr_head(rtcm,cssr,&sync,&tow,&iod,NULL,&udint,&ngnss,i0,header))<0)
-		return -1;
+    if((i=decode_cssr_head(rtcm,cssr,&sync,&tow,&iod,NULL,&udint,&ngnss,i0))<0)
+        return -1;
     rtcm->time = gpst2time(cssr->week, tow);
     nsat = svmask2sat(cssr->svmask, sat);
     trace(3,"decode_cssr_stec: sync=%d tow=%d iod=%d\n",sync, tow, iod);
@@ -631,16 +635,16 @@ static int decode_cssr_stec(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
             for (k=0;k<4;k++) atmos->ai[s][k] = 0.0;
             atmos->ai[s][0] = decode_sval(rtcm->buff,i,14,0.05); i+=14;
             if (cssr->opt.stec_type > 0) {
-            	atmos->ai[s][1] = decode_sval(rtcm->buff,i,12,0.02); i+=12;
-            	atmos->ai[s][2] = decode_sval(rtcm->buff,i,12,0.02); i+=12;
+                atmos->ai[s][1] = decode_sval(rtcm->buff,i,12,0.02); i+=12;
+                atmos->ai[s][2] = decode_sval(rtcm->buff,i,12,0.02); i+=12;
             }
             if (cssr->opt.stec_type > 1) {
-            	atmos->ai[s][3] = decode_sval(rtcm->buff,i,10,0.02); i+=10;
+                atmos->ai[s][3] = decode_sval(rtcm->buff,i,10,0.02); i+=10;
             }
             s++;
             trace(4, "ssr stec: sys=%d, prn=%2d, tow=%d, udi=%.1f, iod=%2d, quality=%d a=(%4.2f,%4.2f,%4.2f,%4.2f)\n",
-            		sys,prn,tow,udint,iod,
-					atmos->stec_quality,atmos->ai[s][0],atmos->ai[s][1],atmos->ai[s][2],atmos->ai[s][3]);
+                    sys,prn,tow,udint,iod,
+                    atmos->stec_quality,atmos->ai[s][0],atmos->ai[s][1],atmos->ai[s][2],atmos->ai[s][3]);
         }
     }
     cssr->inet = inet;
@@ -664,7 +668,7 @@ static int check_bit_width_stec(rtcm_t *rtcm, cssr_t *cssr, int i0)
     slen = slen_t[stec_type];
     for (j=0;j<nsat;j++) { /* number of local satellites */
         if ((net_svmask>>(nsat-1-j))&1) {
-        	nsat_local++;
+            nsat_local++;
         }
     }
     i+=nsat_local*slen;
@@ -673,7 +677,7 @@ static int check_bit_width_stec(rtcm_t *rtcm, cssr_t *cssr, int i0)
 }
 
 /* decode grid correction */
-static int decode_cssr_grid(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
+static int decode_cssr_grid(rtcm_t *rtcm, cssr_t *cssr, int i0)
 {
     int i,j,k,ii,s,sync,iod,tow,ngnss,sat[CSSR_MAX_SV],nsat,ofst=0,sz;
     int trop_type,sz_idx,inet,hs,wet,sys,prn;
@@ -682,8 +686,8 @@ static int decode_cssr_grid(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
     atmos_t *atmos=NULL;
     static char wetsign[CSSR_MAX_NETWORK*RTCM_SSR_MAX_GP]={0},hydsign[CSSR_MAX_NETWORK*RTCM_SSR_MAX_GP]={0};
 
-    if((i=decode_cssr_head(rtcm,cssr,&sync,&tow,&iod,NULL,&udint,&ngnss,i0,header))<0)
-    		return -1;
+    if((i=decode_cssr_head(rtcm,cssr,&sync,&tow,&iod,NULL,&udint,&ngnss,i0))<0)
+            return -1;
     rtcm->time = gpst2time(cssr->week, tow);
     nsat = svmask2sat(cssr->svmask,sat);
     trop_type = getbitu(rtcm->buff,i,2); i+=2;  /* troposphere correction type */
@@ -727,24 +731,24 @@ static int decode_cssr_grid(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
 
         for (k=0,s=0,ii=0;k<nsat;k++) {
             if ((cssr->net_svmask[inet]>>(nsat-1-k))&1) {
-            	sys = satsys(sat[k],&prn);
+                sys = satsys(sat[k],&prn);
                 dstec = decode_sval(rtcm->buff,i,sz,0.04); i+=sz;
                 if (dstec==INVALID_VALUE) {
-                	atmos->stec[j][s] = INVALID_VALUE;
-                	iono = INVALID_VALUE;
+                    atmos->stec[j][s] = INVALID_VALUE;
+                    iono = INVALID_VALUE;
                     trace(2,"dstec is invalid: tow=%d, inet=%d, grid=%d, sat=%d\n",tow,inet,j,sat[k]);
                 } else {
                     stec0 = atmos->ai[ii][0]+atmos->ai[ii][1]*dlat+
                             atmos->ai[ii][2]*dlon+
                             atmos->ai[ii][3]*dlat*dlon;
-                	atmos->stec[j][s] = stec0+dstec;
-                	iono = 40.3E16/(FREQ1*FREQ2)*atmos->stec[j][s];
+                    atmos->stec[j][s] = stec0+dstec;
+                    iono = 40.3E16/(FREQ1*FREQ2)*atmos->stec[j][s];
                 }
                 atmos->sat[j][s] = sat[k];
 
                 trace(4,"decode_cssr_grid time=%s,net=%d,ig=%d,pos=%6.3f,%6.3f,sys=%d,prn=%d,iono=%.4f\n",
-                		time_str(atmos->time,0),inet,j,atmos->pos[j][0],atmos->pos[j][1],
-						sys,prn,iono);
+                        time_str(atmos->time,0),inet,j,atmos->pos[j][0],atmos->pos[j][1],
+                        sys,prn,iono);
                 s++;
                 ii++;
             }
@@ -771,9 +775,9 @@ static int check_bit_width_grid(rtcm_t *rtcm, cssr_t *cssr, int i0)
     sz_trop = (trop_type==0) ? 0:17;
     sz_stec = (sz_idx==0) ? 7:16;
     for (k=0;k<nsat;k++) {
-    	if ((net_svmask>>(nsat-1-k))&1) {
-    		nsat_local++;
-    	}
+        if ((net_svmask>>(nsat-1-k))&1) {
+            nsat_local++;
+        }
     }
     i+=ngp*(sz_trop+nsat_local*sz_stec);
     if (i>rtcm->nbit) return -1;
@@ -781,15 +785,15 @@ static int check_bit_width_grid(rtcm_t *rtcm, cssr_t *cssr, int i0)
 }
 
 /* decode orbit/clock combination message */
-static int decode_cssr_combo(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
+static int decode_cssr_combo(rtcm_t *rtcm, cssr_t *cssr, int i0)
 {
     int i,j,sync,iod,tow,ngnss,sat[CSSR_MAX_SV],nsat,iode,sz;
     int flg_orbit,flg_clock,flg_net,netid=0,s,sys,prn;
     uint64_t net_svmask=0;
     double udint;
     ssr_t *ssr=NULL;
-    if((i=decode_cssr_head(rtcm,cssr,&sync,&tow,&iod,NULL,&udint,&ngnss,i0,header))<0)
-    	return -1;
+    if((i=decode_cssr_head(rtcm,cssr,&sync,&tow,&iod,NULL,&udint,&ngnss,i0))<0)
+        return -1;
     /*check_week_ref(rtcm, tow, ref_combined);*/
     rtcm->time = gpst2time(cssr->week, tow);
     nsat = svmask2sat(cssr->svmask, sat);
@@ -799,17 +803,17 @@ static int decode_cssr_combo(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
     flg_clock = getbitu(rtcm->buff,i,1); i+=1;
     flg_net = getbitu(rtcm->buff,i,1); i+=1;
     if (flg_net) {
-    	netid = getbitu(rtcm->buff,i,5); i+=5;
-    	net_svmask = getbitu(rtcm->buff,i,nsat); i+=nsat;
-    	rtcm->staid = netid;
+        netid = getbitu(rtcm->buff,i,5); i+=5;
+        net_svmask = getbitu(rtcm->buff,i,nsat); i+=nsat;
+        rtcm->staid = netid;
     }
     for (j=s=0;j<nsat;j++) {
         if (!flg_net||(flg_net && ((net_svmask>>(nsat-1-j))&1))) {
-        	ssr = &rtcm->ssr[sat[j]-1];
+            ssr = &rtcm->ssr[sat[j]-1];
             sys = satsys(sat[j], &prn);
             if (flg_orbit) {
-            	sz = (satsys(sat[j],NULL)==SYS_GAL) ? 10:8;
-            	iode = getbitu(rtcm->buff,i,sz); i+=sz; /* iode */
+                sz = (satsys(sat[j],NULL)==SYS_GAL) ? 10:8;
+                iode = getbitu(rtcm->buff,i,sz); i+=sz; /* iode */
                 /* delta radial,along-track,cross-track */
                 ssr->deph[0] = decode_sval(rtcm->buff,i,15,0.0016); i+=15;
                 ssr->deph[1] = decode_sval(rtcm->buff,i,13,0.0064); i+=13;
@@ -819,15 +823,15 @@ static int decode_cssr_combo(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
                 ssr->iod[2] = cssr->iod;
                 ssr->iode = iode;
                 trace(4, "combined orbit: net=%2d, tow=%8d, sys=%2d, prn=%3d, iode=%3d, deph=%10.4f, %10.4f, %10.4f\n",
-                		netid,tow,sys,prn,ssr->iode,ssr->deph[0],ssr->deph[1],ssr->deph[2]);
+                        netid,tow,sys,prn,ssr->iode,ssr->deph[0],ssr->deph[1],ssr->deph[2]);
             }
             if (flg_clock) {
-            	ssr->dclk[0] = decode_sval(rtcm->buff,i,15,0.0016); i+=15;
+                ssr->dclk[0] = decode_sval(rtcm->buff,i,15,0.0016); i+=15;
                 ssr->t0 [3] = rtcm->time;
                 ssr->udi[3] = udint;
                 ssr->iod[3] = cssr->iod;
                 trace(4, "combined clock: net=%2d, tow=%8d, sys=%2d, prn=%3d, dclk=%10.4f\n",
-                		netid,tow,sys,prn,ssr->dclk[0]);
+                        netid,tow,sys,prn,ssr->dclk[0]);
             }
             s++;
         }
@@ -848,16 +852,16 @@ static int check_bit_width_combo(rtcm_t *rtcm, cssr_t *cssr, int i0)
     flg_clock = getbitu(rtcm->buff,i,1); i+=1;
     flg_net = getbitu(rtcm->buff,i,1); i+=1;
     if (flg_net) {
-    	if (i+5+nsat>rtcm->nbit) return -1;
-    	i+=5; /* network id */
-    	net_svmask = getbitu(rtcm->buff,i,nsat); i+=nsat;
+        if (i+5+nsat>rtcm->nbit) return -1;
+        i+=5; /* network id */
+        net_svmask = getbitu(rtcm->buff,i,nsat); i+=nsat;
     }
     for (j=0;j<nsat;j++) {
         if (!flg_net||(flg_net&&((net_svmask>>(nsat-1-j))&1))) {
             if (flg_orbit) {
-            	sz = (satsys(sat[j],NULL)==SYS_GAL) ? 10:8;
-            	i+=sz+41;
-            	if (i>rtcm->nbit) return -1;
+                sz = (satsys(sat[j],NULL)==SYS_GAL) ? 10:8;
+                i+=sz+41;
+                if (i>rtcm->nbit) return -1;
             }
             if (flg_clock) {
                 if ((i+=15)>rtcm->nbit) return -1;
@@ -870,7 +874,7 @@ static int check_bit_width_combo(rtcm_t *rtcm, cssr_t *cssr, int i0)
 /*
  * decode atmospheric correction message
  */
-static int decode_cssr_atmos(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
+static int decode_cssr_atmos(rtcm_t *rtcm, cssr_t *cssr, int i0)
 {
     int i,j,k,s,sync,tow,iod,ngnss,sat[CSSR_MAX_SV],nsat,sz_idx,sys,prn,sz;
     int flg_trop,flg_stec,trop_type,stec_type,inet;
@@ -880,12 +884,12 @@ static int decode_cssr_atmos(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
     const float dstec_lsb_t[4] = {0.04f,0.12f,0.16f,0.24f};
     const int dstec_sz_t[4] = {4,4,5,7};
     
-	if((i=decode_cssr_head(rtcm,cssr,&sync,&tow,&iod,NULL,&udint,&ngnss,i0,header))<0)
-		return -1;
+    if((i=decode_cssr_head(rtcm,cssr,&sync,&tow,&iod,NULL,&udint,&ngnss,i0))<0)
+        return -1;
     rtcm->time = gpst2time(cssr->week,tow);
     nsat = svmask2sat(cssr->svmask,sat);
-    flg_trop = getbitu(rtcm->buff,i,2); i+=2;  /* troposphere correction type */
-    flg_stec = getbitu(rtcm->buff,i,2); i+=2;  /* stec correction type */
+    flg_trop = getbitu(rtcm->buff,i,2); i+=2;   /* troposphere correction type */
+    flg_stec = getbitu(rtcm->buff,i,2); i+=2;   /* stec correction type */
     inet = getbitu(rtcm->buff,i,5); i+=5;       /* network id */
     trace(3, "decode_cssr_atmos:tow=%d iod=%d net=%d\n",tow,iod,inet);
     rtcm->atmos[0].inet = inet;
@@ -905,11 +909,11 @@ static int decode_cssr_atmos(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
         for (k=0;k<4;k++) ct[k] = 0.0;
         ct[0] = decode_sval(rtcm->buff,i,9,0.004); i+=9;
         if (trop_type>0) {
-        	ct[1] = decode_sval(rtcm->buff,i,7,0.002); i+=7;
-        	ct[2] = decode_sval(rtcm->buff,i,7,0.002); i+=7;
+            ct[1] = decode_sval(rtcm->buff,i,7,0.002); i+=7;
+            ct[2] = decode_sval(rtcm->buff,i,7,0.002); i+=7;
         }
         if (trop_type>1) {
-        	ct[3] = decode_sval(rtcm->buff,i,7,0.001); i+=7;
+            ct[3] = decode_sval(rtcm->buff,i,7,0.001); i+=7;
         }
         sz_idx = getbitu(rtcm->buff, i, 1); i+=1;
         trop_ofst = getbitu(rtcm->buff, i, 4)*0.02; i+=4;
@@ -929,15 +933,15 @@ static int decode_cssr_atmos(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
             }
             atmos->trop_wet[j] = decode_sval(rtcm->buff,i,sz,0.004); i+=sz;
             if (atmos->trop_wet[j]==INVALID_VALUE) {
-            	atmos->trop_total[j] = INVALID_VALUE;
-            	trace(2,"trop(wet) is invalid: tow=%d, inet=%d, grid=%d\n",tow,inet,j);
+                atmos->trop_total[j] = INVALID_VALUE;
+                trace(2,"trop(wet) is invalid: tow=%d, inet=%d, grid=%d\n",tow,inet,j);
             } else {
-            	atmos->trop_wet[j] += trop_ofst;
-            	atmos->trop_total[j] += atmos->trop_wet[j];
+                atmos->trop_wet[j] += trop_ofst;
+                atmos->trop_total[j] += atmos->trop_wet[j];
             }
             trace(4, "decode_cssr_atmos: net=%2d, tow=%d, quality=%.3f, grid=%2d, pos=%.3f %.3f %.3f, total=%.3f, wet=%.3f\n",
                 atmos->inet,tow,atmos->trop_quality,j,atmos->pos[j][0],atmos->pos[j][1],
-				atmos->pos[j][2],atmos->trop_total[j],atmos->trop_wet[j]);
+                atmos->pos[j][2],atmos->trop_total[j],atmos->trop_wet[j]);
         }
     }
     
@@ -948,7 +952,7 @@ static int decode_cssr_atmos(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
             if (!((cssr->net_svmask[inet]>>(nsat-1-j))&1)) {
                 continue;
             }
-			sys = satsys(sat[j], &prn);
+            sys = satsys(sat[j], &prn);
             a = getbitu(rtcm->buff,i,3); i+=3;
             b = getbitu(rtcm->buff,i,3); i+=3;
             atmos->stec_quality[s] = decode_cssr_quality(a,b);
@@ -956,15 +960,15 @@ static int decode_cssr_atmos(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
             for (k=0;k<6;k++) ci[k]=0.0;
             ci[0] = decode_sval(rtcm->buff,i,14,0.05); i+=14;
             if (stec_type>0) {
-            	ci[1] = decode_sval(rtcm->buff,i,12,0.02); i+=12;
-            	ci[2] = decode_sval(rtcm->buff,i,12,0.02); i+=12;
+                ci[1] = decode_sval(rtcm->buff,i,12,0.02); i+=12;
+                ci[2] = decode_sval(rtcm->buff,i,12,0.02); i+=12;
             }
             if (stec_type>1) {
-            	ci[3] = decode_sval(rtcm->buff,i,10,0.02); i+=10;
+                ci[3] = decode_sval(rtcm->buff,i,10,0.02); i+=10;
             }
             if (stec_type>2) {
-            	ci[4] = decode_sval(rtcm->buff,i,8,0.005); i+=8;
-            	ci[5] = decode_sval(rtcm->buff,i,8,0.005); i+=8;
+                ci[4] = decode_sval(rtcm->buff,i,8,0.005); i+=8;
+                ci[5] = decode_sval(rtcm->buff,i,8,0.005); i+=8;
             }
             sz_idx = getbitu(rtcm->buff,i,2); i+=2;
             trace(4,"decode_cssr_atmos: stec_type=%d, ct=%.2f %.2f %.2f %.2f %.3f %.3f, size=%d\n",
@@ -976,7 +980,7 @@ static int decode_cssr_atmos(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
                 i+=dstec_sz_t[sz_idx];
                 trace(5,"size=%d, dstec=%f\n",dstec_sz_t[sz_idx],dstec);
                 if (dstec==INVALID_VALUE) {
-                	atmos->stec[k][s] = INVALID_VALUE;
+                    atmos->stec[k][s] = INVALID_VALUE;
                     trace(2,"dstec is invalid: tow=%d, net=%2d, grid=%2d, sat=%d\n",tow,inet,k,sat[j]);
                 } else {
                     stec0 = ci[0];
@@ -1014,7 +1018,7 @@ static int check_bit_width_atmos(rtcm_t *rtcm, cssr_t *cssr, int i0)
     uint64_t net_svmask;
     const int dstec_sz_t[4] = {4,4,5,7};
     const int trop_sz_t[3] = {9,23,30};
-	const int stec_sz_t[4] = {14,38,48,64};
+    const int stec_sz_t[4] = {14,38,48,64};
     
     nsat = svmask2sat(cssr->svmask,NULL);
     if (i+15>rtcm->nbit) return -1;
@@ -1056,148 +1060,277 @@ static int check_bit_width_atmos(rtcm_t *rtcm, cssr_t *cssr, int i0)
     return i-i0;
 }
 
+/* decode grid definition */
+static int decode_cssr_griddef(rtcm_t *rtcm, cssr_t *cssr, int i0)
+{
+    int i=i0,j,k,ii,ij,jj,sync,type,subtype,subsubtype;
+    int ig,nb=0,idx,inet;
+    cssr_si_t *si=&cssr->si;
+    cssr_si_area_t *area=&si->area;
+    cssr_si_grid_t *grd=NULL;
+    atmos_t *atmos=NULL;
+
+    type=getbitu(rtcm->buff,i,12);i+=12;
+    if (type==4073) {
+        subtype=getbitu(rtcm->buff,i,4);i+=4;
+        if (subtype==CSSR_TYPE_TEST) {
+            subsubtype=getbitu(rtcm->buff,i,4);i+=4;
+            if (subsubtype!=CSSR_SUBTYPE_GRID) {
+                return -1;
+            }
+            sync=getbitu(rtcm->buff,i,1);i+=1;/* multiple message indicator */
+        } else if (subtype==CSSR_TYPE_SI) {
+            sync=getbitu(rtcm->buff,i,1);i+=1;/* multiple message indicator */
+            i+=7;
+            i+=4+3;
+        }
+    }
+
+    area->iod=getbitu(rtcm->buff,i,3);i+=3;
+    area->narea=getbitu(rtcm->buff,i,5)+1;i+=5;
+
+    trace(4,"decode_cssr_griddef(): narea=%d",area->narea);
+
+    for (j=0;j<area->narea;j++) {
+        grd=&area->grd[j];
+        inet=getbitu(rtcm->buff,i,5);i+=5;
+        atmos=&rtcm->atmos[inet];
+        grd->npart=getbitu(rtcm->buff,i,3)+1;i+=3;
+        for (k=0,ii=0;k<grd->npart;k++) {
+            grd->type=getbitu(rtcm->buff,i,2);i+=2;
+            grd->lat0=getbits(rtcm->buff,i,15)*0.01;i+=15;
+            grd->lon0=getbits(rtcm->buff,i,16)*0.01;i+=16;
+            if (grd->type==0) {
+                atmos->pos[ii][0]=grd->lat0;
+                atmos->pos[ii][1]=grd->lon0;
+                ii++;
+                grd->ngrid=getbitu(rtcm->buff,i,6);i+=6;
+                for (ig=0;ig<grd->ngrid;ig++,ii++) {
+                    grd->dlat[ig]=getbits(rtcm->buff,i,10)*0.01;i+=10;
+                    grd->dlon[ig]=getbits(rtcm->buff,i,11)*0.01;i+=11;
+                    atmos->pos[ii][0]=atmos->pos[ii-1][0]+grd->dlat[ig];
+                    atmos->pos[ii][1]=atmos->pos[ii-1][1]+grd->dlon[ig];
+                }
+            } else if (grd->type==1||grd->type==2) {
+                grd->ncount[0]=getbitu(rtcm->buff,i,6);i+=6;
+                grd->ncount[1]=getbitu(rtcm->buff,i,6);i+=6;
+                grd->slat=getbitu(rtcm->buff,i,9)*0.01;i+=9;
+                grd->slon=getbitu(rtcm->buff,i,10)*0.01;i+=10;
+                grd->fmask=getbitu(rtcm->buff,i,1);i+=1;
+                if (grd->fmask) {
+                    nb=grd->ncount[0]*grd->ncount[1];
+                    if (nb>64) {
+                        trace(2,"decode_cssr_grid: nb=%d>64\n",nb);
+                        return -1;
+                    }
+                    if (nb>32) {
+                        grd->mask=(uint64_t)getbitu(rtcm->buff,i,nb-32)<<32;i+=nb-32;
+                        grd->mask|=getbitu(rtcm->buff,i,32);i+=32;
+                    } else {
+                        grd->mask=getbitu(rtcm->buff,i,nb);i+=nb;
+                    }
+                }
+                if (grd->type==1) {
+                    for (ij=0;ij<grd->ncount[0];ij++) {
+                        for (jj=0;jj<grd->ncount[1];jj++) {
+                            idx=ij*grd->ncount[1]+jj;
+                            if (!grd->fmask||((grd->mask>>(nb-idx-1))&0x1)) {
+                                atmos->pos[ii][0]=grd->lat0-grd->slat*ij;
+                                atmos->pos[ii][1]=grd->lon0+grd->slon*jj;
+                                ii++;
+                            }
+                        }
+                    }
+                } else if (grd->type==2) {
+                    for (ij=0;ij<grd->ncount[1];ij++) {
+                        for (jj=0;jj<grd->ncount[0];jj++) {
+                            idx=ij*grd->ncount[0]+jj;
+                            if (!grd->fmask||((grd->mask>>(nb-idx-1))&0x1)) {
+                                atmos->pos[ii][0]=grd->lat0+grd->slat*jj;
+                                atmos->pos[ii][1]=grd->lon0+grd->slon*ij;
+                                ii++;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        atmos->pos[ii][0]=atmos->pos[ii][1]=-1;
+        grd->ngrid=ii;
+    }
+    cssr->nbit=i;
+    return sync?0:10;
+}
+
 /*
  * decode service information message
  */
-static int decode_cssr_si(rtcm_t *rtcm, cssr_t *cssr, int i0, int header)
+static int decode_cssr_si(rtcm_t *rtcm, cssr_t *cssr, int i0)
 {
-	int i=i0+4,j,sync,j0;
+    int i=i0,j,k,sync,j0,type,subtype,blen=0;
 
-	sync = getbitu(rtcm->buff,i,1); i+=1; /* multiple message indicator */
-	cssr->si_cnt = getbitu(rtcm->buff,i,3); i+=3;  /* information message counter */
-	cssr->si_sz = getbitu(rtcm->buff,i,2)+1; i+=2; /* data size */
-	j0=cssr->si_cnt*cssr->si_sz*5;
-	for (j=0;j<cssr->si_sz;j++) {
-		cssr->si_data[j0+j] = (uint64_t)getbitu(rtcm->buff,i,8)<<32; i+=8;
-		cssr->si_data[j0+j] |= getbitu(rtcm->buff,i,32); i+=32;
-	}
-	if (sync==0 && cssr->flg_cssr_si==(1<<cssr->si_cnt)-1) {
-		/* decode SI */
-		cssr->flg_cssr_si = 0;
-	}
+    type = getbitu(rtcm->buff,i,12); i+=12;
+    subtype = getbitu(rtcm->buff,i,4); i+=4;
+
+    if (type!=4073||subtype!=CSSR_TYPE_SI) {
+        trace(2,"decode_cssr_si invalid type,subtype=%4d,%2d\n",
+                type,subtype);
+    }
+
+    sync = getbitu(rtcm->buff,i,1); i+=1; /* multiple message indicator */
+    cssr->si_cnt = getbitu(rtcm->buff,i,3); i+=3;  /* information message counter */
+    cssr->si_sz[cssr->si_cnt] = getbitu(rtcm->buff,i,2)+1; i+=2; /* data size */
+    if (sync==0 && cssr->si_cnt>0) {
+        j0=cssr->si_cnt*20;
+        for (j=0,blen=0;j<=cssr->si_cnt;j++) {
+            blen+=cssr->si_sz[j]*5;
+        }
+    } else {
+        j0=cssr->si_cnt*cssr->si_sz[cssr->si_cnt]*5;
+        blen=cssr->si_sz[cssr->si_cnt]*5;
+    }
+    for (j=0;j<cssr->si_sz[cssr->si_cnt];j++) {
+        for (k=0;k<5;k++) {
+            cssr->si_data[j0+j*5+k] = getbitu(rtcm->buff,i,8);i+=8;
+        }
+    }
+    cssr->flg_cssr_si|=1<<cssr->si_cnt;
+    if (sync==0 && cssr->flg_cssr_si==(1<<(cssr->si_cnt+1))-1) {
+        /* decode SI */
+        memcpy(rtcm->buff+6,cssr->si_data,blen);
+        decode_cssr_griddef(rtcm,cssr,i0);
+        cssr->flg_cssr_si = 0;
+    }
     return sync ? 0:10;
 }
+
 /* check if the buffer length is sufficient to decode the service information message */
 static int check_bit_width_si(rtcm_t *rtcm, cssr_t *cssr, int i0)
 {
-	int i=i0+16,data_sz=0;
-	if (i+6>rtcm->nbit) return -1;
-	i+=4;
-	data_sz = getbitu(rtcm->buff,i,2); i+=2;
-	i+=40*(data_sz+1);
+    int i=i0+16,data_sz=0;
+    if (i+6>rtcm->nbit) return -1;
+    i+=4;
+    data_sz = getbitu(rtcm->buff,i,2); i+=2;
+    i+=40*(data_sz+1);
     if (i>rtcm->nbit) return -1;
     return i-i0;
 }
 /* decode type 4073: Melco proprietary messages */
 extern int decode_cssr(rtcm_t *rtcm, int i0, int head)
 {
-    int i=i0+12,ret=0,subtype;
+    int i=i0,ret=0,subtype,subsubtype;
     cssr_t *cssr = &_cssr;
 
-    i += (head) ? 24:0;
-    subtype = getbitu(rtcm->buff,i,4);
+    i+=(head)?24:0;
+    subtype = getbitu(rtcm->buff,i+12,4);
     trace(4,"decode_cssr subtype=%d\n",subtype);
 
     switch (subtype) {
-		case CSSR_TYPE_MASK:
-			ret=decode_cssr_mask(rtcm, cssr, i, head);
-			break;
-		case CSSR_TYPE_OC:
-			ret=decode_cssr_oc(rtcm, cssr, i, head);
-			break;
-		case CSSR_TYPE_CC:
-			ret=decode_cssr_cc(rtcm, cssr, i, head);
-			break;
-		case CSSR_TYPE_CB:
-			ret=decode_cssr_cb(rtcm, cssr, i, head);
-			break;
-		case CSSR_TYPE_PB:
-			ret=decode_cssr_pb(rtcm, cssr, i, head);
-			break;
-		case CSSR_TYPE_BIAS:
-			ret=decode_cssr_bias(rtcm, cssr, i, head);
-			break;
-		case CSSR_TYPE_URA:
-			ret=decode_cssr_ura(rtcm, cssr, i, head);
-			break;
-		case CSSR_TYPE_STEC:
-			ret=decode_cssr_stec(rtcm, cssr, i, head);
-			break;
-		case CSSR_TYPE_GRID:
-			ret=decode_cssr_grid(rtcm, cssr, i, head);
-			break;
-		case CSSR_TYPE_OCC:
-			ret=decode_cssr_combo(rtcm, cssr, i, head);
-			break;
-		case CSSR_TYPE_ATMOS:
-			ret = decode_cssr_atmos(rtcm, cssr, i, head);
-			break;
-		case CSSR_TYPE_SI:
-			ret = decode_cssr_si(rtcm, cssr, i, head);
-			break;
-		default: break;
+        case CSSR_TYPE_MASK:
+            ret=decode_cssr_mask(rtcm,cssr,i);
+            break;
+        case CSSR_TYPE_OC:
+            ret=decode_cssr_oc(rtcm,cssr,i);
+            break;
+        case CSSR_TYPE_CC:
+            ret=decode_cssr_cc(rtcm,cssr,i);
+            break;
+        case CSSR_TYPE_CB:
+            ret=decode_cssr_cb(rtcm,cssr,i);
+            break;
+        case CSSR_TYPE_PB:
+            ret=decode_cssr_pb(rtcm,cssr,i);
+            break;
+        case CSSR_TYPE_BIAS:
+            ret=decode_cssr_bias(rtcm,cssr,i);
+            break;
+        case CSSR_TYPE_URA:
+            ret=decode_cssr_ura(rtcm,cssr,i);
+            break;
+        case CSSR_TYPE_STEC:
+            ret=decode_cssr_stec(rtcm,cssr,i);
+            break;
+        case CSSR_TYPE_GRID:
+            ret=decode_cssr_grid(rtcm,cssr,i);
+            break;
+        case CSSR_TYPE_OCC:
+            ret=decode_cssr_combo(rtcm,cssr,i);
+            break;
+        case CSSR_TYPE_ATMOS:
+            ret = decode_cssr_atmos(rtcm,cssr,i);
+            break;
+        case CSSR_TYPE_SI:
+            ret = decode_cssr_si(rtcm,cssr,i);
+            break;
+        case CSSR_TYPE_TEST:
+            subsubtype = getbitu(rtcm->buff,i+12+4,4);
+            if (subsubtype==CSSR_SUBTYPE_GRID) {
+                ret = decode_cssr_griddef(rtcm,cssr,i);
+            }
+            break;
+        default: break;
     }
     return ret;
 }
 /* check message length of CSSR */
 extern int cssr_check_bitlen(rtcm_t *rtcm,int i0)
 {
-	int i=i0,type,subtype,nbit=0;
+    int i=i0,type,subtype,nbit=0;
     cssr_t *cssr = &_cssr;
     type = getbitu(rtcm->buff,i,12);
     if (type!=4073) {
-    	trace(2,"invalid type:%d rtcm-nbit=%d nbit=%d\n",
-    			type,rtcm->nbit,cssr->nbit);
-    	return -1;
+        trace(2,"invalid type:%d rtcm-nbit=%d nbit=%d\n",
+                type,rtcm->nbit,cssr->nbit);
+        return -1;
     }
     subtype = getbitu(rtcm->buff,i+12,4);
-	switch (subtype) {
-		case CSSR_TYPE_MASK:
-			nbit=check_bit_width_mask(rtcm,cssr,i);
-			break;
-		case CSSR_TYPE_OC:
-			nbit=check_bit_width_oc(rtcm,cssr,i);
-			break;
-		case CSSR_TYPE_CC:
-			nbit=check_bit_width_cc(rtcm,cssr,i);
-			break;
-		case CSSR_TYPE_CB:
-			nbit=check_bit_width_cb(rtcm,cssr,i);
-			break;
-		case CSSR_TYPE_PB:
-			nbit=check_bit_width_pb(rtcm,cssr,i);
-			break;
-		case CSSR_TYPE_BIAS:
-			nbit=check_bit_width_bias(rtcm,cssr,i);
-			break;
-		case CSSR_TYPE_URA:
-			nbit=check_bit_width_ura(rtcm,cssr,i);
-			break;
-		case CSSR_TYPE_STEC:
-			nbit=check_bit_width_stec(rtcm,cssr,i);
-			break;
-		case CSSR_TYPE_GRID:
-			nbit=check_bit_width_grid(rtcm,cssr,i);
-			break;
-		case CSSR_TYPE_OCC:
-			nbit=check_bit_width_combo(rtcm,cssr,i);
-			break;
-		case CSSR_TYPE_ATMOS:
-			nbit=check_bit_width_atmos(rtcm,cssr,i);
-			break;
-		case CSSR_TYPE_SI:
-			nbit=check_bit_width_si(rtcm,cssr,i);
-			break;
-		default:
-			trace(2,"invalid subtype:%d nbit=%d\n",subtype,rtcm->nbit);
-			return -1;
-	}
-	return nbit;
+    switch (subtype) {
+        case CSSR_TYPE_MASK:
+            nbit=check_bit_width_mask(rtcm,cssr,i);
+            break;
+        case CSSR_TYPE_OC:
+            nbit=check_bit_width_oc(rtcm,cssr,i);
+            break;
+        case CSSR_TYPE_CC:
+            nbit=check_bit_width_cc(rtcm,cssr,i);
+            break;
+        case CSSR_TYPE_CB:
+            nbit=check_bit_width_cb(rtcm,cssr,i);
+            break;
+        case CSSR_TYPE_PB:
+            nbit=check_bit_width_pb(rtcm,cssr,i);
+            break;
+        case CSSR_TYPE_BIAS:
+            nbit=check_bit_width_bias(rtcm,cssr,i);
+            break;
+        case CSSR_TYPE_URA:
+            nbit=check_bit_width_ura(rtcm,cssr,i);
+            break;
+        case CSSR_TYPE_STEC:
+            nbit=check_bit_width_stec(rtcm,cssr,i);
+            break;
+        case CSSR_TYPE_GRID:
+            nbit=check_bit_width_grid(rtcm,cssr,i);
+            break;
+        case CSSR_TYPE_OCC:
+            nbit=check_bit_width_combo(rtcm,cssr,i);
+            break;
+        case CSSR_TYPE_ATMOS:
+            nbit=check_bit_width_atmos(rtcm,cssr,i);
+            break;
+        case CSSR_TYPE_SI:
+            nbit=check_bit_width_si(rtcm,cssr,i);
+            break;
+        default:
+            trace(2,"invalid subtype:%d nbit=%d\n",subtype,rtcm->nbit);
+            return -1;
+    }
+    return nbit;
 }
 /* read list of grid position from ascii file */
 extern int read_grid_def(rtcm_t *rtcm, const char *gridfile)
 {
-	int gridsel=0 ;
+    int gridsel=0 ;
     int no;
     double lat, lon, alt;
     char buff[1024];
@@ -1215,28 +1348,28 @@ extern int read_grid_def(rtcm_t *rtcm, const char *gridfile)
     if(!(fp=fopen(gridfile,"r"))) return -1;
 
     while (fgets(buff, sizeof(buff), fp)) {
-    	if (strstr(buff, "Compact Network ID    GRID No.  Latitude     Longitude   Ellipsoidal height")) {
+        if (strstr(buff, "Compact Network ID    GRID No.  Latitude     Longitude   Ellipsoidal height")) {
             gridsel = 3;
             trace(3, "grid definition: IS attached file version%d\n", gridsel);
             break;
-		} else {
+        } else {
             trace(1, "grid definition: invalid format%d\n", gridsel);
             return -1;
-		}
+        }
     }
-	while ((ret=fscanf(fp, "%d %d %lf %lf %lf", &inet, &no, &lat, &lon, &alt)) != EOF ) {
-		if (inet>=0 && inet<CSSR_MAX_NETWORK && ret==5) {
-			atmos[inet].pos[grid[inet]][0] = lat;
-			atmos[inet].pos[grid[inet]][1] = lon;
-			atmos[inet].pos[grid[inet]][2] = alt;
-			grid[inet]++;
-			atmos[inet].pos[grid[inet]][0] = -1.0;
-			atmos[inet].pos[grid[inet]][1] = -1.0;
-			atmos[inet].pos[grid[inet]][2] = -1.0;
-		}
-		trace(4, "grid_info: %2d, %2d, %10.3f, %10.3f, %8.3f\n",
-				ret,inet,no,lat,lon,alt);
-	}
+    while ((ret=fscanf(fp, "%d %d %lf %lf %lf", &inet, &no, &lat, &lon, &alt)) != EOF ) {
+        if (inet>=0 && inet<CSSR_MAX_NETWORK && ret==5) {
+            atmos[inet].pos[grid[inet]][0] = lat;
+            atmos[inet].pos[grid[inet]][1] = lon;
+            atmos[inet].pos[grid[inet]][2] = alt;
+            grid[inet]++;
+            atmos[inet].pos[grid[inet]][0] = -1.0;
+            atmos[inet].pos[grid[inet]][1] = -1.0;
+            atmos[inet].pos[grid[inet]][2] = -1.0;
+        }
+        trace(4, "grid_info: %2d, %2d, %10.3f, %10.3f, %8.3f\n",
+                ret,inet,no,lat,lon,alt);
+    }
     fclose(fp);
     return 0;
 }
