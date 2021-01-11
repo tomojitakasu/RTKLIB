@@ -2550,6 +2550,7 @@ static int encode_type1230(rtcm_t *rtcm, int sync)
 /* encode type 4073: proprietary message Mitsubishi Electric -----------------*/
 static int encode_type4073(rtcm_t *rtcm, int subtype, int sync)
 {
+    return encode_cssr(rtcm,subtype,sync);
     trace(2,"rtcm3 4073: unsupported message subtype=%d\n",subtype);
     return 0;
 }

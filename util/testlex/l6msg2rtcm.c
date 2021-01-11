@@ -5,7 +5,6 @@
 *-----------------------------------------------------------------------------*/
 #include <stdio.h>
 #include "rtklib.h"
-#include "cssr.h"
 
 /* convert L6 messages into RTCM3 messages ---------------------------------------------------------*/
 static void convl6msg(FILE *fp, FILE *fpout)

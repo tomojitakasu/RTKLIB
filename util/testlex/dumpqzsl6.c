@@ -5,7 +5,6 @@
 *-----------------------------------------------------------------------------*/
 #include <stdio.h>
 #include "rtklib.h"
-#include "cssr.h"
 
 /* print ssr messages --------------------------------------------------------*/
 static void printhead(int topt, int mopt)
@@ -66,8 +65,6 @@ static void printssrmsg(int sat, const ssr_t *ssr, int topt, int mopt)
     printf("\n");
 }
 
-extern cssr_t _cssr;
-
 /* dump L6 messages ---------------------------------------------------------*/
 static int dumpl6msg(FILE *fp, int sat, int topt, int mopt)
 {
@@ -75,7 +72,7 @@ static int dumpl6msg(FILE *fp, int sat, int topt, int mopt)
     rtcm_t *rtcm=&_rtcm;
     static gtime_t t0[MAXSAT]={{0}};
     int i=0,s,stat,nbit,ret;
-    cssr_t *cssr = &_cssr;
+    cssr_t *cssr = &rtcm->cssr;
     const char gridfile[]="clas_grid.def";
     
     init_rtcm(rtcm);
