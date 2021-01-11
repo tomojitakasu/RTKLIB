@@ -20,7 +20,9 @@
 
 #define VER_CSSR  "0.9"             /* library version */
 
-/* cssr */
+#define CSSR_MSGTYPE        4073    /* RTCM 3 proprietary message type for Compact SSR */
+
+/* Parameters */
 #define CSSR_MAX_GNSS     16
 #define CSSR_MAX_SV_GNSS  40
 #define CSSR_MAX_SV       64
@@ -31,6 +33,7 @@
 #define CSSR_MAX_GP       128
 #define CSSR_MAX_NETWORK  32
 
+/* GNSS definitions */
 #define CSSR_SYS_GPS    0
 #define CSSR_SYS_GLO    1
 #define CSSR_SYS_GAL    2
@@ -43,7 +46,7 @@
 
 #define CSSR_TYPE_NUM   14
 
-/* Compact SSR messages */
+/* Compact SSR Messages SubType */
 #define CSSR_TYPE_TEST  0
 #define CSSR_TYPE_MASK  1
 #define CSSR_TYPE_OC    2
@@ -59,10 +62,10 @@
 #define CSSR_TYPE_ATMOS 12
 
 /* Service Information */
-#define CSSR_SUBTYPE_SERVICE    1
-#define CSSR_SUBTYPE_OPINFO        2
-#define CSSR_SUBTYPE_GRID        3
-#define CSSR_SUBTYPE_COORDINATE    4
+#define CSSR_SUBTYPE_SERVICE        1
+#define CSSR_SUBTYPE_OPINFO         2
+#define CSSR_SUBTYPE_GRID           3
+#define CSSR_SUBTYPE_COORDINATE     4
 
 #define CSSR_TYPE_INIT  254
 #define CSSR_TYPE_NULL  255
@@ -94,14 +97,14 @@
 #define CSSR_BIAS_CBIAS 1
 #define CSSR_BIAS_PBIAS 2
 
-#define CSSR_CTYPE_MASK        1
-#define CSSR_CTYPE_OC        2
-#define CSSR_CTYPE_CC        4
-#define CSSR_CTYPE_BIAS        8
-#define CSSR_CTYPE_STEC        16
-#define CSSR_CTYPE_GRID        32
-#define CSSR_CTYPE_ATM        64
-#define CSSR_CTYPE_OCC        128
+#define CSSR_CTYPE_MASK     0x0001
+#define CSSR_CTYPE_OC       0x0002
+#define CSSR_CTYPE_CC       0x0004
+#define CSSR_CTYPE_BIAS     0x0008
+#define CSSR_CTYPE_STEC     0x0010
+#define CSSR_CTYPE_GRID     0x0020
+#define CSSR_CTYPE_ATM      0x0040
+#define CSSR_CTYPE_OCC      0x0080
 
 #define CSSR_AUTH_OTAR_MAX 64
 
@@ -129,7 +132,6 @@ typedef struct {
 } cssropt_t;
 
 typedef struct {
-   /* gtime_t t0[2];*/
     double udi[2];
     int iod[2];
     int ngp;
