@@ -342,11 +342,11 @@ static int decode_line2(const char *buff, tled_t *data)
     data->rev=(int)str2num(buff,63,5);   /* revolution number */
     
     if (strcmp(satno,data->satno)) {
-        trace(2,"tle satno mismatch: %s %s\n",data->satno,satno);
+        rtktrace(2,"tle satno mismatch: %s %s\n",data->satno,satno);
         return 0;
     }
     if (data->n<=0.0||data->ecc<0.0) {
-        trace(2,"tle data error: %s\n",satno);
+        rtktrace(2,"tle data error: %s\n",satno);
         return 0;
     }
     return 1;
@@ -360,7 +360,7 @@ static int add_data(tle_t *tle, const tled_t *data)
         tle->nmax=tle->nmax<=0?1024:tle->nmax*2;
         
         if (!(tle_data=(tled_t *)realloc(tle->data,sizeof(tled_t)*tle->nmax))) {
-            trace(1,"tle malloc error\n");
+            rtktrace(1,"tle malloc error\n");
             free(tle->data); tle->data=NULL; tle->n=tle->nmax=0;
             return 0;
         }
@@ -393,7 +393,7 @@ extern int tle_read(const char *file, tle_t *tle)
     int line=0;
     
     if (!(fp=fopen(file,"r"))) {
-        trace(2,"tle file open error: %s\n",file);
+        rtktrace(2,"tle file open error: %s\n",file);
         return 0;
     }
     while (fgets(buff,sizeof(buff),fp)) {
@@ -460,7 +460,7 @@ extern int tle_name_read(const char *file, tle_t *tle)
     int i;
     
     if (!(fp=fopen(file,"r"))) {
-        trace(2,"tle satellite name file open error: %s\n",file);
+        rtktrace(2,"tle satellite name file open error: %s\n",file);
         return 0;
     }
     while (fgets(buff,sizeof(buff),fp)) {
@@ -477,7 +477,7 @@ extern int tle_name_read(const char *file, tle_t *tle)
                 !strcmp(tle->data[i].desig,desig)) break;
         }
         if (i>=tle->n) {
-            trace(4,"no tle data: satno=%s desig=%s\n",satno,desig);
+            rtktrace(4,"no tle data: satno=%s desig=%s\n",satno,desig);
             continue;
         }
         if (!*tle->data[i].name) {
@@ -538,7 +538,7 @@ extern int tle_pos(gtime_t time, const char *name, const char *satno,
         if (i<tle->n) stat=0;
     }
     if (stat) {
-        trace(4,"no tle data: name=%s satno=%s desig=%s\n",name,satno,desig);
+        rtktrace(4,"no tle data: name=%s satno=%s desig=%s\n",name,satno,desig);
         return 0;
     }
     tutc=gpst2utc(time);

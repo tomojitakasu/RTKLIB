@@ -94,8 +94,8 @@ int main(int argc, char **argv)
        else ifile=argv[i];
     }
     if (trl>0) {
-       traceopen("diffeph.trace");
-       tracelevel(trl);
+       rtktraceopen("diffeph.trace");
+       rtktracelevel(trl);
     }
     t0=epoch2time(ep0);
     
@@ -120,6 +120,6 @@ int main(int argc, char **argv)
        printtec(i+1,time,tint*i,&nav,rpos,nlat,nlon,dpos,fp);
     }
     fclose(fp);
-    if (trl>0) traceclose();
+    if (trl>0) rtktraceclose();
     return 0;
 }

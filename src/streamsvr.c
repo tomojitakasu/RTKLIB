@@ -487,7 +487,7 @@ static void *strsvrthread(void *arg)
     uint8_t buff[1024];
     int i,n,cyc;
     
-    tracet(3,"strsvrthread:\n");
+    rtktracet(3,"strsvrthread:\n");
     
     svr->tick=tickget();
     tick_nmea=svr->tick-1000;
@@ -510,11 +510,11 @@ static void *strsvrthread(void *arg)
             /* write data to log stream */
             strwrite(svr->strlog,svr->buff,n);
             
-            lock(&svr->lock);
+            rtklock(&svr->lock);
             for (i=0;i<n&&svr->npb<svr->buffsize;i++) {
                 svr->pbuf[svr->npb++]=svr->buff[i];
             }
-            unlock(&svr->lock);
+            rtkunlock(&svr->lock);
         }
         for (i=1;i<svr->nstr;i++) {
             
@@ -561,7 +561,7 @@ extern void strsvrinit(strsvr_t *svr, int nout)
 {
     int i;
     
-    tracet(3,"strsvrinit: nout=%d\n",nout);
+    rtktracet(3,"strsvrinit: nout=%d\n",nout);
     
     svr->state=0;
     svr->cycle=0;
@@ -578,7 +578,7 @@ extern void strsvrinit(strsvr_t *svr, int nout)
     svr->nstr=i;
     for (i=0;i<16;i++) svr->conv[i]=NULL;
     svr->thread=0;
-    initlock(&svr->lock);
+    rtkinitlock(&svr->lock);
 }
 /* start stream server ---------------------------------------------------------
 * start stream server
@@ -637,7 +637,7 @@ extern int strsvrstart(strsvr_t *svr, int *opts, int *strs, char **paths,
     int i,rw,stropt[5]={0};
     char file1[MAXSTRPATH],file2[MAXSTRPATH],*p;
     
-    tracet(3,"strsvrstart:\n");
+    rtktracet(3,"strsvrstart:\n");
     
     if (svr->state) return 0;
     
@@ -721,7 +721,7 @@ extern void strsvrstop(strsvr_t *svr, char **cmds)
 {
     int i;
     
-    tracet(3,"strsvrstop:\n");
+    rtktracet(3,"strsvrstop:\n");
     
     for (i=0;i<svr->nstr;i++) {
         if (cmds[i]) strsendcmd(svr->stream+i,cmds[i]);
@@ -751,7 +751,7 @@ extern void strsvrstat(strsvr_t *svr, int *stat, int *log_stat, int *byte,
     char s[MAXSTRMSG]="",*p=msg;
     int i,bps_in;
     
-    tracet(4,"strsvrstat:\n");
+    rtktracet(4,"strsvrstat:\n");
     
     for (i=0;i<svr->nstr;i++) {
         if (i==0) {
@@ -778,7 +778,7 @@ extern int strsvrpeek(strsvr_t *svr, uint8_t *buff, int nmax)
     
     if (!svr->state) return 0;
     
-    lock(&svr->lock);
+    rtklock(&svr->lock);
     n=svr->npb<nmax?svr->npb:nmax;
     if (n>0) {
         memcpy(buff,svr->pbuf,n);
@@ -787,7 +787,7 @@ extern int strsvrpeek(strsvr_t *svr, uint8_t *buff, int nmax)
         memmove(svr->pbuf,svr->pbuf+n,svr->npb-n);
     }
     svr->npb-=n;
-    unlock(&svr->lock);
+    rtkunlock(&svr->lock);
     return n;
 }
 

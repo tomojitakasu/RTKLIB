@@ -133,7 +133,7 @@ extern int pppoutstat(rtk_t *rtk, char *buff)
     
     if (!rtk->sol.stat) return 0;
     
-    trace(3,"pppoutstat:\n");
+    rtktrace(3,"pppoutstat:\n");
     
     tow=time2gpst(rtk->sol.time,&week);
     
@@ -201,7 +201,7 @@ static void testeclipse(const obsd_t *obs, int n, const nav_t *nav, double *rs)
     int i,j;
     const char *type;
     
-    trace(3,"testeclipse:\n");
+    rtktrace(3,"testeclipse:\n");
     
     /* unit vector of sun direction (ecef) */
     sunmoonpos(gpst2utc(obs[0].time),erpv,rsun,NULL,NULL);
@@ -223,7 +223,7 @@ static void testeclipse(const obsd_t *obs, int n, const nav_t *nav, double *rs)
         /* test eclipse */
         if (ang<PI/2.0||r*sin(ang)>RE_WGS84) continue;
         
-        trace(3,"eclipsing sat excluded %s sat=%2d\n",time_str(obs[0].time,0),
+        rtktrace(3,"eclipsing sat excluded %s sat=%2d\n",time_str(obs[0].time,0),
               obs[i].sat);
         
         for (j=0;j<3;j++) rs[j+i*6]=0.0;
@@ -405,12 +405,12 @@ static void detslp_ll(rtk_t *rtk, const obsd_t *obs, int n)
 {
     int i,j;
     
-    trace(3,"detslp_ll: n=%d\n",n);
+    rtktrace(3,"detslp_ll: n=%d\n",n);
     
     for (i=0;i<n&&i<MAXOBS;i++) for (j=0;j<rtk->opt.nf;j++) {
         if (obs[i].L[j]==0.0||!(obs[i].LLI[j]&3)) continue;
         
-        trace(3,"detslp_ll: slip detected sat=%2d f=%d\n",obs[i].sat,j+1);
+        rtktrace(3,"detslp_ll: slip detected sat=%2d f=%d\n",obs[i].sat,j+1);
         
         rtk->ssat[obs[i].sat-1].slip[j]=1;
     }
@@ -421,7 +421,7 @@ static void detslp_gf(rtk_t *rtk, const obsd_t *obs, int n, const nav_t *nav)
     double g0,g1;
     int i,j;
     
-    trace(3,"detslp_gf: n=%d\n",n);
+    rtktrace(3,"detslp_gf: n=%d\n",n);
     
     for (i=0;i<n&&i<MAXOBS;i++) {
         
@@ -430,10 +430,10 @@ static void detslp_gf(rtk_t *rtk, const obsd_t *obs, int n, const nav_t *nav)
         g0=rtk->ssat[obs[i].sat-1].gf[0];
         rtk->ssat[obs[i].sat-1].gf[0]=g1;
         
-        trace(4,"detslip_gf: sat=%2d gf0=%8.3f gf1=%8.3f\n",obs[i].sat,g0,g1);
+        rtktrace(4,"detslip_gf: sat=%2d gf0=%8.3f gf1=%8.3f\n",obs[i].sat,g0,g1);
         
         if (g0!=0.0&&fabs(g1-g0)>rtk->opt.thresslip) {
-            trace(3,"detslip_gf: slip detected sat=%2d gf=%8.3f->%8.3f\n",
+            rtktrace(3,"detslip_gf: slip detected sat=%2d gf=%8.3f->%8.3f\n",
                   obs[i].sat,g0,g1);
             
             for (j=0;j<rtk->opt.nf;j++) rtk->ssat[obs[i].sat-1].slip[j]|=1;
@@ -446,7 +446,7 @@ static void detslp_mw(rtk_t *rtk, const obsd_t *obs, int n, const nav_t *nav)
     double w0,w1;
     int i,j;
     
-    trace(3,"detslp_mw: n=%d\n",n);
+    rtktrace(3,"detslp_mw: n=%d\n",n);
     
     for (i=0;i<n&&i<MAXOBS;i++) {
         if ((w1=mwmeas(obs+i,nav))==0.0) continue;
@@ -454,10 +454,10 @@ static void detslp_mw(rtk_t *rtk, const obsd_t *obs, int n, const nav_t *nav)
         w0=rtk->ssat[obs[i].sat-1].mw[0];
         rtk->ssat[obs[i].sat-1].mw[0]=w1;
         
-        trace(4,"detslip_mw: sat=%2d mw0=%8.3f mw1=%8.3f\n",obs[i].sat,w0,w1);
+        rtktrace(4,"detslip_mw: sat=%2d mw0=%8.3f mw1=%8.3f\n",obs[i].sat,w0,w1);
         
         if (w0!=0.0&&fabs(w1-w0)>THRES_MW_JUMP) {
-            trace(3,"detslip_mw: slip detected sat=%2d mw=%8.3f->%8.3f\n",
+            rtktrace(3,"detslip_mw: slip detected sat=%2d mw=%8.3f->%8.3f\n",
                   obs[i].sat,w0,w1);
             
             for (j=0;j<rtk->opt.nf;j++) rtk->ssat[obs[i].sat-1].slip[j]|=1;
@@ -470,7 +470,7 @@ static void udpos_ppp(rtk_t *rtk)
     double *F,*P,*FP,*x,*xp,pos[3],Q[9]={0},Qv[9];
     int i,j,*ix,nx;
     
-    trace(3,"udpos_ppp:\n");
+    rtktrace(3,"udpos_ppp:\n");
     
     /* fixed mode */
     if (rtk->opt.mode==PMODE_PPP_FIXED) {
@@ -550,7 +550,7 @@ static void udclk_ppp(rtk_t *rtk)
     double dtr;
     int i;
     
-    trace(3,"udclk_ppp:\n");
+    rtktrace(3,"udclk_ppp:\n");
     
     /* initialize every epoch for clock (white noise) */
     for (i=0;i<NSYS;i++) {
@@ -571,7 +571,7 @@ static void udtrop_ppp(rtk_t *rtk)
     double pos[3],azel[]={0.0,PI/2.0},ztd,var;
     int i=IT(&rtk->opt),j;
     
-    trace(3,"udtrop_ppp:\n");
+    rtktrace(3,"udtrop_ppp:\n");
     
     if (rtk->x[i]==0.0) {
         ecef2pos(rtk->sol.rr,pos);
@@ -599,7 +599,7 @@ static void udiono_ppp(rtk_t *rtk, const obsd_t *obs, int n, const nav_t *nav)
     char *p;
     int i,j,gap_resion=GAP_RESION;
     
-    trace(3,"udiono_ppp:\n");
+    rtktrace(3,"udiono_ppp:\n");
     
     if ((p=strstr(rtk->opt.pppopt,"-GAP_RESION="))) {
         sscanf(p,"-GAP_RESION=%d",&gap_resion);
@@ -635,7 +635,7 @@ static void uddcb_ppp(rtk_t *rtk)
 {
     int i=ID(&rtk->opt);
     
-    trace(3,"uddcb_ppp:\n");
+    rtktrace(3,"uddcb_ppp:\n");
     
     if (rtk->x[i]==0.0) {
         initx(rtk,1E-6,VAR_DCB,i);
@@ -648,7 +648,7 @@ static void udbias_ppp(rtk_t *rtk, const obsd_t *obs, int n, const nav_t *nav)
     double freq1,freq2,ion,dantr[NFREQ]={0},dants[NFREQ]={0};
     int i,j,k,f,sat,slip[MAXOBS]={0},clk_jump=0;
     
-    trace(3,"udbias  : n=%d\n",n);
+    rtktrace(3,"udbias  : n=%d\n",n);
     
     /* handle day-boundary clock jump */
     if (rtk->opt.posopt[5]) {
@@ -710,7 +710,7 @@ static void udbias_ppp(rtk_t *rtk, const obsd_t *obs, int n, const nav_t *nav)
                 j=IB(i+1,f,&rtk->opt);
                 if (rtk->x[j]!=0.0) rtk->x[j]+=offset/k;
             }
-            trace(2,"phase-code jump corrected: %s n=%2d dt=%12.9fs\n",
+            rtktrace(2,"phase-code jump corrected: %s n=%2d dt=%12.9fs\n",
                   time_str(rtk->sol.time,0),k,offset/k/CLIGHT);
         }
         for (i=0;i<n&&i<MAXOBS;i++) {
@@ -727,14 +727,14 @@ static void udbias_ppp(rtk_t *rtk, const obsd_t *obs, int n, const nav_t *nav)
             /* reset fix flags */
             for (k=0;k<MAXSAT;k++) rtk->ambc[sat-1].flags[k]=0;
             
-            trace(5,"udbias_ppp: sat=%2d bias=%.3f\n",sat,bias[i]);
+            rtktrace(5,"udbias_ppp: sat=%2d bias=%.3f\n",sat,bias[i]);
         }
     }
 }
 /* temporal update of states --------------------------------------------------*/
 static void udstate_ppp(rtk_t *rtk, const obsd_t *obs, int n, const nav_t *nav)
 {
-    trace(3,"udstate_ppp: n=%d\n",n);
+    rtktrace(3,"udstate_ppp: n=%d\n",n);
     
     /* temporal update of position */
     udpos_ppp(rtk);
@@ -963,12 +963,12 @@ static int ppp_res(int post, const obsd_t *obs, int n, const double *rs,
                     vart+SQR(C)*vari+var_rs[i];
             if (sys==SYS_GLO&&j%2==1) var[nv]+=VAR_GLO_IFB;
             
-            trace(4,"%s sat=%2d %s%d res=%9.4f sig=%9.4f el=%4.1f\n",str,sat,
+            rtktrace(4,"%s sat=%2d %s%d res=%9.4f sig=%9.4f el=%4.1f\n",str,sat,
                   j%2?"P":"L",j/2+1,v[nv],sqrt(var[nv]),azel[1+i*2]*R2D);
             
             /* reject satellite by pre-fit residuals */
             if (!post&&opt->maxinno>0.0&&fabs(v[nv])>opt->maxinno) {
-                trace(2,"outlier (%d) rejected %s sat=%2d %s%d res=%9.4f el=%4.1f\n",
+                rtktrace(2,"outlier (%d) rejected %s sat=%2d %s%d res=%9.4f el=%4.1f\n",
                       post,str,sat,j%2?"P":"L",j/2+1,v[nv],azel[1+i*2]*R2D);
                 exc[i]=1; rtk->ssat[sat-1].rejc[j%2]++;
                 continue;
@@ -989,7 +989,7 @@ static int ppp_res(int post, const obsd_t *obs, int n, const double *rs,
             vmax=ve[j]; maxobs=obsi[j]; maxfrq=frqi[j]; rej=j;
         }
         sat=obs[maxobs].sat;
-        trace(2,"outlier (%d) rejected %s sat=%2d %s%d res=%9.4f el=%4.1f\n",
+        rtktrace(2,"outlier (%d) rejected %s sat=%2d %s%d res=%9.4f el=%4.1f\n",
             post,str,sat,maxfrq%2?"P":"L",maxfrq/2+1,vmax,azel[1+maxobs*2]*R2D);
         exc[maxobs]=1; rtk->ssat[sat-1].rejc[maxfrq%2]++; stat=0;
         ve[rej]=0;
@@ -1084,7 +1084,7 @@ extern void pppos(rtk_t *rtk, const obsd_t *obs, int n, const nav_t *nav)
     int i,j,nv,info,svh[MAXOBS],exc[MAXOBS]={0},stat=SOLQ_SINGLE;
     
     time2str(obs[0].time,str,2);
-    trace(3,"pppos   : time=%s nx=%d n=%d\n",str,rtk->nx,n);
+    rtktrace(3,"pppos   : time=%s nx=%d n=%d\n",str,rtk->nx,n);
     
     rs=mat(6,n); dts=mat(2,n); var=mat(1,n); azel=zeros(2,n);
     
@@ -1116,12 +1116,12 @@ extern void pppos(rtk_t *rtk, const obsd_t *obs, int n, const nav_t *nav)
         
         /* prefit residuals */
         if (!(nv=ppp_res(0,obs,n,rs,dts,var,svh,dr,exc,nav,xp,rtk,v,H,R,azel))) {
-            trace(2,"%s ppp (%d) no valid obs data\n",str,i+1);
+            rtktrace(2,"%s ppp (%d) no valid obs data\n",str,i+1);
             break;
         }
         /* measurement update of ekf states */
-        if ((info=filter(xp,Pp,H,v,R,rtk->nx,nv))) {
-            trace(2,"%s ppp (%d) filter error info=%d\n",str,i+1,info);
+        if ((info=rtkfilter(xp,Pp,H,v,R,rtk->nx,nv))) {
+            rtktrace(2,"%s ppp (%d) rtkfilter error info=%d\n",str,i+1,info);
             break;
         }
         /* postfit residuals */
@@ -1133,7 +1133,7 @@ extern void pppos(rtk_t *rtk, const obsd_t *obs, int n, const nav_t *nav)
         }
     }
     if (i>=MAX_ITER) {
-        trace(2,"%s ppp (%d) iteration overflows\n",str,i);
+        rtktrace(2,"%s ppp (%d) iteration overflows\n",str,i);
     }
     if (stat==SOLQ_PPP) {
         
@@ -1157,7 +1157,7 @@ extern void pppos(rtk_t *rtk, const obsd_t *obs, int n, const nav_t *nav)
         if (stat==SOLQ_FIX&&test_hold_amb(rtk)) {
             matcpy(rtk->x,xp,rtk->nx,1);
             matcpy(rtk->P,Pp,rtk->nx,rtk->nx);
-            trace(2,"%s hold ambiguity\n",str);
+            rtktrace(2,"%s hold ambiguity\n",str);
             rtk->nfix=0;
         }
     }

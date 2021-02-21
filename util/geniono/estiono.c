@@ -199,8 +199,8 @@ static int est_iono(obs_t *obs, nav_t *nav, double *rr, FILE *fp)
         /* ionosphere residuals */
         if ((nv=res_iono(obs+i,n,azel,x,nx,v,H,R))<=0) break;
         
-        /* filter */
-        if ((info=filter(x,P,H,v,R,nx,nv))) break;
+        /* rtkfilter */
+        if ((info=rtkfilter(x,P,H,v,R,nx,nv))) break;
         
         /* output ionopshere parameters */
         out_iono(obs[i].time,x,P,nx,fp);
