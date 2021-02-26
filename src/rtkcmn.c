@@ -3027,24 +3027,24 @@ static char file_trace[1024];   /* rtktrace file */
 static int level_trace=0;       /* level of rtktrace */
 static uint32_t tick_trace=0;   /* tick time at rtktraceopen (ms) */
 static gtime_t time_trace={0};  /* time at rtktraceopen */
-static lock_t lock_trace;       /* lock for rtktrace */
+static rtklock_t lock_trace;       /* lock for rtktrace */
 
 static void traceswap(void)
 {
     gtime_t time=utc2gpst(timeget());
     char path[1024];
     
-    lock(&lock_trace);
+    rtklock(&lock_trace);
     
     if ((int)(time2gpst(time      ,NULL)/INT_SWAP_TRAC)==
         (int)(time2gpst(time_trace,NULL)/INT_SWAP_TRAC)) {
-        unlock(&lock_trace);
+        rtkunlock(&lock_trace);
         return;
     }
     time_trace=time;
     
     if (!reppath(file_trace,path,time,"","")) {
-        unlock(&lock_trace);
+        rtkunlock(&lock_trace);
         return;
     }
     if (fp_trace) fclose(fp_trace);
@@ -3052,7 +3052,7 @@ static void traceswap(void)
     if (!(fp_trace=fopen(path,"w"))) {
         fp_trace=stderr;
     }
-    unlock(&lock_trace);
+    rtkunlock(&lock_trace);
 }
 extern void rtktraceopen(const char *file)
 {
@@ -3064,7 +3064,7 @@ extern void rtktraceopen(const char *file)
     strcpy(file_trace,file);
     tick_trace=tickget();
     time_trace=time;
-    initlock(&lock_trace);
+    rtkinitlock(&lock_trace);
 }
 extern void rtktraceclose(void)
 {
