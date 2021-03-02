@@ -185,7 +185,7 @@ static int decode_measepoch(raw_t *raw)
     else if (strstr(raw->opt,"-AUX2")) ant_sel=2;
     
     if (raw->len<20) {
-        trace(2,"sbf measepoch length error: len=%d\n",raw->len);
+        rtktrace(2,"sbf measepoch length error: len=%d\n",raw->len);
         return -1;
     }
     n1  =U1(p);
@@ -193,7 +193,7 @@ static int decode_measepoch(raw_t *raw)
     len2=U1(p+2);
     
     if (U1(p+3)&0x80) {
-        trace(2,"sbf measepoch scrambled\n");
+        rtktrace(2,"sbf measepoch scrambled\n");
         return -1;
     }
     if (raw->outtype) {
@@ -210,17 +210,17 @@ static int decode_measepoch(raw_t *raw)
         else if (sig>=8&&sig<=11) fcn=(info>>3)-8;
         
         if (ant!=ant_sel) {
-            trace(3,"sbf measepoch ant error: svid=%d ant=%d\n",svid,ant);
+            rtktrace(3,"sbf measepoch ant error: svid=%d ant=%d\n",svid,ant);
             p+=len1+len2*n2;
             continue;
         }
         if (!(sat=svid2sat(svid))) {
-            trace(3,"sbf measepoch svid error: svid=%d\n",svid);
+            rtktrace(3,"sbf measepoch svid error: svid=%d\n",svid);
             p+=len1+len2*n2;
             continue;
         }
         if ((idx=sig2idx(sat,sig,raw->opt,&code))<0) {
-            trace(2,"sbf measepoch sig error: sat=%d sig=%d\n",sat,sig);
+            rtktrace(2,"sbf measepoch sig error: sat=%d sig=%d\n",sat,sig);
             p+=len1+len2*n2;
             continue;
         }
@@ -258,11 +258,11 @@ static int decode_measepoch(raw_t *raw)
             if (sig==31) sig+=(info>>3)*32;
             
             if (ant!=ant_sel) {
-                trace(3,"sbf measepoch ant error: sat=%d ant=%d\n",sat,ant);
+                rtktrace(3,"sbf measepoch ant error: sat=%d ant=%d\n",sat,ant);
                 continue;
             }
             if ((idx=sig2idx(sat,sig,raw->opt,&code))<0) {
-                trace(3,"sbf measepoch sig error: sat=%d sig=%d\n",sat,sig);
+                rtktrace(3,"sbf measepoch sig error: sat=%d sig=%d\n",sat,sig);
                 continue;
             }
             P2=0.0;
@@ -362,16 +362,16 @@ static int decode_rawca(raw_t *raw, int sys)
     int i,svid,sat,prn,id,ret;
     
     if (raw->len<60) {
-        trace(2,"sbf rawca length error: sys=%d len=%d\n",sys,raw->len);
+        rtktrace(2,"sbf rawca length error: sys=%d len=%d\n",sys,raw->len);
         return -1;
     }
     svid=U1(p);
     if (!(sat=svid2sat(svid))||satsys(sat,&prn)!=sys) {
-        trace(2,"sbf rawca svid error: sys=%d svid=%d\n",sys,svid);
+        rtktrace(2,"sbf rawca svid error: sys=%d svid=%d\n",sys,svid);
         return -1;
     }
     if (!U1(p+1)) {
-        trace(3,"sbf rawca parity/crc error: sys=%d prn=%d\n",sys,prn);
+        rtktrace(3,"sbf rawca parity/crc error: sys=%d prn=%d\n",sys,prn);
         return 0;
     }
     if (raw->outtype) {
@@ -383,7 +383,7 @@ static int decode_rawca(raw_t *raw, int sys)
     id=getbitu(buff,43,3);
 
     if (id<1||id>5) {
-        trace(2,"sbf rawca subframe id error: sys=%d prn=%d id=%d\n",sys,prn,id);
+        rtktrace(2,"sbf rawca subframe id error: sys=%d prn=%d id=%d\n",sys,prn,id);
         return -1;
     }
     memcpy(raw->subfrm[sat-1]+(id-1)*30,buff,30);
@@ -413,16 +413,16 @@ static int decode_glorawca(raw_t *raw)
     int i,svid,sat,prn,m;
     
     if (raw->len<32) {
-        trace(2,"sbf glorawca length error: len=%d\n",raw->len);
+        rtktrace(2,"sbf glorawca length error: len=%d\n",raw->len);
         return -1;
     }
     svid=U1(p);
     if (!(sat=svid2sat(svid))||satsys(sat,&prn)!=SYS_GLO) {
-        trace(3,"sbf glorawca svid error: svid=%d\n",svid);
+        rtktrace(3,"sbf glorawca svid error: svid=%d\n",svid);
         return (svid==62)?0:-1; /* svid=62: slot unknown */
     }
     if (!U1(p+1)) {
-        trace(3,"sbf glorawca parity/crc error: prn=%d\n",prn);
+        rtktrace(3,"sbf glorawca parity/crc error: prn=%d\n",prn);
         return 0;
     }
     if (raw->outtype) {
@@ -433,7 +433,7 @@ static int decode_glorawca(raw_t *raw)
     }
     m=getbitu(buff,1,4);
     if (m<1||m>15) {
-        trace(2,"sbf glorawca string number error: prn=%d m=%d\n",prn,m);
+        rtktrace(2,"sbf glorawca string number error: prn=%d m=%d\n",prn,m);
         return -1;
     }
     time=(gtime_t *)(raw->subfrm[sat-1]+150);
@@ -450,7 +450,7 @@ static int decode_glorawca(raw_t *raw)
     matcpy(raw->nav.utc_glo,utc,8,1);
 
     if (geph.sat!=sat) {
-        trace(2,"sbf glorawca satellite error: sat=%d %d\n",sat,geph.sat);
+        rtktrace(2,"sbf glorawca satellite error: sat=%d %d\n",sat,geph.sat);
         return -1;
     }
     geph.frq=(int)U1(p+4)-8;
@@ -475,25 +475,25 @@ static int decode_galrawfnav(raw_t *raw)
     if (strstr(raw->opt,"-GALINAV")) return 0;
     
     if (raw->len<52) {
-        trace(2,"sbf galrawfnav length error: len=%d\n",raw->len);
+        rtktrace(2,"sbf galrawfnav length error: len=%d\n",raw->len);
         return -1;
     }
     svid=U1(p);
     src =U1(p+3)&0x1f;
     
     if (!(sat=svid2sat(svid))||satsys(sat,&prn)!=SYS_GAL) {
-        trace(2,"sbf galrawfnav svid error: svid=%d src=%d\n",svid,src);
+        rtktrace(2,"sbf galrawfnav svid error: svid=%d src=%d\n",svid,src);
         return -1;
     }
     if (!U1(p+1)) {
-        trace(3,"sbf galrawfnav parity/crc error: prn=%d src=%d\n",prn,src);
+        rtktrace(3,"sbf galrawfnav parity/crc error: prn=%d src=%d\n",prn,src);
         return 0;
     }
     if (raw->outtype) {
         sprintf(raw->msgtype+strlen(raw->msgtype)," prn=%d src=%d",prn,src);
     }
     if (src!=20&&src!=22) { /* E5a or E5 AltBOC */
-        trace(2,"sbf galrawfnav source error: prn=%d src=%d\n",prn,src);
+        rtktrace(2,"sbf galrawfnav source error: prn=%d src=%d\n",prn,src);
         return -1;
     }
     for (i=0;i<8;i++) {
@@ -503,7 +503,7 @@ static int decode_galrawfnav(raw_t *raw)
     
     if (type==63) return 0; /* dummy page */
     if (type<1||type>6) {
-        trace(2,"sbf galrawfnav page type error: prn=%d type=%d\n",prn,type);
+        rtktrace(2,"sbf galrawfnav page type error: prn=%d type=%d\n",prn,type);
         return -1;
     }
     /* save 244 bits page (31 bytes * 6 page) */
@@ -513,7 +513,7 @@ static int decode_galrawfnav(raw_t *raw)
     if (!decode_gal_fnav(raw->subfrm[sat-1]+128,&eph,ion,utc)) return 0;
     
     if (eph.sat!=sat) {
-        trace(2,"sbf galrawfnav satellite error: sat=%d %d\n",sat,eph.sat);
+        rtktrace(2,"sbf galrawfnav satellite error: sat=%d %d\n",sat,eph.sat);
         return -1;
     }
     eph.code|=(1<<1); /* data source: E5a */
@@ -543,25 +543,25 @@ static int decode_galrawinav(raw_t *raw)
     if (strstr(raw->opt,"-GALFNAV")) return 0;
     
     if (raw->len<52) {
-        trace(2,"sbf galrawinav length error: len=%d\n",raw->len);
+        rtktrace(2,"sbf galrawinav length error: len=%d\n",raw->len);
         return -1;
     }
     svid=U1(p);
     src =U1(p+3)&0x1f;
     
     if (!(sat=svid2sat(svid))||satsys(sat,&prn)!=SYS_GAL) {
-        trace(2,"sbf galrawinav svid error: svid=%d src=%d\n",svid,src);
+        rtktrace(2,"sbf galrawinav svid error: svid=%d src=%d\n",svid,src);
         return -1;
     }
     if (!U1(p+1)) {
-        trace(3,"sbf galrawinav parity/crc error: prn=%d src=%d\n",prn,src);
+        rtktrace(3,"sbf galrawinav parity/crc error: prn=%d src=%d\n",prn,src);
         return 0;
     }
     if (raw->outtype) {
         sprintf(raw->msgtype+strlen(raw->msgtype)," prn=%d src=%d",prn,src);
     }
     if (src!=17&&src!=21&&src!=22) { /* E1, E5b or E5 AltBOC */
-        trace(2,"sbf galrawinav source error: prn=%d src=%d\n",prn,src);
+        rtktrace(2,"sbf galrawinav source error: prn=%d src=%d\n",prn,src);
         return -1;
     }
     for (i=0,p+=6;i<8;i++,p+=4) {
@@ -573,7 +573,7 @@ static int decode_galrawinav(raw_t *raw)
     page2=getbitu(buff,115,1);
 
     if (part1!=0||part2!=1) {
-        trace(3,"sbf galrawinav part error: prn=%d even/odd=%d %d\n",prn,part1,
+        rtktrace(3,"sbf galrawinav part error: prn=%d even/odd=%d %d\n",prn,part1,
               part2);
         return -1;
     }
@@ -594,7 +594,7 @@ static int decode_galrawinav(raw_t *raw)
     if (!decode_gal_inav(raw->subfrm[sat-1],&eph,ion,utc)) return 0;
     
     if (eph.sat!=sat) {
-        trace(2,"sbf galrawinav satellite error: sat=%d %d\n",sat,eph.sat);
+        rtktrace(2,"sbf galrawinav satellite error: sat=%d %d\n",sat,eph.sat);
         return -1;
     }
     eph.code|=(src==17)?(1<<0):(1<<2); /* data source: E1 or E5b */
@@ -620,16 +620,16 @@ static int decode_georawl1(raw_t *raw)
     int i,svid,sat,prn;
     
     if (raw->len<52) {
-        trace(2,"sbf georawl1 length error: len=%d\n",raw->len);
+        rtktrace(2,"sbf georawl1 length error: len=%d\n",raw->len);
         return -1;
     }
     svid=U1(p);
     if (!(sat=svid2sat(svid))||satsys(sat,&prn)!=SYS_SBS) {
-        trace(2,"sbf georawl1 svid error: svid=%d\n",svid);
+        rtktrace(2,"sbf georawl1 svid error: svid=%d\n",svid);
         return -1;
     }
     if (!U1(p+1)) {
-        trace(3,"sbf georawl1 parity/crc error: prn=%d err=%d\n",prn,U1(p+2));
+        rtktrace(3,"sbf georawl1 parity/crc error: prn=%d err=%d\n",prn,U1(p+2));
         return 0;
     }
     if (raw->outtype) {
@@ -654,16 +654,16 @@ static int decode_bdsraw(raw_t *raw)
     int i,id,svid,sat,prn,pgn;
     
     if (raw->len<52) {
-        trace(2,"sbf bdsraw length error: len=%d\n",raw->len);
+        rtktrace(2,"sbf bdsraw length error: len=%d\n",raw->len);
         return -1;
     }
     svid=U1(p);
     if (!(sat=svid2sat(svid))||satsys(sat,&prn)!=SYS_CMP) {
-        trace(2,"sbf bdsraw svid error: svid=%d\n",svid);
+        rtktrace(2,"sbf bdsraw svid error: svid=%d\n",svid);
         return -1;
     }
     if (!U1(p+1)) {
-        trace(3,"sbf bdsraw parity/crc error: prn=%d\n",prn);
+        rtktrace(3,"sbf bdsraw parity/crc error: prn=%d\n",prn);
         return 0;
     }
     if (raw->outtype) {
@@ -674,7 +674,7 @@ static int decode_bdsraw(raw_t *raw)
     }
     id=getbitu(buff,15,3); /* subframe ID */
     if (id<1||id>5) {
-        trace(2,"sbf bdsraw id error: prn=%d id=%d\n",prn,id);
+        rtktrace(2,"sbf bdsraw id error: prn=%d id=%d\n",prn,id);
         return -1;
     }
     if (prn>=6&&prn<=58) { /* IGSO/MEO */
@@ -730,16 +730,16 @@ static int decode_navicraw(raw_t *raw)
     int i,id,svid,sat,prn,ret=0;
     
     if (raw->len<52) {
-        trace(2,"sbf navicraw length error: len=%d\n",raw->len);
+        rtktrace(2,"sbf navicraw length error: len=%d\n",raw->len);
         return -1;
     }
     svid=U1(p);
     if (!(sat=svid2sat(svid))||satsys(sat,&prn)!=SYS_IRN) {
-        trace(2,"sbf navicraw svid error: svid=%d\n",svid);
+        rtktrace(2,"sbf navicraw svid error: svid=%d\n",svid);
         return -1;
     }
     if (!U1(p+1)) {
-        trace(3,"sbf navicraw parity/crc error: prn=%d err=%d\n",prn,U1(p+2));
+        rtktrace(3,"sbf navicraw parity/crc error: prn=%d err=%d\n",prn,U1(p+2));
         return 0;
     }
     if (raw->outtype) {
@@ -791,17 +791,17 @@ static int decode_sbf(raw_t *raw)
     int type=U2(p+4)&0x1fff;
     
     if (rtk_crc16(p+4,raw->len-4)!=U2(p+2)) {
-        trace(2,"sbf crc error: type=%d len=%d\n",type,raw->len);
+        rtktrace(2,"sbf crc error: type=%d len=%d\n",type,raw->len);
         return -1;
     }
     if (raw->len<14) {
-        trace(2,"sbf length error: type=%d len=%d\n",type,raw->len);
+        rtktrace(2,"sbf length error: type=%d len=%d\n",type,raw->len);
         return -1;
     }
     tow =U4(p+8);
     week=U2(p+12);
     if (tow==4294967295u||week==65535u) {
-        trace(2,"sbf tow/week error: type=%d len=%d\n",type,raw->len);
+        rtktrace(2,"sbf tow/week error: type=%d len=%d\n",type,raw->len);
         return -1;
     }
     raw->time=gpst2time(week,tow*0.001);
@@ -822,7 +822,7 @@ static int decode_sbf(raw_t *raw)
         case SBF_QZSRAWL1CA: return decode_qzsrawl1ca(raw);
         case SBF_NAVICRAW  : return decode_navicraw  (raw);
     }
-    trace(3,"sbf unsupported message: type=%d\n",type);
+    rtktrace(3,"sbf unsupported message: type=%d\n",type);
     return 0;
 }
 /* synchronize SBF block header ----------------------------------------------*/
@@ -864,7 +864,7 @@ static int sync_sbf(uint8_t *buff, uint8_t data)
 *-----------------------------------------------------------------------------*/
 extern int input_sbf(raw_t *raw, uint8_t data)
 {
-    trace(5,"input_sbf: data=%02x\n",data);
+    rtktrace(5,"input_sbf: data=%02x\n",data);
     
     if (raw->nbyte==0) {
         if (sync_sbf(raw->buff,data)) raw->nbyte=2;
@@ -874,7 +874,7 @@ extern int input_sbf(raw_t *raw, uint8_t data)
     if (raw->nbyte<8) return 0;
     
     if ((raw->len=U2(raw->buff+6))>MAXRAWLEN) {
-        trace(2,"sbf length error: len=%d\n",raw->len);
+        rtktrace(2,"sbf length error: len=%d\n",raw->len);
         raw->nbyte=0;
         return -1;
     }
@@ -894,7 +894,7 @@ extern int input_sbff(raw_t *raw, FILE *fp)
 {
     int i,data;
     
-    trace(4,"input_sbff:\n");
+    rtktrace(4,"input_sbff:\n");
     
     if (raw->nbyte==0) {
         for (i=0;;i++) {
@@ -907,7 +907,7 @@ extern int input_sbff(raw_t *raw, FILE *fp)
     raw->nbyte=8;
     
     if ((raw->len=U2(raw->buff+6))>MAXRAWLEN) {
-        trace(2,"sbf length error: len=%d\n",raw->len);
+        rtktrace(2,"sbf length error: len=%d\n",raw->len);
         raw->nbyte=0;
         return -1;
     }

@@ -45,7 +45,7 @@ static void updatertcm(gtime_t time, rtcm_t *rtcm, nav_t *nav, FILE *fp)
     while (input_rtcm3f(rtcm,fp)>=0) {
         time2str(time      ,s1,0);
         time2str(rtcm->time,s2,0);
-        trace(2,"rtcm.time=%s time=%s\n",s1,s2);
+        rtktrace(2,"rtcm.time=%s time=%s\n",s1,s2);
         
         if (timediff(rtcm->time,time)>=5.0) break;
     }
@@ -166,8 +166,8 @@ int main(int argc, char **argv)
        else files[n++]=argv[i];
     }
     if (trl>0) {
-       traceopen("diffeph.trace");
-       tracelevel(trl);
+       rtktraceopen("diffeph.trace");
+       rtktracelevel(trl);
     }
     t0=epoch2time(ep0);
     
@@ -231,6 +231,6 @@ int main(int argc, char **argv)
        }
     }
     if (fp) fclose(fp);
-    if (trl>0) traceclose();
+    if (trl>0) rtktraceclose();
     return 0;
 }

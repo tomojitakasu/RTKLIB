@@ -117,15 +117,15 @@ int main(int argc, char **argv)
         return -1;
     }
     if (trl>0) {
-        traceopen("dumpssr.trace");
-        tracelevel(trl);
+        rtktraceopen("dumpssr.trace");
+        rtktracelevel(trl);
     }
     printhead(topt,mopt);
     
     dumpssrmsg(fp,sat,topt,mopt);
     
     fclose(fp);
-    traceclose();
+    rtktraceclose();
     
     return 0;
 }

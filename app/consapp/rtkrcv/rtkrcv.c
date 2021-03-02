@@ -247,7 +247,7 @@ static void printusage(void)
 /* external stop signal ------------------------------------------------------*/
 static void sigshut(int sig)
 {
-    trace(3,"sigshut: sig=%d\n",sig);
+    rtktrace(3,"sigshut: sig=%d\n",sig);
     
     intflg=1;
 }
@@ -260,13 +260,13 @@ static void chop(char *str)
 /* thread to send keep alive for monitor port --------------------------------*/
 static void *sendkeepalive(void *arg)
 {
-    trace(3,"sendkeepalive: start\n");
+    rtktrace(3,"sendkeepalive: start\n");
     
     while (keepalive) {
         strwrite(&moni,(uint8_t *)"\r",1);
         sleepms(INTKEEPALIVE);
     }
-    trace(3,"sendkeepalive: stop\n");
+    rtktrace(3,"sendkeepalive: stop\n");
     return NULL;
 }
 /* open monitor port ---------------------------------------------------------*/
@@ -275,7 +275,7 @@ static int openmoni(int port)
     pthread_t thread;
     char path[64];
     
-    trace(3,"openmomi: port=%d\n",port);
+    rtktrace(3,"openmomi: port=%d\n",port);
     
     sprintf(path,":%d",port);
     if (!stropen(&moni,STR_TCPSVR,STR_MODE_RW,path)) return 0;
@@ -287,7 +287,7 @@ static int openmoni(int port)
 /* close monitor port --------------------------------------------------------*/
 static void closemoni(void)
 {
-    trace(3,"closemoni:\n");
+    rtktrace(3,"closemoni:\n");
     keepalive=0;
     
     /* send disconnect message */
@@ -317,7 +317,7 @@ static int login(vt_t *vt)
 {
     char buff[256];
     
-    trace(3,"login: passwd=%s type=%d\n",passwd,vt->type);
+    rtktrace(3,"login: passwd=%s type=%d\n",passwd,vt->type);
     
     if (!*passwd||!vt->type) return 1;
     
@@ -341,7 +341,7 @@ static int readcmd(const char *file, char *cmd, int type)
     char buff[MAXSTR],*p=cmd;
     int i=0;
     
-    trace(3,"readcmd: file=%s\n",file);
+    rtktrace(3,"readcmd: file=%s\n",file);
     
     if (!(fp=fopen(file,"r"))) return 0;
     
@@ -363,7 +363,7 @@ static void readant(vt_t *vt, prcopt_t *opt, nav_t *nav)
     gtime_t time=timeget();
     int i;
     
-    trace(3,"readant:\n");
+    rtktrace(3,"readant:\n");
     
     opt->pcvr[0]=opt->pcvr[1]=pcv0;
     if (!*filopt.rcvantp) return;
@@ -405,7 +405,7 @@ static int startsvr(vt_t *vt)
     char errmsg[2048]="";
     int i,ret,stropt[8]={0};
     
-    trace(3,"startsvr:\n");
+    rtktrace(3,"startsvr:\n");
     
     /* read start commads from command files */
     for (i=0;i<3;i++) {
@@ -441,7 +441,7 @@ static int startsvr(vt_t *vt)
     }
     /* open geoid data file */
     if (solopt[0].geoid>0&&!opengeoid(solopt[0].geoid,filopt.geoid)) {
-        trace(2,"geoid data open error: %s\n",filopt.geoid);
+        rtktrace(2,"geoid data open error: %s\n",filopt.geoid);
         vt_printf(vt,"geoid data open error: %s\n",filopt.geoid);
     }
     for (i=0;*rcvopts[i].name;i++) modflgr[i]=0;
@@ -463,7 +463,7 @@ static int startsvr(vt_t *vt)
     
     /* execute start command */
     if (*startcmd&&(ret=system(startcmd))) {
-        trace(2,"command exec error: %s (%d)\n",startcmd,ret);
+        rtktrace(2,"command exec error: %s (%d)\n",startcmd,ret);
         vt_printf(vt,"command exec error: %s (%d)\n",startcmd,ret);
     }
     solopt[0].posf=strfmt[3];
@@ -473,7 +473,7 @@ static int startsvr(vt_t *vt)
     if (!rtksvrstart(&svr,svrcycle,buffsize,strtype,paths,strfmt,navmsgsel,
                      cmds,cmds_periodic,ropts,nmeacycle,nmeareq,npos,&prcopt,
                      solopt,&moni,errmsg)) {
-        trace(2,"rtk server start error (%s)\n",errmsg);
+        rtktrace(2,"rtk server start error (%s)\n",errmsg);
         vt_printf(vt,"rtk server start error (%s)\n",errmsg);
         return 0;
     }
@@ -485,7 +485,7 @@ static void stopsvr(vt_t *vt)
     char s[3][MAXRCVCMD]={"","",""},*cmds[]={NULL,NULL,NULL};
     int i,ret;
     
-    trace(3,"stopsvr:\n");
+    rtktrace(3,"stopsvr:\n");
     
     if (!svr.state) return;
     
@@ -502,7 +502,7 @@ static void stopsvr(vt_t *vt)
     
     /* execute stop command */
     if (*stopcmd&&(ret=system(stopcmd))) {
-        trace(2,"command exec error: %s (%d)\n",stopcmd,ret);
+        rtktrace(2,"command exec error: %s (%d)\n",stopcmd,ret);
         vt_printf(vt,"command exec error: %s (%d)\n",stopcmd,ret);
     }
     if (solopt[0].geoid>0) closegeoid();
@@ -536,7 +536,7 @@ static void prsolution(vt_t *vt, const sol_t *sol, const double *rb)
     double enu[3]={0},pitch=0.0,yaw=0.0,len;
     int i;
     
-    trace(4,"prsolution:\n");
+    rtktrace(4,"prsolution:\n");
     
     if (sol->time.time==0||!sol->stat) return;
     prtime(vt,sol->time);
@@ -640,7 +640,7 @@ static void prstatus(vt_t *vt)
     double runtime,rt[3]={0},dop[4]={0},rr[3],bl1=0.0,bl2=0.0;
     double azel[MAXSAT*2],pos[3],vel[3],*del;
     
-    trace(4,"prstatus:\n");
+    rtktrace(4,"prstatus:\n");
     
     rtksvrlock(&svr);
     rtk=svr.rtk;
@@ -773,7 +773,7 @@ static void prsatellite(vt_t *vt, int nf)
     char id[32];
     int i,j,fix,frq[]={1,2,5,7,8,6};
     
-    trace(4,"prsatellite:\n");
+    rtktrace(4,"prsatellite:\n");
     
     rtksvrlock(&svr);
     rtk=svr.rtk;
@@ -816,7 +816,7 @@ static void probserv(vt_t *vt, int nf)
     char tstr[64],id[32];
     int i,j,n=0,frq[]={1,2,5,7,8,6,9};
     
-    trace(4,"probserv:\n");
+    rtktrace(4,"probserv:\n");
     
     rtksvrlock(&svr);
     for (i=0;i<svr.obs[0][0].n&&n<MAXOBS*2;i++) {
@@ -856,7 +856,7 @@ static void prnavidata(vt_t *vt)
     char id[32],s1[64],s2[64],s3[64];
     int i,valid,prn;
     
-    trace(4,"prnavidata:\n");
+    rtktrace(4,"prnavidata:\n");
     
     rtksvrlock(&svr);
     time=svr.rtk.sol.time;
@@ -903,7 +903,7 @@ static void prerror(vt_t *vt)
 {
     int n;
     
-    trace(4,"prerror:\n");
+    rtktrace(4,"prerror:\n");
     
     rtksvrlock(&svr);
     if ((n=svr.rtk.neb)>0) {
@@ -930,7 +930,7 @@ static void prstream(vt_t *vt)
     stream_t stream[9];
     int i,format[9]={0};
     
-    trace(4,"prstream:\n");
+    rtktrace(4,"prstream:\n");
     
     rtksvrlock(&svr);
     for (i=0;i<8;i++) stream[i]=svr.stream[i];
@@ -989,7 +989,7 @@ static void prssr(vt_t *vt)
 /* start command -------------------------------------------------------------*/
 static void cmd_start(char **args, int narg, vt_t *vt)
 {
-    trace(3,"cmd_start:\n");
+    rtktrace(3,"cmd_start:\n");
     
     if (!startsvr(vt)) return;
     vt_printf(vt,"rtk server start\n");
@@ -997,7 +997,7 @@ static void cmd_start(char **args, int narg, vt_t *vt)
 /* stop command --------------------------------------------------------------*/
 static void cmd_stop(char **args, int narg, vt_t *vt)
 {
-    trace(3,"cmd_stop:\n");
+    rtktrace(3,"cmd_stop:\n");
     
     stopsvr(vt);
     vt_printf(vt,"rtk server stop\n");
@@ -1005,7 +1005,7 @@ static void cmd_stop(char **args, int narg, vt_t *vt)
 /* restart command -----------------------------------------------------------*/
 static void cmd_restart(char **args, int narg, vt_t *vt)
 {
-    trace(3,"cmd_restart:\n");
+    rtktrace(3,"cmd_restart:\n");
     
     stopsvr(vt);
     if (!startsvr(vt)) return;
@@ -1016,7 +1016,7 @@ static void cmd_solution(char **args, int narg, vt_t *vt)
 {
     int i,cycle=0;
     
-    trace(3,"cmd_solution:\n");
+    rtktrace(3,"cmd_solution:\n");
     
     if (narg>1) cycle=(int)(atof(args[1])*1000.0);
     
@@ -1035,7 +1035,7 @@ static void cmd_status(char **args, int narg, vt_t *vt)
 {
     int cycle=0;
     
-    trace(3,"cmd_status:\n");
+    rtktrace(3,"cmd_status:\n");
     
     if (narg>1) cycle=(int)(atof(args[1])*1000.0);
     
@@ -1051,7 +1051,7 @@ static void cmd_satellite(char **args, int narg, vt_t *vt)
 {
     int i,nf=2,cycle=0;
     
-    trace(3,"cmd_satellite:\n");
+    rtktrace(3,"cmd_satellite:\n");
     
     for (i=1;i<narg;i++) {
         if (sscanf(args[i],"-%d",&nf)<1) cycle=(int)(atof(args[i])*1000.0);
@@ -1068,7 +1068,7 @@ static void cmd_observ(char **args, int narg, vt_t *vt)
 {
     int i,nf=2,cycle=0;
     
-    trace(3,"cmd_observ:\n");
+    rtktrace(3,"cmd_observ:\n");
     
     for (i=1;i<narg;i++) {
         if (sscanf(args[i],"-%d",&nf)<1) cycle=(int)(atof(args[i])*1000.0);
@@ -1085,7 +1085,7 @@ static void cmd_navidata(char **args, int narg, vt_t *vt)
 {
     int cycle=0;
     
-    trace(3,"cmd_navidata:\n");
+    rtktrace(3,"cmd_navidata:\n");
     
     if (narg>1) cycle=(int)(atof(args[1])*1000.0);
     
@@ -1099,7 +1099,7 @@ static void cmd_navidata(char **args, int narg, vt_t *vt)
 /* error command -------------------------------------------------------------*/
 static void cmd_error(char **args, int narg, vt_t *vt)
 {
-    trace(3,"cmd_error:\n");
+    rtktrace(3,"cmd_error:\n");
     
     rtksvrlock(&svr);
     svr.rtk.neb=0;
@@ -1116,7 +1116,7 @@ static void cmd_stream(char **args, int narg, vt_t *vt)
 {
     int cycle=0;
     
-    trace(3,"cmd_stream:\n");
+    rtktrace(3,"cmd_stream:\n");
     
     if (narg>1) cycle=(int)(atof(args[1])*1000.0);
     
@@ -1132,7 +1132,7 @@ static void cmd_ssr(char **args, int narg, vt_t *vt)
 {
     int cycle=0;
     
-    trace(3,"cmd_ssr:\n");
+    rtktrace(3,"cmd_ssr:\n");
     
     if (narg>1) cycle=(int)(atof(args[1])*1000.0);
     
@@ -1149,7 +1149,7 @@ static void cmd_option(char **args, int narg, vt_t *vt)
     char buff[MAXSTR],*p;
     int i,n;
     
-    trace(3,"cmd_option:\n");
+    rtktrace(3,"cmd_option:\n");
     
     for (i=0;*rcvopts[i].name;i++) {
         if (narg>=2&&!strstr(rcvopts[i].name,args[1])) continue;
@@ -1181,7 +1181,7 @@ static void cmd_set(char **args, int narg, vt_t *vt)
     int *modf;
     char buff[MAXSTR];
     
-    trace(3,"cmd_set:\n");
+    rtktrace(3,"cmd_set:\n");
     
     if (narg<2) {
         vt_printf(vt,"specify option type\n");
@@ -1224,7 +1224,7 @@ static void cmd_load(char **args, int narg, vt_t *vt)
 {
     char file[MAXSTR]="";
     
-    trace(3,"cmd_load:\n");
+    rtktrace(3,"cmd_load:\n");
     
     if (narg>=2) {
         strcpy(file,args[1]);
@@ -1250,7 +1250,7 @@ static void cmd_save(char **args, int narg, vt_t *vt)
 {
     char file[MAXSTR]="",comment[256],s[64];
     
-    trace(3,"cmd_save:\n");
+    rtktrace(3,"cmd_save:\n");
     
     if (narg>=2) {
         strcpy(file,args[1]);
@@ -1271,7 +1271,7 @@ static void cmd_save(char **args, int narg, vt_t *vt)
 /* log command ---------------------------------------------------------------*/
 static void cmd_log(char **args, int narg, vt_t *vt)
 {
-    trace(3,"cmd_log:\n");
+    rtktrace(3,"cmd_log:\n");
     
     if (narg<2) {
         vt_printf(vt,"specify log file\n");
@@ -1339,7 +1339,7 @@ static void *con_thread(void *arg)
     int i,j,narg;
     char buff[MAXCMD],*args[MAXARG],*p;
     
-    trace(3,"console_thread:\n");
+    rtktrace(3,"console_thread:\n");
     
     vt_printf(con->vt,"\n%s** %s ver.%s %s console (h:help) **%s\n",ESC_BOLD,
               PRGNAME,VER_RTKLIB,PATCH_LEVEL,ESC_RESET);
@@ -1414,7 +1414,7 @@ static con_t *con_open(int sock, const char *dev)
 {
     con_t *con;
     
-    trace(3,"con_open: sock=%d dev=%s\n",sock,dev);
+    rtktrace(3,"con_open: sock=%d dev=%s\n",sock,dev);
     
     if (!(con=(con_t *)malloc(sizeof(con_t)))) return NULL;
     
@@ -1433,7 +1433,7 @@ static con_t *con_open(int sock, const char *dev)
 /* close console -------------------------------------------------------------*/
 static void con_close(con_t *con)
 {
-    trace(3,"con_close:\n");
+    rtktrace(3,"con_close:\n");
     
     if (!con) return;
     con->state=con->vt->state=0;
@@ -1446,7 +1446,7 @@ static int open_sock(int port)
     struct sockaddr_in addr;
     int sock,on=1;
     
-    trace(3,"open_sock: port=%d\n",port);
+    rtktrace(3,"open_sock: port=%d\n",port);
     
     if ((sock=socket(AF_INET,SOCK_STREAM,0))<0) {
         fprintf(stderr,"socket error (%d)\n",errno);
@@ -1476,7 +1476,7 @@ static void accept_sock(int ssock, con_t **con)
     
     if (ssock<=0) return;
     
-    trace(4,"accept_sock: ssock=%d\n",ssock);
+    rtktrace(4,"accept_sock: ssock=%d\n",ssock);
     
     for (i=1;i<MAXCON;i++) {
         if (!con[i]||con[i]->state) continue;
@@ -1496,12 +1496,12 @@ static void accept_sock(int ssock, con_t **con)
         
         con[i]=con_open(sock,"");
         
-        trace(3,"remote console connected: addr=%s\n",
+        rtktrace(3,"remote console connected: addr=%s\n",
               inet_ntoa(addr.sin_addr));
         return;
     }
     close(sock);
-    trace(2,"remote console connection refused. addr=%s\n",
+    rtktrace(2,"remote console connection refused. addr=%s\n",
          inet_ntoa(addr.sin_addr));
 }
 /* rtkrcv main -----------------------------------------------------------------
@@ -1528,7 +1528,7 @@ static void accept_sock(int ssock, con_t **con)
 *     -o file    processing options file
 *     -w pwd     login password for remote console ("": no password)
 *     -r level   output solution status file (0:off,1:states,2:residuals)
-*     -t level   debug trace level (0:off,1-5:on)
+*     -t level   debug rtktrace level (0:off,1-5:on)
 *     -sta sta   station name for receiver dcb
 *
 * command
@@ -1611,7 +1611,7 @@ static void accept_sock(int ssock, con_t **con)
 int main(int argc, char **argv)
 {
     con_t *con[MAXCON]={0};
-    int i,start=0,port=0,outstat=0,trace=0,sock=0;
+    int i,start=0,port=0,outstat=0,rtktrace=0,sock=0;
     char *dev="",file[MAXSTR]="";
     
     for (i=1;i<argc;i++) {
@@ -1622,13 +1622,13 @@ int main(int argc, char **argv)
         else if (!strcmp(argv[i],"-o")&&i+1<argc) strcpy(file,argv[++i]);
         else if (!strcmp(argv[i],"-w")&&i+1<argc) strcpy(passwd,argv[++i]);
         else if (!strcmp(argv[i],"-r")&&i+1<argc) outstat=atoi(argv[++i]);
-        else if (!strcmp(argv[i],"-t")&&i+1<argc) trace=atoi(argv[++i]);
+        else if (!strcmp(argv[i],"-t")&&i+1<argc) rtktrace=atoi(argv[++i]);
         else if (!strcmp(argv[i],"-sta")&&i+1<argc) strcpy(sta_name,argv[++i]);
         else printusage();
     }
-    if (trace>0) {
-        traceopen(TRACEFILE);
-        tracelevel(trace);
+    if (rtktrace>0) {
+        rtktraceopen(TRACEFILE);
+        rtktracelevel(rtktrace);
     }
     /* initialize rtk server and monitor port */
     rtksvrinit(&svr);
@@ -1660,7 +1660,7 @@ int main(int argc, char **argv)
             fprintf(stderr,"console open error port=%d\n",port);
             if (moniport>0) closemoni();
             if (outstat>0) rtkclosestat();
-            traceclose();
+            rtktraceclose();
             return -1;
         }
     }
@@ -1670,7 +1670,7 @@ int main(int argc, char **argv)
             fprintf(stderr,"console open error dev=%s\n",dev);
             if (moniport>0) closemoni();
             if (outstat>0) rtkclosestat();
-            traceclose();
+            rtktraceclose();
             return -1;
         }
     }
@@ -1703,6 +1703,6 @@ int main(int argc, char **argv)
     if (!savenav(NAVIFILE,&svr.nav)) {
         fprintf(stderr,"navigation data save error: %s\n",NAVIFILE);
     }
-    traceclose();
+    rtktraceclose();
     return 0;
 }

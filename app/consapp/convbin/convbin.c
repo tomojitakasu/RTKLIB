@@ -607,12 +607,12 @@ int main(int argc, char **argv)
     sprintf(opt.prog,"%s %s",PRGNAME,VER_RTKLIB);
     
     if (trace>0) {
-        traceopen(TRACEFILE);
-        tracelevel(trace);
+        rtktraceopen(TRACEFILE);
+        rtktracelevel(trace);
     }
     stat=convbin(format,&opt,ifile,ofile,dir);
     
-    traceclose();
+    rtktraceclose();
     
     return stat;
 }

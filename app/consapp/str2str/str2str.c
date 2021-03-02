@@ -304,8 +304,8 @@ int main(int argc, char **argv)
     strsvrinit(&strsvr,n+1);
     
     if (trlevel>0) {
-        traceopen(*logfile?logfile:TRFILE);
-        tracelevel(trlevel);
+        rtktraceopen(*logfile?logfile:TRFILE);
+        rtktracelevel(trlevel);
     }
     fprintf(stderr,"stream server start\n");
     
@@ -345,7 +345,7 @@ int main(int argc, char **argv)
         strconvfree(conv[i]);
     }
     if (trlevel>0) {
-        traceclose();
+        rtktraceclose();
     }
     fprintf(stderr,"stream server stop\n");
     return 0;

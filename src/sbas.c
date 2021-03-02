@@ -129,7 +129,7 @@ static int decode_sbstype1(const sbsmsg_t *msg, sbssat_t *sbssat)
 {
     int i,n,sat;
     
-    trace(4,"decode_sbstype1:\n");
+    rtktrace(4,"decode_sbstype1:\n");
     
     for (i=1,n=0;i<=210&&n<MAXSAT;i++) {
         if (getbitu(msg->msg,13+i,1)) {
@@ -147,7 +147,7 @@ static int decode_sbstype1(const sbsmsg_t *msg, sbssat_t *sbssat)
     sbssat->iodp=getbitu(msg->msg,224,2);
     sbssat->nsat=n;
     
-    trace(5,"decode_sbstype1: nprn=%d iodp=%d\n",n,sbssat->iodp);
+    rtktrace(5,"decode_sbstype1: nprn=%d iodp=%d\n",n,sbssat->iodp);
     return 1;
 }
 /* decode type 2-5,0: fast corrections ---------------------------------------*/
@@ -157,7 +157,7 @@ static int decode_sbstype2(const sbsmsg_t *msg, sbssat_t *sbssat)
     double prc,dt;
     gtime_t t0;
     
-    trace(4,"decode_sbstype2:\n");
+    rtktrace(4,"decode_sbstype2:\n");
     
     if (sbssat->iodp!=(int)getbitu(msg->msg,16,2)) return 0;
     
@@ -183,7 +183,7 @@ static int decode_sbstype2(const sbsmsg_t *msg, sbssat_t *sbssat)
         }
         sbssat->sat[j].fcorr.iodf=iodf;
     }
-    trace(5,"decode_sbstype2: type=%d iodf=%d\n",type,iodf);
+    rtktrace(5,"decode_sbstype2: type=%d iodf=%d\n",type,iodf);
     return 1;
 }
 /* decode type 6: integrity info ---------------------------------------------*/
@@ -191,7 +191,7 @@ static int decode_sbstype6(const sbsmsg_t *msg, sbssat_t *sbssat)
 {
     int i,iodf[4],udre;
     
-    trace(4,"decode_sbstype6:\n");
+    rtktrace(4,"decode_sbstype6:\n");
     
     for (i=0;i<4;i++) {
         iodf[i]=getbitu(msg->msg,14+i*2,2);
@@ -201,7 +201,7 @@ static int decode_sbstype6(const sbsmsg_t *msg, sbssat_t *sbssat)
         udre=getbitu(msg->msg,22+i*4,4);
         sbssat->sat[i].fcorr.udre=udre+1;
     }
-    trace(5,"decode_sbstype6: iodf=%d %d %d %d\n",iodf[0],iodf[1],iodf[2],iodf[3]);
+    rtktrace(5,"decode_sbstype6: iodf=%d %d %d %d\n",iodf[0],iodf[1],iodf[2],iodf[3]);
     return 1;
 }
 /* decode type 7: fast correction degradation factor -------------------------*/
@@ -209,7 +209,7 @@ static int decode_sbstype7(const sbsmsg_t *msg, sbssat_t *sbssat)
 {
     int i;
     
-    trace(4,"decode_sbstype7\n");
+    rtktrace(4,"decode_sbstype7\n");
     
     if (sbssat->iodp!=(int)getbitu(msg->msg,18,2)) return 0;
     
@@ -226,10 +226,10 @@ static int decode_sbstype9(const sbsmsg_t *msg, nav_t *nav)
     seph_t seph={0};
     int i,sat,t;
     
-    trace(4,"decode_sbstype9:\n");
+    rtktrace(4,"decode_sbstype9:\n");
     
     if (!(sat=satno(SYS_SBS,msg->prn))) {
-        trace(2,"invalid prn in sbas type 9: prn=%3d\n",msg->prn);
+        rtktrace(2,"invalid prn in sbas type 9: prn=%3d\n",msg->prn);
         return 0;
     }
     t=(int)getbitu(msg->msg,22,13)*16-(int)msg->tow%86400;
@@ -261,7 +261,7 @@ static int decode_sbstype9(const sbsmsg_t *msg, nav_t *nav)
     nav->seph[NSATSBS+i]=nav->seph[i]; /* previous */
     nav->seph[i]=seph;                 /* current */
 
-    trace(5,"decode_sbstype9: prn=%d\n",msg->prn);
+    rtktrace(5,"decode_sbstype9: prn=%d\n",msg->prn);
     return 1;
 }
 /* decode type 18: ionospheric grid point masks ------------------------------*/
@@ -270,7 +270,7 @@ static int decode_sbstype18(const sbsmsg_t *msg, sbsion_t *sbsion)
     const sbsigpband_t *p;
     int i,j,n,m,band=getbitu(msg->msg,18,4);
     
-    trace(4,"decode_sbstype18:\n");
+    rtktrace(4,"decode_sbstype18:\n");
     
     if      (0<=band&&band<= 8) {p=igpband1[band  ]; m=8;}
     else if (9<=band&&band<=10) {p=igpband2[band-9]; m=5;}
@@ -289,7 +289,7 @@ static int decode_sbstype18(const sbsmsg_t *msg, sbsion_t *sbsion)
     }
     sbsion[band].nigp=n;
     
-    trace(5,"decode_sbstype18: band=%d nigp=%d\n",band,n);
+    rtktrace(5,"decode_sbstype18: band=%d nigp=%d\n",band,n);
     return 1;
 }
 /* decode half long term correction (vel code=0) -----------------------------*/
@@ -297,7 +297,7 @@ static int decode_longcorr0(const sbsmsg_t *msg, int p, sbssat_t *sbssat)
 {
     int i,n=getbitu(msg->msg,p,6);
     
-    trace(4,"decode_longcorr0:\n");
+    rtktrace(4,"decode_longcorr0:\n");
     
     if (n==0||n>MAXSAT) return 0;
     
@@ -311,7 +311,7 @@ static int decode_longcorr0(const sbsmsg_t *msg, int p, sbssat_t *sbssat)
     sbssat->sat[n-1].lcorr.daf1=0.0;
     sbssat->sat[n-1].lcorr.t0=gpst2time(msg->week,msg->tow);
     
-    trace(5,"decode_longcorr0:sat=%2d\n",sbssat->sat[n-1].sat);
+    rtktrace(5,"decode_longcorr0:sat=%2d\n",sbssat->sat[n-1].sat);
     return 1;
 }
 /* decode half long term correction (vel code=1) -----------------------------*/
@@ -319,7 +319,7 @@ static int decode_longcorr1(const sbsmsg_t *msg, int p, sbssat_t *sbssat)
 {
     int i,n=getbitu(msg->msg,p,6),t;
     
-    trace(4,"decode_longcorr1:\n");
+    rtktrace(4,"decode_longcorr1:\n");
     
     if (n==0||n>MAXSAT) return 0;
     
@@ -336,13 +336,13 @@ static int decode_longcorr1(const sbsmsg_t *msg, int p, sbssat_t *sbssat)
     else if (t>  43200) t-=86400;
     sbssat->sat[n-1].lcorr.t0=gpst2time(msg->week,msg->tow+t);
     
-    trace(5,"decode_longcorr1: sat=%2d\n",sbssat->sat[n-1].sat);
+    rtktrace(5,"decode_longcorr1: sat=%2d\n",sbssat->sat[n-1].sat);
     return 1;
 }
 /* decode half long term correction ------------------------------------------*/
 static int decode_longcorrh(const sbsmsg_t *msg, int p, sbssat_t *sbssat)
 {
-    trace(4,"decode_longcorrh:\n");
+    rtktrace(4,"decode_longcorrh:\n");
     
     if (getbitu(msg->msg,p,1)==0) { /* vel code=0 */
         if (sbssat->iodp==(int)getbitu(msg->msg,p+103,2)) {
@@ -360,7 +360,7 @@ static int decode_sbstype24(const sbsmsg_t *msg, sbssat_t *sbssat)
 {
     int i,j,iodf,blk,udre;
     
-    trace(4,"decode_sbstype24:\n");
+    rtktrace(4,"decode_sbstype24:\n");
     
     if (sbssat->iodp!=(int)getbitu(msg->msg,110,2)) return 0; /* check IODP */
     
@@ -381,7 +381,7 @@ static int decode_sbstype24(const sbsmsg_t *msg, sbssat_t *sbssat)
 /* decode type 25: long term satellite error correction ----------------------*/
 static int decode_sbstype25(const sbsmsg_t *msg, sbssat_t *sbssat)
 {
-    trace(4,"decode_sbstype25:\n");
+    rtktrace(4,"decode_sbstype25:\n");
     
     return decode_longcorrh(msg,14,sbssat)&&decode_longcorrh(msg,120,sbssat);
 }
@@ -390,7 +390,7 @@ static int decode_sbstype26(const sbsmsg_t *msg, sbsion_t *sbsion)
 {
     int i,j,block,delay,give,band=getbitu(msg->msg,14,4);
     
-    trace(4,"decode_sbstype26:\n");
+    rtktrace(4,"decode_sbstype26:\n");
     
     if (band>MAXBAND||sbsion[band].iodi!=(int)getbitu(msg->msg,217,2)) return 0;
     
@@ -409,7 +409,7 @@ static int decode_sbstype26(const sbsmsg_t *msg, sbsion_t *sbsion)
             sbsion[band].igp[j].give=0;
         }
     }
-    trace(5,"decode_sbstype26: band=%d block=%d\n",band,block);
+    rtktrace(5,"decode_sbstype26: band=%d block=%d\n",band,block);
     return 1;
 }
 /* update sbas corrections -----------------------------------------------------
@@ -425,7 +425,7 @@ extern int sbsupdatecorr(const sbsmsg_t *msg, nav_t *nav)
 {
     int type=getbitu(msg->msg,8,6),stat=-1;
     
-    trace(3,"sbsupdatecorr: type=%d\n",type);
+    rtktrace(3,"sbsupdatecorr: type=%d\n",type);
     
     if (msg->week==0) return -1;
     
@@ -445,7 +445,7 @@ extern int sbsupdatecorr(const sbsmsg_t *msg, nav_t *nav)
         case 26: stat=decode_sbstype26(msg,nav ->sbsion); break;
         case 63: break; /* null message */
         
-        /*default: trace(2,"unsupported sbas message: type=%d\n",type); break;*/
+        /*default: rtktrace(2,"unsupported sbas message: type=%d\n",type); break;*/
     }
     return stat?type:-1;
 }
@@ -461,10 +461,10 @@ static void readmsgs(const char *file, int sel, gtime_t ts, gtime_t te,
     gtime_t time;
     FILE *fp;
     
-    trace(3,"readmsgs: file=%s sel=%d\n",file,sel);
+    rtktrace(3,"readmsgs: file=%s sel=%d\n",file,sel);
     
     if (!(fp=fopen(file,"r"))) {
-        trace(2,"sbas message file open error: %s\n",file);
+        rtktrace(2,"sbas message file open error: %s\n",file);
         return;
     }
     while (fgets(buff,sizeof(buff),fp)) {
@@ -502,7 +502,7 @@ static void readmsgs(const char *file, int sel, gtime_t ts, gtime_t te,
         if (sbs->n>=sbs->nmax) {
             sbs->nmax=sbs->nmax==0?1024:sbs->nmax*2;
             if (!(sbs_msgs=(sbsmsg_t *)realloc(sbs->msgs,sbs->nmax*sizeof(sbsmsg_t)))) {
-                trace(1,"readsbsmsg malloc error: nmax=%d\n",sbs->nmax);
+                rtktrace(1,"readsbsmsg malloc error: nmax=%d\n",sbs->nmax);
                 free(sbs->msgs); sbs->msgs=NULL; sbs->n=sbs->nmax=0;
                 return;
             }
@@ -547,7 +547,7 @@ extern int sbsreadmsgt(const char *file, int sel, gtime_t ts, gtime_t te,
     char *efiles[MAXEXFILE]={0},*ext;
     int i,n;
     
-    trace(3,"sbsreadmsgt: file=%s sel=%d\n",file,sel);
+    rtktrace(3,"sbsreadmsgt: file=%s sel=%d\n",file,sel);
     
     for (i=0;i<MAXEXFILE;i++) {
         if (!(efiles[i]=(char *)malloc(1024))) {
@@ -577,7 +577,7 @@ extern int sbsreadmsg(const char *file, int sel, sbs_t *sbs)
 {
     gtime_t ts={0},te={0};
     
-    trace(3,"sbsreadmsg: file=%s sel=%d\n",file,sel);
+    rtktrace(3,"sbsreadmsg: file=%s sel=%d\n",file,sel);
     
     return sbsreadmsgt(file,sel,ts,te,sbs);
 }
@@ -591,7 +591,7 @@ extern void sbsoutmsg(FILE *fp, sbsmsg_t *sbsmsg)
 {
     int i,prn=sbsmsg->prn,type=sbsmsg->msg[1]>>2;
     
-    trace(4,"sbsoutmsg:\n");
+    rtktrace(4,"sbsoutmsg:\n");
     
     fprintf(fp,"%4d %6d %3d %2d : ",sbsmsg->week,sbsmsg->tow,prn,type);
     for (i=0;i<29;i++) fprintf(fp,"%02X",sbsmsg->msg[i]);
@@ -605,7 +605,7 @@ static void searchigp(gtime_t time, const double *pos, const sbsion_t *ion,
     double lat=pos[0]*R2D,lon=pos[1]*R2D;
     const sbsigp_t *p;
     
-    trace(4,"searchigp: pos=%.3f %.3f\n",pos[0]*R2D,pos[1]*R2D);
+    rtktrace(4,"searchigp: pos=%.3f %.3f\n",pos[0]*R2D,pos[1]*R2D);
     
     if (lon>=180.0) lon-=360.0;
     if (-55.0<=lat&&lat<55.0) {
@@ -671,7 +671,7 @@ extern int sbsioncorr(gtime_t time, const nav_t *nav, const double *pos,
     double fp,posp[2],x=0.0,y=0.0,t,w[4]={0};
     const sbsigp_t *igp[4]={0}; /* {ws,wn,es,en} */
     
-    trace(4,"sbsioncorr: pos=%.3f %.3f azel=%.3f %.3f\n",pos[0]*R2D,pos[1]*R2D,
+    rtktrace(4,"sbsioncorr: pos=%.3f %.3f azel=%.3f %.3f\n",pos[0]*R2D,pos[1]*R2D,
           azel[0]*R2D,azel[1]*R2D);
     
     *delay=*var=0.0;
@@ -706,7 +706,7 @@ extern int sbsioncorr(gtime_t time, const nav_t *nav, const double *pos,
     else err=1;
     
     if (err) {
-        trace(2,"no sbas iono correction: lat=%3.0f lon=%4.0f\n",posp[0]*R2D,
+        rtktrace(2,"no sbas iono correction: lat=%3.0f lon=%4.0f\n",posp[0]*R2D,
               posp[1]*R2D);
         return 0;
     }
@@ -718,7 +718,7 @@ extern int sbsioncorr(gtime_t time, const nav_t *nav, const double *pos,
     }
     *delay*=fp; *var*=fp*fp;
     
-    trace(5,"sbsioncorr: dion=%7.2f sig=%7.2f\n",*delay,sqrt(*var));
+    rtktrace(5,"sbsioncorr: dion=%7.2f sig=%7.2f\n",*delay,sqrt(*var));
     return 1;
 }
 /* get meterological parameters ----------------------------------------------*/
@@ -757,7 +757,7 @@ extern double sbstropcorr(gtime_t time, const double *pos, const double *azel,
     int i;
     double c,met[10],sinel=sin(azel[1]),h=pos[2],m;
     
-    trace(4,"sbstropcorr: pos=%.3f %.3f azel=%.3f %.3f\n",pos[0]*R2D,pos[1]*R2D,
+    rtktrace(4,"sbstropcorr: pos=%.3f %.3f azel=%.3f %.3f\n",pos[0]*R2D,pos[1]*R2D,
           azel[0]*R2D,azel[1]*R2D);
     
     if (pos[2]<-100.0||10000.0<pos[2]||azel[1]<=0) {
@@ -787,20 +787,20 @@ static int sbslongcorr(gtime_t time, int sat, const sbssat_t *sbssat,
     double t;
     int i;
     
-    trace(3,"sbslongcorr: sat=%2d\n",sat);
+    rtktrace(3,"sbslongcorr: sat=%2d\n",sat);
     
     for (p=sbssat->sat;p<sbssat->sat+sbssat->nsat;p++) {
         if (p->sat!=sat||p->lcorr.t0.time==0) continue;
         t=timediff(time,p->lcorr.t0);
         if (fabs(t)>MAXSBSAGEL) {
-            trace(2,"sbas long-term correction expired: %s sat=%2d t=%5.0f\n",
+            rtktrace(2,"sbas long-term correction expired: %s sat=%2d t=%5.0f\n",
                   time_str(time,0),sat,t);
             return 0;
         }
         for (i=0;i<3;i++) drs[i]=p->lcorr.dpos[i]+p->lcorr.dvel[i]*t;
         *ddts=p->lcorr.daf0+p->lcorr.daf1*t;
         
-        trace(5,"sbslongcorr: sat=%2d drs=%7.2f%7.2f%7.2f ddts=%7.2f\n",
+        rtktrace(5,"sbslongcorr: sat=%2d drs=%7.2f%7.2f%7.2f ddts=%7.2f\n",
               sat,drs[0],drs[1],drs[2],*ddts*CLIGHT);
         
         return 1;
@@ -808,7 +808,7 @@ static int sbslongcorr(gtime_t time, int sat, const sbssat_t *sbssat,
     /* if sbas satellite without correction, no correction applied */
     if (satsys(sat,NULL)==SYS_SBS) return 1;
     
-    trace(2,"no sbas long-term correction: %s sat=%2d\n",time_str(time,0),sat);
+    rtktrace(2,"no sbas long-term correction: %s sat=%2d\n",time_str(time,0),sat);
     return 0;
 }
 /* fast correction -----------------------------------------------------------*/
@@ -818,7 +818,7 @@ static int sbsfastcorr(gtime_t time, int sat, const sbssat_t *sbssat,
     const sbssatp_t *p;
     double t;
     
-    trace(3,"sbsfastcorr: sat=%2d\n",sat);
+    rtktrace(3,"sbsfastcorr: sat=%2d\n",sat);
     
     for (p=sbssat->sat;p<sbssat->sat+sbssat->nsat;p++) {
         if (p->sat!=sat) continue;
@@ -835,11 +835,11 @@ static int sbsfastcorr(gtime_t time, int sat, const sbssat_t *sbssat,
 #endif
         *var=varfcorr(p->fcorr.udre)+degfcorr(p->fcorr.ai)*t*t/2.0;
         
-        trace(5,"sbsfastcorr: sat=%3d prc=%7.2f sig=%7.2f t=%5.0f\n",sat,
+        rtktrace(5,"sbsfastcorr: sat=%3d prc=%7.2f sig=%7.2f t=%5.0f\n",sat,
               *prc,sqrt(*var),t);
         return 1;
     }
-    trace(2,"no sbas fast correction: %s sat=%2d\n",time_str(time,0),sat);
+    rtktrace(2,"no sbas fast correction: %s sat=%2d\n",time_str(time,0),sat);
     return 0;
 }
 /* sbas satellite ephemeris and clock correction -------------------------------
@@ -865,7 +865,7 @@ extern int sbssatcorr(gtime_t time, int sat, const nav_t *nav, double *rs,
     double drs[3]={0},dclk=0.0,prc=0.0;
     int i;
     
-    trace(3,"sbssatcorr : sat=%2d\n",sat);
+    rtktrace(3,"sbssatcorr : sat=%2d\n",sat);
     
     /* sbas long term corrections */
     if (!sbslongcorr(time,sat,&nav->sbssat,drs,&dclk)) {
@@ -879,7 +879,7 @@ extern int sbssatcorr(gtime_t time, int sat, const nav_t *nav, double *rs,
     
     dts[0]+=dclk+prc/CLIGHT;
     
-    trace(5,"sbssatcorr: sat=%2d drs=%6.3f %6.3f %6.3f dclk=%.3f %.3f var=%.3f\n",
+    rtktrace(5,"sbssatcorr: sat=%2d drs=%6.3f %6.3f %6.3f dclk=%.3f %.3f var=%.3f\n",
           sat,drs[0],drs[1],drs[2],dclk,prc/CLIGHT,*var);
     
     return 1;
@@ -899,7 +899,7 @@ extern int sbsdecodemsg(gtime_t time, int prn, const uint32_t *words,
     uint8_t f[29];
     double tow;
     
-    trace(5,"sbsdecodemsg: prn=%d\n",prn);
+    rtktrace(5,"sbsdecodemsg: prn=%d\n",prn);
     
     if (time.time==0) return 0;
     tow=time2gpst(time,&sbsmsg->week);

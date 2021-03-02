@@ -164,7 +164,7 @@ extern int convkml(const char *infile, const char *outfile, gtime_t ts,
     int i,j,nfile,stat;
     char *p,file[1024],*files[MAXEXFILE]={0};
     
-    trace(3,"convkml : infile=%s outfile=%s\n",infile,outfile);
+    rtktrace(3,"convkml : infile=%s outfile=%s\n",infile,outfile);
     
     /* expand wild-card of infile */
     for (i=0;i<MAXEXFILE;i++) {

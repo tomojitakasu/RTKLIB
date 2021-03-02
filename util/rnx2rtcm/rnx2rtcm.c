@@ -218,8 +218,8 @@ int main(int argc, char **argv)
         else infile[n++]=argv[i];
     }
     if (trlevel>0) {
-        traceopen(TRACEFILE);
-        tracelevel(trlevel);
+        rtktraceopen(TRACEFILE);
+        rtktracelevel(trlevel);
     }
     if (es[0]>0.0) ts=epoch2time(es);
     if (ee[0]>0.0) te=epoch2time(ee);
@@ -238,7 +238,7 @@ int main(int argc, char **argv)
     freenav(&nav,0xFF);
     
     if (trlevel>0) {
-        traceclose();
+        rtktraceclose();
     }
     return ret;
 }

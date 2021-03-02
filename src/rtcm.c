@@ -72,7 +72,7 @@ extern int init_rtcm(rtcm_t *rtcm)
     ssr_t ssr0={{{0}}};
     int i,j;
     
-    trace(3,"init_rtcm:\n");
+    rtktrace(3,"init_rtcm:\n");
     
     rtcm->staid=rtcm->stah=rtcm->seqno=rtcm->outtype=0;
     rtcm->time=rtcm->time_s=time0;
@@ -127,7 +127,7 @@ extern int init_rtcm(rtcm_t *rtcm)
 *-----------------------------------------------------------------------------*/
 extern void free_rtcm(rtcm_t *rtcm)
 {
-    trace(3,"free_rtcm:\n");
+    rtktrace(3,"free_rtcm:\n");
     
     /* free memory for observation and ephemeris buffer */
     free(rtcm->obs.data); rtcm->obs.data=NULL; rtcm->obs.n=0;
@@ -153,7 +153,7 @@ extern int input_rtcm2(rtcm_t *rtcm, uint8_t data)
     uint8_t preamb;
     int i;
     
-    trace(5,"input_rtcm2: data=%02x\n",data);
+    rtktrace(5,"input_rtcm2: data=%02x\n",data);
     
     if ((data&0xC0)!=0x40) return 0; /* ignore if upper 2bit != 01 */
     
@@ -175,7 +175,7 @@ extern int input_rtcm2(rtcm_t *rtcm, uint8_t data)
         
         /* check parity */
         if (!decode_word(rtcm->word,rtcm->buff+rtcm->nbyte)) {
-            trace(2,"rtcm2 partity error: i=%d word=%08x\n",i,rtcm->word);
+            rtktrace(2,"rtcm2 partity error: i=%d word=%08x\n",i,rtcm->word);
             rtcm->nbyte=0; rtcm->word&=0x3;
             continue;
         }
@@ -262,7 +262,7 @@ extern int input_rtcm2(rtcm_t *rtcm, uint8_t data)
 *-----------------------------------------------------------------------------*/
 extern int input_rtcm3(rtcm_t *rtcm, uint8_t data)
 {
-    trace(5,"input_rtcm3: data=%02x\n",data);
+    rtktrace(5,"input_rtcm3: data=%02x\n",data);
     
     /* synchronize frame */
     if (rtcm->nbyte==0) {
@@ -280,7 +280,7 @@ extern int input_rtcm3(rtcm_t *rtcm, uint8_t data)
     
     /* check parity */
     if (rtk_crc24q(rtcm->buff,rtcm->len)!=getbitu(rtcm->buff,rtcm->len*8,24)) {
-        trace(2,"rtcm3 parity error: len=%d\n",rtcm->len);
+        rtktrace(2,"rtcm3 parity error: len=%d\n",rtcm->len);
         return 0;
     }
     /* decode rtcm3 message */
@@ -297,7 +297,7 @@ extern int input_rtcm2f(rtcm_t *rtcm, FILE *fp)
 {
     int i,data=0,ret;
     
-    trace(4,"input_rtcm2f: data=%02x\n",data);
+    rtktrace(4,"input_rtcm2f: data=%02x\n",data);
     
     for (i=0;i<4096;i++) {
         if ((data=fgetc(fp))==EOF) return -2;
@@ -316,7 +316,7 @@ extern int input_rtcm3f(rtcm_t *rtcm, FILE *fp)
 {
     int i,data=0,ret;
     
-    trace(4,"input_rtcm3f: data=%02x\n",data);
+    rtktrace(4,"input_rtcm3f: data=%02x\n",data);
     
     for (i=0;i<4096;i++) {
         if ((data=fgetc(fp))==EOF) return -2;
@@ -333,7 +333,7 @@ extern int input_rtcm3f(rtcm_t *rtcm, FILE *fp)
 *-----------------------------------------------------------------------------*/
 extern int gen_rtcm2(rtcm_t *rtcm, int type, int sync)
 {
-    trace(4,"gen_rtcm2: type=%d sync=%d\n",type,sync);
+    rtktrace(4,"gen_rtcm2: type=%d sync=%d\n",type,sync);
     
     rtcm->nbit=rtcm->len=rtcm->nbyte=0;
     
@@ -360,7 +360,7 @@ extern int gen_rtcm3(rtcm_t *rtcm, int type, int subtype, int sync)
     uint32_t crc;
     int i=0;
     
-    trace(4,"gen_rtcm3: type=%d subtype=%d sync=%d\n",type,subtype,sync);
+    rtktrace(4,"gen_rtcm3: type=%d subtype=%d sync=%d\n",type,subtype,sync);
     
     rtcm->nbit=rtcm->len=rtcm->nbyte=0;
     
@@ -378,7 +378,7 @@ extern int gen_rtcm3(rtcm_t *rtcm, int type, int subtype, int sync)
     }
     /* message length (header+data) (bytes) */
     if ((rtcm->len=i/8)>=3+1024) {
-        trace(2,"generate rtcm 3 message length error len=%d\n",rtcm->len-3);
+        rtktrace(2,"generate rtcm 3 message length error len=%d\n",rtcm->len-3);
         rtcm->nbit=rtcm->len=0;
         return 0;
     }

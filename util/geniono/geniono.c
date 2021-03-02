@@ -306,9 +306,9 @@ static int est_iono(obs_t *obs, nav_t *nav, const pcv_t *pcv, double *rr,
         if ((nv=res_iono(obs->data+i,n,nav,rs,rr,pos,azel,pcv,ekf,phw,v,H,R))<=0) {
             continue;
         }
-        /* filter */
-        if ((info=filter(ekf->x,ekf->P,H,v,R,ekf->nx,nv))) {
-            fprintf(stderr,"filter error: info=%d\n",info);
+        /* rtkfilter */
+        if ((info=rtkfilter(ekf->x,ekf->P,H,v,R,ekf->nx,nv))) {
+            fprintf(stderr,"rtkfilter error: info=%d\n",info);
             break;
         }
         /* output ionopshere parameters */

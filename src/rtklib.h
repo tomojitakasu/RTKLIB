@@ -511,18 +511,18 @@ extern "C" {
 #define P2_55       2.775557561562891E-17 /* 2^-55 */
 
 #ifdef WIN32
-#define thread_t    HANDLE
-#define lock_t      CRITICAL_SECTION
-#define initlock(f) InitializeCriticalSection(f)
-#define lock(f)     EnterCriticalSection(f)
-#define unlock(f)   LeaveCriticalSection(f)
+#define rtkthread_t    HANDLE
+#define rtklock_t      CRITICAL_SECTION
+#define rtkinitlock(f) InitializeCriticalSection(f)
+#define rtklock(f)     EnterCriticalSection(f)
+#define rtkunlock(f)   LeaveCriticalSection(f)
 #define FILEPATHSEP '\\'
 #else
-#define thread_t    pthread_t
-#define lock_t      pthread_mutex_t
-#define initlock(f) pthread_mutex_init(f,NULL)
-#define lock(f)     pthread_mutex_lock(f)
-#define unlock(f)   pthread_mutex_unlock(f)
+#define rtkthread_t    pthread_t
+#define rtklock_t      pthread_mutex_t
+#define rtkinitlock(f) pthread_mutex_init(f,NULL)
+#define rtklock(f)     pthread_mutex_lock(f)
+#define rtkunlock(f)   pthread_mutex_unlock(f)
 #define FILEPATHSEP '/'
 #endif
 
@@ -1180,7 +1180,7 @@ typedef struct {        /* stream type */
     uint32_t tick_o;    /* output tick */
     uint32_t tact;      /* active tick */
     uint32_t inbt,outbt; /* input/output bytes at tick */
-    lock_t lock;        /* lock flag */
+    rtklock_t lock;        /* lock flag */
     void *port;         /* type dependent port control struct */
     char path[MAXSTRPATH]; /* stream path */
     char msg [MAXSTRMSG];  /* stream message */
@@ -1215,8 +1215,8 @@ typedef struct {        /* stream server type */
     stream_t stream[16]; /* input/output streams */
     stream_t strlog[16]; /* return log streams */
     strconv_t *conv[16]; /* stream converter */
-    thread_t thread;    /* server thread */
-    lock_t lock;        /* lock flag */
+    rtkthread_t thread;    /* server thread */
+    rtklock_t lock;        /* lock flag */
 } strsvr_t;
 
 typedef struct {        /* RTK server type */
@@ -1250,7 +1250,7 @@ typedef struct {        /* RTK server type */
     stream_t stream[8]; /* streams {rov,base,corr,sol1,sol2,logr,logb,logc} */
     stream_t *moni;     /* monitor stream */
     uint32_t tick;      /* start tick */
-    thread_t thread;    /* server thread */
+    rtkthread_t thread;    /* server thread */
     int cputime;        /* CPU time (ms) for a processing cycle */
     int prcout;         /* missing observation data count */
     int nave;           /* number of averaging base pos */
@@ -1258,7 +1258,7 @@ typedef struct {        /* RTK server type */
     char cmds_periodic[3][MAXRCVCMD]; /* periodic commands */
     char cmd_reset[MAXRCVCMD]; /* reset command */
     double bl_reset;    /* baseline length to reset (km) */
-    lock_t lock;        /* lock flag */
+    rtklock_t lock;        /* lock flag */
 } rtksvr_t;
 
 typedef struct {        /* GIS data point type */
@@ -1334,7 +1334,7 @@ EXPORT int  solve (const char *tr, const double *A, const double *Y, int n,
                    int m, double *X);
 EXPORT int  lsq   (const double *A, const double *y, int n, int m, double *x,
                    double *Q);
-EXPORT int  filter(double *x, double *P, const double *H, const double *v,
+EXPORT int  rtkfilter(double *x, double *P, const double *H, const double *v,
                    const double *R, int n, int m);
 EXPORT int  smoother(const double *xf, const double *Qf, const double *xb,
                      const double *Qb, int n, double *xs, double *Qs);
@@ -1404,20 +1404,20 @@ EXPORT int  readblq(const char *file, const char *sta, double *odisp);
 EXPORT int  readerp(const char *file, erp_t *erp);
 EXPORT int  geterp (const erp_t *erp, gtime_t time, double *val);
 
-/* debug trace functions -----------------------------------------------------*/
-EXPORT void traceopen(const char *file);
-EXPORT void traceclose(void);
-EXPORT void tracelevel(int level);
-EXPORT void trace    (int level, const char *format, ...);
-EXPORT void tracet   (int level, const char *format, ...);
-EXPORT void tracemat (int level, const double *A, int n, int m, int p, int q);
-EXPORT void traceobs (int level, const obsd_t *obs, int n);
-EXPORT void tracenav (int level, const nav_t *nav);
-EXPORT void tracegnav(int level, const nav_t *nav);
-EXPORT void tracehnav(int level, const nav_t *nav);
-EXPORT void tracepeph(int level, const nav_t *nav);
-EXPORT void tracepclk(int level, const nav_t *nav);
-EXPORT void traceb   (int level, const uint8_t *p, int n);
+/* debug rtktrace functions -----------------------------------------------------*/
+EXPORT void rtktraceopen(const char *file);
+EXPORT void rtktraceclose(void);
+EXPORT void rtktracelevel(int level);
+EXPORT void rtktrace    (int level, const char *format, ...);
+EXPORT void rtktracet   (int level, const char *format, ...);
+EXPORT void rtktracemat (int level, const double *A, int n, int m, int p, int q);
+EXPORT void rtktraceobs (int level, const obsd_t *obs, int n);
+EXPORT void rtktracenav (int level, const nav_t *nav);
+EXPORT void rtktracegnav(int level, const nav_t *nav);
+EXPORT void rtktracehnav(int level, const nav_t *nav);
+EXPORT void rtktracepeph(int level, const nav_t *nav);
+EXPORT void rtktracepclk(int level, const nav_t *nav);
+EXPORT void rtktraceb   (int level, const uint8_t *p, int n);
 
 /* platform dependent functions ----------------------------------------------*/
 EXPORT int execcmd(const char *cmd);
@@ -1499,6 +1499,7 @@ EXPORT int  open_rnxctr (rnxctr_t *rnx, FILE *fp);
 EXPORT int  input_rnxctr(rnxctr_t *rnx, FILE *fp);
 
 /* ephemeris and clock functions ---------------------------------------------*/
+EXPORT eph_t *seleph(gtime_t time, int sat, int iode, const nav_t *nav);
 EXPORT double eph2clk (gtime_t time, const eph_t  *eph);
 EXPORT double geph2clk(gtime_t time, const geph_t *geph);
 EXPORT double seph2clk(gtime_t time, const seph_t *seph);
