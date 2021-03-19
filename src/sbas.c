@@ -385,7 +385,7 @@ static int decode_sbstype25(const sbsmsg_t *msg, sbssat_t *sbssat)
     
     return decode_longcorrh(msg,14,sbssat)&&decode_longcorrh(msg,120,sbssat);
 }
-/* decode type 26: ionospheric deley corrections -----------------------------*/
+/* decode type 26: ionospheric delay corrections -----------------------------*/
 static int decode_sbstype26(const sbsmsg_t *msg, sbsion_t *sbsion)
 {
     int i,j,block,delay,give,band=getbitu(msg->msg,14,4);
