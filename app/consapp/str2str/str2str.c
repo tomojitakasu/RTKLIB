@@ -30,7 +30,14 @@
 *           2020/11/30  1.18 support api change strsvrstart(),strsvrstat()
 *-----------------------------------------------------------------------------*/
 #include <signal.h>
+
+#ifdef WIN32
+#define SIGHUP 1
+#define SIGPIPE 13
+#else
 #include <unistd.h>
+#endif
+
 #include "rtklib.h"
 
 #define PRGNAME     "str2str"          /* program name */
@@ -298,8 +305,8 @@ int main(int argc, char **argv)
     }
     signal(SIGTERM,sigfunc);
     signal(SIGINT ,sigfunc);
-    signal(SIGHUP ,SIG_IGN);
-    signal(SIGPIPE,SIG_IGN);
+//    signal(SIGHUP ,SIG_IGN);
+//    signal(SIGPIPE,SIG_IGN);
     
     strsvrinit(&strsvr,n+1);
     
