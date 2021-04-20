@@ -516,7 +516,7 @@ extern int strsvrstart(strsvr_t *svr, int *opts, int *strs, char **paths,
     return 1;
 }
 /* stop stream server ----------------------------------------------------------
-* start stream server
+* stop stream server
 * args   : strsvr_t *svr    IO  stream server struct
 *          char  *cmd       I   input stop command (NULL: no cmd)
 * return : none
