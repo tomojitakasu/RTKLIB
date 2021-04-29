@@ -1625,7 +1625,7 @@ extern int outsols(uint8_t *buff, const sol_t *sol, const double *rb,
     return p-buff;
 }
 /* output solution extended ----------------------------------------------------
-* output solution exteneded infomation
+* output solution exteneded information
 * args   : uint8_t *buff    IO  output buffer
 *          sol_t  *sol      I   solution
 *          ssat_t *ssat     I   satellite status
@@ -1710,7 +1710,7 @@ extern void outsol(FILE *fp, const sol_t *sol, const double *rb,
     }
 }
 /* output solution extended ----------------------------------------------------
-* output solution exteneded infomation to file
+* output solution exteneded information to file
 * args   : FILE   *fp       I   output file pointer
 *          sol_t  *sol      I   solution
 *          ssat_t *ssat     I   satellite status

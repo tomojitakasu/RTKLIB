@@ -53,7 +53,7 @@
 *                           improve unchange-test of beidou ephemeris
 *           2017/06/15 1.15 add output half-cycle-ambiguity status to LLI
 *                           improve slip-detection by lock-time rollback
-*           2018/10/10 1.16 fix problem on data souce for galileo ephemeris
+*           2018/10/10 1.16 fix problem on data source for galileo ephemeris
 *                           output L2W instead of L2D for L2Pcodeless
 *                           test toc difference to output beidou ephemeris
 *           2019/05/10 1.17 save galileo E5b data to obs index 2
