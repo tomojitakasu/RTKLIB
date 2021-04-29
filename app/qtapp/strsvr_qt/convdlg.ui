@@ -155,7 +155,7 @@
       <string/>
      </property>
      <property name="text">
-      <string>Message Types  (Inteval: s) separated by ,</string>
+      <string>Message Types  (Interval: s) separated by ,</string>
      </property>
     </widget>
    </item>
