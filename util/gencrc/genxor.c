@@ -7,7 +7,7 @@ int main(int argc, char **argv)
 {
     int i,j,b;
     
-    printf("const unsigned char xor_bits[]={\n");
+    printf("const uint8_t xor_bits[]={\n");
     
     for (i=0;i<256;i++) {
         for (j=b=0;j<8;j++) b^=((i>>j)&1);

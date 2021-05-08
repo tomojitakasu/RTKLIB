@@ -1,0 +1,25 @@
+cd rtkconv
+call clean.bat
+cd ..
+cd rtknavi
+call clean.bat
+cd ..
+cd rtkplot
+call clean.bat
+cd ..
+cd rtkpost
+call clean.bat
+cd ..
+cd srctblbrows
+call clean.bat
+cd ..
+cd strsvr
+call clean.bat
+cd ..
+cd rtkget
+call clean.bat
+cd ..
+cd rtklaunch
+call clean.bat
+cd ..
+

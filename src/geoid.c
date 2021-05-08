@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * geoid.c : geoid models
 *
-*          Copyright (C) 2007-2009 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2007-2020 by T.TAKASU, All rights reserved.
 *
 * reference :
 *     [1] EGM96 The NASA GSFC and NIMA Joint Geopotential Model
@@ -12,6 +12,7 @@
 *           2009/09/04 1.1  replace geoid data by global model
 *           2009/12/05 1.2  added api:
 *                               opengeoid(),closegeoid()
+*           2020/11/30 1.3  use integer types in stdint.h
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -47,13 +48,13 @@ static double geoidh_emb(const double *pos)
     return interpb(y,a,b);
 }
 /* get 2 byte signed integer from file ---------------------------------------*/
-static short fget2b(FILE *fp, long off)
+static int16_t fget2b(FILE *fp, int32_t off)
 {
-    unsigned char v[2];
+    uint8_t v[2];
     if (fseek(fp,off,SEEK_SET)==EOF||fread(v,2,1,fp)<1) {
         trace(2,"geoid data file range error: off=%ld\n",off);
     }
-    return ((short)v[0]<<8)+v[1]; /* big-endian */
+    return ((int16_t)v[0]<<8)+v[1]; /* big-endian */
 }
 /* egm96 15x15" model --------------------------------------------------------*/
 static double geoidh_egm96(const double *pos)
@@ -61,14 +62,14 @@ static double geoidh_egm96(const double *pos)
     const double lon0=0.0,lat0=90.0,dlon=15.0/60.0,dlat=-15.0/60.0;
     const int nlon=1440,nlat=721;
     double a,b,y[4];
-    long i1,i2,j1,j2;
+    int i1,i2,j1,j2;
     
     if (!fp_geoid) return 0.0;
     
     a=(pos[1]-lon0)/dlon;
     b=(pos[0]-lat0)/dlat;
-    i1=(long)a; a-=i1; i2=i1<nlon-1?i1+1:0;
-    j1=(long)b; b-=j1; j2=j1<nlat-1?j1+1:j1;
+    i1=(int)a; a-=i1; i2=i1<nlon-1?i1+1:0;
+    j1=(int)b; b-=j1; j2=j1<nlat-1?j1+1:j1;
     y[0]=fget2b(fp_geoid,2L*(i1+j1*nlon))*0.01;
     y[1]=fget2b(fp_geoid,2L*(i2+j1*nlon))*0.01;
     y[2]=fget2b(fp_geoid,2L*(i1+j2*nlon))*0.01;
@@ -76,10 +77,10 @@ static double geoidh_egm96(const double *pos)
     return interpb(y,a,b);
 }
 /* get 4byte float from file -------------------------------------------------*/
-static float fget4f(FILE *fp, long off)
+static float fget4f(FILE *fp, int off)
 {
     float v=0.0;
-    if (fseek(fp,off,SEEK_SET)==EOF||fread(&v,4,1,fp)<1) {
+    if (fseek(fp,(long)off,SEEK_SET)==EOF||fread(&v,4,1,fp)<1) {
         trace(2,"geoid data file range error: off=%ld\n",off);
     }
     return v; /* small-endian */
@@ -90,7 +91,7 @@ static double geoidh_egm08(const double *pos, int model)
     const double lon0=0.0,lat0=90.0;
     double dlon,dlat;
     double a,b,y[4];
-    long i1,i2,j1,j2;
+    int i1,i2,j1,j2;
     int nlon,nlat;
     
     if (!fp_geoid) return 0.0;
@@ -109,11 +110,11 @@ static double geoidh_egm08(const double *pos, int model)
     }
     a=(pos[1]-lon0)/dlon;
     b=(pos[0]-lat0)/dlat;
-    i1=(long)a; a-=i1; i2=i1<nlon-1?i1+1:0;
-    j1=(long)b; b-=j1; j2=j1<nlat-1?j1+1:j1;
+    i1=(int)a; a-=i1; i2=i1<nlon-1?i1+1:0;
+    j1=(int)b; b-=j1; j2=j1<nlat-1?j1+1:j1;
     
     /* notes: 4byte-zeros are inserted at first and last field of a record */
-    /*        for current geid data files */
+    /*        for current geoid data files */
     /* http://earth-info.nga.mil/GandG/wgs84/gravitymod/egm2008/egm08_wgs84.html */
     /* (1) Und_min1x1_egm2008_isw=82_WGS84_TideFree_SE.gz */
     /* (2) Und_min2.5x2.5_egm2008_isw=82_WGS84_TideFree_SE.gz */
@@ -137,10 +138,10 @@ static double fgetgsi(FILE *fp, int nlon, int nlat, int i, int j)
 {
     const int nf=28,wf=9,nl=nf*wf+2,nr=(nlon-1)/nf+1;
     double v;
-    long off=nl+j*nr*nl+i/nf*nl+i%nf*wf;
+    int off=nl+j*nr*nl+i/nf*nl+i%nf*wf;
     char buff[16]="";
     
-    if (fseek(fp,off,SEEK_SET)==EOF||fread(buff,wf,1,fp)<1) {
+    if (fseek(fp,(long)off,SEEK_SET)==EOF||fread(buff,wf,1,fp)<1) {
         trace(2,"out of range for gsi geoid: i=%d j=%d\n",i,j);
         return 0.0;
     }

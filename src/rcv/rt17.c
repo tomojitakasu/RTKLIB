@@ -2,6 +2,7 @@
 * rt17.c : Trimble RT-17 dependent functions
 *
 *          Copyright (C) 2016 Daniel A. Cook, All rights reserved.
+*          Copyright (C) 2020 T.TAKASU, All rights reserved.
 *
 * references:
 *     [1] https://github.com/astrodanco/RTKLIB/tree/cmr/src/rcv/rt17.c
@@ -24,6 +25,7 @@
 *                           int free_rt17() -> void free_rt17()
 *           2016/07/29 1.4  suppress warning
 *           2017/04/11 1.5  (char *) -> (signed char *)
+*           2020/11/30 1.6  use integer type in stdint.h
 *-----------------------------------------------------------------------------*/
 
 /*
@@ -283,17 +285,17 @@
 #define M_WEEK_SCAN   M_BIT3    /* WEEK=n option already looked for, no need to do it again */
 
 /* Data conversion macros: */
-#define I1(p) (*((signed char*)(p)))    /* One byte signed integer */
-#define U1(p) (*((unsigned char*)(p)))  /* One byte unsigned integer */
+#define I1(p) (*((int8_t  *)(p)))       /* One byte signed integer */
+#define U1(p) (*((uint8_t *)(p)))       /* One byte uint32_teger */
 #define I2(p) ReadI2(p)                 /* Two byte signed integer */
-#define U2(p) ReadU2(p)                 /* Two byte unsigned integer */
+#define U2(p) ReadU2(p)                 /* Two byte uint32_teger */
 #define I4(p) ReadI4(p)                 /* Four byte signed integer */
-#define U4(p) ReadU4(p)                 /* Four byte unsigned integer */
+#define U4(p) ReadU4(p)                 /* Four byte uint32_teger */
 #define R4(p) ReadR4(p)                 /* IEEE S_FLOAT floating point number */
 #define R8(p) ReadR8(p)                 /* IEEE T_FLOAT floating point number */
 
 /* Internal structure definitions. */
-typedef union {unsigned short u2; unsigned char c[2];} ENDIAN_TEST; 
+typedef union {uint16_t u2; uint8_t c[2];} ENDIAN_TEST; 
 
 /* GENOUT 0x40 message types: */
 static const char *GSOFTable[] = {
@@ -385,23 +387,23 @@ static const char *RetsvdataTable[] = {
 */
 
 typedef struct {                    /* RT17 information struct type */
-    unsigned char *MessageBuffer;   /* Message buffer */
-    unsigned char *PacketBuffer;    /* Packet buffer */
+    uint8_t *MessageBuffer;   /* Message buffer */
+    uint8_t *PacketBuffer;    /* Packet buffer */
     double        Tow;              /* Receive time of week */
-    unsigned int  Flags;            /* Miscellaneous internal flag bits */
-    unsigned int  MessageBytes;     /* Number of bytes in message buffer */ 
-    unsigned int  MessageLength;    /* Message length (bytes) */
-    unsigned int  PacketBytes;      /* How many packet bytes have been read so far */
-    unsigned int  PacketLength;     /* Total size of packet to be read */
-    unsigned int  Page;             /* Last page number */
-    unsigned int  Reply;            /* Current reply number */
+    uint32_t  Flags;            /* Miscellaneous internal flag bits */
+    uint32_t  MessageBytes;     /* Number of bytes in message buffer */ 
+    uint32_t  MessageLength;    /* Message length (bytes) */
+    uint32_t  PacketBytes;      /* How many packet bytes have been read so far */
+    uint32_t  PacketLength;     /* Total size of packet to be read */
+    uint32_t  Page;             /* Last page number */
+    uint32_t  Reply;            /* Current reply number */
     int           Week;             /* GPS week number */
 } rt17_t;
 
 /*
 | Internal private function forward declarations (in alphabetical order):
 */
-static int CheckPacketChecksum(unsigned char *PacketBuffer);
+static int CheckPacketChecksum(uint8_t *PacketBuffer);
 static void ClearMessageBuffer(rt17_t *rt17);
 static void ClearPacketBuffer(rt17_t *rt17);
 static int DecodeBeidouEphemeris(raw_t *Raw);
@@ -409,28 +411,28 @@ static int DecodeGalileoEphemeris(raw_t *Raw);
 static int DecodeGLONASSEphemeris(raw_t *Raw);
 static int DecodeGPSEphemeris(raw_t *Raw);
 static int DecodeGSOF(raw_t *Raw);
-static int DecodeGSOF1(raw_t *Raw, unsigned char *p);
-static int DecodeGSOF3(raw_t *Raw, unsigned char *p);
-static int DecodeGSOF15(raw_t *Raw, unsigned char *p);
-static int DecodeGSOF16(raw_t *Raw, unsigned char *p);
-static int DecodeGSOF26(raw_t *Raw, unsigned char *p);
-static int DecodeGSOF41(raw_t *Raw, unsigned char *p);
+static int DecodeGSOF1(raw_t *Raw, uint8_t *p);
+static int DecodeGSOF3(raw_t *Raw, uint8_t *p);
+static int DecodeGSOF15(raw_t *Raw, uint8_t *p);
+static int DecodeGSOF16(raw_t *Raw, uint8_t *p);
+static int DecodeGSOF26(raw_t *Raw, uint8_t *p);
+static int DecodeGSOF41(raw_t *Raw, uint8_t *p);
 static int DecodeIONAndUTCData(raw_t *Raw);
 static int DecodeQZSSEphemeris(raw_t *Raw);
 static int DecodeRawdata(raw_t *Raw);
 static int DecodeRetsvdata(raw_t *Raw);
-static int DecodeType17(raw_t *Raw, unsigned int rif);
+static int DecodeType17(raw_t *Raw, uint32_t rif);
 static int DecodeType29(raw_t *Raw);
 static int GetWeek(raw_t *Raw, double tow);
-static short ReadI2(unsigned char *p);
-static int ReadI4(unsigned char *p);
-static float ReadR4(unsigned char *p);
-static double ReadR8(unsigned char *p);
-static unsigned short ReadU2(unsigned char *p);
-static unsigned int ReadU4(unsigned char *p);
+static int16_t ReadI2(uint8_t *p);
+static int32_t ReadI4(uint8_t *p);
+static float ReadR4(uint8_t *p);
+static double ReadR8(uint8_t *p);
+static uint16_t ReadU2(uint8_t *p);
+static uint32_t ReadU4(uint8_t *p);
 static void SetWeek(raw_t *Raw, int Week, double tow);
-static int SyncPacket(rt17_t *rt17, unsigned char Data);
-static void UnwrapRawdata(rt17_t *rt17, unsigned int *rif);
+static int SyncPacket(rt17_t *rt17, uint8_t Data);
+static void UnwrapRawdata(rt17_t *rt17, uint32_t *rif);
 static void UnwrapGenout(rt17_t *rt17);
 
 /* Public functions (in alphabetical order): */
@@ -469,7 +471,7 @@ EXPORT void free_rt17(raw_t *Raw)
 EXPORT int init_rt17(raw_t *Raw)
 {
 	rt17_t *rt17 = NULL;
-    unsigned char *MessageBuffer = NULL, *PacketBuffer = NULL;
+    uint8_t *MessageBuffer = NULL, *PacketBuffer = NULL;
 
     if (Raw->format != STRFMT_RT17)
        return 0;
@@ -481,7 +483,7 @@ EXPORT int init_rt17(raw_t *Raw)
     }
     Raw->rcv_data = (void*) rt17;
     
-    if (!(MessageBuffer = (unsigned char*) calloc(MBUFF_LENGTH, sizeof(unsigned char))))
+    if (!(MessageBuffer = (uint8_t*) calloc(MBUFF_LENGTH, sizeof(uint8_t))))
     {
         tracet(0, "RT17: unable to allocate RT17 message buffer.\n");
         free_rt17(Raw);
@@ -489,7 +491,7 @@ EXPORT int init_rt17(raw_t *Raw)
     }
     rt17->MessageBuffer = MessageBuffer;
 
-    if (!(PacketBuffer = (unsigned char*) calloc(PBUFF_LENGTH, sizeof(unsigned char))))
+    if (!(PacketBuffer = (uint8_t*) calloc(PBUFF_LENGTH, sizeof(uint8_t))))
     {
         tracet(0, "RT17: unable to allocate RT17 packet buffer.\n");
         free_rt17(Raw);
@@ -515,12 +517,12 @@ EXPORT int init_rt17(raw_t *Raw)
 | and the packet ends with a 2-byte trailer. Byte 3 is set to 0 (00h) when the packet
 | contains no data.
 */
-EXPORT int input_rt17(raw_t *Raw, unsigned char Data)
+EXPORT int input_rt17(raw_t *Raw, uint8_t Data)
 {
     rt17_t *rt17 = (rt17_t*) Raw->rcv_data;
-    unsigned char *MessageBuffer = rt17->MessageBuffer;
-    unsigned char *PacketBuffer = rt17->PacketBuffer;
-    unsigned int Page, Pages, Reply;
+    uint8_t *MessageBuffer = rt17->MessageBuffer;
+    uint8_t *PacketBuffer = rt17->PacketBuffer;
+    uint32_t Page, Pages, Reply;
     int Ret = 0;
 
     /* If no current packet */
@@ -730,7 +732,7 @@ EXPORT int input_rt17f(raw_t *Raw, FILE *fp)
     for (i = 0; i < 4096; i++)
     {
 	if ((Data = fgetc(fp)) == EOF) return -2;
-	    if ((Ret = input_rt17(Raw, (unsigned char) Data))) return Ret;
+	    if ((Ret = input_rt17(Raw, (uint8_t) Data))) return Ret;
     }
 
     return 0; /* return at every 4k bytes */
@@ -749,11 +751,11 @@ EXPORT int input_rt17f(raw_t *Raw, FILE *fp)
 | of the data bytes. It does not include the STX leader, the ETX trailer
 | nor the checksum byte.
 */
-static int CheckPacketChecksum(unsigned char *PacketBuffer)
+static int CheckPacketChecksum(uint8_t *PacketBuffer)
 {
-    unsigned char Checksum = 0;
-    unsigned char *p = &PacketBuffer[1];        /* Starting with status */
-    unsigned int Length = PacketBuffer[3] + 3; /* status, type, length, data */
+    uint8_t Checksum = 0;
+    uint8_t *p = &PacketBuffer[1];        /* Starting with status */
+    uint32_t Length = PacketBuffer[3] + 3; /* status, type, length, data */
   
     /* Compute the packet checksum */
     while (Length > 0)
@@ -773,7 +775,7 @@ static int CheckPacketChecksum(unsigned char *PacketBuffer)
 /* ClearMessageBuffer - Clear the raw data stream buffer */
 static void ClearMessageBuffer(rt17_t *rt17)
 {
-   unsigned char *MessageBuffer = rt17->MessageBuffer;
+   uint8_t *MessageBuffer = rt17->MessageBuffer;
    int i;
    
    for (i = 0; i < 4; i++)
@@ -786,7 +788,7 @@ static void ClearMessageBuffer(rt17_t *rt17)
 /* ClearPacketBuffer - Clear the packet buffer */
 static void ClearPacketBuffer(rt17_t *rt17)
 {
-    unsigned char *PacketBuffer = rt17->PacketBuffer;
+    uint8_t *PacketBuffer = rt17->PacketBuffer;
     int i;
 
     for (i = 0; i < 4; i++)
@@ -812,9 +814,9 @@ static int DecodeBeidouEphemeris(raw_t *Raw)
 
 #if 0
     rt17_t *rt17 = (rt17_t*) Raw->rcv_data;
-    unsigned char *p = rt17->PacketBuffer;
+    uint8_t *p = rt17->PacketBuffer;
     int prn, sat, toc, tow;
-    unsigned int Flags, toe;
+    uint32_t Flags, toe;
     double sqrtA;
     eph_t eph={0};
     tracet(3, "RT17: DecodeBeidouEphemeris(); Length=%d\n", rt17->PacketLength);
@@ -944,13 +946,13 @@ static int DecodeGalileoEphemeris(raw_t *Raw)
 
 #if 0
     rt17_t *rt17 = (rt17_t*) Raw->rcv_data;
-    unsigned char *p = rt17->PacketBuffer;
+    uint8_t *p = rt17->PacketBuffer;
     int prn, sat, toc, tow;
-    unsigned int toe;
+    uint32_t toe;
     double sqrtA;
     eph_t eph={0};
-    unsigned char SISA, MODEL1, MODEL2;
-    unsigned short IODnav, HSDVS;
+    uint8_t SISA, MODEL1, MODEL2;
+    uint16_t IODnav, HSDVS;
     double BDG1, BDG2;
     tracet(3, "RT17: DecodeGalileoEphemeris(); Length=%d\n", rt17->PacketLength);
     if (rt17->PacketLength < 190)
@@ -1062,9 +1064,9 @@ static int DecodeGLONASSEphemeris(raw_t *Raw)
 static int DecodeGPSEphemeris(raw_t *Raw)
 {
     rt17_t *rt17 = (rt17_t*) Raw->rcv_data;
-    unsigned char *p = rt17->PacketBuffer;
+    uint8_t *p = rt17->PacketBuffer;
     int prn, sat, toc, tow;
-    unsigned int Flags, toe;
+    uint32_t Flags, toe;
     double sqrtA;
     eph_t eph={0};
 
@@ -1214,7 +1216,7 @@ static int DecodeGSOF(raw_t *Raw)
 {
     rt17_t *rt17 = (rt17_t*) Raw->rcv_data;
     int InputLength, Ret = 0;
-    unsigned char RecordLength, RecordType, *p;
+    uint8_t RecordLength, RecordType, *p;
     char *RecordType_s = NULL;
  
    /*
@@ -1261,7 +1263,7 @@ static int DecodeGSOF(raw_t *Raw)
             Ret = DecodeGSOF41(Raw, p);
             break;
         default:
-            tracet(3, "RT17: GSOF message not processed.\n");    
+            tracet(3, "RT17: GSOF message not processed.\n"); 
         }
 
         RecordLength += 2;
@@ -1273,7 +1275,7 @@ static int DecodeGSOF(raw_t *Raw)
 }
 
 /* DecodeGSOF1 - Decode a Position Time GSOF message */
-static int DecodeGSOF1(raw_t *Raw, unsigned char *p)
+static int DecodeGSOF1(raw_t *Raw, uint8_t *p)
 {
 
     if (p[1] < 6)
@@ -1285,7 +1287,7 @@ static int DecodeGSOF1(raw_t *Raw, unsigned char *p)
 }
  
 /* DecodeGSOF3 - Decode an ECEF Position GSOF message */
-static int DecodeGSOF3(raw_t *Raw, unsigned char *p)
+static int DecodeGSOF3(raw_t *Raw, uint8_t *p)
 {
     sta_t *sta = &Raw->sta;
  
@@ -1307,7 +1309,7 @@ static int DecodeGSOF3(raw_t *Raw, unsigned char *p)
 }
 
 /* DecodeGSOF15 - Decode a Receiver Serial Number GSOF message  */
-static int DecodeGSOF15(raw_t *Raw, unsigned char *p)
+static int DecodeGSOF15(raw_t *Raw, uint8_t *p)
 {
     if (p[1] < 15)
         tracet(2, "RT17: GSOF Receiver Serial Number record length %d < 15 bytes. Record discarded.\n", p[1]);
@@ -1318,7 +1320,7 @@ static int DecodeGSOF15(raw_t *Raw, unsigned char *p)
 }
 
 /* DecodeGSOF16 - Decode a Current Time GSOF message */
-static int DecodeGSOF16(raw_t *Raw, unsigned char *p)
+static int DecodeGSOF16(raw_t *Raw, uint8_t *p)
 {
     if (p[1] < 9)
         tracet( 2, "RT17: GSOF Current Time message record length %d < 9 bytes. Record discarded.\n", p[1] );
@@ -1329,7 +1331,7 @@ static int DecodeGSOF16(raw_t *Raw, unsigned char *p)
 }
 
 /* DecodeGSOF26 - Decode a Position Time UTC GSOF message */
-static int DecodeGSOF26(raw_t *Raw, unsigned char *p)
+static int DecodeGSOF26(raw_t *Raw, uint8_t *p)
 {
     if (p[1] < 6)
         tracet(2, "RT17: GSOF Position Time UTC message record length %d < 6 bytes. Record discarded.\n", p[1]);
@@ -1340,7 +1342,7 @@ static int DecodeGSOF26(raw_t *Raw, unsigned char *p)
 }
 
 /* DecodeGSOF41 - Decode a Base Position and Quality Indicator GSOF message */
-static int DecodeGSOF41(raw_t *raw, unsigned char *p)
+static int DecodeGSOF41(raw_t *raw, uint8_t *p)
 {
     if (p[1] < 6)
         tracet(2, "RT17: GSOF Base Position and Quality Indicator message record length %d < 6 bytes. Record discarded.\n", p[1]);
@@ -1365,7 +1367,7 @@ static int DecodeIONAndUTCData(raw_t *Raw)
 {
     rt17_t *rt17 = (rt17_t*) Raw->rcv_data;
     int week;
-    unsigned char *p = rt17->PacketBuffer;
+    uint8_t *p = rt17->PacketBuffer;
     nav_t *nav = &Raw->nav;
     double *ion_gps = nav->ion_gps;
     double *utc_gps = nav->utc_gps;
@@ -1393,7 +1395,7 @@ static int DecodeIONAndUTCData(raw_t *Raw)
     utc_gps[1] = R8(p+78); /* 078-085: ASUB1   (seconds/seconds) */     
     utc_gps[2] = R8(p+86); /* 086-093: TSUB0T */ 
     utc_gps[3] = week;
-    nav->leaps =(int) R8(p+94); /* 094-101: DELTATLS (seconds) */
+    utc_gps[4] = R8(p+94); /* 094-101: DELTATLS (seconds) */
     /* Unused by RTKLIB R8 */   /* 102-109: DELTATLSF */
     /* Unused by RTKLIB R8 */   /* 110-117: IONTIME */
     /* Unused by RTKLIB U1 */   /* 118-118: WNSUBT */
@@ -1421,9 +1423,9 @@ static int DecodeQZSSEphemeris(raw_t *Raw)
 
 #if 0
     rt17_t *rt17 = (rt17_t*) Raw->rcv_data;
-    unsigned char *p = rt17->PacketBuffer;
+    uint8_t *p = rt17->PacketBuffer;
     int prn, sat, toc, tow;
-    unsigned int Flags, toe;
+    uint32_t Flags, toe;
     double sqrtA;
     eph_t eph={0};
     tracet(3, "RT17: DecodeQZSSEphemeris(); Length=%d\n", rt17->PacketLength);
@@ -1551,11 +1553,11 @@ static int DecodeQZSSEphemeris(raw_t *Raw)
 static int DecodeRawdata(raw_t *Raw)
 {
     rt17_t *rt17 = (rt17_t*) Raw->rcv_data;
-    unsigned char *MessageBuffer = rt17->MessageBuffer;
+    uint8_t *MessageBuffer = rt17->MessageBuffer;
     int Ret = 0;
-    unsigned int rif;
+    uint32_t rif;
     char *RecordType_s = NULL;
-    unsigned char RecordType = MessageBuffer[4];
+    uint8_t RecordType = MessageBuffer[4];
  
     if (RecordType < (sizeof(RawdataTable) / sizeof(char*)))
         RecordType_s = (char*) RawdataTable[RecordType];
@@ -1600,10 +1602,10 @@ static int DecodeRawdata(raw_t *Raw)
 static int DecodeRetsvdata(raw_t *Raw)
 {
     rt17_t *rt17 = (rt17_t*) Raw->rcv_data;
-    unsigned char *PacketBuffer = rt17->PacketBuffer;
+    uint8_t *PacketBuffer = rt17->PacketBuffer;
     int Ret = 0;
     char *Subtype_s = NULL;
-    unsigned char Subtype = PacketBuffer[4];
+    uint8_t Subtype = PacketBuffer[4];
 
     if (Subtype < (sizeof(RetsvdataTable) / sizeof(char*)))
         Subtype_s = (char*) RetsvdataTable[Subtype];
@@ -1652,10 +1654,10 @@ static int DecodeRetsvdata(raw_t *Raw)
 |
 | Handles expanded and concise formats with and without enhanced record data.
 */
-static int DecodeType17(raw_t *Raw, unsigned int rif)
+static int DecodeType17(raw_t *Raw, uint32_t rif)
 {
     rt17_t *rt17 = (rt17_t*) Raw->rcv_data;
-    unsigned char *p = rt17->MessageBuffer;
+    uint8_t *p = rt17->MessageBuffer;
     double ClockOffset, tow;
     int Flags1, Flags2, FlagStatus, i, n, nsat, prn, Week;
     gtime_t Time;
@@ -1699,7 +1701,7 @@ static int DecodeType17(raw_t *Raw, unsigned int rif)
             if (Flags1 & M_BIT6) /* L1 data valid */
             {
                 /* Measure of L1 signal strength (dB * 4) */
-                obs->SNR[0] = U1(p);
+                obs->SNR[0] = (uint16_t)(U1(p)*0.25/SNR_UNIT+0.5);
                 p++;
                 
                 /* Full L1 C/A code or P-code pseudorange (meters) */
@@ -1719,7 +1721,7 @@ static int DecodeType17(raw_t *Raw, unsigned int rif)
             if (Flags1 & M_BIT0)  /* L2 data loaded */
             {
                 /* Measure of L2 signal strength (dB * 4) */
-                obs->SNR[1] = U1(p);
+                obs->SNR[1] = (uint16_t)(U1(p)*0.25/SNR_UNIT+0.5);
                 p++;
                 
                 /* L2 Continuous Phase (cycles) */
@@ -1778,7 +1780,7 @@ static int DecodeType17(raw_t *Raw, unsigned int rif)
             if (Flags1 & M_BIT6) /* L1 data valid */
             {           
                 /* Measure of satellite signal strength (dB) */
-                obs->SNR[0] = R8(p) * 4.0;
+                obs->SNR[0] = (uint16_t)(R8(p)/SNR_UNIT+0.5);
                 p += 8;
 
                 /* Full L1 C/A code or P-code pseudorange (meters) */
@@ -1801,7 +1803,7 @@ static int DecodeType17(raw_t *Raw, unsigned int rif)
             if (Flags1 & M_BIT0) /* L2 data loaded */
             {
                 /* Measure of L2 signal strength (dB) */
-                obs->SNR[1] = R8(p) * 4.0;
+                obs->SNR[1] = (uint16_t)(R8(p)/SNR_UNIT+0.5);
                 p += 8;
 
                 /* L2 Continuous Phase (cycles) */                
@@ -1878,7 +1880,7 @@ static int DecodeType17(raw_t *Raw, unsigned int rif)
 static int DecodeType29(raw_t *Raw)
 {
     rt17_t *rt17 = (rt17_t*) Raw->rcv_data;
-    unsigned char *p = rt17->MessageBuffer;
+    uint8_t *p = rt17->MessageBuffer;
 
     if (*p < 7)
         tracet(2, "RT17: Enhanced Position record block #1 length %d < 7 bytes. Record discarded.\n", *p);
@@ -1953,9 +1955,9 @@ static int GetWeek(raw_t *Raw, double Tow)
 }
 
 /* ReadI2 - Fetch & convert a signed two byte integer (short) */
-static short ReadI2(unsigned char *p) 
+static int16_t ReadI2(uint8_t *p) 
 {
-    union I2 {short i2; unsigned char c[2];} u;
+    union I2 {int16_t i2; uint8_t c[2];} u;
     ENDIAN_TEST et;
 
     memcpy(&u.i2, p, sizeof(u.i2));
@@ -1963,16 +1965,16 @@ static short ReadI2(unsigned char *p)
     et.u2 = 0; et.c[0] = 1;  
     if (et.u2 == 1)
     {
-        unsigned char t;
+        uint8_t t;
         t = u.c[0]; u.c[0] = u.c[1]; u.c[1] = t;
     }
     return u.i2;
 }
 
 /* ReadI4 - Fetch & convert a four byte signed integer (int) */
-static int ReadI4(unsigned char *p)
+static int32_t ReadI4(uint8_t *p)
 {
-    union i4 {int i4; unsigned char c[4];} u;
+    union i4 {int32_t i4; uint8_t c[4];} u;
     ENDIAN_TEST et;
 
     memcpy(&u.i4, p, sizeof(u.i4));
@@ -1980,7 +1982,7 @@ static int ReadI4(unsigned char *p)
     et.u2 = 0; et.c[0] = 1;  
     if (et.u2 == 1)
     {
-        unsigned char t;
+        uint8_t t;
         t = u.c[0]; u.c[0] = u.c[3]; u.c[3] = t;
         t = u.c[1]; u.c[1] = u.c[2]; u.c[2] = t;
     }   
@@ -1988,25 +1990,25 @@ static int ReadI4(unsigned char *p)
 }
 
 /* ReadR4 - Fetch & convert an IEEE S_FLOAT (float) */
-static float ReadR4(unsigned char *p)
+static float ReadR4(uint8_t *p)
 {
-    union R4 {float f; unsigned int u4;} u; 
+    union R4 {float f; uint32_t u4;} u; 
     u.u4 = U4(p);
     return u.f;
 }
 
 /* ReadR8 - Fetch & convert an IEEE T_FLOAT (double) */
-static double ReadR8(unsigned char *p)
+static double ReadR8(uint8_t *p)
 {
     ENDIAN_TEST et;
-    union R8 {double d; unsigned char c[8];} u;
+    union R8 {double d; uint8_t c[8];} u;
 
     memcpy(&u.d, p, sizeof(u.d));
  
     et.u2 = 0; et.c[0] = 1;  
     if (et.u2 == 1)
     {
-        unsigned char t;
+        uint8_t t;
         t = u.c[0]; u.c[0] = u.c[7]; u.c[7] = t;
         t = u.c[1]; u.c[1] = u.c[6]; u.c[6] = t;
         t = u.c[2]; u.c[2] = u.c[5]; u.c[5] = t;
@@ -2015,35 +2017,35 @@ static double ReadR8(unsigned char *p)
     return u.d;
 }
 
-/* ReadU2 - Fetch & convert an unsigned twe byte integer (unsigned short) */
-static unsigned short ReadU2(unsigned char *p)
+/* ReadU2 - Fetch & convert an unsigned twe byte integer (uint16_t) */
+static uint16_t ReadU2(uint8_t *p)
 {
     ENDIAN_TEST et;
-    union U2 {unsigned short u2; unsigned char c[2];} u;
+    union U2 {uint16_t u2; uint8_t c[2];} u;
 
     memcpy(&u.u2, p, sizeof(u.u2)); 
  
     et.u2 = 0; et.c[0] = 1;  
     if (et.u2 == 1)
     {
-        unsigned char t;
+        uint8_t t;
         t = u.c[0]; u.c[0] = u.c[1]; u.c[1] = t;
     }
     return u.u2;
 }
 
-/* ReadU4 - Fetch & convert a four byte unsigned integer (unsigned int) */
-static unsigned int ReadU4(unsigned char *p)
+/* ReadU4 - Fetch & convert a four byte uint32_teger (uint32_t) */
+static uint32_t ReadU4(uint8_t *p)
 {
     ENDIAN_TEST et;
-    union U4 {unsigned int u4; unsigned char c[4];} u;
+    union U4 {uint32_t u4; uint8_t c[4];} u;
 
     memcpy(&u.u4, p, sizeof(u.u4));
  
     et.u2 = 0; et.c[0] = 1;  
     if (et.u2 == 1)
     {
-        unsigned char t;
+        uint8_t t;
         t = u.c[0]; u.c[0] = u.c[3]; u.c[3] = t;
         t = u.c[1]; u.c[1] = u.c[2]; u.c[2] = t;
     }   
@@ -2083,9 +2085,9 @@ static void SetWeek(raw_t *Raw, int Week, double Tow)
 }
 
 /* SyncPacket - Synchronize the raw data stream to the start of a series of RT-17 packets */
-static int SyncPacket(rt17_t *rt17, unsigned char Data)
+static int SyncPacket(rt17_t *rt17, uint8_t Data)
 {
-    unsigned char Type, *PacketBuffer = rt17->PacketBuffer;
+    uint8_t Type, *PacketBuffer = rt17->PacketBuffer;
 
     PacketBuffer[0] = PacketBuffer[1];
     PacketBuffer[1] = PacketBuffer[2];
@@ -2114,10 +2116,10 @@ static int SyncPacket(rt17_t *rt17, unsigned char Data)
 */
 static void UnwrapGenout(rt17_t *rt17)
 {
-    unsigned char *p_in = rt17->MessageBuffer;
-    unsigned char *p_out = p_in;
-    unsigned int InputLength, InputLengthTotal = rt17->MessageLength;
-    unsigned int OutputLength, OutputLengthTotal = 0;
+    uint8_t *p_in = rt17->MessageBuffer;
+    uint8_t *p_out = p_in;
+    uint32_t InputLength, InputLengthTotal = rt17->MessageLength;
+    uint32_t OutputLength, OutputLengthTotal = 0;
 
     while (InputLengthTotal > 0)
     {
@@ -2144,18 +2146,18 @@ static void UnwrapGenout(rt17_t *rt17)
 | While we're at it we also check to make sure the Record Interpretation
 | Flags are consistent. They should be the same in every page frame.
 */
-static void UnwrapRawdata(rt17_t *rt17, unsigned int *rif)
+static void UnwrapRawdata(rt17_t *rt17, uint32_t *rif)
 {
-    unsigned char *p_in = rt17->MessageBuffer;
-    unsigned char *p_out = p_in;
-    unsigned int InputLength, InputLengthTotal = rt17->MessageLength;
-    unsigned int OutputLength, OutputLengthTotal = 0;
+    uint8_t *p_in = rt17->MessageBuffer;
+    uint8_t *p_out = p_in;
+    uint32_t InputLength, InputLengthTotal = rt17->MessageLength;
+    uint32_t OutputLength, OutputLengthTotal = 0;
 
     *rif = p_in[7];
 
     while (InputLengthTotal > 0)
     {
-        if ((unsigned int)p_in[7] != *rif)
+        if ((uint32_t)p_in[7] != *rif)
            tracet(2, "RT17: Inconsistent Record Interpretation Flags within a single RAWDATA message.\n");
 
         InputLength = p_in[3] + 6;

@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2020/12/08 18:44:06.000.488,=D:\share\RTKLIB\app\winapp\rtkconv\Unit1.cpp</Transaction>
+    <Transaction>2020/12/08 18:57:46.000.847,D:\share\RTKLIB\app\winapp\rtkconv\Unit1.cpp=D:\share\RTKLIB\app\winapp\appcmn\glofcndlg.cpp</Transaction>
+    <Transaction>2020/12/08 18:57:46.000.847,D:\share\RTKLIB\app\winapp\rtkconv\Unit1.dfm=D:\share\RTKLIB\app\winapp\appcmn\glofcndlg.dfm</Transaction>
+    <Transaction>2020/12/08 18:57:46.000.847,D:\share\RTKLIB\app\winapp\rtkconv\Unit1.h=D:\share\RTKLIB\app\winapp\appcmn\glofcndlg.h</Transaction>
+  </Transactions>
+</BorlandProject>

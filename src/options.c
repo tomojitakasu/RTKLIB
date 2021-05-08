@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * options.c : options functions
 *
-*          Copyright (C) 2010-2015 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2010-2020 by T.TAKASU, All rights reserved.
 *
 * version : $Revision:$ $Date:$
 * history : 2010/07/20  1.1  moved from postpos.c
@@ -24,6 +24,9 @@
 *           2016/06/10  1.9  add ant2-maxaveep,ant2-initrst
 *           2016/07/31  1.10 add out-outsingle,out-maxsolstd
 *           2017/06/14  1.11 add out-outvel
+*           2020/11/30  1.12 change options pos1-frequency, pos1-ionoopt,
+*                             pos1-tropopt, pos1-sateph, pos1-navsys,
+*                             pos2-gloarmode,
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -40,13 +43,13 @@ static char snrmask_[NFREQ][1024];
 /* system options table ------------------------------------------------------*/
 #define SWTOPT  "0:off,1:on"
 #define MODOPT  "0:single,1:dgps,2:kinematic,3:static,4:movingbase,5:fixed,6:ppp-kine,7:ppp-static,8:ppp-fixed"
-#define FRQOPT  "1:l1,2:l1+l2,3:l1+l2+l5,4:l1+l5"
+#define FRQOPT  "1:l1,2:l1+2,3:l1+2+3,4:l1+2+3+4,5:l1+2+3+4+5"
 #define TYPOPT  "0:forward,1:backward,2:combined"
-#define IONOPT  "0:off,1:brdc,2:sbas,3:dual-freq,4:est-stec,5:ionex-tec,6:qzs-brdc,7:qzs-lex,8:stec"
-#define TRPOPT  "0:off,1:saas,2:sbas,3:est-ztd,4:est-ztdgrad,5:ztd"
+#define IONOPT  "0:off,1:brdc,2:sbas,3:dual-freq,4:est-stec,5:ionex-tec,6:qzs-brdc"
+#define TRPOPT  "0:off,1:saas,2:sbas,3:est-ztd,4:est-ztdgrad"
 #define EPHOPT  "0:brdc,1:precise,2:brdc+sbas,3:brdc+ssrapc,4:brdc+ssrcom"
-#define NAVOPT  "1:gps+2:sbas+4:glo+8:gal+16:qzs+32:comp"
-#define GAROPT  "0:off,1:on,2:autocal"
+#define NAVOPT  "1:gps+2:sbas+4:glo+8:gal+16:qzs+32:bds+64:navic"
+#define GAROPT  "0:off,1:on"
 #define SOLOPT  "0:llh,1:xyz,2:enu,3:nmea"
 #define TSYOPT  "0:gpst,1:utc,2:jst"
 #define TFTOPT  "0:tow,1:hms"
@@ -219,7 +222,7 @@ static int str2enum(const char *str, const char *comment, int *val)
        for (p-=2;'0'<=*p&&*p<='9';p--) ;
        return sscanf(p+1,"%d",val)==1;
     }
-    sprintf(s,"%30.30s:",str);
+    sprintf(s,"%.30s:",str);
     if ((p=strstr(comment,s))) { /* number */
         return sscanf(p,"%d",val)==1;
     }

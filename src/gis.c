@@ -15,10 +15,10 @@
 #define SHAPE_CODE  9994        /* shapefile code */
 
 /* get integer big-endian ----------------------------------------------------*/
-static int I4_B(unsigned char *buff)
+static int I4_B(uint8_t *buff)
 {
     int i,val=0;
-    unsigned char *p=buff,*q=(unsigned char *)&val+3;
+    uint8_t *p=buff,*q=(uint8_t *)&val+3;
     
     for (i=0;i<4;i++) {
         *q--=*p++;
@@ -26,7 +26,7 @@ static int I4_B(unsigned char *buff)
     return val;
 }
 /* get integer little-endian -------------------------------------------------*/
-static int I4_L(unsigned char *buff)
+static int I4_L(uint8_t *buff)
 {
     int val;
     
@@ -34,7 +34,7 @@ static int I4_L(unsigned char *buff)
     return val;
 }
 /* get double little-endian --------------------------------------------------*/
-static double D8_L(unsigned char *buff)
+static double D8_L(uint8_t *buff)
 {
     double val;
     
@@ -44,7 +44,7 @@ static double D8_L(unsigned char *buff)
 /* read shapefile header -----------------------------------------------------*/
 static int read_shape_head(FILE *fp)
 {
-    unsigned char buff[128];
+    uint8_t buff[128];
     
     if (fread(buff,100,1,fp)!=1) {
         return -1;
@@ -89,7 +89,7 @@ static int read_pnt(FILE *fp, double *bound, gisd_t **p)
 {
     gis_pnt_t *pnt;
     double pos[3]={0};
-    unsigned char buff[16];
+    uint8_t buff[16];
     
     if (fread(buff,16,1,fp)!=1) {
         return 0;
@@ -107,7 +107,7 @@ static int read_pnt(FILE *fp, double *bound, gisd_t **p)
 /* read multi-point data ------------------------------------------------------*/
 static int read_mpnt(FILE *fp, double *bound, gisd_t **p)
 {
-    unsigned char buff[36];
+    uint8_t buff[36];
     int i,np;
     
     if (fread(buff,36,1,fp)!=1) {
@@ -127,7 +127,7 @@ static int read_poly(FILE *fp, double *bound, gisd_t **p)
 {
     gis_poly_t *poly;
     double pos[3]={0};
-    unsigned char buff[40];
+    uint8_t buff[40];
     int i,j,nt,np,nr,n,*part;
     
     if (fread(buff,40,1,fp)!=1) {
@@ -190,7 +190,7 @@ static int read_polygon(FILE *fp, double *bound, gisd_t **p)
 {
     gis_polygon_t *polygon;
     double pos[3]={0};
-    unsigned char buff[40];
+    uint8_t buff[40];
     int i,j,nt,np,nr,n,*part;
     
     if (fread(buff,40,1,fp)!=1) {
@@ -253,7 +253,7 @@ static int gis_read_record(FILE *fp, FILE *fp_idx, int type, double *bound,
                            gisd_t **data)
 {
     gisd_t *p,*next;
-    unsigned char buff[16];
+    uint8_t buff[16];
     int i,off,num,len1,len2,typ2;
     
     for (i=0;fread(buff,1,8,fp_idx)==8;i++) {

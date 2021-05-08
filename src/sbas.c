@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * sbas.c : sbas functions
 *
-*          Copyright (C) 2007-2016 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2007-2020 by T.TAKASU, All rights reserved.
 *
 * option : -DRRCENA  enable rrc correction
 *          
@@ -35,6 +35,7 @@
 *           2011/01/15 1.8  use api ionppp()
 *                           add prn mask of qzss for qzss L1SAIF
 *           2016/07/29 1.9  crc24q() -> rtk_crc24q()
+*           2020/11/30 1.10 use integer types in stdint.h
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -43,7 +44,7 @@
 #define WEEKOFFSET  1024        /* gps week offset for NovAtel OEM-3 */
 
 /* sbas igp definition -------------------------------------------------------*/
-static const short
+static const int16_t
 x1[]={-75,-65,-55,-50,-45,-40,-35,-30,-25,-20,-15,-10,- 5,  0,  5, 10, 15, 20,
        25, 30, 35, 40, 45, 50, 55, 65, 75, 85},
 x2[]={-55,-50,-45,-40,-35,-30,-25,-20,-15,-10, -5,  0,  5, 10, 15, 20, 25, 30,
@@ -259,7 +260,7 @@ static int decode_sbstype9(const sbsmsg_t *msg, nav_t *nav)
     }
     nav->seph[NSATSBS+i]=nav->seph[i]; /* previous */
     nav->seph[i]=seph;                 /* current */
-    
+
     trace(5,"decode_sbstype9: prn=%d\n",msg->prn);
     return 1;
 }
@@ -275,7 +276,7 @@ static int decode_sbstype18(const sbsmsg_t *msg, sbsion_t *sbsion)
     else if (9<=band&&band<=10) {p=igpband2[band-9]; m=5;}
     else return 0;
     
-    sbsion[band].iodi=(short)getbitu(msg->msg,22,2);
+    sbsion[band].iodi=(int16_t)getbitu(msg->msg,22,2);
     
     for (i=1,n=0;i<=201;i++) {
         if (!getbitu(msg->msg,23+i,1)) continue;
@@ -454,7 +455,7 @@ static void readmsgs(const char *file, int sel, gtime_t ts, gtime_t te,
 {
     sbsmsg_t *sbs_msgs;
     int i,week,prn,ch,msg;
-    unsigned int b;
+    uint32_t b;
     double tow,ep[6]={0};
     char buff[256],*p;
     gtime_t time;
@@ -512,7 +513,7 @@ static void readmsgs(const char *file, int sel, gtime_t ts, gtime_t te,
         sbs->msgs[sbs->n].prn=prn;
         for (i=0;i<29;i++) sbs->msgs[sbs->n].msg[i]=0;
         for (i=0;*(p-1)&&*p&&i<29;p+=2,i++) {
-            if (sscanf(p,"%2X",&b)==1) sbs->msgs[sbs->n].msg[i]=(unsigned char)b;
+            if (sscanf(p,"%2X",&b)==1) sbs->msgs[sbs->n].msg[i]=(uint8_t)b;
         }
         sbs->msgs[sbs->n++].msg[28]&=0xC0;
     }
@@ -588,11 +589,11 @@ extern int sbsreadmsg(const char *file, int sel, sbs_t *sbs)
 *-----------------------------------------------------------------------------*/
 extern void sbsoutmsg(FILE *fp, sbsmsg_t *sbsmsg)
 {
-    int i,type=sbsmsg->msg[1]>>2;
+    int i,prn=sbsmsg->prn,type=sbsmsg->msg[1]>>2;
     
     trace(4,"sbsoutmsg:\n");
     
-    fprintf(fp,"%4d %6d %3d %2d : ",sbsmsg->week,sbsmsg->tow,sbsmsg->prn,type);
+    fprintf(fp,"%4d %6d %3d %2d : ",sbsmsg->week,sbsmsg->tow,prn,type);
     for (i=0;i<29;i++) fprintf(fp,"%02X",sbsmsg->msg[i]);
     fprintf(fp,"\n");
 }
@@ -887,15 +888,15 @@ extern int sbssatcorr(gtime_t time, int sat, const nav_t *nav, double *rs,
 * decode sbas message frame words and check crc
 * args   : gtime_t time     I   reception time
 *          int    prn       I   sbas satellite prn number
-*          unsigned int *word I message frame words (24bit x 10)
+*          uint32_t *word   I   message frame words (24bit x 10)
 *          sbsmsg_t *sbsmsg O   sbas message
 * return : status (1:ok,0:crc error)
 *-----------------------------------------------------------------------------*/
-extern int sbsdecodemsg(gtime_t time, int prn, const unsigned int *words,
+extern int sbsdecodemsg(gtime_t time, int prn, const uint32_t *words,
                         sbsmsg_t *sbsmsg)
 {
     int i,j;
-    unsigned char f[29];
+    uint8_t f[29];
     double tow;
     
     trace(5,"sbsdecodemsg: prn=%d\n",prn);
@@ -905,9 +906,9 @@ extern int sbsdecodemsg(gtime_t time, int prn, const unsigned int *words,
     sbsmsg->tow=(int)(tow+DTTOL);
     sbsmsg->prn=prn;
     for (i=0;i<7;i++) for (j=0;j<4;j++) {
-        sbsmsg->msg[i*4+j]=(unsigned char)(words[i]>>((3-j)*8));
+        sbsmsg->msg[i*4+j]=(uint8_t)(words[i]>>((3-j)*8));
     }
-    sbsmsg->msg[28]=(unsigned char)(words[7]>>18)&0xC0;
+    sbsmsg->msg[28]=(uint8_t)(words[7]>>18)&0xC0;
     for (i=28;i>0;i--) f[i]=(sbsmsg->msg[i]>>6)+(sbsmsg->msg[i-1]<<2);
     f[0]=sbsmsg->msg[0]>>6;
     

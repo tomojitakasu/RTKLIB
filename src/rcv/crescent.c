@@ -1,28 +1,32 @@
 /*------------------------------------------------------------------------------
 * crescent.c : hemisphere crescent/eclipse receiver dependent functions
 *
-*          Copyright (C) 2007-2014 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2007-2020 by T.TAKASU, All rights reserved.
 *
 * reference :
 *     [1] Hemisphere GPS, Grescent Integrator's Manual, December, 2005
 *     [2] Hemisphere GPS, GPS Technical Reference, Part No. 875-0175-000,
 *         Rev.D1, 2008
-*     [3] Hemisphere GPS, Hemisphere GPS Technical Reference, 2014
+*     [3] Hemisphere GPS, Hemisphere GPS Technical Reference Manual, v4.0,
+*         June 30, 2020
 *
 * version : $Revision: 1.2 $ $Date: 2008/07/14 00:05:05 $
-* history : 2008/05/21 1.0 new
-*           2009/04/01 1.1 support sbas, set 0 to L2 observables
-*                          fix bug on getting doppler observables
-*           2009/10/19 1.2 support eclipse (message bin 76)
-*           2009/10/24 1.3 ignore vaild phase flag
-*           2011/05/27 1.4 add -EPHALL option
-*                          fix problem with ARM compiler
-*           2011/07/01 1.5 suppress warning
-*           2013/02/23 1.6 fix memory access violation problem on arm
-*           2014/05/13 1.7 support bin65 and bin66
-*                          add receiver option -TTCORR
-*           2014/06/21 1.8 move decode_glostr() to rcvraw.c
-*           2017/04/11 1.9 (char *) -> (signed char *)
+* history : 2008/05/21 1.0  new
+*           2009/04/01 1.1  support sbas, set 0 to L2 observables
+*                           fix bug on getting doppler observables
+*           2009/10/19 1.2  support eclipse (message bin 76)
+*           2009/10/24 1.3  ignore vaild phase flag
+*           2011/05/27 1.4  add -EPHALL option
+*                           fix problem with ARM compiler
+*           2011/07/01 1.5  suppress warning
+*           2013/02/23 1.6  fix memory access violation problem on arm
+*           2014/05/13 1.7  support bin65 and bin66
+*                           add receiver option -TTCORR
+*           2014/06/21 1.8  move decode_glostr() to rcvraw.c
+*           2017/04/11 1.9  (char *) -> (signed char *)
+*           2020/11/30 1.10 use integer type in stdint.h
+*                           use sat2freq() instead of lam_carr()
+*                           udpate reference [3]
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -41,19 +45,19 @@
 #define SNR2CN0_L2  30.0        /* hemis snr to c/n0 offset (db) L2 */
 
 /* get fields (little-endian) ------------------------------------------------*/
-#define U1(p) (*((unsigned char *)(p)))
-#define I1(p) (*((signed char *)(p)))
-static unsigned short U2(unsigned char *p) {unsigned short u; memcpy(&u,p,2); return u;}
-static unsigned int   U4(unsigned char *p) {unsigned int   u; memcpy(&u,p,4); return u;}
-static short          I2(unsigned char *p) {short          i; memcpy(&i,p,2); return i;}
-static int            I4(unsigned char *p) {int            i; memcpy(&i,p,4); return i;}
-static float          R4(unsigned char *p) {float          r; memcpy(&r,p,4); return r;}
-static double         R8(unsigned char *p) {double         r; memcpy(&r,p,8); return r;}
+#define U1(p) (*((uint8_t *)(p)))
+#define I1(p) (*((int8_t  *)(p)))
+static uint16_t U2(uint8_t *p) {uint16_t u; memcpy(&u,p,2); return u;}
+static uint32_t U4(uint8_t *p) {uint32_t u; memcpy(&u,p,4); return u;}
+static int16_t  I2(uint8_t *p) {int16_t  i; memcpy(&i,p,2); return i;}
+static int32_t  I4(uint8_t *p) {int32_t  i; memcpy(&i,p,4); return i;}
+static float    R4(uint8_t *p) {float    r; memcpy(&r,p,4); return r;}
+static double   R8(uint8_t *p) {double   r; memcpy(&r,p,8); return r;}
 
 /* checksum ------------------------------------------------------------------*/
-static int chksum(const unsigned char *buff, int len)
+static int chksum(const uint8_t *buff, int len)
 {
-    unsigned short sum=0;
+    uint16_t sum=0;
     int i;
     
     for (i=8;i<len-4;i++) sum+=buff[i];
@@ -68,7 +72,7 @@ static int decode_crespos(raw_t *raw)
     int ns,week,mode;
     double tow,pos[3],vel[3],std;
     char tstr[64];
-    unsigned char *p=raw->buff+8;
+    uint8_t *p=raw->buff+8;
     
     trace(4,"decode_crespos: len=%d\n",raw->len);
     
@@ -96,10 +100,10 @@ static int decode_crespos(raw_t *raw)
 static int decode_cresraw(raw_t *raw)
 {
     gtime_t time;
-    double tow,tows,toff=0.0,cp,pr,dop,snr;
+    double tow,tows,toff=0.0,cp,pr,dop,snr,freq=FREQ1;
     int i,j,n,prn,sat,week,word2,lli=0;
-    unsigned int word1,sn,sc;
-    unsigned char *p=raw->buff+8;
+    uint32_t word1,sn,sc;
+    uint8_t *p=raw->buff+8;
     
     trace(4,"decode_cresraw: len=%d\n",raw->len);
     
@@ -129,20 +133,20 @@ static int decode_cresraw(raw_t *raw)
         if (!(word2&1)) cp=0.0; /* invalid phase */
         sn =(word1>>8)&0xFF;
         snr=sn==0?0.0:10.0*log10(0.8192*sn)+SNR2CN0_L1;
-        sc =(unsigned int)(word1>>24);
+        sc =(uint32_t)(word1>>24);
         if (raw->time.time!=0) {
-            lli=(int)((unsigned char)sc-(unsigned char)raw->lockt[sat-1][0])>0;
+            lli=(int)((uint8_t)sc-(uint8_t)raw->lockt[sat-1][0])>0;
         }
-        raw->lockt[sat-1][0]=(unsigned char)sc;
+        raw->lockt[sat-1][0]=(uint8_t)sc;
         dop=word2/16/4096.0;
         
         raw->obs.data[n].time=time;
         raw->obs.data[n].sat =sat;
         raw->obs.data[n].P[0]=pr;
-        raw->obs.data[n].L[0]=cp/lam_carr[0];
-        raw->obs.data[n].D[0]=-(float)(dop/lam_carr[0]);
-        raw->obs.data[n].SNR[0]=(unsigned char)(snr*4.0+0.5);
-        raw->obs.data[n].LLI[0]=(unsigned char)lli;
+        raw->obs.data[n].L[0]=cp*freq/CLIGHT;
+        raw->obs.data[n].D[0]=-(float)(dop*freq/CLIGHT);
+        raw->obs.data[n].SNR[0]=(uint16_t)(snr/SNR_UNIT+0.5);
+        raw->obs.data[n].LLI[0]=(uint8_t)lli;
         raw->obs.data[n].code[0]=CODE_L1C;
         
         for (j=1;j<NFREQ;j++) {
@@ -162,9 +166,10 @@ static int decode_cresraw2(raw_t *raw)
 {
     gtime_t time;
     double tow,tows,toff=0.0,cp[2]={0},pr1,pr[2]={0},dop[2]={0},snr[2]={0};
+    double freq[2]={FREQ1,FREQ2};
     int i,j,n=0,prn,sat,week,lli[2]={0};
-    unsigned int word1,word2,word3,sc,sn;
-    unsigned char *p=raw->buff+8;
+    uint32_t word1,word2,word3,sc,sn;
+    uint8_t *p=raw->buff+8;
     
     trace(4,"decode_cresraw2: len=%d\n",raw->len);
     
@@ -198,22 +203,22 @@ static int decode_cresraw2(raw_t *raw)
         word3=U4(p+152+12*i);
         sn=word1&0xFFF;
         snr[0]=sn==0?0.0:10.0*log10(0.1024*sn)+SNR2CN0_L1;
-        sc=(unsigned int)(word1>>24);
+        sc=(uint32_t)(word1>>24);
         if (raw->time.time!=0) {
-            lli[0]=(int)((unsigned char)sc-(unsigned char)raw->lockt[sat-1][0])>0;
+            lli[0]=(int)((uint8_t)sc-(uint8_t)raw->lockt[sat-1][0])>0;
         }
         else {
             lli[0]=0;
         }
         lli[0]|=((word1>>12)&7)?2:0;
-        raw->lockt[sat-1][0]=(unsigned char)sc;
+        raw->lockt[sat-1][0]=(uint8_t)sc;
         dop[0]=((word2>>1)&0x7FFFFF)/512.0;
         if ((word2>>24)&1) dop[0]=-dop[0];
         pr[0]=pr1+(word3&0xFFFF)/256.0;
-        cp[0]=floor(pr[0]/lam_carr[0]/8192.0)*8192.0;
+        cp[0]=floor(pr[0]*freq[0]/CLIGHT/8192.0)*8192.0;
         cp[0]+=((word2&0xFE000000)+((word3&0xFFFF0000)>>7))/524288.0;
-        if      (cp[0]-pr[0]/lam_carr[0]<-4096.0) cp[0]+=8192.0;
-        else if (cp[0]-pr[0]/lam_carr[0]> 4096.0) cp[0]-=8192.0;
+        if      (cp[0]-pr[0]*freq[0]/CLIGHT<-4096.0) cp[0]+=8192.0;
+        else if (cp[0]-pr[0]*freq[0]/CLIGHT> 4096.0) cp[0]-=8192.0;
         
         if (i<12) {
             word1=U4(p  +12*i); /* L2PSatObs */
@@ -221,15 +226,15 @@ static int decode_cresraw2(raw_t *raw)
             word3=U4(p+8+12*i);
             sn=word1&0xFFF;
             snr[1]=sn==0?0.0:10.0*log10(0.1164*sn)+SNR2CN0_L2;
-            sc=(unsigned int)(word1>>24);
+            sc=(uint32_t)(word1>>24);
             if (raw->time.time==0) {
-                lli[1]=(int)((unsigned char)sc-(unsigned char)raw->lockt[sat-1][1])>0;
+                lli[1]=(int)((uint8_t)sc-(uint8_t)raw->lockt[sat-1][1])>0;
             }
             else {
                 lli[1]=0;
             }
             lli[1]|=((word1>>12)&7)?2:0;
-            raw->lockt[sat-1][1]=(unsigned char)sc;
+            raw->lockt[sat-1][1]=(uint8_t)sc;
             dop[1]=((word2>>1)&0x7FFFFF)/512.0;
             if ((word2>>24)&1) dop[1]=-dop[1];
             pr[1]=(word3&0xFFFF)/256.0;
@@ -237,10 +242,10 @@ static int decode_cresraw2(raw_t *raw)
                 pr[1]+=pr1;
                 if      (pr[1]-pr[0]<-128.0) pr[1]+=256.0;
                 else if (pr[1]-pr[0]> 128.0) pr[1]-=256.0;
-                cp[1]=floor(pr[1]/lam_carr[1]/8192.0)*8192.0;
+                cp[1]=floor(pr[1]*freq[1]/CLIGHT/8192.0)*8192.0;
                 cp[1]+=((word2&0xFE000000)+((word3&0xFFFF0000)>>7))/524288.0;
-                if      (cp[1]-pr[1]/lam_carr[1]<-4096.0) cp[1]+=8192.0;
-                else if (cp[1]-pr[1]/lam_carr[1]> 4096.0) cp[1]-=8192.0;
+                if      (cp[1]-pr[1]*freq[1]/CLIGHT<-4096.0) cp[1]+=8192.0;
+                else if (cp[1]-pr[1]*freq[1]/CLIGHT> 4096.0) cp[1]-=8192.0;
             }
             else cp[1]=0.0;
         }
@@ -249,10 +254,10 @@ static int decode_cresraw2(raw_t *raw)
         for (j=0;j<NFREQ;j++) {
             if (j==0||(j==1&&i<12)) {
                 raw->obs.data[n].P[j]=pr[j]==0.0?0.0:pr[j]-toff;
-                raw->obs.data[n].L[j]=cp[j]==0.0?0.0:cp[j]-toff/lam_carr[j];
+                raw->obs.data[n].L[j]=cp[j]==0.0?0.0:cp[j]-toff*freq[j]/CLIGHT;
                 raw->obs.data[n].D[j]=-(float)dop[j];
-                raw->obs.data[n].SNR[j]=(unsigned char)(snr[j]*4.0+0.5);
-                raw->obs.data[n].LLI[j]=(unsigned char)lli[j];
+                raw->obs.data[n].SNR[j]=(uint16_t)(snr[j]/SNR_UNIT+0.5);
+                raw->obs.data[n].LLI[j]=(uint8_t)lli[j];
                 raw->obs.data[n].code[j]=j==0?CODE_L1C:CODE_L2P;
             }
             else {
@@ -273,9 +278,9 @@ static int decode_cresraw2(raw_t *raw)
 static int decode_creseph(raw_t *raw)
 {
     eph_t eph={0};
-    unsigned int word;
+    uint32_t word;
     int i,j,k,prn,sat;
-    unsigned char *p=raw->buff+8,buff[90];
+    uint8_t *p=raw->buff+8,buff[90];
     
     trace(4,"decode_creseph: len=%d\n",raw->len);
     
@@ -290,11 +295,9 @@ static int decode_creseph(raw_t *raw)
     }
     for (i=0;i<3;i++) for (j=0;j<10;j++) {
         word=U4(p+8+i*40+j*4)>>6;
-        for (k=0;k<3;k++) buff[i*30+j*3+k]=(unsigned char)((word>>(8*(2-k)))&0xFF);
+        for (k=0;k<3;k++) buff[i*30+j*3+k]=(uint8_t)((word>>(8*(2-k)))&0xFF);
     }
-    if (decode_frame(buff   ,&eph,NULL,NULL,NULL,NULL)!=1||
-        decode_frame(buff+30,&eph,NULL,NULL,NULL,NULL)!=2||
-        decode_frame(buff+60,&eph,NULL,NULL,NULL,NULL)!=3) {
+    if (!decode_frame(buff,&eph,NULL,NULL,NULL)) {
         trace(2,"crescent bin 95 navigation frame error: prn=%d\n",prn);
         return -1;
     }
@@ -304,13 +307,14 @@ static int decode_creseph(raw_t *raw)
     eph.sat=sat;
     raw->nav.eph[sat-1]=eph;
     raw->ephsat=sat;
+    raw->ephset=0;
     return 2;
 }
 /* decode bin 94 ion/utc parameters ------------------------------------------*/
 static int decode_cresionutc(raw_t *raw)
 {
     int i;
-    unsigned char *p=raw->buff+8;
+    uint8_t *p=raw->buff+8;
     
     trace(4,"decode_cresionutc: len=%d\n",raw->len);
     
@@ -323,16 +327,16 @@ static int decode_cresionutc(raw_t *raw)
     raw->nav.utc_gps[1]=R8(p+72);
     raw->nav.utc_gps[2]=(double)U4(p+80);
     raw->nav.utc_gps[3]=(double)U2(p+84);
-    raw->nav.leaps=I2(p+90);
+    raw->nav.utc_gps[4]=I2(p+90);
     return 9;
 }
 /* decode bin 80 waas messages -----------------------------------------------*/
 static int decode_creswaas(raw_t *raw)
 {
     double tow;
-    unsigned int word;
+    uint32_t word;
     int i,j,k,prn;
-    unsigned char *p=raw->buff+8;
+    uint8_t *p=raw->buff+8;
     
     trace(4,"decode_creswaas: len=%d\n",raw->len);
     
@@ -353,7 +357,7 @@ static int decode_creswaas(raw_t *raw)
     
     for (i=k=0;i<8&&k<29;i++) {
         word=U4(p+8+i*4);
-        for (j=0;j<4&&k<29;j++) raw->sbsmsg.msg[k++]=(unsigned char)(word>>(3-j)*8);
+        for (j=0;j<4&&k<29;j++) raw->sbsmsg.msg[k++]=(uint8_t)(word>>(3-j)*8);
     }
     raw->sbsmsg.msg[28]&=0xC0;
     return 3;
@@ -363,9 +367,10 @@ static int decode_cresgloraw(raw_t *raw)
 {
     gtime_t time;
     double tow,tows,toff=0.0,cp[2]={0},pr1,pr[2]={0},dop[2]={0},snr[2]={0};
+    double freq[2];
     int i,j,n=0,prn,sat,week,lli[2]={0};
-    unsigned int word1,word2,word3,sc,sn;
-    unsigned char *p=raw->buff+8;
+    uint32_t word1,word2,word3,sc,sn;
+    uint8_t *p=raw->buff+8;
     
     trace(4,"decode_cregloraw: len=%d\n",raw->len);
     
@@ -396,28 +401,31 @@ static int decode_cresgloraw(raw_t *raw)
         }
         pr1=(word1>>13)*256.0; /* upper 19bit of L1CA pseudorange */
         
+        freq[0]=sat2freq(sat,CODE_L1C,&raw->nav);
+        freq[1]=sat2freq(sat,CODE_L2C,&raw->nav);
+        
         /* L1Obs */
         word1=U4(p  +12*i);
         word2=U4(p+4+12*i);
         word3=U4(p+8+12*i);
         sn=word1&0xFFF;
         snr[0]=sn==0?0.0:10.0*log10(0.1024*sn)+SNR2CN0_L1;
-        sc=(unsigned int)(word1>>24);
+        sc=(uint32_t)(word1>>24);
         if (raw->time.time!=0) {
-            lli[0]=(int)((unsigned char)sc-(unsigned char)raw->lockt[sat-1][0])>0;
+            lli[0]=(int)((uint8_t)sc-(uint8_t)raw->lockt[sat-1][0])>0;
         }
         else {
             lli[0]=0;
         }
         lli[0]|=((word1>>12)&7)?2:0;
-        raw->lockt[sat-1][0]=(unsigned char)sc;
+        raw->lockt[sat-1][0]=(uint8_t)sc;
         dop[0]=((word2>>1)&0x7FFFFF)/512.0;
         if ((word2>>24)&1) dop[0]=-dop[0];
         pr[0]=pr1+(word3&0xFFFF)/256.0;
-        cp[0]=floor(pr[0]/lam_carr[0]/8192.0)*8192.0;
+        cp[0]=floor(pr[0]*freq[0]/CLIGHT/8192.0)*8192.0;
         cp[0]+=((word2&0xFE000000)+((word3&0xFFFF0000)>>7))/524288.0;
-        if      (cp[0]-pr[0]/lam_carr[0]<-4096.0) cp[0]+=8192.0;
-        else if (cp[0]-pr[0]/lam_carr[0]> 4096.0) cp[0]-=8192.0;
+        if      (cp[0]-pr[0]*freq[0]/CLIGHT<-4096.0) cp[0]+=8192.0;
+        else if (cp[0]-pr[0]*freq[0]/CLIGHT> 4096.0) cp[0]-=8192.0;
         
         /* L2Obs */
         word1=U4(p+144+12*i);
@@ -425,15 +433,15 @@ static int decode_cresgloraw(raw_t *raw)
         word3=U4(p+152+12*i);
         sn=word1&0xFFF;
         snr[1]=sn==0?0.0:10.0*log10(0.1164*sn)+SNR2CN0_L2;
-        sc=(unsigned int)(word1>>24);
+        sc=(uint32_t)(word1>>24);
         if (raw->time.time==0) {
-            lli[1]=(int)((unsigned char)sc-(unsigned char)raw->lockt[sat-1][1])>0;
+            lli[1]=(int)((uint8_t)sc-(uint8_t)raw->lockt[sat-1][1])>0;
         }
         else {
             lli[1]=0;
         }
         lli[1]|=((word1>>12)&7)?2:0;
-        raw->lockt[sat-1][1]=(unsigned char)sc;
+        raw->lockt[sat-1][1]=(uint8_t)sc;
         dop[1]=((word2>>1)&0x7FFFFF)/512.0;
         if ((word2>>24)&1) dop[1]=-dop[1];
         pr[1]=(word3&0xFFFF)/256.0;
@@ -441,20 +449,20 @@ static int decode_cresgloraw(raw_t *raw)
             pr[1]+=pr1;
             if      (pr[1]-pr[0]<-128.0) pr[1]+=256.0;
             else if (pr[1]-pr[0]> 128.0) pr[1]-=256.0;
-            cp[1]=floor(pr[1]/lam_carr[1]/8192.0)*8192.0;
+            cp[1]=floor(pr[1]*freq[1]/CLIGHT/8192.0)*8192.0;
             cp[1]+=((word2&0xFE000000)+((word3&0xFFFF0000)>>7))/524288.0;
-            if      (cp[1]-pr[1]/lam_carr[1]<-4096.0) cp[1]+=8192.0;
-            else if (cp[1]-pr[1]/lam_carr[1]> 4096.0) cp[1]-=8192.0;
+            if      (cp[1]-pr[1]*freq[1]/CLIGHT<-4096.0) cp[1]+=8192.0;
+            else if (cp[1]-pr[1]*freq[1]/CLIGHT> 4096.0) cp[1]-=8192.0;
         }
         raw->obs.data[n].time=time;
         raw->obs.data[n].sat =sat;
         for (j=0;j<NFREQ;j++) {
             if (j==0||(j==1&&i<12)) {
                 raw->obs.data[n].P[j]=pr[j]==0.0?0.0:pr[j]-toff;
-                raw->obs.data[n].L[j]=cp[j]==0.0?0.0:cp[j]-toff/lam_carr[j];
+                raw->obs.data[n].L[j]=cp[j]==0.0?0.0:cp[j]-toff*freq[j]/CLIGHT;
                 raw->obs.data[n].D[j]=-(float)dop[j];
-                raw->obs.data[n].SNR[j]=(unsigned char)(snr[j]*4.0+0.5);
-                raw->obs.data[n].LLI[j]=(unsigned char)lli[j];
+                raw->obs.data[n].SNR[j]=(uint16_t)(snr[j]/SNR_UNIT+0.5);
+                raw->obs.data[n].LLI[j]=(uint8_t)lli[j];
                 raw->obs.data[n].code[j]=j==0?CODE_L1C:CODE_L2P;
             }
             else {
@@ -474,7 +482,7 @@ static int decode_cresgloraw(raw_t *raw)
 static int decode_cresgloeph(raw_t *raw)
 {
     geph_t geph={0};
-    unsigned char *p=raw->buff+8,str[12];
+    uint8_t *p=raw->buff+8,str[12];
     int i,j,k,sat,prn,frq,time,no;
     
     trace(4,"decode_cregloeph: len=%d\n",raw->len);
@@ -502,7 +510,7 @@ static int decode_cresgloeph(raw_t *raw)
     }
     /* decode glonass ephemeris strings */
     geph.tof=raw->time;
-    if (!decode_glostr(raw->subfrm[sat-1],&geph)||geph.sat!=sat) return -1;
+    if (!decode_glostr(raw->subfrm[sat-1],&geph,NULL)||geph.sat!=sat) return -1;
     geph.frq=frq;
     
     if (!strstr(raw->opt,"-EPHALL")) {
@@ -510,6 +518,7 @@ static int decode_cresgloeph(raw_t *raw)
     }
     raw->nav.geph[prn-1]=geph;
     raw->ephsat=sat;
+    raw->ephset=0;
     return 2;
 }
 /* decode crescent raw message -----------------------------------------------*/
@@ -539,7 +548,7 @@ static int decode_cres(raw_t *raw)
     return 0;
 }
 /* sync code -----------------------------------------------------------------*/
-static int sync_cres(unsigned char *buff, unsigned char data)
+static int sync_cres(uint8_t *buff, uint8_t data)
 {
     buff[0]=buff[1]; buff[1]=buff[2]; buff[2]=buff[3]; buff[3]=data;
     return buff[0]==CRESSYNC[0]&&buff[1]==CRESSYNC[1]&&
@@ -547,8 +556,8 @@ static int sync_cres(unsigned char *buff, unsigned char data)
 }
 /* input cresent raw message ---------------------------------------------------
 * input next crescent raw message from stream
-* args   : raw_t *raw   IO     receiver raw data control struct
-*          unsigned char data I stream data (1 byte)
+* args   : raw_t *raw       IO  receiver raw data control struct
+*          uint8_t data     I   stream data (1 byte)
 * return : status (-1: error message, 0: no message, 1: input observation data,
 *                  2: input ephemeris, 3: input sbas message,
 *                  9: input ion/utc parameter)
@@ -561,7 +570,7 @@ static int sync_cres(unsigned char *buff, unsigned char data)
 *          -ENAGLO      : enable glonass messages
 *
 *-----------------------------------------------------------------------------*/
-extern int input_cres(raw_t *raw, unsigned char data)
+extern int input_cres(raw_t *raw, uint8_t data)
 {
     trace(5,"input_cres: data=%02x\n",data);
     
@@ -602,7 +611,7 @@ extern int input_cresf(raw_t *raw, FILE *fp)
     if (raw->nbyte==0) {
         for (i=0;;i++) {
             if ((data=fgetc(fp))==EOF) return -2;
-            if (sync_cres(raw->buff,(unsigned char)data)) break;
+            if (sync_cres(raw->buff,(uint8_t)data)) break;
             if (i>=4096) return 0;
         }
     }

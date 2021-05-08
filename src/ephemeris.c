@@ -1,14 +1,14 @@
 /*------------------------------------------------------------------------------
 * ephemeris.c : satellite ephemeris and clock functions
 *
-*          Copyright (C) 2010-2018 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2010-2020 by T.TAKASU, All rights reserved.
 *
 * references :
-*     [1] IS-GPS-200D, Navstar GPS Space Segment/Navigation User Interfaces,
-*         7 March, 2006
+*     [1] IS-GPS-200K, Navstar GPS Space Segment/Navigation User Interfaces,
+*         May 6, 2019
 *     [2] Global Navigation Satellite System GLONASS, Interface Control Document
-*         Navigational radiosignal In bands L1, L2, (Edition 5.1), 2008
-*     [3] RTCA/DO-229C, Minimum operational performanc standards for global
+*         Navigational radiosignal In bands L1, L2, (Version 5.1), 2008
+*     [3] RTCA/DO-229C, Minimum operational performance standards for global
 *         positioning system/wide area augmentation system airborne equipment,
 *         RTCA inc, November 28, 2001
 *     [4] RTCM Paper, April 12, 2010, Proposed SSR Messages for SV Orbit Clock,
@@ -17,14 +17,14 @@
 *     [6] RTCM Paper 012-2009-SC104-582, February 2, 2010 (previous ver of [4])
 *     [7] European GNSS (Galileo) Open Service Signal In Space Interface Control
 *         Document, Issue 1.3, December, 2016
-*     [8] Quasi-Zenith Satellite System Navigation Service Interface Control
-*         Specification for QZSS (IS-QZSS) V1.1, Japan Aerospace Exploration
-*         Agency, July 31, 2009
+*     [8] Quasi-Zenith Satellite System Interface Specification Satellite
+*         Positioning, Navigation and Timing Service (IS-QZSS-PNT-003), Cabinet
+*         Office, November 5, 2018
 *     [9] BeiDou navigation satellite system signal in space interface control
-*         document open service signal B1I (version 1.0), China Satellite
-*         Navigation office, December 2012
-*     [10] RTCM Standard 10403.1 - Amendment 5, Differential GNSS (Global
-*         Navigation Satellite Systems) Services - version 3, July 1, 2011
+*         document open service signal B1I (version 3.0), China Satellite
+*         Navigation office, February, 2019
+*     [10] RTCM Standard 10403.3, Differential GNSS (Global Navigation
+*         Satellite Systems) Services - version 3, October 7, 2016
 *
 * version : $Revision:$ $Date:$
 * history : 2010/07/28 1.1  moved from rtkcmn.c
@@ -58,6 +58,18 @@
 *                           support ura value in var_uraeph() for galileo
 *                           test eph->flag to recognize beidou geo
 *                           add api satseleph() for ephemeris selection
+*           2020/11/30 1.14 update references [1],[2],[8],[9] and [10]
+*                           add API getseleph()
+*                           rename API satseleph() as setseleph()
+*                           support NavIC/IRNSS by API satpos() and satposs()
+*                           support BDS C59-63 as GEO satellites in eph2pos()
+*                           default selection of I/NAV for Galileo ephemeris
+*                           no support EPHOPT_LEX by API satpos() and satposs()
+*                           unselect Galileo ephemeris with AOD<=0 in seleph()
+*                           fix bug on clock iteration in eph2clk(), geph2clk()
+*                           fix bug on clock reference time in satpos_ssr()
+*                           fix bug on wrong value with ura=15 in var_ura()
+*                           use integer types in stdint.h
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -94,8 +106,8 @@
 #define MAX_ITER_KEPLER 30        /* max number of iteration of Kelpler */
 
 /* ephemeris selections ------------------------------------------------------*/
-static int eph_sel[]={ /* GPS,GLO,GAL,QZS,BDS,SBS */
-    0,0,1,0,0,0
+static int eph_sel[]={ /* GPS,GLO,GAL,QZS,BDS,IRN,SBS */
+    0,0,0,0,0,0,0
 };
 
 /* variance by ura ephemeris -------------------------------------------------*/
@@ -113,10 +125,10 @@ static double var_uraeph(int sys, int ura)
         return SQR(STD_GAL_NAPA);
     }
     else { /* gps ura (ref [1] 20.3.3.3.1.1) */
-        return ura<0||15<ura?SQR(6144.0):SQR(ura_value[ura]);
+        return ura<0||14<ura?SQR(6144.0):SQR(ura_value[ura]);
     }
 }
-/* variance by ura ssr (ref [4]) ---------------------------------------------*/
+/* variance by ura ssr (ref [10] table 3.3-1 DF389) --------------------------*/
 static double var_urassr(int ura)
 {
     double std;
@@ -178,15 +190,15 @@ extern void alm2pos(gtime_t time, const alm_t *alm, double *rs, double *dts)
 *-----------------------------------------------------------------------------*/
 extern double eph2clk(gtime_t time, const eph_t *eph)
 {
-    double t;
+    double t,ts;
     int i;
     
     trace(4,"eph2clk : time=%s sat=%2d\n",time_str(time,3),eph->sat);
     
-    t=timediff(time,eph->toc);
+    t=ts=timediff(time,eph->toc);
     
     for (i=0;i<2;i++) {
-        t-=eph->f0+eph->f1*t+eph->f2*t*t;
+        t=ts-(eph->f0+eph->f1*t+eph->f2*t*t);
     }
     return eph->f0+eph->f1*t+eph->f2*t*t;
 }
@@ -246,7 +258,7 @@ extern void eph2pos(gtime_t time, const eph_t *eph, double *rs, double *dts,
     x=r*cos(u); y=r*sin(u); cosi=cos(i);
     
     /* beidou geo satellite */
-    if (sys==SYS_CMP&&(eph->flag==2||(eph->flag==0&&prn<=5))) {
+    if (sys==SYS_CMP&&(prn<=5||prn>=59)) { /* ref [9] table 4-1 */
         O=eph->OMG0+eph->OMGd*tk-omge*eph->toes;
         sinO=sin(O); cosO=cos(O);
         xg=x*cosO-y*cosi*sinO;
@@ -312,15 +324,15 @@ static void glorbit(double t, double *x, const double *acc)
 *-----------------------------------------------------------------------------*/
 extern double geph2clk(gtime_t time, const geph_t *geph)
 {
-    double t;
+    double t,ts;
     int i;
     
     trace(4,"geph2clk: time=%s sat=%2d\n",time_str(time,3),geph->sat);
     
-    t=timediff(time,geph->toe);
+    t=ts=timediff(time,geph->toe);
     
     for (i=0;i<2;i++) {
-        t-=-geph->taun+geph->gamn*t;
+        t=ts-(-geph->taun+geph->gamn*t);
     }
     return -geph->taun+geph->gamn*t;
 }
@@ -410,7 +422,7 @@ extern void seph2pos(gtime_t time, const seph_t *seph, double *rs, double *dts,
 static eph_t *seleph(gtime_t time, int sat, int iode, const nav_t *nav)
 {
     double t,tmax,tmin;
-    int i,j=-1,sys,sel=0;
+    int i,j=-1,sys,sel;
     
     trace(4,"seleph  : time=%s sat=%2d iode=%d\n",time_str(time,3),sat,iode);
     
@@ -420,6 +432,7 @@ static eph_t *seleph(gtime_t time, int sat, int iode, const nav_t *nav)
         case SYS_GAL: tmax=MAXDTOE_GAL    ; sel=eph_sel[2]; break;
         case SYS_QZS: tmax=MAXDTOE_QZS+1.0; sel=eph_sel[3]; break;
         case SYS_CMP: tmax=MAXDTOE_CMP+1.0; sel=eph_sel[4]; break;
+        case SYS_IRN: tmax=MAXDTOE_IRN+1.0; sel=eph_sel[5]; break;
         default: tmax=MAXDTOE+1.0; break;
     }
     tmin=tmax+1.0;
@@ -427,17 +440,19 @@ static eph_t *seleph(gtime_t time, int sat, int iode, const nav_t *nav)
     for (i=0;i<nav->n;i++) {
         if (nav->eph[i].sat!=sat) continue;
         if (iode>=0&&nav->eph[i].iode!=iode) continue;
-        if (sys==SYS_GAL&&sel) {
-            if (sel==1&&!(nav->eph[i].code&(1<<9))) continue; /* I/NAV */
-            if (sel==2&&!(nav->eph[i].code&(1<<8))) continue; /* F/NAV */
+        if (sys==SYS_GAL) {
+            sel=getseleph(SYS_GAL);
+            if (sel==0&&!(nav->eph[i].code&(1<<9))) continue; /* I/NAV */
+            if (sel==1&&!(nav->eph[i].code&(1<<8))) continue; /* F/NAV */
+            if (timediff(nav->eph[i].toe,time)>=0.0) continue; /* AOD<=0 */
         }
         if ((t=fabs(timediff(nav->eph[i].toe,time)))>tmax) continue;
         if (iode>=0) return nav->eph+i;
         if (t<=tmin) {j=i; tmin=t;} /* toe closest to time */
     }
     if (iode>=0||j<0) {
-        trace(3,"no broadcast ephemeris: %s sat=%2d iode=%3d\n",time_str(time,0),
-              sat,iode);
+        trace(3,"no broadcast ephemeris: %s sat=%2d iode=%3d\n",
+              time_str(time,0),sat,iode);
         return NULL;
     }
     return nav->eph+j;
@@ -496,7 +511,7 @@ static int ephclk(gtime_t time, gtime_t teph, int sat, const nav_t *nav,
     
     sys=satsys(sat,NULL);
     
-    if (sys==SYS_GPS||sys==SYS_GAL||sys==SYS_QZS||sys==SYS_CMP) {
+    if (sys==SYS_GPS||sys==SYS_GAL||sys==SYS_QZS||sys==SYS_CMP||sys==SYS_IRN) {
         if (!(eph=seleph(teph,sat,-1,nav))) return 0;
         *dts=eph2clk(time,eph);
     }
@@ -528,7 +543,7 @@ static int ephpos(gtime_t time, gtime_t teph, int sat, const nav_t *nav,
     
     *svh=-1;
     
-    if (sys==SYS_GPS||sys==SYS_GAL||sys==SYS_QZS||sys==SYS_CMP) {
+    if (sys==SYS_GPS||sys==SYS_GAL||sys==SYS_QZS||sys==SYS_CMP||sys==SYS_IRN) {
         if (!(eph=seleph(teph,sat,iode,nav))) return 0;
         eph2pos(time,eph,rs,dts,var);
         time=timeadd(time,tt);
@@ -625,7 +640,7 @@ static int satpos_ssr(gtime_t time, gtime_t teph, int sat, const nav_t *nav,
         return 0;
     }
     if (ssr->udi[0]>=1.0) t1-=ssr->udi[0]/2.0;
-    if (ssr->udi[1]>=1.0) t2-=ssr->udi[0]/2.0;
+    if (ssr->udi[1]>=1.0) t2-=ssr->udi[1]/2.0;
     
     for (i=0;i<3;i++) deph[i]=ssr->deph[i]+ssr->ddeph[i]*t1;
     dclk=ssr->dclk[0]+ssr->dclk[1]*t2+ssr->dclk[2]*t2*t2;
@@ -714,8 +729,6 @@ extern int satpos(gtime_t time, gtime_t teph, int sat, int ephopt,
         case EPHOPT_SSRCOM: return satpos_ssr (time,teph,sat,nav, 1,rs,dts,var,svh);
         case EPHOPT_PREC  :
             if (!peph2pos(time,sat,nav,1,rs,dts,var)) break; else return 1;
-        case EPHOPT_LEX   :
-            if (!lexeph2pos(time,sat,nav,rs,dts,var)) break; else return 1;
     }
     *svh=-1;
     return 0;
@@ -762,7 +775,7 @@ extern void satposs(gtime_t teph, const obsd_t *obs, int n, const nav_t *nav,
         for (j=0,pr=0.0;j<NFREQ;j++) if ((pr=obs[i].P[j])!=0.0) break;
         
         if (j>=NFREQ) {
-            trace(2,"no pseudorange %s sat=%2d\n",time_str(obs[i].time,3),obs[i].sat);
+            trace(3,"no pseudorange %s sat=%2d\n",time_str(obs[i].time,3),obs[i].sat);
             continue;
         }
         /* transmission time by satellite clock */
@@ -794,16 +807,18 @@ extern void satposs(gtime_t teph, const obsd_t *obs, int n, const nav_t *nav,
               dts[i*2]*1E9,var[i],svh[i]);
     }
 }
-/* select satellite ephemeris --------------------------------------------------
-* select satellite ephemeris. call it before calling satpos(),satposs().
+/* set selected satellite ephemeris --------------------------------------------
+* Set selected satellite ephemeris for multiple ones like LNAV - CNAV, I/NAV -
+* F/NAV. Call it before calling satpos(),satposs() to use unselected one.
 * args   : int    sys       I   satellite system (SYS_???)
 *          int    sel       I   selection of ephemeris
-*                                 SYS_GAL: 0:any,1:I/NAV,2:F/NAV
-*                                 others : undefined
+*                                 GPS,QZS : 0:LNAV ,1:CNAV  (default: LNAV)
+*                                 GAL     : 0:I/NAV,1:F/NAV (default: I/NAV)
+*                                 others  : undefined
 * return : none
 * notes  : default ephemeris selection for galileo is any.
 *-----------------------------------------------------------------------------*/
-extern void satseleph(int sys, int sel)
+extern void setseleph(int sys, int sel)
 {
     switch (sys) {
         case SYS_GPS: eph_sel[0]=sel; break;
@@ -811,6 +826,26 @@ extern void satseleph(int sys, int sel)
         case SYS_GAL: eph_sel[2]=sel; break;
         case SYS_QZS: eph_sel[3]=sel; break;
         case SYS_CMP: eph_sel[4]=sel; break;
-        case SYS_SBS: eph_sel[5]=sel; break;
+        case SYS_IRN: eph_sel[5]=sel; break;
+        case SYS_SBS: eph_sel[6]=sel; break;
     }
+}
+/* get selected satellite ephemeris -------------------------------------------
+* Get the selected satellite ephemeris.
+* args   : int    sys       I   satellite system (SYS_???)
+* return : selected ephemeris
+*            refer setseleph()
+*-----------------------------------------------------------------------------*/
+extern int getseleph(int sys)
+{
+    switch (sys) {
+        case SYS_GPS: return eph_sel[0];
+        case SYS_GLO: return eph_sel[1];
+        case SYS_GAL: return eph_sel[2];
+        case SYS_QZS: return eph_sel[3];
+        case SYS_CMP: return eph_sel[4];
+        case SYS_IRN: return eph_sel[5];
+        case SYS_SBS: return eph_sel[6];
+    }
+    return 0;
 }

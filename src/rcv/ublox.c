@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 * ublox.c : ublox receiver dependent functions
 *
-*          Copyright (C) 2007-2018 by T.TAKASU, All rights reserved.
+*          Copyright (C) 2007-2020 by T.TAKASU, All rights reserved.
 *          Copyright (C) 2014 by T.SUZUKI, All rights reserved.
 *
 * reference :
@@ -13,8 +13,8 @@
 *         Protocol Specification V15.00-17.00, Nov 3, 2014
 *     [4] ublox-AG, UBX-13003221-R09, u-blox 8 /u-blox M8 Receiver Description
 *         including Protocol Specification V15.00-18.00, January, 2016
-*     [5] ublox-AG, UBX-18010854-R04, u-blox ZED-F9P Interface Description,
-*         September, 2018
+*     [5] ublox-AG, UBX-18010854-R08, u-blox ZED-F9P Interface Description,
+*         May, 2020
 *
 * version : $Revision: 1.2 $ $Date: 2008/07/14 00:05:05 $
 * history : 2007/10/08 1.0  new
@@ -65,6 +65,16 @@
 *           2019/05/10 1.27 disable half-cyc-subtract flag on LLI for RXM-RAWX
 *                           save galileo E5b data to obs index 2
 *                           handle C17 as no-GEO (MEO/IGSO)
+*           2020/11/30 1.28 update reference [5]
+*                           support UBX-CFG-VALDEL,VALGET,VALSET
+*                           support hex field format for ubx binary message
+*                           add quality test for receiver time in decode_trkd5()
+*                           add half cycle shift correction for BDS GEO
+*                           delete receiver option -GALFNAV
+*                           use API code2idx() and code2freq()
+*                           support QZSS L1S (CODE_L1Z)
+*                           CODE_L1I -> CODE_L2I for BDS B1I (RINEX 3.04)
+*                           use integer types in stdint.h
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -101,30 +111,29 @@
 #define ROUND(x)    (int)floor((x)+0.5)
 
 /* get fields (little-endian) ------------------------------------------------*/
-#define U1(p) (*((unsigned char *)(p)))
-#define I1(p) (*((signed char *)(p)))
-static unsigned short U2(unsigned char *p) {unsigned short u; memcpy(&u,p,2); return u;}
-static unsigned int   U4(unsigned char *p) {unsigned int   u; memcpy(&u,p,4); return u;}
-static int            I4(unsigned char *p) {int            u; memcpy(&u,p,4); return u;}
-static float          R4(unsigned char *p) {float          r; memcpy(&r,p,4); return r;}
-static double         R8(unsigned char *p) {double         r; memcpy(&r,p,8); return r;}
-
-static double         I8(unsigned char *p) {return I4(p+4)*4294967296.0+U4(p);}
+#define U1(p) (*((uint8_t *)(p)))
+#define I1(p) (*((int8_t  *)(p)))
+static uint16_t U2(uint8_t *p) {uint16_t u; memcpy(&u,p,2); return u;}
+static uint32_t U4(uint8_t *p) {uint32_t u; memcpy(&u,p,4); return u;}
+static int32_t  I4(uint8_t *p) {int32_t  u; memcpy(&u,p,4); return u;}
+static float    R4(uint8_t *p) {float    r; memcpy(&r,p,4); return r;}
+static double   R8(uint8_t *p) {double   r; memcpy(&r,p,8); return r;}
+static double   I8(uint8_t *p) {return I4(p+4)*4294967296.0+U4(p);}
 
 /* set fields (little-endian) ------------------------------------------------*/
-static void setU1(unsigned char *p, unsigned char  u) {*p=u;}
-static void setU2(unsigned char *p, unsigned short u) {memcpy(p,&u,2);}
-static void setU4(unsigned char *p, unsigned int   u) {memcpy(p,&u,4);}
-static void setI1(unsigned char *p, signed char    i) {*p=(unsigned char)i;}
-static void setI2(unsigned char *p, short          i) {memcpy(p,&i,2);}
-static void setI4(unsigned char *p, int            i) {memcpy(p,&i,4);}
-static void setR4(unsigned char *p, float          r) {memcpy(p,&r,4);}
-static void setR8(unsigned char *p, double         r) {memcpy(p,&r,8);}
+static void setU1(uint8_t *p, uint8_t  u) {*p=u;}
+static void setU2(uint8_t *p, uint16_t u) {memcpy(p,&u,2);}
+static void setU4(uint8_t *p, uint32_t u) {memcpy(p,&u,4);}
+static void setI1(uint8_t *p, int8_t   i) {*p=(uint8_t)i;}
+static void setI2(uint8_t *p, int16_t  i) {memcpy(p,&i,2);}
+static void setI4(uint8_t *p, int32_t  i) {memcpy(p,&i,4);}
+static void setR4(uint8_t *p, float    r) {memcpy(p,&r,4);}
+static void setR8(uint8_t *p, double   r) {memcpy(p,&r,8);}
 
 /* checksum ------------------------------------------------------------------*/
-static int checksum(unsigned char *buff, int len)
+static int checksum(uint8_t *buff, int len)
 {
-    unsigned char cka=0,ckb=0;
+    uint8_t cka=0,ckb=0;
     int i;
     
     for (i=2;i<len-2;i++) {
@@ -132,9 +141,9 @@ static int checksum(unsigned char *buff, int len)
     }
     return cka==buff[len-2]&&ckb==buff[len-1];
 }
-static void setcs(unsigned char *buff, int len)
+static void setcs(uint8_t *buff, int len)
 {
-    unsigned char cka=0,ckb=0;
+    uint8_t cka=0,ckb=0;
     int i;
     
     for (i=2;i<len-2;i++) {
@@ -143,7 +152,7 @@ static void setcs(unsigned char *buff, int len)
     buff[len-2]=cka;
     buff[len-1]=ckb;
 }
-/* ubx gnssid to system (ref [2] 25) -----------------------------------------*/
+/* UBX GNSSId to system (ref [2] 25) -----------------------------------------*/
 static int ubx_sys(int gnssid)
 {
     switch (gnssid) {
@@ -156,106 +165,67 @@ static int ubx_sys(int gnssid)
     }
     return 0;
 }
-/* ubx sigid to signal ([5] Appendix B) --------------------------------------*/
+/* UBX SigId to signal (ref [5] 1.5.4) ---------------------------------------*/
 static int ubx_sig(int sys, int sigid)
 {
-    if (sys == SYS_GPS) {
-        if (sigid == 0) return CODE_L1C; /* L1C/A */
-        if (sigid == 3) return CODE_L2L; /* L2CL */
-        if (sigid == 4) return CODE_L2M; /* L2CM */
+    if (sys==SYS_GPS) {
+        if (sigid==0) return CODE_L1C; /* L1C/A */
+        if (sigid==3) return CODE_L2L; /* L2CL */
+        if (sigid==4) return CODE_L2S; /* L2CM */
     }
-    else if (sys == SYS_GLO) {
-        if (sigid == 0) return CODE_L1C; /* G1C/A (GLO L1 OF) */
-        if (sigid == 2) return CODE_L2C; /* G2C/A (GLO L2 OF) */
+    else if (sys==SYS_GLO) {
+        if (sigid==0) return CODE_L1C; /* G1C/A (GLO L1 OF) */
+        if (sigid==2) return CODE_L2C; /* G2C/A (GLO L2 OF) */
     }
-    else if (sys == SYS_GAL) {
-        if (sigid == 0) return CODE_L1C; /* E1C */
-        if (sigid == 1) return CODE_L1B; /* E1B */
-        if (sigid == 5) return CODE_L7I; /* E5bI */
-        if (sigid == 6) return CODE_L7Q; /* E5bQ */
+    else if (sys==SYS_GAL) {
+        if (sigid==0) return CODE_L1C; /* E1C */
+        if (sigid==1) return CODE_L1B; /* E1B */
+        if (sigid==5) return CODE_L7I; /* E5bI */
+        if (sigid==6) return CODE_L7Q; /* E5bQ */
     }
-    else if (sys == SYS_QZS) {
-        if (sigid == 0) return CODE_L1C; /* L1C/A */
-        if (sigid == 5) return CODE_L2L; /* L2CL (not specified in [5]) */
+    else if (sys==SYS_QZS) {
+        if (sigid==0) return CODE_L1C; /* L1C/A */
+        if (sigid==1) return CODE_L1Z; /* L1S */
+        if (sigid==4) return CODE_L2S; /* L2CM */
+        if (sigid==5) return CODE_L2L; /* L2CL */
     }
-    else if (sys == SYS_CMP) {
-        if (sigid == 0) return CODE_L1I; /* B1I D1 (rinex 3.02) */
-        if (sigid == 1) return CODE_L1I; /* B1I D2 (rinex 3.02) */
-        if (sigid == 2) return CODE_L7I; /* B2I D1 */
-        if (sigid == 3) return CODE_L7I; /* B2I D2 */
+    else if (sys==SYS_CMP) {
+        if (sigid==0) return CODE_L2I; /* B1I D1 */
+        if (sigid==1) return CODE_L2I; /* B1I D2 */
+        if (sigid==2) return CODE_L7I; /* B2I D1 */
+        if (sigid==3) return CODE_L7I; /* B2I D2 */
     }
-    else if (sys == SYS_SBS) {
-        return CODE_L1C; /* L1C/A (not in [5]) */
+    else if (sys==SYS_SBS) {
+        if (sigid==0) return CODE_L1C; /* L1C/A */
     }
     return CODE_NONE;
 }
 /* signal index in obs data --------------------------------------------------*/
-static int sig_idx(int sys, int code)
+static int sig_idx(int sys, uint8_t code)
 {
-    if (sys == SYS_GPS) {
-        if (code==CODE_L1C) return 1;
-        if (code==CODE_L2L) return 2;
-        if (code==CODE_L2M) return NFREQ+1;
-    }
-    else if (sys == SYS_GLO) {
-        if (code==CODE_L1C) return 1;
-        if (code==CODE_L2C) return 2;
-    }
-    else if (sys == SYS_GAL) {
-        if (code==CODE_L1C) return 1;
-        if (code==CODE_L1B) return NFREQ+1;
-        if (code==CODE_L7I) return 2; /* E5bI */
-        if (code==CODE_L7Q) return 2; /* E5bQ */
-    }
-    else if (sys == SYS_QZS) {
-        if (code==CODE_L1C) return 1;
-        if (code==CODE_L2L) return 2;
-    }
-    else if (sys == SYS_CMP) {
-        if (code==CODE_L1I) return 1;
-        if (code==CODE_L7I) return 2;
-    }
-    else if (sys == SYS_SBS) {
-        if (code==CODE_L1C) return 1;
-    }
-    return 0;
-}
-/* freq index to frequency ---------------------------------------------------*/
-static double sig_freq(int sys, int f, int fcn)
-{
-    static const double freq_glo[8]={FREQ1_GLO,FREQ2_GLO,FREQ3_GLO};
-    static const double dfrq_glo[8]={DFRQ1_GLO,DFRQ2_GLO};
-    static const double freq_bds[8]={FREQ1_CMP,0,0,FREQ3_CMP,FREQ2_CMP};
+    int idx=code2idx(sys,code),nex=NEXOBS;
     
-    if (sys == SYS_GLO) {
-        return freq_glo[f-1]+dfrq_glo[f-1]*fcn;
+    if (sys==SYS_GPS) {
+        if (code==CODE_L2S) return (nex<1)?-1:NFREQ;   /* L2CM */
     }
-    else if (sys == SYS_CMP) {
-        return freq_bds[f-1];
+    else if (sys==SYS_GAL) {
+        if (code==CODE_L1B) return (nex<1)?-1:NFREQ;   /* E1B */
+        if (code==CODE_L7I) return (nex<2)?-1:NFREQ+1; /* E5bI */
     }
-    return CLIGHT/lam_carr[f-1];
+    else if (sys==SYS_QZS) {
+        if (code==CODE_L2S) return (nex<1)?-1:NFREQ;   /* L2CM */
+        if (code==CODE_L1Z) return (nex<2)?-1:NFREQ+1; /* L1S */
+    }
+    return (idx<NFREQ)?idx:-1;
 }
-/* 8-bit week -> full week ---------------------------------------------------*/
-static void adj_utcweek(gtime_t time, double *utc)
-{
-    int week;
-    
-    if (utc[3]>=256.0) return;
-    time2gpst(time,&week);
-    utc[3]+=week/256*256;
-    if      (utc[3]<week-128) utc[3]+=256.0;
-    else if (utc[3]>week+128) utc[3]-=256.0;
-}
-/* decode ubx-rxm-raw: raw measurement data ----------------------------------*/
+/* decode UBX-RXM-RAW: raw measurement data ----------------------------------*/
 static int decode_rxmraw(raw_t *raw)
 {
+    uint8_t *p=raw->buff+6;
     gtime_t time;
     double tow,tt,tadj=0.0,toff=0.0,tn;
     int i,j,prn,sat,n=0,nsat,week;
-    unsigned char *p=raw->buff+6;
     char *q;
-    
-    trace(4,"decode_rxmraw: len=%d\n",raw->len);
     
     if (raw->outtype) {
         sprintf(raw->msgtype,"UBX RXM-RAW   (%4d): nsat=%d",raw->len,U1(p+6));
@@ -291,7 +261,7 @@ static int decode_rxmraw(raw_t *raw)
         raw->obs.data[n].P[0]  =R8(p+ 8)-toff*CLIGHT;
         raw->obs.data[n].D[0]  =R4(p+16);
         prn                    =U1(p+20);
-        raw->obs.data[n].SNR[0]=(unsigned char)(I1(p+22)*4.0+0.5);
+        raw->obs.data[n].SNR[0]=(uint16_t)(I1(p+22)*1.0/SNR_UNIT+0.5);
         raw->obs.data[n].LLI[0]=U1(p+23);
         raw->obs.data[n].code[0]=CODE_L1C;
         
@@ -321,17 +291,15 @@ static int decode_rxmraw(raw_t *raw)
     raw->obs.n=n;
     return 1;
 }
-/* decode ubx-rxm-rawx: multi-gnss raw measurement data (ref [3][4][5]) ------*/
+/* decode UBX-RXM-RAWX: multi-GNSS raw measurement data (ref [3][4][5]) ------*/
 static int decode_rxmrawx(raw_t *raw)
 {
+    uint8_t *p=raw->buff+6;
     gtime_t time;
-    unsigned char *p=raw->buff+6;
     char *q,tstr[64];
     double tow,P,L,D,tn,tadj=0.0,toff=0.0;
-    int i,j,k,f,sys,prn,sat,code,slip,halfv,halfc,LLI,n=0,std_slip=0;
+    int i,j,k,idx,sys,prn,sat,code,slip,halfv,halfc,LLI,n=0,std_slip=0;
     int week,nmeas,ver,gnss,svid,sigid,frqid,lockt,cn0,cpstd,tstat;
-    
-    trace(4,"decode_rxmrawx: len=%d\n",raw->len);
     
     if (raw->len<24) {
         trace(2,"ubx rxmrawx length error: len=%d\n",raw->len);
@@ -361,7 +329,7 @@ static int decode_rxmrawx(raw_t *raw)
     if ((q=strstr(raw->opt,"-TADJ="))) {
         sscanf(q,"-TADJ=%lf",&tadj);
     }
-    /* slip theshold of std-dev of carreir-phase (-STD_SLIP) */
+    /* slip threshold of std-dev of carreir-phase (-STD_SLIP) */
     if ((q=strstr(raw->opt,"-STD_SLIP="))) {
         sscanf(q,"-STD_SLIP=%d",&std_slip);
     }
@@ -398,32 +366,37 @@ static int decode_rxmrawx(raw_t *raw)
             trace(2,"ubx rxmrawx sat number error: sys=%2d prn=%2d\n",sys,prn);
             continue;
         }
+        if (sys==SYS_GLO&&!raw->nav.glo_fcn[prn-1]) {
+            raw->nav.glo_fcn[prn-1]=frqid-7+8;
+        }
         if (ver>=1) {
             code=ubx_sig(sys,sigid);
         }
         else {
-            code=(sys==SYS_CMP)?CODE_L1I:((sys==SYS_GAL)?CODE_L1X:CODE_L1C);
+            code=(sys==SYS_CMP)?CODE_L2I:((sys==SYS_GAL)?CODE_L1X:CODE_L1C);
         }
         /* signal index in obs data */
-        f=sig_idx(sys,code);
-        
-        if (f==0||f>NFREQ+NEXOBS) {
+        if ((idx=sig_idx(sys,code))<0) {
             trace(2,"ubx rxmrawx signal error: sat=%2d sigid=%d\n",sat,sigid);
             continue;
         }
         /* offset by time tag adjustment */
         if (toff!=0.0) {
             P-=toff*CLIGHT;
-            L-=toff*sig_freq(sys,f,frqid-7);
+            L-=toff*code2freq(sys,code,frqid-7);
         }
-        halfv=tstat&4?1:0; /* half cycle valid */
-        halfc=tstat&8?1:0; /* half cycle subtracted from phase */
-        slip=lockt==0||lockt*1E-3<raw->lockt[sat-1][f-1]||
-             halfc!=raw->halfc[sat-1][f-1]||(std_slip&&cpstd>=std_slip);
-        raw->lockt[sat-1][f-1]=lockt*1E-3;
-        raw->halfc[sat-1][f-1]=halfc;
-        LLI=(slip?LLI_SLIP:0)|(!halfv?LLI_HALFC:0);
-        
+        /* half-cycle shift correction for BDS GEO */
+        if (sys==SYS_CMP&&(prn<=5||prn>=59)&&L!=0.0) {
+            L+=0.5;
+        }
+        halfv=(tstat&4)?1:0; /* half cycle valid */
+        halfc=(tstat&8)?1:0; /* half cycle subtracted from phase */
+        slip=lockt==0||lockt*1E-3<raw->lockt[sat-1][idx]||
+             halfc!=raw->halfc[sat-1][idx]||(std_slip&&cpstd>=std_slip);
+        raw->lockt[sat-1][idx]=lockt*1E-3;
+        raw->halfc[sat-1][idx]=halfc;
+        LLI=(slip?LLI_SLIP:0)|(!halfv?LLI_HALFC:0)|(halfc?LLI_HALFS:0);
+
         for (j=0;j<n;j++) {
             if (raw->obs.data[j].sat==sat) break;
         }
@@ -439,133 +412,22 @@ static int decode_rxmrawx(raw_t *raw)
             }
             n++;
         }
-        raw->obs.data[j].L[f-1]=L;
-        raw->obs.data[j].P[f-1]=P;
-        raw->obs.data[j].D[f-1]=(float)D;
-        raw->obs.data[j].SNR[f-1]=(unsigned char)(cn0*4);
-        raw->obs.data[j].LLI[f-1]=(unsigned char)LLI;
-        raw->obs.data[j].code[f-1]=(unsigned char)code;
+        raw->obs.data[j].L[idx]=L;
+        raw->obs.data[j].P[idx]=P;
+        raw->obs.data[j].D[idx]=(float)D;
+        raw->obs.data[j].SNR[idx]=(uint16_t)(cn0*1.0/SNR_UNIT+0.5);
+        raw->obs.data[j].LLI[idx]=(uint8_t)LLI;
+        raw->obs.data[j].code[idx]=(uint8_t)code;
     }
     raw->time=time;
     raw->obs.n=n;
     return 1;
 }
-/* save subframe -------------------------------------------------------------*/
-static int save_subfrm(int sat, raw_t *raw)
-{
-    unsigned char *p=raw->buff+6,*q;
-    int i,j,n,id=(U4(p+6)>>2)&0x7;
-    
-    trace(4,"save_subfrm: sat=%2d id=%d\n",sat,id);
-    
-    if (id<1||5<id) return 0;
-    
-    q=raw->subfrm[sat-1]+(id-1)*30;
-    
-    for (i=n=0,p+=2;i<10;i++,p+=4) {
-        for (j=23;j>=0;j--) {
-            *q=(*q<<1)+((U4(p)>>j)&1); if (++n%8==0) q++;
-        }
-    }
-    return id;
-}
-/* decode ephemeris ----------------------------------------------------------*/
-static int decode_ephem(int sat, raw_t *raw)
-{
-    eph_t eph={0};
-    
-    trace(4,"decode_ephem: sat=%2d\n",sat);
-    
-    if (decode_frame(raw->subfrm[sat-1]   ,&eph,NULL,NULL,NULL,NULL)!=1||
-        decode_frame(raw->subfrm[sat-1]+30,&eph,NULL,NULL,NULL,NULL)!=2||
-        decode_frame(raw->subfrm[sat-1]+60,&eph,NULL,NULL,NULL,NULL)!=3) return 0;
-    
-    if (!strstr(raw->opt,"-EPHALL")) {
-        if (eph.iode==raw->nav.eph[sat-1].iode&&
-            eph.iodc==raw->nav.eph[sat-1].iodc) return 0; /* unchanged */
-    }
-    eph.sat=sat;
-    raw->nav.eph[sat-1]=eph;
-    raw->ephsat=sat;
-    return 2;
-}
-/* decode almanac and ion/utc ------------------------------------------------*/
-static int decode_alm1(int sat, raw_t *raw)
-{
-    int sys=satsys(sat,NULL);
-    
-    trace(4,"decode_alm1 : sat=%2d\n",sat);
-    
-    if (sys==SYS_GPS) {
-        decode_frame(raw->subfrm[sat-1]+90,NULL,raw->nav.alm,raw->nav.ion_gps,
-                     raw->nav.utc_gps,&raw->nav.leaps);
-        adj_utcweek(raw->time,raw->nav.utc_gps);
-    }
-    else if (sys==SYS_QZS) {
-        decode_frame(raw->subfrm[sat-1]+90,NULL,raw->nav.alm,raw->nav.ion_qzs,
-                     raw->nav.utc_qzs,&raw->nav.leaps);
-        adj_utcweek(raw->time,raw->nav.utc_qzs);
-    }
-    return 9;
-}
-/* decode almanac ------------------------------------------------------------*/
-static int decode_alm2(int sat, raw_t *raw)
-{
-    int sys=satsys(sat,NULL);
-    
-    trace(4,"decode_alm2 : sat=%2d\n",sat);
-    
-    if (sys==SYS_GPS) {
-        decode_frame(raw->subfrm[sat-1]+120,NULL,raw->nav.alm,NULL,NULL,NULL);
-    }
-    else if (sys==SYS_QZS) {
-        decode_frame(raw->subfrm[sat-1]+120,NULL,raw->nav.alm,raw->nav.ion_qzs,
-                     raw->nav.utc_qzs,&raw->nav.leaps);
-        adj_utcweek(raw->time,raw->nav.utc_qzs);
-    }
-    return  0;
-}
-/* decode ubx-rxm-sfrb: subframe buffer --------------------------------------*/
-static int decode_rxmsfrb(raw_t *raw)
-{
-    unsigned int words[10];
-    int i,prn,sat,sys,id;
-    unsigned char *p=raw->buff+6;
-    
-    trace(4,"decode_rxmsfrb: len=%d\n",raw->len);
-    
-    if (raw->outtype) {
-        sprintf(raw->msgtype,"UBX RXM-SFRB  (%4d): prn=%2d",raw->len,U1(p+1));
-    }
-    if (raw->len<42) {
-        trace(2,"ubx rxmsfrb length error: len=%d\n",raw->len);
-        return -1;
-    }
-    prn=U1(p+1);
-    if (!(sat=satno(MINPRNSBS<=prn?SYS_SBS:SYS_GPS,prn))) {
-        trace(2,"ubx rxmsfrb satellite number error: prn=%d\n",prn);
-        return -1;
-    }
-    sys=satsys(sat,&prn);
-    
-    if (sys==SYS_GPS) {
-        id=save_subfrm(sat,raw);
-        if (id==3) return decode_ephem(sat,raw);
-        if (id==4) return decode_alm1 (sat,raw);
-        if (id==5) return decode_alm2 (sat,raw);
-        return 0;
-    }
-    else if (sys==SYS_SBS) {
-        for (i=0,p+=2;i<10;i++,p+=4) words[i]=U4(p);
-        return sbsdecodemsg(raw->time,prn,words,&raw->sbsmsg)?3:0;
-    }
-    return 0;
-}
-/* decode ubx-nav-sol: navigation solution -----------------------------------*/
+/* decode UBX-NAV-SOL: navigation solution -----------------------------------*/
 static int decode_navsol(raw_t *raw)
 {
+    uint8_t *p=raw->buff+6;
     int itow,ftow,week;
-    unsigned char *p=raw->buff+6;
     
     trace(4,"decode_navsol: len=%d\n",raw->len);
     
@@ -580,11 +442,11 @@ static int decode_navsol(raw_t *raw)
     }
     return 0;
 }
-/* decode ubx-nav-timegps: gps time solution ---------------------------------*/
+/* decode UBX-NAV-TIMEGPS: GPS time solution ---------------------------------*/
 static int decode_navtime(raw_t *raw)
 {
     int itow,ftow,week;
-    unsigned char *p=raw->buff+6;
+    uint8_t *p=raw->buff+6;
     
     trace(4,"decode_navtime: len=%d\n",raw->len);
     
@@ -599,14 +461,14 @@ static int decode_navtime(raw_t *raw)
     }
     return 0;
 }
-/* decode ubx-trk-meas: trace measurement data -------------------------------*/
+/* decode UBX-TRK-MEAS: trace measurement data (unofficial) ------------------*/
 static int decode_trkmeas(raw_t *raw)
 {
     static double adrs[MAXSAT]={0};
+    uint8_t *p=raw->buff+6;
     gtime_t time;
     double ts,tr=-1.0,t,tau,utc_gpst,snr,adr,dop;
     int i,j,n=0,nch,sys,prn,sat,qi,frq,flag,lock1,lock2,week;
-    unsigned char *p=raw->buff+6;
     
     trace(4,"decode_trkmeas: len=%d\n",raw->len);
     
@@ -696,8 +558,8 @@ static int decode_trkmeas(raw_t *raw)
         raw->obs.data[n].P[0]=tau*CLIGHT;
         raw->obs.data[n].L[0]=-adr;
         raw->obs.data[n].D[0]=(float)dop;
-        raw->obs.data[n].SNR[0]=(unsigned char)(snr*4.0);
-        raw->obs.data[n].code[0]=sys==SYS_CMP?CODE_L1I:CODE_L1C;
+        raw->obs.data[n].SNR[0]=(uint16_t)(snr/SNR_UNIT+0.5);
+        raw->obs.data[n].code[0]=sys==SYS_CMP?CODE_L2I:CODE_L1C;
         raw->obs.data[n].LLI[0]=raw->lockt[sat-1][1]>0.0?1:0;
         if (sys==SYS_SBS) { /* half-cycle valid */
             raw->obs.data[n].LLI[0]|=lock2>142?0:2;
@@ -720,14 +582,14 @@ static int decode_trkmeas(raw_t *raw)
     raw->obs.n=n;
     return 1;
 }
-/* decode ubx-trkd5: trace measurement data ----------------------------------*/
+/* decode UBX-TRKD5: trace measurement data (unofficial) ---------------------*/
 static int decode_trkd5(raw_t *raw)
 {
     static double adrs[MAXSAT]={0};
     gtime_t time;
     double ts,tr=-1.0,t,tau,adr,dop,snr,utc_gpst;
     int i,j,n=0,type,off,len,sys,prn,sat,qi,frq,flag,week;
-    unsigned char *p=raw->buff+6;
+    uint8_t *p=raw->buff+6;
     
     trace(4,"decode_trkd5: len=%d\n",raw->len);
     
@@ -744,10 +606,11 @@ static int decode_trkd5(raw_t *raw)
         default: off=78; len=56; break;
     }
     for (i=0,p=raw->buff+off;p-raw->buff<raw->len-2;i++,p+=len) {
-        if (U1(p+41)<4) continue;
+        qi=U1(p+41)&7;
+        if (qi<4||7<qi) continue;
         t=I8(p)*P2_32/1000.0;
         if (ubx_sys(U1(p+56))==SYS_GLO) t-=10800.0+utc_gpst;
-        if (t>tr) tr=t;
+        if (t>tr) {tr=t; break;}
     }
     if (tr<0.0) return 0;
     
@@ -815,8 +678,8 @@ static int decode_trkd5(raw_t *raw)
         raw->obs.data[n].P[0]=tau*CLIGHT;
         raw->obs.data[n].L[0]=-adr;
         raw->obs.data[n].D[0]=(float)dop;
-        raw->obs.data[n].SNR[0]=(unsigned char)(snr*4.0);
-        raw->obs.data[n].code[0]=sys==SYS_CMP?CODE_L1I:CODE_L1C;
+        raw->obs.data[n].SNR[0]=(uint16_t)(snr/SNR_UNIT+0.5);
+        raw->obs.data[n].code[0]=sys==SYS_CMP?CODE_L2I:CODE_L1C;
         raw->obs.data[n].LLI[0]=raw->lockt[sat-1][1]>0.0?1:0;
         raw->lockt[sat-1][1]=0.0;
         
@@ -833,195 +696,249 @@ static int decode_trkd5(raw_t *raw)
     raw->obs.n=n;
     return 1;
 }
-/* decode gps and qzss navigation data ---------------------------------------*/
-static int decode_nav(raw_t *raw, int sat, int off)
+/* UTC 8-bit week -> full week -----------------------------------------------*/
+static void adj_utcweek(gtime_t time, double *utc)
 {
-    unsigned int words[10];
-    int i,id;
-    unsigned char *p=raw->buff+6+off;
+    int week;
     
-    if (raw->len<48+off) {
-        trace(2,"ubx rawsfrbx length error: sat=%d len=%d\n",sat,raw->len);
-        return -1;
-    }
-    if ((U4(p)>>24)==PREAMB_CNAV) {
-        trace(3,"ubx rawsfrbx cnav not supported sat=%d prn=%d\n",sat,
-              (U4(p)>>18)&0x3F);
-        return 0;
-    }
-    for (i=0;i<10;i++,p+=4) words[i]=U4(p)>>6; /* 24 bits without parity */
-    
-    id=(words[1]>>2)&7;
-    if (id<1||5<id) {
-        trace(2,"ubx rawsfrbx subfrm id error: sat=%2d id=%d len=%d\n",sat,id,
-              raw->len);
-        return -1;
-    }
-    for (i=0;i<10;i++) {
-        setbitu(raw->subfrm[sat-1]+(id-1)*30,i*24,24,words[i]);
-    }
-    if (id==3) return decode_ephem(sat,raw);
-    if (id==4) return decode_alm1 (sat,raw);
-    if (id==5) return decode_alm2 (sat,raw);
-    return 0;
+    time2gpst(time,&week);
+    utc[3]+=week/256*256;
+    if      (utc[3]<week-127) utc[3]+=256.0;
+    else if (utc[3]>week+127) utc[3]-=256.0;
+    utc[5]+=utc[3]/256*256;
+    if      (utc[5]<utc[3]-127) utc[5]+=256.0;
+    else if (utc[5]>utc[3]+127) utc[5]-=256.0;
 }
-/* decode galileo navigation data --------------------------------------------*/
-static int decode_enav(raw_t *raw, int sat, int off)
+/* decode GPS/QZSS ephemeris -------------------------------------------------*/
+static int decode_eph(raw_t *raw, int sat)
 {
     eph_t eph={0};
-    unsigned char *p=raw->buff+6+off,buff[32],crc_buff[26]={0};
-    int i,j,k,part1,page1,part2,page2,type;
     
-    if (raw->len<44+off) {
-        trace(2,"ubx rawsfrbx length error: sat=%d len=%d\n",sat,raw->len);
-        return -1;
-    }
-    for (i=k=0;i<8;i++,p+=4) for (j=0;j<4;j++) {
-        buff[k++]=p[3-j];
-    }
-    part1=getbitu(buff   ,0,1);
-    page1=getbitu(buff   ,1,1);
-    part2=getbitu(buff+16,0,1);
-    page2=getbitu(buff+16,1,1);
+    if (!decode_frame(raw->subfrm[sat-1],&eph,NULL,NULL,NULL)) return 0;
     
-    /* skip alert page */
-    if (page1==1||page2==1) return 0;
-    
-    /* test even-odd parts */
-    if (part1!=0||part2!=1) {
-        trace(2,"ubx rawsfrbx gal page even/odd error: sat=%2d\n",sat);
-        return -1;
-    }
-    /* test crc (4(pad) + 114 + 82 bits) */
-    for (i=0,j=  4;i<15;i++,j+=8) setbitu(crc_buff,j,8,getbitu(buff   ,i*8,8));
-    for (i=0,j=118;i<11;i++,j+=8) setbitu(crc_buff,j,8,getbitu(buff+16,i*8,8));
-    if (rtk_crc24q(crc_buff,25)!=getbitu(buff+16,82,24)) {
-        trace(2,"ubx rawsfrbx gal page crc error: sat=%2d\n",sat);
-        return -1;
-    }
-    type=getbitu(buff,2,6); /* word type */
-    
-    /* skip word except for ephemeris, iono, utc parameters */
-    if (type>6) return 0;
-    
-    /* clear word 0-6 flags */
-    if (type==2) raw->subfrm[sat-1][112]=0;
-    
-    /* save page data (112 + 16 bits) to frame buffer */
-    k=type*16;
-    for (i=0,j=2;i<14;i++,j+=8) raw->subfrm[sat-1][k++]=getbitu(buff   ,j,8);
-    for (i=0,j=2;i< 2;i++,j+=8) raw->subfrm[sat-1][k++]=getbitu(buff+16,j,8);
-    
-    /* test word 0-6 flags */
-    raw->subfrm[sat-1][112]|=(1<<type);
-    if (raw->subfrm[sat-1][112]!=0x7F) return 0;
-    
-    if (strstr(raw->opt,"-GALFNAV")) {
-        return 0;
-    }
-    /* decode galileo inav ephemeris */
-    if (!decode_gal_inav(raw->subfrm[sat-1],&eph)) {
-        return 0;
-    }
-    /* test svid consistency */
-    if (eph.sat!=sat) {
-        trace(2,"ubx rawsfrbx gal svid error: sat=%2d %2d\n",sat,eph.sat);
-        return -1;
-    }
     if (!strstr(raw->opt,"-EPHALL")) {
-        if (eph.iode==raw->nav.eph[sat-1].iode&& /* unchanged */
+        if (eph.iode==raw->nav.eph[sat-1].iode&&
+            eph.iodc==raw->nav.eph[sat-1].iodc&&
             timediff(eph.toe,raw->nav.eph[sat-1].toe)==0.0&&
             timediff(eph.toc,raw->nav.eph[sat-1].toc)==0.0) return 0;
     }
     eph.sat=sat;
     raw->nav.eph[sat-1]=eph;
     raw->ephsat=sat;
+    raw->ephset=0;
     return 2;
 }
-/* decode beidou navigation data ---------------------------------------------*/
+/* decode GPS/QZSS ION/UTC parameters ----------------------------------------*/
+static int decode_ionutc(raw_t *raw, int sat)
+{
+    double ion[8],utc[8];
+    int sys=satsys(sat,NULL);
+    
+    if (!decode_frame(raw->subfrm[sat-1],NULL,NULL,ion,utc)) return 0;
+    
+    adj_utcweek(raw->time,utc);
+    if (sys==SYS_QZS) {
+        matcpy(raw->nav.ion_qzs,ion,8,1);
+        matcpy(raw->nav.utc_qzs,utc,8,1);
+    }
+    else {
+        matcpy(raw->nav.ion_gps,ion,8,1);
+        matcpy(raw->nav.utc_gps,utc,8,1);
+    }
+    return 9;
+}
+/* decode GPS/QZSS navigation data -------------------------------------------*/
+static int decode_nav(raw_t *raw, int sat, int off)
+{
+    uint8_t *p=raw->buff+6+off,buff[30];
+    int i,id,ret;
+    
+    if (raw->len<48+off) {
+        trace(2,"ubx rxmsfrbx nav length error: sat=%d len=%d\n",sat,raw->len);
+        return -1;
+    }
+    if ((U4(p)>>24)==PREAMB_CNAV) {
+        trace(3,"ubx rxmsfrbx nav unsupported sat=%d len=%d\n",sat,raw->len);
+        return 0;
+    }
+    for (i=0;i<10;i++,p+=4) { /* 24 x 10 bits w/o parity */
+        setbitu(buff,24*i,24,U4(p)>>6);
+    }
+    id=getbitu(buff,43,3);
+    if (id<1||id>5) {
+        trace(2,"ubx rxmsfrbx nav subframe id error: sat=%d id=%d\n",sat,id);
+        return -1;
+    }
+    memcpy(raw->subfrm[sat-1]+(id-1)*30,buff,30);
+    
+    if (id==3) {
+        return decode_eph(raw,sat);
+    }
+    if (id==4||id==5) {
+        ret=decode_ionutc(raw,sat);
+        memset(raw->subfrm[sat-1]+(id-1)*30,0,30);
+        return ret;
+    }
+    return 0;
+}
+/* decode Galileo I/NAV navigation data --------------------------------------*/
+static int decode_enav(raw_t *raw, int sat, int off)
+{
+    eph_t eph={0};
+    double ion[4]={0},utc[8]={0};
+    uint8_t *p=raw->buff+6+off,buff[32],crc_buff[26]={0};
+    int i,j,part1,page1,part2,page2,type;
+    
+    if (raw->len<40+off) {
+        trace(2,"ubx rxmsfrbx enav length error: sat=%d len=%d\n",sat,raw->len);
+        return -1;
+    }
+    if (raw->len<44+off) return 0; /* E5b I/NAV */
+    
+    for (i=0;i<8;i++,p+=4) {
+        setbitu(buff,32*i,32,U4(p));
+    }
+    part1=getbitu(buff,  0,1);
+    page1=getbitu(buff,  1,1);
+    part2=getbitu(buff,128,1);
+    page2=getbitu(buff,129,1);
+    
+    if (part1!=0||part2!=1) {
+        trace(3,"ubx rxmsfrbx enav page even/odd error: sat=%d\n",sat);
+        return -1;
+    }
+    if (page1==1||page2==1) return 0; /* alert page */
+    
+    /* test crc (4(pad) + 114 + 82 bits) */
+    for (i=0,j=  4;i<15;i++,j+=8) setbitu(crc_buff,j,8,getbitu(buff,i*8    ,8));
+    for (i=0,j=118;i<11;i++,j+=8) setbitu(crc_buff,j,8,getbitu(buff,i*8+128,8));
+    if (rtk_crc24q(crc_buff,25)!=getbitu(buff,128+82,24)) {
+        trace(2,"ubx rxmsfrbx enav crc error: sat=%d\n",sat);
+        return -1;
+    }
+    type=getbitu(buff,2,6); /* word type */
+    
+    if (type>6) return 0;
+    
+    /* save 128 (112:even+16:odd) bits word */
+    for (i=0,j=2;i<14;i++,j+=8) {
+        raw->subfrm[sat-1][type*16+i]=getbitu(buff,j,8);
+    }
+    for (i=14,j=130;i<16;i++,j+=8) {
+        raw->subfrm[sat-1][type*16+i]=getbitu(buff,j,8);
+    }
+    if (type!=5) return 0;
+    if (!decode_gal_inav(raw->subfrm[sat-1],&eph,ion,utc)) return 0;
+        
+    if (eph.sat!=sat) {
+        trace(2,"ubx rxmsfrbx enav satellite error: sat=%d %d\n",sat,eph.sat);
+        return -1;
+    }
+    eph.code|=(1<<0); /* data source: E1 */
+    
+    adj_utcweek(raw->time,utc);
+    matcpy(raw->nav.ion_gal,ion,4,1);
+    matcpy(raw->nav.utc_gal,utc,8,1);
+    
+    if (!strstr(raw->opt,"-EPHALL")) {
+        if (eph.iode==raw->nav.eph[sat-1].iode&&
+            timediff(eph.toe,raw->nav.eph[sat-1].toe)==0.0&&
+            timediff(eph.toc,raw->nav.eph[sat-1].toc)==0.0) return 0;
+    }
+    raw->nav.eph[sat-1]=eph;
+    raw->ephsat=sat;
+    raw->ephset=0; /* 0:I/NAV */
+    return 2;
+}
+/* decode BDS navigation data ------------------------------------------------*/
 static int decode_cnav(raw_t *raw, int sat, int off)
 {
     eph_t eph={0};
-    unsigned int words[10];
+    double ion[8],utc[8];
+    uint8_t *p=raw->buff+6+off,buff[38]={0};
     int i,id,pgn,prn;
-    unsigned char *p=raw->buff+6+off;
     
     if (raw->len<48+off) {
-        trace(2,"ubx rawsfrbx length error: sat=%d len=%d\n",sat,raw->len);
+        trace(2,"ubx rxmsfrbx cnav length error: sat=%d len=%d\n",sat,raw->len);
         return -1;
     }
-    for (i=0;i<10;i++,p+=4) words[i]=U4(p)&0x3FFFFFFF; /* 30 bits */
-    
-    satsys(sat,&prn);
-    id=(words[0]>>12)&0x07; /* subframe id (3bit) */
+    for (i=0;i<10;i++,p+=4) {
+        setbitu(buff,30*i,30,U4(p));
+    }
+    id=getbitu(buff,15,3); /* subframe ID */
     if (id<1||5<id) {
-        trace(2,"ubx rawsfrbx subfrm id error: sat=%2d\n",sat);
+        trace(2,"ubx rxmsfrbx cnav subframe id error: sat=%2d\n",sat);
         return -1;
     }
-    if (prn>5&&prn<59) { /* IGSO/MEO */
+    satsys(sat,&prn);
+    
+    if (prn>=6&&prn<=58) { /* IGSO/MEO */
+        memcpy(raw->subfrm[sat-1]+(id-1)*38,buff,38);
         
-        for (i=0;i<10;i++) {
-            setbitu(raw->subfrm[sat-1]+(id-1)*38,i*30,30,words[i]);
+        if (id==3) {
+            if (!decode_bds_d1(raw->subfrm[sat-1],&eph,NULL,NULL)) return 0;
         }
-        if (id!=3) return 0;
-        
-        /* decode beidou D1 ephemeris */
-        if (!decode_bds_d1(raw->subfrm[sat-1],&eph)) return 0;
+        else if (id==5) {
+            if (!decode_bds_d1(raw->subfrm[sat-1],NULL,ion,utc)) return 0;
+            matcpy(raw->nav.ion_cmp,ion,8,1);
+            matcpy(raw->nav.utc_cmp,utc,8,1);
+            return 9;
+        }
+        else return 0;
     }
-    else { /* GEO (C01-05, C59-63) */
-        if (id!=1) return 0;
+    else { /* GEO */
+        pgn=getbitu(buff,42,4); /* page numuber */
         
-        /* subframe 1 */
-        pgn=(words[1]>>14)&0x0F; /* page number (4bit) */
-        if (pgn<1||10<pgn) {
-            trace(2,"ubx rawsfrbx page number error: sat=%2d\n",sat);
-            return -1;
+        if (id==1&&pgn>=1&&pgn<=10) {
+            memcpy(raw->subfrm[sat-1]+(pgn-1)*38,buff,38);
+            if (pgn!=10) return 0;
+            if (!decode_bds_d2(raw->subfrm[sat-1],&eph,NULL)) return 0;
         }
-        for (i=0;i<10;i++) {
-            setbitu(raw->subfrm[sat-1]+(pgn-1)*38,i*30,30,words[i]);
+        else if (id==5&&pgn==102) {
+            memcpy(raw->subfrm[sat-1]+10*38,buff,38);
+            if (!decode_bds_d2(raw->subfrm[sat-1],NULL,utc)) return 0;
+            matcpy(raw->nav.utc_cmp,utc,8,1);
+            return 9;
         }
-        if (pgn!=10) return 0;
-        
-        /* decode beidou D2 ephemeris */
-        if (!decode_bds_d2(raw->subfrm[sat-1],&eph)) return 0;
+        else return 0;
     }
     if (!strstr(raw->opt,"-EPHALL")) {
-        if (timediff(eph.toe,raw->nav.eph[sat-1].toe)==0.0&&
-            eph.iode==raw->nav.eph[sat-1].iode&&
-            eph.iodc==raw->nav.eph[sat-1].iodc) return 0; /* unchanged */
+        if (timediff(eph.toe,raw->nav.eph[sat-1].toe)==0.0) return 0;
     }
     eph.sat=sat;
     raw->nav.eph[sat-1]=eph;
     raw->ephsat=sat;
+    raw->ephset=0;
     return 2;
 }
-/* decode glonass navigation data --------------------------------------------*/
+/* decode GLONASS navigation data --------------------------------------------*/
 static int decode_gnav(raw_t *raw, int sat, int off, int frq)
 {
     geph_t geph={0};
+    double utc_glo[8]={0};
     int i,j,k,m,prn;
-    unsigned char *p=raw->buff+6+off,buff[64],*fid;
+    uint8_t *p=raw->buff+6+off,buff[64],*fid;
     
     satsys(sat,&prn);
     
     if (raw->len<24+off) {
-        trace(2,"ubx rawsfrbx gnav length error: len=%d\n",raw->len);
+        trace(2,"ubx rxmsfrbx gnav length error: len=%d\n",raw->len);
         return -1;
     }
     for (i=k=0;i<4;i++,p+=4) for (j=0;j<4;j++) {
         buff[k++]=p[3-j];
     }
-    /* test hamming of glonass string */
+    /* test hamming of GLONASS string */
     if (!test_glostr(buff)) {
-        trace(2,"ubx rawsfrbx glo string hamming error: sat=%2d\n",sat);
+        trace(2,"ubx rxmsfrbx gnav hamming error: sat=%2d\n",sat);
         return -1;
     }
     m=getbitu(buff,1,4);
     if (m<1||15<m) {
-        trace(2,"ubx rawsfrbx glo string no error: sat=%2d\n",sat);
+        trace(2,"ubx rxmsfrbx gnav string no error: sat=%2d\n",sat);
         return -1;
     }
-    /* flush frame buffer if frame-id changed */
+    /* flush frame buffer if frame-ID changed */
     fid=raw->subfrm[sat-1]+150;
     if (fid[0]!=buff[12]||fid[1]!=buff[13]) {
         for (i=0;i<4;i++) memset(raw->subfrm[sat-1]+i*10,0,10);
@@ -1029,49 +946,55 @@ static int decode_gnav(raw_t *raw, int sat, int off, int frq)
     }
     memcpy(raw->subfrm[sat-1]+(m-1)*10,buff,10);
     
-    if (m!=4) return 0;
-    
-    /* decode glonass ephemeris strings */
-    geph.tof=raw->time;
-    if (!decode_glostr(raw->subfrm[sat-1],&geph)||geph.sat!=sat) return 0;
-    geph.frq=frq-7;
-    
-    if (!strstr(raw->opt,"-EPHALL")) {
-        if (geph.iode==raw->nav.geph[prn-1].iode) return 0; /* unchanged */
+    if (m==4) {
+        /* decode GLONASS ephemeris strings */
+        geph.tof=raw->time;
+        if (!decode_glostr(raw->subfrm[sat-1],&geph,NULL)||geph.sat!=sat) {
+            return 0;
+        }
+        geph.frq=frq-7;
+        
+        if (!strstr(raw->opt,"-EPHALL")) {
+            if (geph.iode==raw->nav.geph[prn-1].iode) return 0;
+        }
+        raw->nav.geph[prn-1]=geph;
+        raw->ephsat=sat;
+        raw->ephset=0;
+        return 2;
     }
-    raw->nav.geph[prn-1]=geph;
-    raw->ephsat=sat;
-    return 2;
+    else if (m==5) {
+        if (!decode_glostr(raw->subfrm[sat-1],NULL,utc_glo)) return 0;
+        matcpy(raw->nav.utc_glo,utc_glo,8,1);
+        return 9;
+    }
+    return 0;
 }
-/* decode sbas navigation data -----------------------------------------------*/
-static int decode_snav(raw_t *raw, int sat, int off)
+/* decode SBAS navigation data -----------------------------------------------*/
+static int decode_snav(raw_t *raw, int prn, int off)
 {
-    int i,j,k,prn,tow,week;
-    unsigned char *p=raw->buff+6+off,buff[64];
+    int i,tow,week;
+    uint8_t *p=raw->buff+6+off,buff[32];
     
     if (raw->len<40+off) {
-        trace(2,"ubx rawsfrbx snav length error: len=%d\n",raw->len);
+        trace(2,"ubx rxmsfrbx snav length error: len=%d\n",raw->len);
         return -1;
     }
     tow=(int)time2gpst(timeadd(raw->time,-1.0),&week);
-    satsys(sat,&prn);
     raw->sbsmsg.prn=prn;
     raw->sbsmsg.tow=tow;
     raw->sbsmsg.week=week;
-    for (i=k=0;i<8;i++,p+=4) for (j=0;j<4;j++) {
-        buff[k++]=p[3-j];
+    for (i=0;i<8;i++,p+=4) {
+        setbitu(buff,32*i,32,U4(p));
     }
     memcpy(raw->sbsmsg.msg,buff,29);
     raw->sbsmsg.msg[28]&=0xC0;
     return 3;
 }
-/* decode ubx-rxm-sfrbx: raw subframe data (ref [3][4][5]) -------------------*/
+/* decode UBX-RXM-SFRBX: raw subframe data (ref [3][4][5]) -------------------*/
 static int decode_rxmsfrbx(raw_t *raw)
 {
+    uint8_t *p=raw->buff+6;
     int prn,sat,sys;
-    unsigned char *p=raw->buff+6;
-    
-    trace(4,"decode_rxmsfrbx: len=%d\n",raw->len);
     
     if (raw->outtype) {
         sprintf(raw->msgtype,"UBX RXM-SFRBX (%4d): sys=%d prn=%3d",raw->len,
@@ -1081,13 +1004,17 @@ static int decode_rxmsfrbx(raw_t *raw)
         trace(2,"ubx rxmsfrbx sys id error: sys=%d\n",U1(p));
         return -1;
     }
-    prn=U1(p+1)+(sys==SYS_QZS?192:0);
+    prn=U1(p+1)+((sys==SYS_QZS)?192:0);
     if (!(sat=satno(sys,prn))) {
         if (sys==SYS_GLO&&prn==255) {
-            return 0; /* suppress error for unknown glo satellite */
+            return 0; /* suppress error for unknown GLONASS satellite */
         }
         trace(2,"ubx rxmsfrbx sat number error: sys=%d prn=%d\n",sys,prn);
         return -1;
+    }
+    if (sys==SYS_QZS&&raw->len==52) { /* QZSS L1S */
+        sys=SYS_SBS;
+        prn-=10;
     }
     switch (sys) {
         case SYS_GPS: return decode_nav (raw,sat,8);
@@ -1095,17 +1022,15 @@ static int decode_rxmsfrbx(raw_t *raw)
         case SYS_GAL: return decode_enav(raw,sat,8);
         case SYS_CMP: return decode_cnav(raw,sat,8);
         case SYS_GLO: return decode_gnav(raw,sat,8,U1(p+3));
-        case SYS_SBS: return decode_snav(raw,sat,8);
+        case SYS_SBS: return decode_snav(raw,prn,8);
     }
     return 0;
 }
-/* decode ubx-trk-sfrbx: subframe buffer extension ---------------------------*/
+/* decode UBX-TRK-SFRBX: subframe buffer extension (unoffitial) --------------*/
 static int decode_trksfrbx(raw_t *raw)
 {
+    uint8_t *p=raw->buff+6;
     int prn,sat,sys;
-    unsigned char *p=raw->buff+6;
-    
-    trace(4,"decode_trksfrbx: len=%d\n",raw->len);
     
     if (raw->outtype) {
         sprintf(raw->msgtype,"UBX TRK-SFRBX (%4d): sys=%d prn=%3d",raw->len,
@@ -1127,6 +1052,43 @@ static int decode_trksfrbx(raw_t *raw)
         case SYS_CMP: return decode_cnav(raw,sat,13);
         case SYS_GLO: return decode_gnav(raw,sat,13,U1(p+4));
         case SYS_SBS: return decode_snav(raw,sat,13);
+    }
+    return 0;
+}
+/* decode UBX-RXM-SFRB: subframe buffer (GPS/SBAS) ---------------------------*/
+static int decode_rxmsfrb(raw_t *raw)
+{
+    uint32_t words[10];
+    uint8_t *p=raw->buff+6,buff[30];
+    int i,sys,prn,sat,id;
+    
+    if (raw->outtype) {
+        sprintf(raw->msgtype,"UBX RXM-SFRB  (%4d): prn=%2d",raw->len,U1(p+1));
+    }
+    if (raw->len<42) {
+        trace(2,"ubx rxmsfrb length error: len=%d\n",raw->len);
+        return -1;
+    }
+    prn=U1(p+1);
+    sys=(prn>=MINPRNSBS)?SYS_SBS:SYS_GPS;
+    
+    if (!(sat=satno(sys,prn))) {
+        trace(2,"ubx rxmsfrb satellite error: prn=%d\n",prn);
+        return -1;
+    }
+    if (sys==SYS_GPS) {
+        for (i=0,p+=2;i<10;i++,p+=4) setbitu(buff,24*i,24,U4(p));
+        id=getbitu(buff,43,3);
+        if (id>=1&&id<=5) {
+            memcpy(raw->subfrm[sat-1]+(id-1)*30,buff,30);
+            if      (id==3) return decode_eph   (raw,sat);
+            else if (id==4) return decode_ionutc(raw,sat);
+        }
+    }
+    else {
+        for (i=0,p+=2;i<10;i++,p+=4) words[i]=U4(p);
+        if (!sbsdecodemsg(raw->time,prn,words,&raw->sbsmsg)) return 0;
+        return 3;
     }
     return 0;
 }
@@ -1160,15 +1122,15 @@ static int decode_ubx(raw_t *raw)
     return 0;
 }
 /* sync code -----------------------------------------------------------------*/
-static int sync_ubx(unsigned char *buff, unsigned char data)
+static int sync_ubx(uint8_t *buff, uint8_t data)
 {
     buff[0]=buff[1]; buff[1]=data;
     return buff[0]==UBXSYNC1&&buff[1]==UBXSYNC2;
 }
 /* input ublox raw message from stream -----------------------------------------
 * fetch next ublox raw data and input a mesasge from stream
-* args   : raw_t *raw   IO     receiver raw data control struct
-*          unsigned char data I stream data (1 byte)
+* args   : raw_t *raw       IO  receiver raw data control struct
+*          uint8_t data     I   stream data (1 byte)
 * return : status (-1: error message, 0: no message, 1: input observation data,
 *                  2: input ephemeris, 3: input sbas message,
 *                  9: input ion/utc parameter)
@@ -1180,7 +1142,6 @@ static int sync_ubx(unsigned char *buff, unsigned char data)
 *          -INVCP     : invert polarity of carrier-phase
 *          -TADJ=tint : adjust time tags to multiples of tint (sec)
 *          -STD_SLIP=std: slip by std-dev of carrier phase under std
-*          -GALFNAV   : input only F/NAV for galileo ephemeris
 *
 *          The supported messages are as follows.
 *
@@ -1194,7 +1155,7 @@ static int sync_ubx(unsigned char *buff, unsigned char data)
 *          documented and not supported by u-blox.
 *          Users can use these messages by their own risk.
 *-----------------------------------------------------------------------------*/
-extern int input_ubx(raw_t *raw, unsigned char data)
+extern int input_ubx(raw_t *raw, uint8_t data)
 {
     trace(5,"input_ubx: data=%02x\n",data);
     
@@ -1221,8 +1182,8 @@ extern int input_ubx(raw_t *raw, unsigned char data)
 }
 /* input ublox raw message from file -------------------------------------------
 * fetch next ublox raw data and input a message from file
-* args   : raw_t  *raw   IO     receiver raw data control struct
-*          FILE   *fp    I      file pointer
+* args   : raw_t  *raw      IO  receiver raw data control struct
+*          FILE   *fp       I   file pointer
 * return : status(-2: end of file, -1...9: same as above)
 *-----------------------------------------------------------------------------*/
 extern int input_ubxf(raw_t *raw, FILE *fp)
@@ -1235,7 +1196,7 @@ extern int input_ubxf(raw_t *raw, FILE *fp)
     if (raw->nbyte==0) {
         for (i=0;;i++) {
             if ((data=fgetc(fp))==EOF) return -2;
-            if (sync_ubx(raw->buff,(unsigned char)data)) break;
+            if (sync_ubx(raw->buff,(uint8_t)data)) break;
             if (i>=4096) return 0;
         }
     }
@@ -1252,6 +1213,13 @@ extern int input_ubxf(raw_t *raw, FILE *fp)
     
     /* decode ubx raw message */
     return decode_ubx(raw);
+}
+/* convert string to integer -------------------------------------------------*/
+static int stoi(const char *s)
+{
+    uint32_t n;
+    if (sscanf(s,"0x%X",&n)==1) return (int)n; /* hex (0xXXXX) */
+    return atoi(s);
 }
 /* generate ublox binary message -----------------------------------------------
 * generate ublox binary message from message string
@@ -1290,25 +1258,30 @@ extern int input_ubxf(raw_t *raw, FILE *fp)
 *            "CFG-TMODE3 ..."
 *            "CFG-TPS   ..."
 *            "CFG-TXSLOT ..."
-*          unsigned char *buff O binary message
+*            "CFG-VALDEL ver layer res0 res1 key [key ...]"
+*            "CFG-VALGET ver layer pos key [key ...]"
+*            "CFG-VALSET ver layer res0 res1 key value [key value ...]"
+*          uint8_t *buff O binary message
 * return : length of binary message (0: error)
-* note   : see reference [1][3] for details.
+* note   : see reference [1][3][5] for details.
 *          the following messages are not supported:
 *             CFG-DOSC,CFG-ESRC
 *-----------------------------------------------------------------------------*/
-extern int gen_ubx(const char *msg, unsigned char *buff)
+extern int gen_ubx(const char *msg, uint8_t *buff)
 {
     const char *cmd[]={
         "PRT","USB","MSG","NMEA","RATE","CFG","TP","NAV2","DAT","INF",
         "RST","RXM","ANT","FXN","SBAS","LIC","TM","TM2","TMODE","EKF",
         "GNSS","ITFM","LOGFILTER","NAV5","NAVX5","ODO","PM2","PWR","RINV","SMGR",
-        "TMODE2","TMODE3","TPS","TXSLOT",""
+        "TMODE2","TMODE3","TPS","TXSLOT",
+        "VALDEL","VALGET","VALSET",""
     };
-    const unsigned char id[]={
+    const uint8_t id[]={
         0x00,0x1B,0x01,0x17,0x08,0x09,0x07,0x1A,0x06,0x02,
         0x04,0x11,0x13,0x0E,0x16,0x80,0x10,0x19,0x1D,0x12,
         0x3E,0x39,0x47,0x24,0x23,0x1E,0x3B,0x57,0x34,0x62,
-        0x36,0x71,0x31,0x53
+        0x36,0x71,0x31,0x53,
+        0x8c,0x8b,0x8a
     };
     const int prm[][32]={
         {FU1,FU1,FU2,FU4,FU4,FU2,FU2,FU2,FU2},    /* PRT */
@@ -1347,9 +1320,12 @@ extern int gen_ubx(const char *msg, unsigned char *buff)
         {FU1,FU1,FU2,FI4,FI4,FI4,FU4,FU4,FU4},    /* TMODE2 */
         {FU1,FU1,FU2,FI4,FI4,FI4,FU4,FU4,FU4},    /* TMODE3 */
         {FU1,FU1,FU1,FU1,FI2,FI2,FU4,FU4,FU4,FU4,FI4,FU4}, /* TPS */
-        {FU1,FU1,FU1,FU1,FU4,FU4,FU4,FU4,FU4}     /* TXSLOT */
+        {FU1,FU1,FU1,FU1,FU4,FU4,FU4,FU4,FU4},    /* TXSLOT */
+        {FU1,FU1,FU1,FU1},                        /* VALDEL */
+        {FU1,FU1,FU2},                            /* VALGET */
+        {FU1,FU1,FU1,FU1}                         /* VALSET */
     };
-    unsigned char *q=buff;
+    uint8_t *q=buff;
     char mbuff[1024],*args[32],*p;
     int i,j,n,narg=0;
     
@@ -1373,20 +1349,20 @@ extern int gen_ubx(const char *msg, unsigned char *buff)
     q+=2;
     for (j=1;prm[i][j-1]||j<narg;j++) {
         switch (prm[i][j-1]) {
-            case FU1 : setU1(q,j<narg?(unsigned char )atoi(args[j]):0); q+=1; break;
-            case FU2 : setU2(q,j<narg?(unsigned short)atoi(args[j]):0); q+=2; break;
-            case FU4 : setU4(q,j<narg?(unsigned int  )atoi(args[j]):0); q+=4; break;
-            case FI1 : setI1(q,j<narg?(signed char   )atoi(args[j]):0); q+=1; break;
-            case FI2 : setI2(q,j<narg?(short         )atoi(args[j]):0); q+=2; break;
-            case FI4 : setI4(q,j<narg?(int           )atoi(args[j]):0); q+=4; break;
-            case FR4 : setR4(q,j<narg?(float         )atof(args[j]):0); q+=4; break;
-            case FR8 : setR8(q,j<narg?(double)atof(args[j]):0); q+=8; break;
+            case FU1 : setU1(q,j<narg?(uint8_t )stoi(args[j]):0); q+=1; break;
+            case FU2 : setU2(q,j<narg?(uint16_t)stoi(args[j]):0); q+=2; break;
+            case FU4 : setU4(q,j<narg?(uint32_t)stoi(args[j]):0); q+=4; break;
+            case FI1 : setI1(q,j<narg?(int8_t  )stoi(args[j]):0); q+=1; break;
+            case FI2 : setI2(q,j<narg?(int16_t )stoi(args[j]):0); q+=2; break;
+            case FI4 : setI4(q,j<narg?(int32_t )stoi(args[j]):0); q+=4; break;
+            case FR4 : setR4(q,j<narg?(float   )atof(args[j]):0); q+=4; break;
+            case FR8 : setR8(q,j<narg?(double  )atof(args[j]):0); q+=8; break;
             case FS32: sprintf((char *)q,"%-32.32s",j<narg?args[j]:""); q+=32; break;
-            default  : setU1(q,j<narg?(unsigned char )atoi(args[j]):0); q+=1; break;
+            default  : setU1(q,j<narg?(uint8_t )stoi(args[j]):0); q+=1; break;
         }
     }
     n=(int)(q-buff)+2;
-    setU2(buff+4,(unsigned short)(n-8));
+    setU2(buff+4,(uint16_t)(n-8)); /* length */
     setcs(buff,n);
     
     trace(5,"gen_ubx: buff=\n"); traceb(5,buff,n);

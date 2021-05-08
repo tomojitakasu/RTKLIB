@@ -2,7 +2,7 @@
 * nvs.c : NVS receiver dependent functions
 *
 *    Copyright (C) 2012-2016 by M.BAVARO and T.TAKASU, All rights reserved.
-*    Copyright (C) 2014 by T.TAKASU, All rights reserved.
+*    Copyright (C) 2014-2020 by T.TAKASU, All rights reserved.
 *
 *     [1] Description of BINR messages which is used by RC program for RINEX
 *         files accumulation, NVS
@@ -18,6 +18,8 @@
 *           2014/08/26 1.5  fix bug on iode in glonass ephemeris
 *           2016/01/26 1.6  fix bug on unrecognized meas data (#130)
 *           2017/04/11 1.7  (char *) -> (signed char *)
+*           2020/07/10 1.8  suppress warnings
+*           2020/11/30 1.9  use integer type in stdint.h
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
@@ -38,14 +40,14 @@
 #define ID_XD5BIT      0xd5     /* */
 
 /* get fields (little-endian) ------------------------------------------------*/
-#define U1(p) (*((unsigned char *)(p)))
-#define I1(p) (*((signed char *)(p)))
-static unsigned short U2(unsigned char *p) {unsigned short u; memcpy(&u,p,2); return u;}
-static unsigned int   U4(unsigned char *p) {unsigned int   u; memcpy(&u,p,4); return u;}
-static short          I2(unsigned char *p) {short          i; memcpy(&i,p,2); return i;}
-static int            I4(unsigned char *p) {int            i; memcpy(&i,p,4); return i;}
-static float          R4(unsigned char *p) {float          r; memcpy(&r,p,4); return r;}
-static double         R8(unsigned char *p) {double         r; memcpy(&r,p,8); return r;}
+#define U1(p) (*((uint8_t *)(p)))
+#define I1(p) (*((int8_t  *)(p)))
+static uint16_t U2(uint8_t *p) {uint16_t u; memcpy(&u,p,2); return u;}
+static uint32_t U4(uint8_t *p) {uint32_t u; memcpy(&u,p,4); return u;}
+static int16_t  I2(uint8_t *p) {int16_t  i; memcpy(&i,p,2); return i;}
+static int32_t  I4(uint8_t *p) {int32_t  i; memcpy(&i,p,4); return i;}
+static float    R4(uint8_t *p) {float    r; memcpy(&r,p,4); return r;}
+static double   R8(uint8_t *p) {double   r; memcpy(&r,p,8); return r;}
 
 /* ura values (ref [3] 20.3.3.3.1.1) -----------------------------------------*/
 static const double ura_eph[]={
@@ -67,9 +69,9 @@ static int decode_xf5raw(raw_t *raw)
     int dTowInt;
     double dTowUTC, dTowGPS, dTowFrac, L1, P1, D1;
     double gpsutcTimescale;
-    unsigned char rcvTimeScaleCorr, sys, carrNo;
+    uint8_t rcvTimeScaleCorr, sys, carrNo;
     int i,j,prn,sat,n=0,nsat,week;
-    unsigned char *p=raw->buff+2;
+    uint8_t *p=raw->buff+2;
     char *q,tstr[32],flag;
     
     trace(4,"decode_xf5raw: len=%d\n",raw->len);
@@ -142,7 +144,7 @@ static int decode_xf5raw(raw_t *raw)
                   sat,L1,P1,D1);
             continue;
         }
-        raw->obs.data[n].SNR[0]=(unsigned char)(I1(p+3)*4.0+0.5);
+        raw->obs.data[n].SNR[0]=(uint16_t)(I1(p+3)/SNR_UNIT+0.5);
         if (sys==SYS_GLO) {
             raw->obs.data[n].L[0]  =  L1 - toff*(FREQ1_GLO+DFRQ1_GLO*carrNo);
         } else {
@@ -156,13 +158,6 @@ static int decode_xf5raw(raw_t *raw)
         raw->obs.data[n].LLI[0]=(flag&0x08)&&!(raw->halfc[sat-1][0]&0x08)?1:0;
         raw->halfc[sat-1][0]=flag;
         
-#if 0
-        if (raw->obs.data[n].SNR[0] > 160) {
-            time2str(time,tstr,3);
-            trace(2,"%s, obs.data[%d]: SNR=%.3f  LLI=0x%02x\n",  tstr,
-                n, (raw->obs.data[n].SNR[0])/4.0, U1(p+28) );
-        }
-#endif
         raw->obs.data[n].code[0] = CODE_L1C;
         raw->obs.data[n].sat = sat;
         
@@ -182,8 +177,8 @@ static int decode_xf5raw(raw_t *raw)
 static int decode_gpsephem(int sat, raw_t *raw)
 {
     eph_t eph={0};
-    unsigned char *puiTmp = (raw->buff)+2;
-    unsigned short week;
+    uint8_t *puiTmp = (raw->buff)+2;
+    uint16_t week;
     double toc;
     
     trace(4,"decode_ephem: sat=%2d\n",sat);
@@ -232,6 +227,7 @@ static int decode_gpsephem(int sat, raw_t *raw)
     eph.sat=sat;
     raw->nav.eph[sat-1]=eph;
     raw->ephsat=sat;
+    raw->ephset=0;
     return 2;
 }
 /* adjust daily rollover of time ---------------------------------------------*/
@@ -249,7 +245,7 @@ static gtime_t adjday(gtime_t time, double tod)
 static int decode_gloephem(int sat, raw_t *raw)
 {
     geph_t geph={0};
-    unsigned char *p=(raw->buff)+2;
+    uint8_t *p=(raw->buff)+2;
     int prn,tk,tb;
     
     if (raw->len>=93) {
@@ -306,14 +302,15 @@ static int decode_gloephem(int sat, raw_t *raw)
 #endif
     raw->nav.geph[prn-1]=geph;
     raw->ephsat=geph.sat;
+    raw->ephset=0;
     
     return 2;
 }
-/* decode NVS epehemerides in clear ------------------------------------------*/
+/* decode NVS ephemerides in clear -------------------------------------------*/
 static int decode_xf7eph(raw_t *raw)
 {
     int prn,sat,sys;
-    unsigned char *p=raw->buff;
+    uint8_t *p=raw->buff;
     
     trace(4,"decode_xf7eph: len=%d\n",raw->len);
     
@@ -340,9 +337,9 @@ static int decode_xe5bit(raw_t *raw)
 {
     int prn;
     int iBlkStartIdx, iExpLen, iIdx;
-    unsigned int words[10];
-    unsigned char uiDataBlocks, uiDataType;
-    unsigned char *p=raw->buff;
+    uint32_t words[10];
+    uint8_t uiDataBlocks, uiDataType;
+    uint8_t *p=raw->buff;
     
     trace(4,"decode_xe5bit: len=%d\n",raw->len);
     
@@ -374,7 +371,7 @@ static int decode_xe5bit(raw_t *raw)
                 
                 /* sat = satno(SYS_SBS, prn); */
                 /* sys = satsys(sat,&prn); */
-                memset(words, 0, 10*sizeof(unsigned int));
+                memset(words, 0, 10*sizeof(uint32_t));
                 for (iIdx=0, iBlkStartIdx+=7; iIdx<10; iIdx++, iBlkStartIdx+=4) {
                     words[iIdx]=U4(p+iBlkStartIdx);
                 }
@@ -390,7 +387,7 @@ static int decode_xe5bit(raw_t *raw)
 /* decode NVS x4aiono --------------------------------------------------------*/
 static int decode_x4aiono(raw_t *raw)
 {
-    unsigned char *p=raw->buff+2;
+    uint8_t *p=raw->buff+2;
     
     trace(4,"decode_x4aiono: len=%d\n", raw->len);
     
@@ -408,7 +405,7 @@ static int decode_x4aiono(raw_t *raw)
 /* decode NVS x4btime --------------------------------------------------------*/
 static int decode_x4btime(raw_t *raw)
 {
-    unsigned char *p=raw->buff+2;
+    uint8_t *p=raw->buff+2;
     
     trace(4,"decode_x4btime: len=%d\n", raw->len);
     
@@ -416,7 +413,7 @@ static int decode_x4btime(raw_t *raw)
     raw->nav.utc_gps[0] = R8(p+ 8);
     raw->nav.utc_gps[2] = I4(p+16);
     raw->nav.utc_gps[3] = I2(p+20);
-    raw->nav.leaps = I1(p+22);
+    raw->nav.utc_gps[4] = I1(p+22);
     
     return 9;
 }
@@ -441,8 +438,8 @@ static int decode_nvs(raw_t *raw)
 }
 /* input NVS raw message from stream -------------------------------------------
 * fetch next NVS raw data and input a message from stream
-* args   : raw_t *raw   IO     receiver raw data control struct
-*          unsigned char data I stream data (1 byte)
+* args   : raw_t *raw   IO    receiver raw data control struct
+*          uint8_t data I     stream data (1 byte)
 * return : status (-1: error message, 0: no message, 1: input observation data,
 *                  2: input ephemeris, 3: input sbas message,
 *                  9: input ion/utc parameter)
@@ -454,7 +451,7 @@ static int decode_nvs(raw_t *raw)
 *          -TADJ=tint : adjust time tags to multiples of tint (sec)
 *
 *-----------------------------------------------------------------------------*/
-extern int input_nvs(raw_t *raw, unsigned char data)
+extern int input_nvs(raw_t *raw, uint8_t data)
 {
     trace(5,"input_nvs: data=%02x\n",data);
     
@@ -498,8 +495,8 @@ extern int input_nvs(raw_t *raw, unsigned char data)
 }
 /* input NVS raw message from file ---------------------------------------------
 * fetch next NVS raw data and input a message from file
-* args   : raw_t  *raw   IO     receiver raw data control struct
-*          FILE   *fp    I      file pointer
+* args   : raw_t  *raw  IO    receiver raw data control struct
+*          FILE   *fp   I     file pointer
 * return : status(-2: end of file, -1...9: same as above)
 *-----------------------------------------------------------------------------*/
 extern int input_nvsf(raw_t *raw, FILE *fp)
@@ -555,23 +552,26 @@ extern int input_nvsf(raw_t *raw, FILE *fp)
 *            "CFG-SERI [arg...]" configure serial port property
 *            "CFG-FMT  [arg...]" configure output message format
 *            "CFG-RATE [arg...]" configure binary measurement output rates
-*          unsigned char *buff O binary message
+*          uint8_t *buff O binary message
 * return : length of binary message (0: error)
 * note   : see reference [1][2] for details.
 *-----------------------------------------------------------------------------*/
-extern int gen_nvs(const char *msg, unsigned char *buff)
+extern int gen_nvs(const char *msg, uint8_t *buff)
 {
-    unsigned char *q=buff;
+    uint8_t *q=buff;
     char mbuff[1024],*args[32],*p;
-    unsigned int byte;
+    uint32_t byte;
     int iRate,n,narg=0;
-    unsigned char ui100Ms;
+    uint8_t ui100Ms;
     
     trace(4,"gen_nvs: msg=%s\n",msg);
     
     strcpy(mbuff,msg);
     for (p=strtok(mbuff," ");p&&narg<32;p=strtok(NULL," ")) {
         args[narg++]=p;
+    }
+    if (narg<1) {
+        return 0;
     }
     *q++=NVSSYNC; /* DLE */
     
@@ -580,7 +580,7 @@ extern int gen_nvs(const char *msg, unsigned char *buff)
         *q++=ID_X02RATEPVT;
         if (narg>1) {
             iRate = atoi(args[1]);
-            *q++ = (unsigned char) iRate;
+            *q++ = (uint8_t) iRate;
         }
     }
     else if (!strcmp(args[0],"CFG-RAWRATE")) {
@@ -604,7 +604,7 @@ extern int gen_nvs(const char *msg, unsigned char *buff)
     }
     else if (!strcmp(args[0],"CFG-BINR")) {
         for (n=1;(n<narg);n++) {
-            if (sscanf(args[n], "%2x",&byte)) *q++=(unsigned char)byte;
+            if (sscanf(args[n], "%2x",&byte)) *q++=(uint8_t)byte;
         }
     }
     else return 0;

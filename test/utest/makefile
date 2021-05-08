@@ -7,7 +7,7 @@ LDLIBS = -lm -llapack -lblas
 CC = gcc
 
 BIN    = t_matrix t_time t_coord t_rinex t_lambda t_atmos t_misc t_preceph t_gloeph \
-t_geoid t_ppp t_ionex t_stec t_tle
+t_geoid t_ppp t_ionex t_tle
 
 all        : $(BIN)
 t_matrix   : t_matrix.o rtkcmn.o preceph.o
@@ -21,9 +21,8 @@ t_preceph  : t_preceph.o rtkcmn.o preceph.o rinex.o ephemeris.o sbas.o qzslex.o
 t_gloeph   : t_gloeph.o rtkcmn.o rinex.o ephemeris.o sbas.o preceph.o qzslex.o
 t_geoid    : t_geoid.o rtkcmn.o preceph.o geoid.o
 t_ppp      : t_ppp.o rtkcmn.o ephemeris.o preceph.o sbas.o ionex.o pntpos.o ppp.o ppp_ar.o qzslex.o
-t_ppp      : stec.o lambda.o
+t_ppp      : lambda.o
 t_ionex    : t_ionex.o rtkcmn.o preceph.o ionex.o
-t_stec     : t_stec.o rtkcmn.o preceph.o stec.o
 t_tle      : t_tle.o rtkcmn.o rinex.o ephemeris.o sbas.o preceph.o tle.o
 
 rtkcmn.o   : $(SRC)/rtklib.h $(SRC)/rtkcmn.c
@@ -50,8 +49,6 @@ pntpos.o   : $(SRC)/rtklib.h $(SRC)/pntpos.c
 	$(CC) -c $(CFLAGS) $(SRC)/pntpos.c
 ionex.o    : $(SRC)/rtklib.h $(SRC)/ionex.c
 	$(CC) -c $(CFLAGS) $(SRC)/ionex.c
-stec.o     : $(SRC)/rtklib.h $(SRC)/stec.c
-	$(CC) -c $(CFLAGS) $(SRC)/stec.c
 tle.o      : $(SRC)/rtklib.h $(SRC)/tle.c
 	$(CC) -c $(CFLAGS) $(SRC)/tle.c
 qzslex.o   : $(SRC)/rtklib.h $(SRC)/qzslex.c
@@ -84,8 +81,6 @@ utest11 :
 	./t_ppp     > utest11.out
 utest12 :
 	./t_ionex   > utest12.out
-utest13 :
-	./t_stec    > utest13.out
 utest14 :
 	./t_tle     > utest14.out
 

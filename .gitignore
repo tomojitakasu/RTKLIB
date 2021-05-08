@@ -1,10 +1,13 @@
 *.o
+*.d
 *.obs
 *.ini
 *.local
 Release
 Release_Build
+Debug
 Debug_Build
 __history
 Makefile
 *.pro.user
+__astcache

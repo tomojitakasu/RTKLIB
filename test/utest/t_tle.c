@@ -51,7 +51,7 @@ static void utest1(void)
     stat=tle_read(file3,&tle);
         assert(stat);
         assert(tle.n==114);
-#if 0
+#if 0 /* for debug */
     dumptle(OUT,&tle);
 #endif
     

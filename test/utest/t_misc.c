@@ -152,8 +152,8 @@ void utest3(void)
 /* getbitu(),getbits(),setbitu(),setbits() */
 void utest4(void)
 {
-    unsigned char buff[1024]={0};
-    unsigned int vu;
+    uint8_t  buff[1024]={0};
+    uint32_t vu;
     int vs;
     
     setbitu(buff,  0, 8,     1); vu=getbitu(buff,  0, 8); assert(vu==     1);
