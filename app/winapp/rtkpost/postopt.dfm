@@ -1364,7 +1364,7 @@ object OptDialog: TOptDialog
             'X/Y/Z-ECEF (m)'
             'Average of Single Position'
             'Get from Position File'
-            'RINEX Header Postion')
+            'RINEX Header Position')
         end
         object DatumRef: TComboBox
           Left = 186

@@ -322,7 +322,7 @@ static void update_svr(rtksvr_t *svr, int ret, obs_t *obs, nav_t *nav,
     else if (ret==9) { /* ion/utc parameters */
         update_ionutc(svr,nav,index);
     }
-    else if (ret==5) { /* antenna postion */
+    else if (ret==5) { /* antenna position */
         update_antpos(svr,index);
     }
     else if (ret==7) { /* dgps correction */
