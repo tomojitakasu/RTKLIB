@@ -116,7 +116,7 @@
 #define NTRIP_RSP_HTTP      "HTTP/"     /* ntrip response: http */
 #define NTRIP_RSP_ERROR     "ERROR"     /* ntrip response: error */
 #define NTRIP_RSP_UNAUTH    "HTTP/1.0 401 Unauthorized\r\n"
-#define NTRIP_RSP_ERR_PWD   "ERROR - Bad Pasword\r\n"
+#define NTRIP_RSP_ERR_PWD   "ERROR - Bad Password\r\n"
 #define NTRIP_RSP_ERR_MNTP  "ERROR - Bad Mountpoint\r\n"
 
 #define FTP_CMD             "wget"      /* ftp/http command */

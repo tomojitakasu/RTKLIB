@@ -35,7 +35,7 @@ object ConvDialog: TConvDialog
     Top = 34
     Width = 208
     Height = 13
-    Caption = 'Message Types  (Inteval: s) separeted by ,'
+    Caption = 'Message Types  (Interval: s) separated by ,'
   end
   object BtnOk: TButton
     Left = 177

@@ -87,7 +87,7 @@ Changes: ver.2.2.2 -> ver.2.3.0
   (r) "Output Solution Status" option is added in "Options"-"Output" dialog
   (s) "Meas Errors of Doppler Frequency" option is added in "Options"-"Statistics" dialog
   (t) "Process Noise of Receiver Accel Horiz/Vertical" option is added in "Options"-"Statistics" dialog
-  (u) "Rover Position" can be set in "Options"-"Postions" dialog if "Fixed" is selected as "Positioning Mode"
+  (u) "Rover Position" can be set in "Options"-"Positions" dialog if "Fixed" is selected as "Positioning Mode"
   (v) "Geoid Data File" option is added in "Options"-"Files"
   (w) SkyTraq S1315F receiver is supported.
   (x) Hemisphere Eclipse receiver is supported.
@@ -116,7 +116,7 @@ Changes: ver.2.2.2 -> ver.2.3.0
   (n) "Output Solution Status" option is added in "Options"-"Output" dialog
   (o) "Meas Errors of Doppler Frequency" option is added in "Options"-"Statistics" dialog
   (p) "Process Noise of Receiver Accel Horiz/Vertical" option is added in "Options"-"Statistics" dialog
-  (q) "Rover Position" can be set in "Options"-"Postions" dialog if "Fixed" is selected as "Positioning Mode"
+  (q) "Rover Position" can be set in "Options"-"Positions" dialog if "Fixed" is selected as "Positioning Mode"
   (r) "Geoid Data File" option is added in "Options"-"Files"
   (s) '#' can be used for comment in "Rover List" or "Base Station List" in Options-"Misc" dialog
   (t) Wild-cards in file path of precise ephemeris (SP3) are supported.

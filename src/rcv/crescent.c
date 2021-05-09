@@ -66,7 +66,7 @@ static int chksum(const uint8_t *buff, int len)
     return (sum>>8)==buff[len-3]&&(sum&0xFF)==buff[len-4]&&
            buff[len-2]==0x0D&&buff[len-1]==0x0A;
 }
-/* decode bin 1 postion/velocity ---------------------------------------------*/
+/* decode bin 1 position/velocity ---------------------------------------------*/
 static int decode_crespos(raw_t *raw)
 {
     int ns,week,mode;

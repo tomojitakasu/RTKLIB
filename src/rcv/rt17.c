@@ -142,7 +142,7 @@
 | 5. Positions AKA Stream Positions
 |    (NOT RECOMMENDED)
 |
-| Streamed postions are of no use to RTKLIB. They will be ignored. RTKLIB
+| Streamed positions are of no use to RTKLIB. They will be ignored. RTKLIB
 | computes positions from the raw satellite data. It has no use for the
 | receiver's position solutions. Streamed positions also consume
 | considerable bandwidth in the stream and/or space in a file.
