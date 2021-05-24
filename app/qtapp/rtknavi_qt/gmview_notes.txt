@@ -1,0 +1,14 @@
+Map View by Google Maps Notes
+
+2020/11/30
+
+To enable Map View of RTKPLOT by Google Maps API, add Windows registry
+keys by using REGEDIT as follows:
+
+Key
+\HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Internet Explorer\Main\FeatureControl\
+FEATURE_BROWSER_EMULATION
+
+Name             Type       Data
+...
+rtkplot.exe      REG_DWORD  0x00002af8 (11000)

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>527</width>
+    <width>556</width>
     <height>158</height>
    </rect>
   </property>
@@ -17,46 +17,7 @@
    <string/>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="2" column="0">
-    <widget class="QLabel" name="Label1">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>File Path</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="5">
-    <widget class="QPushButton" name="BtnFilePath">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>...</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="2">
-    <widget class="QLineEdit" name="FilePath">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="0" colspan="8">
+   <item row="4" column="1" colspan="8">
     <widget class="QWidget" name="widget" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
@@ -229,7 +190,7 @@
      </layout>
     </widget>
    </item>
-   <item row="1" column="2">
+   <item row="1" column="3">
     <widget class="QDoubleSpinBox" name="TimeStart">
      <property name="suffix">
       <string> s</string>
@@ -239,7 +200,53 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="0">
+   <item row="3" column="6">
+    <widget class="QPushButton" name="BtnFilePath">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text">
+      <string>...</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QLabel" name="Label1">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text">
+      <string>File Path</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="2">
+    <widget class="QLabel" name="Label2">
+     <property name="text">
+      <string>+</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="3">
+    <widget class="QLineEdit" name="FilePath">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
     <widget class="QComboBox" name="TimeSpeed">
      <property name="enabled">
       <bool>true</bool>
@@ -284,10 +291,13 @@
      </item>
     </widget>
    </item>
-   <item row="1" column="1">
-    <widget class="QLabel" name="Label2">
+   <item row="2" column="1">
+    <widget class="QCheckBox" name="PathEnable">
      <property name="text">
-      <string>+</string>
+      <string>CheckBox</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
      </property>
     </widget>
    </item>

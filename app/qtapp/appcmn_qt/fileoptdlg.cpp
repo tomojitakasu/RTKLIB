@@ -18,6 +18,7 @@ FileOptDialog::FileOptDialog(QWidget *parent)
 {
     setupUi(this);
     Opt = 0;
+    PathEna = 0;
 
     keyDialog = new KeyDialog(this);
 
@@ -43,9 +44,11 @@ void FileOptDialog::showEvent(QShowEvent *event)
     if (event->spontaneous()) return;
 
     ChkTimeTag->setText(Opt ? tr("TimeTag") : tr("Time"));
+    Label1->setVisible(Opt!=2);
+    PathEnable->setVisible(Opt==2);
+    PathEnable->setChecked(Opt!=2||PathEna);
     TimeSpeed->setVisible(!Opt);
     TimeStart->setVisible(!Opt);
-    Chk64Bit->setVisible(!Opt);
     Label1->setText(Opt ? tr("Output File Path") : tr("Input File Path"));
     Label2->setVisible(!Opt);
     Label4->setVisible(Opt);
@@ -100,6 +103,7 @@ void FileOptDialog::showEvent(QShowEvent *event)
         }
 
         FilePath->setText(tokens.at(0));
+        PathEna=PathEnable->isChecked();
 	}
 	UpdateEnable();
 }
@@ -147,8 +151,15 @@ void FileOptDialog::BtnKeyClick()
 //---------------------------------------------------------------------------
 void FileOptDialog::UpdateEnable(void)
 {
+    FilePath->setEnabled(PathEnable->isChecked());
+    BtnFilePath->setEnabled(PathEnable->isChecked());
     TimeSpeed->setEnabled(ChkTimeTag->isChecked());
     TimeStart->setEnabled(ChkTimeTag->isChecked());
     Chk64Bit ->setEnabled(ChkTimeTag->isChecked());
     Label2->setEnabled(ChkTimeTag->isChecked());
+    SwapIntv->setEnabled(PathEnable->isChecked());
+    Label4->setEnabled(PathEnable->isChecked());
+    Label5->setEnabled(PathEnable->isChecked());
+    ChkTimeTag->setEnabled(PathEnable->isChecked());
+    //BtnKey->setEnabled(PathEnabled->isChecked());
 }

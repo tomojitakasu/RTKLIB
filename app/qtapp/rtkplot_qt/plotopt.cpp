@@ -45,6 +45,7 @@ PlotOptDialog::PlotOptDialog(QWidget *parent)
     connect(BtnTLESatFile, SIGNAL(clicked(bool)), this, SLOT(BtnTLESatFileClick()));
     connect(BtnTLESatView, SIGNAL(clicked(bool)), this, SLOT(BtnTLESatViewClick()));
     connect(BtnTLEView, SIGNAL(clicked(bool)), this, SLOT(BtnTLEViewClick()));
+    connect(BtnShapeFile, SIGNAL(clicked(bool)), this, SLOT(BtnShapeFileClick()));
     connect(Origin, SIGNAL(currentIndexChanged(int)), this, SLOT(OriginChange()));
     connect(AutoScale, SIGNAL(currentIndexChanged(int)), this, SLOT(AutoScaleChange()));
     connect(RcvPos, SIGNAL(currentIndexChanged(int)), this, SLOT(RcvPosChange()));
@@ -65,7 +66,7 @@ PlotOptDialog::PlotOptDialog(QWidget *parent)
 //---------------------------------------------------------------------------
 void PlotOptDialog::showEvent(QShowEvent *event)
 {
-    int i, marks[] = { 1, 2, 3, 4, 5, 10, 15, 20 };
+    int marks[] = { 1, 2, 3, 4, 5, 10, 15, 20 };
 
     if (event->spontaneous()) return;
 
@@ -84,7 +85,7 @@ void PlotOptDialog::showEvent(QShowEvent *event)
     ShowCompass->setCurrentIndex(plot->ShowCompass);
     PlotStyle->setCurrentIndex(plot->PlotStyle);
 
-    for (i = 0; i < 8; i++)
+    for (int i = 0; i < 8; i++)
         if (marks[i] == plot->MarkSize) MarkSize->setCurrentIndex(i);
 
     for (int i = 0; i < 8; i++)
@@ -111,13 +112,14 @@ void PlotOptDialog::showEvent(QShowEvent *event)
     Color3->setStyleSheet(QString("QLabel {background-color: %1;}").arg(color2String(plot->CColor[2])));
     Color4->setStyleSheet(QString("QLabel {background-color: %1;}").arg(color2String(plot->CColor[3])));
 
-    FontOpt = plot->Font;
+    //FontOpt = plot->Font;
+    FontOpt.setFamily(plot->FontName);
+    FontOpt.setPixelSize(plot->FontSize);
     UpdateFont();
 
     ElMask->setCurrentText(QString::number(plot->ElMask));
     MaxDop->setCurrentText(QString::number(plot->MaxDop));
     MaxMP->setCurrentText(QString::number(plot->MaxMP));
-    YRange->setCurrentText(QString::number(plot->YRange));
     Origin->setCurrentIndex(plot->Origin);
     RcvPos->setCurrentIndex(plot->RcvPos);
     RefPos1->setValue(plot->OOPos[0] * R2D);
@@ -138,17 +140,39 @@ void PlotOptDialog::showEvent(QShowEvent *event)
     BuffSize->setValue(plot->RtBuffSize);
     ChkTimeSync->setChecked(plot->TimeSyncOut);
     EditTimeSync->setValue(plot->TimeSyncPort);
-    QcCmd->setText(plot->QcCmd);
     RnxOpts->setText(plot->RnxOpts);
-    ApiKey ->setText(plot->ApiKey);
+    ShapeFile ->setText(plot->ShapeFile);
     TLEFile->setText(plot->TLEFile);
     TLESatFile->setText(plot->TLESatFile);
+
+    for (int i=0;i<YRange->count();i++) {
+            double range;
+            bool ok;
+            QString unit;
+
+            QString s=YRange->itemText(i);
+            QStringList tokens = s.split(' ');
+            if (tokens.length() != 2) continue;
+            range = tokens.at(0).toInt(&ok);
+            unit = tokens.at(1);
+            if (!ok) continue;
+            if (unit == "cm") range*=0.01;
+            else if (unit == "km") range*=1000.0;
+            if (range==plot->YRange) {
+                YRange->setCurrentIndex(i);
+                break;
+            }
+        }
 
     UpdateEnable();
 }
 //---------------------------------------------------------------------------
 void PlotOptDialog::BtnOKClick()
 {
+    QString s;
+    double range;
+    bool ok;
+    QString unit;
     int marks[] = { 1, 2, 3, 4, 5, 10, 15, 20 };
 
     plot->TimeLabel = TimeLabel->currentIndex();
@@ -174,6 +198,8 @@ void PlotOptDialog::BtnOKClick()
     for (int i = 0; i < 4; i++)
         plot->CColor[i] = CColor[i];
 
+    plot->FontName=FontOpt.family();
+    plot->FontSize=FontOpt.pixelSize();
     plot->Font = FontOpt;
 
     plot->ElMask = ElMask->currentText().toDouble();
@@ -200,11 +226,22 @@ void PlotOptDialog::BtnOKClick()
     plot->TimeSyncOut = ChkTimeSync->isChecked();
     plot->TimeSyncPort = EditTimeSync->value();
     plot->ExSats = ExSats->text();
-    plot->QcCmd = QcCmd->text();
     plot->RnxOpts = RnxOpts->text();
-    plot->ApiKey = ApiKey->text();
+    plot->ShapeFile = ShapeFile->text();
     plot->TLEFile = TLEFile->text();
     plot->TLESatFile = TLESatFile->text();
+
+    s=YRange->currentText();
+    QStringList tokens = s.split(' ');
+    if (tokens.length() == 2) {
+        range = tokens.at(0).toInt(&ok);
+        unit = tokens.at(1);
+        if (ok) {
+            if (unit == "cm") range*=0.01;
+            else if (unit == "km") range*=1000.0;
+            plot->YRange=range;
+        }
+    }
 
     accept();
 }
@@ -294,9 +331,9 @@ void PlotOptDialog::BtnFontClick()
     UpdateFont();
 }
 //---------------------------------------------------------------------------
-void PlotOptDialog::BtnQcCmdClick()
+void PlotOptDialog::BtnShapeFileClick()
 {
-    QcCmd->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Open"))));
+    ShapeFile->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Open"))));
 }
 //---------------------------------------------------------------------------
 void PlotOptDialog::BtnTLEFileClick()
@@ -316,7 +353,7 @@ void PlotOptDialog::BtnRefPosClick()
     refDialog->RovPos[2] = RefPos3->value();
     refDialog->move(pos().x() + size().width() / 2 - refDialog->size().width() / 2,
             pos().y() + size().height() / 2 - refDialog->size().height() / 2);
-
+    refDialog->Opt=1;
     refDialog->exec();
 
     if (refDialog->result() != QDialog::Accepted) return;

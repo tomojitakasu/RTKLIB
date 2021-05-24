@@ -30,7 +30,7 @@ public slots:
     void BtnFontClick();
     void RcvPosChange();
     void BtnTLEFileClick();
-    void BtnQcCmdClick();
+    void BtnShapeFileClick();
     void BtnTLESatFileClick();
     void BtnTLEViewClick();
     void BtnTLESatViewClick();

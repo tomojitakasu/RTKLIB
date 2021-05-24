@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>339</width>
-    <height>169</height>
+    <width>379</width>
+    <height>210</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -281,19 +281,6 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QPushButton" name="BtnCmd">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>&amp;Commands...</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QPushButton" name="BtnOk">
         <property name="enabled">
          <bool>true</bool>
@@ -349,7 +336,6 @@
   <tabstop>FlowCtr</tabstop>
   <tabstop>OutTcpPort</tabstop>
   <tabstop>TcpPort</tabstop>
-  <tabstop>BtnCmd</tabstop>
   <tabstop>BtnOk</tabstop>
   <tabstop>BtnCancel</tabstop>
  </tabstops>

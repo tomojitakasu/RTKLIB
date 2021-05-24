@@ -179,14 +179,12 @@ void ConnectDialog::TcpOpt1(int opt)
     dialog.Path = Paths1[1];
     dialog.Opt = opt;
     for (int i = 0; i < MAXHIST; i++) dialog.History [i] = TcpHistory [i];
-    for (int i = 0; i < MAXHIST; i++) dialog.MntpHist[i] = TcpMntpHist[i];
     dialog.exec();
 
     if (dialog.result() != QDialog::Accepted) return;
 
     Paths1[1] = dialog.Path;
     for (int i = 0; i < MAXHIST; i++) TcpHistory [i] = dialog.History [i];
-    for (int i = 0; i < MAXHIST; i++) TcpMntpHist[i] = dialog.MntpHist[i];
 }
 //---------------------------------------------------------------------------
 void ConnectDialog::TcpOpt2(int opt)
@@ -196,14 +194,12 @@ void ConnectDialog::TcpOpt2(int opt)
     dialog.Path = Paths2[1];
     dialog.Opt = opt;
     for (int i = 0; i < MAXHIST; i++) dialog.History [i] = TcpHistory [i];
-    for (int i = 0; i < MAXHIST; i++) dialog.MntpHist[i] = TcpMntpHist[i];
     dialog.exec();
 
     if (dialog.result() != QDialog::Accepted) return;
 
     Paths2[1] = dialog.Path;
     for (int i = 0; i < MAXHIST; i++) TcpHistory [i] = dialog.History [i];
-    for (int i = 0; i < MAXHIST; i++) TcpMntpHist[i] = dialog.MntpHist[i];
 }
 //---------------------------------------------------------------------------
 void ConnectDialog::FileOpt1(int opt)

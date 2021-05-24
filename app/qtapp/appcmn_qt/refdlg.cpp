@@ -18,7 +18,7 @@ RefDialog::RefDialog(QWidget *parent)
     : QDialog(parent)
 {
     setupUi(this);
-
+    Opt=0;
     Pos[0] = Pos[1] = Pos[2] = RovPos[0] = RovPos[1] = RovPos[2] = 0.0;
 
     connect(StaList, SIGNAL(cellDoubleClicked(int,int)), this, SLOT(StaListDblClick(int,int)));
@@ -31,9 +31,11 @@ RefDialog::RefDialog(QWidget *parent)
 //---------------------------------------------------------------------------
 void RefDialog::showEvent(QShowEvent *event)
 {
-    int width[] = { 30, 80, 90, 65, 40, 70, 55 };
+    int width[] = { 30, 80, 90, 65, 50, 80, 55 };
 
     if (event->spontaneous()) return;
+
+    BtnLoad->setVisible(Opt);
 
     QStringList columns;
     columns << tr("No") << tr("Latitude(%1)").arg(degreeChar) << tr("Longitude(%1)").arg(degreeChar) << tr("Height(m)") << tr("Id") << tr("Name") << tr("Dist(km)");
@@ -222,11 +224,13 @@ void RefDialog::UpdateDist(void)
     double pos[3], ru[3], rr[3];
     bool ok;
 
-    for (int i = 0; i < 3; i++) pos[i] = RovPos[i];
+    matcpy(pos,RovPos,3,1);
 
     if (norm(pos, 3) <= 0.0) return;
 
-    pos[0] *= D2R; pos[1] *= D2R; pos2ecef(pos, ru);
+    pos[0] *= D2R;
+    pos[1] *= D2R;
+    pos2ecef(pos, ru);
 
     for (int i = 1; i < StaList->rowCount(); i++) {
         if (StaList->item(i, 1)->text() == "") continue;

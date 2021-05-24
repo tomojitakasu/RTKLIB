@@ -91,7 +91,7 @@ void TextViewer::BtnFindClick()
 //---------------------------------------------------------------------------
 bool TextViewer::Read(const QString &path)
 {
-    char file[256], *p[] = { file };
+    char file[1024], *p[] = { file };
 
     if (expath(qPrintable(path), p, 1) < 1) return false;
 
@@ -100,7 +100,7 @@ bool TextViewer::Read(const QString &path)
     if (!f.open(QIODevice::ReadOnly)) return false;
     Text->setPlainText("");
 
-    TextStr = f.readAll();
+    QString TextStr = f.readAll();
     Text->appendPlainText(TextStr);
 
     setWindowTitle(file);

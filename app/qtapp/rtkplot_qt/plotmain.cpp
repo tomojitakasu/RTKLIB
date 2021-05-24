@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------------
 // rtkplot : visualization of solution and obs data ap
 //
-//          Copyright (C) 2007-2012 by T.TAKASU, All rights reserved.
+//          Copyright (C) 2007-2020 by T.TAKASU, All rights reserved.
 //          ported to Qt by Jens Reimann
 //
 // options : rtkplot [-t title][-i file][-r][-p path][-x level][file ...]
@@ -27,6 +27,15 @@
 //           2010/06/10  1.3 rtklib 2.4.1
 //           2010/06/19  1.4 rtklib 2.4.1 p1
 //           2012/11/21  1.5 rtklib 2.4.2
+//           2016/06/11  1.6 rtklib 2.4.3
+//           2020/11/30  1.7 support NavIC/IRNSS
+//                           delete functions for Google Earth View
+//                           support Map API by Leaflet for Map View
+//                           move Google Map API Key option to Map View
+//                           modify order of ObsType selections
+//                           improve slip detection performance by LG jump
+//                           fix bug on MP computation for L3,L4,... freq.
+
 //---------------------------------------------------------------------------
 #include <clocale>
 
@@ -57,21 +66,21 @@
 #include "plotopt.h"
 #include "refdlg.h"
 #include "tspandlg.h"
-#include "satdlg.h"
 #include "aboutdlg.h"
 #include "conndlg.h"
 #include "console.h"
 #include "pntdlg.h"
-#include "mapdlg.h"
+#include "mapoptdlg.h"
 #include "skydlg.h"
-#include "geview.h"
-#include "gmview.h"
+#include "freqdlg.h"
+#include "mapview.h"
 #include "viewer.h"
 #include "vmapdlg.h"
 #include "fileseldlg.h"
 
 #define YLIM_AGE    10.0        // ylimit of age of differential
 #define YLIM_RATIO  20.0        // ylimit of raito factor
+#define MAXSHAPEFILE 16             // max number of shape files
 
 static int RefreshTime = 100;    // update only every 100ms
 
@@ -104,7 +113,6 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
     solstatbuf_t solstat0 = { 0, 0, 0 };
     double ep[] = { 2000, 1, 1, 0, 0, 0 }, xl[2], yl[2];
     double xs[] = { -DEFTSPAN / 2, DEFTSPAN / 2 };
-    int i, nfreq = NFREQ;
 
     memset(&nav0, 0, sizeof(nav_t));
     memset(&sta0, 0, sizeof(sta_t));
@@ -121,7 +129,7 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
     Az = NULL; El = NULL;
     Week = Flush = PlotType = 0;
     AnimCycle = 1;
-    for (i = 0; i < 2; i++) {
+    for (int i = 0; i < 2; i++) {
         initsolbuf(SolData + i, 0, 0);
         SolStat[i] = solstat0;
         SolIndex[i] = 0;
@@ -138,21 +146,21 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
     GEState = GEDataState[0] = GEDataState[1] = 0;
     GEHeading = 0.0;
     OEpoch = t0;
-    for (i = 0; i < 3; i++) OPos[i] = OVel[i] = 0.0;
+    for (int i = 0; i < 3; i++) OPos[i] = OVel[i] = 0.0;
     Az = El = NULL;
-    for (i = 0; i < NFREQ + NEXOBS; i++) Mp[i] = NULL;
+    for (int i = 0; i < NFREQ + NEXOBS; i++) Mp[i] = NULL;
 
     GraphT = new Graph(Disp);
     GraphT->Fit = 0;
 
-    for (i = 0; i < 3; i++) {
+    for (int i = 0; i < 3; i++) {
         GraphG[i] = new Graph(Disp);
         GraphG[i]->XLPos = 0;
         GraphG[i]->GetLim(xl, yl);
         GraphG[i]->SetLim(xs, yl);
     }
     GraphR = new Graph(Disp);
-    for (i = 0; i < 2; i++)
+    for (int i = 0; i < 2; i++)
         GraphE[i] = new Graph(Disp);
     GraphS = new Graph(Disp);
 
@@ -175,13 +183,13 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
     SkyElMask = 1;
     SkyDestCorr = SkyRes = SkyFlip = 0;
 
-    for (i = 0; i < 10; i++) SkyDest[i] = 0.0;
+    for (int i = 0; i < 10; i++) SkyDest[i] = 0.0;
 
     SkyBinarize = 0;
     SkyBinThres1 = 0.3;
     SkyBinThres2 = 0.1;
 
-    for (i = 0; i < 3; i++) TimeEna[i] = 0;
+    for (int i = 0; i < 3; i++) TimeEna[i] = 0;
     TimeLabel = AutoScale = ShowStats = 0;
     ShowLabel = ShowGLabel = 1;
     ShowArrow = ShowSlip = ShowHalfC = ShowErr = ShowEph = 0;
@@ -195,7 +203,7 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
     RangeList->setParent(0);
     RangeList->setWindowFlags(Qt::Window | Qt::WindowStaysOnTopHint | Qt::X11BypassWindowManagerHint | Qt::FramelessWindowHint);
 
-    for (i = 0; i < 361; i++) ElMaskData[i] = 0.0;
+    for (int i = 0; i < 361; i++) ElMaskData[i] = 0.0;
 
     Trace = 0;
     ConnectState = OpenRaw = 0;
@@ -206,20 +214,18 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
 
     FrqType->clear();
     FrqType->addItem("L1/LC");
-    if (nfreq >= 2) FrqType->addItem("L2");
-    if (nfreq >= 3) FrqType->addItem("L5");
-    if (nfreq >= 4) FrqType->addItem("L6");
-    if (nfreq >= 5) FrqType->addItem("L7");
-    if (nfreq >= 6) FrqType->addItem("L8");
+    for (int i=0;i<NFREQ;i++) {
+        FrqType->addItem(QString("L%1").arg(i+1));
+    }
     FrqType->setCurrentIndex(0);
 
     TLEData.n = TLEData.nmax = 0;
     TLEData.data = NULL;
 
-    googleEarthView = new GoogleEarthView(this);
-    googleMapView = new GoogleMapView(this);
+    freqDialog = new FreqDialog(this);
+    mapOptDialog = new MapOptDialog(this);
+    mapView = new MapView(this);
     spanDialog = new SpanDialog(this);
-    mapAreaDialog = new MapAreaDialog(this);
     connectDialog = new ConnectDialog(this);
     skyImgDialog = new SkyImgDialog(this);
     plotOptDialog = new PlotOptDialog(this);
@@ -232,8 +238,7 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
     BtnReload->setDefaultAction(MenuReload);
     BtnClear->setDefaultAction(MenuClear);
     BtnOptions->setDefaultAction(MenuOptions);
-    BtnGE->setDefaultAction(MenuGE);
-    BtnGM->setDefaultAction(MenuGM);
+    BtnMapView->setDefaultAction(MenuMapView);
     BtnCenterOri->setDefaultAction(MenuCenterOri);
     BtnFitHoriz->setDefaultAction(MenuFitHoriz);
     BtnFitVert->setDefaultAction(MenuFitVert);
@@ -283,8 +288,7 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
     connect(MenuFixCent, SIGNAL(triggered(bool)), this, SLOT(MenuFixCentClick()));
     connect(MenuFixHoriz, SIGNAL(triggered(bool)), this, SLOT(MenuFixHorizClick()));
     connect(MenuFixVert, SIGNAL(triggered(bool)), this, SLOT(MenuFixVertClick()));
-    connect(MenuGE, SIGNAL(triggered(bool)), this, SLOT(MenuGEClick()));
-    connect(MenuGM, SIGNAL(triggered(bool)), this, SLOT(MenuGMClick()));
+    connect(MenuMapView, SIGNAL(triggered(bool)), this, SLOT(MenuMapViewClick()));
     connect(MenuMapImg, SIGNAL(triggered(bool)), this, SLOT(MenuMapImgClick()));
     connect(MenuMax, SIGNAL(triggered(bool)), this, SLOT(MenuMaxClick()));
     connect(MenuMonitor1, SIGNAL(triggered(bool)), this, SLOT(MenuMonitor1Click()));
@@ -298,11 +302,9 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
     connect(MenuOpenSol1, SIGNAL(triggered(bool)), this, SLOT(MenuOpenSol1Click()));
     connect(MenuOpenSol2, SIGNAL(triggered(bool)), this, SLOT(MenuOpenSol2Click()));
     connect(MenuOptions, SIGNAL(triggered(bool)), this, SLOT(MenuOptionsClick()));
-    connect(MenuPlotGE, SIGNAL(triggered(bool)), this, SLOT(MenuPlotGEClick()));
-    connect(MenuPlotGEGM, SIGNAL(triggered(bool)), this, SLOT(MenuPlotGEGMClick()));
-    connect(MenuPlotGM, SIGNAL(triggered(bool)), this, SLOT(MenuPlotGMClick()));
+    connect(MenuPlotMapView, SIGNAL(triggered(bool)), this, SLOT(MenuPlotMapViewClick()));
     connect(MenuPort, SIGNAL(triggered(bool)), this, SLOT(MenuPortClick()));
-    connect(MenuQcObs, SIGNAL(triggered(bool)), this, SLOT(MenuQcObsClick()));
+    connect(MenuShapeFile, SIGNAL(triggered(bool)), this, SLOT(MenuShapeFileClick()));
     connect(MenuQuit, SIGNAL(triggered(bool)), this, SLOT(MenuQuitClick()));
     connect(MenuReload, SIGNAL(triggered(bool)), this, SLOT(MenuReloadClick()));
     connect(MenuSaveDop, SIGNAL(triggered(bool)), this, SLOT(MenuSaveDopClick()));
@@ -351,11 +353,8 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
 #ifdef QWEBENGINE
     state = true;
 #endif
-    MenuGE->setEnabled(state);
-    MenuGM->setEnabled(state);
-    MenuPlotGE->setEnabled(state);
-    MenuPlotGEGM->setEnabled(state);
-    MenuPlotGM->setEnabled(state);
+    MenuMapView->setEnabled(state);
+    MenuPlotMapView->setEnabled(state);
 
     Disp->setAttribute(Qt::WA_OpaquePaintEvent);
     setMouseTracking(true);
@@ -443,7 +442,7 @@ void Plot::showEvent(QShowEvent *event)
                        QCoreApplication::translate("main", "path"));
     parser.addOption(path2Option);
 
-    QCommandLineOption traceOption(QStringList() << "t" << "tracelevel",
+    QCommandLineOption traceOption(QStringList() << "x" << "tracelevel",
                        QCoreApplication::translate("main", "set trace lavel to <tracelavel>."),
                        QCoreApplication::translate("main", "tracelevel"));
     parser.addOption(traceOption);
@@ -470,6 +469,12 @@ void Plot::showEvent(QShowEvent *event)
     foreach(file, args)
     OpenFiles.append(file);
 
+    if (Trace>0) {
+        traceopen(TRACEFILE);
+        tracelevel(Trace);
+    }
+    LoadOpt();
+
     UpdateType(PlotType >= PLOT_OBS ? PLOT_TRK : PlotType);
 
     UpdateColor();
@@ -484,9 +489,22 @@ void Plot::showEvent(QShowEvent *event)
     } else if (OpenFiles.count() <= 0) {
         setWindowTitle(Title != "" ? Title : QString(tr("%1 ver. %2 %3")).arg(PRGNAME).arg(VER_RTKLIB).arg(PATCH_LEVEL));
     }
-    if (Trace > 0) {
-        traceopen(TRACEFILE);
-        tracelevel(Trace);
+    if (ShapeFile!="") {
+        QStringList files;
+        char *paths[MAXSHAPEFILE];
+        for (int i=0;i<MAXSHAPEFILE;i++) {
+            paths[i]=new char [1024];
+        }
+        int n=expath(qPrintable(ShapeFile),paths,MAXSHAPEFILE);
+
+        for (int i=0;i<n;i++) {
+            files.append(paths[i]);
+        }
+        ReadShapeFile(files);
+
+        for (int i=0;i<MAXSHAPEFILE;i++) {
+            delete [] paths[i];
+        }
     }
     if (TLEFile != "")
         tle_read(qPrintable(TLEFile), &TLEData);
@@ -537,8 +555,6 @@ void Plot::showEvent(QShowEvent *event)
         if (CheckObs(OpenFiles.at(0)) || OpenRaw) ReadObs(OpenFiles);
         else ReadSol(OpenFiles, 0);
     }
-
-    googleMapView->setApiKey(ApiKey);
 }
 // callback on form-close ---------------------------------------------------
 void Plot::closeEvent(QCloseEvent *)
@@ -590,18 +606,19 @@ void Plot::dropEvent(QDropEvent *event)
 
     if (ConnectState || !event->mimeData()->hasUrls())
         return;
-    ;
     foreach(QUrl url, event->mimeData()->urls()) {
         files.append(QDir::toNativeSeparators(url.toString()));
     }
+
+    QString file=files.at(0);
 
     if (files.size() == 1 && (n = files.at(0).lastIndexOf('.')) != -1) {
         QString ext = files.at(0).mid(n).toLower();
         if ((ext == "jpg") || (ext == "jpeg")) {
             if (PlotType == PLOT_TRK)
-                ReadMapData(files.at(0));
+                ReadMapData(file);
             else if (PlotType == PLOT_SKY || PlotType == PLOT_MPS)
-                ReadSkyData(files.at(0));
+                ReadSkyData(file);
         }
         ;
     } else if (CheckObs(files.at(0))) {
@@ -656,21 +673,20 @@ void Plot::MenuOpenWaypointClick()
 {
     trace(3, "MenuOpenWaypointClick\n");
 
-    ReadWaypoint(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Open Waypoint"), SkyImageFile, tr("GPX File (*.gpx);;All (*.*)"))));
+    ReadWaypoint(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Open Waypoint"), SkyImageFile, tr("Waypoint File (*.gpx, *.pos);;All (*.*)"))));
 }
 // callback on menu-open-obs-data -------------------------------------------
 void Plot::MenuOpenObsClick()
 {
     trace(3, "MenuOpenObsClick\n");
-
-    ReadObs(QFileDialog::getOpenFileNames(this, tr("Open Obs/Nav Data"), QString(), tr("RINEX OBS (*.obs *.*o *.*d *.*o.gz *.*o.Z *.d.gz *.d.Z);;All (*.*)")));
+    ReadObs(QFileDialog::getOpenFileNames(this, tr("Open Obs/Nav Data"), QString(), tr("RINEX OBS (*.obs *.*o *.*d *.O.rnx *.*o.gz *.*o.Z *.d.gz *.d.Z);;All (*.*)")));
 }
 // callback on menu-open-nav-data -------------------------------------------
 void Plot::MenuOpenNavClick()
 {
     trace(3, "MenuOpenNavClick\n");
 
-    ReadNav(QFileDialog::getOpenFileNames(this, tr("Open Raw Obs/Nav Messages"), QString(), tr("RINEX NAV (*.nav *.gnav *.hnav *.qnav *.*n *.*g *.*h *.*q *.*p);;All (*.*)")));
+    ReadNav(QFileDialog::getOpenFileNames(this, tr("Open Raw Obs/Nav Messages"), QString(), tr("RINEX NAV (*.nav *.gnav *.hnav *.qnav *.*n *.*g *.*h *.*q *.*p *N.rnx);;All (*.*)")));
 }
 // callback on menu-open-elev-mask ------------------------------------------
 void Plot::MenuOpenElevMaskClick()
@@ -716,7 +732,7 @@ void Plot::MenuSaveWaypointClick()
 {
     trace(3, "MenuSaveWaypointClick\n");
 
-    SaveWaypoint(QDir::toNativeSeparators(QFileDialog::getSaveFileName(this, tr("Save Waypoint"), QString(), tr("GPX File (*.gpx);;All (*.*)"))));
+    SaveWaypoint(QDir::toNativeSeparators(QFileDialog::getSaveFileName(this, tr("Save Waypoint"), QString(), tr("GPX File (*.gpx, *.pos);;All (*.*)"))));
 }
 // callback on menu-save-# of sats/dop --------------------------------------
 void Plot::MenuSaveDopClick()
@@ -780,7 +796,6 @@ void Plot::MenuPortClick()
         connectDialog->CmdEna2[i] = StrCmdEna[1][i];
     }
     for (i = 0; i < 10; i++) connectDialog->TcpHistory [i] = StrHistory [i];
-    for (i = 0; i < 10; i++) connectDialog->TcpMntpHist[i] = StrMntpHist[i];
 
     connectDialog->exec();
 
@@ -806,7 +821,6 @@ void Plot::MenuPortClick()
         StrCmdEna[1][i] = connectDialog->CmdEna2[i];
     }
     for (i = 0; i < 10; i++) StrHistory [i] = connectDialog->TcpHistory [i];
-    for (i = 0; i < 10; i++) StrMntpHist[i] = connectDialog->TcpMntpHist[i];
 }
 // callback on menu-reload --------------------------------------------------
 void Plot::MenuReloadClick()
@@ -892,7 +906,7 @@ void Plot::MenuMapImgClick()
 {
     trace(3, "MenuMapImgClick\n");
 
-    mapAreaDialog->show();
+    mapOptDialog->show();
 }
 // callback on menu-sky image -----------------------------------------------
 void Plot::MenuSkyImgClick()
@@ -909,12 +923,9 @@ void Plot::MenuMapLayerClick()
     vecMapDialog = new VecMapDialog(this);
 
     vecMapDialog->exec();
-    if (vecMapDialog->result() != QDialog::Accepted) return;
 
     delete vecMapDialog;
 
-    UpdatePlot();
-    UpdateEnable();
 }
 // callback on menu-solution-source -----------------------------------------
 void Plot::MenuSrcSolClick()
@@ -951,32 +962,6 @@ void Plot::MenuSrcObsClick()
     viewer->Read(!cstat ? file : tmpfile);
     if (cstat) remove(tmpfile);
 }
-// callback on menu-data-qc -------------------------------------------------
-void Plot::MenuQcObsClick()
-{
-    TextViewer *viewer;
-    QString cmd = QcCmd, cmdexec, tmpfile = QCTMPFILE, errfile = QCERRFILE;
-    int i, stat;
-
-    trace(3, "MenuQcObsClick\n");
-
-    if (ObsFiles.count() <= 0 || cmd == "") return;
-
-    for (i = 0; i < ObsFiles.count(); i++) cmd += " \"" + ObsFiles.at(i) + "\"";
-    for (i = 0; i < NavFiles.count(); i++) cmd += " \"" + NavFiles.at(i) + "\"";
-
-    cmdexec = cmd + " > " + tmpfile;
-    cmdexec += " 2> " + errfile;
-    stat = execcmd(qPrintable(cmdexec));
-
-    viewer = new TextViewer(this);
-    viewer->Option = 0;
-    viewer->show();
-    viewer->Read(stat ? errfile : tmpfile);
-    viewer->setWindowTitle((stat ? "QC Error: " : "") + cmd);
-    remove(qPrintable(tmpfile));
-    remove(qPrintable(errfile));
-}
 // callback on menu-copy-to-clipboard ---------------------------------------
 void Plot::MenuCopyClick()
 {
@@ -990,14 +975,13 @@ void Plot::MenuCopyClick()
 void Plot::MenuOptionsClick()
 {
     QString tlefile = TLEFile, tlesatfile = TLESatFile;
-    double oopos[3], range;
+    double oopos[3];
     char str_path[256];
-    int timesyncout=TimeSyncOut;
+    int timesyncout=TimeSyncOut, rcvpos=RcvPos;
 
     trace(3, "MenuOptionsClick\n");
 
-    int i, rcvpos = RcvPos;
-    for (i = 0; i < 3; i++) oopos[i] = OOPos[i];
+    matcpy(oopos,OOPos,3,1);
 
     plotOptDialog->move(pos().x() + width() / 2 - plotOptDialog->width() / 2,
                 pos().y() + height() / 2 - plotOptDialog->height() / 2);
@@ -1009,7 +993,7 @@ void Plot::MenuOptionsClick()
 
     SaveOpt();
 
-    for (i = 0; i < 3; i++) oopos[i] -= OOPos[i];
+    for (int i = 0; i < 3; i++) oopos[i] -= OOPos[i];
 
     if (TLEFile != tlefile) {
         free(TLEData.data);
@@ -1028,16 +1012,30 @@ void Plot::MenuOptionsClick()
     UpdateInfo();
     UpdateSatMask();
     UpdateSatList();
-    UpdateEnable();
+
     Refresh();
     Timer.start(RefCycle);
 
-    for (i = 0; i < RangeList->count(); i++) {
-        bool okay;
-        range = RangeList->item(i)->text().toDouble(&okay);
+    for (int i = 0; i < RangeList->count(); i++) {
+        QString str=RangeList->item(i)->text();
+        double range;
+        QString unit;
 
-        if (okay && (qFuzzyCompare(range, YRange)))
-            RangeList->item(i)->setSelected(true);
+        QStringList tokens = str.split(' ');
+        if (tokens.length()==2) {
+            bool ok;
+            range = tokens.at(0).toInt(&ok);
+            unit = tokens.at(1);
+            if (ok) {
+                if (unit == "cm") range*=0.01;
+                else if (unit == "km") range*=1000.0;
+                if (range==YRange) {
+                    RangeList->item(i)->setSelected(true);
+                    break;
+                }
+
+            }
+        }
     }
     if (!timesyncout && TimeSyncOut) {
         sprintf(str_path,":%d",TimeSyncPort);
@@ -1106,21 +1104,14 @@ void Plot::MenuMonitor2Click()
     Console2->setWindowTitle(tr("Monitor RT Input 2"));
     Console2->show();
 }
-// callback on menu-google-earth-view ---------------------------------------
-void Plot::MenuGEClick()
+// callback on menu-map-view ---------------------------------------
+void Plot::MenuMapViewClick()
 {
     trace(3, "MenuGEClick\n");
 
-    googleEarthView->setWindowTitle(
+    mapView->setWindowTitle(
         QString(tr("%1 ver.%2 %3: Google Earth View")).arg(PRGNAME).arg(VER_RTKLIB).arg(PATCH_LEVEL));
-    googleEarthView->show();
-}
-// callback on menu-google-map-view -----------------------------------------
-void Plot::MenuGMClick()
-{
-    googleMapView->setWindowTitle(
-        QString(tr("%1 ver.%2 %3: Google Map View")).arg(PRGNAME).arg(VER_RTKLIB).arg(PATCH_LEVEL));
-    googleMapView->show();
+    mapView->show();
 }
 // callback on menu-center-origin -------------------------------------------
 void Plot::MenuCenterOriClick()
@@ -1157,7 +1148,7 @@ void Plot::MenuShowSkyplotClick()
 // callback on menu-show-map-image ------------------------------------------
 void Plot::MenuShowImgClick()
 {
-    trace(3, "MenuShowMapClick\n");
+    trace(3, "MenuShowImgClick\n");
 
     UpdatePlot();
     UpdateEnable();
@@ -1213,9 +1204,6 @@ void Plot::MenuShowMapClick()
 {
     trace(3, "MenuShowMapClick\n");
 
-#if 0
-    if (BtnShowMap->isChecked()) UpdatePntsGE();
-#endif
     UpdatePlot();
     UpdateEnable();
 }
@@ -1228,9 +1216,11 @@ void Plot::MenuMaxClick()
 
     this->move(rect.x(), rect.y());
     this->resize(rect.width() - thisDecoration.width(), rect.height() - thisDecoration.height());
+
+    mapView->hide();
 }
-// callback on menu-windows-plot-ge -----------------------------------------
-void Plot::MenuPlotGEClick()
+// callback on menu-windows-mapview -----------------------------------------
+void Plot::MenuPlotMapViewClick()
 {
     QScreen *scr = QApplication::screens().at(0);
     QRect rect = scr->availableGeometry();
@@ -1239,50 +1229,11 @@ void Plot::MenuPlotGEClick()
     this->move(rect.x(), rect.y());
     this->resize(rect.width() / 2 - thisDecoration.width(), rect.height() - thisDecoration.height());
 
-    QSize GEDecoration = googleEarthView->frameSize() - googleEarthView->size();
-    googleEarthView->resize(rect.width()/2 - GEDecoration.width(), rect.height() - GEDecoration.height());
-    googleEarthView->move(rect.x() + rect.width() / 2, rect.y());
+    QSize GEDecoration = mapView->frameSize() - mapView->size();
+    mapView->resize(rect.width()/2 - GEDecoration.width(), rect.height() - GEDecoration.height());
+    mapView->move(rect.x() + rect.width() / 2, rect.y());
 
-    googleEarthView->setVisible(true);
-    googleMapView->setVisible(false);
-}
-// callback on menu-windows-plot-gm -----------------------------------------
-void Plot::MenuPlotGMClick()
-{
-    QScreen *scr = QApplication::screens().at(0);
-    QRect rect = scr->availableGeometry();
-    QSize thisDecoration = this->frameSize() - this->size();
-
-    this->move(rect.x(), rect.y());
-    this->resize(rect.width() / 2 - thisDecoration.width(), rect.height() - thisDecoration.height());
-
-    QSize GMDecoration = googleMapView->frameSize() - googleMapView->size();
-    googleMapView->resize(rect.width() / 2 - GMDecoration.width(), rect.height() - GMDecoration.height());
-    googleMapView->move(rect.x() + rect.width() / 2, rect.y());
-
-    googleEarthView->setVisible(false);;
-    googleMapView->setVisible(true);
-}
-// callback on menu-windows-plot-ge/gm --------------------------------------
-void Plot::MenuPlotGEGMClick()
-{
-    QScreen *scr = QApplication::screens().at(0);
-    QRect rect = scr->availableGeometry();
-    QSize thisDecoration = this->frameSize() - this->size();
-
-    this->move(rect.x(), rect.y());
-    this->resize(rect.width() / 2 - thisDecoration.width(), rect.height() - thisDecoration.height());
-
-    QSize GMDecoration = googleMapView->frameSize() - googleMapView->size();
-    googleMapView->resize(rect.width() / 2 - GMDecoration.width(), rect.height() / 2 - GMDecoration.height());
-    googleMapView->move(rect.x() + rect.width() / 2, rect.y());
-
-    QSize GEDecoration = googleEarthView->frameSize() - googleEarthView->size();
-    googleEarthView->resize(rect.width() / 2 - GEDecoration.width(), rect.height() / 2 - GEDecoration.height());
-    googleEarthView->move(rect.x() + rect.width() / 2, rect.y() + rect.height() / 2);
-
-    googleEarthView->setVisible(true);
-    googleMapView->setVisible(true);
+    mapView->setVisible(true);
 }
 //---------------------------------------------------------------------------
 #if 0
@@ -1412,11 +1363,12 @@ void Plot::BtnOn3Click()
 // callback on button-range-list --------------------------------------------
 void Plot::BtnRangeListClick()
 {
+    QToolButton *btn=(QToolButton *)sender();
     trace(3, "BtnRangeListClick\n");
 
-    QPoint pos = BtnRangeList->mapToGlobal(BtnRangeList->pos());
-    pos.rx() -= BtnRangeList->width();
-    pos.ry() += BtnRangeList->height();
+    QPoint pos = btn->mapToGlobal(btn->pos());
+    pos.rx() -= btn->width();
+    pos.ry() += btn->height();
 
     RangeList->move(pos);
     RangeList->setVisible(!RangeList->isVisible());
@@ -1424,8 +1376,8 @@ void Plot::BtnRangeListClick()
 // callback on button-range-list --------------------------------------------
 void Plot::RangeListClick()
 {
-    double range;
     bool okay;
+    QString unit;
     QListWidgetItem *i;
 
     trace(3, "RangeListClick\n");
@@ -1433,10 +1385,17 @@ void Plot::RangeListClick()
     RangeList->setVisible(false);
     if ((i = RangeList->currentItem()) == NULL) return;
 
-    range = i->text().toDouble(&okay);
+    QStringList tokens = i->text().split(" ");
+
+    if (tokens.length()!=2) return;
+
+    YRange = tokens.at(0).toDouble(&okay);
     if (!okay) return;
 
-    YRange = range;
+    unit = tokens.at(1);
+
+    if (unit == "cm") YRange*=0.01;
+    else if (unit == "km") YRange*=1000.0;
     SetRange(0, YRange);
     UpdatePlot();
     UpdateEnable();
@@ -1573,7 +1532,7 @@ void Plot::mouseReleaseEvent(QMouseEvent *event)
     Drag = 0;
     setCursor(Qt::ArrowCursor);
     Refresh();
-    Refresh_GEView();
+    Refresh_MapView();
 }
 // callback on mouse-double-click -------------------------------------------
 void Plot::mouseDoubleClickEvent(QMouseEvent *event)
@@ -1591,7 +1550,7 @@ void Plot::mouseDoubleClickEvent(QMouseEvent *event)
         GraphT->ToPos(p, x, y);
         GraphT->SetCent(x, y);
         Refresh();
-        Refresh_GEView();
+        Refresh_MapView();
     } else if (PlotType <= PLOT_NSAT || PlotType == PLOT_RES || PlotType == PLOT_SNR) {
         GraphG[0]->ToPos(p, x, y);
         SetCentX(x);
@@ -2001,7 +1960,7 @@ void Plot::TimerTimer()
     QLabel *strstatus[] = { StrStatus1, StrStatus2 };
     Console *console[] = { Console1, Console2 };
     QString connectmsg = "";
-    static unsigned char buff[16384];
+    static uint8_t buff[16384];
     solopt_t opt = solopt_default;
     sol_t *sol;
     const gtime_t ts = { 0, 0 };
@@ -2039,8 +1998,7 @@ void Plot::TimerTimer()
                         time2gpst(SolData[i].time, &Week);
                         UpdateOrigin();
                         ecef2pos(SolData[i].data[0].rr, pos);
-//                        googleEarthView->SetView(pos[0]*R2D,pos[1]*R2D,0.0,0.0);
-//                        googleMapView->SetView(pos[0]*R2D,pos[1]*R2D,13);
+                        mapView->SetCent(pos[0]*R2D,pos[1]*R2D);
                     }
                     nmsg[i]++;
                 }
@@ -2072,7 +2030,7 @@ void Plot::TimerTimer()
         }
     } else if (TimeSyncOut) { // time sync
         time.time = 0;
-        while (strread(&StrTimeSync, (unsigned char *)StrBuff + NStrBuff, 1)) {
+        while (strread(&StrTimeSync, (uint8_t *)StrBuff + NStrBuff, 1)) {
             if (++NStrBuff >= 1023) {
                 NStrBuff = 0;
                 continue;
@@ -2167,15 +2125,15 @@ void Plot::UpdateSize(void)
 {
     QPushButton *btn[] = { BtnOn1, BtnOn2, BtnOn3 };
     QPoint p1(0, 0), p2(Disp->width(), Disp->height());
-    double xs, ys;
+    double xs, ys,font_px=Disp->font().pixelSize()*1.33;
     int i, n, h, tmargin, bmargin, rmargin, lmargin;
 
     trace(3, "UpdateSize\n");
 
-    tmargin = 5;                                                    // top margin
-    bmargin = static_cast<int>(Disp->font().pointSize() * 1.5) + 3; // bottom
-    rmargin = 8;                                                    // right
-    lmargin = Disp->font().pointSize() * 3 + 15;                    // left
+    tmargin=(int)(font_px*0.9); // top margin (px)
+    bmargin=(int)(font_px*1.8); // bottom
+    rmargin=(int)(font_px*1.2); // right
+    lmargin=(int)(font_px*3.6); // left
 
     GraphT->resize();
     GraphS->resize();
@@ -2194,6 +2152,7 @@ void Plot::UpdateSize(void)
     p2.rx() -= rmargin; p2.setY(p2.y() - bmargin);
     GraphR->SetPos(p1, p2);
 
+    p1.setX(p1.x()+(int)(font_px*1.2));
     p1.setY(tmargin); p2.setY(p1.y());
     for (i = n = 0; i < 3; i++) if (btn[i]->isChecked()) n++;
     for (i = 0; i < 3; i++) {
@@ -2351,7 +2310,7 @@ void Plot::UpdateOrigin(void)
         OPos[i] = opos[i];
         OVel[i] = ovel[i];
     }
-    Refresh_GEView();
+    Refresh_MapView();
 }
 // update satellite mask ----------------------------------------------------
 void Plot::UpdateSatMask(void)
@@ -2385,6 +2344,7 @@ void Plot::UpdateSatSel(void)
     else if (SatListText == "E") sys = SYS_GAL;
     else if (SatListText == "J") sys = SYS_QZS;
     else if (SatListText == "C") sys = SYS_CMP;
+    else if (SatListText == "I") sys = SYS_IRN;
     else if (SatListText == "S") sys = SYS_SBS;
 
     for (i = 0; i < MAXSAT; i++) {
@@ -2405,7 +2365,8 @@ void Plot::UpdateEnable(void)
     Panel21->setVisible(MenuStatusBar->isChecked());
 
     MenuConnect->setChecked(ConnectState);
-    BtnSol2->setEnabled(PlotType <= PLOT_NSAT || PlotType == PLOT_RES);
+    BtnSol1->setEnabled(true);
+    BtnSol2->setEnabled(PlotType<=PLOT_NSAT||PlotType==PLOT_RES||PlotType==PLOT_RESE);
     BtnSol12->setEnabled(!ConnectState && PlotType <= PLOT_SOLA && SolData[0].n > 0 && SolData[1].n > 0);
 
     QFlag->setVisible(PlotType == PLOT_TRK || PlotType == PLOT_SOLP ||
@@ -2414,9 +2375,9 @@ void Plot::UpdateEnable(void)
     ObsType->setVisible(PlotType == PLOT_OBS || PlotType <= PLOT_SKY);
     ObsType2->setVisible(PlotType == PLOT_SNR || PlotType == PLOT_SNRE || PlotType == PLOT_MPS);
 
-    FrqType->setVisible(PlotType == PLOT_RES);
+    FrqType->setVisible(PlotType == PLOT_RES||PlotType==PLOT_RESE);
     DopType->setVisible(PlotType == PLOT_DOP);
-    SatList->setVisible(PlotType == PLOT_RES || PlotType >= PLOT_OBS ||
+    SatList->setVisible(PlotType == PLOT_RES ||PlotType==PLOT_RESE||PlotType>=PLOT_OBS||
                 PlotType == PLOT_SKY || PlotType == PLOT_DOP ||
                 PlotType == PLOT_SNR || PlotType == PLOT_SNRE ||
                 PlotType == PLOT_MPS);
@@ -2424,24 +2385,26 @@ void Plot::UpdateEnable(void)
     ObsType->setEnabled(data && !SimObs);
     ObsType2->setEnabled(data && !SimObs);
 
-    BtnOn1->setEnabled(plot || PlotType == PLOT_SNR || PlotType == PLOT_RES || PlotType == PLOT_SNRE);
-    BtnOn2->setEnabled(plot || PlotType == PLOT_SNR || PlotType == PLOT_RES || PlotType == PLOT_SNRE);
+    Panel102->setVisible(PlotType==PLOT_SOLP||PlotType==PLOT_SOLV||
+                         PlotType==PLOT_SOLA||PlotType==PLOT_NSAT||
+                         PlotType==PLOT_RES ||PlotType==PLOT_RESE||
+                         PlotType==PLOT_SNR ||PlotType==PLOT_SNRE);
+    BtnOn1->setEnabled(plot||PlotType==PLOT_SNR||PlotType==PLOT_RES||
+                             PlotType==PLOT_RESE||PlotType==PLOT_SNRE);
+    BtnOn2->setEnabled(plot||PlotType==PLOT_SNR||PlotType==PLOT_RES||
+                             PlotType==PLOT_RESE||PlotType==PLOT_SNRE);
     BtnOn3->setEnabled(plot || PlotType == PLOT_SNR || PlotType == PLOT_RES);
 
     BtnCenterOri->setVisible(PlotType == PLOT_TRK || PlotType == PLOT_SOLP ||
                  PlotType == PLOT_SOLV || PlotType == PLOT_SOLA ||
                  PlotType == PLOT_NSAT);
+    BtnCenterOri->setEnabled(PlotType != PLOT_NSAT);
     BtnRangeList->setVisible(PlotType == PLOT_TRK || PlotType == PLOT_SOLP ||
                  PlotType == PLOT_SOLV || PlotType == PLOT_SOLA ||
                  PlotType == PLOT_NSAT);
-    BtnCenterOri->setEnabled(PlotType != PLOT_NSAT);
     BtnRangeList->setEnabled(PlotType != PLOT_NSAT);
 
 
-    Panel102->setVisible(PlotType == PLOT_SOLP || PlotType == PLOT_SOLV ||
-                 PlotType == PLOT_SOLA || PlotType == PLOT_NSAT ||
-                 PlotType == PLOT_RES ||
-                 PlotType == PLOT_SNR || PlotType == PLOT_SNRE);
     BtnFitHoriz->setVisible(PlotType == PLOT_SOLP || PlotType == PLOT_SOLV ||
                 PlotType == PLOT_SOLA || PlotType == PLOT_NSAT ||
                 PlotType == PLOT_RES || PlotType == PLOT_OBS ||
@@ -2457,8 +2420,7 @@ void Plot::UpdateEnable(void)
     BtnFixHoriz->setVisible(PlotType == PLOT_SOLP || PlotType == PLOT_SOLV ||
                 PlotType == PLOT_SOLA || PlotType == PLOT_NSAT ||
                 PlotType == PLOT_RES || PlotType == PLOT_OBS ||
-                PlotType == PLOT_DOP || PlotType == PLOT_RES ||
-                PlotType == PLOT_SNR);
+                PlotType == PLOT_DOP || PlotType == PLOT_SNR);
     BtnFixVert->setVisible(PlotType == PLOT_SOLP || PlotType == PLOT_SOLV ||
                    PlotType == PLOT_SOLA);
     BtnFixCent->setEnabled(data);
@@ -2466,13 +2428,11 @@ void Plot::UpdateEnable(void)
     BtnFixVert->setEnabled(data);
     BtnShowMap->setVisible(PlotType == PLOT_TRK);
     BtnShowMap->setEnabled(!BtnSol12->isChecked());
+    MenuMapView->setVisible(PlotType==PLOT_TRK||PlotType==PLOT_SOLP);
+    Panel12->setVisible(!ConnectState);
     BtnAnimate->setVisible(data && MenuShowTrack->isChecked());
     TimeScroll->setVisible(data && MenuShowTrack->isChecked());
-
-#if defined(QWEBKIT) || defined(QWEBENGINE)
-    MenuGE->setVisible(PlotType == PLOT_TRK);
-    MenuGM->setVisible(PlotType == PLOT_TRK);
-#endif
+    TimeScroll->setEnabled(data && MenuShowTrack->isChecked());
 
     if (!MenuShowTrack->isChecked()) {
         MenuFixHoriz->setEnabled(false);
@@ -2484,11 +2444,7 @@ void Plot::UpdateEnable(void)
     MenuSkyImg->setEnabled(SkyImageI.height() > 0);
     MenuSrcSol->setEnabled(SolFiles[sel].count() > 0);
     MenuSrcObs->setEnabled(ObsFiles.count() > 0);
-    MenuQcObs->setEnabled(ObsFiles.count() > 0);
-    int n = 0;
-    for (int i = 0; i < MAXMAPLAYER; i++)
-        if (Gis.data[i]) n++;
-    MenuMapLayer->setEnabled(n > 0);
+    MenuMapLayer->setEnabled(true);
 
     MenuShowSkyplot->setEnabled(MenuShowSkyplot->isVisible());
 
@@ -2497,7 +2453,6 @@ void Plot::UpdateEnable(void)
     BtnShowGrid->setVisible(PlotType==PLOT_TRK);
     MenuAnimStart->setEnabled(!ConnectState && BtnAnimate->isEnabled() && !BtnAnimate->isChecked());
     MenuAnimStop->setEnabled(!ConnectState && BtnAnimate->isEnabled() && BtnAnimate->isChecked());
-    TimeScroll->setEnabled(data && MenuShowTrack->isChecked());
 
     MenuOpenSol1->setEnabled(!ConnectState);
     MenuOpenSol2->setEnabled(!ConnectState);
@@ -2509,10 +2464,9 @@ void Plot::UpdateEnable(void)
     MenuOpenElevMask->setEnabled(!ConnectState);
     MenuReload->setEnabled(!ConnectState);
 
-    MenuReload->setVisible(!ConnectState);
-    StrStatus1->setVisible(ConnectState);
-    StrStatus2->setVisible(ConnectState);
-    Panel12->setVisible(!ConnectState);
+    MenuReload->setEnabled(!ConnectState);
+    StrStatus->setEnabled(ConnectState);
+    BtnFreq->setVisible(FrqType->isVisible()||ObsType->isVisible()||ObsType2->isVisible());
 }
 // linear-fitting of positions ----------------------------------------------
 int Plot::FitPos(gtime_t *time, double *opos, double *ovel)
@@ -2600,8 +2554,7 @@ void Plot::SetRange(int all, double range)
         GraphT->SetScale(MAX(xs, ys), MAX(xs, ys));
         if (norm(OPos, 3) > 0.0) {
             ecef2pos(OPos, pos);
-            googleEarthView->SetView(pos[0] * R2D, pos[1] * R2D, 0.0, 0.0);
-            googleMapView->SetView(pos[0] * R2D, pos[1] * R2D, 13);
+            mapView->SetCent(pos[0] * R2D, pos[1] * R2D);
         }
     }
     if (PLOT_SOLP <= PlotType && PlotType <= PLOT_SOLA) {
@@ -2620,8 +2573,8 @@ void Plot::SetRange(int all, double range)
         GraphG[2]->SetLim(tl, zl);
     } else if (PlotType < PLOT_SNR) {
         GraphG[0]->GetLim(tl, xp);
-        xl[0] = -10.0; xl[1] = 10.0;
-        yl[0] = -0.1; yl[1] = 0.1;
+        xl[0] = -MaxMP; xl[1] = MaxMP;
+        yl[0] = -MaxMP/100.0; yl[1] = MaxMP/100.0;
         zl[0] = 0.0; zl[1] = 90.0;
         GraphG[0]->SetLim(tl, xl);
         GraphG[1]->SetLim(tl, yl);
@@ -2732,7 +2685,6 @@ void Plot::FitRange(int all)
         if (lats[0] <= lats[1] && lons[0] <= lons[1]) {
             lat = (lats[0] + lats[1]) / 2.0;
             lon = (lons[0] + lons[1]) / 2.0;
-            googleEarthView->SetView(lat, lon, 0.0, 0.0);
         }
     }
 }
@@ -2754,12 +2706,10 @@ void Plot::SetTrkCent(double lat, double lon)
 void Plot::LoadOpt(void)
 {
     QSettings settings(IniFile, QSettings::IniFormat);
-    double range;
-    int i, geopts[12];
 
     trace(3, "LoadOpt\n");
 
-    PlotType = settings.value("plot/plottype", 0).toInt();
+//    PlotType = settings.value("plot/plottype", 0).toInt();
     TimeLabel = settings.value("plot/timelabel", 1).toInt();
     LatLonFmt = settings.value("plot/latlonfmt", 0).toInt();
     AutoScale = settings.value("plot/autoscale", 1).toInt();
@@ -2775,7 +2725,7 @@ void Plot::LoadOpt(void)
     ShowEph = settings.value("plot/showeph", 0).toInt();
     PlotStyle = settings.value("plot/plotstyle", 0).toInt();
     MarkSize = settings.value("plot/marksize", 2).toInt();
-    NavSys = settings.value("plot/navsys", SYS_GPS).toInt();
+    NavSys = settings.value("plot/navsys", SYS_ALL).toInt();
     AnimCycle = settings.value("plot/animcycle", 10).toInt();
     RefCycle = settings.value("plot/refcycle", 100).toInt();
     HideLowSat = settings.value("plot/hidelowsat", 0).toInt();
@@ -2820,15 +2770,26 @@ void Plot::LoadOpt(void)
     MapColor[7] = settings.value("plot/mapcolor8", QColor(0xf0, 0xf0, 0xf0)).value<QColor>();
     MapColor[8] = settings.value("plot/mapcolor9", QColor(0xf0, 0xf0, 0xf0)).value<QColor>();
     MapColor[9] = settings.value("plot/mapcolor10", QColor(0xf0, 0xf0, 0xf0)).value<QColor>();
-    MapColor[10] = settings.value("plot/mapcolor11", QColor(0xf0, 0xf0, 0xf0)).value<QColor>();
-    MapColor[11] = settings.value("plot/mapcolor12", QColor(0xf0, 0xf0, 0xf0)).value<QColor>();
+    MapColor[10] = settings.value("plot/mapcolor11", QColor(Qt::white)).value<QColor>();
+    MapColor[11] = settings.value("plot/mapcolor12", QColor(Qt::white)).value<QColor>();
+    MapColorF[0] = settings.value("plot/mapcolorf1", QColor(Qt::white)).value<QColor>();
+    MapColorF[1] = settings.value("plot/mapcolorf2", QColor(Qt::white)).value<QColor>();
+    MapColorF[2] = settings.value("plot/mapcolorf3", QColor(Qt::white)).value<QColor>();
+    MapColorF[3] = settings.value("plot/mapcolorf4", QColor(Qt::white)).value<QColor>();
+    MapColorF[4] = settings.value("plot/mapcolorf5", QColor(Qt::white)).value<QColor>();
+    MapColorF[5] = settings.value("plot/mapcolorf6", QColor(Qt::white)).value<QColor>();
+    MapColorF[6] = settings.value("plot/mapcolorf7", QColor(Qt::white)).value<QColor>();
+    MapColorF[7] = settings.value("plot/mapcolorf8", QColor(Qt::white)).value<QColor>();
+    MapColorF[8] = settings.value("plot/mapcolorf9", QColor(Qt::white)).value<QColor>();
+    MapColorF[9] = settings.value("plot/mapcolorf10", QColor(Qt::white)).value<QColor>();
+    MapColorF[10] = settings.value("plot/mapcolorf11", QColor(Qt::white)).value<QColor>();
+    MapColorF[11] = settings.value("plot/mapcolorf12", QColor(Qt::white)).value<QColor>();
     CColor[0] = settings.value("plot/color1", QColor(Qt::white)).value<QColor>();
     CColor[1] = settings.value("plot/color2", QColor(0xc0, 0xc0, 0xc0)).value<QColor>();
     CColor[2] = settings.value("plot/color3", QColor(Qt::black)).value<QColor>();
     CColor[3] = settings.value("plot/color4", QColor(0xc0, 0xc0, 0xc0)).value<QColor>();
 
     plotOptDialog->refDialog->StaPosFile = settings.value("plot/staposfile", "").toString();
-    plotOptDialog->refDialog->Format = settings.value("plot/staposformat", 0).toInt();
 
     ElMask = settings.value("plot/elmask", 0.0).toDouble();
     MaxDop = settings.value("plot/maxdop", 30.0).toDouble();
@@ -2839,61 +2800,79 @@ void Plot::LoadOpt(void)
     OOPos[0] = settings.value("plot/oopos1", 0).toDouble();
     OOPos[1] = settings.value("plot/oopos2", 0).toDouble();
     OOPos[2] = settings.value("plot/oopos3", 0).toDouble();
-    QcCmd = settings.value("plot/qccmd", "teqc +qc +sym +l -rep -plot").toString();
+    ShapeFile = settings.value("plot/shapefile", "").toString();
     TLEFile = settings.value("plot/tlefile", "").toString();
     TLESatFile = settings.value("plot/tlesatfile", "").toString();
 
-    Font.setFamily(settings.value("plot/fontname", "Tahoma").toString());
-    Font.setPointSize(settings.value("plot/fontsize", 8).toInt());
+    FontName = settings.value("plot/fontname","Tahoma").toString();
+    FontSize = settings.value("plot/fontsize",8).toInt();
+    Font.setFamily(FontName);
+    Font.setPointSize(FontSize);
 
     RnxOpts = settings.value("plot/rnxopts", "").toString();
-    ApiKey  = settings.value ("plot/apikey" ,"").toString();
 
-    for (i = 0; i < 11; i++)
-        geopts[i] = settings.value(QString("ge/geopts_%1").arg(i), 0).toInt();
-    googleEarthView->SetOpts(geopts);
-
-    for (i = 0; i < 2; i++) {
+    MapApi = settings.value("mapview/mapapi" , 0).toInt();
+    ApiKey = settings.value("mapview/apikey" ,"").toString();
+    MapStrs[0][0] = settings.value("mapview/mapstrs_0_0","OpenStreetMap").toString();
+    MapStrs[0][1] = settings.value("mapview/mapstrs_0_1","https://tile.openstreetmap.org/{z}/{x}/{y}.png").toString();
+    MapStrs[0][2] = settings.value("mapview/mapstrs_0_2","https://osm.org/copyright").toString();
+    for (int i=1;i<6;i++) for (int j=0;j<3;j++) {
+        MapStrs[i][j] = settings.value(QString("mapview/mapstrs_%1_%2").arg(i).arg(j),"").toString();
+    }
+    for (int i=0;i<2;i++) {
         StrCmds  [0][i] = settings.value(QString("str/strcmd1_%1").arg(i), "").toString();
         StrCmds  [1][i] = settings.value(QString("str/strcmd2_%1").arg(i), "").toString();
         StrCmdEna[0][i] = settings.value(QString("str/strcmdena1_%1").arg(i), 0).toInt();
         StrCmdEna[1][i] = settings.value(QString("str/strcmdena2_%1").arg(i), 0).toInt();
     }
-    for (i = 0; i < 3; i++) {
+    for (int i = 0; i < 3; i++) {
         StrPaths[0][i] = settings.value(QString("str/strpath1_%1").arg(i), "").toString();
         StrPaths[1][i] = settings.value(QString("str/strpath2_%1").arg(i), "").toString();
     }
-    for (i = 0; i < 10; i++) {
+    for (int i = 0; i < 10; i++) {
         StrHistory [i] = settings.value(QString("str/strhistry_%1").arg(i), "").toString();
-        StrMntpHist[i] = settings.value(QString("str/strmntphist_%1").arg(i), "").toString();
     }
 
     TextViewer::Color1 = settings.value("viewer/color1", QColor(Qt::black)).value<QColor>();
     TextViewer::Color2 = settings.value("viewer/color2", QColor(Qt::white)).value<QColor>();
-    TextViewer::FontD.setFamily(settings.value("viewer/fontname", "Courier New").toString());
+    TextViewer::FontD.setFamily(settings.value("viewer/fontname", "Consolas").toString());
     TextViewer::FontD.setPointSize(settings.value("viewer/fontsize", 9).toInt());
 
     MenuBrowse->setChecked(settings.value("solbrows/show",       0).toBool());
     BrowseSplitter->restoreState(settings.value("solbrows/split1",   100).toByteArray());
     Dir  =settings.value("solbrows/dir",  "C:\\").toString();
 
-    for (i = 0; i < RangeList->count(); i++) {
-        bool okay;
-        range = RangeList->item(i)->text().toDouble(&okay);
+    for (int i = 0; i < RangeList->count(); i++) {
+        QString s=RangeList->item(i)->text();
+        double range;
+        QString unit;
+        bool ok;
 
-        if (okay && qFuzzyCompare(range, YRange))
-            RangeList->item(i)->setSelected(true);
+        QStringList tokens = s.split(' ');
+        if (tokens.size()==2) {
+            range = tokens.at(0).toInt(&ok);
+            unit = tokens.at(1);
+            if (ok) {
+                if (unit == "cm") range*=0.01;
+                else if (unit == "km") range*=1000.0;
+                if (range==YRange) {
+                    RangeList->item(i)->setSelected(true);
+                    break;
+                }
+
+            }
+        }
+
     }
 }
 // save options to ini-file -------------------------------------------------
 void Plot::SaveOpt(void)
 {
     QSettings settings(IniFile, QSettings::IniFormat);
-    int i, geopts[12];
 
     trace(3, "SaveOpt\n");
 
-    settings.setValue("plot/plottype", PlotType);
+    //settings.setValue("plot/plottype", PlotType);
     settings.setValue("plot/timelabel", TimeLabel);
     settings.setValue("plot/latlonfmt", LatLonFmt);
     settings.setValue("plot/autoscale", AutoScale);
@@ -2956,13 +2935,24 @@ void Plot::SaveOpt(void)
     settings.setValue("plot/mapcolor10", MapColor[9]);
     settings.setValue("plot/mapcolor11", MapColor[10]);
     settings.setValue("plot/mapcolor12", MapColor[11]);
+    settings.setValue("plot/mapcolorf1", MapColorF[0]);
+    settings.setValue("plot/mapcolorf2", MapColorF[1]);
+    settings.setValue("plot/mapcolorf3", MapColorF[2]);
+    settings.setValue("plot/mapcolorf4", MapColorF[3]);
+    settings.setValue("plot/mapcolorf5", MapColorF[4]);
+    settings.setValue("plot/mapcolorf6", MapColorF[5]);
+    settings.setValue("plot/mapcolorf7", MapColorF[6]);
+    settings.setValue("plot/mapcolorf8", MapColorF[7]);
+    settings.setValue("plot/mapcolorf9", MapColorF[8]);
+    settings.setValue("plot/mapcolorf10", MapColorF[9]);
+    settings.setValue("plot/mapcolorf11", MapColorF[10]);
+    settings.setValue("plot/mapcolorf12", MapColorF[11]);
     settings.setValue("plot/color1", CColor[0]);
     settings.setValue("plot/color2", CColor[1]);
     settings.setValue("plot/color3", CColor[2]);
     settings.setValue("plot/color4", CColor[3]);
 
     settings.setValue("plot/staposfile", plotOptDialog->refDialog->StaPosFile);
-    settings.setValue("plot/staposformat", plotOptDialog->refDialog->Format);
 
     settings.setValue("plot/elmask", ElMask);
     settings.setValue("plot/maxdop", MaxDop);
@@ -2973,7 +2963,7 @@ void Plot::SaveOpt(void)
     settings.setValue("plot/oopos1", OOPos[0]);
     settings.setValue("plot/oopos2", OOPos[1]);
     settings.setValue("plot/oopos3", OOPos[2]);
-    settings.setValue("plot/qccmd", QcCmd);
+    settings.setValue("plot/shapefile", ShapeFile);
     settings.setValue("plot/tlefile", TLEFile);
     settings.setValue("plot/tlesatfile", TLESatFile);
 
@@ -2981,24 +2971,24 @@ void Plot::SaveOpt(void)
     settings.setValue("plot/fontsize", Font.pointSize());
 
     settings.setValue("plot/rnxopts", RnxOpts);
-    settings.setValue("plot/apikey", ApiKey);
+    settings.setValue("mapview/apikey", ApiKey);
+    settings.setValue("mapview/mapapi", MapApi);
+     for (int i=0;i<6;i++) for (int j=0;j<3;j++) {
+         settings.setValue(QString("mapview/mapstrs_%1_%2").arg(i).arg(j),MapStrs[i][j]);
+     }
 
-    googleEarthView->GetOpts(geopts);
-    for (i = 0; i < 11; i++)
-        settings.setValue(QString("gr/geopts_%1").arg(i), geopts[i]);
-    for (i = 0; i < 2; i++) {
+    for (int i = 0; i < 2; i++) {
         settings.setValue(QString("str/strcmd1_%1").arg(i), StrCmds  [0][i]);
         settings.setValue(QString("str/strcmd2_%1").arg(i), StrCmds  [1][i]);
         settings.setValue(QString("str/strcmdena1_%1").arg(i), StrCmdEna[0][i]);
         settings.setValue(QString("str/strcmdena2_%1").arg(i), StrCmdEna[1][i]);
     }
-    for (i = 0; i < 3; i++) {
+    for (int i = 0; i < 3; i++) {
         settings.setValue(QString("str/strpath1_%1").arg(i), StrPaths[0][i]);
         settings.setValue(QString("str/strpath2_%1").arg(i), StrPaths[1][i]);
     }
-    for (i = 0; i < 10; i++) {
+    for (int i = 0; i < 10; i++) {
         settings.setValue(QString("str/strhistry_%1").arg(i), StrHistory [i]);
-        settings.setValue(QString("str/strmntphist_%1").arg(i), StrMntpHist[i]);
     }
 
     settings.setValue("viewer/color1", TextViewer::Color1);
@@ -3066,5 +3056,10 @@ void Plot::FilterClick()
 
     fileModel->setNameFilters(filter.split(" "));
     DirSelector->setVisible(false);
+}
+//---------------------------------------------------------------------------
+void Plot::BtnFreqClick()
+{
+    freqDialog->exec();
 }
 //---------------------------------------------------------------------------

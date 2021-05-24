@@ -19,7 +19,7 @@ PntDialog::PntDialog(QWidget *parent)
     setupUi(this);
     QStringList labels;
 
-    labels << tr("Latitude (°)") << tr("Longitude (°)") << "Name";
+    labels << tr("Latitude (°)") << tr("Longitude (°)") << tr("Height (m)") << tr("Name");
 
     PntList->setColumnCount(3);
     PntList->setHorizontalHeaderLabels(labels);
@@ -39,10 +39,10 @@ void PntDialog::showEvent(QShowEvent *event)
 {
     if (event->spontaneous()) return;
 
-    int width[] = { 120, 120, 90 };
+    int width[] = { 90, 90, 80, 90 };
 
     FontScale = this->physicalDpiX();
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 4; i++)
         PntList->setColumnWidth(i, width[i] * FontScale / 96);
 }
 //---------------------------------------------------------------------------
@@ -59,7 +59,8 @@ void PntDialog::BtnAddClick()
     PntList->setRowCount(PntList->rowCount() + 1);
     PntList->setItem(PntList->rowCount() - 1, 0, new QTableWidgetItem(QString("%1").arg(pos[0] * R2D, 0, 'f', 9)));
     PntList->setItem(PntList->rowCount() - 1, 1, new QTableWidgetItem(QString("%1").arg(pos[1] * R2D, 0, 'f', 9)));
-    PntList->setItem(PntList->rowCount() - 1, 2, new QTableWidgetItem(QString("Point%1").arg(PntList->rowCount(), 2)));
+    PntList->setItem(PntList->rowCount() - 1, 2, new QTableWidgetItem(QString("%1").arg(pos[2])));
+    PntList->setItem(PntList->rowCount() - 1, 4, new QTableWidgetItem(QString("Point%1").arg(PntList->rowCount(), 2)));
     noUpdate = false;
 
     UpdatePoint();
@@ -108,8 +109,8 @@ void PntDialog::UpdatePoint()
         if (PntList->item(i, 2)->text() == "") continue;
         plot->PntPos[n][0] = PntList->item(i, 0)->text().toDouble();
         plot->PntPos[n][1] = PntList->item(i, 1)->text().toDouble();
-        plot->PntPos[n][2] = 0.0;
-        plot->PntName[n++] = PntList->item(i, 2)->text();
+        plot->PntPos[n][2] = PntList->item(i, 2)->text().toDouble();
+        plot->PntName[n++] = PntList->item(i, 3)->text();
     }
     plot->NWayPnt = n;
 
@@ -123,7 +124,8 @@ void PntDialog::SetPoint(void)
     for (int i = 0; i < plot->NWayPnt; i++) {
         PntList->setItem(i, 0, new QTableWidgetItem(QString::number(plot->PntPos[i][0], 'f', 9)));
         PntList->setItem(i, 1, new QTableWidgetItem(QString::number(plot->PntPos[i][1], 'f', 9)));
-        PntList->setItem(i, 2, new QTableWidgetItem(plot->PntName[i]));
+        PntList->setItem(i, 2, new QTableWidgetItem(QString::number(plot->PntPos[i][2], 'f', 4)));
+        PntList->setItem(i, 3, new QTableWidgetItem(plot->PntName[i]));
     }
     noUpdate = false;
 }

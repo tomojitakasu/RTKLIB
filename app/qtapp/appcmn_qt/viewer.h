@@ -2,7 +2,7 @@
 #ifndef viewerH
 #define viewerH
 //---------------------------------------------------------------------------
-#define MAXLINE		20000
+#define MAXLINE		100000
 
 #include <QDialog>
 #include "ui_viewer.h"
@@ -28,9 +28,7 @@ public slots:
 
 private:
     QString File;
-    QString TextStr;
 	
-    void ReadText(const QString &file);
     void UpdateText(void);
 
 public:

@@ -14,15 +14,11 @@
 
 #include "rtklib.h"
 #include "plotmain.h"
-#include "mapdlg.h"
+#include "mapoptdlg.h"
 #include "pntdlg.h"
-#include "geview.h"
 
 #define MAX_SIMOBS   16384              // max genrated obs epochs
 #define MAX_SKYIMG_R 2048               // max size of resampled sky image
-
-#define THRES_SLIP  2.0                 // threshold of cycle-slip
-
 
 static char path_str[MAXNFILE][1024];
 static const char *XMLNS = "http://www.topografix.com/GPX/1/1";
@@ -32,7 +28,7 @@ void Plot::ReadSol(const QStringList &files, int sel)
 {
     solbuf_t sol;
     gtime_t ts, te;
-    double tint, ep[6];
+    double tint;
     int i, n = 0;
     char *paths[MAXNFILE];
 
@@ -47,17 +43,6 @@ void Plot::ReadSol(const QStringList &files, int sel)
     if (files.count() <= 0) return;
 
     ReadWaitStart();
-
-    QFileInfo fi(files.at(0));
-    QDateTime created = fi.created();
-
-    ep[0]=created.date().year();
-    ep[1]=created.date().month();
-    ep[2]=created.date().day();
-    ep[3]=created.time().hour();
-    ep[4]=created.time().minute();
-    ep[5]=created.time().second();
-    sol.time=utc2gpst(epoch2time(ep));
 
     for (i = 0; i < files.count() && n < MAXNFILE; i++)
         strcpy(paths[n++], qPrintable(files.at(i)));
@@ -94,6 +79,7 @@ void Plot::ReadSol(const QStringList &files, int sel)
         UpdateOrigin();
     }
     SolIndex[0] = SolIndex[1] = ObsIndex = 0;
+    TimeScroll->setValue(0);
 
     GEDataState[sel] = 0;
 
@@ -258,6 +244,21 @@ int Plot::ReadObsRnx(const QStringList &files, obs_t *obs, nav_t *nav,
             // read brdc navigation data
             memcpy(q + 1, "BRDC", 4);
             strcpy(p + 3, "N"); readrnxt(navfile, 1, ts, te, tint, opt, NULL, nav, NULL);
+        } else if (!strcmp(p-1,"O.rnx" )&&(p=strrchr(navfile,'_'))) { /* rinex 3 */
+            *p='\0';
+            if (!(p=strrchr(navfile,'_'))) continue;
+            *p='\0';
+            if (!(p=strrchr(navfile,'_'))) continue;
+            strcpy(p,"_*_*N.rnx");
+
+            n=nav->n;
+            readrnxt(navfile,1,ts,te,tint,opt,NULL,nav,NULL);
+
+            if (nav->n>n||!(q=strrchr(navfile,'\\'))) continue;
+
+            // read brdc navigation data
+            memcpy(q+1,"BRDC",4);
+            readrnxt(navfile,1,ts,te,tint,opt,NULL,nav,NULL);
         }
     }
     if (obs->n <= 0) {
@@ -461,7 +462,7 @@ void Plot::ReadMapData(const QString &file)
 
     BtnShowImg->setChecked(true);
 
-    mapAreaDialog->UpdateField();
+    mapOptDialog->UpdateField();
     UpdatePlot();
     UpdateOrigin();
     UpdateEnable();
@@ -482,7 +483,7 @@ void Plot::ReadMapData(const QString &file)
                static_cast<quint8>(a1 * qRed(p1) + a2 * qGreen(p2) + a3 * qGreen(p1) + a4 * qGreen(p2)), \
                static_cast<quint8>(a1 * qRed(p1) + a2 * qBlue(p2) + a3 * qBlue(p1) + a4 * qBlue(p2))); \
 }
-// rotate coordintates roll-pitch-yaw ---------------------------------------
+// rotate coordinates roll-pitch-yaw ---------------------------------------
 static void RPY(const double *rpy, double *R)
 {
     double sr = sin(-rpy[0] * D2R), cr = cos(-rpy[0] * D2R);
@@ -745,18 +746,16 @@ void Plot::ReadShapeFile(const QStringList &files)
     UpdatePlot();
     UpdateEnable();
 }
-// read waypoint ------------------------------------------------------------
-void Plot::ReadWaypoint(const QString &file)
+// read GPX file ------------------------------------------------------------
+void Plot::ReadGpxFile(const QString &file)
 {
+    QString label1("<ogr:?"),label2("<ogr:_?");
     QFile fp(file);
     QByteArray buff;
     QString name;
     double pos[3] = { 0 };
 
     if (!fp.open(QIODevice::ReadOnly | QIODevice::Text)) return;
-
-    ReadWaitStart();
-    ShowMsg(tr("reading waypoint... %1").arg(file));
 
     NWayPnt = 0;
 
@@ -797,8 +796,76 @@ void Plot::ReadWaypoint(const QString &file)
 
     pntDialog->SetPoint();
 }
-// save waypoint ------------------------------------------------------------
-void Plot::SaveWaypoint(const QString &file)
+// read pos file ------------------------------------------------------------
+void Plot::ReadPosFile(const QString &file)
+{
+    QFile fp(file);
+    QString id, name;
+    double pos[3]={0};
+    int n,p;
+    bool ok;
+
+    if (!fp.open(QIODevice::ReadOnly | QIODevice::Text))
+            return;
+
+    NWayPnt=0;
+
+    while (!fp.atEnd() && NWayPnt<MAXWAYPNT) {
+        QByteArray line = fp.readLine();
+
+        // remove comments
+        if ((p=line.indexOf("#"))!=-1) line = line.left(p);
+
+        QList<QByteArray> tokens = line.split(' ');
+
+        n = tokens.size();
+
+        if (n<4) continue;
+
+        pos[0]=tokens.at(0).toDouble(&ok);
+        if (!ok) continue;
+        pos[1]=tokens.at(1).toDouble(&ok);
+        if (!ok) continue;
+        pos[2]=tokens.at(2).toDouble(&ok);
+        if (!ok) continue;
+        id = tokens.at(3);
+        if (n>4)
+            name = tokens.at(4);
+
+        if (n>=4) {
+            PntPos[NWayPnt][0]=pos[0];
+            PntPos[NWayPnt][1]=pos[1];
+            PntPos[NWayPnt][2]=pos[2];
+            PntName[NWayPnt++]=(n>=5)?name:id;
+        }
+    }
+    fp.close();
+}
+// read waypoint ------------------------------------------------------------
+void Plot::ReadWaypoint(const QString &file)
+{
+    int type=0;
+    int p;
+
+    if ((p=file.indexOf('.'))&& (file.right(p)==".gpx")) type=1;
+
+    ReadWaitStart();
+    ShowMsg(QString("reading waypoint... %1").arg(file));
+
+    if (type) ReadGpxFile(file);
+    else      ReadPosFile(file);
+
+    ReadWaitEnd();
+    ShowMsg("");
+
+    BtnShowMap->setChecked(true);
+
+    UpdatePlot();
+    UpdateEnable();
+    pntDialog->SetPoint();
+}
+// save GPX file ------------------------------------------------------------
+void Plot::SaveGpxFile(const QString &file)
 {
     QFile fp(file);
     int i;
@@ -826,6 +893,41 @@ void Plot::SaveWaypoint(const QString &file)
     stream.writeEndElement();
 
     stream.writeEndDocument();
+}
+// save pos file ------------------------------------------------------------
+void Plot::SavePosFile(const QString &file)
+{
+    QFile fp(file);
+    int i;
+
+    if (!fp.open(QIODevice::WriteOnly | QIODevice::Text)) return;
+    QTextStream stream(&fp);
+
+    stream << QString("# WAYPOINTS by RTKLIB %1\n").arg(VER_RTKLIB);
+
+    for (i=0;i<NWayPnt;i++) {
+        QString str(PntName[i]);
+        stream << QString("%13.9f %14.9f %10.4f %s\n").arg(PntPos[i][0],13,'f',9).arg(PntPos[i][1],14,'f',9).
+                arg(PntPos[i][2],10,'f',4).arg(str);
+    }
+    fp.close();
+}
+// save waypoint ------------------------------------------------------------
+void Plot::SaveWaypoint(const QString &file)
+{
+    int type=0;
+    int p;
+
+    if ((p=file.indexOf('.'))&& (file.right(p)==".gpx")) type=1;
+
+    ReadWaitStart();
+    ShowMsg(QString("saving waypoint... %1").arg(file));
+
+    if (type) SaveGpxFile(file);
+    else      SavePosFile(file);
+
+    ReadWaitEnd();
+    ShowMsg("");
 }
 // read station position data -----------------------------------------------
 void Plot::ReadStaPos(const QString &file, const QString &sta,
@@ -950,7 +1052,7 @@ void Plot::SaveSnrMp(const QString &file)
             if (Obs.data[j].sat != i + 1) continue;
 
             for (k = 0; k < NFREQ + NEXOBS; k++)
-                if (strstr(code2obs(Obs.data[j].code[k], NULL), code)) break;
+                if (strstr(code2obs(Obs.data[j].code[k]), code)) break;
             if (k >= NFREQ + NEXOBS) continue;
 
             time = Obs.data[j].time;
@@ -966,7 +1068,7 @@ void Plot::SaveSnrMp(const QString &file)
                 time2str(timeadd(gpst2utc(time), 9 * 3600.0), tstr, 1);
             }
             data = QString("%1 %2 %3 %4 %5 %6f\n").arg(tstr).arg(sat, 6).arg(Az[j] * R2D, 8, 'f', 1)
-                   .arg(El[j] * R2D, 8, 'f', 1).arg(Obs.data[j].SNR[k] * 0.25, 9, 'f', 2).arg(!Mp[k] ? 0.0 : Mp[k][j], 10, 'f', 4);
+                   .arg(El[j] * R2D, 8, 'f', 1).arg(Obs.data[j].SNR[k] * SNR_UNIT, 9, 'f', 2).arg(!Mp[k] ? 0.0 : Mp[k][j], 10, 'f', 4);
             fp.write(data.toLatin1());
         }
     }
@@ -1032,7 +1134,7 @@ void Plot::Connect(void)
 
         if (StrCmdEna[i][0]) {
             strcpy(cmd, qPrintable(StrCmds[i][0]));
-            strwrite(Stream + i, (unsigned char *)cmd, strlen(cmd));
+            strwrite(Stream + i, (uint8_t *)cmd, strlen(cmd));
         }
         ConnectState = 1;
     }
@@ -1047,6 +1149,7 @@ void Plot::Connect(void)
     BtnSol12->setChecked(false);
     BtnShowTrack->setChecked(true);
     BtnFixHoriz->setChecked(true);
+    BtnFixCent->setChecked(true);
 
     BtnReload->setVisible(false);
     StrStatus->setVisible(true);
@@ -1070,7 +1173,7 @@ void Plot::Disconnect(void)
     for (i = 0; i < 2; i++) {
         if (StrCmdEna[i][1]) {
             strcpy(cmd, qPrintable(StrCmds[i][1]));
-            strwrite(Stream + i, (unsigned char *)cmd, strlen(cmd));
+            strwrite(Stream + i, (uint8_t *)cmd, strlen(cmd));
         }
         strclose(Stream + i);
     }
@@ -1105,15 +1208,10 @@ int Plot::CheckObs(const QString &file)
 void Plot::UpdateObs(int nobs)
 {
     prcopt_t opt = prcopt_default;
-    gtime_t time;
-    sol_t sol;
-    double pos[3], rr[3], e[3], azel[MAXOBS * 2] = { 0 }, rs[6], dts[2], var;
-    int i, j, k, svh, per, per_ = -1;
-    char msg[128], name[16];
+    double rr[3]={0};
+    int per,per_=-1;
 
     trace(3, "UpdateObs\n");
-
-    memset(&sol, 0, sizeof(sol_t));
 
     delete [] IndexObs; IndexObs = NULL;
     delete [] Az; Az = NULL;
@@ -1125,49 +1223,56 @@ void Plot::UpdateObs(int nobs)
     Az = new double[Obs.n];
     El = new double[Obs.n];
 
-    opt.err[0] = 900.0;
-
     ReadWaitStart();
     ShowLegend(NULL);
 
-    for (i = 0; i < Obs.n; i = j) {
-        time = Obs.data[i].time;
+    for (int i = 0, j = 0; i < Obs.n; i = j) {
+        gtime_t time = Obs.data[i].time;
+        double pos[3],azel[2];
+        int svh;
+
         for (j = i; j < Obs.n; j++)
             if (timediff(Obs.data[j].time, time) > TTOL) break;
         IndexObs[NObs++] = i;
 
-        for (k = 0; k < j - i; k++)
-            azel[k * 2] = azel[1 + k * 2] = 0.0;
-        if (RcvPos == 0) {
+        if (RcvPos==0) { // single point position
+            sol_t sol;
+            memset(&sol, 1, sizeof(sol_t));
+            char msg[128];
+
+            opt.err[0]=900.0;
             pntpos(Obs.data + i, j - i, &Nav, &opt, &sol, azel, NULL, msg);
             matcpy(rr, sol.rr, 3, 1);
             ecef2pos(rr, pos);
-        } else {
-            if (RcvPos == 1) { // lat/lon/height
-                for (k = 0; k < 3; k++) pos[k] = OOPos[k];
-                pos2ecef(pos, rr);
-            } else { // rinex header position
-                for (k = 0; k < 3; k++) rr[k] = Sta.pos[k];
-                ecef2pos(rr, pos);
-            }
-            for (k = 0; k < j - i; k++) {
-                azel[k * 2] = azel[1 + k * 2] = 0.0;
-                if (!satpos(time, time, Obs.data[i + k].sat, EPHOPT_BRDC, &Nav, rs, dts,
-                        &var, &svh)) continue;
-                if (geodist(rs, rr, e) > 0.0) satazel(pos, e, azel + k * 2);
-            }
+        } else if (RcvPos==1) { // lat/lon/height
+            matcpy(pos,OOPos,3,1);
+            pos2ecef(pos, rr);
+        } else { // RINEX header position
+            matcpy(rr,Sta.pos,3,1);
+            ecef2pos(rr, pos);
         }
-        // satellite azel by tle data
-        for (k = 0; k < j - i; k++) {
-            if (azel[k * 2] != 0.0 || azel[1 + k * 2] != 0.0) continue;
-            satno2id(Obs.data[i + k].sat, name);
-            if (!tle_pos(time, name, "", "", &TLEData, NULL, rs)) continue;
-            if (geodist(rs, rr, e) > 0.0) satazel(pos, e, azel + k * 2);
-        }
-        for (k = 0; k < j - i; k++) {
-            Az[i + k] = azel[k * 2];
-            El[i + k] = azel[1 + k * 2];
-            if (Az[i + k] < 0.0) Az[i + k] += 2.0 * PI;
+        for (int k = 0; k < j - i; k++) {
+            double e[3],rs[6],dts[2],var;
+            int sat=Obs.data[i+k].sat;
+            if (SimObs) {
+                char name[16];
+                satno2id(sat,name);
+                if (!tle_pos(time,name,"","",&TLEData,NULL,rs)) continue;
+            }
+            else {
+                if (!satpos(time,time,sat,EPHOPT_BRDC,&Nav,rs,dts,&var,&svh)) {
+                    continue;
+                }
+            }
+            if (geodist(rs,rr,e)>0.0) {
+                satazel(pos,e,azel);
+                if (azel[0]<0.0) azel[0]+=2.0*PI;
+            }
+            else {
+                azel[0]=azel[1]=0.0;
+            }
+            Az[i+k]=azel[0];
+            El[i+k]=azel[1];
         }
         per = (i + 1) * 100 / Obs.n;
         if (per != per_) {
@@ -1185,8 +1290,8 @@ void Plot::UpdateObs(int nobs)
 void Plot::UpdateMp(void)
 {
     obsd_t *data;
-    double lam1, lam2, I, C, B;
-    int i, j, k, f1, f2, sat, sys, per, per_ = -1, n;
+    double freq1,freq2,freq,I,B;
+    int i, j, k, m, n, sat, per, per_ = -1;
 
     trace(3, "UpdateMp\n");
 
@@ -1195,74 +1300,52 @@ void Plot::UpdateMp(void)
     }
     if (Obs.n <= 0) return;
 
-    for (i = 0; i < NFREQ + NEXOBS; i++)
+    for (i = 0; i < NFREQ + NEXOBS; i++) {
         Mp[i] = new double[Obs.n];
+        for (j=0;j<Obs.n;j++) Mp[i][j]=0.0;
+    }
     ReadWaitStart();
     ShowLegend(NULL);
 
     for (i = 0; i < Obs.n; i++) {
         data = Obs.data + i;
-        sys = satsys(data->sat, NULL);
+        freq1=sat2freq(data->sat,data->code[0],&Nav);
+        freq2=sat2freq(data->sat,data->code[1],&Nav);
+        if (data->L[0]==0.0||data->L[1]==0.0||freq1==0.0||freq2==0.0) continue;
+        I=-CLIGHT*(data->L[0]/freq1-data->L[1]/freq2)/(1.0-SQR(freq1/freq2));
 
         for (j = 0; j < NFREQ + NEXOBS; j++) {
-            Mp[j][i] = 0.0;
+            freq=sat2freq(data->sat,data->code[j],&Nav);
+            if (data->P[j]==0.0||data->L[j]==0.0||freq==0.0) continue;
+            Mp[j][i]=data->P[j]-CLIGHT*data->L[j]/freq-2.0*SQR(freq1/freq)*I;
 
-            code2obs(data->code[j], &f1);
-
-            if (sys == SYS_CMP) {
-                if (f1 == 5) f1 = 2;                    /* B2 */
-                else if (f1 == 4) f1 = 3;               /* B3 */
-            }
-            if (sys == SYS_GAL) f2 = f1 == 1 ? 3 : 1;       /* E1/E5a */
-            else if (sys == SYS_SBS) f2 = f1 == 1 ? 3 : 1;  /* L1/L5 */
-            else if (sys == SYS_CMP) f2 = f1 == 1 ? 2 : 1;  /* B1/B2 */
-            else f2 = f1 == 1 ? 2 : 1;                      /* L1/L2 */
-
-            lam1 = satwavelen(data->sat, f1 - 1, &Nav);
-            lam2 = satwavelen(data->sat, f2 - 1, &Nav);
-            if (lam1 == 0.0 || lam2 == 0.0) continue;
-
-            if (data->P[j] != 0.0 && data->L[j] != 0.0 && data->L[f2 - 1] != 0.0) {
-                C = SQR(lam1) / (SQR(lam1) - SQR(lam2));
-                I = lam1 * data->L[j] - lam2 * data->L[f2 - 1];
-                Mp[j][i] = data->P[j] - lam1 * data->L[j] + 2.0 * C * I;
-            }
         }
     }
-    for (sat = 1; sat <= MAXSAT; sat++) for (i = 0; i < NFREQ + NEXOBS; i++) {
-            sys = satsys(sat, NULL);
-
-            for (j = k = n = 0, B = 0.0; j < Obs.n; j++) {
-                if (Obs.data[j].sat != sat) continue;
-
-                code2obs(Obs.data[j].code[i], &f1);
-
-                if (sys == SYS_CMP) {
-                    if (f1 == 5) f1 = 2;            /* B2 */
-                    else if (f1 == 4) f1 = 3;       /* B3 */
+    for (sat=1;sat<=MAXSAT;sat++) {
+        for (j=0;j<NFREQ+NEXOBS;j++) {
+            for (i=n=m=0,B=0.0;i<Obs.n;i++) {
+                data=Obs.data+i;
+                if (data->sat!=sat) continue;
+                if ((data->LLI[j]&1)||(data->LLI[0]&1)||(data->LLI[1]&1)||
+                    fabs(Mp[j][i]-B)>5.0) {
+                    for (k=m;k<i;k++) {
+                        if (Obs.data[k].sat==sat&&Mp[j][k]!=0.0) Mp[j][k]-=B;
+                    }
+                    n=0; m=i; B=0.0;
                 }
-                if (sys == SYS_GAL) f2 = f1 == 1 ? 3 : 1;
-                else if (sys == SYS_CMP) f2 = f1 == 1 ? 2 : 1;
-                else f2 = f1 == 1 ? 2 : 1;
-
-                if ((Obs.data[j].LLI[i] & 1) || (Obs.data[j].LLI[f2 - 1] & 1) ||
-                    fabs(Mp[i][j] - B) > THRES_SLIP) {
-                    for (; k < j; k++) if (Obs.data[k].sat == sat) Mp[i][k] -= B;
-                    B = Mp[i][j]; n = 1; k = j;
-                } else {
-                    if (n == 0) k = j;
-                    B += (Mp[i][j] - B) / ++n;
-                }
+                if (Mp[j][i]!=0.0) B+=(Mp[j][i]-B)/++n;
             }
-            if (n > 0)
-                for (; k < j; k++) if (Obs.data[k].sat == sat) Mp[i][k] -= B;
-            per = sat * 100 / MAXSAT;
-            if (per != per_) {
-                ShowMsg(tr("updating multipath... (%1%)").arg(per));
-                per_ = per;
-                qApp->processEvents();
+            for (k=m;k<Obs.n;k++) {
+               if (Obs.data[k].sat==sat&&Mp[j][k]!=0.0) Mp[j][k]-=B;
             }
         }
+        per = sat * 100 / MAXSAT;
+        if (per != per_) {
+            ShowMsg(tr("updating multipath... (%1%)").arg(per));
+            per_ = per;
+            qApp->processEvents();
+        }
+    }
     ReadWaitEnd();
 }
 // set connect path ---------------------------------------------------------
@@ -1291,6 +1374,7 @@ void Plot::ConnectPath(const QString &path, int ch)
     BtnShowTrack->setChecked(true);
     BtnFixHoriz->setChecked(true);
     BtnFixVert->setChecked(true);
+    BtnFixCent->setChecked(true);
 }
 // clear obs data --------------------------------------------------------------
 void Plot::ClearObs(void)
@@ -1363,9 +1447,11 @@ void Plot::Clear(void)
         initsolbuf(SolData, 1, RtBuffSize + 1);
         initsolbuf(SolData + 1, 1, RtBuffSize + 1);
     }
-    googleEarthView->Clear();
 
-    for (i = 0; i <= 360; i++) ElMaskData[i] = 0.0;
+    for (i=0;i<=360;i++) ElMaskData[i]=0.0;
+
+    NWayPnt=0;
+    SelWayPnt=-1;
 
     UpdateTime();
     UpdatePlot();

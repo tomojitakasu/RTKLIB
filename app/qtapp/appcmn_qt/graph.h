@@ -60,8 +60,10 @@ public:
         void DrawCircle(QPainter &c,const QPoint &p, const QColor &color, int rx, int ry, int style);
         void DrawCircle(QPainter &c,double x, double y, const QColor &color, double rx, double ry, int style);
         void DrawCircles(QPainter &c,int label);
-        void DrawText(QPainter &c,double x, double y, const QString &str, const QColor &color, int ha,int va, int rot);
+        void DrawText(QPainter &c,double x, double y, const QString &str, const QColor &color, int ha, int va, int rot);
+        void DrawText(QPainter &c,double x, double y, const QString &str, const QColor &color, int ha, int va, int rot, const QFont &font);
         void DrawText(QPainter &c,const QPoint &p, const QString &str, const QColor &color, int ha, int va,int rot);
+        void DrawText(QPainter &c,const QPoint &p, const QString &str, const QColor &color, int ha, int va,int rot, const QFont &font);
         void DrawText(QPainter &c,double x, double y, const QString &str, const QColor &color, const QColor &bgcolor,int ha, int va, int rot);
         void DrawText(QPainter &c,const QPoint &p, const QString &str, const QColor &color, const QColor &bgcolor,int ha, int va, int rot);
         void DrawPoly(QPainter &c,QPoint *p, int n, const QColor &color, int style);

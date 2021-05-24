@@ -3,7 +3,7 @@
 #define plotmainH
 //---------------------------------------------------------------------------
 #include <QTimer>
-#include <QTime>
+#include <QElapsedTimer>
 #include <QMainWindow>
 #include <QFileSystemModel>
 #include <QTreeView>
@@ -16,7 +16,7 @@
 
 #define MAXNFILE    256                 // max number of solution files
 #define MAXSTRBUFF  1024                // max length of stream buffer
-#define MAXWAYPNT   99                  // max number of waypoints
+#define MAXWAYPNT   4096                // max number of waypoints
 #define MAXMAPPATH  4096                // max number of map paths
 #define MAXMAPLAYER 12                  // max number of map layers
 
@@ -42,12 +42,13 @@ const QChar up2Char(0262);              // character code of ^2     (UTF-8)
 #define PLOT_SOLA   3                   // plot-type: accel-plot
 #define PLOT_NSAT   4                   // plot-type: number-of-satellite-plot
 #define PLOT_RES    5                   // plot-type: residual-plot
-#define PLOT_OBS    6                   // plot-type: observation-data-plot
-#define PLOT_SKY    7                   // plot-type: sky-plot
-#define PLOT_DOP    8                   // plot-type: dop-plot
-#define PLOT_SNR    9                   // plot-type: snr/mp-plot
-#define PLOT_SNRE   10                  // plot-type: snr/mp-el-plot
-#define PLOT_MPS    11                  // plot-type: mp-skyplot
+#define PLOT_RESE   6                   // plot-type: residual-elevation plot
+#define PLOT_OBS    7                   // plot-type: observation-data-plot
+#define PLOT_SKY    8                   // plot-type: sky-plot
+#define PLOT_DOP    9                   // plot-type: dop-plot
+#define PLOT_SNR    10                  // plot-type: snr/mp-plot
+#define PLOT_SNRE   11                  // plot-type: snr/mp-el-plot
+#define PLOT_MPS    12                  // plot-type: mp-skyplot
 
 #define ORG_STARTPOS 0                  // plot-origin: start position
 #define ORG_ENDPOS  1                   // plot-origin: end position
@@ -71,9 +72,9 @@ const QChar up2Char(0262);              // character code of ^2     (UTF-8)
 
 extern const QString PTypes[];
 
-class MapAreaDialog;
-class GoogleEarthView;
-class GoogleMapView;
+class FreqDialog;
+class MapOptDialog;
+class MapView;
 class SpanDialog;
 class ConnectDialog;
 class SkyImgDialog;
@@ -151,7 +152,6 @@ public slots:
     void MenuWaypointClick();
     void MenuSrcSolClick();
     void MenuSrcObsClick();
-    void MenuQcObsClick();
     void MenuCopyClick();
     void MenuOptionsClick();
 
@@ -159,6 +159,7 @@ public slots:
     void MenuStatusBarClick();
     void MenuMonitor1Click();
     void MenuMonitor2Click();
+    void MenuMapViewClick();
     void MenuCenterOriClick();
     void MenuFitHorizClick();
     void MenuFitVertClick();
@@ -183,6 +184,7 @@ public slots:
     void BtnOn3Click();
     void BtnRangeListClick();
     void BtnAnimateClick();
+    void BtnFreqClick();
 
     void PlotTypeSChange();
     void QFlagChange();
@@ -196,17 +198,13 @@ public slots:
 
     void MenuSaveDopClick();
     void MenuSaveImageClick();
-    void MenuGEClick();
     void MenuVisAnaClick();
     void MenuFixCentClick();
-    void MenuGMClick();
     void MenuSaveSnrMpClick();
     void MenuOpenSkyImageClick();
     void MenuSkyImgClick();
     void MenuShowSkyplotClick();
-    void MenuPlotGEClick();
-    void MenuPlotGMClick();
-    void MenuPlotGEGMClick();
+    void MenuPlotMapViewClick();
     void MenuMaxClick();
     void MenuSaveElMaskClick();
     void MenuMapLayerClick();
@@ -254,7 +252,7 @@ private:
     char StrBuff[1024];
     int NStrBuff;
     QTimer Timer;
-    QTime updateTime;
+    QElapsedTimer updateTime;
     
     gtime_t OEpoch;
     int FormWidth, FormHeight;
@@ -268,11 +266,11 @@ private:
     
     int Drag, Xn, Yn;
     double X0, Y0, Xc, Yc, Xs, Ys, Xcent, Xcent0;
-    unsigned int MouseDownTick;
+    uint32_t MouseDownTick;
     
     int GEState, GEDataState[2];
     double GEHeading;
-    
+
     void ReadSolStat(const QStringList &files, int sel);
     int ReadObsRnx(const QStringList &files, obs_t *obs, nav_t *nav, sta_t *sta);
     void ReadMapTag(const QString &file);
@@ -343,6 +341,7 @@ private:
     void DrawSolStat(QPainter &g,const TIMEPOS *pos, const QString &unit, int p);
     void DrawNsat(QPainter &g,int level);
     void DrawRes(QPainter &g,int level);
+    void DrawResE(QPainter &g,int level);
     void DrawPolyS(Graph *,QPainter &c, double *x, double *y, int n,
                            const QColor &color, int style);
     
@@ -383,9 +382,9 @@ private:
     void LoadOpt();
     void SaveOpt();
     
-    MapAreaDialog *mapAreaDialog;
-    GoogleEarthView *googleEarthView;
-    GoogleMapView *googleMapView;
+    FreqDialog * freqDialog;
+    MapOptDialog *mapOptDialog;
+    MapView *mapView;
     SpanDialog *spanDialog;
     ConnectDialog *connectDialog;
     SkyImgDialog *skyImgDialog;
@@ -402,7 +401,6 @@ public:
     QString MapImageFile;
     QString SkyImageFile;
     QString RnxOpts;
-    QString ApiKey;
     tle_t TLEData;
     QFont Font;
     gis_t Gis;
@@ -468,15 +466,21 @@ public:
     double OOPos[3];
     QColor MColor[2][8]; // {{mark1 0-7},{mark2 0-7}}
     QColor CColor[4];    // {background,grid,text,line}
-    QColor MapColor[MAXMAPLAYER]; // mapcolors
+    QColor MapColor[MAXMAPLAYER]; // mapcolors line
+    QColor MapColorF[MAXMAPLAYER]; // mapcolors fill
     int PlotStyle;
     int MarkSize;
     int AnimCycle;
     int RefCycle;
     int Trace;
-    QString QcCmd,QcOpt;
+    QString FontName;
+    int FontSize;
+    QString ShapeFile;
     QString TLEFile;
     QString TLESatFile;
+    // map view options
+    int MapApi;
+    QString MapStrs[6][3],ApiKey;
     
     QString Title;
     QString PntName[MAXWAYPNT];
@@ -486,24 +490,27 @@ public:
     double OPos[3], OVel[3];
     
     QString StrHistory [10];
-    QString StrMntpHist[10];
     
     void ReadSol(const QStringList &files, int sel);
     void ReadObs(const QStringList &files);
     void ReadNav(const QStringList &files);
     void ReadMapData(const QString &file);
     void ReadSkyData(const QString &file);
+    void ReadGpxFile(const QString &file);
+    void ReadPosFile(const QString &file);
     void ReadWaypoint(const QString &file);
+    void SaveGpxFile(const QString &file);
+    void SavePosFile(const QString &file);
     void SaveWaypoint(const QString &file);
     void ReadSkyTag(const QString &file);
     void UpdateSky(void);
+    void UpdatePlot (void);
+    void GenObsSlip(int *LLI);
     void ReadElMaskData(const QString &file);
     int GetCurrentPos(double *rr);
     int GetCenterPos(double *rr);
     void SetTrkCent(double lat, double lon);
-    void UpdatePlot(void);
-    void Refresh_GEView(void);
-    void Refresh_GMView(void);
+    void Refresh_MapView(void);
 
     explicit Plot(QWidget* parent=NULL);
     ~Plot();

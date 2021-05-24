@@ -9,8 +9,10 @@
 #include "plotmain.h"
 #include "graph.h"
 #include "refdlg.h"
-#include "geview.h"
-#include "gmview.h"
+#include "mapview.h"
+
+
+#define MS_FONT     "Consolas"      // monospace font name
 
 #define COL_ELMASK  Qt::red
 #define ATAN2(x, y)  ((x) * (x) + (y) * (y) > 1E-12 ? atan2(x, y) : 0.0)
@@ -60,13 +62,13 @@ void Plot::UpdateDisp(void)
             case  PLOT_SKY: DrawSky(c, level);   break;
             case  PLOT_DOP: DrawDop(c, level);   break;
             case  PLOT_RES: DrawRes(c, level);   break;
+            case  PLOT_RESE: DrawResE(c, level);   break;
             case  PLOT_SNR: DrawSnr(c, level);   break;
             case  PLOT_SNRE: DrawSnrE(c, level);   break;
             case  PLOT_MPS: DrawMpS(c, level);   break;
         }
 
         Disp->setPixmap(Buff);
-
     }
 
     Flush = 0;
@@ -74,7 +76,7 @@ void Plot::UpdateDisp(void)
 // draw track-plot ----------------------------------------------------------
 void Plot::DrawTrk(QPainter &c, int level)
 {
-    QString label, header;
+    QString header;
     TIMEPOS *pos, *pos1, *pos2, *vel;
     gtime_t time1 = { 0, 0 }, time2 = { 0, 0 };
     sol_t *sol;
@@ -225,13 +227,21 @@ void Plot::DrawTrk(QPainter &c, int level)
         delete pos1;
         delete pos2;
     }
-    if (BtnShowMap->isChecked()) {
+    if (level&& BtnShowMap->isChecked()) {
         for (i = 0; i < NWayPnt; i++) {
+            if (i==SelWayPnt) continue;
             pnt[0] = PntPos[i][0] * D2R;
             pnt[1] = PntPos[i][1] * D2R;
             pnt[2] = PntPos[i][2];
             pos2ecef(pnt, rr);
-            DrawTrkPos(c, rr, 0, i == SelWayPnt ? 12 : 8, CColor[2], PntName[i]);
+            DrawTrkPos(c, rr, 0, 8, CColor[2], PntName[i]);
+        }
+        if (SelWayPnt>=0) {
+            pnt[0]=PntPos[SelWayPnt][0]*D2R;
+            pnt[1]=PntPos[SelWayPnt][1]*D2R;
+            pnt[2]=PntPos[SelWayPnt][2];
+            pos2ecef(pnt, rr);
+            DrawTrkPos(c,rr, 0, 16, Qt::red, PntName[SelWayPnt]);
         }
     }
 
@@ -249,6 +259,7 @@ void Plot::DrawTrk(QPainter &c, int level)
     }
 
     if (ShowScale) {
+        QString label;
         GraphT->GetPos(p1, p2);
         GraphT->GetTick(xt, yt);
         GraphT->GetScale(sx, sy);
@@ -256,9 +267,9 @@ void Plot::DrawTrk(QPainter &c, int level)
         p2.ry() -= 25;
         DrawMark(GraphT, c, p2, 11, CColor[2], static_cast<int>(xt / sx + 0.5), 0);
         p2.ry() -= 3;
-        if (xt < 0.01) label = QString("%1 mm").arg(xt * 1000.0, 0, 'f', 0);
-        else if (xt < 1.0) label = QString("%1 cm").arg(xt * 100.0, 0, 'f', 0);
-        else if (xt < 1000.0) label = QString("%1 m").arg(xt, 0, 'f', 0);
+        if (xt < 0.0099) label = QString("%1 mm").arg(xt * 1000.0, 0, 'f', 0);
+        else if (xt < 0.999) label = QString("%1 cm").arg(xt * 100.0, 0, 'f', 0);
+        else if (xt < 999.0) label = QString("%1 m").arg(xt, 0, 'f', 0);
         else label = QString("%1 km").arg(xt / 1000.0, 0, 'f', 0);
         DrawLabel(GraphT, c, p2, label, 0, 1);
     }
@@ -269,7 +280,7 @@ void Plot::DrawTrk(QPainter &c, int level)
         DrawMark(GraphT, c, p1, 5, CColor[2], 20, 0);
     }
 
-    // update geview and gmview center
+    // update map center
     if (level) {
         if (norm(OPos, 3) > 0.0) {
             GraphT->GetCent(xt, yt);
@@ -279,10 +290,9 @@ void Plot::DrawTrk(QPainter &c, int level)
             enu2ecef(opos, enu, rr);
             for (i=0; i<3; i++) rr[i] += OPos[i];
             ecef2pos(rr, cent);
-            googleEarthView->SetCent(cent[0] * R2D, cent[1] * R2D);
-            googleMapView  ->SetCent(cent[0] * R2D, cent[1] * R2D);
+            mapView->SetCent(cent[0] * R2D, cent[1] * R2D);
         }
-        Refresh_GEView();
+        Refresh_MapView();
     }
 }
 // draw map-image on track-plot ---------------------------------------------
@@ -410,8 +420,8 @@ void Plot::DrawTrkMap(QPainter &c, int level)
                             // judge hole
                 for (j = 0, S = 0.0; j < m - 1; j++)
                     S += static_cast<double>(p[j].x() * p[j + 1].y() - p[j + 1].x() * p[j].y());
-                color = S < 0.0 ? CColor[0] : MapColor[i];
-                GraphT->DrawPatch(c, p, m, color, color, 0);
+                color = S < 0.0 ? CColor[0] : MapColorF[i];
+                GraphT->DrawPatch(c, p, m, MapColor[i], color, 0);
                 delete [] p;
             }
         }
@@ -453,13 +463,13 @@ void Plot::DrawTrkPos(QPainter &c, const double *rr, int type, int siz,
     QPoint p1;
     double xyz[3], xs, ys;
 
-    trace(3, "DrawTrkPos: type=%d\n", type);
+    trace(3,"DrawTrkPos: type=%d rr=%.3f %.3f %.3f\n",type,rr[0],rr[1],rr[2]);
 
     if (norm(rr, 3) > 0.0) {
         GraphT->GetScale(xs, ys);
         PosToXyz(time, rr, type, xyz);
         GraphT->ToPoint(xyz[0], xyz[1], p1);
-        DrawMark(GraphT, c, p1, 5, color, siz + 8, 0);
+        DrawMark(GraphT, c, p1, 5, color, siz + 6, 0);
         DrawMark(GraphT, c, p1, 1, color, siz, 0);
         DrawMark(GraphT, c, p1, 1, color, siz - 6, 0);
         p1.ry() += 10;
@@ -895,7 +905,6 @@ void Plot::DrawNsat(QPainter &c, int level)
 // draw observation-data-plot -----------------------------------------------
 void Plot::DrawObs(QPainter &c, int level)
 {
-    QString label;
     QPoint p1, p2, p;
     gtime_t time;
     obsd_t *obs;
@@ -937,6 +946,7 @@ void Plot::DrawObs(QPainter &c, int level)
     GraphR->GetPos(p1, p2);
 
     for (i = 0, j = 0; i < MAXSAT; i++) {
+        QString label;
         if (!sats[i]) continue;
         p.setX(p1.x());
         p.setY(p1.y() + static_cast<int>((p2.y() - p1.y()) * (j + 0.5) / m));
@@ -991,65 +1001,100 @@ void Plot::DrawObs(QPainter &c, int level)
             GraphR->DrawMark(c, xl[0], yl[1] - 1E-6, 1, CColor[2], 9, 0);
     }
 }
+// generate observation-data-slips ---------------------------------------
+void Plot::GenObsSlip(int *LLI)
+{
+    QString obstype = ObsType->currentText();
+    bool ok;
+    double gfp[MAXSAT][NFREQ+NEXOBS]={{0}};
+
+    for (int i=0;i<Obs.n;i++) {
+        obsd_t *obs=Obs.data+i;
+        int j,k;
+
+        LLI[i]=0;
+        if (El[i]<ElMask*D2R||!SatSel[obs->sat-1]) continue;
+        if (ElMaskP&&El[i]<ElMaskData[(int)(Az[i]*R2D+0.5)]) continue;
+
+        if (ShowSlip==1) { // LG jump
+            double freq1,freq2,gf;
+
+            if (obstype == "ALL") {
+                if ((freq1=sat2freq(obs->sat,obs->code[0],&Nav))==0.0) continue;
+                LLI[i]=obs->LLI[0]&2;
+                for (j=1;j<NFREQ+NEXOBS;j++) {
+                    LLI[i]|=obs->LLI[j]&2;
+                    if ((freq2=sat2freq(obs->sat,obs->code[j],&Nav))==0.0) continue;
+                    gf=CLIGHT*(obs->L[0]/freq1-obs->L[j]/freq2);
+                    if (fabs(gfp[obs->sat-1][j]-gf)>THRESLIP) LLI[i]|=1;
+                    gfp[obs->sat-1][j]=gf;
+                }
+            }
+            else {
+                k = obstype.midRef(1).toInt(&ok);
+                if (ok) {
+                    j=k-1;
+                }
+                else {
+                    for (j=0;j<NFREQ+NEXOBS;j++) {
+                        if (!strcmp(code2obs(obs->code[j]),qPrintable(obstype))) break;
+                    }
+                    if (j>=NFREQ+NEXOBS) continue;
+                }
+                LLI[i]=obs->LLI[j]&2;
+                k=(j==0)?1:0;
+                if ((freq1=sat2freq(obs->sat,obs->code[k],&Nav))==0.0) continue;
+                if ((freq2=sat2freq(obs->sat,obs->code[j],&Nav))==0.0) continue;
+                gf=CLIGHT*(obs->L[k]/freq1-obs->L[j]/freq2);
+                if (fabs(gfp[obs->sat-1][j]-gf)>THRESLIP) LLI[i]|=1;
+                gfp[obs->sat-1][j]=gf;
+            }
+        }
+        else {
+            if (obstype == "ALL") {
+                for (j=0;j<NFREQ+NEXOBS;j++) {
+                    LLI[i]|=obs->LLI[j];
+                }
+            }
+            else {
+                k = obstype.midRef(1).toInt(&ok);
+                if (ok) {
+                    j=k-1;
+                }
+                else {
+                    for (j=0;j<NFREQ+NEXOBS;j++) {
+                        if (!strcmp(code2obs(obs->code[j]),qPrintable(obstype))) break;
+                    }
+                    if (j>=NFREQ+NEXOBS) continue;
+                }
+                LLI[i]=obs->LLI[j];
+            }
+        }
+    }
+}
 // draw slip on observation-data-plot ---------------------------------------
 void Plot::DrawObsSlip(QPainter &c, double *yp)
 {
-    QString ObsTypeText = ObsType->currentText();
-    obsd_t *obs;
-    QPoint ps[2];
-    double gfp[MAXSAT] = { 0 }, gf;
-    char code[32];
-    int i, j, slip;
+    trace(3,"DrawObsSlip\n");
+    if (Obs.n<=0||(!ShowSlip&&!ShowHalfC)) return;
 
-    trace(3, "DrawObsSlip\n");
+    int *LLI=new int [Obs.n];
 
-    strncpy(code, ObsType->currentIndex() ? qPrintable(ObsTypeText) + 1 : "", 32);
+    GenObsSlip(LLI);
 
-    if (ShowHalfC) {
-        for (i = 0; i < Obs.n; i++) {
-            if (El[i] < ElMask * D2R) continue;
-            if (ElMaskP && El[i] < ElMaskData[(int)(Az[i] * R2D + 0.5)]) continue;
-            obs = &Obs.data[i];
-            if (!SatSel[obs->sat-1]) continue;
-            slip = 0;
-            for (j = 0; j < NFREQ + NEXOBS; j++)
-                if ((!*code || strstr(code2obs(obs->code[j], NULL), code)) &&
-                    (obs->LLI[j] & 2)) slip = 1;
-            if (!slip) continue;
-            if (!GraphR->ToPoint(TimePos(obs->time), yp[obs->sat-1], ps[0])) continue;
+    for (int i=0;i<Obs.n;i++) {
+        if (!LLI[i]) continue;
+        QPoint ps[2];
+        obsd_t *obs=Obs.data+i;
+        if (GraphR->ToPoint(TimePos(obs->time),yp[obs->sat-1],ps[0])) {
             ps[1].setX(ps[0].x());
-            ps[1].setY(ps[0].y() + MarkSize * 3 / 2 + 1);
-            ps[0].setY(ps[0].y() - MarkSize * 3 / 2);
-            GraphR->DrawPoly(c, ps, 2, MColor[0][0], 0);
+            ps[1].setY(ps[0].y()+MarkSize*3/2+1);
+            ps[0].setY(ps[0].y()-MarkSize*3/2);
+            if (ShowHalfC&&(LLI[i]&2)) GraphR->DrawPoly(c, ps, 2, MColor[0][0], 0);
+            if (ShowSlip &&(LLI[i]&1)) GraphR->DrawPoly(c, ps, 2, MColor[0][5], 0);
         }
     }
-    if (ShowSlip) {
-        for (i = 0; i < Obs.n; i++) {
-            if (El[i] < ElMask * D2R) continue;
-            if (ElMaskP && El[i] < ElMaskData[(int)(Az[i] * R2D + 0.5)]) continue;
-            obs = &Obs.data[i];
-            if (!SatSel[obs->sat-1]) continue;
-            slip = 0;
-            if (ShowSlip == 2) { // LLI
-                for (j = 0; j < NFREQ + NEXOBS; j++)
-                    if ((!*code || strstr(code2obs(obs->code[j], NULL), code)) &&
-                        (obs->LLI[j] & 1)) slip = 1;
-            } else if (!*code || !strcmp(code, "1") || !strcmp(code, "2")) {
-                if (obs->L[0] != 0.0 && obs->L[1] != 0.0 &&
-                    satsys(obs->sat, NULL) != SYS_GLO) {
-                    gf = CLIGHT * (obs->L[0] / FREQ1 - obs->L[1] / FREQ2);
-                    if (fabs(gfp[obs->sat - 1] - gf) > THRESLIP) slip = 1;
-                    gfp[obs->sat - 1] = gf;
-                }
-            }
-            if (!slip) continue;
-            if (!GraphR->ToPoint(TimePos(obs->time), yp[obs->sat-1], ps[0])) continue;
-            ps[1].setX(ps[0].x());
-            ps[1].setY(ps[0].y() + MarkSize * 3 / 2 + 1);
-            ps[0].setY(ps[0].y() - MarkSize * 3 / 2);
-            GraphR->DrawPoly(c, ps, 2, MColor[0][5], 0);
-        }
-    }
+    delete [] LLI;
 }
 // draw ephemeris on observation-data-plot ----------------------------------
 void Plot::DrawObsEphem(QPainter &c, double *yp)
@@ -1148,17 +1193,13 @@ void Plot::DrawSkyImage(QPainter &c, int level)
 void Plot::DrawSky(QPainter &c, int level)
 {
     QPoint p1, p2;
-    QString s, ObsTypeText = ObsType->currentText();
+    QString s, obstype = ObsType->currentText();
     obsd_t *obs;
     gtime_t t[MAXSAT] = { { 0, 0 } };
-    double p[MAXSAT][2] = { { 0 } }, gfp[MAXSAT] = { 0 }, p0[MAXSAT][2] = { { 0 } };
-    double x, y, xp, yp, xs, ys, dt, dx, dy, xl[2], yl[2], r, gf;
-    int i, j, ind = ObsIndex;
-    int hh = static_cast<int>(Disp->font().pointSize() * 1.5), slip;
-    char code[32];
-    char id[16];
-
-    strncpy(code, ObsType->currentIndex() ? qPrintable(ObsTypeText) + 1 : "", 32);
+    double p[MAXSAT][2] = { { 0 } }, p0[MAXSAT][2] = { { 0 } };
+    double x, y, xp, yp, xs, ys, dt, dx, dy, xl[2], yl[2], r;
+    int i, j, ind = ObsIndex, freq;
+    int hh = static_cast<int>(Disp->font().pointSize() * 1.5);
 
     trace(3, "DrawSky: level=%d\n", level);
 
@@ -1202,8 +1243,9 @@ void Plot::DrawSky(QPainter &c, int level)
             if (p0[i][0] != 0.0 || p0[i][1] != 0.0) {
                 QPoint pnt;
                 if (GraphS->ToPoint(p0[i][0], p0[i][1], pnt)) {
-                    satno2id(i + 1, id); s = id;
-                    DrawLabel(GraphS, c, pnt, s, 1, 0);
+                    char id[16];
+                    satno2id(i+1,id);
+                    DrawLabel(GraphS, c, pnt, QString(id), 1, 0);
                 }
             }
         }
@@ -1211,23 +1253,13 @@ void Plot::DrawSky(QPainter &c, int level)
     if (!level) return;
 
     if (ShowSlip && PlotStyle <= 2) {
-        for (i = 0; i < Obs.n; i++) {
-            obs = &Obs.data[i];
-            if (SatMask[obs->sat - 1] || !SatSel[obs->sat - 1] || El[i] <= 0.0) continue;
+        int *LLI=new int [Obs.n];
 
-            slip = 0;
-            if (ShowSlip == 2) { // LLI
-                for (j = 0; j < NFREQ + NEXOBS; j++)
-                    if ((!*code || strstr(code2obs(obs->code[j], NULL), code)) &&
-                        (obs->LLI[j] & 1)) slip = 1;
-            } else if (!*code || !strcmp(code, "1") || !strcmp(code, "2")) {
-                if (obs->L[0] != 0.0 && obs->L[1] != 0.0 &&
-                    satsys(obs->sat, NULL) != SYS_GLO) {
-                    gf = CLIGHT * (obs->L[0] / FREQ1 - obs->L[1] / FREQ2);
-                    if (fabs(gfp[obs->sat - 1] - gf) > THRESLIP) slip = 1;
-                    gfp[obs->sat - 1] = gf;
-                }
-            }
+        GenObsSlip(LLI);
+
+        for (i = 0; i < Obs.n; i++) {
+            if (!(LLI[i]&1)) continue;
+            obs=Obs.data+i;
             x = r * sin(Az[i]) * (1.0 - 2.0 * El[i] / PI);
             y = r * cos(Az[i]) * (1.0 - 2.0 * El[i] / PI);
             dt = timediff(obs->time, t[obs->sat - 1]);
@@ -1237,11 +1269,9 @@ void Plot::DrawSky(QPainter &c, int level)
             p[obs->sat - 1][0] = x;
             p[obs->sat - 1][1] = y;
             if (fabs(dt) > 300.0) continue;
-            if (El[i] < ElMask * D2R) continue;
-            if (ElMaskP && El[i] < ElMaskData[static_cast<int>(Az[i] * R2D + 0.5)]) continue;
-            if (slip)
-                GraphS->DrawMark(c, x, y, 4, MColor[0][5], MarkSize * 3 + 2, static_cast<int>(ATAN2(dy, dx) * R2D + 90));
+            GraphS->DrawMark(c, x, y, 4, MColor[0][5], MarkSize * 3 + 2, static_cast<int>(ATAN2(dy, dx) * R2D + 90));
         }
+        delete [] LLI;
     }
 
     if (ElMaskP) {
@@ -1268,10 +1298,11 @@ void Plot::DrawSky(QPainter &c, int level)
             x = r * sin(Az[i]) * (1.0 - 2.0 * El[i] / PI);
             y = r * cos(Az[i]) * (1.0 - 2.0 * El[i] / PI);
 
+            char id[16];
             satno2id(obs->sat, id);
             GraphS->DrawMark(c, x, y, 0, col, Disp->font().pointSize() * 2 + 5, 0);
             GraphS->DrawMark(c, x, y, 1, col == Qt::black ? MColor[0][0] : CColor[2], Disp->font().pointSize() * 2 + 5, 0);
-            GraphS->DrawText(c, x, y, s = id, CColor[0], 0, 0, 0);
+            GraphS->DrawText(c, x, y, QString(id), CColor[0], 0, 0, 0);
         }
     }
 
@@ -1288,11 +1319,21 @@ void Plot::DrawSky(QPainter &c, int level)
     }
         // show statistics
     if (ShowStats && BtnShowTrack->isChecked() && 0 <= ind && ind < NObs && !SimObs) {
-        s = QString(tr("SAT: OBS : SNR : LLI%1")).arg(!*code ? "" : tr(" : CODE"));
-        DrawLabel(GraphS, c, p2, s, 2, 2);
+        char id[16];
+
+        if (obstype == "ALL") {
+            s = QString::asprintf("%3s: %*s %*s%*s %*s","SAT",NFREQ,"PR",NFREQ,"CP",
+                         NFREQ*3,"CN0",NFREQ,"LLI");
+        }
+        else {
+            s = QString(tr("SAT: SIG OBS CN0 LLI"));
+        }
+        GraphS->DrawText(c, p2, s, Qt::black, 2, 2, 0, QFont(MS_FONT));
+
         p2.ry() += 3;
 
         for (i = IndexObs[ind]; i < Obs.n && i < IndexObs[ind + 1]; i++) {
+            bool ok;
             obs = &Obs.data[i];
             if (SatMask[obs->sat - 1] || !SatSel[obs->sat - 1]) continue;
             if (HideLowSat && El[i] < ElMask * D2R) continue;
@@ -1301,22 +1342,42 @@ void Plot::DrawSky(QPainter &c, int level)
             satno2id(obs->sat, id);
             s = QString("%1: ").arg(id, 3, QChar('-'));
 
-            if (!*code) {
+            freq=obstype.midRef(1).toInt(&ok);
+
+            if (obstype == "ALL") {
                 for (j = 0; j < NFREQ; j++) s += obs->P[j] == 0.0 ? "-" : "C";
+                s += " ";
                 for (j = 0; j < NFREQ; j++) s += obs->L[j] == 0.0 ? "-" : "L";
-                s += " : ";
-                for (j = 0; j < NFREQ; j++) s += QString("%1 ").arg(obs->SNR[j] * 0.25, 2, 'f', 0, QChar('0'));
-                s += ": ";
-                for (j = 0; j < NFREQ; j++) s += QString("%1").arg(obs->LLI[j]);
+                s += " ";
+                for (j = 0; j < NFREQ; j++) {
+                    if (obs->P[j]==0.0&&obs->L[j]==0.0) s+="-- ";
+                    else s += QString("%1 ").arg(obs->SNR[j] * SNR_UNIT, 2, 'f', 0, QChar('0'));
+                }
+                for (j = 0; j < NFREQ; j++) {
+                    if (obs->L[j]==0.0) s+="-";
+                    else s += QString("%1").arg(obs->LLI[j]);
+                }
+             } else if (ok) {
+                if (!obs->code[freq-1]) continue;
+                s+=QString("%1  %2 %3 %4  ").arg(code2obs(obs->code[freq-1])).arg(
+                              obs->P[freq-1]==0.0?"-":"C").arg(obs->L[freq-1]==0.0?"-":"L").arg(
+                              obs->D[freq-1]==0.0?"-":"D");
+                if (obs->P[freq-1]==0.0&&obs->L[freq-1]==0.0) s+="---- ";
+                else s+=QString("%1 ").arg(obs->SNR[freq-1]*SNR_UNIT,4,'f',1);
+                if (obs->L[freq-1]==0.0) s+=" -";
+                else s+=QString::number(obs->LLI[freq-1]);
             } else {
                 for (j = 0; j < NFREQ + NEXOBS; j++)
-                    if (strstr(code2obs(obs->code[j], NULL), code)) break;
+                    if (!strcmp(code2obs(obs->code[j]), qPrintable(obstype))) break;
                 if (j >= NFREQ + NEXOBS) continue;
 
-                s += QString("%1%2%3 : %4 : %5 : %6").arg(obs->P[j] == 0.0 ? "-" : "C")
-                     .arg(obs->L[j] == 0.0 ? "-" : "L").arg(obs->D[j] == 0.0 ? "-" : "D")
-                     .arg(obs->SNR[j] * 0.25, 4, 'f', 1, QChar('0')).arg(obs->LLI[j])
-                     .arg(code2obs(obs->code[j], NULL));
+                s+=QString("%1  %2 %3 %4  ").arg(code2obs(obs->code[j])).arg(
+                                 obs->P[j]==0.0?"-":"C").arg(obs->L[j]==0.0?"-":"L").arg(
+                                 obs->D[j]==0.0?"-":"D");
+                if (obs->P[j]==0.0&&obs->L[j]==0.0) s+="---- ";
+                else s+=QString("%1 ").arg(obs->SNR[j]*SNR_UNIT,4,'f',1);
+                if (obs->L[j]==0.0) s+=" -";
+                else s+=QString::number(obs->LLI[j]);
             }
             QColor col = ObsColor(obs, Az[i], El[i]);
             p2.ry() += hh;
@@ -1330,7 +1391,7 @@ void Plot::DrawSky(QPainter &c, int level)
         DrawLabel(GraphS, c, p2, tr("No Navigation Data"), 2, 1);
     }
 }
-// draw dop and number-of-satellite plot ------------------------------------
+// draw DOP and number-of-satellite plot ------------------------------------
 void Plot::DrawDop(QPainter &c, int level)
 {
     QString label;
@@ -1345,7 +1406,8 @@ void Plot::DrawDop(QPainter &c, int level)
     GraphR->YLPos = 1;
     GraphR->Week = Week;
     GraphR->GetLim(xl, yl);
-    yl[0] = 0.0; yl[1] = MaxDop;
+    yl[0] = 0.0;
+    yl[1] = MaxDop;
     GraphR->SetLim(xl, yl);
     GraphR->SetTick(0.0, 0.0);
 
@@ -1392,7 +1454,7 @@ void Plot::DrawDop(QPainter &c, int level)
     for (i = 0; i < 4; i++) {
         if (doptype != 0 && doptype != i + 2) continue;
 
-        for (j = 0; j < n; j++) y[j] = dop[i + j * 4];
+        for (j = 0; j < n; j++) y[j] = dop[i + j * 4]*10;
 
         if (!(PlotStyle % 2))
             DrawPolyS(GraphR, c, x, y, n, CColor[3], 0);
@@ -1433,7 +1495,7 @@ void Plot::DrawDop(QPainter &c, int level)
 
         for (i = 0; i < 4; i++) {
             if ((doptype != 0 && doptype != i + 2) || dop[i] <= 0.0) continue;
-            GraphR->DrawMark(c, xl[0], dop[i], 0, MColor[0][i + 2], MarkSize * 2 + 2, 0);
+            GraphR->DrawMark(c, xl[0], dop[i]*10.0, 0, MColor[0][i + 2], MarkSize * 2 + 2, 0);
         }
         if (doptype == 0 || doptype == 1)
             GraphR->DrawMark(c, xl[0], ns[0], 0, MColor[0][1], MarkSize * 2 + 2, 0);
@@ -1456,23 +1518,23 @@ void Plot::DrawDop(QPainter &c, int level)
     delete [] dop;
     delete [] ns;
 }
-// draw statistics on dop and number-of-satellite plot ----------------------
+// draw statistics on DOP and number-of-satellite plot ----------------------
 void Plot::DrawDopStat(QPainter &c, double *dop, int *ns, int n)
 {
     QString s0[MAXOBS + 2], s1[MAXOBS + 2], s2[MAXOBS + 2];
-    QPoint p1, p2, p3;
     double ave[4] = { 0 };
-    int i, j, m = 0;
-    int ndop[4] = { 0 }, nsat[MAXOBS] = { 0 }, fonth = static_cast<int>(Disp->font().pointSize() * 1.5);
+    int nsat[MAXOBS]={0},ndop[4]={0}, m = 0;
 
     trace(3, "DrawDopStat: n=%d\n", n);
 
     if (!ShowStats) return;
 
-    for (i = 0; i < n; i++) nsat[ns[i]]++;
+    for (int i = 0; i < n; i++) {
+        nsat[ns[i]]++;
+    }
 
-    for (i = 0; i < 4; i++) {
-        for (j = 0; j < n; j++) {
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < n; j++) {
             if (dop[i + j * 4] <= 0.0 || dop[i + j * 4] > MaxDop) continue;
             ave[i] += dop[i + j * 4];
             ndop[i]++;
@@ -1489,59 +1551,60 @@ void Plot::DrawDopStat(QPainter &c, double *dop, int *ns, int n)
               .arg(ndop[3]).arg(n > 0 ? ndop[3] * 100.0 / n : 0.0, 4, 'f', 1);
     }
     if (DopType->currentIndex() <= 1) {
-        for (i = 0, j = 0; i < MAXOBS; i++) {
+        for (int i = 0, j = 0; i < MAXOBS; i++) {
             if (nsat[i] <= 0) continue;
             s0[m] = QString("%1%2:").arg(j++ == 0 ? "NSAT= " : "").arg(i, 2);
             s1[m] = QString("%1").arg(nsat[i], 7);
             s2[m++] = QString("(%1%%)").arg(nsat[i] * 100.0 / n, 4, 'f', 1);
         }
     }
+    QPoint p1,p2,p3;
+    int fonth=(int)(Disp->font().pixelSize()*1.5);
+
     GraphR->GetPos(p1, p2);
     p1.setX(p2.x() - 10);
     p1.ry() += 8;
     p2 = p1; p2.rx() -= fonth * 4;
     p3 = p2; p3.rx() -= fonth * 8;
 
-    for (i = 0; i < m; i++, p1.ry() += fonth, p2.ry() += fonth, p3.ry() += fonth) {
+    for (int i = 0; i < m; i++) {
         DrawLabel(GraphR, c, p3, s0[i], 2, 2);
         DrawLabel(GraphR, c, p2, s1[i], 2, 2);
         DrawLabel(GraphR, c, p1, s2[i], 2, 2);
+        p1.setY(p1.y() + fonth);
+        p2.setY(p2.y() + fonth);
+        p3.setY(p3.y() + fonth);
     }
 }
-// draw snr, mp and elevation-plot ---------------------------------------------
+// draw SNR, MP and elevation-plot ---------------------------------------------
 void Plot::DrawSnr(QPainter &c, int level)
 {
     QPushButton *btn[] = { BtnOn1, BtnOn2, BtnOn3 };
     QString ObsTypeText = ObsType2->currentText();
     QString label[] = { tr("SNR"), tr("Multipath"), tr("Elevation") };
     QString unit[] = { "dBHz", "m", degreeChar };
-    QPoint p1, p2;
-    QColor *col, colp[MAXSAT];
     gtime_t time = { 0, 0 };
-    double *x, *y, xl[2], yl[2], off, xc, yc, xp, yp[MAXSAT], ave[3] = { 0 }, rms[3] = { 0 };
-    char code[32];
-    int i, j, k, l, n, np, sat, ind = ObsIndex, nrms[3] = { 0 };
-
-    strncpy(code, qPrintable(ObsTypeText.mid(1)), 32);
 
     trace(3, "DrawSnr: level=%d\n", level);
 
-    if (0 <= ind && ind < NObs && BtnShowTrack->isChecked())
-        time = Obs.data[IndexObs[ind]].time;
-    if (0 <= ind && ind < NObs && BtnShowTrack->isChecked() && BtnFixHoriz->isChecked()) {
+    if (0 <= ObsIndex && ObsIndex < NObs && BtnShowTrack->isChecked())
+        time = Obs.data[IndexObs[ObsIndex]].time;
+    if (0 <= ObsIndex && ObsIndex < NObs && BtnShowTrack->isChecked() && BtnFixHoriz->isChecked()) {
+        double xc,yc,xp=TimePos(time);
+        double xl[2],yl[2];
+
         GraphG[0]->GetLim(xl, yl);
-        off = Xcent * (xl[1] - xl[0]) / 2.0;
-        xp = TimePos(time);
-        for (j = 0; j < 3; j++) {
-            GraphG[j]->GetCent(xc, yc);
-            GraphG[j]->SetCent(xp - off, yc);
+        xp -= Xcent * (xl[1] - xl[0]) / 2.0;
+        for (int i=0;i<3;i++) {
+            GraphG[i]->GetCent(xc,yc);
+            GraphG[i]->SetCent(xp,yc);
         }
     }
-    j = 0;
+    int j = 0;
 
-    for (i = 0; i < 3; i++) if (btn[i]->isChecked()) j = i;
+    for (int i = 0; i < 3; i++) if (btn[i]->isChecked()) j = i;
 
-    for (i = 0; i < 3; i++) {
+    for (int i = 0; i < 3; i++) {
         if (!btn[i]->isChecked()) continue;
         GraphG[i]->XLPos = TimeLabel ? (i == j ? 6 : 5) : (i == j ? 1 : 0);
         GraphG[i]->Week = Week;
@@ -1549,26 +1612,44 @@ void Plot::DrawSnr(QPainter &c, int level)
     }
 
     if (NObs > 0 && BtnSol1->isChecked()) {
-        x = new double[NObs],
-        y = new double[NObs];
-        col = new QColor[NObs];
+        QString obstype=ObsType2->currentText();
+        double *x=new double[NObs];
+        double *y=new double[NObs];
+        QColor *col=new QColor[NObs];
 
-        for (i = l = 0; i < 3; i++) {
+        for (int i=0,l=0;i<3;i++) {
+            QColor colp[MAXSAT];
+            double yp[MAXSAT],ave=0.0,rms=0.0;
+            int np=0,nrms=0;
+
             if (!btn[i]->isChecked()) continue;
 
-            for (sat = 1, np = 0; sat <= MAXSAT; sat++) {
+            for (int sat = 1, np = 0; sat <= MAXSAT; sat++) {
                 if (SatMask[sat - 1] || !SatSel[sat - 1]) continue;
+                int n=0;
 
-                for (j = n = 0; j < Obs.n; j++) {
-                    if (Obs.data[j].sat != sat) continue;
+                for (int j = n = 0; j < Obs.n; j++) {
+                    obsd_t *obs=Obs.data+j;
+                    int k,freq;
+                    bool ok;
 
-                    for (k = 0; k < NFREQ + NEXOBS; k++)
-                        if (strstr(code2obs(Obs.data[j].code[k], NULL), code)) break;
-                    if (k >= NFREQ + NEXOBS) continue;
+                    if (obs->sat!=sat) continue;
 
-                    x[n] = TimePos(Obs.data[j].time);
+                    freq=obstype.midRef(1).toInt(&ok);
+                    if (ok) {
+                        k=freq-1;
+                    }
+                    else {
+                        for (k=0;k<NFREQ+NEXOBS;k++) {
+                            if (!strcmp(code2obs(obs->code[k]),qPrintable(obstype))) break;
+                        }
+                        if (k>=NFREQ+NEXOBS) continue;
+                    }
+                    if (obs->SNR[k]*SNR_UNIT<=0.0) continue;
+
+                    x[n] = TimePos(obs->time);
                     if (i == 0) {
-                        y[n] = Obs.data[j].SNR[k] * 0.25;
+                        y[n] = obs->SNR[k] * SNR_UNIT;
                         col[n] = MColor[0][4];
                     } else if (i == 1) {
                         if (!Mp[k] || Mp[k][j] == 0.0) continue;
@@ -1576,45 +1657,49 @@ void Plot::DrawSnr(QPainter &c, int level)
                         col[n] = MColor[0][4];
                     } else {
                         y[n] = El[j] * R2D;
-                        if (SimObs) col[n] = SysColor(Obs.data[j].sat);
-                        else col[n] = SnrColor(Obs.data[j].SNR[k] * 0.25);
+                        if (SimObs) col[n] = SysColor(obs->sat);
+                        else col[n] = SnrColor(obs->SNR[k] * SNR_UNIT);
                         if (El[j] > 0.0 && El[j] < ElMask * D2R) col[n] = MColor[0][0];
                     }
-                    if (timediff(time, Obs.data[j].time) == 0.0 && np < MAXSAT) {
+                    if (timediff(time, obs->time) == 0.0 && np < MAXSAT) {
                         yp[np] = y[n];
                         colp[np++] = col[n];
                     }
                     if (n < NObs) n++;
                 }
                 if (!level || !(PlotStyle % 2)) {
-                    for (j = 0; j < n; j = k) {
+                    for (int j = 0, k=0; j < n; j = k) {
                         for (k = j + 1; k < n; k++) if (fabs(y[k - 1] - y[k]) > 30.0) break;
                         DrawPolyS(GraphG[i], c, x + j, y + j, k - j, CColor[3], 0);
                     }
                 }
                 if (level && PlotStyle < 2) {
-                    for (j = 0; j < n; j++) {
+                    for (int j  = 0; j < n; j++) {
                         if (i != 1 && y[j] <= 0.0) continue;
                         GraphG[i]->DrawMark(c, x[j], y[j], 0, col[j], MarkSize, 0);
                     }
                 }
-                for (j = 0; j < n; j++) {
+                for (int j = 0; j < n; j++) {
                     if (y[j] == 0.0) continue;
-                    ave[i] += y[j];
-                    rms[i] += SQR(y[j]);
-                    nrms[i]++;
+                    ave += y[j];
+                    rms += SQR(y[j]);
+                    nrms++;
                 }
             }
-            if (level && i == 1 && nrms[i] > 0 && ShowStats && !BtnShowTrack->isChecked()) {
-                ave[i] = ave[i] / nrms[i];
-                rms[i] = SQRT(rms[i] / nrms[i]);
+            if (level && i == 1 && nrms > 0 && ShowStats && !BtnShowTrack->isChecked()) {
+                QPoint p1,p2;
+                ave=ave/nrms;
+                rms=SQRT(rms/nrms);
+
                 GraphG[i]->GetPos(p1, p2);
                 p1.rx() = p2.x() - 8; p1.ry() += 3;
-                DrawLabel(GraphG[i], c, p1, QString("AVE=%1m RMS=%2m").arg(ave[i], 0, 'f', 4)
-                      .arg(rms[i], 0, 'f', 4), 2, 2);
+                DrawLabel(GraphG[i], c, p1, QString("AVE=%1m RMS=%2m").arg(ave, 0, 'f', 4)
+                      .arg(rms, 0, 'f', 4), 2, 2);
             }
-            if (BtnShowTrack->isChecked() && 0 <= ind && ind < NObs && BtnSol1->isChecked()) {
+            if (BtnShowTrack->isChecked() && 0 <= ObsIndex && ObsIndex < NObs && BtnSol1->isChecked()) {
                 if (!btn[i]->isChecked()) continue;
+                QPoint p1,p2;
+                double xl[2],yl[2];
                 GraphG[i]->GetLim(xl, yl);
                 xl[0] = xl[1] = TimePos(time);
                 GraphG[i]->DrawPoly(c, xl, yl, 2, CColor[2], 0);
@@ -1625,7 +1710,7 @@ void Plot::DrawSnr(QPainter &c, int level)
                     if (!BtnFixHoriz->isChecked())
                         GraphG[i]->DrawMark(c, xl[0], yl[1] - 1E-6, 1, CColor[2], 9, 0);
                 }
-                for (k = 0; k < np; k++) {
+                for (int k = 0; k < np; k++) {
                     if (i != 1 && yp[k] <= 0.0) continue;
                     GraphG[i]->DrawMark(c, xl[0], yp[k], 0, CColor[0], MarkSize * 2 + 4, 0);
                     GraphG[i]->DrawMark(c, xl[0], yp[k], 0, colp[k], MarkSize * 2 + 2, 0);
@@ -1641,37 +1726,34 @@ void Plot::DrawSnr(QPainter &c, int level)
         delete [] y;
         delete [] col;
     }
-    for (i = 0; i < 3; i++) {
+    for (int i = 0; i < 3; i++) {
         if (!btn[i]->isChecked()) continue;
+        QPoint p1, p2;
         GraphG[i]->GetPos(p1, p2);
         p1.rx() += 5; p1.ry() += 3;
         DrawLabel(GraphG[i], c, p1, QString("%1 (%2)").arg(label[i]).arg(unit[i]), 1, 2);
     }
 }
-// draw snr, mp-elevation-plot ----------------------------------------------
+// draw SNR, MP to elevation-plot ----------------------------------------------
 void Plot::DrawSnrE(QPainter &c, int level)
 {
     QPushButton *btn[] = { BtnOn1, BtnOn2, BtnOn3 };
     QString s, ObsTypeText = ObsType2->currentText();
     QString label[] = { tr("SNR (dBHz)"), tr("Multipath (m)") };
-    QPoint p1, p2;
-    QColor *col[2], colp[2][MAXSAT];
     gtime_t time = { 0, 0 };
-    double *x[2], *y[2], xl[2] = { -0.001, 90.0 }, yl[2][2] = { { 10.0, 65.0 }, { -10.0, 10.0 } };
-    double xp[2][MAXSAT], yp[2][MAXSAT], ave = 0.0, rms = 0.0;
-    char code[32];
-    int i, j, k, n[2], np[2] = { 0 }, sat, ind = ObsIndex, hh = static_cast<int>(Disp->font().pointSize() * 1.5);
-    int nrms = 0;
+    double ave=0.0, rms=0.0;
 
-    strncpy(code, qPrintable(ObsTypeText.mid(1)), 32);
+    int nrms=0;
 
     trace(3, "DrawSnrE: level=%d\n", level);
 
-    yl[1][0] = -MaxMP; yl[1][1] = MaxMP;
+    int j=0;
+    for (int i=0;i<2;i++) if (btn[i]->isChecked()) j=i;
 
-    j = 0;
-    for (i = 0; i < 2; i++) if (btn[i]->isChecked()) j = i;
-    for (i = 0; i < 2; i++) {
+    for (int i=0;i<2;i++) {
+        QPoint p1,p2;
+        double xl[2]={-0.001,90.0},yl[2][2]={{10.0,65.0},{-MaxMP,MaxMP}};
+
         if (!btn[i]->isChecked()) continue;
         GraphE[i]->XLPos = i == j ? 1 : 0;
         GraphE[i]->YLPos = 1;
@@ -1689,29 +1771,45 @@ void Plot::DrawSnrE(QPainter &c, int level)
         }
     }
 
-    if (0 <= ind && ind < NObs && BtnShowTrack->isChecked())
-        time = Obs.data[IndexObs[ind]].time;
+    if (0 <= ObsIndex && ObsIndex < NObs && BtnShowTrack->isChecked())
+        time = Obs.data[IndexObs[ObsIndex]].time;
 
     if (NObs > 0 && BtnSol1->isChecked()) {
-        for (i = 0; i < 2; i++) {
+        QColor *col[2],colp[2][MAXSAT];
+        QString obstype=ObsType2->currentText();
+        double *x[2],*y[2],xp[2][MAXSAT],yp[2][MAXSAT];
+        int n[2],np[2]={0};
+
+        for (int i = 0; i < 2; i++) {
             x[i] = new double[NObs],
             y[i] = new double[NObs];
             col[i] = new QColor[NObs];
         }
-        for (sat = 1; sat <= MAXSAT; sat++) {
+        for (int sat = 1; sat <= MAXSAT; sat++) {
             if (SatMask[sat - 1] || !SatSel[sat - 1]) continue;
+            n[0]=n[1]=0;
 
-            for (j = n[0] = n[1] = 0; j < Obs.n; j++) {
-                if (Obs.data[j].sat != sat) continue;
+            for (int j=0;j<Obs.n;j++) {
+                obsd_t *obs=Obs.data+j;
+                int k,freq;
+                bool ok;
 
-                for (k = 0; k < NFREQ + NEXOBS; k++)
-                    if (strstr(code2obs(Obs.data[j].code[k], NULL), code)) break;
-                if (k >= NFREQ + NEXOBS) continue;
-                if (El[j] <= 0.0) continue;
+                if (obs->sat!=sat||El[j]<=0.0) continue;
 
-                x[0][n[0]] = x[1][n[1]] = El[j] * R2D;
+                freq = obstype.midRef(1).toInt(&ok);
 
-                y[0][n[0]] = Obs.data[j].SNR[k] * 0.25;
+                if (ok) {
+                    k=freq-1;
+                }
+                else {
+                    for (k=0;k<NFREQ+NEXOBS;k++) {
+                        if (!strcmp(code2obs(obs->code[k]),qPrintable(obstype))) break;
+                    }
+                    if (k>=NFREQ+NEXOBS) continue;
+                }
+                if (obs->SNR[k]*SNR_UNIT<=0.0) continue;
+
+                y[0][n[0]]=obs->SNR[k]*SNR_UNIT;
                 y[1][n[1]] = !Mp[k] ? 0.0 : Mp[k][j];
 
                 col[0][n[0]] = col[1][n[1]] =
@@ -1742,28 +1840,28 @@ void Plot::DrawSnrE(QPainter &c, int level)
                 }
             }
             if (!level || !(PlotStyle % 2)) {
-                for (i = 0; i < 2; i++) {
+                for (int i = 0; i < 2; i++) {
                     if (!btn[i]->isChecked()) continue;
                     DrawPolyS(GraphE[i], c, x[i], y[i], n[i], CColor[3], 0);
                 }
             }
             if (level && PlotStyle < 2) {
-                for (i = 0; i < 2; i++) {
+                for (int i = 0; i < 2; i++) {
                     if (!btn[i]->isChecked()) continue;
-                    for (j = 0; j < n[i]; j++)
+                    for (int j = 0; j < n[i]; j++)
                         GraphE[i]->DrawMark(c, x[i][j], y[i][j], 0, col[i][j], MarkSize, 0);
                 }
             }
         }
-        for (i = 0; i < 2; i++) {
+        for (int i = 0; i < 2; i++) {
             delete [] x[i];
             delete [] y[i];
             delete [] col[i];
         }
-        if (BtnShowTrack->isChecked() && 0 <= ind && ind < NObs && BtnSol1->isChecked()) {
-            for (i = 0; i < 2; i++) {
+        if (BtnShowTrack->isChecked() && 0 <= ObsIndex && ObsIndex < NObs && BtnSol1->isChecked()) {
+            for (int i = 0; i < 2; i++) {
                 if (!btn[i]->isChecked()) continue;
-                for (j = 0; j < np[i]; j++) {
+                for (int j = 0; j < np[i]; j++) {
                     GraphE[i]->DrawMark(c, xp[i][j], yp[i][j], 0, CColor[0], MarkSize * 2 + 8, 0);
                     GraphE[i]->DrawMark(c, xp[i][j], yp[i][j], 1, CColor[2], MarkSize * 2 + 6, 0);
                     GraphE[i]->DrawMark(c, xp[i][j], yp[i][j], 0, colp[i][j], MarkSize * 2 + 2, 0);
@@ -1773,8 +1871,12 @@ void Plot::DrawSnrE(QPainter &c, int level)
     }
 
     if (ShowStats) {
+        int i;
         for (i = 0; i < 2; i++) if (btn[i]->isChecked()) break;
         if (i < 2) {
+            QPoint p1,p2;
+            int hh=(int)(Disp->font().pixelSize()*1.5);
+
             GraphE[i]->GetPos(p1, p2);
             p1.rx() += 8; p1.ry() += 6;
             s = QString("MARKER: %1 %2").arg(Sta.name).arg(Sta.marker);
@@ -1785,6 +1887,7 @@ void Plot::DrawSnrE(QPainter &c, int level)
             DrawLabel(GraphE[i], c, p1, s, 1, 2); p1.ry() += hh;
         }
         if (btn[1]->isChecked() && nrms > 0 && !BtnShowTrack->isChecked()) {
+            QPoint p1,p2;
             ave = ave / nrms;
             rms = SQRT(rms / nrms);
             GraphE[1]->GetPos(p1, p2);
@@ -1793,18 +1896,11 @@ void Plot::DrawSnrE(QPainter &c, int level)
         }
     }
 }
-// draw mp-skyplot ----------------------------------------------------------
+// draw MP-skyplot ----------------------------------------------------------
 void Plot::DrawMpS(QPainter &c, int level)
 {
-    QString ObsTypeText = ObsType2->currentText(), s;
-    QColor col;
-    obsd_t *obs;
-    double x, y, xp, yp, xs, ys, xl[2], yl[2], p[MAXSAT][2] = { { 0 } }, r;
-    int i, j, sat, ind = ObsIndex;
-    char code[32];
-    char id[32];
-
-    strncpy(code, qPrintable(ObsTypeText.mid(1)), 32);
+    QString obstype = ObsType2->currentText();
+    double r,xl[2],yl[2],xs,ys;
 
     trace(3, "DrawSnrS: level=%d\n", level);
 
@@ -1821,22 +1917,33 @@ void Plot::DrawMpS(QPainter &c, int level)
 
     GraphS->GetScale(xs, ys);
 
-    for (sat = 1; sat <= MAXSAT; sat++) {
+    for (int sat = 1; sat <= MAXSAT; sat++) {
+        double p[MAXSAT][2]={{0}};
+
         if (SatMask[sat - 1] || !SatSel[sat - 1]) continue;
 
-        for (i = 0; i < Obs.n; i++) {
-            if (Obs.data[i].sat != sat) continue;
+        for (int i = 0; i < Obs.n; i++) {
+            obsd_t *obs=Obs.data+i;
+            int j,freq;
+            bool ok;
 
-            for (j = 0; j < NFREQ + NEXOBS; j++)
-                if (strstr(code2obs(Obs.data[i].code[j], NULL), code)) break;
-            if (j >= NFREQ + NEXOBS) continue;
-            if (El[i] <= 0.0) continue;
+            if (obs->sat!=sat||El[i]<=0.0) continue;
 
-            x = r * sin(Az[i]) * (1.0 - 2.0 * El[i] / PI);
-            y = r * cos(Az[i]) * (1.0 - 2.0 * El[i] / PI);
-            xp = p[sat - 1][0];
-            yp = p[sat - 1][1];
-            col = MpColor(!Mp[j] ? 0.0 : Mp[j][i]);
+            freq = obstype.midRef(1).toInt(&ok);
+
+            if (ok) {
+                j=freq-1;
+            }
+            else {                for (j=0;j<NFREQ+NEXOBS;j++) {
+                    if (!strcmp(code2obs(obs->code[j]),qPrintable(obstype))) break;
+                }
+                if (j>=NFREQ+NEXOBS) continue;
+            }
+            double x=r*sin(Az[i])*(1.0-2.0*El[i]/PI);
+            double y=r*cos(Az[i])*(1.0-2.0*El[i]/PI);
+            double xp=p[sat-1][0];
+            double yp=p[sat-1][1];
+            QColor col=MpColor(!Mp[j]?0.0:Mp[j][i]);
 
             if ((x - xp) * (x - xp) + (y - yp) * (y - yp) >= xs * xs) {
                 int siz = PlotStyle < 2 ? MarkSize : 1;
@@ -1848,26 +1955,36 @@ void Plot::DrawMpS(QPainter &c, int level)
         }
     }
 
-    if (BtnShowTrack->isChecked() && 0 <= ind && ind < NObs) {
-        for (i = IndexObs[ind]; i < Obs.n && i < IndexObs[ind + 1]; i++) {
-            obs = &Obs.data[i];
-            if (SatMask[obs->sat - 1] || !SatSel[obs->sat - 1] || El[i] <= 0.0) continue;
-            for (j = 0; j < NFREQ + NEXOBS; j++)
-                if (strstr(code2obs(obs->code[j], NULL), code)) break;
-            if (j >= NFREQ + NEXOBS) continue;
-            col = MpColor(!Mp[j] ? 0.0 : Mp[j][i]);
+    if (BtnShowTrack->isChecked() && 0 <= ObsIndex && ObsIndex < NObs) {
+        for (int i=IndexObs[ObsIndex];i<Obs.n&&i<IndexObs[ObsIndex+1];i++) {
+            obsd_t *obs=Obs.data+i;
+            int j,freq;
+            bool ok;
 
-            x = r * sin(Az[i]) * (1.0 - 2.0 * El[i] / PI);
-            y = r * cos(Az[i]) * (1.0 - 2.0 * El[i] / PI);
+            freq=obstype.mid(1).toInt(&ok);
 
+            if (ok) {
+                j=freq-1;
+            }
+            else {
+                for (j=0;j<NFREQ+NEXOBS;j++) {
+                    if (!strcmp(code2obs(obs->code[j]),qPrintable(obstype))) break;
+                }
+                if (j>=NFREQ+NEXOBS) continue;
+            }
+            QColor col=MpColor(!Mp[j]?0.0:Mp[j][i]);
+            double x = r * sin(Az[i]) * (1.0 - 2.0 * El[i] / PI);
+            double y = r * cos(Az[i]) * (1.0 - 2.0 * El[i] / PI);
+
+            char id[32];
             satno2id(obs->sat, id);
             GraphS->DrawMark(c, x, y, 0, col, Disp->font().pointSize() * 2 + 5, 0);
             GraphS->DrawMark(c, x, y, 1, CColor[2], Disp->font().pointSize() * 2 + 5, 0);
-            GraphS->DrawText(c, x, y, s = id, CColor[0], 0, 0, 0);
+            GraphS->DrawText(c, x, y, QString(id), CColor[0], 0, 0, 0);
         }
     }
 }
-// draw residuals and snr/elevation plot ------------------------------------
+// draw residuals and SNR/elevation plot ------------------------------------
 void Plot::DrawRes(QPainter &c, int level)
 {
     QString label[] = {
@@ -1877,19 +1994,18 @@ void Plot::DrawRes(QPainter &c, int level)
     };
     QString str;
     QPushButton *btn[] = { BtnOn1, BtnOn2, BtnOn3 };
-    QPoint p1, p2;
-    double xc, yc, xl[2], yl[2], sum[2] = { 0 }, sum2[2] = { 0 };
-    int i, j, sel = !BtnSol1->isChecked() && BtnSol2->isChecked() ? 1 : 0, ind = SolIndex[sel];
-    int frq = FrqType->currentIndex() + 1;
+    int sel = !BtnSol1->isChecked() && BtnSol2->isChecked() ? 1 : 0, ind = SolIndex[sel];
+    int frq = FrqType->currentIndex() + 1, n=SolStat[sel].n;
 
     trace(3, "DrawRes: level=%d\n", level);
 
     if (0 <= ind && ind < SolData[sel].n && BtnShowTrack->isChecked() && BtnFixHoriz->isChecked()) {
         gtime_t t = SolData[sel].data[ind].time;
 
-        for (i = 0; i < 3; i++) {
+        for (int i=0;i<3;i++) {
+            double off,xc,yc,xl[2],yl[2];
+
             if (BtnFixHoriz->isChecked()) {
-                double off;
                 GraphG[i]->GetLim(xl, yl);
                 off = Xcent * (xl[1] - xl[0]) / 2.0;
                 GraphG[i]->GetCent(xc, yc);
@@ -1901,50 +2017,53 @@ void Plot::DrawRes(QPainter &c, int level)
             }
         }
     }
-    j = -1;
-    for (i = 0; i < 3; i++) if (btn[i]->isChecked()) j = i;
+    int j = -1;
+    for (int i = 0; i < 3; i++) if (btn[i]->isChecked()) j = i;
 
-    for (i = 0; i < 3; i++) {
+    for (int i = 0; i < 3; i++) {
         if (!btn[i]->isChecked()) continue;
         GraphG[i]->XLPos = TimeLabel ? (i == j ? 6 : 5) : (i == j ? 1 : 0);
         GraphG[i]->Week = Week;
         GraphG[i]->DrawAxis(c, ShowLabel, ShowLabel);
     }
 
-    double *x, *y[4];
-    int n = SolStat[sel].n;
-    int m, ns[2] = { 0 }, *q, *s;
-
     if (n > 0 && ((sel == 0 && BtnSol1->isChecked()) || (sel == 1 && BtnSol2->isChecked()))) {
-        q = new int[n];
-        s = new int[n];
-        x = new double[n],
-        y[0] = new double[n];
-        y[1] = new double[n];
-        y[2] = new double[n];
-        y[3] = new double[n];
+        QColor *col[4];
+        double *x[4],*y[4],sum[2]={0},sum2[2]={0};
+        int ns[2]={0};
+
+        for (int i=0;i<4;i++) {
+            x[i]=new double[n],
+            y[i]=new double[n];
+            col[i]=new QColor[n];
+        }
 
         for (int sat = 1; sat <= MAXSAT; sat++) {
-            char id[32];
-            satno2id(sat, id);
             if (SatMask[sat - 1] || !SatSel[sat - 1]) continue;
-            m = 0;
+
+            int m[4]={0};
+
             for (int i = 0; i < n; i++) {
                 solstat_t *p = SolStat[sel].data + i;
+                int q;
+
                 if (p->sat != sat || p->frq != frq) continue;
                 if (p->resp == 0.0 && p->resc == 0.0) continue;
-                x[m] = TimePos(p->time);
-                y[0][m] = p->resp;
-                y[1][m] = p->resc;
-                y[2][m] = p->el * R2D;
-                y[3][m] = p->snr * 0.25;
+                x[0][m[0]]=x[1][m[1]]=x[2][m[2]]=x[3][m[3]]= TimePos(p->time);
+                y[0][m[0]] = p->resp;
+                y[1][m[1]] = p->resc;
+                y[2][m[2]] = p->el * R2D;
+                y[3][m[3]] = p->snr * SNR_UNIT;
 
-                if (!(p->flag >> 5)) q[m] = 0;          // invalid
-                else if ((p->flag & 7) <= 1) q[m] = 2;  // float
-                else if ((p->flag & 7) <= 3) q[m] = 1;  // fixed
-                else q[m] = 6;                          // ppp
+                if (!(p->flag >> 5)) q = 0;          // invalid
+                else if ((p->flag & 7) <= 1) q = 2;  // float
+                else if ((p->flag & 7) <= 3) q = 1;  // fixed
+                else q = 6;                          // ppp
 
-                s[m++] = (p->flag >> 3) & 0x3;          // slip
+                col[0][m[0]]=MColor[0][q];
+                col[1][m[1]]=((p->flag>>3)&1)?Qt::red:MColor[0][q];
+                col[2][m[2]]=MColor[0][1];
+                col[3][m[3]]=MColor[0][4];        // slip
 
                 if (p->resp != 0.0) {
                     sum [0] += p->resp;
@@ -1956,41 +2075,38 @@ void Plot::DrawRes(QPainter &c, int level)
                     sum2[1] += p->resc * p->resc;
                     ns[1]++;
                 }
+                m[0]++; m[1]++; m[2]++; m[3]++;
             }
             for (int i = 0; i < 3; i++) {
                 if (!btn[i]->isChecked()) continue;
                 if (!level || !(PlotStyle % 2)) {
-                    DrawPolyS(GraphG[i], c, x, y[i], m, CColor[3], 0);
-                    if (i == 2) DrawPolyS(GraphG[i], c, x, y[3], m, CColor[3], 0);
+                    DrawPolyS(GraphG[i], c, x[i], y[i], m[i], CColor[3], 0);
+                    if (i == 2) DrawPolyS(GraphG[i], c, x[3], y[3], m[3], CColor[3], 0);
                 }
                 if (level && PlotStyle < 2) {
-                    QColor color;
-                    for (int j = 0; j < m; j++) {
-                        color = i < 2 ? MColor[0][q[j]] : MColor[0][1];
-                        GraphG[i]->DrawMark(c, x[j], y[i][j], 0, color, MarkSize, 0);
-                        if (i == 2) GraphG[i]->DrawMark(c, x[j], y[3][j], 0, MColor[0][4], MarkSize, 0);
+
+                    for (int j=0;j<m[i];j++) {
+                        GraphG[i]->DrawMark(c, x[i][j],y[i][j],0,col[i][j],MarkSize,0);
                     }
-                }
-                if (level && i == 1) { /* slip */
-                    for (int j = 0; j < m; j++) {
-                        if (!s[j]) continue;
-                        QColor color = (s[j] & 1) ? MColor[0][5] : MColor[0][0];
-                        GraphG[i]->DrawMark(c, x[j], y[i][j], 4, color, MarkSize * 3, 90);
+                    if (i==2) {
+                        for (int j=0;j<m[3];j++) {
+                            GraphG[i]->DrawMark(c, x[3][j],y[3][j],0,col[3][j],MarkSize,0);
+                        }
                     }
                 }
             }
         }
-        delete [] x;
-        delete [] q;
-        delete [] s;
-        delete [] y[0];
-        delete [] y[1];
-        delete [] y[2];
-        delete [] y[3];
+        for (int i=0;i<4;i++) {
+            delete [] x[i];
+            delete [] y[i];
+            delete [] col[i];
+        }
 
         if (ShowStats) {
             for (int i = 0; i < 2; i++) {
                 if (!btn[i]->isChecked()) continue;
+                QPoint p1,p2;
+
                 double ave, std, rms;
                 ave = ns[i] <= 0 ? 0.0 : sum[i] / ns[i];
                 std = ns[i] <= 1 ? 0.0 : SQRT((sum2[i] - 2.0 * sum[i] * ave + ns[i] * ave * ave) / (ns[i] - 1));
@@ -2006,6 +2122,7 @@ void Plot::DrawRes(QPainter &c, int level)
             for (int i = 0, j = 0; i < 3; i++) {
                 if (!btn[i]->isChecked()) continue;
                 gtime_t t = SolData[sel].data[ind].time;
+                double xl[2], yl[2];
                 GraphG[i]->GetLim(xl, yl);
                 xl[0] = xl[1] = TimePos(t);
                 GraphG[i]->DrawPoly(c, xl, yl, 2, ind == 0 ? CColor[1] : CColor[2], 0);
@@ -2016,11 +2133,123 @@ void Plot::DrawRes(QPainter &c, int level)
             }
         }
     }
-    for (i = 0; i < 3; i++) {
+    for (int i = 0; i < 3; i++) {
         if (!btn[i]->isChecked()) continue;
+        QPoint p1, p2;
         GraphG[i]->GetPos(p1, p2);
         p1.rx() += 5; p1.ry() += 3;
         DrawLabel(GraphG[i], c, p1, label[i], 1, 2);
+    }
+}
+// draw residuals - elevation plot ------------------------------------------
+void Plot::DrawResE(QPainter &c, int level)
+{
+    QPushButton *btn[]={BtnOn1,BtnOn2,BtnOn3};
+    QString label[]={"Pseudorange Residuals (m)","Carrier-Phase Residuals (m)"};
+    int j,sel=!BtnSol1->isChecked()&&BtnSol2->isChecked()?1:0;
+    int frq=FrqType->currentIndex()+1,n=SolStat[sel].n;
+
+    trace(3,"DrawResE: level=%d\n",level);
+
+    j=0;
+    for (int i=0;i<2;i++) if (btn[i]->isChecked()) j=i;
+    for (int i=0;i<2;i++) {
+        if (!btn[i]->isChecked()) continue;
+
+        QPoint p1,p2;
+        double xl[2]={-0.001,90.0};
+        double yl[2][2]={{-MaxMP,MaxMP},{-MaxMP/100.0,MaxMP/100.0}};
+
+        GraphE[i]->XLPos=i==j?1:0;
+        GraphE[i]->YLPos=1;
+        GraphE[i]->SetLim(xl,yl[i]);
+        GraphE[i]->SetTick(0.0,0.0);
+        GraphE[i]->DrawAxis(c, 1,1);
+        GraphE[i]->GetPos(p1,p2);
+        p1.setX(Disp->font().pixelSize());
+        p1.setY((p1.y()+p2.y())/2);
+        GraphE[i]->DrawText(c, p1,label[i],CColor[2],0,0,90);
+        if (i==j) {
+            p2.rx()-=8; p2.ry()-=6;
+            GraphE[i]->DrawText(c, p2,"Elevation ( ° )",CColor[2],2,1,0);
+        }
+    }
+    if (n>0&&((sel==0&&BtnSol1->isChecked())||(sel==1&&BtnSol2->isChecked()))) {
+        QColor *col[2];
+        double *x[2],*y[2],sum[2]={0},sum2[2]={0};
+        int ns[2]={0};
+
+        for (int i=0;i<2;i++) {
+            x  [i]=new double[n],
+            y  [i]=new double[n];
+            col[i]=new QColor[n];
+        }
+        for (int sat=1;sat<=MAXSAT;sat++) {
+            if (SatMask[sat-1]||!SatSel[sat-1]) continue;
+            int q,m[2]={0};
+
+            for (int i=0;i<n;i++) {
+                solstat_t *p=SolStat[sel].data+i;
+                if (p->sat!=sat||p->frq!=frq) continue;
+
+                x[0][m[0]]=x[1][m[1]]=p->el*R2D;
+                y[0][m[0]]=p->resp;
+                y[1][m[1]]=p->resc;
+                if      (!(p->flag>>5))  q=0; // invalid
+                else if ((p->flag&7)<=1) q=2; // float
+                else if ((p->flag&7)<=3) q=1; // fixed
+                else                     q=6; // ppp
+
+                col[0][m[0]]=MColor[0][q];
+                col[1][m[1]]=((p->flag>>3)&1)?Qt::red:MColor[0][q];
+
+                if (p->resp!=0.0) {
+                    sum [0]+=p->resp;
+                    sum2[0]+=p->resp*p->resp;
+                    ns[0]++;
+                }
+                if (p->resc!=0.0) {
+                    sum [1]+=p->resc;
+                    sum2[1]+=p->resc*p->resc;
+                    ns[1]++;
+                }
+                m[0]++; m[1]++;
+            }
+            for (int i=0;i<2;i++) {
+                if (!btn[i]->isChecked()) continue;
+                if (!level||!(PlotStyle%2)) {
+                    DrawPolyS(GraphE[i],c,x[i],y[i],m[i],CColor[3],0);
+                }
+                if (level&&PlotStyle<2) {
+                    for (int j=0;j<m[i];j++) {
+                        GraphE[i]->DrawMark(c, x[i][j],y[i][j],0,col[i][j],MarkSize,0);
+                    }
+                }
+            }
+        }
+        for (int i=0;i<2;i++) {
+            delete [] x[i];
+            delete [] y[i];
+            delete [] col[i];
+        }
+        if (ShowStats) {
+            for (int i=0;i<2;i++) {
+                if (!btn[i]->isChecked()) continue;
+
+                QString str;
+                QPoint p1,p2;
+                double ave,std,rms;
+
+                ave=ns[i]<=0?0.0:sum[i]/ns[i];
+                std=ns[i]<=1?0.0:SQRT((sum2[i]-2.0*sum[i]*ave+ns[i]*ave*ave)/(ns[i]-1));
+                rms=ns[i]<=0?0.0:SQRT(sum2[i]/ns[i]);
+                GraphE[i]->GetPos(p1,p2);
+                p1.setX(p2.x()-5);
+                p1.ry()+=3;
+                str= QString("AVE=%1m STD=%2m RMS=%3m").arg(ave,0,'f',3).arg(std,0,'f',3).arg(rms,0,'f',3);
+                DrawLabel(GraphG[i],c,p1,str,2,2);
+            }
+        }
     }
 }
 // draw polyline without time-gaps ------------------------------------------
@@ -2045,94 +2274,33 @@ void Plot::DrawMark(Graph *g, QPainter &c, const QPoint &p, int mark, const QCol
 {
     g->DrawMark(c, p, mark, color, CColor[0], size, rot);
 }
-// refresh google earth/map view --------------------------------------------------
-void Plot::Refresh_GEView(void)
+// refresh map view --------------------------------------------------
+void Plot::Refresh_MapView(void)
 {
-    TIMEPOS *vel;
     sol_t *sol;
-    double pos[3] = { 0 }, heading, ddeg;
-    int opts[12], sel = !BtnSol1->isChecked() && BtnSol2->isChecked() ? 1 : 0;
-
-    // get ge options
-    googleEarthView->GetOpts(opts);
+    double pos[3] = { 0 };
 
     if (BtnShowTrack->isChecked()) {
-        // update mark
-        if (BtnSol2->isChecked() && SolData[1].n > 0) {
-            sol = getsol(SolData + 1, SolIndex[1]);
+        if (BtnSol2->isChecked() && SolData[1].n>0&&
+            (sol=getsol(SolData+1,SolIndex[1]))) {
             ecef2pos(sol->rr, pos);
-            pos[2] -= geoidh(pos);
-            googleEarthView->SetMark(2, pos);
-            googleEarthView->ShowMark(2);
-            googleMapView->SetMark(2, pos);
-            googleMapView->ShowMark(2);
+            mapView->SetMark(2,pos[0]*R2D,pos[1]*R2D);
+            mapView->ShowMark(2);
+
         } else {
-            googleEarthView->HideMark(2);
-            googleMapView->HideMark(2);
+            mapView->HideMark(2);
         }
-        if (BtnSol1->isChecked() && SolData[0].n > 0) {
-            sol = getsol(SolData, SolIndex[0]);
+        if (BtnSol1->isChecked() && SolData[0].n > 0 &&
+                (sol=getsol(SolData,SolIndex[0]))) {
             ecef2pos(sol->rr, pos);
-            pos[2] -= geoidh(pos);
-            googleEarthView->SetMark(1, pos);
-            googleEarthView->ShowMark(1);
-            googleMapView->SetMark(1, pos);
-            googleMapView->ShowMark(1);
+            mapView->SetMark(1, pos[0]*R2D,pos[1]*R2D);
+            mapView->ShowMark(1);
         } else {
-            googleEarthView->HideMark(1);
-            googleMapView->HideMark(1);
-        }
-        // update heading
-        if (opts[10] && norm(pos, 3) > 0.0) {
-            vel = SolToPos(SolData + sel, SolIndex[sel], 0, 1);
-            heading = ATAN2(vel->x[0], vel->y[0]) * R2D;
-
-            // filter
-            if (vel->x[0] * vel->x[0] + vel->y[0] * vel->y[0] > 0.5) {
-                ddeg = heading - GEHeading;
-                if (ddeg < -180.0) ddeg += 360.0;
-                else if (ddeg > 180.0) ddeg -= 360.0;
-                GEHeading += 0.5 * ddeg;
-                if (GEHeading < -180.0) GEHeading += 360.0;
-                else if (GEHeading > 180.0) GEHeading -= 360.0;
-            }
-            googleEarthView->SetHeading(GEHeading);
-
-            delete vel;
+            mapView->HideMark(1);
         }
     } else {
-        googleEarthView->HideMark(1);
-        googleEarthView->HideMark(2);
-        googleMapView->HideMark(1);
-        googleMapView->HideMark(2);
-    }
-    // update track
-    if (BtnSol1->isChecked() && !BtnConnect->isChecked()) {
-        if (!GEDataState[0]) {
-            googleEarthView->HideTrack(1);
-            GEDataState[0] = googleEarthView->UpdateTrack(1, SolData);
-        }
-        googleEarthView->ShowTrack(1);
-    } else {
-        googleEarthView->HideTrack(1);
-    }
-    if (BtnSol2->isChecked() && !BtnConnect->isChecked()) {
-        if (!GEDataState[1]) {
-            googleEarthView->HideTrack(2);
-            GEDataState[1] = googleEarthView->UpdateTrack(2, SolData + 1);
-        }
-        googleEarthView->ShowTrack(2);
-    } else {
-        googleEarthView->HideTrack(2);
+        mapView->HideMark(1);
+        mapView->HideMark(2);
     }
 
-    // update points
-    if (BtnShowMap->isChecked())
-        googleEarthView->ShowPoint();
-    else
-        googleEarthView->HidePoint();
-}
-// refresh google map view -----------------------------------------------------
-void Plot::Refresh_GMView(void)
-{
 }

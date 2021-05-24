@@ -24,9 +24,9 @@ void Plot::UpdateInfo(void)
 // update time-information for observation-data plot ------------------------
 void Plot::UpdateTimeObs(void)
 {
-    QString msgs1[] = { " OBS=L1/2 ", " L1 ", " L2 ", " L1/2/5 ", " L1/5 ", "", " L5 " };
+    QString msgs1[] = { " #FRQ=5 ", " 4 ", " 3 ", " 2 ", " 1", "", "" };
     QString msgs2[] = { " SNR=...45.", "..40.", "..35.", "..30.", "..25 ", "", " <25 " };
-    QString msgs3[] = { " SYS=GPS ", "GLO ", "GAL ", "QZS ", "BDS ", "SBS ", "" };
+    QString msgs3[] = { " SYS=GPS ", "GLO ", "GAL ", "QZS ", "BDS ", "IRN ", "SBS" };
     QString msgs4[] = { " MP=..0.6", "..0.3", "..0.0..", "-0.3..", "-0.6..", "", "" };
     QString msgs[8];
     QString msg;
@@ -80,7 +80,7 @@ void Plot::UpdateTimeSol(void)
     QString msg;
     QString msgs[8];
     sol_t *data;
-    double xyz[3], pos[3], r, az, el;
+    double pos[3], r, az, el;
     int sel = BtnSol1->isChecked() || !BtnSol2->isChecked() ? 0 : 1, ind = SolIndex[sel];
     QString tstr;
 
@@ -95,10 +95,11 @@ void Plot::UpdateTimeSol(void)
         msg += " : ";
 
         if (PLOT_SOLP <= PlotType && PlotType <= PLOT_SOLA) {
-            PosToXyz(data->time, data->rr, data->type, xyz);
+            TIMEPOS *p=SolToPos(SolData+sel,ind,0,PlotType-PLOT_SOLP);
             u = unit[PlotType - PLOT_SOLP];
             msg += QString("E=%1%2 N=%3%2 U=%4%2 Q=")
-                   .arg(xyz[0], 7, 'f', 4).arg(u).arg(xyz[1], 7, 'f', 4).arg(xyz[2], 7, 'f', 4);
+                   .arg(p->x[0], 7, 'f', 4).arg(u).arg(p->y[0], 7, 'f', 4).arg(p->z[0], 7, 'f', 4);
+            delete p;
         } else if (PlotType == PLOT_NSAT) {
             msg += QString("NS=%1 AGE=%2 RATIO=%3 Q=").arg(data->ns).arg(data->age, 0, 'f', 1)
                    .arg(data->ratio, 0, 'f', 1);
@@ -122,14 +123,14 @@ void Plot::UpdateTimeSol(void)
 void Plot::UpdateInfoObs(void)
 {
     QString msgs0[] = { " NSAT", " GDOP", " PDOP", " HDOP", " VDOP", "", "" };
-    QString msgs1[] = { " OBS=L1/2 ", " L1 ", " L2 ", " L1/2/5 ", " L1/5 ", "", " L5 " };
+    QString msgs1[] = { " #FRQ=5 ", " 4 ", " 3 ", " 2 ", " 1 ", "", "" };
     QString msgs2[] = { " SNR=...45.", "..40.", "..35.", "..30.", "..25 ", "", " <25 " };
-    QString msgs3[] = { " SYS=GPS ", "GLO ", "GAL ", "QZS ", "BDS ", "SBS ", "" };
+    QString msgs3[] = { " SYS=GPS ", "GLO ", "GAL ", "QZS ", "BDS ", "IRN ", "SBS" };
     QString msgs4[] = { " MP=..0.6", "..0.3", "..0.0..", "-0.3..", "-0.6..", "", "" };
     QString msg;
     QString msgs[8];
     gtime_t ts = { 0, 0 }, te = { 0, 0 }, t, tp = { 0, 0 };
-    int i, n = 0, ne = 0;
+    int i, n = 0, ne = 0, p;
     QString s1, s2;
 
     trace(3, "UpdateInfoObs:\n");
@@ -146,6 +147,7 @@ void Plot::UpdateInfoObs(void)
     if (n > 0) {
         TimeStr(ts, 0, 0, s1);
         TimeStr(te, 0, 1, s2);
+        if (TimeLabel&&(p=s1.indexOf(' '))) s1=s1.left(p);
         msg = QString("[1]%1-%2 : EP=%3 N=%4").arg(s1).arg(s2.mid(TimeLabel ? 5 : 0)).arg(ne).arg(n);
 
         for (i = 0; i < 7; i++) {
@@ -170,7 +172,7 @@ void Plot::UpdateInfoSol(void)
     sol_t *data;
     gtime_t ts = { 0, 0 }, te = { 0, 0 };
     double r[3], b, bl[2] = { 1E9, 0.0 };
-    int i, j, n = 0, nq[8] = { 0 }, sel = BtnSol1->isChecked() || !BtnSol2->isChecked() ? 0 : 1;
+    int i, j,p, n = 0, nq[8] = { 0 }, sel = BtnSol1->isChecked() || !BtnSol2->isChecked() ? 0 : 1;
     QString s1, s2;
 
     trace(3, "UpdateInfoSol:\n");
@@ -210,6 +212,7 @@ void Plot::UpdateInfoSol(void)
 
         TimeStr(ts, 0, 0, s1);
         TimeStr(te, 0, 1, s2);
+        if (TimeLabel&&(p=s1.indexOf(' '))) s1=s1.left(p);
         msg += QString("%1-%2 : N=%3").arg(s1).arg(s2.mid(TimeLabel ? 5 : 0)).arg(n);
 
         if (bl[0] + 100.0 < bl[1])
@@ -248,8 +251,10 @@ void Plot::UpdatePlotType(void)
         PlotTypeS->addItem(PTypes[PLOT_SKY]);
         PlotTypeS->addItem(PTypes[PLOT_DOP]);
     }
-    if (SolStat[0].n > 0 || SolStat[1].n > 0)
+    if (SolStat[0].n > 0 || SolStat[1].n > 0) {
         PlotTypeS->addItem(PTypes[PLOT_RES]);
+        PlotTypeS->addItem(PTypes[PLOT_RESE]);
+    }
     if (NObs > 0) {
         PlotTypeS->addItem(PTypes[PLOT_SNR]);
         PlotTypeS->addItem(PTypes[PLOT_SNRE]);
@@ -293,6 +298,7 @@ void Plot::UpdateSatList(void)
         case SYS_GAL: strcpy(s, "E"); break;
         case SYS_QZS: strcpy(s, "J"); break;
         case SYS_CMP: strcpy(s, "C"); break;
+        case SYS_IRN: strcpy(s, "I"); break;
         case SYS_SBS: strcpy(s, "S"); break;
         }
         SatList->addItem(s);
@@ -306,11 +312,16 @@ void Plot::UpdateSatList(void)
 
     UpdateSatSel();
 }
+// string compare --------------------------------------------------------------
+static int _strcmp(const void *str1, const void *str2)
+{
+    return strcmp(*(const char **)str1, *(const char **)str2);
+}
 // update observation type pull-down menu --------------------------------------
 void Plot::UpdateObsType(void)
 {
-    char *codes[MAXCODE + 1], freqs[] = "125678";
-    int i, j, n = 0, cmask[MAXCODE + 1] = { 0 }, fmask[6] = { 0 };
+    char *codes[MAXCODE + 1], *obs;
+    int i, j, n = 0, cmask[MAXCODE + 1] = { 0 };
 
     trace(3, "UpdateObsType\n");
 
@@ -319,17 +330,17 @@ void Plot::UpdateObsType(void)
 
     for (unsigned char c = 1; c <= MAXCODE; c++) {
         if (!cmask[c]) continue;
-        codes[n++] = code2obs(c, &j);
-        fmask[j - 1] = 1;
+        if (!*(obs=code2obs((uint8_t)i))) continue;
+        codes[n++]=obs;
     }
+    qsort(codes,n,sizeof(char *),_strcmp);
     ObsType->clear();
     ObsType2->clear();
     ObsType->addItem(tr("ALL"));
 
-    for (i = 0; i < 6; i++) {
-        if (!fmask[i]) continue;
-        ObsType->addItem(QString("L%1").arg(freqs[i]));
-        ObsType2->addItem(QString("L%1").arg(freqs[i]));
+    for (i = 0; i < NFREQ; i++) {
+        ObsType->addItem(QString("L%1").arg(i+1));
+        ObsType2->addItem(QString("L%1").arg(i+1));
     }
     for (i = 0; i < n; i++) {
         ObsType->addItem(QString("L%1").arg(codes[i]));
@@ -377,7 +388,7 @@ void Plot::UpdatePoint(int x, int y)
             if (az < 0.0) az += 360.0;
             msg = QString("AZ=%1%2 EL=%3%4").arg(az, 5, 'f', 1).arg(degreeChar).arg(el, 4, 'f', 1).arg(degreeChar);
         }
-    } else if (PlotType == PLOT_SNRE) { // snr-el-plot
+    } else if (PlotType == PLOT_SNRE||PlotType==PLOT_RESE) { // snr-el-plot
         GraphE[0]->ToPos(p, q[0], q[1]);
         msg = QString("EL=%1%2").arg(q[0], 4, 'f', 1).arg(degreeChar);
     } else {

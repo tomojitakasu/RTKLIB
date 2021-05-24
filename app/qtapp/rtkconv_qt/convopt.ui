@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>833</width>
-    <height>547</height>
+    <height>590</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -83,6 +83,11 @@
         <item>
          <property name="text">
           <string>3.03</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>3.04</string>
          </property>
         </item>
        </widget>
@@ -184,12 +189,12 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QCheckBox" name="OutTime">
+          <widget class="QCheckBox" name="PhaseShift">
            <property name="toolTip">
             <string/>
            </property>
            <property name="text">
-            <string>Time Corr</string>
+            <string>Phase Shift</string>
            </property>
            <property name="checked">
             <bool>false</bool>
@@ -197,15 +202,9 @@
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="ScanObs">
-           <property name="toolTip">
-            <string/>
-           </property>
+          <widget class="QCheckBox" name="HalfCyc">
            <property name="text">
-            <string>Scan Obs Types</string>
-           </property>
-           <property name="checked">
-            <bool>false</bool>
+            <string>Half Cyc Corr</string>
            </property>
           </widget>
          </item>
@@ -223,6 +222,19 @@
           </widget>
          </item>
          <item>
+          <widget class="QCheckBox" name="OutTime">
+           <property name="toolTip">
+            <string/>
+           </property>
+           <property name="text">
+            <string>Time Corr</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QCheckBox" name="OutLeaps">
            <property name="toolTip">
             <string/>
@@ -232,13 +244,6 @@
            </property>
            <property name="checked">
             <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="HalfCyc">
-           <property name="text">
-            <string>Half Cyc Corr</string>
            </property>
           </widget>
          </item>
@@ -267,7 +272,7 @@
          <string/>
         </property>
         <property name="text">
-         <string>RunBy/Obsv/Agency</string>
+         <string>RunBy/Obsrv/Agency</string>
         </property>
        </widget>
       </item>
@@ -281,19 +286,6 @@
         </property>
         <property name="checked">
          <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="5" colspan="2">
-       <widget class="QLineEdit" name="Ant2">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string/>
         </property>
        </widget>
       </item>
@@ -345,7 +337,7 @@
          <string/>
         </property>
         <property name="text">
-         <string>Ant Delta H/E/N</string>
+         <string>Antenna Delta H/E/N</string>
         </property>
        </widget>
       </item>
@@ -706,19 +698,6 @@
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="Nav5">
-           <property name="toolTip">
-            <string/>
-           </property>
-           <property name="text">
-            <string>SBS</string>
-           </property>
-           <property name="checked">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
           <widget class="QCheckBox" name="Nav6">
            <property name="toolTip">
             <string/>
@@ -734,7 +713,20 @@
          <item>
           <widget class="QCheckBox" name="Nav7">
            <property name="text">
-            <string>IRN</string>
+            <string>NavIC</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="Nav5">
+           <property name="toolTip">
+            <string/>
+           </property>
+           <property name="text">
+            <string>SBS</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
            </property>
           </widget>
          </item>
@@ -832,7 +824,7 @@
          <string/>
         </property>
         <property name="title">
-         <string>Frequencies</string>
+         <string>GNSS Signals</string>
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout_3">
          <item>
@@ -867,7 +859,7 @@
             <string/>
            </property>
            <property name="text">
-            <string>L5/L3</string>
+            <string>L3</string>
            </property>
            <property name="checked">
             <bool>false</bool>
@@ -880,7 +872,7 @@
             <string/>
            </property>
            <property name="text">
-            <string>L6</string>
+            <string>L4</string>
            </property>
            <property name="checked">
             <bool>false</bool>
@@ -893,30 +885,10 @@
             <string/>
            </property>
            <property name="text">
-            <string>L7</string>
+            <string>L5</string>
            </property>
            <property name="checked">
             <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="Freq6">
-           <property name="toolTip">
-            <string/>
-           </property>
-           <property name="text">
-            <string>L8</string>
-           </property>
-           <property name="checked">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="Freq7">
-           <property name="text">
-            <string>L9</string>
            </property>
           </widget>
          </item>
@@ -930,6 +902,26 @@
            </property>
            <property name="text">
             <string>Mask...</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="BtnFcn">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="toolTip">
+            <string/>
+           </property>
+           <property name="text">
+            <string>FCN...</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="BtnFreq">
+           <property name="text">
+            <string>?</string>
            </property>
           </widget>
          </item>
@@ -1092,7 +1084,6 @@
   <tabstop>Rec2</tabstop>
   <tabstop>Ant0</tabstop>
   <tabstop>Ant1</tabstop>
-  <tabstop>Ant2</tabstop>
   <tabstop>AutoPos</tabstop>
   <tabstop>AppPos0</tabstop>
   <tabstop>AppPos1</tabstop>
@@ -1100,16 +1091,12 @@
   <tabstop>AntDel0</tabstop>
   <tabstop>AntDel1</tabstop>
   <tabstop>AntDel2</tabstop>
-  <tabstop>OutTime</tabstop>
-  <tabstop>ScanObs</tabstop>
+  <tabstop>PhaseShift</tabstop>
   <tabstop>OutIono</tabstop>
-  <tabstop>OutLeaps</tabstop>
-  <tabstop>HalfCyc</tabstop>
   <tabstop>Nav1</tabstop>
   <tabstop>Nav2</tabstop>
   <tabstop>Nav3</tabstop>
   <tabstop>Nav4</tabstop>
-  <tabstop>Nav5</tabstop>
   <tabstop>Nav6</tabstop>
   <tabstop>Nav7</tabstop>
   <tabstop>ExSats</tabstop>
@@ -1122,8 +1109,6 @@
   <tabstop>Freq3</tabstop>
   <tabstop>Freq4</tabstop>
   <tabstop>Freq5</tabstop>
-  <tabstop>Freq6</tabstop>
-  <tabstop>Freq7</tabstop>
   <tabstop>BtnMask</tabstop>
   <tabstop>RcvOption</tabstop>
   <tabstop>TraceLevel</tabstop>

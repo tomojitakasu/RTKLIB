@@ -25,7 +25,7 @@ int showmsg(const char *format, ...)
 }
 //---------------------------------------------------------------------------
 const QString PTypes[] = {
-    QT_TR_NOOP("Gnd Trk"), QT_TR_NOOP("Position"), QT_TR_NOOP("Velocity"), QT_TR_NOOP("Accel"),	QT_TR_NOOP("NSat"),	 QT_TR_NOOP("Residuals"),
+    QT_TR_NOOP("Gnd Trk"), QT_TR_NOOP("Position"), QT_TR_NOOP("Velocity"), QT_TR_NOOP("Accel"),	QT_TR_NOOP("NSat"),	 QT_TR_NOOP("Residuals"), QT_TR_NOOP("Resid-EL"),
     QT_TR_NOOP("Sat Vis"), QT_TR_NOOP("Skyplot"),  QT_TR_NOOP("DOP/NSat"), QT_TR_NOOP("SNR/MP/EL"), QT_TR_NOOP("SNR/MP-EL"), QT_TR_NOOP("MP-Skyplot"), ""
 };
 // show message in status-bar -----------------------------------------------
@@ -290,48 +290,54 @@ QColor Plot::SysColor(int sat)
     case SYS_GAL: return MColor[0][3];
     case SYS_QZS: return MColor[0][4];
     case SYS_CMP: return MColor[0][5];
-    case SYS_SBS: return MColor[0][6];
+    case SYS_IRN: return MColor[0][6];
+    case SYS_SBS: return MColor[0][0];
     }
     return MColor[0][0];
 }
 // get observation data color -----------------------------------------------
 QColor Plot::ObsColor(const obsd_t *obs, double az, double el)
 {
-    QColor color = Qt::black;
-    QString ObsType_Text;
-    char code[16];
-    int i;
-
-    code[0] = '\0';
+    QColor color;
+    QString text = ObsType->currentText();
+    QString obstype;
+    int i, n, freq;
+    bool ok;
 
     trace(4, "ObsColor\n");
 
     if (!SatSel[obs->sat - 1]) return Qt::black;
 
     if (PlotType == PLOT_SNR || PlotType == PLOT_SNRE) {
-        ObsType_Text = ObsType2->currentText();
-        strcpy(code, qPrintable(ObsType_Text.mid(1)));
-    } else if (ObsType->currentIndex() != 0) {
-        ObsType_Text = ObsType->currentText();
-        strcpy(code, qPrintable(ObsType_Text.mid(1)));
+        text = ObsType2->currentText();
     }
+    obstype=text;
     if (SimObs) {
         color = SysColor(obs->sat);
-    } else if (*code) {
-        for (i = 0; i < NFREQ + NEXOBS; i++) {
-            if (!strstr(code2obs(obs->code[i], NULL), code)) continue;
-            color = SnrColor(obs->SNR[i] * 0.25);
-            break;
+    } else if (obstype=="ALL") {
+        for (i=n=0;i<NFREQ&&n<5;i++) {
+            if (obs->L[i]!=0.0||obs->P[i]!=0.0) n++;
         }
-        if (i >= NFREQ + NEXOBS) return Qt::black;
+        if (n==0) {
+            return Qt::black;
+        }
+        color=MColor[0][6-n];
+    } else if ((freq=obstype.midRef(1).toInt(&ok)) && ok) {
+        if (obs->L[freq-1]==0.0&&obs->P[freq-1]==0.0) {
+            return Qt::black;
+        }
+        color=SnrColor(obs->SNR[freq-1]*SNR_UNIT);
     } else {
-        if (obs->L[0] != 0.0 && obs->L[1] != 0.0 && obs->L[2] != 0.0) color = MColor[0][4];
-        else if (obs->L[0] != 0.0 && obs->L[1] != 0.0) color = MColor[0][1];
-        else if (obs->L[0] != 0.0 && obs->L[2] != 0.0) color = MColor[0][5];
-        else if (obs->L[0] != 0.0) color = MColor[0][2];
-        else if (obs->P[1] != 0.0) color = MColor[0][3];
-        else if (obs->P[2] != 0.0) color = MColor[0][6];
-        else return Qt::black;
+        for (i = 0; i < NFREQ + NEXOBS; i++) {
+            if (!strcmp(code2obs(obs->code[i]), qPrintable(obstype))) break;
+        }
+        if (i>=NFREQ+NEXOBS) {
+            return Qt::black;
+        }
+        if (obs->L[i]==0.0&&obs->P[i]==0.0) {
+            return Qt::black;
+        }
+        color = SnrColor(obs->SNR[i] * 0.25);
     }
     if (el < ElMask * D2R || (ElMaskP && el < ElMaskData[static_cast<int>(az * R2D + 0.5)]))
         return HideLowSat ? Qt::black : MColor[0][0];
@@ -341,7 +347,7 @@ QColor Plot::ObsColor(const obsd_t *obs, double az, double el)
 QColor Plot::SnrColor(double snr)
 {
     QColor c1, c2;
-    unsigned int r1, b1, g1;
+    uint32_t r1, b1, g1;
     double a;
     int i;
 
@@ -353,9 +359,9 @@ QColor Plot::SnrColor(double snr)
     a -= i;
     c1 = MColor[0][4 - i];
     c2 = MColor[0][5 - i];
-    r1 = static_cast<unsigned int>(a * c1.red() + (1.0 - a) * c2.red()) & 0xFF;
-    g1 = static_cast<unsigned int>(a * c1.green() + (1.0 - a) * c2.green()) & 0xFF;
-    b1 = static_cast<unsigned int>(a * c1.blue() + (1.0 - a) * c2.blue()) & 0xFF;
+    r1 = static_cast<uint32_t>(a * c1.red() + (1.0 - a) * c2.red()) & 0xFF;
+    g1 = static_cast<uint32_t>(a * c1.green() + (1.0 - a) * c2.green()) & 0xFF;
+    b1 = static_cast<uint32_t>(a * c1.blue() + (1.0 - a) * c2.blue()) & 0xFF;
 
     return QColor(r1, g1, b1);
 }
@@ -364,7 +370,7 @@ QColor Plot::MpColor(double mp)
 {
     QColor colors[5];
     QColor c1, c2;
-    unsigned int r1, b1, g1;
+    uint32_t r1, b1, g1;
     double a;
     int i;
 
@@ -381,9 +387,9 @@ QColor Plot::MpColor(double mp)
     a -= i;
     c1 = colors[i];
     c2 = colors[i + 1];
-    r1 = static_cast<unsigned int>(a * c1.red() + (1.0 - a) * c2.red()) & 0xFF;
-    g1 = static_cast<unsigned int>(a * c1.green() + (1.0 - a) * c2.green()) & 0xFF;
-    b1 = static_cast<unsigned int>(a * c1.blue() + (1.0 - a) * c2.blue()) & 0xFF;
+    r1 = static_cast<uint32_t>(a * c1.red() + (1.0 - a) * c2.red()) & 0xFF;
+    g1 = static_cast<uint32_t>(a * c1.green() + (1.0 - a) * c2.green()) & 0xFF;
+    b1 = static_cast<uint32_t>(a * c1.blue() + (1.0 - a) * c2.blue()) & 0xFF;
 
     return QColor(r1, g1, b1);
 }
@@ -417,7 +423,8 @@ int Plot::SearchPos(int x, int y)
 void Plot::TimeStr(gtime_t time, int n, int tsys, QString &str)
 {
     struct tm *t;
-    char tstr[64];
+    QString tstr;
+    char temp[64];
     QString label = "";
     double tow;
     int week;
@@ -426,19 +433,21 @@ void Plot::TimeStr(gtime_t time, int n, int tsys, QString &str)
 
     if (TimeLabel == 0) { // www/ssss
         tow = time2gpst(time, &week);
-        strcpy(tstr, qPrintable(QString("%1/%2").arg(week, 4).arg(tow, (n > 0 ? 6 : 5) + n, 'f', n)));
+        tstr = QString("%1/%2").arg(week, 4).arg(tow, (n > 0 ? 6 : 5) + n, 'f', n);
     } else if (TimeLabel == 1) { // gpst
-        time2str(time, tstr, n);
+        time2str(time, temp, n);
+        tstr = temp;
         label = " GPST";
     } else if (TimeLabel == 2) { // utc
-        time2str(gpst2utc(time), tstr, n);
+        time2str(gpst2utc(time), temp, n);
+        tstr = temp;
         label = " UTC";
     } else { // lt
         time = gpst2utc(time);
-        if (!(t = localtime(&time.time))) strcpy(tstr, "2000/01/01 00:00:00.0");
-        else strcpy(tstr, qPrintable(QString("%1/%2/%3 %4:%5:%6.%7").arg(t->tm_year + 1900, 4, 10, QChar('0'))
+        if (!(t = localtime(&time.time)))tstr = "2000/01/01 00:00:00.0";
+        else tstr = QString("%1/%2/%3 %4:%5:%6.%7").arg(t->tm_year + 1900, 4, 10, QChar('0'))
                          .arg(t->tm_mon + 1, 2, 10, QChar('0')).arg(t->tm_mday, 2, 10, QChar('0')).arg(t->tm_hour, 2, 10, QChar('0')).arg(t->tm_min, 2, 10, QChar('0'))
-                         .arg(t->tm_sec, 2, 10, QChar('0')).arg(static_cast<int>(time.sec * pow(10.0, n)), n, 10)));
+                         .arg(t->tm_sec, 2, 10, QChar('0')).arg(static_cast<int>(time.sec * pow(10.0, n)), n, 10);
         label = " LT";
     }
     str = tstr + label;

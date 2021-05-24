@@ -137,7 +137,8 @@ public:
     QString CodeMask[7];
     double AppPos[3], AntDel[3], TimeTol;
     int RnxVer, RnxFile, NavSys, ObsType, FreqType, TraceLevel;
-    int AutoPos, ScanObs, HalfCyc, OutIono, OutTime, OutLeaps, SepNav;
+    int AutoPos, PhaseShift, HalfCyc, OutIono, OutTime, OutLeaps, SepNav;
+    int EnaGloFcn,GloFcn[27];
 	
     explicit MainWindow(QWidget *parent=0);
 };

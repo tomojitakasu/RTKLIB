@@ -4,6 +4,8 @@
 #include "convmain.h"
 #include "convopt.h"
 #include "codeopt.h"
+#include "freqdlg.h"
+#include "glofcndlg.h"
 
 extern MainWindow *mainWindow;
 //---------------------------------------------------------------------------
@@ -13,12 +15,15 @@ ConvOptDialog::ConvOptDialog(QWidget *parent)
     setupUi(this);
 
     codeOptDialog = new CodeOptDialog(this, this);
+    gloFcnDialog = new GloFcnDialog(this);
+    freqDialog = new FreqDialog(this);
 
-    int glo = MAXPRNGLO, gal = MAXPRNGAL, qzs = MAXPRNQZS, cmp = MAXPRNCMP;
+    int glo = MAXPRNGLO, gal = MAXPRNGAL, qzs = MAXPRNQZS, cmp = MAXPRNCMP, irn=MAXPRNIRN;;
     if (glo <= 0) Nav2->setEnabled(false);
     if (gal <= 0) Nav3->setEnabled(false);
     if (qzs <= 0) Nav4->setEnabled(false);
     if (cmp <= 0) Nav6->setEnabled(false);
+    if (irn <= 0) Nav7->setEnabled(false);
 
     connect(BtnCancel, SIGNAL(clicked(bool)), this, SLOT(reject()));
     connect(BtnOk, SIGNAL(clicked(bool)), this, SLOT(BtnOkClick()));
@@ -26,6 +31,8 @@ ConvOptDialog::ConvOptDialog(QWidget *parent)
     connect(AutoPos, SIGNAL(clicked(bool)), this, SLOT(AutoPosClick()));
     connect(RnxFile, SIGNAL(clicked(bool)), this, SLOT(RnxFileClick()));
     connect(RnxVer, SIGNAL(currentIndexChanged(int)), this, SLOT(RnxVerChange()));
+    connect(BtnFcn, SIGNAL(clicked(bool)), this, SLOT(BtnFcnClick()));
+    connect(BtnFreq, SIGNAL(clicked(bool)), this, SLOT(BtnFreqClick()));
 
 	UpdateEnable();
 }
@@ -48,7 +55,6 @@ void ConvOptDialog::showEvent(QShowEvent *event)
     Rec2->setText(mainWindow->Rec[2]);
     Ant0->setText(mainWindow->Ant[0]);
     Ant1->setText(mainWindow->Ant[1]);
-    Ant2->setText(mainWindow->Ant[2]);
     AppPos0->setValue(mainWindow->AppPos[0]);
     AppPos1->setValue(mainWindow->AppPos[1]);
     AppPos2->setValue(mainWindow->AppPos[2]);
@@ -62,11 +68,15 @@ void ConvOptDialog::showEvent(QShowEvent *event)
     for (int i = 0; i < 7; i++) CodeMask[i] = mainWindow->CodeMask[i];
 
     AutoPos->setChecked(mainWindow->AutoPos);
-    ScanObs->setChecked(mainWindow->ScanObs);
+    PhaseShift->setChecked(mainWindow->PhaseShift);
     HalfCyc->setChecked(mainWindow->HalfCyc);
     OutIono->setChecked(mainWindow->OutIono);
     OutTime->setChecked(mainWindow->OutTime);
     OutLeaps->setChecked(mainWindow->OutLeaps);
+    gloFcnDialog->EnaGloFcn=mainWindow->EnaGloFcn;
+    for (int i=0;i<27;i++) {
+        gloFcnDialog->GloFcn[i]=mainWindow->GloFcn[i];
+    }
 
     Nav1->setChecked(mainWindow->NavSys & SYS_GPS);
     Nav2->setChecked(mainWindow->NavSys & SYS_GLO);
@@ -81,11 +91,10 @@ void ConvOptDialog::showEvent(QShowEvent *event)
     Obs4->setChecked(mainWindow->ObsType & OBSTYPE_SNR);
     Freq1->setChecked(mainWindow->FreqType & FREQTYPE_L1);
     Freq2->setChecked(mainWindow->FreqType & FREQTYPE_L2);
-    Freq3->setChecked(mainWindow->FreqType & FREQTYPE_L5);
-    Freq4->setChecked(mainWindow->FreqType & FREQTYPE_L6);
-    Freq5->setChecked(mainWindow->FreqType & FREQTYPE_L7);
-    Freq6->setChecked(mainWindow->FreqType & FREQTYPE_L8);
-    Freq7->setChecked(mainWindow->FreqType & FREQTYPE_L9);
+    Freq3->setChecked(mainWindow->FreqType & FREQTYPE_L3);
+    Freq4->setChecked(mainWindow->FreqType & FREQTYPE_L4);
+    Freq5->setChecked(mainWindow->FreqType & FREQTYPE_L5);
+
     ExSats->setText(mainWindow->ExSats);
     TraceLevel->setCurrentIndex(mainWindow->TraceLevel);
     ChkSepNav->setChecked(mainWindow->SepNav);
@@ -110,7 +119,6 @@ void ConvOptDialog::BtnOkClick()
     mainWindow->Rec[2] = Rec2->text();
     mainWindow->Ant[0] = Ant0->text();
     mainWindow->Ant[1] = Ant1->text();
-    mainWindow->Ant[2] = Ant2->text();
     mainWindow->AppPos[0] = AppPos0->value();
     mainWindow->AppPos[1] = AppPos1->value();
     mainWindow->AppPos[2] = AppPos2->value();
@@ -124,11 +132,15 @@ void ConvOptDialog::BtnOkClick()
     for (int i = 0; i < 7; i++) mainWindow->CodeMask[i] = CodeMask[i];
 
     mainWindow->AutoPos = AutoPos->isChecked();
-    mainWindow->ScanObs = ScanObs->isChecked();
+    mainWindow->PhaseShift = PhaseShift->isChecked();
     mainWindow->HalfCyc = HalfCyc->isChecked();
     mainWindow->OutIono = OutIono->isChecked();
     mainWindow->OutTime = OutTime->isChecked();
     mainWindow->OutLeaps = OutLeaps->isChecked();
+    mainWindow->EnaGloFcn=gloFcnDialog->EnaGloFcn;
+    for (int i=0;i<27;i++) {
+        mainWindow->GloFcn[i]=gloFcnDialog->GloFcn[i];
+    }
 
     int navsys = 0, obstype = 0, freqtype = 0;
 
@@ -147,11 +159,9 @@ void ConvOptDialog::BtnOkClick()
 
     if (Freq1->isChecked()) freqtype |= FREQTYPE_L1;
     if (Freq2->isChecked()) freqtype |= FREQTYPE_L2;
-    if (Freq3->isChecked()) freqtype |= FREQTYPE_L5;
-    if (Freq4->isChecked()) freqtype |= FREQTYPE_L6;
-    if (Freq5->isChecked()) freqtype |= FREQTYPE_L7;
-    if (Freq6->isChecked()) freqtype |= FREQTYPE_L8;
-    if (Freq7->isChecked()) freqtype |= FREQTYPE_L9;
+    if (Freq3->isChecked()) freqtype |= FREQTYPE_L3;
+    if (Freq4->isChecked()) freqtype |= FREQTYPE_L4;
+    if (Freq5->isChecked()) freqtype |= FREQTYPE_L5;
 
     mainWindow->NavSys = navsys;
     mainWindow->ObsType = obstype;
@@ -178,6 +188,10 @@ void ConvOptDialog::AutoPosClick()
 {
 	UpdateEnable();
 }
+void ConvOptDialog::BtnFreqClick()
+{
+    freqDialog->exec();
+}
 //---------------------------------------------------------------------------
 void ConvOptDialog::BtnMaskClick()
 {
@@ -194,23 +208,33 @@ void ConvOptDialog::BtnMaskClick()
 
     if (Freq1->isChecked()) codeOptDialog->FreqType |= FREQTYPE_L1;
     if (Freq2->isChecked()) codeOptDialog->FreqType |= FREQTYPE_L2;
-    if (Freq3->isChecked()) codeOptDialog->FreqType |= FREQTYPE_L5;
-    if (Freq4->isChecked()) codeOptDialog->FreqType |= FREQTYPE_L6;
-    if (Freq5->isChecked()) codeOptDialog->FreqType |= FREQTYPE_L7;
-    if (Freq6->isChecked()) codeOptDialog->FreqType |= FREQTYPE_L8;
-    if (Freq7->isChecked()) codeOptDialog->FreqType |= FREQTYPE_L9;
+    if (Freq3->isChecked()) codeOptDialog->FreqType |= FREQTYPE_L3;
+    if (Freq4->isChecked()) codeOptDialog->FreqType |= FREQTYPE_L4;
+    if (Freq5->isChecked()) codeOptDialog->FreqType |= FREQTYPE_L5;
 
     codeOptDialog->show();
 }
 //---------------------------------------------------------------------------
 void ConvOptDialog::UpdateEnable(void)
 {
-//	Freq4->setEnabled(RnxVer->currentIndex()>0);
-//	Freq5->setEnabled(RnxVer->currentIndex()>0);
-//	Freq6->setEnabled(RnxVer->currentIndex()>0);
     AppPos0->setEnabled(AutoPos->isChecked());
     AppPos1->setEnabled(AutoPos->isChecked());
     AppPos2->setEnabled(AutoPos->isChecked());
     ChkSepNav->setEnabled(RnxVer->currentIndex()>=3);
+    Label13->setEnabled(mainWindow->TimeIntF->isChecked());
+    TimeTol->setEnabled(mainWindow->TimeIntF->isChecked());
+    Nav3->setEnabled(RnxVer->currentIndex()>=1);
+    Nav4->setEnabled(RnxVer->currentIndex()>=5);
+    Nav6->setEnabled(RnxVer->currentIndex()==2||RnxVer->currentIndex()>=4);
+    Nav7->setEnabled(RnxVer->currentIndex()>=6);
+    Freq3->setEnabled(RnxVer->currentIndex()>=1);
+    Freq4->setEnabled(RnxVer->currentIndex()>=1);
+    Freq5->setEnabled(RnxVer->currentIndex()>=1);
+    PhaseShift->setEnabled(RnxVer->currentIndex()>=4);
+}
+//---------------------------------------------------------------------------
+void ConvOptDialog::BtnFcnClick()
+{
+    gloFcnDialog->exec();
 }
 //---------------------------------------------------------------------------

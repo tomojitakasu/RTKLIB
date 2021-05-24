@@ -312,9 +312,10 @@ void Graph::DrawAxis(QPainter &c, int label, int glabel)
 //---------------------------------------------------------------------------
 void Graph::RotPoint(QPoint *ps, int n, const QPoint &pc, int rot, QPoint *pr)
 {
+    double cos_rot=cos(rot*D2R),sin_rot=sin(rot*D2R);
     for (int i = 0; i < n; i++) {
-        pr[i].setX(pc.x() + (int)floor(ps[i].x() * cos(rot * D2R) - ps[i].y() * sin(rot * D2R) + 0.5));
-        pr[i].setY(pc.y() - (int)floor(ps[i].x() * sin(rot * D2R) + ps[i].y() * cos(rot * D2R) + 0.5));
+        pr[i].setX(pc.x() + (int)floor(ps[i].x() * cos_rot - ps[i].y() * sin_rot + 0.5));
+        pr[i].setY(pc.y() - (int)floor(ps[i].x() * sin_rot + ps[i].y() * cos_rot + 0.5));
 	}
 }
 //---------------------------------------------------------------------------
@@ -378,20 +379,11 @@ void Graph::DrawMark(QPainter &c, const QPoint &p, int mark, const QColor &color
         ps[0].setX(ps[0].x() - size / 2); ps[0].setY(0); ps[1].setX(size / 2); ps[1].setY(0);
         break;
     case 5:         // plus
-#if 0
-        brush.setStyle(Qt::NoBrush);
-        c.setBrush(brush);
-
-        c.drawLine(x1, p.y(), x1 + w1, p.y());
-        c.drawLine(p.x(), y1 + h1, p.x(), y1);
-        return;
-#else
         n=5;
         for (int i=0;i<n;i++) {
             ps[i].setX(xs4[i] * s); ps[i].setY(ys4[i] * s);
         }
         break;
-#endif
     case 10:         // arrow
         n = 6;
         ps[0].setX(ps[0].x() - size / 2); ps[0].setY(0); ps[1].setX(size / 2); ps[1].setY(0);
@@ -467,10 +459,10 @@ void Graph::DrawMarks(QPainter &c, const double *x, const double *y, const QVect
 void Graph::DrawText(QPainter &c, const QPoint &p, const QString &str, const QColor &color, int ha, int va,
              int rot)
 {
-	// str = UTF-8 string
-	// ha  = horizontal alignment (0: center, 1: left,   2: right)
-	// va  = vertical alignment   (0: center, 1: bottom, 2: top  )
-	// rot = rotation angle (deg)
+    // str = UTF-8 string
+    // ha  = horizontal alignment (0: center, 1: left,   2: right)
+    // va  = vertical alignment   (0: center, 1: bottom, 2: top  )
+    // rot = rotation angle (deg)
     int flags = 0;
 
     switch (ha) {
@@ -498,6 +490,43 @@ void Graph::DrawText(QPainter &c, const QPoint &p, const QString &str, const QCo
     c.translate(-p);
 }
 //---------------------------------------------------------------------------
+void Graph::DrawText(QPainter &c, const QPoint &p, const QString &str, const QColor &color, int ha, int va,
+             int rot, const QFont &font)
+{
+	// str = UTF-8 string
+	// ha  = horizontal alignment (0: center, 1: left,   2: right)
+	// va  = vertical alignment   (0: center, 1: bottom, 2: top  )
+	// rot = rotation angle (deg)
+    int flags = 0;
+
+    switch (ha) {
+        case 0: flags |= Qt::AlignHCenter; break;
+        case 1: flags |= Qt::AlignLeft; break;
+        case 2: flags |= Qt::AlignRight; break;
+    }
+    switch (va) {
+        case 0: flags |= Qt::AlignVCenter; break;
+        case 1: flags |= Qt::AlignBottom; break;
+        case 2: flags |= Qt::AlignTop; break;
+    }
+
+    QRectF off = c.boundingRect(QRectF(), flags, str);
+
+    QFont old_font=c.font();
+    c.setFont(font);
+    QPen pen = c.pen();
+    c.setBrush(Qt::NoBrush);
+    pen.setColor(color);
+    c.setPen(pen);
+
+    c.translate(p);
+    c.rotate(-rot);
+    c.drawText(off, str);
+    c.rotate(rot);
+    c.translate(-p);
+    c.setFont(old_font);
+}
+//---------------------------------------------------------------------------
 void Graph::DrawText(QPainter &c, double x, double y, const QString &str, const QColor &color,
              int ha, int va, int rot)
 {
@@ -507,6 +536,14 @@ void Graph::DrawText(QPainter &c, double x, double y, const QString &str, const 
     DrawText(c, p, str, color, ha, va, rot);
 }
 //---------------------------------------------------------------------------
+void Graph::DrawText(QPainter &c, double x, double y, const QString &str, const QColor &color,
+             int ha, int va, int rot, const QFont &font)
+{
+    QPoint p;
+
+    ToPoint(x, y, p);
+    DrawText(c, p, str, color, ha, va, rot, font);
+}//---------------------------------------------------------------------------
 void Graph::DrawText(QPainter &c, const QPoint &p, const QString &str, const QColor &color, const QColor &bgcolor,
              int ha, int va, int rot)
 {

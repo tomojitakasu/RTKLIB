@@ -20,7 +20,6 @@ SerialOptDialog::SerialOptDialog(QWidget *parent)
 
     cmdOptDialog = new CmdOptDialog(this);
 
-    connect(BtnCmd, SIGNAL(clicked()), this, SLOT(BtnCmdClick()));
     connect(BtnOk, SIGNAL(clicked(bool)), this, SLOT(BtnOkClick()));
     connect(BtnCancel, SIGNAL(clicked(bool)), this, SLOT(reject()));
     connect(OutTcpPort, SIGNAL(clicked(bool)), this, SLOT(OutTcpPortClick()));
@@ -56,7 +55,8 @@ void SerialOptDialog::showEvent(QShowEvent *event)
     QStringList tokens2 = tokens.at(5).split('#');
     bool okay;
 
-    BtnCmd->setVisible(Opt);
+    OutTcpPort->setEnabled(Opt);
+    TcpPort   ->setEnabled(Opt);
 
     if (tokens2.size() == 2) {
         int port = tokens2.at(1).toInt(&okay);
@@ -74,22 +74,6 @@ void SerialOptDialog::showEvent(QShowEvent *event)
     TcpPort->setValue(-1);
 
     UpdateEnable();
-}
-//---------------------------------------------------------------------------
-void SerialOptDialog::BtnCmdClick()
-{
-    for (int i = 0; i < 2; i++) {
-        cmdOptDialog->Cmds[i] = Cmds[i];
-        cmdOptDialog->CmdEna[i] = CmdEna[i];
-	}
-
-    cmdOptDialog->exec();
-    if (cmdOptDialog->result() != QDialog::Accepted) return;
-
-    for (int i = 0; i < 2; i++) {
-        Cmds[i] = cmdOptDialog->Cmds[i];
-        CmdEna[i] = cmdOptDialog->CmdEna[i];
-	}
 }
 //---------------------------------------------------------------------------
 void SerialOptDialog::BtnOkClick()
