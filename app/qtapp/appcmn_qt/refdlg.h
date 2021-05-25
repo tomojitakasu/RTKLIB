@@ -31,7 +31,7 @@ private:
 
 public:
     QString StaPosFile,StaId,StaName;
-	int FontScale,Format;
+	int Opt, FontScale;
 	double Pos[3],RovPos[3];
 
     explicit RefDialog(QWidget* parent);

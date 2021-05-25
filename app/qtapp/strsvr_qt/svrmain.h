@@ -13,30 +13,29 @@
 
 class QCloseEvent;
 class SvrOptDialog;
-class Console;
 class SerialOptDialog;
 class TcpOptDialog;
 class FileOptDialog;
 class FtpOptDialog;
+class StrMonDialog;
+
+#define MAXSTR        7    // number of streams
 
 //---------------------------------------------------------------------------
 class MainForm : public QDialog, private Ui::MainForm
 {
     Q_OBJECT
+
 public slots:
     void BtnExitClick();
     void BtnInputClick();
-    void BtnOutput1Click();
-    void BtnOutput2Click();
+    void BtnOutputClick();
     void BtnStartClick();
     void BtnStopClick();
     void Timer1Timer();
     void BtnOptClick();
-    void Output1Change();
-    void Output2Change();
+    void OutputChange();
     void InputChange();
-    void BtnOutput3Click();
-    void Output3Change();
     void BtnCmdClick();
     void BtnAboutClick();
     void BtnStrMonClick();
@@ -48,36 +47,42 @@ public slots:
     void MenuStopClick();
     void MenuExitClick();
     void FormCreate();
-    void BtnConv1Click();
-    void BtnConv2Click();
-    void BtnConv3Click();
+    void BtnConvClick();
+    void BtnLogClick();
+
 protected:
     void closeEvent(QCloseEvent*);
 
 private:
     QString IniFile;
-    QString Paths[4][4],Cmds[2],CmdsTcp[2];
-    QString TcpHistory[MAXHIST],TcpMntpHist[MAXHIST];
-    QString StaPosFile,ExeDirectory,LocalDirectory,SwapInterval;
-    QString ProxyAddress;
-    QString ConvMsg[3],ConvOpt[3],AntType,RcvType;
-	int ConvEna[3],ConvInp[3],ConvOut[3],StaId,StaSel;
-	int TraceLevel,SvrOpt[6],CmdEna[2],CmdEnaTcp[2],NmeaReq,FileSwapMargin;
-	double AntPos[3],AntOff[3];
-	gtime_t StartTime,EndTime;
+    QString Paths[MAXSTR][4], Cmds[MAXSTR][3], CmdsTcp[MAXSTR][3];
+    QString TcpHistory[MAXHIST], TcpMntpHist[MAXHIST];
+    QString StaPosFile, ExeDirectory, LocalDirectory, SwapInterval;
+    QString ProxyAddress,LogFile;
+    QString ConvMsg[MAXSTR - 1], ConvOpt[MAXSTR - 1], AntType, RcvType;
+    QString PathLog[MAXSTR];
+    int ConvEna[MAXSTR - 1], ConvInp[MAXSTR - 1], ConvOut[3], StaId, StaSel;
+    int TraceLevel, SvrOpt[6], CmdEna[MAXSTR][3], CmdEnaTcp[MAXSTR][3], NmeaReq, FileSwapMargin, RelayBack, ProgBarRange, PathEna[MAXSTR];
+    double AntPos[3], AntOff[3];
+    gtime_t StartTime, EndTime;
     QSystemTrayIcon *TrayIcon;
     SvrOptDialog *svrOptDialog;
-    Console *console;
     TcpOptDialog *tcpOptDialog;
     SerialOptDialog *serialOptDialog;
     FileOptDialog *fileOptDialog;
     FtpOptDialog * ftpOptDialog;
+    StrMonDialog * strMonDialog;
     QTimer Timer1,Timer2;
 
-    void SerialOpt(int index, int opt);
-    void TcpOpt(int index, int opt);
-    void FileOpt(int index, int opt);
-    void FtpOpt(int index, int opt);
+    void SerialOpt(int index, int path);
+    void TcpCliOpt(int index, int path);
+    void TcpSvrOpt(int index, int path);
+    void NtripSvrOpt(int index, int path);
+    void NtripCliOpt(int index, int path);
+    void NtripCasOpt(int index, int path);
+    void UdpCliOpt(int index, int path);
+    void UdpSvrOpt(int index, int path);
+    void FileOpt(int index, int path);
     void ShowMsg(const QString &msg);
     void SvrStart(void);
     void SvrStop(void);
@@ -85,6 +90,7 @@ private:
     void SetTrayIcon(int index);
     void LoadOpt(void);
     void SaveOpt(void);
+
 public:
     explicit MainForm(QWidget *parent=0);
 };

@@ -66,7 +66,7 @@ public slots:
     void BtnBLQFileClick();
     void BtnEOPFileClick();
     void BtnEOPViewClick();
-    void BtnExtOptClick();
+    void BtnFreqClick();
     void BtnMaskClick();
     void NavSys6Click();
 
@@ -75,7 +75,7 @@ protected:
 
 private:
 	snrmask_t SnrMask;
-	int RovPosTypeP,RefPosTypeP;
+    int RovPosTypeP, RefPosTypeP;
 
     void GetOpt(void);
     void SetOpt(void);
@@ -84,8 +84,8 @@ private:
     void ReadAntList(void);
     void UpdateEnable(void);
     void UpdateEnableExtErr(void);
+
 public:
-	exterr_t ExtErr;
 	
     explicit OptDialog(QWidget *parent);
 };

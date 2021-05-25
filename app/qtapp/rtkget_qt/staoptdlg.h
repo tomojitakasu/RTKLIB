@@ -11,7 +11,7 @@ class StaListDialog : public QDialog, private Ui::StaListDialog
     Q_OBJECT
 
 protected:
-    void  showEvent(QShowEvent *);
+    void  showEvent(QShowEvent*);
 
 public slots:
     void  BtnLoadClick();

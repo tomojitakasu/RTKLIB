@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>636</width>
-    <height>559</height>
+    <width>833</width>
+    <height>590</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,9 +20,6 @@
    <item>
     <widget class="QWidget" name="widget_2" native="true">
      <layout class="QHBoxLayout" name="horizontalLayout_5">
-      <property name="spacing">
-       <number>0</number>
-      </property>
       <property name="leftMargin">
        <number>0</number>
       </property>
@@ -88,6 +85,18 @@
           <string>3.03</string>
          </property>
         </item>
+        <item>
+         <property name="text">
+          <string>3.04</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="ChkSepNav">
+        <property name="text">
+         <string>Sep NAV</string>
+        </property>
        </widget>
       </item>
       <item>
@@ -117,12 +126,32 @@
        </widget>
       </item>
       <item>
+       <widget class="QLabel" name="Label13">
+        <property name="text">
+         <string>Time Torelance (s)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QDoubleSpinBox" name="TimeTol">
+        <property name="decimals">
+         <number>4</number>
+        </property>
+        <property name="singleStep">
+         <double>0.001000000000000</double>
+        </property>
+        <property name="value">
+         <double>0.005000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QCheckBox" name="RnxFile">
         <property name="toolTip">
          <string/>
         </property>
         <property name="text">
-         <string>RINEX Name</string>
+         <string>RINEX2 Name</string>
         </property>
         <property name="checked">
          <bool>false</bool>
@@ -141,6 +170,99 @@
       <string/>
      </property>
      <layout class="QGridLayout" name="gridLayout">
+      <item row="9" column="0" colspan="7">
+       <widget class="QWidget" name="options" native="true">
+        <layout class="QHBoxLayout" name="horizontalLayout_7">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QCheckBox" name="PhaseShift">
+           <property name="toolTip">
+            <string/>
+           </property>
+           <property name="text">
+            <string>Phase Shift</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="HalfCyc">
+           <property name="text">
+            <string>Half Cyc Corr</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="OutIono">
+           <property name="toolTip">
+            <string/>
+           </property>
+           <property name="text">
+            <string>Iono Corr</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="OutTime">
+           <property name="toolTip">
+            <string/>
+           </property>
+           <property name="text">
+            <string>Time Corr</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="OutLeaps">
+           <property name="toolTip">
+            <string/>
+           </property>
+           <property name="text">
+            <string>Leap Sec</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="3" column="5" colspan="2">
+       <widget class="QLineEdit" name="MarkerType">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="0">
        <widget class="QLabel" name="Label2">
         <property name="enabled">
@@ -150,12 +272,38 @@
          <string/>
         </property>
         <property name="text">
-         <string>RunBy/Obsv/Agency</string>
+         <string>RunBy/Obsrv/Agency</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="2">
-       <widget class="QLineEdit" name="RunBy">
+      <item row="7" column="1">
+       <widget class="QCheckBox" name="AutoPos">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="0">
+       <widget class="QLabel" name="Label6">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Approx Pos XYZ</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <widget class="QLineEdit" name="Marker">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -180,6 +328,32 @@
         </property>
        </widget>
       </item>
+      <item row="8" column="0">
+       <widget class="QLabel" name="Label7">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Antenna Delta H/E/N</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="5" colspan="2">
+       <widget class="QLineEdit" name="Rec2">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="5" colspan="2">
        <widget class="QLineEdit" name="Name1">
         <property name="enabled">
@@ -193,8 +367,8 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="0" rowspan="2">
-       <widget class="QLabel" name="Label10">
+      <item row="5" column="0">
+       <widget class="QLabel" name="Label5">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -202,129 +376,12 @@
          <string/>
         </property>
         <property name="text">
-         <string>Comment</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="2" colspan="5">
-       <widget class="QLineEdit" name="Comment0">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string/>
+         <string>Ant #/Type</string>
         </property>
        </widget>
       </item>
       <item row="2" column="2" colspan="5">
        <widget class="QLineEdit" name="Comment1">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="Label1">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Maker Name/#/Type</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="2">
-       <widget class="QLineEdit" name="Marker">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="3" colspan="2">
-       <widget class="QLineEdit" name="MarkerNo">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="5" colspan="2">
-       <widget class="QLineEdit" name="MarkerType">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="Label4">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Rec #/Type/Vers</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="2">
-       <widget class="QLineEdit" name="Rec0">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="3" colspan="2">
-       <widget class="QLineEdit" name="Rec1">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="5" colspan="2">
-       <widget class="QLineEdit" name="Rec2">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -349,6 +406,58 @@
         </property>
        </widget>
       </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="Label4">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Rec #/Type/Vers</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLineEdit" name="RunBy">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="3" colspan="2">
+       <widget class="QLineEdit" name="Rec1">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="Label1">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Maker Name/#/Type</string>
+        </property>
+       </widget>
+      </item>
       <item row="5" column="3" colspan="2">
        <widget class="QLineEdit" name="Ant1">
         <property name="enabled">
@@ -362,8 +471,8 @@
         </property>
        </widget>
       </item>
-      <item row="5" column="5" colspan="2">
-       <widget class="QLineEdit" name="Ant2">
+      <item row="1" column="2" colspan="5">
+       <widget class="QLineEdit" name="Comment0">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -375,8 +484,8 @@
         </property>
        </widget>
       </item>
-      <item row="6" column="0">
-       <widget class="QLabel" name="Label6">
+      <item row="4" column="2">
+       <widget class="QLineEdit" name="Rec0">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -384,25 +493,12 @@
          <string/>
         </property>
         <property name="text">
-         <string>Approx Pos XYZ</string>
+         <string/>
         </property>
        </widget>
       </item>
-      <item row="6" column="1">
-       <widget class="QCheckBox" name="AutoPos">
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="checked">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="2">
-       <widget class="QLineEdit" name="AppPos0">
+      <item row="1" column="0" rowspan="2">
+       <widget class="QLabel" name="Label10">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -410,12 +506,12 @@
          <string/>
         </property>
         <property name="text">
-         <string>0.0000</string>
+         <string>Comment</string>
         </property>
        </widget>
       </item>
-      <item row="6" column="3" colspan="2">
-       <widget class="QLineEdit" name="AppPos1">
+      <item row="3" column="3" colspan="2">
+       <widget class="QLineEdit" name="MarkerNo">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -423,137 +519,76 @@
          <string/>
         </property>
         <property name="text">
-         <string>0.0000</string>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="5" colspan="2">
-       <widget class="QLineEdit" name="AppPos2">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
          <string/>
-        </property>
-        <property name="text">
-         <string>0.0000</string>
         </property>
        </widget>
       </item>
       <item row="7" column="2">
-       <widget class="QLineEdit" name="AntDel0">
-        <property name="enabled">
-         <bool>true</bool>
+       <widget class="QDoubleSpinBox" name="AppPos0">
+        <property name="suffix">
+         <string> m</string>
         </property>
-        <property name="toolTip">
-         <string/>
+        <property name="decimals">
+         <number>4</number>
         </property>
-        <property name="text">
-         <string>0.0000</string>
+        <property name="maximum">
+         <double>1000000.000000000000000</double>
         </property>
        </widget>
       </item>
       <item row="7" column="3" colspan="2">
-       <widget class="QLineEdit" name="AntDel1">
-        <property name="enabled">
-         <bool>true</bool>
+       <widget class="QDoubleSpinBox" name="AppPos1">
+        <property name="suffix">
+         <string> m</string>
         </property>
-        <property name="toolTip">
-         <string/>
+        <property name="decimals">
+         <number>4</number>
         </property>
-        <property name="text">
-         <string>0.0000</string>
+        <property name="maximum">
+         <double>1000000.000000000000000</double>
         </property>
        </widget>
       </item>
       <item row="7" column="5" colspan="2">
-       <widget class="QLineEdit" name="AntDel2">
-        <property name="enabled">
-         <bool>true</bool>
+       <widget class="QDoubleSpinBox" name="AppPos2">
+        <property name="suffix">
+         <string> m</string>
         </property>
-        <property name="toolTip">
-         <string/>
+        <property name="decimals">
+         <number>4</number>
         </property>
-        <property name="text">
-         <string>0.0000</string>
-        </property>
-       </widget>
-      </item>
-      <item row="8" column="0">
-       <widget class="QCheckBox" name="ScanObs">
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Scan Obs Types</string>
-        </property>
-        <property name="checked">
-         <bool>false</bool>
+        <property name="maximum">
+         <double>1000000.000000000000000</double>
         </property>
        </widget>
       </item>
-      <item row="8" column="2" colspan="2">
-       <widget class="QCheckBox" name="OutIono">
-        <property name="toolTip">
-         <string/>
+      <item row="8" column="2">
+       <widget class="QDoubleSpinBox" name="AntDel0">
+        <property name="suffix">
+         <string> m</string>
         </property>
-        <property name="text">
-         <string>Iono Corr</string>
-        </property>
-        <property name="checked">
-         <bool>false</bool>
+        <property name="decimals">
+         <number>4</number>
         </property>
        </widget>
       </item>
-      <item row="8" column="4" colspan="2">
-       <widget class="QCheckBox" name="OutTime">
-        <property name="toolTip">
-         <string/>
+      <item row="8" column="5" colspan="2">
+       <widget class="QDoubleSpinBox" name="AntDel2">
+        <property name="suffix">
+         <string> m</string>
         </property>
-        <property name="text">
-         <string>Time Corr</string>
-        </property>
-        <property name="checked">
-         <bool>false</bool>
+        <property name="decimals">
+         <number>4</number>
         </property>
        </widget>
       </item>
-      <item row="8" column="6">
-       <widget class="QCheckBox" name="OutLeaps">
-        <property name="toolTip">
-         <string/>
+      <item row="8" column="3" colspan="2">
+       <widget class="QDoubleSpinBox" name="AntDel1">
+        <property name="suffix">
+         <string> m</string>
         </property>
-        <property name="text">
-         <string>Leap Sec</string>
-        </property>
-        <property name="checked">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="7" column="0">
-       <widget class="QLabel" name="Label7">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Ant Delta H/E/N</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="0">
-       <widget class="QLabel" name="Label5">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Ant #/Type</string>
+        <property name="decimals">
+         <number>4</number>
         </property>
        </widget>
       </item>
@@ -573,9 +608,6 @@
        <number>0</number>
       </property>
       <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <property name="spacing">
        <number>0</number>
       </property>
       <item row="2" column="2">
@@ -666,19 +698,6 @@
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="Nav5">
-           <property name="toolTip">
-            <string/>
-           </property>
-           <property name="text">
-            <string>SBS</string>
-           </property>
-           <property name="checked">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
           <widget class="QCheckBox" name="Nav6">
            <property name="toolTip">
             <string/>
@@ -694,7 +713,20 @@
          <item>
           <widget class="QCheckBox" name="Nav7">
            <property name="text">
-            <string>IRN</string>
+            <string>NavIC</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="Nav5">
+           <property name="toolTip">
+            <string/>
+           </property>
+           <property name="text">
+            <string>SBS</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
            </property>
           </widget>
          </item>
@@ -707,6 +739,21 @@
    <item>
     <widget class="QWidget" name="widget_4" native="true">
      <layout class="QHBoxLayout" name="horizontalLayout_6">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
       <item>
        <widget class="QGroupBox" name="GroupBox3">
         <property name="toolTip">
@@ -716,21 +763,6 @@
          <string>Observation Types</string>
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <property name="spacing">
-          <number>0</number>
-         </property>
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
          <item>
           <widget class="QCheckBox" name="Obs1">
            <property name="toolTip">
@@ -792,24 +824,9 @@
          <string/>
         </property>
         <property name="title">
-         <string>Frequencies</string>
+         <string>GNSS Signals</string>
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout_3">
-         <property name="spacing">
-          <number>0</number>
-         </property>
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
          <item>
           <widget class="QCheckBox" name="Freq1">
            <property name="toolTip">
@@ -842,7 +859,7 @@
             <string/>
            </property>
            <property name="text">
-            <string>L5/L3</string>
+            <string>L3</string>
            </property>
            <property name="checked">
             <bool>false</bool>
@@ -855,7 +872,7 @@
             <string/>
            </property>
            <property name="text">
-            <string>L6</string>
+            <string>L4</string>
            </property>
            <property name="checked">
             <bool>false</bool>
@@ -868,30 +885,10 @@
             <string/>
            </property>
            <property name="text">
-            <string>L7</string>
+            <string>L5</string>
            </property>
            <property name="checked">
             <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="Freq6">
-           <property name="toolTip">
-            <string/>
-           </property>
-           <property name="text">
-            <string>L8</string>
-           </property>
-           <property name="checked">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="Freq7">
-           <property name="text">
-            <string>L9</string>
            </property>
           </widget>
          </item>
@@ -908,6 +905,26 @@
            </property>
           </widget>
          </item>
+         <item>
+          <widget class="QPushButton" name="BtnFcn">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="toolTip">
+            <string/>
+           </property>
+           <property name="text">
+            <string>FCN...</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="BtnFreq">
+           <property name="text">
+            <string>?</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </widget>
       </item>
@@ -917,6 +934,18 @@
    <item>
     <widget class="QWidget" name="widget" native="true">
      <layout class="QHBoxLayout" name="horizontalLayout_4">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
       <item>
        <widget class="QLabel" name="Label8">
         <property name="enabled">
@@ -926,7 +955,7 @@
          <string/>
         </property>
         <property name="text">
-         <string>Option</string>
+         <string>Receiver Options</string>
         </property>
        </widget>
       </item>
@@ -1038,6 +1067,54 @@
   <zorder>widget_3</zorder>
   <zorder>widget_4</zorder>
  </widget>
+ <tabstops>
+  <tabstop>RnxVer</tabstop>
+  <tabstop>RnxCode</tabstop>
+  <tabstop>RnxFile</tabstop>
+  <tabstop>RunBy</tabstop>
+  <tabstop>Name0</tabstop>
+  <tabstop>Name1</tabstop>
+  <tabstop>Comment0</tabstop>
+  <tabstop>Comment1</tabstop>
+  <tabstop>Marker</tabstop>
+  <tabstop>MarkerNo</tabstop>
+  <tabstop>MarkerType</tabstop>
+  <tabstop>Rec0</tabstop>
+  <tabstop>Rec1</tabstop>
+  <tabstop>Rec2</tabstop>
+  <tabstop>Ant0</tabstop>
+  <tabstop>Ant1</tabstop>
+  <tabstop>AutoPos</tabstop>
+  <tabstop>AppPos0</tabstop>
+  <tabstop>AppPos1</tabstop>
+  <tabstop>AppPos2</tabstop>
+  <tabstop>AntDel0</tabstop>
+  <tabstop>AntDel1</tabstop>
+  <tabstop>AntDel2</tabstop>
+  <tabstop>PhaseShift</tabstop>
+  <tabstop>OutIono</tabstop>
+  <tabstop>Nav1</tabstop>
+  <tabstop>Nav2</tabstop>
+  <tabstop>Nav3</tabstop>
+  <tabstop>Nav4</tabstop>
+  <tabstop>Nav6</tabstop>
+  <tabstop>Nav7</tabstop>
+  <tabstop>ExSats</tabstop>
+  <tabstop>Obs1</tabstop>
+  <tabstop>Obs2</tabstop>
+  <tabstop>Obs3</tabstop>
+  <tabstop>Obs4</tabstop>
+  <tabstop>Freq1</tabstop>
+  <tabstop>Freq2</tabstop>
+  <tabstop>Freq3</tabstop>
+  <tabstop>Freq4</tabstop>
+  <tabstop>Freq5</tabstop>
+  <tabstop>BtnMask</tabstop>
+  <tabstop>RcvOption</tabstop>
+  <tabstop>TraceLevel</tabstop>
+  <tabstop>BtnOk</tabstop>
+  <tabstop>BtnCancel</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

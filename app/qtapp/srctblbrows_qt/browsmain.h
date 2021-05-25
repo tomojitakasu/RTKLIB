@@ -18,6 +18,7 @@ class QTimer;
 class MainForm : public QMainWindow, private Ui::MainForm
 {
     Q_OBJECT
+
 protected:
     void showEvent(QShowEvent*);
     void closeEvent(QCloseEvent*);
@@ -38,7 +39,7 @@ public slots:
     void MenuAboutClick();
     void BtnMapClick();
     void TimerTimer();
-    void Table0SelectCell(int ACol, int ARow);
+    void Table0SelectCell(int ARow, int ACol);
     void BtnStaClick();
     void StaMaskClick();
     void UpdateCaster();
@@ -46,7 +47,7 @@ public slots:
     void ShowMsg(const QString &);
 
 private:
-    QString AddrList,AddrCaster,SrcTable,IniFile;
+    QString AddrList, AddrCaster, SrcTable, IniFile;
 	int FontScale;
     GoogleMapView *googleMapView;
     StaListDialog *staListDialog;
@@ -62,7 +63,7 @@ private:
 public:
     QStringList StaList;
 
-    explicit MainForm(QWidget *parent=NULL);
+    explicit MainForm(QWidget *parent = NULL);
 };
 //---------------------------------------------------------------------------
 #endif

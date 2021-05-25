@@ -31,7 +31,7 @@ private:
     void UpdateEnable(void);
 	
 public:
-    explicit SkyImgDialog(QWidget *parent=NULL);
+    explicit SkyImgDialog(QWidget *parent = NULL);
     void UpdateField(void);
 };
 //---------------------------------------------------------------------------

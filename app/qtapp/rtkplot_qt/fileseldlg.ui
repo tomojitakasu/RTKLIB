@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>251</width>
-    <height>507</height>
+    <width>257</width>
+    <height>513</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -207,6 +207,12 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>DriveSel</tabstop>
+  <tabstop>BtnDirSel</tabstop>
+  <tabstop>FileList</tabstop>
+  <tabstop>Filter</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

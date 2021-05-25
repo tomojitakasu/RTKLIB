@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>GloFcnDialog</class>
+ <widget class="QDialog" name="GloFcnDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>612</width>
+    <height>276</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>GLONASS Frequency Channel Number</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="1" column="0" colspan="5">
+    <widget class="QFrame" name="frame">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="1" column="0">
+       <widget class="QLabel" name="Label1">
+        <property name="text">
+         <string>R01</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="3">
+       <widget class="QLineEdit" name="Fcn04"/>
+      </item>
+      <item row="3" column="6">
+       <widget class="QLabel" name="Label1_8">
+        <property name="text">
+         <string>R17</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="4">
+       <widget class="QLabel" name="Label2_4">
+        <property name="text">
+         <string>R05</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="5">
+       <widget class="QLabel" name="Label1_7">
+        <property name="text">
+         <string>R16</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="3">
+       <widget class="QLabel" name="Label1_5">
+        <property name="text">
+         <string>R14</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="2">
+       <widget class="QLineEdit" name="Fcn23"/>
+      </item>
+      <item row="2" column="8">
+       <widget class="QLineEdit" name="Fcn09"/>
+      </item>
+      <item row="6" column="1">
+       <widget class="QLineEdit" name="Fcn22"/>
+      </item>
+      <item row="1" column="3">
+       <widget class="QLabel" name="Label2_3">
+        <property name="text">
+         <string>R04</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="9">
+       <widget class="QLineEdit" name="Fcn20"/>
+      </item>
+      <item row="1" column="9">
+       <widget class="QLabel" name="Label2_9">
+        <property name="text">
+         <string>R10</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="6">
+       <widget class="QLabel" name="Label2_6">
+        <property name="text">
+         <string>R07</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="6">
+       <widget class="QLineEdit" name="Fcn17"/>
+      </item>
+      <item row="3" column="9">
+       <widget class="QLabel" name="Label1_11">
+        <property name="text">
+         <string>R20</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="8">
+       <widget class="QLabel" name="Label2_8">
+        <property name="text">
+         <string>R09</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="QLabel" name="Label1_13">
+        <property name="text">
+         <string>R22</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="5">
+       <widget class="QLineEdit" name="Fcn06"/>
+      </item>
+      <item row="2" column="4">
+       <widget class="QLineEdit" name="Fcn05"/>
+      </item>
+      <item row="2" column="6">
+       <widget class="QLineEdit" name="Fcn07"/>
+      </item>
+      <item row="6" column="3">
+       <widget class="QLineEdit" name="Fcn24"/>
+      </item>
+      <item row="5" column="3">
+       <widget class="QLabel" name="Label1_15">
+        <property name="text">
+         <string>R24</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="7">
+       <widget class="QLineEdit" name="Fcn18"/>
+      </item>
+      <item row="5" column="2">
+       <widget class="QLabel" name="Label1_14">
+        <property name="text">
+         <string>R23</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="4">
+       <widget class="QLabel" name="Label1_6">
+        <property name="text">
+         <string>R15</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLineEdit" name="Fcn11"/>
+      </item>
+      <item row="4" column="8">
+       <widget class="QLineEdit" name="Fcn19"/>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLabel" name="Label1_12">
+        <property name="text">
+         <string>R21</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLineEdit" name="Fcn02"/>
+      </item>
+      <item row="4" column="1">
+       <widget class="QLineEdit" name="Fcn12"/>
+      </item>
+      <item row="1" column="5">
+       <widget class="QLabel" name="Label2_5">
+        <property name="text">
+         <string>R06</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="5">
+       <widget class="QLineEdit" name="Fcn26"/>
+      </item>
+      <item row="3" column="7">
+       <widget class="QLabel" name="Label1_9">
+        <property name="text">
+         <string>R18</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <widget class="QLabel" name="Label1_4">
+        <property name="text">
+         <string>R13</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="3">
+       <widget class="QLineEdit" name="Fcn14"/>
+      </item>
+      <item row="6" column="6">
+       <widget class="QLineEdit" name="Fcn27"/>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="Label1_2">
+        <property name="text">
+         <string>R11</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="4">
+       <widget class="QLineEdit" name="Fcn25"/>
+      </item>
+      <item row="2" column="2">
+       <widget class="QLineEdit" name="Fcn03"/>
+      </item>
+      <item row="2" column="7">
+       <widget class="QLineEdit" name="Fcn08"/>
+      </item>
+      <item row="5" column="6">
+       <widget class="QLabel" name="Label1_18">
+        <property name="text">
+         <string>R27</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLineEdit" name="Fcn01"/>
+      </item>
+      <item row="3" column="8">
+       <widget class="QLabel" name="Label1_10">
+        <property name="text">
+         <string>R19</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QLabel" name="Label1_3">
+        <property name="text">
+         <string>R12</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="4">
+       <widget class="QLineEdit" name="Fcn15"/>
+      </item>
+      <item row="1" column="2">
+       <widget class="QLabel" name="Label2_2">
+        <property name="text">
+         <string>R03</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLineEdit" name="Fcn21"/>
+      </item>
+      <item row="5" column="5">
+       <widget class="QLabel" name="Label1_17">
+        <property name="text">
+         <string>R26</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="5">
+       <widget class="QLineEdit" name="Fcn16"/>
+      </item>
+      <item row="2" column="9">
+       <widget class="QLineEdit" name="Fcn10"/>
+      </item>
+      <item row="1" column="7">
+       <widget class="QLabel" name="Label2_7">
+        <property name="text">
+         <string>R08</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="4">
+       <widget class="QLabel" name="Label1_16">
+        <property name="text">
+         <string>R25</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLabel" name="Label2">
+        <property name="text">
+         <string>R02</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="2">
+       <widget class="QLineEdit" name="Fcn13"/>
+      </item>
+      <item row="5" column="7" colspan="3">
+       <widget class="QLabel" name="Label21">
+        <property name="text">
+         <string>FCN:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="7" colspan="3">
+       <widget class="QLabel" name="Label22">
+        <property name="text">
+         <string>-7 ... 6</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QPushButton" name="BtnRead">
+     <property name="text">
+      <string>Read</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QPushButton" name="BtnClear">
+     <property name="text">
+      <string>Clear</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="4">
+    <widget class="QPushButton" name="BtnCancel">
+     <property name="text">
+      <string>Cancel</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="3">
+    <widget class="QPushButton" name="BtnOk">
+     <property name="text">
+      <string>Ok</string>
+     </property>
+     <property name="default">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="2">
+    <spacer name="horizontalSpacer">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="0" column="0" colspan="2">
+    <widget class="QCheckBox" name="EnaFcn">
+     <property name="text">
+      <string>Use FCN Table</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

@@ -8,3 +8,6 @@ Makefile*
 rtkget_qt
 rtkget_qt.exe
 object_script*
+debug
+release
+*.exe

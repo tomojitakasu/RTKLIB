@@ -17,7 +17,7 @@ class GMPageState : public QObject
     Q_OBJECT
     Q_PROPERTY(QString text MEMBER text NOTIFY textChanged)
 public:
-    explicit GMPageState(QObject *parent=NULL): QObject(parent){}
+    explicit GMPageState(QObject *parent = NULL): QObject(parent){}
     QString getText() {return text;}
 signals:
     void textChanged(const QString &text);
@@ -25,6 +25,7 @@ private:
     QString text;
 };
 #endif
+
 class QResizeEvent;
 class QShowEvent;
 //---------------------------------------------------------------------------
@@ -33,7 +34,6 @@ class GoogleMapView : public QDialog, private Ui::GoogleMapView
     Q_OBJECT
 
 public slots:
-    void FormCreate();
     void Timer1Timer();
     void BtnShrinkClick();
     void BtnExpandClick();
@@ -46,7 +46,8 @@ protected:
 
 private:
 	int State;
-	double Lat,Lon,Zoom;
+    double Lat,Lon;
+    int Zoom;
 	double MarkPos[2][2];
     QTimer Timer1;
     bool loaded;
@@ -62,7 +63,9 @@ private:
 public:
     int FixCent;
 
-    explicit GoogleMapView(QWidget *parent=NULL);
+    explicit GoogleMapView(QWidget *parent = NULL);
+
+    int setApiKey(QString key);
     int  GetState(void);
     void SetView(double lat, double lon, int zoom);
     void SetCent(double lat, double lon);

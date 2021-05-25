@@ -16,17 +16,20 @@ class FtpOptDialog : public QDialog, private Ui::FtpOptDialog
     Q_OBJECT
 protected:
     void  showEvent(QShowEvent *);
+
 public slots:
     void  BtnOkClick();
     void  BtnKeyClick();
+
 private:
     void  AddHist(QComboBox *list, QString *hist);
     void  UpdateEnable(void);
 
     KeyDialog *keyDlg;
+
 public:
 	int Opt;
-    QString Path,History[MAXHIST],MntpHist[MAXHIST];
+    QString Path, History[MAXHIST], MntpHist[MAXHIST];
     explicit FtpOptDialog(QWidget *parent);
 };
 //---------------------------------------------------------------------------

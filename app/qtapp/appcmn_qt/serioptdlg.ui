@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>540</width>
-    <height>156</height>
+    <width>379</width>
+    <height>210</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -265,7 +265,7 @@
      </item>
     </widget>
    </item>
-   <item row="7" column="0" colspan="4">
+   <item row="8" column="0" colspan="4">
     <widget class="QWidget" name="widget" native="true">
      <layout class="QHBoxLayout" name="horizontalLayout">
       <property name="leftMargin">
@@ -280,19 +280,6 @@
       <property name="bottomMargin">
        <number>0</number>
       </property>
-      <item>
-       <widget class="QPushButton" name="BtnCmd">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>&amp;Commands...</string>
-        </property>
-       </widget>
-      </item>
       <item>
        <widget class="QPushButton" name="BtnOk">
         <property name="enabled">
@@ -328,8 +315,30 @@
      </layout>
     </widget>
    </item>
+   <item row="7" column="3">
+    <widget class="QSpinBox" name="TcpPort"/>
+   </item>
+   <item row="7" column="0" colspan="3">
+    <widget class="QCheckBox" name="OutTcpPort">
+     <property name="text">
+      <string>Output Received Stream to  TCP Port :</string>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>Port</tabstop>
+  <tabstop>Parity</tabstop>
+  <tabstop>BitRate</tabstop>
+  <tabstop>StopBits</tabstop>
+  <tabstop>ByteSize</tabstop>
+  <tabstop>FlowCtr</tabstop>
+  <tabstop>OutTcpPort</tabstop>
+  <tabstop>TcpPort</tabstop>
+  <tabstop>BtnOk</tabstop>
+  <tabstop>BtnCancel</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

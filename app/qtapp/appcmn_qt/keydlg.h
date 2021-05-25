@@ -20,6 +20,7 @@ protected:
 
 public:
 	int Flag;
+
     explicit KeyDialog(QWidget* parent);
 };
 //---------------------------------------------------------------------------

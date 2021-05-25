@@ -27,9 +27,11 @@ public slots:
     void Timer2Timer();
     void SelObsChange(int);
     void SelFmtChange(int);
+    void SelStrChange();
+    void SelStr2Change();
 
 private:
-	int TypeF,ConFmt,ScrollPos,FontScale,ObsMode;
+    int TypeF, ConFmt, Str1, Str2, FontScale, ObsMode;
     QStringList ConBuff;
     QStringList header;
 	rtcm_t rtcm;
@@ -54,16 +56,13 @@ private:
     void SetRtcm(void);
     void SetRtcmDgps(void);
     void SetRtcmSsr(void);
-    void SetLexMsg(void);
-    void SetLexEph(void);
-    void SetLexIon(void);
-    void SetIonCorr(void);
+    void SetRefSta(void);
     void ShowRtk(void);
-    void ShowSat(int sys);
+    void ShowSat(void);
     void ShowEst(void);
     void ShowCov(void);
     void ShowObs(void);
-    void ShowNav(int sys);
+    void ShowNav(void);
     void ShowGnav(void);
     void ShowSbsMsg(void);
     void ShowIonUtc(void);
@@ -75,16 +74,14 @@ private:
     void ShowRtcm(void);
     void ShowRtcmDgps(void);
     void ShowRtcmSsr(void);
-    void ShowLexMsg(void);
-    void ShowLexEph(void);
-    void ShowLexIon(void);
-    void ShowIonCorr(void);
+    void ShowRefSta(void);
 
-    void AddConsole(unsigned char *msg, int n, int mode);
+    void AddConsole(const unsigned char *msg, int n, int mode);
     void ViewConsole(void);
 
 public:
     explicit MonitorDialog(QWidget* parent);
+    ~MonitorDialog();
 };
 //---------------------------------------------------------------------------
 #endif

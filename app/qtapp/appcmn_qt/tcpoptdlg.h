@@ -7,6 +7,7 @@
 #include "ui_tcpoptdlg.h"
 #define MAXHIST		10
 
+class MntpOptDialog;
 //---------------------------------------------------------------------------
 class TcpOptDialog : public QDialog, private Ui::TcpOptDialog
 {
@@ -18,14 +19,17 @@ protected:
 public slots:
     void  BtnOkClick();
     void  BtnNtripClick();
+    void BtnMountpClick();
+    void BtnBrowsClick();
 
 private:
     void  AddHist(QComboBox *list, QString *hist);
-    int  ExecCmd(QString cmd, int show);
+    int  ExecCmd(const QString &cmd, const QStringList &opt, int show);
 
 public:
 	int Opt;
-    QString Path,History[MAXHIST],MntpHist[MAXHIST];
+    QString Path,History[MAXHIST], MntpStr;
+    MntpOptDialog *mntpOptDialog;
 
     explicit TcpOptDialog(QWidget* parent);
 };

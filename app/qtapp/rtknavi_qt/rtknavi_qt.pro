@@ -4,40 +4,15 @@
 #
 #-------------------------------------------------
 
-QT       += widgets core gui
+QT       += widgets core gui serialport
 
-greaterThan(QT_MAJOR_VERSION, 4) {
-    QT += widgets serialport
-    DEFINES += QT5
-}
-
-lessThan(QT_MAJOR_VERSION, 5) {
-    LIBS += -lqextserialport-1.2
-    DEFINES += QEXTSERIALPORT
-}
-
-include(../../RTKLib.pri)
+include(../qtapp.pri)
 
 TARGET = rtknavi_qt
 TEMPLATE = app
 
-INCLUDEPATH += ../../src/ ../appcmn_qt ../rtkplot_qt
+INCLUDEPATH += ../../../src/ ../appcmn_qt
 
-linux{
-    RTKLIB =../../src/libRTKLib.a
-    LIBS += -lpng $${RTKLIB}
-}
-win32 {
-    CONFIG(debug) {
-        RTKLIB = ../../src/debug/libRTKLib.a
-    } else {
-        RTKLIB =../../src/release/libRTKLib.a
-    }
-
-    LIBS+= $${RTKLIB} -lWs2_32 -lwinmm
-}
-
-PRE_TARGETDEPS = $${RTKLIB}
 SOURCES += \
     ../appcmn_qt/aboutdlg.cpp \
     ../appcmn_qt/cmdoptdlg.cpp \
@@ -47,9 +22,11 @@ SOURCES += \
     ../appcmn_qt/maskoptdlg.cpp \
     ../appcmn_qt/refdlg.cpp \
     ../appcmn_qt/serioptdlg.cpp \
+    ../appcmn_qt/mntpoptdlg.cpp \
     ../appcmn_qt/tcpoptdlg.cpp \
     ../appcmn_qt/viewer.cpp \
     ../appcmn_qt/vieweropt.cpp \
+    ../appcmn_qt/freqdlg.cpp \
     instrdlg.cpp \
     logstrdlg.cpp \
     main.cpp \
@@ -78,8 +55,10 @@ HEADERS  += \
     ../appcmn_qt/refdlg.h \
     ../appcmn_qt/serioptdlg.h \
     ../appcmn_qt/tcpoptdlg.h \
+    ../appcmn_qt/mntpoptdlg.h \
     ../appcmn_qt/viewer.h \
     ../appcmn_qt/vieweropt.h \
+    ../appcmn_qt/freqdlg.h \
     markdlg.h \
     ../appcmn_qt/graph.h
 
@@ -102,6 +81,8 @@ FORMS    += \
     ../appcmn_qt/viewer.ui \
     ../appcmn_qt/vieweropt.ui \
     ../appcmn_qt/tcpoptdlg.ui \
+    ../appcmn_qt/mntpoptdlg.ui \
+    ../appcmn_qt/freqdlg.ui \
     markdlg.ui
 
 RESOURCES += \

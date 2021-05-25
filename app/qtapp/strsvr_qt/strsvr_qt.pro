@@ -4,39 +4,14 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui widgets serialport
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets serialport
+include(../qtapp.pri)
 
-include(../../RTKLib.pri)
-
-lessThan(QT_MAJOR_VERSION, 5) {
-    LIBS += -lqextserialport-1.2
-    DEFINES += QEXTSERIALPORT
-}
-
-
-INCLUDEPATH += ../../src/ ../appcmn_qt
-
-linux{
-    RTKLIB =../../src/libRTKLib.a
-    LIBS += -lpng $${RTKLIB}
-}
-win32 {
-    CONFIG(debug) {
-        RTKLIB = ../../src/debug/libRTKLib.a
-    } else {
-        RTKLIB =../../src/release/libRTKLib.a
-    }
-
-    LIBS+= $${RTKLIB} -lWs2_32 -lwinmm
-}
-
-PRE_TARGETDEPS = $${RTKLIB}
+INCLUDEPATH += ../../../src/ ../appcmn_qt
 
 TARGET = strsvr_qt
 TEMPLATE = app
-
 
 SOURCES += \  
     convdlg.cpp \
@@ -51,7 +26,9 @@ SOURCES += \
     ../appcmn_qt/fileoptdlg.cpp \
     ../appcmn_qt/ftpoptdlg.cpp \
     ../appcmn_qt/refdlg.cpp \
-    ../appcmn_qt/keydlg.cpp
+    ../appcmn_qt/mntpoptdlg.cpp \
+    ../appcmn_qt/keydlg.cpp \
+    mondlg.cpp
 
 HEADERS  += \ 
     convdlg.h \
@@ -65,7 +42,9 @@ HEADERS  += \
     ../appcmn_qt/fileoptdlg.h \
     ../appcmn_qt/ftpoptdlg.h \
     ../appcmn_qt/refdlg.h \
-    ../appcmn_qt/keydlg.h
+    ../appcmn_qt/mntpoptdlg.h \
+    ../appcmn_qt/keydlg.h \
+    mondlg.h
 
 FORMS    += \ 
     convdlg.ui \
@@ -79,7 +58,9 @@ FORMS    += \
     ../appcmn_qt/fileoptdlg.ui \
     ../appcmn_qt/ftpoptdlg.ui \
     ../appcmn_qt/refdlg.ui \
-    ../appcmn_qt/keydlg.ui
+    ../appcmn_qt/mntpoptdlg.ui \
+    ../appcmn_qt/keydlg.ui \
+    mondlg.ui
 
 RESOURCES +=  \
     strsvr_qt.qrc
