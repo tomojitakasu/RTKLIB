@@ -6,9 +6,9 @@
 
 QT       += core gui widgets
 
-include(../app.pri)
+include(../qtapp.pri)
 
-INCLUDEPATH += ../../src/ ../appcmn_qt
+INCLUDEPATH += ../../../src/ ../appcmn_qt
 
 TARGET = rtkget_qt
 TEMPLATE = app

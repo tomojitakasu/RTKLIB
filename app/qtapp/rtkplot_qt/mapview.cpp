@@ -24,9 +24,9 @@
 // instance of Plot --------------------------------------------------------
 extern Plot *plot;
 
-#define RTKLIB_GM_TEMP "rtkplot_gm.htm"
+#define RTKLIB_GM_TEMP ":/html/rtkplot_gm.htm"
 #define RTKLIB_GM_FILE "rtkplot_gm_a.htm"
-#define RTKLIB_LL_TEMP "rtkplot_ll.htm"
+#define RTKLIB_LL_TEMP ":/html/rtkplot_ll.htm"
 #define RTKLIB_LL_FILE "rtkplot_ll_a.htm"
 #define URL_GM_API     "http://maps.google.com/maps/api/js"
 #define MAP_OPACITY    0.8
@@ -42,7 +42,6 @@ MapView::MapView(QWidget *parent)
     MapSel=0;
     Lat=Lon=0.0;
     for (int i=0;i<2;i++) {
-        MapState[0]=MapState[1]=0;
         MarkState[0]=MarkState[1]=0;
         MarkPos[i][0]=MarkPos[i][1]=0.0;
     }
@@ -55,8 +54,8 @@ MapView::MapView(QWidget *parent)
     connect(BtnSync, SIGNAL(clicked(bool)), this, SLOT(BtnSyncClick()));
     connect(&Timer1, SIGNAL(timeout()), this, SLOT(Timer1Timer()));
     connect(&Timer2, SIGNAL(timeout()), this, SLOT(Timer2Timer()));
-    connect(MapSel1, SIGNAL(toggled(bool)), this, SLOT(MapSel1Click()));
-    connect(MapSel2, SIGNAL(toggled(bool)), this, SLOT(MapSel2Click()));
+    connect(MapSel1, SIGNAL(clicked(bool)), this, SLOT(MapSel1Click()));
+    connect(MapSel2, SIGNAL(clicked(bool)), this, SLOT(MapSel2Click()));
 
 #ifdef QWEBKIT
     WebBrowser = new QWebView(Panel2);
@@ -113,7 +112,6 @@ void MapView::BtnOptClick()
     for (int i=0;i<6;i++) for (int j=0;j<3;j++) {
         plot->MapStrs[i][j]=mapViewOptDialog->MapStrs[i][j];
     }
-    MapState[0]=MapState[1]=0;
     ShowMap(MapSel);
 }
 //---------------------------------------------------------------------------
@@ -154,10 +152,10 @@ void MapView::resizeEvent(QResizeEvent *)
 //---------------------------------------------------------------------------
 void MapView::ShowMap(int map)
 {
-    if (map==0&&!MapState[0]) {
+    if (map==0) {
         ShowMapLL();
     }
-    else if (map==1&&!MapState[1]) {
+    else if (map==1) {
         ShowMapGM();
     }
     else {
@@ -167,27 +165,20 @@ void MapView::ShowMap(int map)
 //---------------------------------------------------------------------------
 void MapView::ShowMapLL(void)
 {
-    QString dir, ifile,ofile;
+    QString pageSource;
     int i, j;
 
-    dir = qApp->applicationDirPath(); // exe directory
-
-    ifile=dir+"/"+RTKLIB_LL_TEMP;
-    ofile=dir+"/"+RTKLIB_LL_FILE;
-
-    QFile ifp(ifile), ofp(ofile);
+    QFile ifp(RTKLIB_LL_TEMP);
 
     if (!ifp.open(QIODevice::ReadOnly | QIODevice::Text)) {
         return;
     }
-    if (!ofp.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        ifp.close();
-        return;
-    }
-    QTextStream out(&ofp);
+
+    QTextStream out(&pageSource);
     while (!ifp.atEnd()) {
         QString buff = ifp.readLine();
         out<<buff;
+        if (buff.contains("<script src=\"qrc:/leaflet/leaflet.js\"></script>")) out << "<script type=\"text/javascript\" src=\"https://getfirebug.com/firebug-lite.js\"></script>\n";
         if (!buff.contains("// start map tiles")) continue;
         for (i=0,j=1;i<6;i++) {
             if (plot->MapStrs[i][0]=="") continue;
@@ -211,7 +202,7 @@ void MapView::ShowMapLL(void)
         out << "};\n";
     }
     ifp.close();
-    ofp.close();
+
 
 #ifdef QWEBKIT
     WebBrowser->load(QUrl::fromLocalFile(ofile));
@@ -219,7 +210,7 @@ void MapView::ShowMapLL(void)
     loaded = true;
 #endif
 #ifdef QWEBENGINE
-    WebBrowser->load(QUrl::fromLocalFile(ofile));
+    WebBrowser->setHtml(pageSource);
     QWebChannel *channel = new QWebChannel(this);
     channel->registerObject(QStringLiteral("state"), pageState);
 
@@ -235,8 +226,6 @@ void MapView::Timer1Timer()
 {
     if (!GetState(0)) return;
 
-    MapState[0]=1;
-    MapState[1]=0;
     SetView(0,Lat,Lon,INIT_ZOOM);
     AddMark(0,1,MarkPos[0][0],MarkPos[0][1],MarkState[0]);
     AddMark(0,2,MarkPos[1][0],MarkPos[1][1],MarkState[1]);
@@ -245,24 +234,16 @@ void MapView::Timer1Timer()
 }
 void MapView::ShowMapGM(void)
 {
-    QString dir,ifile,ofile;
+    QString pageSource;
     int p;
 
-    dir = qApp->applicationDirPath(); // exe directory
-
-    ifile=dir+"/"+RTKLIB_LL_TEMP;
-    ofile=dir+"/"+RTKLIB_LL_FILE;
-
-    QFile ifp(ifile), ofp(ofile);
+    QFile ifp(RTKLIB_GM_TEMP);
 
     if (!ifp.open(QIODevice::ReadOnly | QIODevice::Text)) {
         return;
     }
-    if (!ofp.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        ifp.close();
-        return;
-    }
-    QTextStream out(&ofp);
+
+    QTextStream out(&pageSource);
     while (!ifp.atEnd()) {
         QString buff = ifp.readLine();
 
@@ -274,7 +255,6 @@ void MapView::ShowMapGM(void)
         out<<buff;
     }
     ifp.close();
-    ofp.close();
 
 #ifdef QWEBKIT
     WebBrowser->load(QUrl::fromLocalFile(ofile));
@@ -282,7 +262,7 @@ void MapView::ShowMapGM(void)
     loaded = true;
 #endif
 #ifdef QWEBENGINE
-    WebBrowser->load(QUrl::fromLocalFile(ofile));
+    WebBrowser->setHtml(pageSource);
     QWebChannel *channel = new QWebChannel(this);
     channel->registerObject(QStringLiteral("state"), pageState);
 
@@ -298,8 +278,7 @@ void MapView::ShowMapGM(void)
 void MapView::Timer2Timer()
 {
     if (!GetState(1)) return;
-    MapState[1]=1;
-    MapState[0]=0;
+
     SetView(1,Lat,Lon,INIT_ZOOM);
         AddMark(1,1,MarkPos[0][0],MarkPos[0][1],MarkState[0]);
         AddMark(1,2,MarkPos[1][0],MarkPos[1][1],MarkState[1]);

@@ -42,9 +42,7 @@ SOURCES += rtkcmn.c \
     postpos.c \
     ppp.c \
     ppp_ar.c \
-    ppp_corr.c \
     preceph.c \
-    qzslex.c \
     rcvraw.c \
     rinex.c \
     rtcm.c \
@@ -61,18 +59,14 @@ SOURCES += rtkcmn.c \
     tle.c \
     rcv/binex.c \
     rcv/crescent.c \
-    rcv/gw10.c \
     rcv/javad.c \
     rcv/novatel.c \
     rcv/nvs.c \
-    rcv/rcvlex.c \
     rcv/rt17.c \
     rcv/septentrio.c \
     rcv/skytraq.c \
     rcv/ss2.c \
-    rcv/ublox.c \
-    rcv/cmr.c \
-    rcv/tersus.c
+    rcv/ublox.c 
 
 HEADERS += rtklib.h
 

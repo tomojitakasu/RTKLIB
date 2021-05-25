@@ -376,7 +376,7 @@ private:
     void TimeSpan(gtime_t *ts, gtime_t *te, double *tint);
     double TimePos(gtime_t time);
     void TimeStr(gtime_t time, int n, int tsys, QString &str);
-    int ExecCmd(const QString &cmd);
+    int ExecCmd(const QString &cmd, const QStringList &opt);
     void ShowMsg(const QString &msg);
     void ShowLegend (QString *msgs);
     void LoadOpt();

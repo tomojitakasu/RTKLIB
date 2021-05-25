@@ -84,8 +84,6 @@ protected:
     void closeEvent(QCloseEvent *);
 
 private:
-    tle_t TLEData;
-
     AboutDialog *aboutDialog;
     InputStrDialog *inputStrDialog;
     OutputStrDialog *outputStrDialog;
@@ -106,7 +104,7 @@ private:
     void UpdateTime(void);
     void UpdatePos(void);
     void UpdateStr(void);
-    void DrawPlot(QLabel *plot, int no);
+    void DrawPlot(QLabel *plot, int type, int freq);
     void UpdatePlot(void);
     void UpdateEnable(void);
     void ChangePlot(void);
@@ -114,11 +112,11 @@ private:
 	
     void DrawSnr(QPainter *c, int w, int h, int x0, int y0, int index, int freq);
     void DrawSat(QPainter *c, int w, int h, int x0, int y0, int index, int freq);
-    void DrawBL(QPainter *c, int no, int w, int h);
-    void DrawTrk(QPainter *c, int no, QPixmap &plot);
+    void DrawBL(QPainter *c, int id, int w, int h);
+    void DrawTrk(QPainter *c, int id, QPixmap &plot);
     void DrawSky(QPainter *c, int w, int h, int x0, int y0);
     void DrawText(QPainter *c, int x, int y, const QString &s,
-                   const QColor &color, int align);
+                   const QColor &color, int ha, int va);
     void DrawArrow    (QPainter *c, int x, int y, int siz,
                                   int ang, const QColor &color);
     void OpenMoniPort(int port);
@@ -129,13 +127,14 @@ private:
     void LoadOpt(void);
     void SaveOpt(void);
     void SetTrayIcon(int index);
-    int ExecCmd(const QString &cmd, int show);
+    int ExecCmd(const QString &cmd, const QStringList &opt, int show);
     void BtnFreqTypeChange(int i);
     QColor SnrColor(int snr);
 public:
     OptDialog *optDialog;
     QString IniFile;
 	
+    int TimerCycle,TimerInact;
     int PanelStack, PanelMode;
     int SvrCycle, SvrBuffSize, Scale, SolBuffSize, NavSelect, SavedSol;
 
@@ -148,9 +147,8 @@ public:
     int PlotType[4],FreqType[4];
     int TrkType[4];
     int TrkScale[4];
-    int BLMode[4];
-    int FreqType1,FreqType2,FreqType3,FreqType4;
-    int MoniPort, OpenPort;
+    int BLMode[4];   
+    int MoniPort, OpenPort, AutoRun;
 	
     int PSol, PSolS, PSolE, Nsat[2], SolCurrentStat;
     int Sat[2][MAXSAT], Snr[2][MAXSAT][NFREQ], Vsat[2][MAXSAT];
@@ -168,7 +166,7 @@ public:
 	prcopt_t PrcOpt;
 	solopt_t SolOpt;
 
-    QFont PosFont;
+    QFont PanelFont, PosFont;
 
     int DebugTraceF, DebugStatusF, OutputGeoidF, BaselineC;
     int RovPosTypeF, RefPosTypeF, RovAntPcvF, RefAntPcvF;
@@ -176,12 +174,12 @@ public:
     double RovAntDel[3], RefAntDel[3], RovPos[3], RefPos[3], NmeaPos[3];
 	double Baseline[2];
 
-    QString History[10], MntpHist[10];
+    QString History[10];
 
     QTimer Timer;
 	
-    QString GeoidDataFileF, StaPosFileF, DCBFileF, EOPFileF, TLEFileF;
-    QString TLESatFileF, LocalDirectory, PntName[MAXMAPPNT];
+    QString GeoidDataFileF, StaPosFileF, DCBFileF, EOPFileF;
+    QString LocalDirectory, PntName[MAXMAPPNT];
 
 	double PntPos[MAXMAPPNT][3];
 	int NMapPnt;

@@ -176,63 +176,74 @@ void MainForm::closeEvent(QCloseEvent *event)
 //---------------------------------------------------------------------------
 void MainForm::BtnPlotClick()
 {
-    QString cmd1 = "./rtkplot_qt", cmd2 = "../../../bin/rtkplot_qt", opts = "";
+    QString cmd1 = "./rtkplot_qt", cmd2 = "../../../bin/rtkplot_qt";
+    QStringList opts;
 
-    if (!ExecCmd(cmd1 + opts)) ExecCmd(cmd2 + opts);
+
+    if (!ExecCmd(cmd1, opts)) ExecCmd(cmd2, opts);
 }
 //---------------------------------------------------------------------------
 void MainForm::BtnConvClick()
 {
-    QString cmd1 = "./rtkconv_qt", cmd2 = "../../../bin/rtkconv_qt", opts = "";
+    QString cmd1 = "./rtkconv_qt", cmd2 = "../../../bin/rtkconv_qt";
+    QStringList opts;
 
-    if (!ExecCmd(cmd1 + opts)) ExecCmd(cmd2 + opts);
+
+    if (!ExecCmd(cmd1, opts)) ExecCmd(cmd2, opts);
 }
 //---------------------------------------------------------------------------
 void MainForm::BtnStrClick()
 {
-    QString cmd1 = "./strsvr_qt", cmd2 = "../../../bin/strsvr_qt", opts = "";
+    QString cmd1 = "./strsvr_qt", cmd2 = "../../../bin/strsvr_qt";
+    QStringList opts;
 
-    if (!ExecCmd(cmd1 + opts)) ExecCmd(cmd2 + opts);
+
+    if (!ExecCmd(cmd1, opts)) ExecCmd(cmd2, opts);
 }
 //---------------------------------------------------------------------------
 void MainForm::BtnPostClick()
 {
-    QString cmd1 = "./rtkpost_qt", cmd2 = "../../../bin/rtkpost_qt", opts = "";
+    QString cmd1 = "./rtkpost_qt", cmd2 = "../../../bin/rtkpost_qt";
+    QStringList opts;
 
-    if (!ExecCmd(cmd1 + opts)) ExecCmd(cmd2 + opts);
+    if (!ExecCmd(cmd1, opts)) ExecCmd(cmd2, opts);
 }
 //---------------------------------------------------------------------------
 void MainForm::BtnNtripClick()
 {
-    QString cmd1 = "./srctblbrows_qt", cmd2 = "../../../bin/srctblbrows_qt", opts = "";
+    QString cmd1 = "./srctblbrows_qt", cmd2 = "../../../bin/srctblbrows_qt";
+    QStringList opts;
 
-    if (!ExecCmd(cmd1 + opts)) ExecCmd(cmd2 + opts);
+    if (!ExecCmd(cmd1, opts)) ExecCmd(cmd2, opts);
 }
 //---------------------------------------------------------------------------
 void MainForm::BtnNaviClick()
 {
-    QString cmd1 = "./rtknavi_qt", cmd2 = "../../../bin/rtknavi_qt", opts = "";
+    QString cmd1 = "./rtknavi_qt", cmd2 = "../../../bin/rtknavi_qt";
+    QStringList opts;
 
-    if (!ExecCmd(cmd1 + opts)) ExecCmd(cmd2 + opts);
+    if (!ExecCmd(cmd1, opts)) ExecCmd(cmd2, opts);
 }
 //---------------------------------------------------------------------------
 void MainForm::BtnGetClick()
 {
-    QString cmd1 = "./rtkget_qt", cmd2 = "../../../bin/rtkget_qt", opts = "";
+    QString cmd1 = "./rtkget_qt", cmd2 = "../../../bin/rtkget_qt";
+    QStringList opts;
 
-    if (!ExecCmd(cmd1 + opts)) ExecCmd(cmd2 + opts);
+    if (!ExecCmd(cmd1, opts)) ExecCmd(cmd2, opts);
 }
 //---------------------------------------------------------------------------
 void MainForm::BtnVideoClick()
 {
-    QString cmd1 = "rtkvideo", cmd2 = "..\\..\\..\\bin\\rtkvideo", opts = "";
+    QString cmd1 = "rtkvideo", cmd2 = "..\\..\\..\\bin\\rtkvideo";
+    QStringList opts;
 
-    if (!ExecCmd(cmd1 + opts)) ExecCmd(cmd2 + opts);
+    if (!ExecCmd(cmd1, opts)) ExecCmd(cmd2,  opts);
 }
 //---------------------------------------------------------------------------
-int MainForm::ExecCmd(const QString &cmd)
+int MainForm::ExecCmd(const QString &cmd, const QStringList &opt)
 {
-    return QProcess::startDetached(cmd);
+    return QProcess::startDetached(cmd, opt);
 }
 //---------------------------------------------------------------------------
 void MainForm::BtnTrayClick()

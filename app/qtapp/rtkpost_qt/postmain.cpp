@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------------
 // rtkpost_qt : post-processing analysis
 //
-//          Copyright (C) 2007-2012 by T.TAKASU, All rights reserved.
+//          Copyright (C) 2007-2020 by T.TAKASU, All rights reserved.
 //          ported to Qt by Jens Reimann
 //
 // options : rtkpost [-t title][-i file][-r file][-b file][-n file ...]
@@ -27,6 +27,7 @@
 //           2010/07/18  1.3 rtklib 2.4.0
 //           2010/09/07  1.3 rtklib 2.4.1
 //           2011/04/03  1.4 rtklib 2.4.2
+//           2020/11/30  1.5 rtklib 2.4.3
 //---------------------------------------------------------------------------
 #include <clocale>
 #include <stdio.h>
@@ -63,7 +64,7 @@
 #define PRGNAME     "RTKPOST-QT"
 #define MAXHIST     20
 #ifdef Q_OS_WIN
-#define GOOGLE_EARTH "C:\\Program Files\\Google\\Google Earth\\googleearth.exe"
+#define GOOGLE_EARTH "C:\\Program Files\\Google\\Google Earth Pro\\client\\googleearth.exe"
 #endif
 #ifdef Q_OS_LINUX
 #define GOOGLE_EARTH "google-earth"
@@ -318,7 +319,7 @@ void MainForm::showEvent(QShowEvent* event)
             QCoreApplication::translate("main", "yyyy/mm/dd hh:mm:ss"));
     parser.addOption(timeStartOption);
 
-    QCommandLineOption timeEndOption(QStringList() << "ts",
+    QCommandLineOption timeEndOption(QStringList() << "te",
             QCoreApplication::translate("main", "time end"),
             QCoreApplication::translate("main", "yyyy/mm/dd hh:mm:ss"));
     parser.addOption(timeEndOption);
@@ -431,11 +432,12 @@ void MainForm::BtnPlotClick()
 {
     QString OutputFile_Text=OutputFile->currentText();
     QString file=FilePath(OutputFile_Text);
-    QString cmd1="rtkplot_qt",cmd2="../../../bin/rtkplot_qt",opts="";
+    QString cmd1="rtkplot_qt",cmd2="../../../bin/rtkplot_qt";
+    QStringList opts;
     
     opts+=" \""+file+"\"";
     
-    if (!ExecCmd(cmd1+opts,1)&&!ExecCmd(cmd2+opts,1)) {
+    if (!ExecCmd(cmd1, opts, 1)&&!ExecCmd(cmd2, opts, 1)) {
         ShowMsg("error : rtkplot_qt execution");
     }
 }
@@ -684,7 +686,8 @@ void MainForm::BtnInputPlot1Click()
     QString InputFile5_Text=InputFile5->currentText();
     QString InputFile6_Text=InputFile6->currentText();
     QString files[6];
-    QString cmd1="rtkplot_qt",cmd2="../../../bin/rtkplot_qt",opts="";
+    QString cmd1="rtkplot_qt",cmd2="../../../bin/rtkplot_qt";
+    QStringList opts;
     QString navfile;
     
     files[0]=FilePath(InputFile1_Text); /* obs rover */
@@ -697,10 +700,11 @@ void MainForm::BtnInputPlot1Click()
     if (files[2]=="") {
         if (ObsToNav(files[0],navfile)) files[2]=navfile;
     }
-    opts=" -r \""+files[0]+"\" \""+files[2]+"\" \""+files[3]+"\" \""+
-        files[4]+"\" \""+files[5]+"\"";
+    opts << "-r";
+    for (int i=0;i<5;i++)
+            opts <<"\""+files[i]+"\"";
     
-    if (!ExecCmd(cmd1+opts,1)&&!ExecCmd(cmd2+opts,1)) {
+    if (!ExecCmd(cmd1, opts,1)&&!ExecCmd(cmd2, opts,1)) {
         ShowMsg("error : rtkplot_qt execution");
     }
 }
@@ -714,7 +718,8 @@ void MainForm::BtnInputPlot2Click()
     QString InputFile5_Text=InputFile5->currentText();
     QString InputFile6_Text=InputFile6->currentText();
     QString files[6];
-    QString cmd1="rtkplot_qt",cmd2="../../../bin/rtkplot_qt",opts="";
+    QString cmd1="rtkplot_qt",cmd2="../../../bin/rtkplot_qt";
+    QStringList opts;
     QString navfile;
     
     files[0]=FilePath(InputFile1_Text); /* obs rover */
@@ -727,10 +732,11 @@ void MainForm::BtnInputPlot2Click()
     if (files[2]=="") {
         if (ObsToNav(files[0],navfile)) files[2]=navfile;
     }
-    opts=" -r \""+files[1]+"\" \""+files[2]+"\" \""+files[3]+"\" \""+
-         files[4]+"\" \""+files[5]+"\"";
-    
-    if (!ExecCmd(cmd1+opts,1)&&!ExecCmd(cmd2+opts,1)) {
+    opts << "-r";
+    for (int i=0;i<5;i++)
+            opts <<"\""+files[i]+"\"";
+
+    if (!ExecCmd(cmd1, opts,1)&&!ExecCmd(cmd2, opts,1)) {
         ShowMsg("error : rtkplot_qt execution");
     }
 }
@@ -986,8 +992,6 @@ int MainForm::GetOption(prcopt_t &prcopt, solopt_t &solopt,
             prcopt.exsats[sat-1]=ex;
         }
     }
-    // extended receiver error model option
-    prcopt.exterr=ExtErr;
     
     strcpy(prcopt.rnxopt[0],qPrintable(RnxOpts1));
     strcpy(prcopt.rnxopt[1],qPrintable(RnxOpts2));
@@ -1001,6 +1005,7 @@ int MainForm::GetOption(prcopt_t &prcopt, solopt_t &solopt,
     solopt.degf     =LatLonFormat;
     solopt.outhead  =OutputHead;
     solopt.outopt   =OutputOpt;
+    solopt.outvel   =OutputVel;
     solopt.maxsolstd=MaxSolStd;
     solopt.datum    =OutputDatum;
     solopt.height   =OutputHeight;
@@ -1077,7 +1082,7 @@ void MainForm::ReadList(QComboBox* combo, QSettings *ini, const QString &key)
     
     for (i=0;i<100;i++) {
         item=ini->value(QString("%1_%2").arg(key).arg(i,3),"").toString();
-        if (item!="") combo->addItem(item); else break;
+        if (item!=""&& combo->findText(item)==-1) combo->addItem(item); else break;
     }
 }
 // write history ------------------------------------------------------------
@@ -1101,10 +1106,10 @@ void MainForm::AddHist(QComboBox *combo)
     combo->setCurrentIndex(0);
 }
 // execute command ----------------------------------------------------------
-int MainForm::ExecCmd(const QString &cmd, int show)
+int MainForm::ExecCmd(const QString &cmd, const QStringList &opt, int show)
 {
     Q_UNUSED(show);
-    return QProcess::startDetached(cmd);  /* FIXME: show option not yet supported */
+    return QProcess::startDetached(cmd, opt);  /* FIXME: show option not yet supported */
 }
 // view file ----------------------------------------------------------------
 void MainForm::ViewFile(const QString &file)
@@ -1273,6 +1278,7 @@ void MainForm::LoadOpt(void)
     FieldSep           =ini.value ("opt/fieldsep",      "").toString();
     OutputHead         =ini.value("opt/outputhead",     1).toInt();
     OutputOpt          =ini.value("opt/outputopt",      1).toInt();
+    OutputVel          =ini.value("opt/outputvel",      0).toInt();
     OutputSingle       =ini.value("opt/outputsingle",   0).toInt();
     MaxSolStd          =ini.value("opt/maxsolstd",    0.0).toInt();
     OutputDatum        =ini.value("opt/outputdatum",    0).toInt();
@@ -1287,7 +1293,7 @@ void MainForm::LoadOpt(void)
     MeasErr2           =ini.value  ("opt/measerr2",   0.003).toDouble();
     MeasErr3           =ini.value  ("opt/measerr3",   0.003).toDouble();
     MeasErr4           =ini.value  ("opt/measerr4",   0.000).toDouble();
-    MeasErr5           =ini.value  ("opt/measerr5",  10.000).toDouble();
+    MeasErr5           =ini.value  ("opt/measerr5",   1.000).toDouble();
     SatClkStab         =ini.value  ("opt/satclkstab", 5E-12).toDouble();
     PrNoise1           =ini.value  ("opt/prnoise1",    1E-4).toDouble();
     PrNoise2           =ini.value  ("opt/prnoise2",    1E-3).toDouble();
@@ -1350,21 +1356,6 @@ void MainForm::LoadOpt(void)
     RovList.replace("@@","\n");
     BaseList.replace("@@","\n");
 
-    ExtErr.ena[0]      =ini.value("opt/exterr_ena0",    0).toInt();
-    ExtErr.ena[1]      =ini.value("opt/exterr_ena1",    0).toInt();
-    ExtErr.ena[2]      =ini.value("opt/exterr_ena2",    0).toInt();
-    ExtErr.ena[3]      =ini.value("opt/exterr_ena3",    0).toInt();
-    for (int i=0;i<3;i++) for (int j=0;j<6;j++) {
-        ExtErr.cerr[i][j]=ini.value(QString("opt/exterr_cerr%1%2").arg(i).arg(j),0.3).toDouble();
-    }
-    for (int i=0;i<3;i++) for (int j=0;j<6;j++) {
-        ExtErr.perr[i][j]=ini.value(QString("exterr_perr%1%2").arg(i).arg(j),0.003).toDouble();
-    }
-    ExtErr.gloicb[0]   =ini.value  ("opt/exterr_gloicb0",0.0).toDouble();
-    ExtErr.gloicb[1]   =ini.value  ("opt/exterr_gloicb1",0.0).toDouble();
-    ExtErr.gpsglob[0]  =ini.value  ("opt/exterr_gpsglob0",0.0).toDouble();
-    ExtErr.gpsglob[1]  =ini.value  ("opt/exterr_gpsglob1",0.0).toDouble();
-    
     convDialog->TimeSpan  ->setChecked(ini.value("conv/timespan",  0).toInt());
     convDialog->TimeIntF  ->setChecked(ini.value("conv/timeintf",  0).toInt());
     convDialog->dateTime1 ->setDate(ini.value ("conv/timey1","2000/01/01").toDate());
@@ -1393,25 +1384,25 @@ void MainForm::SaveOpt(void)
 {
     QSettings ini(IniFile,QSettings::IniFormat);
     
-    ini.setValue ("set/timestart",   TimeStart ->isChecked()?1:0);
-    ini.setValue ("set/timeend",     TimeEnd   ->isChecked()?1:0);
-    ini.setValue ("set/timey1",      dateTime1    ->date());
-    ini.setValue ("set/timeh1",      dateTime1    ->time());
-    ini.setValue ("set/timey2",      dateTime2    ->date());
-    ini.setValue ("set/timeh2",      dateTime2    ->time());
-    ini.setValue ("set/timeintf",    TimeIntF  ->isChecked()?1:0);
-    ini.setValue ("set/timeint",     TimeInt   ->currentText());
-    ini.setValue ("set/timeunitf",   TimeUnitF ->isChecked()?1:0);
-    ini.setValue ("set/timeunit",    TimeUnit  ->text());
-    ini.setValue ("set/inputfile1",  InputFile1->currentText());
-    ini.setValue ("set/inputfile2",  InputFile2->currentText());
-    ini.setValue ("set/inputfile3",  InputFile3->currentText());
-    ini.setValue ("set/inputfile4",  InputFile4->currentText());
-    ini.setValue ("set/inputfile5",  InputFile5->currentText());
-    ini.setValue ("set/inputfile6",  InputFile6->currentText());
-    ini.setValue ("set/outputdirena",OutDirEna ->isChecked());
-    ini.setValue ("set/outputdir",   OutDir    ->text());
-    ini.setValue ("set/outputfile",  OutputFile->currentText());
+    ini.setValue("set/timestart",   TimeStart ->isChecked()?1:0);
+    ini.setValue("set/timeend",     TimeEnd   ->isChecked()?1:0);
+    ini.setValue("set/timey1",      dateTime1    ->date());
+    ini.setValue("set/timeh1",      dateTime1    ->time());
+    ini.setValue("set/timey2",      dateTime2    ->date());
+    ini.setValue("set/timeh2",      dateTime2    ->time());
+    ini.setValue("set/timeintf",    TimeIntF  ->isChecked()?1:0);
+    ini.setValue("set/timeint",     TimeInt   ->currentText());
+    ini.setValue("set/timeunitf",   TimeUnitF ->isChecked()?1:0);
+    ini.setValue("set/timeunit",    TimeUnit  ->text());
+    ini.setValue("set/inputfile1",  InputFile1->currentText());
+    ini.setValue("set/inputfile2",  InputFile2->currentText());
+    ini.setValue("set/inputfile3",  InputFile3->currentText());
+    ini.setValue("set/inputfile4",  InputFile4->currentText());
+    ini.setValue("set/inputfile5",  InputFile5->currentText());
+    ini.setValue("set/inputfile6",  InputFile6->currentText());
+    ini.setValue("set/outputdirena",OutDirEna ->isChecked());
+    ini.setValue("set/outputdir",   OutDir    ->text());
+    ini.setValue("set/outputfile",  OutputFile->currentText());
     
     WriteList(&ini,"hist/inputfile1",     InputFile1);
     WriteList(&ini,"hist/inputfile2",     InputFile2);
@@ -1424,7 +1415,7 @@ void MainForm::SaveOpt(void)
     ini.setValue("opt/posmode",     PosMode     );
     ini.setValue("opt/freq",        Freq        );
     ini.setValue("opt/solution",    Solution    );
-    ini.setValue  ("opt/elmask",      ElMask      );
+    ini.setValue ("opt/elmask",      ElMask      );
     ini.setValue("opt/snrmask_ena1",SnrMask.ena[0]);
     ini.setValue("opt/snrmask_ena2",SnrMask.ena[1]);
     for (int i=0;i<3;i++) for (int j=0;j<9;j++) {
@@ -1437,7 +1428,7 @@ void MainForm::SaveOpt(void)
     ini.setValue("opt/dynamicmodel",DynamicModel);
     ini.setValue("opt/tidecorr",    TideCorr    );
     ini.setValue("opt/satephem",    SatEphem    );
-    ini.setValue ("opt/exsats",      ExSats      );
+    ini.setValue("opt/exsats",      ExSats      );
     ini.setValue("opt/navsys",      NavSys      );
     ini.setValue("opt/posopt1",     PosOpt[0]   );
     ini.setValue("opt/posopt2",     PosOpt[1]   );
@@ -1450,32 +1441,33 @@ void MainForm::SaveOpt(void)
     ini.setValue("opt/ambres",      AmbRes      );
     ini.setValue("opt/gloambres",   GloAmbRes   );
     ini.setValue("opt/bdsambres",   BdsAmbRes   );
-    ini.setValue  ("opt/validthresar",ValidThresAR);
-    ini.setValue  ("opt/thresar2",    ThresAR2    );
-    ini.setValue  ("opt/thresar3",    ThresAR3    );
+    ini.setValue("opt/validthresar",ValidThresAR);
+    ini.setValue("opt/thresar2",    ThresAR2    );
+    ini.setValue("opt/thresar3",    ThresAR3    );
     ini.setValue("opt/lockcntfixamb",LockCntFixAmb);
     ini.setValue("opt/fixcntholdamb",FixCntHoldAmb);
-    ini.setValue  ("opt/elmaskar",    ElMaskAR    );
-    ini.setValue  ("opt/elmaskhold",  ElMaskHold  );
+    ini.setValue("opt/elmaskar",    ElMaskAR    );
+    ini.setValue("opt/elmaskhold",  ElMaskHold  );
     ini.setValue("opt/outcntresetbias",OutCntResetAmb);
-    ini.setValue  ("opt/slipthres",   SlipThres   );
-    ini.setValue  ("opt/maxagediff",  MaxAgeDiff  );
-    ini.setValue  ("opt/rejectgdop",  RejectGdop  );
-    ini.setValue  ("opt/rejectthres", RejectThres );
+    ini.setValue("opt/slipthres",   SlipThres   );
+    ini.setValue("opt/maxagediff",  MaxAgeDiff  );
+    ini.setValue("opt/rejectgdop",  RejectGdop  );
+    ini.setValue("opt/rejectthres", RejectThres );
     ini.setValue("opt/ariter",      ARIter      );
     ini.setValue("opt/numiter",     NumIter     );
     ini.setValue("opt/codesmooth",  CodeSmooth  );
-    ini.setValue  ("opt/baselinelen", BaseLine[0] );
-    ini.setValue  ("opt/baselinesig", BaseLine[1] );
+    ini.setValue("opt/baselinelen", BaseLine[0] );
+    ini.setValue("opt/baselinesig", BaseLine[1] );
     ini.setValue("opt/baselineconst",BaseLineConst);
     
     ini.setValue("opt/solformat",   SolFormat   );
     ini.setValue("opt/timeformat",  TimeFormat  );
     ini.setValue("opt/timedecimal", TimeDecimal );
     ini.setValue("opt/latlonformat",LatLonFormat);
-    ini.setValue ("opt/fieldsep",    FieldSep    );
+    ini.setValue("opt/fieldsep",    FieldSep    );
     ini.setValue("opt/outputhead",  OutputHead  );
     ini.setValue("opt/outputopt",   OutputOpt   );
+    ini.setValue("opt/outputvel",   OutputVel   );
     ini.setValue("opt/outputsingle",OutputSingle);
     ini.setValue("opt/maxsolstd",   MaxSolStd   );
     ini.setValue("opt/outputdatum", OutputDatum );
@@ -1485,43 +1477,43 @@ void MainForm::SaveOpt(void)
     ini.setValue("opt/debugtrace",  DebugTrace  );
     ini.setValue("opt/debugstatus", DebugStatus );
     
-    ini.setValue  ("opt/measeratio1", MeasErrR1   );
-    ini.setValue  ("opt/measeratio2", MeasErrR2   );
-    ini.setValue  ("opt/measerr2",    MeasErr2    );
-    ini.setValue  ("opt/measerr3",    MeasErr3    );
-    ini.setValue  ("opt/measerr4",    MeasErr4    );
-    ini.setValue  ("opt/measerr5",    MeasErr5    );
-    ini.setValue  ("opt/satclkstab",  SatClkStab  );
-    ini.setValue  ("opt/prnoise1",    PrNoise1    );
-    ini.setValue  ("opt/prnoise2",    PrNoise2    );
-    ini.setValue  ("opt/prnoise3",    PrNoise3    );
-    ini.setValue  ("opt/prnoise4",    PrNoise4    );
-    ini.setValue  ("opt/prnoise5",    PrNoise5    );
+    ini.setValue("opt/measeratio1", MeasErrR1   );
+    ini.setValue("opt/measeratio2", MeasErrR2   );
+    ini.setValue("opt/measerr2",    MeasErr2    );
+    ini.setValue("opt/measerr3",    MeasErr3    );
+    ini.setValue("opt/measerr4",    MeasErr4    );
+    ini.setValue("opt/measerr5",    MeasErr5    );
+    ini.setValue("opt/satclkstab",  SatClkStab  );
+    ini.setValue("opt/prnoise1",    PrNoise1    );
+    ini.setValue("opt/prnoise2",    PrNoise2    );
+    ini.setValue("opt/prnoise3",    PrNoise3    );
+    ini.setValue("opt/prnoise4",    PrNoise4    );
+    ini.setValue("opt/prnoise5",    PrNoise5    );
     
     ini.setValue("opt/rovpostype",  RovPosType  );
     ini.setValue("opt/refpostype",  RefPosType  );
-    ini.setValue  ("opt/rovpos1",     RovPos[0]   );
-    ini.setValue  ("opt/rovpos2",     RovPos[1]   );
-    ini.setValue  ("opt/rovpos3",     RovPos[2]   );
-    ini.setValue  ("opt/refpos1",     RefPos[0]   );
-    ini.setValue  ("opt/refpos2",     RefPos[1]   );
-    ini.setValue  ("opt/refpos3",     RefPos[2]   );
+    ini.setValue("opt/rovpos1",     RovPos[0]   );
+    ini.setValue("opt/rovpos2",     RovPos[1]   );
+    ini.setValue("opt/rovpos3",     RovPos[2]   );
+    ini.setValue("opt/refpos1",     RefPos[0]   );
+    ini.setValue("opt/refpos2",     RefPos[1]   );
+    ini.setValue("opt/refpos3",     RefPos[2]   );
     ini.setValue("opt/rovantpcv",   RovAntPcv   );
     ini.setValue("opt/refantpcv",   RefAntPcv   );
-    ini.setValue ("opt/rovant",      RovAnt      );
-    ini.setValue ("opt/refant",      RefAnt      );
-    ini.setValue  ("opt/rovante",     RovAntE     );
-    ini.setValue  ("opt/rovantn",     RovAntN     );
-    ini.setValue  ("opt/rovantu",     RovAntU     );
-    ini.setValue  ("opt/refante",     RefAntE     );
-    ini.setValue  ("opt/refantn",     RefAntN     );
-    ini.setValue  ("opt/refantu",     RefAntU     );
+    ini.setValue("opt/rovant",      RovAnt      );
+    ini.setValue("opt/refant",      RefAnt      );
+    ini.setValue("opt/rovante",     RovAntE     );
+    ini.setValue("opt/rovantn",     RovAntN     );
+    ini.setValue("opt/rovantu",     RovAntU     );
+    ini.setValue("opt/refante",     RefAntE     );
+    ini.setValue("opt/refantn",     RefAntN     );
+    ini.setValue("opt/refantu",     RefAntU     );
     
-    ini.setValue ("opt/rnxopts1",    RnxOpts1    );
-    ini.setValue ("opt/rnxopts2",    RnxOpts2    );
-    ini.setValue ("opt/pppopts",     PPPOpts     );
+    ini.setValue("opt/rnxopts1",    RnxOpts1    );
+    ini.setValue("opt/rnxopts2",    RnxOpts2    );
+    ini.setValue("opt/pppopts",     PPPOpts     );
     
-    ini.setValue ("opt/antpcvfile",  AntPcvFile  );
+    ini.setValue("opt/antpcvfile",  AntPcvFile  );
     ini.setValue("opt/intprefobs",  IntpRefObs  );
     ini.setValue("opt/sbassat",     SbasSat     );
     ini.setValue("opt/netrscorr",   NetRSCorr   );
@@ -1531,16 +1523,16 @@ void MainForm::SaveOpt(void)
     ini.setValue("opt/sbascorr2",   SbasCorr2   );
     ini.setValue("opt/sbascorr3",   SbasCorr3   );
     ini.setValue("opt/sbascorr4",   SbasCorr4   );
-    ini.setValue ("opt/sbascorrfile",SbasCorrFile);
-    ini.setValue ("opt/precephfile", PrecEphFile );
-    ini.setValue ("opt/satpcvfile",  SatPcvFile  );
-    ini.setValue ("opt/staposfile",  StaPosFile  );
-    ini.setValue ("opt/geoiddatafile",GeoidDataFile);
-    ini.setValue ("opt/ionofile",    IonoFile    );
-    ini.setValue ("opt/eopfile",     EOPFile     );
-    ini.setValue ("opt/dcbfile",     DCBFile     );
-    ini.setValue ("opt/blqfile",     BLQFile     );
-    ini.setValue ("opt/googleearthfile",GoogleEarthFile);
+    ini.setValue("opt/sbascorrfile",SbasCorrFile);
+    ini.setValue("opt/precephfile", PrecEphFile );
+    ini.setValue("opt/satpcvfile",  SatPcvFile  );
+    ini.setValue("opt/staposfile",  StaPosFile  );
+    ini.setValue("opt/geoiddatafile",GeoidDataFile);
+    ini.setValue("opt/ionofile",    IonoFile    );
+    ini.setValue("opt/eopfile",     EOPFile     );
+    ini.setValue("opt/dcbfile",     DCBFile     );
+    ini.setValue("opt/blqfile",     BLQFile     );
+    ini.setValue("opt/googleearthfile",GoogleEarthFile);
     
     RovList.replace("\n","@@");
     for (int i=0;i<10;i++) {
@@ -1551,21 +1543,6 @@ void MainForm::SaveOpt(void)
     for (int i=0;i<10;i++) {
         ini.setValue(QString("opt/baselist%1").arg(i+1),BaseList.mid(i*2000,2000));
     }
-    ini.setValue("opt/exterr_ena0", ExtErr.ena[0]);
-    ini.setValue("opt/exterr_ena1", ExtErr.ena[1]);
-    ini.setValue("opt/exterr_ena2", ExtErr.ena[2]);
-    ini.setValue("opt/exterr_ena3", ExtErr.ena[3]);
-    
-    for (int i=0;i<3;i++) for (int j=0;j<6;j++) {
-        ini.setValue(QString("opt/exterr_cerr%1%2").arg(i).arg(j),ExtErr.cerr[i][j]);
-    }
-    for (int i=0;i<3;i++) for (int j=0;j<6;j++) {
-        ini.setValue(QString("exterr_perr%1%2").arg(i).arg(j),ExtErr.perr[i][j]);
-    }
-    ini.setValue  ("opt/exterr_gloicb0",ExtErr.gloicb[0]);
-    ini.setValue  ("opt/exterr_gloicb1",ExtErr.gloicb[1]);
-    ini.setValue  ("opt/exterr_gpsglob0",ExtErr.gpsglob[0]);
-    ini.setValue  ("opt/exterr_gpsglob1",ExtErr.gpsglob[1]);
     
     ini.setValue ("conv/timespan",   convDialog->TimeSpan  ->isChecked());
     ini.setValue ("conv/timey1",     convDialog->dateTime1 ->date());

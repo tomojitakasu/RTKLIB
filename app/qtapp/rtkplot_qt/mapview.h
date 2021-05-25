@@ -59,7 +59,7 @@ private:
     QWebEngineView *WebBrowser;
     MapViewPageState *pageState;
 #endif
-    int MapState[2],MarkState[2];
+    int MarkState[2];
     double Lat,Lon;
     double MarkPos[2][2];
     QTimer Timer1, Timer2;

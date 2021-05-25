@@ -66,7 +66,7 @@ public slots:
     void BtnBLQFileClick();
     void BtnEOPFileClick();
     void BtnEOPViewClick();
-    void BtnExtOptClick();
+    void BtnFreqClick();
     void BtnMaskClick();
     void NavSys6Click();
 
@@ -86,7 +86,6 @@ private:
     void UpdateEnableExtErr(void);
 
 public:
-	exterr_t ExtErr;
 	
     explicit OptDialog(QWidget *parent);
 };

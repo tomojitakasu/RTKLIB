@@ -6,20 +6,20 @@
 
 QT       += widgets core gui
 
-include(../app.pri)
+include(../qtapp.pri)
 
 TARGET = rtkpost_qt
 TEMPLATE = app
 
-INCLUDEPATH += ../../src/ ../appcmn_qt
+INCLUDEPATH += ../../../src/ ../appcmn_qt
 
 SOURCES += \ 
-    extopt.cpp \
     kmzconv.cpp \
     postmain.cpp \
     postopt.cpp \
     rtkpost.cpp \
     ../appcmn_qt/aboutdlg.cpp \
+    ../appcmn_qt/freqdlg.cpp \
     ../appcmn_qt/keydlg.cpp \
     ../appcmn_qt/maskoptdlg.cpp \
     ../appcmn_qt/refdlg.cpp \
@@ -28,11 +28,11 @@ SOURCES += \
     ../appcmn_qt/timedlg.cpp
 
 HEADERS  += \ 
-    extopt.h \
     kmzconv.h \
     postmain.h \
     postopt.h \
     ../appcmn_qt/keydlg.h \
+    ../appcmn_qt/freqdlg.h \
     ../appcmn_qt/maskoptdlg.h \
     ../appcmn_qt/refdlg.h \
     ../appcmn_qt/viewer.h \
@@ -41,11 +41,11 @@ HEADERS  += \
     ../appcmn_qt/timedlg.h
 
 FORMS    += \ 
-    extopt.ui \
     kmzconv.ui \
     postmain.ui \
     postopt.ui \
     ../appcmn_qt/keydlg.ui \
+    ../appcmn_qt/freqdlg.ui \
     ../appcmn_qt/maskoptdlg.ui \
     ../appcmn_qt/refdlg.ui \
     ../appcmn_qt/viewer.ui \

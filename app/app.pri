@@ -18,4 +18,4 @@ QMAKE_RPATHDIR *= $${ROOT_DIRECTORY}/lib
 
 PRE_TARGETDEPS = $${ROOT_DIRECTORY}/src/rtklib.h
 
-CONFIG += c++11
+CONFIG += c++11 debug

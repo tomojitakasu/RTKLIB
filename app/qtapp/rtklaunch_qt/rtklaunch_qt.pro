@@ -9,7 +9,7 @@ QT       += widgets core gui widgets
 TARGET = rtklaunch_qt
 TEMPLATE = app
 
-INCLUDEPATH += ../../src/  
+INCLUDEPATH += ../../../src/  
 
 SOURCES += \ 
     launchmain.cpp \

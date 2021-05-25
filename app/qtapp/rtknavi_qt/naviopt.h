@@ -7,6 +7,7 @@
 #include "rtklib.h"
 
 class TextViewer;
+class FreqDialog;
 //---------------------------------------------------------------------------
 class OptDialog : public QDialog, private Ui::OptDialog
 {
@@ -35,7 +36,8 @@ public slots:
     void RovPosTypePChange(int);
     void GetPos(int type, QLineEdit **edit, double *pos);
     void SetPos(int type, QLineEdit **edit, double *pos);
-    void BtnFontClick();
+    void BtnFont1Click();
+    void BtnFont2Click();
     void BtnGeoidDataFileClick();
     void NavSys2Click();
     void BaselineConstClick();
@@ -44,10 +46,11 @@ public slots:
     void BtnLocalDirClick();
     void BtnEOPFileClick();
     void BtnEOPViewClick();
-    void BtnTLESatFileClick();
-    void BtnTLEFileClick();
     void BtnSnrMaskClick();
     void NavSys6Click();
+    void BtnFreqClick();
+    void RefAntClick();
+    void RovAntClick();
 
 private:
     void GetOpt(void);
@@ -60,8 +63,9 @@ private:
 public:
 	prcopt_t PrcOpt;
 	solopt_t SolOpt;
-    QFont PosFont;
+    QFont PanelFont, PosFont;
     TextViewer *textViewer;
+    FreqDialog * freqDialog;
 
     int SvrCycle, SvrBuffSize, SolBuffSize, NavSelect, SavedSol;
     int NmeaReq, NmeaCycle, TimeoutTime, ReconTime, DgpsCorr, SbasCorr;

@@ -67,7 +67,7 @@ public:
     double NmeaPos[3], MaxBL;
     QString Paths[3][4], Cmds[3][3], CmdsTcp[3][3], TimeStart, TimeSpeed;
     QString RcvOpt[3], ResetCmd;
-    QString History[10], MntpHist[10];
+    QString History[10];
 
     explicit InputStrDialog(QWidget* parent);
 };

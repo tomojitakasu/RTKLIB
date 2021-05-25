@@ -89,6 +89,7 @@ void ConvDialog::BtnConvertClick()
     QString InputFile_Text = InputFile->text(), OutputFile_Text = OutputFile->text();
 	int stat;
     QString cmd;
+    QStringList opt;
     char file[1024], kmlfile[1024], *p;
     double offset[3] = { 0 }, tint = 0.0;
     gtime_t ts = { 0, 0 }, te = { 0, 0 };
@@ -142,12 +143,16 @@ void ConvDialog::BtnConvertClick()
 	}
     if (FormatKML->isChecked() && Compress->isChecked()) {
 #ifdef Q_OS_WIN
-        cmd = QString("zip.exe -j -m %1 %2").arg(OutputFile->text()).arg(kmlfile); //TODO: zip for other platforms
+        cmd = "zip.exe";
+        opt << "-j"
+        opt << QString("-m %1").arg(OutputFile->text()); //TODO: zip for other platforms
 #endif
 #ifdef Q_OS_LINUX
-        cmd = QString("gzip -3 %1 %2").arg(OutputFile->text()).arg(kmlfile);
+        cmd = "gzip";
+        opt << QString("-3 %1 %2").arg(OutputFile->text());
 #endif
-        if (!ExecCmd(cmd)) {
+        opt << kmlfile;
+        if (!ExecCmd(cmd, opt)) {
             ShowMsg(tr("error : zip execution"));
 			return;
 		}
@@ -187,9 +192,9 @@ void ConvDialog::UpdateEnable(void)
 #endif
 }
 //---------------------------------------------------------------------------
-int ConvDialog::ExecCmd(const QString &cmd)
+int ConvDialog::ExecCmd(const QString &cmd, const QStringList &opt)
 {
-    return QProcess::startDetached(cmd);
+    return QProcess::startDetached(cmd, opt);
 }
 //---------------------------------------------------------------------------
 void ConvDialog::ShowMsg(const QString &msg)

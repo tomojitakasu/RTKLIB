@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>820</width>
-    <height>424</height>
+    <height>436</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -422,7 +422,7 @@
       <string/>
      </property>
      <property name="text">
-      <string>Transmit NMEA GPGGA to Base Station</string>
+      <string>Transmit NMEA GGA to Base Station</string>
      </property>
     </widget>
    </item>

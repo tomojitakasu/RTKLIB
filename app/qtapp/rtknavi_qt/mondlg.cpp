@@ -13,16 +13,16 @@
 #define TOPMARGIN	2
 #define LEFTMARGIN	3
 #define MAXLINE		128
-#define MAXLEN		200
+#define MAXLEN		256
 
-#define NMONITEM	29
+#define TYPE_WIDTH  90
 
-#define IONLON1		110.0
-#define IONLON2		165.0
-#define IONLAT1		55.0
-#define IONLAT2		15.0
-#define DIONLON		2.0
-#define DIONLAT		1.0
+#define NMONITEM	17
+
+
+static const int sys_tbl[]={
+        SYS_ALL,SYS_GPS,SYS_GLO,SYS_GAL,SYS_QZS,SYS_CMP,SYS_IRN,SYS_SBS
+};
 
 //---------------------------------------------------------------------------
 
@@ -41,6 +41,7 @@ MonitorDialog::MonitorDialog(QWidget *parent)
 
     ObsMode = 0;
     ConFmt = -1;
+    Str1=Str2=0;
 
     for (i = 0; i <= MAXRCVFMT; i++) SelFmt->addItem(formatstrs[i]);
 
@@ -53,6 +54,8 @@ MonitorDialog::MonitorDialog(QWidget *parent)
     connect(Type, SIGNAL(currentIndexChanged(int)), this, SLOT(TypeChange(int)));
     connect(SelFmt, SIGNAL(currentIndexChanged(int)), this, SLOT(SelFmtChange(int)));
     connect(SelObs, SIGNAL(currentIndexChanged(int)), this, SLOT(SelObsChange(int)));
+    connect(SelStr, SIGNAL(currentIndexChanged(int)), this, SLOT(SelStrChange()));
+    connect(SelStr2, SIGNAL(currentIndexChanged(int)), this, SLOT(SelStr2Change()));
     connect(&timer1, SIGNAL(timeout()), this, SLOT(Timer1Timer()));
     connect(&timer2, SIGNAL(timeout()), this, SLOT(Timer2Timer()));
 
@@ -116,7 +119,7 @@ void MonitorDialog::SelFmtChange(int)
 {
     char c[2] = "\n";
 
-    AddConsole((unsigned char *)c, 1, 1);
+    AddConsole((uint8_t *)c, 1, 1);
 
     if (ConFmt >= 3 && ConFmt < 18)
         free_raw(&raw);
@@ -126,39 +129,40 @@ void MonitorDialog::SelFmtChange(int)
         init_raw(&raw, ConFmt - 2);
 }
 //---------------------------------------------------------------------------
+void MonitorDialog::SelStrChange()
+{
+    Str1=SelStr->currentIndex();
+    ConBuff.clear();
+    Console->clear();
+}
+//---------------------------------------------------------------------------
+void MonitorDialog::SelStr2Change()
+{
+    Str2=SelStr2->currentIndex();
+    ConBuff.clear();
+    Console->clear();
+}
+//---------------------------------------------------------------------------
 void MonitorDialog::Timer1Timer()
 {
     if (!isVisible()) return;
 	switch (TypeF) {
         case  0: ShowRtk();        break;
         case  1: ShowObs();        break;
-        case  2: ShowNav(SYS_GPS); break;
-        case  3: ShowGnav();       break;
-        case  4: ShowNav(SYS_GAL); break;
-        case  5: ShowNav(SYS_QZS); break;
-        case  6: ShowNav(SYS_CMP); break;
-        case  7: ShowSbsNav();     break;
-        case  8: ShowIonUtc();     break;
-        case  9: ShowStr();        break;
-        case 10: ShowSat(SYS_GPS); break;
-        case 11: ShowSat(SYS_GLO); break;
-        case 12: ShowSat(SYS_GAL); break;
-        case 13: ShowSat(SYS_QZS); break;
-        case 14: ShowSat(SYS_CMP); break;
-        case 15: ShowSat(SYS_SBS); break;
-        case 16: ShowEst();        break;
-        case 17: ShowCov();        break;
-        case 18: ShowSbsMsg();     break;
-        case 19: ShowSbsLong();    break;
-        case 20: ShowSbsIono();    break;
-        case 21: ShowSbsFast();    break;
-        case 22: ShowRtcm();       break;
-        case 23: ShowRtcmDgps();   break;
-        case 24: ShowRtcmSsr();    break;
-        case 25: ShowLexMsg();     break;
-        case 26: ShowLexEph();     break;
-        case 27: ShowLexIon();     break;
-        case 28: ShowIonCorr();    break;
+        case  2: ShowNav();        break;
+        case  3: ShowIonUtc();     break;
+        case  4: ShowStr();        break;
+        case  5: ShowSat();        break;
+        case  6: ShowEst();        break;
+        case  7: ShowCov();        break;
+        case  8: ShowSbsMsg();     break;
+        case  9: ShowSbsLong();    break;
+        case 10: ShowSbsIono();    break;
+        case 11: ShowSbsFast();    break;
+        case 12: ShowRtcm();       break;
+        case 13: ShowRtcmDgps();   break;
+        case 14: ShowRtcmSsr();    break;
+        case 15: ShowRefSta();   break;
 	}
 }
 //---------------------------------------------------------------------------
@@ -169,47 +173,38 @@ void MonitorDialog::ClearTable(void)
 	switch (TypeF) {
         case  0: SetRtk();      break;
         case  1: SetObs();      break;
-        case  2: SetNav();      break;
-        case  3: SetGnav();     break;
-        case  4: SetNav();      break;
-        case  5: SetNav();      break;
-        case  6: SetNav();      break;
-        case  7: SetSbsNav();   break;
-        case  8: SetIonUtc();   break;
-        case  9: SetStr();      break;
-        case 10: SetSat();      break;
-        case 11: SetSat();      break;
-        case 12: SetSat();      break;
-        case 13: SetSat();      break;
-        case 14: SetSat();      break;
-        case 15: SetSat();      break;
-        case 16: SetEst();      break;
-        case 17: SetCov();      break;
-        case 18: SetSbsMsg();   break;
-        case 19: SetSbsLong();  break;
-        case 20: SetSbsIono();  break;
-        case 21: SetSbsFast();  break;
-        case 22: SetRtcm();     break;
-        case 23: SetRtcmDgps(); break;
-        case 24: SetRtcmSsr();  break;
-        case 25: SetLexMsg();   break;
-        case 26: SetLexEph();   break;
-        case 27: SetLexIon();   break;
-        case 28: SetIonCorr();  break;
+        case  2: ;              break;
+        case  3: SetIonUtc();   break;
+        case  4: SetStr();      break;
+        case  5: SetSat();      break;
+        case  6: SetEst();      break;
+        case  7: SetCov();      break;
+        case  8: SetSbsMsg();   break;
+        case  9: SetSbsLong();  break;
+        case 10: SetSbsIono();  break;
+        case 11: SetSbsFast();  break;
+        case 12: SetRtcm();     break;
+        case 13: SetRtcmDgps(); break;
+        case 14: SetRtcmSsr();  break;
+        case 15: SetRefSta();  break;
         default: console = 1;
             Console->setColumnWidth(0, Console->width());
             break;
 	}
     Console->setVisible(true);
+    Panel2->setVisible(console);
     BtnPause->setVisible(console != 0);
     BtnDown->setVisible(console != 0);
     BtnClear->setVisible(console != 0);
-    SelFmt->setVisible(NMONITEM <= TypeF && TypeF <= NMONITEM + 2);
+
     SelObs->setVisible(TypeF == 1);
-    SelSat->setVisible((2 <= TypeF && TypeF <= 7) || (10 <= TypeF && TypeF <= 15));
-    SelStr->setVisible(TypeF == 18 || TypeF == 22 || TypeF == 24);
-    SelEph->setVisible(2 <= TypeF && TypeF <= 7);
-    SelIon->setVisible(TypeF == 28);
+    SelSys->setVisible(TypeF == 1 || TypeF == 5);
+    SelSys2->setVisible(TypeF == 2 || TypeF == 14);
+    SelSat->setVisible(TypeF == 2 || TypeF == 5);
+    SelStr->setVisible(TypeF==12||TypeF==14||TypeF==15||TypeF==16);
+    SelStr2->setVisible(TypeF == 17);
+    SelFmt->setVisible(TypeF == 16);
+    SelEph->setVisible(TypeF == 2);
 }
 //---------------------------------------------------------------------------
 void MonitorDialog::Timer2Timer()
@@ -217,25 +212,25 @@ void MonitorDialog::Timer2Timer()
     unsigned char *msg = 0;
     int i, len, index = TypeF - NMONITEM;
 
-    if (index < 0 || 6 <= index) return;
+    if (TypeF<16) return;
 
 	rtksvrlock(&rtksvr);
 
-    if (index < 3) { // input buffer
-        len = rtksvr.npb[index];
-        if (len > 0 && (msg = (unsigned char *)malloc(size_t(len)))) {
-            memcpy(msg, rtksvr.pbuf[index], size_t(len));
-            rtksvr.npb[index] = 0;
+    if (TypeF == 16) { // input buffer
+        len = rtksvr.npb[Str1];
+        if (len > 0 && (msg = (uint8_t *)malloc(size_t(len)))) {
+            memcpy(msg, rtksvr.pbuf[Str1], size_t(len));
+            rtksvr.npb[Str1] = 0;
 		}
-    } else if (index < 5) { // solution buffer
-        len = rtksvr.nsb[index - 3];
-        if (len > 0 && (msg = (unsigned char *)malloc(size_t(len)))) {
-            memcpy(msg, rtksvr.sbuf[index - 3], size_t(len));
-            rtksvr.nsb[index - 3] = 0;
+    } else if (TypeF==17) { // solution buffer
+        len = rtksvr.nsb[Str2];
+        if (len > 0 && (msg = (uint8_t*)malloc(size_t(len)))) {
+            memcpy(msg, rtksvr.sbuf[Str2], size_t(len));
+            rtksvr.nsb[Str2] = 0;
 		}
     } else { // error message buffer
         len = rtksvr.rtk.neb;
-        if (len > 0 && (msg = (unsigned char *)malloc(size_t(len)))) {
+        if (len > 0 && (msg = (uint8_t *)malloc(size_t(len)))) {
             memcpy(msg, rtksvr.rtk.errbuf, size_t(len));
             rtksvr.rtk.neb = 0;
 		}
@@ -246,14 +241,17 @@ void MonitorDialog::Timer2Timer()
 
     rtcm.outtype = raw.outtype = 1;
 
-    if (ConFmt < 2 || index >= 3) {
+    if (TypeF >=17) {
         AddConsole(msg, len, index < 3 ? ConFmt : 1);
+    }
+    else if (ConFmt<2) {
+        AddConsole(msg,len,ConFmt);
     } else if (ConFmt == 2) {
         for (i = 0; i < len; i++) {
             input_rtcm2(&rtcm, msg[i]);
 			if (rtcm.msgtype[0]) {
                 QString buff=QString("%1\n").arg(rtcm.msgtype);
-                AddConsole((unsigned char*)qPrintable(buff), buff.size(), 1);
+                AddConsole((uint8_t*)qPrintable(buff), buff.size(), 1);
                 rtcm.msgtype[0] = '\0';
 			}
         }
@@ -262,16 +260,16 @@ void MonitorDialog::Timer2Timer()
             input_rtcm3(&rtcm, msg[i]);
 			if (rtcm.msgtype[0]) {
                 QString buff=QString("%1\n").arg(rtcm.msgtype);
-                AddConsole((unsigned char*)qPrintable(buff), buff.size(), 1);
+                AddConsole((uint8_t*)qPrintable(buff), buff.size(), 1);
                 rtcm.msgtype[0] = '\0';
 			}
         }
-    } else if (ConFmt < 18) {
+    } else if (ConFmt < 17) {
         for (i = 0; i < len; i++) {
             input_raw(&raw, ConFmt - 2, msg[i]);
 			if (raw.msgtype[0]) {
                 QString buff=QString("%1\n").arg(raw.msgtype);
-                AddConsole((unsigned char*)qPrintable(buff), buff.size(), 1);
+                AddConsole((uint8_t*)qPrintable(buff), buff.size(), 1);
                 raw.msgtype[0] = '\0';
 			}
         }
@@ -279,7 +277,7 @@ void MonitorDialog::Timer2Timer()
 	free(msg);
 }
 //---------------------------------------------------------------------------
-void MonitorDialog::AddConsole(const unsigned char *msg, int n, int mode)
+void MonitorDialog::AddConsole(const uint8_t *msg, int n, int mode)
 {
     char buff[MAXLEN + 16], *p = buff;
 
@@ -357,9 +355,9 @@ void MonitorDialog::ShowRtk(void)
     const QString sol[] = { tr("-"), tr("Fix"), tr("Float"), tr("SBAS"), tr("DGPS"), tr("Single"), tr("PPP"), "" };
     const QString mode[] = { tr("Single"), tr("DGPS"),	      tr("Kinematic"),	tr("Static"), tr("Moving-Base"),
                tr("Fixed"),	 tr("PPP-Kinematic"), tr("PPP-Static"), "" };
-    const QString freq[] = { tr("-"), tr("L1"), tr("L1+L2"), tr("L1+L2+L5"), tr("L1+L2+L5+L6"), tr("L1+L2+L5+L6+L7"), tr("L1+L2+L5+L6+L7+L8"), "" };
-    double *del, *off1, *off2, rt[3] = { 0 }, dop[4] = { 0 };
-    double azel[MAXSAT * 2], pos[3], vel[3];
+    const QString freq[] = { tr("-"), tr("L1"), tr("L1+L2"), tr("L1+L2+L3"), tr("L1+L2+L3+L4+L5"), "" };
+    double *del, *off, rt[3] = { 0 }, dop[4] = { 0 };
+    double azel[MAXSAT * 2], pos[3], vel[3], rr[3]={0}, enu[3]={0};
     int i, j, k, cycle, state, rtkstat, nsat0, nsat1, prcout, nave;
     unsigned long thread;
     int cputime, nb[3] = { 0 }, ne;
@@ -416,9 +414,10 @@ void MonitorDialog::ShowRtk(void)
     if (rtk.opt.navsys & SYS_GLO) navsys = navsys + tr("GLONASS ");
     if (rtk.opt.navsys & SYS_GAL) navsys = navsys + tr("Galileo ");
     if (rtk.opt.navsys & SYS_QZS) navsys = navsys + tr("QZSS ");
+    if (rtk.opt.navsys & SYS_CMP) navsys = navsys + tr("BDS ");
+    if (rtk.opt.navsys & SYS_IRN) navsys = navsys + tr("NavIC ");
     if (rtk.opt.navsys & SYS_SBS) navsys = navsys + tr("SBAS ");
     if (rtk.opt.navsys & SYS_CMP) navsys = navsys + tr("BeiDou ");
-    if (rtk.opt.navsys & SYS_IRN) navsys = navsys + tr("IRNSS ");
 
     Label->setText("");
     if (Console->rowCount() < 56) return;
@@ -449,30 +448,30 @@ void MonitorDialog::ShowRtk(void)
 
     Console->setItem(i, 0, new QTableWidgetItem(tr("SNR Mask L1 (dBHz)")));
     Console->setItem(i++, 1, new QTableWidgetItem(!rtk.opt.snrmask.ena[0] ? "" :
-                              QString("%1,%2,%3,%4,%5,%6,%7,%8,%9")
+                              QString("%1, %2, %3, %4, %5, %6, %7, %8, %9")
                               .arg(rtk.opt.snrmask.mask[0][0], 0).arg(rtk.opt.snrmask.mask[0][1], 0).arg(rtk.opt.snrmask.mask[0][2], 0)
                               .arg(rtk.opt.snrmask.mask[0][3], 0).arg(rtk.opt.snrmask.mask[0][4], 0).arg(rtk.opt.snrmask.mask[0][5], 0)
                               .arg(rtk.opt.snrmask.mask[0][6], 0).arg(rtk.opt.snrmask.mask[0][7], 0).arg(rtk.opt.snrmask.mask[0][8], 0)));
 
     Console->setItem(i, 0, new QTableWidgetItem(tr("SNR Mask L2 (dBHz)")));
     Console->setItem(i++, 1, new QTableWidgetItem(!rtk.opt.snrmask.ena[0] ? "" :
-                              QString("%1,%2,%3,%4,%5,%6,%7,%8,%9")
+                              QString("%1, %2, %3, %4, %5, %6, %7, %8, %9")
                               .arg(rtk.opt.snrmask.mask[1][0], 0).arg(rtk.opt.snrmask.mask[1][1], 0).arg(rtk.opt.snrmask.mask[1][2], 0)
                               .arg(rtk.opt.snrmask.mask[1][3], 0).arg(rtk.opt.snrmask.mask[1][4], 0).arg(rtk.opt.snrmask.mask[1][5], 0)
                               .arg(rtk.opt.snrmask.mask[1][6], 0).arg(rtk.opt.snrmask.mask[1][7], 0).arg(rtk.opt.snrmask.mask[1][8], 0)));
 
-    Console->setItem(i, 0, new QTableWidgetItem(tr("SNR Mask L5 (dBHz)")));
+    Console->setItem(i, 0, new QTableWidgetItem(tr("SNR Mask L3 (dBHz)")));
     Console->setItem(i++, 1, new QTableWidgetItem(!rtk.opt.snrmask.ena[0] ? "" :
-                              QString("%1,%2,%3,%4,%5,%6,%7,%8,%9")
+                              QString("%1, %2, %3, %4, %5, %6, %7, %8, %9")
                               .arg(rtk.opt.snrmask.mask[2][0], 0).arg(rtk.opt.snrmask.mask[2][1], 0).arg(rtk.opt.snrmask.mask[2][2], 0)
                               .arg(rtk.opt.snrmask.mask[2][3], 0).arg(rtk.opt.snrmask.mask[2][4], 0).arg(rtk.opt.snrmask.mask[2][5], 0)
                               .arg(rtk.opt.snrmask.mask[2][6], 0).arg(rtk.opt.snrmask.mask[2][7], 0).arg(rtk.opt.snrmask.mask[2][8], 0)));
 
     Console->setItem(i, 0, new QTableWidgetItem(tr("Rec Dynamic/Earth Tides Correction")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1,%2").arg(rtk.opt.dynamics ? tr("ON") : tr("OFF")).arg(rtk.opt.tidecorr ? tr("ON") : tr("OFF"))));
+    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1, %2").arg(rtk.opt.dynamics ? tr("ON") : tr("OFF")).arg(rtk.opt.tidecorr ? tr("ON") : tr("OFF"))));
 
     Console->setItem(i, 0, new QTableWidgetItem(tr("Ionosphere/Troposphere Model")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1,%2").arg(ionoopt[rtk.opt.ionoopt]).arg(tropopt[rtk.opt.tropopt])));
+    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1, %2").arg(ionoopt[rtk.opt.ionoopt]).arg(tropopt[rtk.opt.tropopt])));
 
     Console->setItem(i, 0, new QTableWidgetItem(tr("Satellite Ephemeris")));
     Console->setItem(i++, 1, new QTableWidgetItem(ephopt[rtk.opt.sateph]));
@@ -499,22 +498,22 @@ void MonitorDialog::ShowRtk(void)
     Console->setItem(i++, 1, new QTableWidgetItem(QString::number(prcout)));
 
     Console->setItem(i, 0, new QTableWidgetItem(tr("Bytes in Input Buffer")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1,%2,%3").arg(nb[0]).arg(nb[1]).arg(nb[2])));
+    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1, %2, %3").arg(nb[0]).arg(nb[1]).arg(nb[2])));
 
     Console->setItem(i, 0, new QTableWidgetItem(tr("# of Input Data Rover")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString(tr("Obs(%1),Nav(%2),Gnav(%3),Ion(%4),Sbs(%5),Pos(%6),Dgps(%7),Ssr(%8),Lex(%9),Err(%10)"))
-                              .arg(nmsg[0][0]).arg(nmsg[0][1]).arg(nmsg[0][6]).arg(nmsg[0][2]).arg(nmsg[0][3])
-                              .arg(nmsg[0][4]).arg(nmsg[0][5]).arg(nmsg[0][7]).arg(nmsg[0][8]).arg(nmsg[0][9])));
+    Console->setItem(i++, 1, new QTableWidgetItem(QString(tr("Obs(%1), Nav(%2), Ion(%3), Sbs (%4), Pos(%5), Dgps(%6), Ssr(%7), Err(%8)"))
+                              .arg(nmsg[0][0]).arg(nmsg[0][1] + nmsg[0][6]).arg(nmsg[0][2]).arg(nmsg[0][3])
+                              .arg(nmsg[0][4]).arg(nmsg[0][5]).arg(nmsg[0][7]).arg(nmsg[0][9])));
 
     Console->setItem(i, 0, new QTableWidgetItem(tr("# of Input Data Base/NRTK Station")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString(tr("Obs(%1),Nav(%2),Gnav(%3),Ion(%4),Sbs(%5),Pos(%6),Dgps(%7),Ssr(%8),Lex(%9),Err(%10)"))
-                              .arg(nmsg[1][0]).arg(nmsg[1][1]).arg(nmsg[1][6]).arg(nmsg[1][2]).arg(nmsg[1][3])
-                              .arg(nmsg[1][4]).arg(nmsg[1][5]).arg(nmsg[1][7]).arg(nmsg[1][8]).arg(nmsg[1][9])));
+    Console->setItem(i++, 1, new QTableWidgetItem(QString(tr("Obs(%1), Nav(%2), Ion(%3), Sbs (%4), Pos(%5), Dgps(%6), Ssr(%7), Err(%8)"))
+                              .arg(nmsg[1][0]).arg(nmsg[1][1] + nmsg[1][6]).arg(nmsg[1][2]).arg(nmsg[1][3])
+                              .arg(nmsg[1][4]).arg(nmsg[1][5]).arg(nmsg[1][7]).arg(nmsg[1][9])));
 
     Console->setItem(i, 0, new QTableWidgetItem(tr("# of Input Data Ephemeris")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString(tr("Obs(%1),Nav(%2),Gnav(%3),Ion(%4),Sbs(%5),Pos(%6),Dgps(%7),Ssr(%8),Lex(%9),Err(%10)"))
-                              .arg(nmsg[2][0]).arg(nmsg[2][1]).arg(nmsg[2][6]).arg(nmsg[2][2]).arg(nmsg[2][3])
-                              .arg(nmsg[2][4]).arg(nmsg[2][5]).arg(nmsg[2][7]).arg(nmsg[2][8]).arg(nmsg[2][9])));
+    Console->setItem(i++, 1, new QTableWidgetItem(QString(tr("Obs(%1), Nav(%2), Ion(%3), Sbs (%4), Pos(%5), Dgps(%6), Ssr(%7), Err(%8)"))
+                              .arg(nmsg[2][0]).arg(nmsg[2][1] + nmsg[2][6]).arg(nmsg[2][2]).arg(nmsg[2][3])
+                              .arg(nmsg[2][4]).arg(nmsg[2][5]).arg(nmsg[2][7]).arg(nmsg[2][9])));
 
     Console->setItem(i, 0, new QTableWidgetItem(tr("Solution Status")));
     Console->setItem(i++, 1, new QTableWidgetItem(sol[rtkstat]));
@@ -524,7 +523,7 @@ void MonitorDialog::ShowRtk(void)
     Console->setItem(i++, 1, new QTableWidgetItem(rtk.sol.time.time ? tstr : "-"));
 
     Console->setItem(i, 0, new QTableWidgetItem(tr("Time System Offset/Receiver Bias (GLO-GPS,GAL-GPS,BDS-GPS,IRN-GPS) (ns)")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1,%2,%3,%4").arg(rtk.sol.dtr[1] * 1E9, 0, 'f', 3).arg(rtk.sol.dtr[2] * 1E9, 0, 'f', 3).arg(rtk.sol.dtr[3] * 1E9, 0, 'f', 3)
+    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1, %2, %3, %4").arg(rtk.sol.dtr[1] * 1E9, 0, 'f', 3).arg(rtk.sol.dtr[2] * 1E9, 0, 'f', 3).arg(rtk.sol.dtr[3] * 1E9, 0, 'f', 3)
                               .arg(rtk.sol.dtr[4] * 1E9, 0, 'f', 3)));
 
     Console->setItem(i, 0, new QTableWidgetItem(tr("Solution Interval (s)")));
@@ -546,7 +545,7 @@ void MonitorDialog::ShowRtk(void)
     Console->setItem(i++, 1, new QTableWidgetItem(QString::number(rtk.sol.ns)));
 
     Console->setItem(i, 0, new QTableWidgetItem(tr("GDOP/PDOP/HDOP/VDOP")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1,%2,%3,%4").arg(dop[0], 0, 'f', 1).arg(dop[1], 0, 'f', 1).arg(dop[2], 0, 'f', 1).arg(dop[3], 0, 'f', 1)));
+    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1, %2, %3, %4").arg(dop[0], 0, 'f', 1).arg(dop[1], 0, 'f', 1).arg(dop[2], 0, 'f', 1).arg(dop[3], 0, 'f', 1)));
 
     Console->setItem(i, 0, new QTableWidgetItem(tr("# of Real Estimated States")));
     Console->setItem(i++, 1, new QTableWidgetItem(QString::number(rtk.na)));
@@ -555,42 +554,49 @@ void MonitorDialog::ShowRtk(void)
     Console->setItem(i++, 1, new QTableWidgetItem(QString::number(rtk.nx)));
 
     Console->setItem(i, 0, new QTableWidgetItem(tr("Pos X/Y/Z Single (m) Rover")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1,%2,%3").arg(rtk.sol.rr[0], 0, 'f', 3).arg(rtk.sol.rr[1], 0, 'f', 3).arg(rtk.sol.rr[2], 0, 'f', 3)));
+    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1, %2, %3").arg(rtk.sol.rr[0], 0, 'f', 3).arg(rtk.sol.rr[1], 0, 'f', 3).arg(rtk.sol.rr[2], 0, 'f', 3)));
 
     if (norm(rtk.sol.rr, 3) > 0.0) ecef2pos(rtk.sol.rr, pos); else pos[0] = pos[1] = pos[2] = 0.0;
     Console->setItem(i, 0, new QTableWidgetItem(tr("Lat/Lon/Height Single (deg,m) Rover")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1,%2,%3").arg(pos[0] * R2D, 0, 'f', 8).arg(pos[1] * R2D, 0, 'f', 8).arg(pos[2], 0, 'f', 3)));
+    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1, %2, %3").arg(pos[0] * R2D, 0, 'f', 8).arg(pos[1] * R2D, 0, 'f', 8).arg(pos[2], 0, 'f', 3)));
 
     ecef2enu(pos, rtk.sol.rr + 3, vel);
     Console->setItem(i, 0, new QTableWidgetItem(tr("Vel E/N/U (m/s) Rover")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1,%2,%3").arg(vel[0], 0, 'f', 3).arg(vel[1], 0, 'f', 3).arg(vel[2], 0, 'f', 3)));
+    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1, %2, %3").arg(vel[0], 0, 'f', 3).arg(vel[1], 0, 'f', 3).arg(vel[2], 0, 'f', 3)));
 
     Console->setItem(i, 0, new QTableWidgetItem(tr("Pos X/Y/Z Float (m) Rover")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1,%2,%3")
+    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1, %2, %3")
                               .arg(rtk.x ? rtk.x[0] : 0, 0, 'f', 3).arg(rtk.x ? rtk.x[1] : 0, 0, 'f', 3).arg(rtk.x ? rtk.x[2] : 0, 0, 'f', 3)));
 
     Console->setItem(i, 0, new QTableWidgetItem(tr("Pos X/Y/Z Float Std (m) Rover")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1,%2,%3")
+    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1, %2, %3")
                               .arg(rtk.P ? SQRT(rtk.P[0]) : 0, 0, 'f', 3).arg(rtk.P ? SQRT(rtk.P[1 + 1 * rtk.nx]) : 0, 0, 'f', 3).arg(rtk.P ? SQRT(rtk.P[2 + 2 * rtk.nx]) : 0, 0, 'f', 3)));
 
     Console->setItem(i, 0, new QTableWidgetItem(tr("Pos X/Y/Z Fixed (m) Rover")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1,%2,%3")
+    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1, %2, %3")
                               .arg(rtk.xa ? rtk.xa[0] : 0, 0, 'f', 3).arg(rtk.xa ? rtk.xa[1] : 0, 0, 'f', 3).arg(rtk.xa ? rtk.xa[2] : 0, 0, 'f', 3)));
 
     Console->setItem(i, 0, new QTableWidgetItem(tr("Pos X/Y/Z Fixed Std (m) Rover")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1,%2,%3")
+    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1, %2, %3")
                               .arg(rtk.Pa ? SQRT(rtk.Pa[0]) : 0, 0, 'f', 3).arg(rtk.Pa ? SQRT(rtk.Pa[1 + 1 * rtk.na]) : 0, 0, 'f', 3).arg(rtk.Pa ? SQRT(rtk.Pa[2 + 2 * rtk.na]) : 0, 0, 'f', 3)));
 
     Console->setItem(i, 0, new QTableWidgetItem(tr("Pos X/Y/Z (m) Base/NRTK Station")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1,%2,%3").arg(rtk.rb[0], 0, 'f', 3).arg(rtk.rb[1], 0, 'f', 3).arg(rtk.rb[2], 0, 'f', 3)));
+    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1, %2, %3").arg(rtk.rb[0], 0, 'f', 3).arg(rtk.rb[1], 0, 'f', 3).arg(rtk.rb[2], 0, 'f', 3)));
 
     if (norm(rtk.rb, 3) > 0.0) ecef2pos(rtk.rb, pos); else pos[0] = pos[1] = pos[2] = 0.0;
     Console->setItem(i, 0, new QTableWidgetItem(tr("Lat/Lon/Height (deg,m) Base/NRTK Station")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1,%2,%3").arg(pos[0] * R2D, 0, 'f', 8).arg(pos[1] * R2D, 0, 'f', 8).arg(pos[2], 0, 'f', 3)));
+    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1, %2, %3").arg(pos[0] * R2D, 0, 'f', 8).arg(pos[1] * R2D, 0, 'f', 8).arg(pos[2], 0, 'f', 3)));
 
     ecef2enu(pos, rtk.rb + 3, vel);
-    Console->setItem(i, 0, new QTableWidgetItem(tr("Vel E/N/U (m/s) Base/NRTK Station")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1,%2,%3").arg(vel[0], 0, 'f', 3).arg(vel[1], 0, 'f', 3).arg(vel[2], 0, 'f', 3)));
+    Console->setItem(i, 0, new QTableWidgetItem(tr("Vel E/N/U (m/s) Base Station")));
+    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1, %2, %3").arg(vel[0], 0, 'f', 3).arg(vel[1], 0, 'f', 3).arg(vel[2], 0, 'f', 3)));
+
+    if (norm(rtk.rb,3)>0.0) {
+        for (k=0;k<3;k++) rr[k]=rtk.sol.rr[k]-rtk.rb[k];
+        ecef2enu(pos,rr,enu);
+    }
+    Console->setItem(i, 0, new QTableWidgetItem(tr("Baseline Length/E/N/U (m) Rover-Base Station")));
+    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1, %2, %3, %4").arg(norm(rr,3),0,'f',3).arg(enu[0],0,'f',3).arg(enu[1],0,'f',3).arg(enu[2],0,'f',3)));
 
     Console->setItem(i, 0, new QTableWidgetItem(tr("# of Averaging Single Pos Base/NRTK Station")));
     Console->setItem(i++, 1, new QTableWidgetItem(QString("%1").arg(nave)));
@@ -598,32 +604,28 @@ void MonitorDialog::ShowRtk(void)
     Console->setItem(i, 0, new QTableWidgetItem(tr("Antenna Type Rover")));
     Console->setItem(i++, 1, new QTableWidgetItem(rtk.opt.pcvr[0].type));
 
-    off1 = rtk.opt.pcvr[0].off[0];
-    Console->setItem(i, 0, new QTableWidgetItem(tr("Ant Phase Center L1 E/N/U (m) Rover")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1,%2,%3").arg(off1[0], 0, 'f', 3).arg(off1[1], 0, 'f', 3).arg(off1[2], 0, 'f', 3)));
-
-    off2 = rtk.opt.pcvr[0].off[1];
-    Console->setItem(i, 0, new QTableWidgetItem(tr("Ant Phase Center L2 E/N/U (m) Rover")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1,%2,%3").arg(off2[0], 0, 'f', 3).arg(off2[1], 0, 'f', 3).arg(off2[2], 0, 'f', 3)));
+    for (j=0;j<NFREQ;j++) {
+        off=rtk.opt.pcvr[0].off[j];
+        Console->setItem(i, 0, new QTableWidgetItem(tr("Ant Phase Center L%1 E/N/U (m) Rover").arg(j+1)));
+        Console->setItem(i++, 1, new QTableWidgetItem(QString("%1, %2, %3").arg(off[0], 0, 'f', 3).arg(off[1], 0, 'f', 3).arg(off[2], 0, 'f', 3)));
+    }
 
     del = rtk.opt.antdel[0];
     Console->setItem(i, 0, new QTableWidgetItem(tr("Ant Delta E/N/U (m) Rover")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1,%2,%3").arg(del[0], 0, 'f', 3).arg(del[1], 0, 'f', 3).arg(del[2], 0, 'f', 3)));
+    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1, %2, %3").arg(del[0], 0, 'f', 3).arg(del[1], 0, 'f', 3).arg(del[2], 0, 'f', 3)));
 
-    Console->setItem(i, 0, new QTableWidgetItem(tr("Antenna Type Base/NRTK Station")));
+    Console->setItem(i, 0, new QTableWidgetItem(tr("Antenna Type Base Station")));
     Console->setItem(i++, 1, new QTableWidgetItem(rtk.opt.pcvr[1].type));
 
-    off1 = rtk.opt.pcvr[1].off[0];
-    Console->setItem(i, 0, new QTableWidgetItem(tr("Ant Phase Center L1 E/N/U (m) Base/NRTK Station")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1,%2,%3").arg(off1[0], 0, 'f', 3).arg(off1[1], 0, 'f', 3).arg(off1[2], 0, 'f', 3)));
-
-    off2 = rtk.opt.pcvr[1].off[1];
-    Console->setItem(i, 0, new QTableWidgetItem(tr("Ant Phase Center L2 E/N/U (m) Base/NRTK Station")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1,%2,%3").arg(off2[0], 0, 'f', 3).arg(off2[1], 0, 'f', 3).arg(off2[2], 0, 'f', 3)));
+    for (j=0;j<NFREQ;j++) {
+        off=rtk.opt.pcvr[1].off[0];
+        Console->setItem(i, 0, new QTableWidgetItem(tr("Ant Phase Center L%1 E/N/U (m) Base Station").arg(j+1)));
+        Console->setItem(i++, 1, new QTableWidgetItem(QString("%1, %2, %3").arg(off[0], 0, 'f', 3).arg(off[1], 0, 'f', 3).arg(off[2], 0, 'f', 3)));
+    }
 
     del = rtk.opt.antdel[1];
-    Console->setItem(i, 0, new QTableWidgetItem(tr("Ant Delta E/N/U (m) Base/NRTK Station")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1,%2,%3").arg(del[0], 0, 'f', 3).arg(del[1], 0, 'f', 3).arg(del[2], 0, 'f', 3)));
+    Console->setItem(i, 0, new QTableWidgetItem(tr("Ant Delta E/N/U (m) Base Station")));
+    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1, %2, %3").arg(del[0], 0, 'f', 3).arg(del[1], 0, 'f', 3).arg(del[2], 0, 'f', 3)));
 
     Console->setItem(i, 0, new QTableWidgetItem(tr("Precise Ephemeris Time/# of Epoch")));
     Console->setItem(i++, 1, new QTableWidgetItem(QString("%1-%2 (%3)").arg(s1).arg(s2).arg(ne)));
@@ -637,57 +639,62 @@ void MonitorDialog::ShowRtk(void)
 //---------------------------------------------------------------------------
 void MonitorDialog::SetSat(void)
 {
-    int i, j = 0, freq[] = { 1, 2, 5, 6, 7, 8 };
+    int i, j = 0;
     const QString label[] = {
-        tr("SAT"),	tr("PRN"),	tr("Status"), tr("Azimuth (deg)"), tr("Elevation (deg)"), tr("LG (m)"), tr("PHW(cyc)"),
+        tr("SAT"),	tr("PRN"), tr("PRN"),	tr("Status"), tr("Azimuth (deg)"), tr("Elevation (deg)"), tr("LG (m)"), tr("PHW(cyc)"),
         tr("P1-P2(m)"), tr("P1-C1(m)"), tr("P2-C2(m)")
 	};
-    int width[] = { 25, 25, 30, 45, 45, 60, 60, 40, 40, 40 };
+    int width[] = { 25, 25, 30, 45, 45, 60, 60, 40, 40, 40 }, nfreq;
 
-    Console->setColumnCount(10 + NFREQ * 9);
+    rtksvrlock(&rtksvr);
+    nfreq=rtksvr.rtk.opt.nf;
+    rtksvrunlock(&rtksvr);
+
+    Console->setColumnCount(9 + nfreq * 8);
     Console->setRowCount(2);
     header.clear();
 
+
     j = 0;
-    for (i = 0; i < 5; i++) {
+    for (i = 0; i < 4; i++) {
         Console->setColumnWidth(j++, width[i] * FontScale / 96);
         header << label[i];
 	}
-    for (i = 0; i < NFREQ; i++) {
+    for (i = 0; i < nfreq; i++) {
         Console->setColumnWidth(j++, 30 * FontScale / 96);
-        header << QString(tr("L%1")).arg(freq[i]);
+        header << QString(tr("L%1")).arg(i+1);
 	}
-    for (i = 0; i < NFREQ; i++) {
+    for (i = 0; i < nfreq; i++) {
         Console->setColumnWidth(j++, 40 * FontScale / 96);
-        header << QString(tr("Fix%1")).arg(freq[i]);
+        header << QString(tr("Fix%1")).arg(i+1);
 	}
-    for (i = 0; i < NFREQ; i++) {
+    for (i = 0; i < nfreq; i++) {
         Console->setColumnWidth(j++, 45 * FontScale / 96);
-        header << QString(tr("P%1 Residual(m)")).arg(freq[i]);
+        header << QString(tr("P%1 Residual(m)")).arg(i+1);
 	}
-    for (i = 0; i < NFREQ; i++) {
+    for (i = 0; i < nfreq; i++) {
         Console->setColumnWidth(j++, 45 * FontScale / 96);
-        header << QString(tr("L%1 Residual(m)")).arg(freq[i]);
+        header << QString(tr("L%1 Residual(m)")).arg(i+1);
 	}
-    for (i = 0; i < NFREQ; i++) {
+    for (i = 0; i < nfreq; i++) {
         Console->setColumnWidth(j++, 45 * FontScale / 96);
-        header << QString(tr("Slip%1")).arg(freq[i]);
+        header << QString(tr("Slip%1")).arg(i+1);
 	}
-    for (i = 0; i < NFREQ; i++) {
+    for (i = 0; i < nfreq; i++) {
         Console->setColumnWidth(j++, 45 * FontScale / 96);
-        header << QString(tr("Lock%1")).arg(freq[i]);
+        header << QString(tr("Lock%1")).arg(i+1);
 	}
-    for (i = 0; i < NFREQ; i++) {
+    for (i = 0; i < nfreq; i++) {
         Console->setColumnWidth(j++, 45 * FontScale / 96);
-        header << QString(tr("Outage%1")).arg(freq[i]);
+        header << QString(tr("Outage%1")).arg(i+1);
 	}
-    for (i = 0; i < NFREQ; i++) {
+    for (i = 0; i < nfreq; i++) {
         Console->setColumnWidth(j++, 45 * FontScale / 96);
-        header << QString(tr("Reject%1")).arg(freq[i]);
+        header << QString(tr("Reject%1")).arg(i+1);
 	}
-    for (i = 0; i < NFREQ; i++) {
+    for (i = 0; i < nfreq; i++) {
         Console->setColumnWidth(j++, 50 * FontScale / 96);
-        header << QString(tr("WaveL%1(m)")).arg(freq[i]);
+        header << QString(tr("WaveL%1(m)")).arg(i+1);
 	}
     for (i = 5; i < 10; i++) {
         Console->setColumnWidth(j++, width[i] * FontScale / 96);
@@ -696,30 +703,37 @@ void MonitorDialog::SetSat(void)
     Console->setHorizontalHeaderLabels(header);
 }
 //---------------------------------------------------------------------------
-void MonitorDialog::ShowSat(int sys)
+void MonitorDialog::ShowSat()
 {
 	rtk_t rtk;
 	ssat_t *ssat;
-    int i, j, k, n, fix, prn;
+    int i, j, k, n, fix, pmode, nfreq, sys=sys_tbl[SelSys->currentIndex()];
+    int vsat[MAXSAT]={0};
 	char id[32];
-    double az, el, lam[MAXSAT][NFREQ], cbias[MAXSAT][3];
+    double az, el, cbias[MAXSAT][3];
+
+    SetSat();
 
 	rtksvrlock(&rtksvr);
     rtk = rtksvr.rtk;
-    for (i = 0; i < MAXSAT; i++) for (j = 0; j < NFREQ; j++)
-            lam[i][j] = rtksvr.nav.lam[i][j];
 
     for (i = 0; i < MAXSAT; i++) for (j = 0; j < 3; j++)
             cbias[i][j] = rtksvr.nav.cbias[i][j];
-
+    pmode=rtksvr.rtk.opt.mode;
+    nfreq=rtksvr.rtk.opt.nf;
 	rtksvrunlock(&rtksvr);
 
     Label->setText("");
 
+    for (i=0;i<MAXSAT;i++) {
+        ssat=rtk.ssat+i;
+        vsat[i]=ssat->vs;
+    }
+
     for (i = 0, n = 1; i < MAXSAT; i++) {
         if (!(satsys(i + 1, NULL) & sys)) continue;
         ssat = rtk.ssat + i;
-        if (SelSat->currentIndex() == 1 && !ssat->vs) continue;
+        if (SelSat->currentIndex() == 1 && !vsat[i]) continue;
 		n++;
 	}
     Console->setRowCount(n - 1);
@@ -733,37 +747,33 @@ void MonitorDialog::ShowSat(int sys)
         if (!(satsys(i + 1, NULL) & sys)) continue;
         j = 0;
         ssat = rtk.ssat + i;
-        if (SelSat->currentIndex() == 1 && !ssat->vs) continue;
+        if (SelSat->currentIndex() == 1 && !vsat[i]) continue;
         satno2id(i + 1, id);
-        satsys(i + 1, &prn);
         Console->setItem(n, j++, new QTableWidgetItem(id));
-        Console->setItem(n, j++, new QTableWidgetItem(QString::number(prn)));
         Console->setItem(n, j++, new QTableWidgetItem(ssat->vs ? tr("OK") : tr("-")));
         az = ssat->azel[0] * R2D; if (az < 0.0) az += 360.0;
         el = ssat->azel[1] * R2D;
         Console->setItem(n, j++, new QTableWidgetItem(QString::number(az, 'f', 1)));
         Console->setItem(n, j++, new QTableWidgetItem(QString::number(el, 'f', 1)));
-        for (k = 0; k < NFREQ; k++)
+        for (k = 0; k < nfreq; k++)
             Console->setItem(n, j++, new QTableWidgetItem(ssat->vsat[k] ? tr("OK") : tr("-")));
-        for (k = 0; k < NFREQ; k++) {
+        for (k = 0; k < nfreq; k++) {
             fix = ssat->fix[k];
             Console->setItem(n, j++, new QTableWidgetItem(fix == 1 ? tr("FLOAT") : (fix == 2 ? tr("FIX") : (fix == 3 ? tr("HOLD") : tr("-")))));
 		}
-        for (k = 0; k < NFREQ; k++)
+        for (k = 0; k < nfreq; k++)
             Console->setItem(n, j++, new QTableWidgetItem(QString::number(ssat->resp[k], 'f', 2)));
-        for (k = 0; k < NFREQ; k++)
+        for (k = 0; k < nfreq; k++)
             Console->setItem(n, j++, new QTableWidgetItem(QString::number(ssat->resc[k], 'f', 4)));
-        for (k = 0; k < NFREQ; k++)
+        for (k = 0; k < nfreq; k++)
             Console->setItem(n, j++, new QTableWidgetItem(QString::number(ssat->slipc[k])));
-        for (k = 0; k < NFREQ; k++)
+        for (k = 0; k < nfreq; k++)
             Console->setItem(n, j++, new QTableWidgetItem(QString::number(ssat->lock[k])));
-        for (k = 0; k < NFREQ; k++)
+        for (k = 0; k < nfreq; k++)
             Console->setItem(n, j++, new QTableWidgetItem(QString::number(ssat->outc[k])));
-        for (k = 0; k < NFREQ; k++)
+        for (k = 0; k < nfreq; k++)
             Console->setItem(n, j++, new QTableWidgetItem(QString::number(ssat->rejc[k])));
-        for (k = 0; k < NFREQ; k++)
-            Console->setItem(n, j++, new QTableWidgetItem(QString("%1").arg(lam[i][k], 7, 'f', 5)));
-        Console->setItem(n, j++, new QTableWidgetItem(QString::number(ssat->gf, 'f', 3)));
+        Console->setItem(n, j++, new QTableWidgetItem(QString::number(ssat->gf[0], 'f', 3)));
         Console->setItem(n, j++, new QTableWidgetItem(QString::number(ssat->phw, 'f', 2)));
         Console->setItem(n, j++, new QTableWidgetItem(QString::number(cbias[i][0], 'f', 2)));
         Console->setItem(n, j++, new QTableWidgetItem(QString::number(cbias[i][1], 'f', 2)));
@@ -914,8 +924,8 @@ void MonitorDialog::ShowCov(void)
 //---------------------------------------------------------------------------
 void MonitorDialog::SetObs(void)
 {
-    const QString label[] = { tr("Trcv (GPST)"), tr("SAT"), tr("RCV") };
-    int i, j = 0, width[] = { 135, 25, 25 }, freq[] = { 1, 2, 5, 6, 7, 8 };
+    const QString label[] = { tr("Trcv (GPST)"), tr("SAT"), tr("STR") };
+    int i, j = 0, width[] = { 135, 25, 25 };
     int nex = ObsMode ? NEXOBS : 0;
 
     Console->setColumnCount(3 + (NFREQ + nex) * 6);
@@ -928,19 +938,24 @@ void MonitorDialog::SetObs(void)
 	}
     for (i = 0; i < NFREQ + nex; i++) {
         Console->setColumnWidth(j++, 80 * FontScale / 96);
-        header << (i < NFREQ ? QString(tr("P%1 (m)")).arg(freq[i]) : QString(tr("PX%1 (m)")).arg(i - NFREQ + 1));
+        header << (i < NFREQ ? QString(tr("C%1")).arg(i+1) : QString(tr("CX%1")).arg(i - NFREQ + 1));
+    }
+    for (i = 0; i < NFREQ + nex; i++) {
+        Console->setColumnWidth(j++, 30 * FontScale / 96);
+        header << (i < NFREQ ? QString(tr("S%1")).arg(i+1
+        ) : QString(tr("SX%1")).arg(i - NFREQ + 1));
+    for (i = 0; i < NFREQ + nex; i++) {
+        Console->setColumnWidth(j++, 80 * FontScale / 96);
+        header << (i < NFREQ ? QString(tr("P%1 (m)")).arg(i+1) : QString(tr("PX%1 (m)")).arg(i - NFREQ + 1));
     }
     for (i = 0; i < NFREQ + nex; i++) {
         Console->setColumnWidth(j++, 85 * FontScale / 96);
-        header << (i < NFREQ ? QString(tr("L%1 (cycle)")).arg(freq[i]) : QString(tr("LX%1 (cycle)")).arg(i - NFREQ + 1));
+        header << (i < NFREQ ? QString(tr("L%1 (cycle)")).arg(i+1) : QString(tr("LX%1 (cycle)")).arg(i - NFREQ + 1));
 	}
     for (i = 0; i < NFREQ + nex; i++) {
         Console->setColumnWidth(j++, 60 * FontScale / 96);
-        header << (i < NFREQ ? QString(tr("D%1 (Hz)")).arg(freq[i]) : QString(tr("DX%1 (Hz)")).arg(i - NFREQ + 1));
+        header << (i < NFREQ ? QString(tr("D%1 (Hz)")).arg(i+1) : QString(tr("DX%1 (Hz)")).arg(i - NFREQ + 1));
 	}
-    for (i = 0; i < NFREQ + nex; i++) {
-        Console->setColumnWidth(j++, 30 * FontScale / 96);
-        header << (i < NFREQ ? QString(tr("S%1")).arg(freq[i]) : QString(tr("SX%1")).arg(i - NFREQ + 1));
 	}
     for (i = 0; i < NFREQ + nex; i++) {
         Console->setColumnWidth(j++, 15 * FontScale / 96);
@@ -948,7 +963,7 @@ void MonitorDialog::SetObs(void)
 	}
     for (i = 0; i < NFREQ + nex; i++) {
         Console->setColumnWidth(j++, 30 * FontScale / 96);
-        header << (i < NFREQ ? QString(tr("C%1")).arg(freq[i]) : QString(tr("CX%1")).arg(i - NFREQ + 1));
+        header << (i < NFREQ ? QString(tr("C%1")).arg(i+1) : QString(tr("CX%1")).arg(i - NFREQ + 1));
 	}
     Console->setHorizontalHeaderLabels(header);
 }
@@ -957,11 +972,17 @@ void MonitorDialog::ShowObs(void)
 {
     obsd_t obs[MAXOBS * 2];
     char tstr[64], id[32], *code;
-    int i, k, n = 0, nex = ObsMode ? NEXOBS : 0;
+    int i, k, n = 0, nex = ObsMode ? NEXOBS : 0,sys=sys_tbl[SelSys->currentIndex()];
 
 	rtksvrlock(&rtksvr);
-    for (i = 0; i < rtksvr.obs[0][0].n && n < MAXOBS * 2; i++) obs[n++] = rtksvr.obs[0][0].data[i];
-    for (i = 0; i < rtksvr.obs[1][0].n && n < MAXOBS * 2; i++) obs[n++] = rtksvr.obs[1][0].data[i];
+    for (i = 0; i < rtksvr.obs[0][0].n && n < MAXOBS * 2; i++) {
+        if (!(satsys(rtksvr.obs[0][0].data[i].sat,NULL)&sys)) continue;
+        obs[n++] = rtksvr.obs[0][0].data[i];
+    }
+    for (i = 0; i < rtksvr.obs[1][0].n && n < MAXOBS * 2; i++) {
+        if (!(satsys(rtksvr.obs[1][0].data[i].sat,NULL)&sys)) continue;
+        obs[n++] = rtksvr.obs[1][0].data[i];
+    }
 	rtksvrunlock(&rtksvr);
 
     Console->setRowCount(n + 1 < 2 ? 0 : n);
@@ -975,7 +996,25 @@ void MonitorDialog::ShowObs(void)
         Console->setItem(i, j++, new QTableWidgetItem(tstr));
         satno2id(obs[i].sat, id);
         Console->setItem(i, j++, new QTableWidgetItem(id));
-        Console->setItem(i, j++, new QTableWidgetItem(QString::number(obs[i].rcv)));
+        Console->setItem(i, j++, new QTableWidgetItem(QString("(%1)").arg(obs[i].rcv)));
+        for (k=0;k<NFREQ+nex;k++) {
+            code=code2obs(obs[i].code[k]);
+            if (*code) Console->setItem(i+1, j++, new QTableWidgetItem(code));
+            else       Console->setItem(i+1, j++, new QTableWidgetItem("-"));
+        }
+        for (k=0;k<NFREQ+nex;k++) {
+            if (obs[i].SNR[k]) Console->setItem(i+1, j++, new QTableWidgetItem(QString::number(obs[i].SNR[k]*SNR_UNIT, 'f', 1)));
+            else               Console->setItem(i+1, j++, new QTableWidgetItem("-"));
+        }
+        for (k = 0; k < NFREQ + nex; k++) {
+            code = code2obs(obs[i].code[k]);
+            if (*code) Console->setItem(i, j++, new QTableWidgetItem(QString(tr("L%1")).arg(code)));
+            else Console->setItem(i, j++, new QTableWidgetItem(""));
+        for (k = 0; k < NFREQ + nex; k++)
+            if (obs[i].SNR[k])
+                Console->setItem(i, j++, new QTableWidgetItem(QString::number(obs[i].SNR[k] * SNR_UNIT, 'f', 1)));
+            else
+                Console->setItem(i, j++, new QTableWidgetItem("-"));
         for (k = 0; k < NFREQ + nex; k++)
             Console->setItem(i, j++, new QTableWidgetItem(QString::number(obs[i].P[k], 'f', 3)));
         for (k = 0; k < NFREQ + nex; k++)
@@ -983,13 +1022,8 @@ void MonitorDialog::ShowObs(void)
         for (k = 0; k < NFREQ + nex; k++)
             Console->setItem(i, j++, new QTableWidgetItem(QString::number(obs[i].D[k], 'f', 3)));
         for (k = 0; k < NFREQ + nex; k++)
-            Console->setItem(i, j++, new QTableWidgetItem(QString::number(obs[i].SNR[k] * 0.25, 'f', 1)));
-        for (k = 0; k < NFREQ + nex; k++)
             Console->setItem(i, j++, new QTableWidgetItem(QString::number(obs[i].LLI[k])));
-        for (k = 0; k < NFREQ + nex; k++) {
-            code = code2obs(obs[i].code[k], NULL);
-            if (*code) Console->setItem(i, j++, new QTableWidgetItem(QString(tr("L%1")).arg(code)));
-            else Console->setItem(i, j++, new QTableWidgetItem(""));
+
 		}
 	}
 }
@@ -997,16 +1031,16 @@ void MonitorDialog::ShowObs(void)
 void MonitorDialog::SetNav(void)
 {
     header.clear();
-    header	<< tr("SAT") << tr("PRN") << tr("Status") << tr("IODE") << tr("IODC") << tr("Accuracy") << tr("Health") << tr("Toe") << tr("Toc") << tr("Ttrans")
+    header	<< tr("SAT") << tr("PRN") << tr("Status") << tr("IODE") << tr("IODC") << tr("URA") << tr("SVH") << tr("Toe") << tr("Toc") << tr("Ttrans")
         << tr("A (m)") << tr("e") << tr("i0 (deg)") << tr("OMEGA0 (deg)") << tr("omega (deg)") << tr("M0 (deg)")
         << tr("deltan (deg/s)") << tr("OMEGAdot (deg/s)") << tr("IDOT (deg/s)")
-        << tr("af0 (ns)") << tr("af1 (ns/s)") << tr("af2 (ns/s2)") << tr("TGD (ns)") << tr("BGD5a(ns)") << tr("BGD5b(ns)")
-        << tr("Cuc(rad)") << tr("Cus(rad)") << tr("Crc(m)") << tr("Crs(m)") << tr("Cic(rad)") << tr("Cis(rad)") << tr("Code") << tr("Flag");
+        << tr("af0 (ns)") << tr("af1 (ns/s)") << tr("af2 (ns/s2)") << tr("TGD (ns)") << tr("BGD5a (ns)") << tr("BGD5b (ns)")
+        << tr("Cuc (rad)") << tr("Cus (rad)") << tr("Crc (m)") << tr("Crs (m)") << tr("Cic (rad)") << tr("Cis (rad)") << tr("Code") << tr("Flag");
     int i, width[] = {
-        25, 25, 30, 30, 30, 25, 25, 115, 115, 115, 80, 70, 60, 60, 60, 60, 70, 70, 70, 60,
-        50, 50, 50, 50, 50, 70, 70, 70,	 70,  70,  70, 30, 30
+        25, 25, 30, 30, 30, 25, 25, 115, 115, 115, 80, 80, 60, 60, 60, 60, 70, 70, 70, 60,
+        50, 50, 50, 50, 50, 70, 70, 50,  70,  70, 30, 30
 	};
-    Console->setColumnCount(33);
+    Console->setColumnCount(32);
     Console->setRowCount(2);
 
     for (i = 0; i < Console->columnCount(); i++)
@@ -1014,7 +1048,7 @@ void MonitorDialog::SetNav(void)
     Console->setHorizontalHeaderLabels(header);
 }
 //---------------------------------------------------------------------------
-void MonitorDialog::ShowNav(int sys)
+void MonitorDialog::ShowNav()
 {
 	eph_t eph[MAXSAT];
 	gtime_t time;
@@ -1022,13 +1056,31 @@ void MonitorDialog::ShowNav(int sys)
     char tstr[64], id[32];
     int i, k, n, prn, off = SelEph->currentIndex() ? MAXSAT : 0;
     bool valid;
+    int sys=sys_tbl[SelSys2->currentIndex()+1];
 
-	rtksvrlock(&rtksvr);
+    if (sys==SYS_GLO) {
+        SetGnav();
+        ShowGnav();
+        return;
+    }
+    if (sys==SYS_SBS) {
+        SetSbsNav();
+        ShowSbsNav();
+        return;
+    }
+    SetNav();
+
+    rtksvrlock(&rtksvr);
     time = rtksvr.rtk.sol.time;
     for (i = 0; i < MAXSAT; i++) eph[i] = rtksvr.nav.eph[i + off];
-	rtksvrunlock(&rtksvr);
+    rtksvrunlock(&rtksvr);
 
-    Label->setText("");
+    if (sys==SYS_GAL) {
+        Label->setText((SelEph->currentIndex()%2)?"F/NAV":"I/NAV");
+    }
+    else {
+        Label->setText("");
+    }
 
     for (k = 0, n = 1; k < MAXSAT; k++) {
         if (!(satsys(k + 1, &prn) & sys)) continue;
@@ -1073,21 +1125,20 @@ void MonitorDialog::ShowNav(int sys)
         Console->setItem(n, j++, new QTableWidgetItem(QString::number(eph[k].deln * R2D, 'E', 4)));
         Console->setItem(n, j++, new QTableWidgetItem(QString::number(eph[k].OMGd * R2D, 'E', 4)));
         Console->setItem(n, j++, new QTableWidgetItem(QString::number(eph[k].idot * R2D, 'E', 4)));
-        Console->setItem(n, j++, new QTableWidgetItem(QString::number(eph[k].f0 * 1E9, 'f', 1)));
+        Console->setItem(n, j++, new QTableWidgetItem(QString::number(eph[k].f0 * 1E9, 'f', 2)));
         Console->setItem(n, j++, new QTableWidgetItem(QString::number(eph[k].f1 * 1E9, 'f', 4)));
         Console->setItem(n, j++, new QTableWidgetItem(QString::number(eph[k].f2 * 1E9, 'f', 4)));
-        Console->setItem(n, j++, new QTableWidgetItem(QString::number(eph[k].tgd[0] * 1E9, 'f', 1)));
-        Console->setItem(n, j++, new QTableWidgetItem(QString::number(eph[k].tgd[1] * 1E9, 'f', 1)));
-        Console->setItem(n, j++, new QTableWidgetItem(QString::number(eph[k].tgd[2] * 1E9, 'f', 1)));
+        Console->setItem(n, j++, new QTableWidgetItem(QString::number(eph[k].tgd[0] * 1E9, 'f', 2)));
+        Console->setItem(n, j++, new QTableWidgetItem(QString::number(eph[k].tgd[1] * 1E9, 'f', 2)));
 
         Console->setItem(n, j++, new QTableWidgetItem(QString::number(eph[k].cuc, 'E', 4)));
         Console->setItem(n, j++, new QTableWidgetItem(QString::number(eph[k].cus, 'E', 4)));
-        Console->setItem(n, j++, new QTableWidgetItem(QString::number(eph[k].crc, 'E', 4)));
-        Console->setItem(n, j++, new QTableWidgetItem(QString::number(eph[k].crs, 'E', 4)));
+        Console->setItem(n, j++, new QTableWidgetItem(QString::number(eph[k].crc, 'E', 3)));
+        Console->setItem(n, j++, new QTableWidgetItem(QString::number(eph[k].crs, 'E', 3)));
         Console->setItem(n, j++, new QTableWidgetItem(QString::number(eph[k].cic, 'E', 4)));
         Console->setItem(n, j++, new QTableWidgetItem(QString::number(eph[k].cis, 'E', 4)));
-        Console->setItem(n, j++, new QTableWidgetItem(QString::number(eph[k].code)));
-        Console->setItem(n, j++, new QTableWidgetItem(QString::number(eph[k].flag)));
+        Console->setItem(n, j++, new QTableWidgetItem(QString::number(eph[k].code, 16)));
+        Console->setItem(n, j++, new QTableWidgetItem(QString::number(eph[k].flag, 16)));
         n++;
 	}
     Console->setRowCount(n);
@@ -1096,14 +1147,14 @@ void MonitorDialog::ShowNav(int sys)
 void MonitorDialog::SetGnav(void)
 {
     header.clear();
-    header	<< tr("SAT") << tr("PRN") << tr("Status") << tr("IOD") << tr("Freq") << tr("Health") << tr("Age(days)") << tr("Toe") << tr("Tof")
-        << tr("X (m)") << tr("Y (m)") << tr("Z (m)") << tr("VX (m/s)") << tr("VY (m/s)") << tr("VZ (m/s)")
-        << tr("AX (m/s2)") << tr("AY (m/s2)") << tr("AZ (m/s2)") << tr("Tau (ns)") << tr("Gamma (ns/s)");
+    header	<< tr("SAT") << tr("PRN") << tr("Status") << tr("IOD") << tr("FCN") << tr("SVH") << tr("Age(days)") << tr("Toe") << tr("Tof")
+        << tr("X (m)") << tr("Y (m)") << tr("Z (m)") << tr("Vx (m/s)") << tr("Vy (m/s)") << tr("Vz (m/s)")
+        << tr("Ax (m/s2)") << tr("Ay (m/s2)") << tr("Az (m/s2)") << tr("Tau (ns)") << tr("Gamma (ns/s)");
 
     int i, width[] = {
-        25, 25, 30, 30, 30, 25, 25, 115, 115, 75, 75, 75, 70, 70, 70, 65, 65, 65, 60, 60
+        25, 25, 30, 30, 30, 25, 25, 115, 115, 75, 75, 75, 70, 70, 70, 65, 65, 65, 70, 60, 50
 	};
-    Console->setColumnCount(20);
+    Console->setColumnCount(21);
     Console->setRowCount(1);
     for (i = 0; i < Console->columnCount(); i++)
         Console->setColumnWidth(i, width[i] * FontScale / 96);
@@ -1151,7 +1202,7 @@ void MonitorDialog::ShowGnav(void)
         if (geph[i].iode < 0) s = "-"; else s = QString::number(geph[i].iode);
         Console->setItem(n, j++, new QTableWidgetItem(s));
         Console->setItem(n, j++, new QTableWidgetItem(QString::number(geph[i].frq)));
-        Console->setItem(n, j++, new QTableWidgetItem(QString::number(geph[i].svh)));
+        Console->setItem(n, j++, new QTableWidgetItem(QString::number(geph[i].svh, 16)));
         Console->setItem(n, j++, new QTableWidgetItem(QString::number(geph[i].age)));
         if (geph[i].toe.time != 0) time2str(geph[i].toe, tstr, 0); else strcpy(tstr, "-");
         Console->setItem(n, j++, new QTableWidgetItem(tstr));
@@ -1166,22 +1217,23 @@ void MonitorDialog::ShowGnav(void)
         Console->setItem(n, j++, new QTableWidgetItem(QString::number(geph[i].acc[0], 'f', 7)));
         Console->setItem(n, j++, new QTableWidgetItem(QString::number(geph[i].acc[1], 'f', 7)));
         Console->setItem(n, j++, new QTableWidgetItem(QString::number(geph[i].acc[2], 'f', 7)));
-        Console->setItem(n, j++, new QTableWidgetItem(QString::number(geph[i].taun * 1E9, 'f', 1)));
+        Console->setItem(n, j++, new QTableWidgetItem(QString::number(geph[i].taun * 1E9, 'f', 2)));
         Console->setItem(n, j++, new QTableWidgetItem(QString::number(geph[i].gamn * 1E9, 'f', 4)));
-		n++;
+        Console->setItem(n, j++, new QTableWidgetItem(QString::number(geph[i].dtaun * 1E9, 'f', 2)));
+        n++;
 	}
 }
 //---------------------------------------------------------------------------
 void MonitorDialog::SetSbsNav(void)
 {
     header.clear();
-    header	<< tr("SAT") << tr("PRN") << tr("Status") << tr("T0") << tr("Tof") << tr("Health") << tr("URA") << tr("X (m)") << tr("Y (m)") << tr("Z (m)") << tr("VX (m/s)")
-        << tr("VY (m/s)") << tr("VZ (m/s)") << tr("AX (m/s2)") << tr("AY (m/s2)") << tr("AZ (m/s2)")
+    header	<< tr("SAT") << tr("PRN") << tr("Status") << tr("T0") << tr("Tof") << tr("SVH") << tr("URA") << tr("X (m)") << tr("Y (m)") << tr("Z (m)") << tr("Vx (m/s)")
+        << tr("Vy (m/s)") << tr("Vz (m/s)") << tr("Ax (m/s2)") << tr("Ay (m/s2)") << tr("Az (m/s2)")
         << tr("af0 (ns)") << tr("af1 (ns/s)");
 
     int i, width[] = { 25, 25, 30, 115, 115, 30, 30, 75, 75, 75, 70, 70, 70, 65, 65, 65, 60, 60 };
 
-    Console->setColumnCount(17);
+    Console->setColumnCount(18);
     Console->setRowCount(1);
     for (i = 0; i < Console->columnCount(); i++)
         Console->setColumnWidth(i, width[i] * FontScale / 96);
@@ -1249,7 +1301,7 @@ void MonitorDialog::ShowSbsNav(void)
         Console->setItem(i, j++, new QTableWidgetItem(QString::number(seph[i].acc[0], 'f', 7)));
         Console->setItem(i, j++, new QTableWidgetItem(QString::number(seph[i].acc[1], 'f', 7)));
         Console->setItem(i, j++, new QTableWidgetItem(QString::number(seph[i].acc[2], 'f', 7)));
-        Console->setItem(i, j++, new QTableWidgetItem(QString::number(seph[i].af0 * 1E9, 'f', 1)));
+        Console->setItem(i, j++, new QTableWidgetItem(QString::number(seph[i].af0 * 1E9, 'f', 2)));
         Console->setItem(i, j++, new QTableWidgetItem(QString::number(seph[i].af1 * 1E9, 'f', 4)));
 		n++;
 	}
@@ -1259,7 +1311,7 @@ void MonitorDialog::SetIonUtc(void)
 {
     header.clear();
     header << tr("Parameter") << tr("Value");
-    int i, width[] = { 220, 380 };
+    int i, width[] = { 270, 330 };
 
     Console->setColumnCount(2);
     Console->setRowCount(1);
@@ -1270,30 +1322,33 @@ void MonitorDialog::SetIonUtc(void)
 //---------------------------------------------------------------------------
 void MonitorDialog::ShowIonUtc(void)
 {
-    double utc_gps[4], utc_glo[4], utc_gal[4], utc_qzs[4];
-    double ion_gps[8], ion_gal[4], ion_qzs[8];
+    double utc_gps[8], utc_glo[8], utc_gal[8], utc_qzs[8], utc_cmp[8],utc_irn[9];
+    double ion_gps[8], ion_gal[4], ion_qzs[8], ion_cmp[8], ion_irn[8];
 	gtime_t time;
     double tow = 0.0;
 	char tstr[64];
-    int i, leaps, week = 0;
+    int i, week = 0;
 
     Q_UNUSED(utc_glo);
 
 	rtksvrlock(&rtksvr);
     time = rtksvr.rtk.sol.time;
-    for (i = 0; i < 4; i++) utc_gps[i] = rtksvr.nav.utc_gps[i];
-    for (i = 0; i < 4; i++) utc_glo[i] = rtksvr.nav.utc_glo[i];
-    for (i = 0; i < 4; i++) utc_gal[i] = rtksvr.nav.utc_gal[i];
-    for (i = 0; i < 4; i++) utc_qzs[i] = rtksvr.nav.utc_qzs[i];
+    for (i = 0; i < 8; i++) utc_gps[i] = rtksvr.nav.utc_gps[i];
+    for (i = 0; i < 8; i++) utc_glo[i] = rtksvr.nav.utc_glo[i];
+    for (i = 0; i < 8; i++) utc_gal[i] = rtksvr.nav.utc_gal[i];
+    for (i = 0; i < 8; i++) utc_qzs[i] = rtksvr.nav.utc_qzs[i];
+    for (i = 0; i < 8; i++) utc_cmp[i] = rtksvr.nav.utc_cmp[i];
+    for (i = 0; i < 9; i++) utc_irn[i] = rtksvr.nav.utc_irn[i];
     for (i = 0; i < 8; i++) ion_gps[i] = rtksvr.nav.ion_gps[i];
-    for (i = 0; i < 4; i++) ion_gal[i] = rtksvr.nav.ion_gal[i];
+    for (i = 0; i < 8; i++) ion_gal[i] = rtksvr.nav.ion_gal[i];
     for (i = 0; i < 8; i++) ion_qzs[i] = rtksvr.nav.ion_qzs[i];
-    leaps = rtksvr.nav.leaps;
+    for (i = 0; i < 8; i++) ion_cmp[i] = rtksvr.nav.ion_cmp[i];
+    for (i = 0; i < 8; i++) ion_irn[i] = rtksvr.nav.ion_irn[i];
 	rtksvrunlock(&rtksvr);
 
     Label->setText("");
 
-    Console->setRowCount(16);
+    Console->setRowCount(17);
     Console->setHorizontalHeaderLabels(header);
     i = 0;
 
@@ -1311,55 +1366,66 @@ void MonitorDialog::ShowIonUtc(void)
 
     if (time.time != 0) tow = time2gpst(time, &week);
     Console->setItem(i, 0, new QTableWidgetItem(tr("GPS Week/Time (s)")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1,%2").arg(week).arg(tow, 0, 'f', 3)));
+    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1, %2").arg(week).arg(tow, 0, 'f', 3)));
 
-    Console->setItem(i, 0, new QTableWidgetItem(tr("Leap Seconds (GPST-UTC) (s)")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString::number(leaps)));
+    Console->setItem(i, 0, new QTableWidgetItem(tr("Leap Seconds dt_LS(s), WN_LSF,DN, dt_LSF(s)")));
+    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1, %2, %3, %4").arg(utc_gps[4], 0, 'f', 0).arg(utc_gps[5], 0, 'f', 0).arg(utc_gps[6], 0, 'f', 0).arg(utc_gps[7], 0, 'f', 0)));
 
     Console->setItem(i, 0, new QTableWidgetItem(tr("GPST-UTC Reference Week/Time (s)")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1,%2").arg(utc_gps[3], 0, 'f', 0).arg(utc_gps[2], 0, 'f', 0)));
+    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1, %2").arg(utc_gps[3], 0, 'f', 0).arg(utc_gps[2], 0, 'f', 0)));
 
-    Console->setItem(i, 0, new QTableWidgetItem(tr("GPST-UTC A0(ns),A1(ns/s)")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1,%2").arg(utc_gps[0] * 1E9, 0, 'f', 3).arg(utc_gps[1] * 1E9, 0, 'f', 6)));
+    Console->setItem(i, 0, new QTableWidgetItem(tr("GLOT-UTC Tau, Tau_GPS(ns)")));
+    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1,%2").arg(utc_glo[0], 0, 'f', 9).arg(utc_glo[1] * 1E9, 0, 'f', 3)));
 
-    Console->setItem(i, 0, new QTableWidgetItem(tr("GST-GPS Reference Week/Time (s)")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1,%2").arg(utc_gal[3], 0, 'f', 0).arg(utc_gal[2], 0, 'f', 0)));
+    Console->setItem(i, 0, new QTableWidgetItem(tr("GTS-UTC Ref Week, Time(s), A0(ns), A1(ns/s)")));
+    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1 ,%2").arg(utc_gal[3], 0, 'f',0).arg(utc_gal[2], 0, 'f', 0).arg(utc_gal[0]*1e9, 0, 'f', 3).arg(utc_gal[1] * 1E9, 0, 'f', 5)));
 
-    Console->setItem(i, 0, new QTableWidgetItem(tr("GST-GPS A0(ns),A1(ns/s)")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1,%2").arg(utc_gal[0] * 1E9, 0, 'f', 3).arg(utc_gal[1] * 1E9, 0, 'f', 6)));
+    Console->setItem(i, 0, new QTableWidgetItem(tr("QZSST-UTC Ref Week, Time(s), A0(ns), A1(ns/s)")));
+    Console->setItem(i++, 1, new QTableWidgetItem(tr("%1, %2, %3, %4").arg(utc_qzs[3],0,'f',0).arg(utc_qzs[2],0,'f',0).
+                                 arg(utc_qzs[0]*1E9,0,'f',3).arg(utc_qzs[1]*1E9,0,'f',5)));
+    Console->setItem(i, 0, new QTableWidgetItem(tr("BDST-UTC Ref Week, Time(s), A0(ns), A1(ns/s)")));
+    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1, %2, %3, %4").arg(utc_cmp[3], 0, 'f', 0).arg(utc_cmp[2], 0, 'f', 0).arg(utc_cmp[0]*1e9,0,'f',3).arg(utc_cmp[1]*1e9,0,'f',5)));
 
-    Console->setItem(i, 0, new QTableWidgetItem(tr("QZST-GPS Reference Week/Time (s)")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1,%2").arg(utc_qzs[3], 0, 'f', 0).arg(utc_qzs[2], 0, 'f', 0)));
+    Console->setItem(i, 0, new QTableWidgetItem(tr("IRNT-UTC Ref Week,Time(s), A0(ns), A1(ns/s), A2(ns/s2)")));
+    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1, %2, %3, %4").arg(utc_irn[3], 0, 'f', 0).arg(utc_irn[2], 0, 'f', 0).arg(utc_irn[0]*1e9,0,'f',3).arg(utc_irn[1]*1e9,0,'f',5)));
 
-    Console->setItem(i, 0, new QTableWidgetItem(tr("QZST-GPS A0(ns),A1(ns/s)")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1,%2").arg(utc_qzs[0] * 1E9, 0, 'f', 3).arg(utc_qzs[1] * 1E9, 0, 'f', 6)));
+    Console->setItem(i, 0, new QTableWidgetItem(tr("GPS Iono Parameters Alpha0-3")));
+    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1, %2,%3, %4").arg(ion_gps[0], 0, 'f', 5).arg(ion_gps[1], 0, 'f', 5).arg(ion_gps[2], 0,'f',5).arg(ion_gps[3], 0,'f',5)));
 
-    Console->setItem(i, 0, new QTableWidgetItem(tr("GPS Iono Parameters Alpha0-Alpha3")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1,%2,%3,%4").arg(ion_gps[0], 0, 'E', 5).arg(ion_gps[1], 0, 'E', 5)
-                              .arg(ion_gps[2], 0, 'E', 5).arg(ion_gps[3], 0, 'E', 5)));
+    Console->setItem(i, 0, new QTableWidgetItem(tr("GPS Iono Parameters Beta0-3")));
+    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1, %2, %3, %4").arg(ion_gps[4], 0, 'f', 5).arg(ion_gps[5], 0, 'f', 5).arg(ion_gps[6], 0,'f',5).arg(ion_gps[7], 0,'f',5)));
 
-    Console->setItem(i, 0, new QTableWidgetItem(tr("GPS Iono Parameters Beta0-Beta3")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1,%2,%3,%4").arg(ion_gps[4], 0, 'E', 5).arg(ion_gps[5], 0, 'E', 5).arg(ion_gps[6], 0, 'E', 5).arg(ion_gps[7], 0, 'E', 5)));
-
-    Console->setItem(i, 0, new QTableWidgetItem(tr("GALILEO Iono Parameters 0-2")));
+    Console->setItem(i, 0, new QTableWidgetItem(tr("Galileo Iono Parameters 0-2")));
     Console->setItem(i++, 1, new QTableWidgetItem(QString("%1,%2,%3").arg(ion_gal[0], 0, 'E', 5).arg(ion_gal[1], 0, 'E', 5).arg(ion_gal[2], 0, 'E', 5)));
 
-    Console->setItem(i, 0, new QTableWidgetItem(tr("QZS Iono Parameters Alpha0-Alpha3")));
+    Console->setItem(i, 0, new QTableWidgetItem(tr("QZSS Iono Parameters Alpha0-Alpha3")));
     Console->setItem(i++, 1, new QTableWidgetItem(QString("%1,%2,%3,%4").arg(ion_qzs[0], 0, 'E', 5).arg(ion_qzs[1], 0, 'E', 5).arg(ion_qzs[2], 0, 'E', 5).arg(ion_qzs[3], 0, 'E', 5)));
 
-    Console->setItem(i, 0, new QTableWidgetItem(tr("QZS Iono Parameters Beta0-Beta3")));
+    Console->setItem(i, 0, new QTableWidgetItem(tr("QZSS Iono Parameters Beta0-Beta3")));
     Console->setItem(i++, 1, new QTableWidgetItem(QString("%1,%2,%3,%4").arg(ion_qzs[4], 0, 'E', 5).arg(ion_qzs[5], 0, 'E', 5).arg(ion_qzs[6], 0, 'E', 5).arg(ion_qzs[7], 0, 'E', 5)));
+
+    Console->setItem(i, 0, new QTableWidgetItem(tr("BDS Iono Parameters Alpha0-Alpha3")));
+    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1,%2,%3,%4").arg(ion_cmp[0], 0, 'E', 5).arg(ion_cmp[1], 0, 'E', 5).arg(ion_cmp[2], 0, 'E', 5).arg(ion_cmp[3], 0, 'E', 5)));
+
+    Console->setItem(i, 0, new QTableWidgetItem(tr("BDS Iono Parameters Beta0-Beta3")));
+    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1,%2,%3,%4").arg(ion_cmp[4], 0, 'E', 5).arg(ion_cmp[5], 0, 'E', 5).arg(ion_cmp[6], 0, 'E', 5).arg(ion_cmp[7], 0, 'E', 5)));
+
+    Console->setItem(i, 0, new QTableWidgetItem(tr("NavIC Iono Parameters Alpha0-Alpha3")));
+    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1,%2,%3,%4").arg(ion_irn[0], 0, 'E', 5).arg(ion_irn[1], 0, 'E', 5).arg(ion_irn[2], 0, 'E', 5).arg(ion_irn[3], 0, 'E', 5)));
+
+    Console->setItem(i, 0, new QTableWidgetItem(tr("NavIC Iono Parameters Beta0-Beta3")));
+    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1,%2,%3,%4").arg(ion_irn[4], 0, 'E', 5).arg(ion_irn[5], 0, 'E', 5).arg(ion_irn[6], 0, 'E', 5).arg(ion_irn[7], 0, 'E', 5)));
 }
 //---------------------------------------------------------------------------
 void MonitorDialog::SetStr(void)
 {
     header.clear();
-    header	<< tr("Stream") << tr("Type") << tr("Format") << tr("Mode") << tr("State") << tr("Input (bytes)") << tr("Input (bps)")
+    header	<< tr("STR") << tr("Stream") << tr("Type") << tr("Format") << tr("Mode") << tr("State") << tr("Input (bytes)") << tr("Input (bps)")
         << tr("Output (bytes)") << tr("Output (bps)") << tr("Path") << tr("Message");
 
-    int i, width[] = { 95, 70, 80, 35, 35, 70, 70, 70, 70, 220, 220 };
+    int i, width[] = {25, 95, 70, 80, 35, 35, 70, 70, 70, 70, 220, 220 };
 
-    Console->setColumnCount(11);
+    Console->setColumnCount(12);
     Console->setRowCount(1);
     for (i = 0; i < Console->columnCount(); i++)
         Console->setColumnWidth(i, width[i] * FontScale / 96);
@@ -1369,13 +1435,14 @@ void MonitorDialog::SetStr(void)
 void MonitorDialog::ShowStr(void)
 {
     const QString ch[] = {
-        tr("Input Rover"),	 tr("Input Base/NRTK"), tr("Input Ephemeris"), tr("Output Solution 1"),
-        tr("Output Solution 2"), tr("Log Rover"),	tr("Log Base/NRTK"),   tr("Log Ephemeris"),
+        tr("Input Rover"),	 tr("Input Base"), tr("Input Correction"), tr("Output Solution 1"),
+        tr("Output Solution 2"), tr("Log Rover"),	tr("Log Base"),   tr("Log Correction"),
         tr("Monitor Port")
 	};
     const QString type[] = {
         tr("-"), tr("Serial"), tr("File"), tr("TCP Server"), tr("TCP Client"), tr("UDP"), tr("NTRIP Server"),
-        tr("NTRIP Client"), tr("FTP"),tr("HTTP"),tr("NTRIP Caster S"),tr("NTRIP Caster C")
+        tr("NTRIP Client"), tr("FTP"),tr("HTTP"),tr("NTRIP Caster S"),tr("NTRIP Caster"),tr("UDP Server"),
+        tr("UDP Client"), tr("")
 	};
     const QString outformat[] = {
         tr("Lat/Lon/Height"), tr("X/Y/Z-ECEF"), tr("E/N/U-Baseline"), tr("NMEA-0183")
@@ -1400,9 +1467,11 @@ void MonitorDialog::ShowStr(void)
 
     for (i = 0; i < 9; i++) {
         int j = 0;
+        Console->setItem(i, j++, new QTableWidgetItem(QString("(%1)").arg(i+1)));
         Console->setItem(i, j++, new QTableWidgetItem(ch[i]));
         Console->setItem(i, j++, new QTableWidgetItem(type[stream[i].type]));
-        if (i < 3) form = formatstrs[format[i]];
+        if (!stream[i].type) form="-";
+        else if (i<3) form=formatstrs[format[i]];
         else if (i < 5 || i == 8) form = outformat[format[i]];
         else form = "-";
         Console->setItem(i, j++, new QTableWidgetItem(form));
@@ -1435,10 +1504,10 @@ void MonitorDialog::ShowStr(void)
 void MonitorDialog::SetSbsMsg(void)
 {
     header.clear();
-    header << tr("Trcv") << tr("PRN") << tr("Type") << tr("Message") << tr("Contents");
-    int i, width[] = { 115, 25, 25, 420, 200 };
+    header << tr("Trcv") << tr("PRN") << tr("STR") << tr("Type") << tr("Message") << tr("Contents");
+    int i, width[] = { 115, 25, 25, 25, 420, 200 };
 
-    Console->setColumnCount(5);
+    Console->setColumnCount(6);
     Console->setRowCount(1);
     for (i = 0; i < Console->columnCount(); i++)
         Console->setColumnWidth(i, width[i] * FontScale / 96);
@@ -1457,16 +1526,22 @@ void MonitorDialog::ShowSbsMsg(void)
         tr("Mixed Fast Corrections/Long Term Satellite Error Corrections"),
         tr("Long Term Satellite Error Corrections",			    "Ionospheric Delay Corrections"),
         tr("WAAS Service Messages"),					    tr("Clock-Ephemeris Covariance Matrix Message"),
-        tr("Internal Test Message"),					    tr("Null Message"),				     ""
+        tr("Internal Test Message"),					    tr("Null Message"),
+        tr("QZSS: DC Report (JMA)","QZSS: DC Report (Other)"),
+        tr("QZSS: Monitoring Station Info","QZSS: PRN Mask"),
+        tr("QZSS: Data Issue Number","QZSS: DGPS Correction"),
+        tr("QZSS: Satellite Health"),
+        ""
 	};
-    const int id[] = { 0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 12, 17, 18, 24, 25, 26, 27, 28, 62, 63, -1 };
+    const int id[] = { 0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 12, 17, 18, 24, 25, 26, 27, 28, 62, 63, 43,44,47,48,49,50,51,-1 };
     char str[64];
     QString s;
-    int i, k, n;
+    int i, k, n, prn;
 
 	rtksvrlock(&rtksvr); // lock
-    n = rtksvr.nsbs;
-    for (i = 0; i < n; i++) msg[i] = rtksvr.sbsmsg[i];
+    for (i=n=0;i<rtksvr.nsbs;i++) {
+        msg[n++]=rtksvr.sbsmsg[i];
+    }
 	rtksvrunlock(&rtksvr); // unlock
 
 
@@ -1476,9 +1551,11 @@ void MonitorDialog::ShowSbsMsg(void)
 
     for (i = 0; i < n; i++) {
         int j = 0;
+        prn=msg[i].prn;
         time2str(gpst2time(msg[i].week, msg[i].tow), str, 0);
         Console->setItem(i, j++, new QTableWidgetItem(str));
-        Console->setItem(i, j++, new QTableWidgetItem(QString::number(msg[i].prn)));
+        Console->setItem(i, j++, new QTableWidgetItem(QString::number(prn)));
+        Console->setItem(i, j++, new QTableWidgetItem(QString("(%1)").arg(msg[i].rcv)));
         int type = msg[i].msg[1] >> 2;
         Console->setItem(i, j++, new QTableWidgetItem(QString::number(type)));
         for (k = 0; k < 29; k++) s += QString::number(msg[i].msg[k], 16);
@@ -1515,12 +1592,12 @@ void MonitorDialog::ShowSbsLong(void)
     sbssat = rtksvr.nav.sbssat;
 	rtksvrunlock(&rtksvr); // unlock
 
-    Console->setRowCount(sbssat.nsat <= 0 ? 2 : sbssat.nsat);
+    Console->setRowCount(sbssat.nsat <= 0 ? 1 : sbssat.nsat);
     Label->setText(QString(tr("IODP:%1  System Latency:%2 s"))
                .arg(sbssat.iodp).arg(sbssat.tlat));
     Console->setHorizontalHeaderLabels(header);
 
-    for (i = 0; i < Console->rowCount(); i++) {
+    for (i = 0; i < sbssat.nsat; i++) {
         int j = 0;
         sbssatp_t *satp = sbssat.sat + i;
         bool valid = timediff(time, satp->lcorr.t0) <= MAXSBSAGEL && satp->lcorr.t0.time;
@@ -1623,11 +1700,11 @@ void MonitorDialog::ShowSbsFast(void)
 	rtksvrunlock(&rtksvr); // unlock
 
     Label->setText("");
-    Console->setRowCount(sbssat.nsat <= 0 ? 2 : sbssat.nsat);
-    Label->setText(QString(tr("IODP:%1  System Latency:%2 s")).arg(sbssat.iodp).arg(sbssat.tlat));
+    Console->setRowCount(sbssat.nsat <= 0 ? 1 : sbssat.nsat);
+    //Label->setText(QString(tr("IODP:%1  System Latency:%2 s")).arg(sbssat.iodp).arg(sbssat.tlat));
     Console->setHorizontalHeaderLabels(header);
 
-    for (i = 0; i < Console->rowCount(); i++) {
+    for (i = 0; i < sbssat.nsat; i++) {
         int j = 0;
         sbssatp_t *satp = sbssat.sat + i;
         bool valid = fabs(timediff(time, satp->fcorr.t0)) <= MAXSBSAGEF && satp->fcorr.t0.time &&
@@ -1661,17 +1738,14 @@ void MonitorDialog::SetRtcm(void)
 //---------------------------------------------------------------------------
 void MonitorDialog::ShowRtcm(void)
 {
-	rtcm_t rtcm;
-    double pos[3] = { 0 };
+    static rtcm_t rtcm;
     int i = 0, j, format;
     QString mstr1, mstr2;
     char tstr[64] = "-";
 
-    if (SelStr->currentIndex() > 3) return;
-
 	rtksvrlock(&rtksvr);
-    format = rtksvr.format[SelStr->currentIndex()];
-    rtcm = rtksvr.rtcm[SelStr->currentIndex()];
+    format = rtksvr.format[Str1];
+    rtcm = rtksvr.rtcm[Str1];
 	rtksvrunlock(&rtksvr);
 
     if (rtcm.time.time) time2str(rtcm.time, tstr, 3);
@@ -1686,15 +1760,19 @@ void MonitorDialog::ShowRtcm(void)
         if (rtcm.nmsg3[j] == 0) continue;
         mstr2 += QString("%1%2(%3)").arg(mstr2.isEmpty() ? "" : ",").arg(j + 1000).arg(rtcm.nmsg3[j]);
 	}
+    for (j=300;j<399;j++) {
+        if (rtcm.nmsg3[j]==0) continue;
+        mstr2+=QString("%1%2(%3)").arg(mstr2.isEmpty()?",":"").arg(j+3770).arg(rtcm.nmsg3[j]);
+    }
     if (rtcm.nmsg3[0] > 0)
         mstr2 += QString("%1other(%2)").arg(mstr2.isEmpty() ? "" : ",").arg(rtcm.nmsg3[0]);
     Label->setText("");
 
-    Console->setRowCount(26);
+    Console->setRowCount(15);
     Console->setHorizontalHeaderLabels(header);
 
     Console->setItem(i, 0, new QTableWidgetItem(tr("Format")));
-    Console->setItem(i++, 1, new QTableWidgetItem(format == STRFMT_RTCM2 ? tr("RTCM2") : tr("RTCM3")));
+    Console->setItem(i++, 1, new QTableWidgetItem(format == STRFMT_RTCM2 ? tr("RTCM 2") : tr("RTCM 3")));
 
     Console->setItem(i, 0, new QTableWidgetItem(tr("Message Time")));
     Console->setItem(i++, 1, new QTableWidgetItem(tstr));
@@ -1707,43 +1785,6 @@ void MonitorDialog::ShowRtcm(void)
 
     Console->setItem(i, 0, new QTableWidgetItem(tr("Sequence No")));
     Console->setItem(i++, 1, new QTableWidgetItem(QString::number(rtcm.seqno)));
-
-    Console->setItem(i, 0, new QTableWidgetItem(tr("Station Pos X/Y/Z (m)")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1,%2,%3").arg(rtcm.sta.pos[0], 0, 'f', 3).arg(rtcm.sta.pos[1], 0, 'f', 3).arg(rtcm.sta.pos[2], 0, 'f', 3)));
-
-    if (norm(rtcm.sta.pos, 3) > 0.0) ecef2pos(rtcm.sta.pos, pos);
-    Console->setItem(i, 0, new QTableWidgetItem(tr("Station Lat/Lon/Height (deg,m)")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1,%2,%3").arg(pos[0] * R2D, 0, 'f', 8).arg(pos[1] * R2D, 0, 'f', 8).arg(pos[2], 0, 'f', 3)));
-
-    Console->setItem(i, 0, new QTableWidgetItem(tr("ITRF Realization Year")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString::number(rtcm.sta.itrf)));
-
-    Console->setItem(i, 0, new QTableWidgetItem(tr("Antenna Delta Type")));
-    Console->setItem(i++, 1, new QTableWidgetItem(rtcm.sta.deltype ? tr("X/Y/Z") : tr("E/N/U")));
-
-    Console->setItem(i, 0, new QTableWidgetItem(tr("Antenna Delta (m)")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1,%2,%3").arg(rtcm.sta.del[0], 0, 'f', 3).arg(rtcm.sta.del[1], 0, 'f', 3).arg(rtcm.sta.del[2], 0, 'f', 3)));
-
-    Console->setItem(i, 0, new QTableWidgetItem(tr("Antenna Height (m)")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString::number(rtcm.sta.hgt, 'f', 3)));
-
-    Console->setItem(i, 0, new QTableWidgetItem(tr("Antenna Descriptor")));
-    Console->setItem(i++, 1, new QTableWidgetItem(rtcm.sta.antdes));
-
-    Console->setItem(i, 0, new QTableWidgetItem(tr("Antenna Setup Id")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString::number(rtcm.sta.antsetup)));
-
-    Console->setItem(i, 0, new QTableWidgetItem(tr("Antenna Serial No")));
-    Console->setItem(i++, 1, new QTableWidgetItem(rtcm.sta.antsno));
-
-    Console->setItem(i, 0, new QTableWidgetItem(tr("Receiver Type Descriptor")));
-    Console->setItem(i++, 1, new QTableWidgetItem(rtcm.sta.rectype));
-
-    Console->setItem(i, 0, new QTableWidgetItem(tr("Receiver Firmware Version")));
-    Console->setItem(i++, 1, new QTableWidgetItem(rtcm.sta.recver));
-
-    Console->setItem(i, 0, new QTableWidgetItem(tr("Receiver Serial No")));
-    Console->setItem(i++, 1, new QTableWidgetItem(rtcm.sta.recsno));
 
     Console->setItem(i, 0, new QTableWidgetItem(tr("RTCM Special Message")));
     Console->setItem(i++, 1, new QTableWidgetItem(rtcm.msg));
@@ -1769,8 +1810,11 @@ void MonitorDialog::ShowRtcm(void)
     Console->setItem(i, 0, new QTableWidgetItem(tr("MSM Signals for SBAS")));
     Console->setItem(i++, 1, new QTableWidgetItem(rtcm.msmtype[4]));
 
-    Console->setItem(i, 0, new QTableWidgetItem(tr("MSM Signals for BeiDou")));
+    Console->setItem(i, 0, new QTableWidgetItem(tr("MSM Signals for BDS")));
     Console->setItem(i++, 1, new QTableWidgetItem(rtcm.msmtype[5]));
+
+    Console->setItem(i, 0, new QTableWidgetItem(tr("MSM Signals for NavIC")));
+    Console->setItem(i++, 1, new QTableWidgetItem(rtcm.msmtype[6]));
 }
 //---------------------------------------------------------------------------
 void MonitorDialog::SetRtcmDgps(void)
@@ -1807,14 +1851,14 @@ void MonitorDialog::ShowRtcmDgps(void)
         int j = 0;
         satno2id(i, id);
         bool valid = dgps[i].t0.time && fabs(timediff(time, dgps[i].t0)) <= 1800.0;
-        Console->setItem(i - 1, j++, new QTableWidgetItem(id));
-        Console->setItem(i - 1, j++, new QTableWidgetItem(valid ? tr("OK") : tr("-")));
-        Console->setItem(i - 1, j++, new QTableWidgetItem(QString::number(dgps[i].prc, 'f', 3)));
-        Console->setItem(i - 1, j++, new QTableWidgetItem(QString::number(dgps[i].rrc, 'f', 4)));
-        Console->setItem(i - 1, j++, new QTableWidgetItem(QString::number(dgps[i].iod)));
-        Console->setItem(i - 1, j++, new QTableWidgetItem(QString::number(dgps[i].udre)));
+        Console->setItem(i, j++, new QTableWidgetItem(id));
+        Console->setItem(i, j++, new QTableWidgetItem(valid ? tr("OK") : tr("-")));
+        Console->setItem(i, j++, new QTableWidgetItem(QString::number(dgps[i].prc, 'f', 3)));
+        Console->setItem(i, j++, new QTableWidgetItem(QString::number(dgps[i].rrc, 'f', 4)));
+        Console->setItem(i, j++, new QTableWidgetItem(QString::number(dgps[i].iod)));
+        Console->setItem(i, j++, new QTableWidgetItem(QString::number(dgps[i].udre)));
         if (dgps[i].t0.time) time2str(dgps[i].t0, tstr, 0); else strcpy(tstr, "-");
-        Console->setItem(i - 1, j++, new QTableWidgetItem(tstr));
+        Console->setItem(i, j++, new QTableWidgetItem(tstr));
 	}
 }
 //---------------------------------------------------------------------------
@@ -1826,16 +1870,11 @@ void MonitorDialog::SetRtcmSsr(void)
         << tr("C0(m)") << tr("C1(mm/s)") << tr("C2(mm/s2)") << tr("C-HR(m)");
     int i, width[] = { 25, 30, 30, 30, 30, 25, 15, 115, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50 };
 
-    Console->setColumnCount(18 + MAXCODE);
-    Console->setRowCount(1);
+    Console->setColumnCount(20);
+    Console->setRowCount(2);
     for (i = 0; i < 18; i++)
         Console->setColumnWidth(i, width[i] * FontScale / 96);
-    for (i = 18; i < Console->columnCount(); i++) {
-        char *code = code2obs((unsigned char)(i - 17), NULL);
-        Console->setColumnWidth(i, 40 * FontScale / 96);
-        header << QString(tr("BL%1(m)")).arg(code);
-        Console->setItem(1, i, new QTableWidgetItem(""));
-	}
+
     Console->setHorizontalHeaderLabels(header);
 }
 //---------------------------------------------------------------------------
@@ -1843,23 +1882,24 @@ void MonitorDialog::ShowRtcmSsr(void)
 {
 	gtime_t time;
 	ssr_t ssr[MAXSAT];
-    int i, k;
+    int i, k, n, sat[MAXSAT],sys=sys_tbl[SelSys2->currentIndex()+1];
     char tstr[64], id[32];
 
 	rtksvrlock(&rtksvr);
     time = rtksvr.rtk.sol.time;
-    for (i = 0; i < MAXSAT; i++) {
-        if (SelStr->currentIndex() < 3)
-            ssr[i] = rtksvr.rtcm[SelStr->currentIndex()].ssr[i];
-        else ssr[i] = rtksvr.nav.ssr[i];
-	}
+    for (i = n= 0; i < MAXSAT; i++) {
+        if (!(satsys(i+1,NULL)&sys)) continue;
+        ssr[n]=rtksvr.rtcm[Str1].ssr[i];
+        sat[n++]=i+1;
+    }
+
 	rtksvrunlock(&rtksvr);
 
     Label->setText("");
-    Console->setRowCount(MAXSAT);
+    Console->setRowCount(n);
     Console->setHorizontalHeaderLabels(header);
 
-    for (i = 0; i < Console->rowCount(); i++) {
+    for (i = 0; i < n; i++) {
         int j = 0;
         satno2id(i + 1, id);
         Console->setItem(i, j++, new QTableWidgetItem(id));
@@ -1885,261 +1925,101 @@ void MonitorDialog::ShowRtcmSsr(void)
 	}
 }
 //---------------------------------------------------------------------------
-void MonitorDialog::SetLexMsg(void)
+void MonitorDialog::SetRefSta(void)
 {
+    int i;
+
     header.clear();
-    header << tr("Parameter") << tr("Value");
-    int i, width[] = { 140, 450 };
+
+    header	<< tr("Parameter") << tr("Value");
+    int width[] = { 220, 520 };
 
     Console->setColumnCount(2);
-    Console->setRowCount(0);
-    for (i = 0; i < Console->columnCount(); i++)
+    Console->setRowCount(2);
+    for (i = 0; i < 2; i++) {
         Console->setColumnWidth(i, width[i] * FontScale / 96);
+	}
     Console->setHorizontalHeaderLabels(header);
 }
 //---------------------------------------------------------------------------
-void MonitorDialog::ShowLexMsg(void)
+void MonitorDialog::ShowRefSta(void)
 {
-	raw_t raw;
-    int i = 0, j, k, format;
-    QString mstr;
-    char tstr[64] = "-";
+    Console->setHorizontalHeaderLabels(header);
 
-    if (SelStr->currentIndex() > 3) return;
+    QString s;
+    gtime_t time;
+    sta_t sta;
+    double pos[3]={0};
+    int i=0,format;
+    char tstr[64]="-";
 
-	rtksvrlock(&rtksvr);
-    format = rtksvr.format[SelStr->currentIndex()];
-    raw = rtksvr.raw[SelStr->currentIndex()];
-	rtksvrunlock(&rtksvr);
+    rtksvrlock(&rtksvr);
+    format=rtksvr.format[Str1];
+    if (format==STRFMT_RTCM2||format==STRFMT_RTCM3) {
+        time=rtksvr.rtcm[Str1].time;
+        sta=rtksvr.rtcm[Str1].sta;
+    }
+    else {
+        time=rtksvr.raw[Str1].time;
+        sta=rtksvr.raw[Str1].sta;
+    }
+    rtksvrunlock(&rtksvr);
 
     Label->setText("");
 
-    if (format == STRFMT_LEXR && raw.time.time) time2str(raw.time, tstr, 3);
+    Console->setRowCount(16);
 
-    Console->setRowCount(14);
-    Console->setHorizontalHeaderLabels(header);
 
-    Console->setItem(i, 0, new QTableWidgetItem(tr("Receiver Time")));
+    Console->setItem(i  , 0, new QTableWidgetItem("Format"));
+    Console->setItem(i++, 1, new QTableWidgetItem(formatstrs[format]));
+
+    if (time.time) time2str(time,tstr,3);
+    Console->setItem(i  , 0, new QTableWidgetItem("Message Time"));
     Console->setItem(i++, 1, new QTableWidgetItem(tstr));
 
-    Console->setItem(i, 0, new QTableWidgetItem(tr("Signal Tracking Status")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString::number(raw.lexmsg.stat)));
+    Console->setItem(i  , 0, new QTableWidgetItem("Station Pos X/Y/Z (m)"));
+    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1,%2,%3").arg(sta.pos[0],0,'f',3).arg(sta.pos[1],0,'f',3).arg(sta.pos[2],0,'f',3)));
 
-    Console->setItem(i, 0, new QTableWidgetItem(tr("Signal Tracking Time (s)")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString::number(raw.lexmsg.ttt / 1000.0, 'f', 3)));
+    if (norm(sta.pos,3)>0.0) ecef2pos(sta.pos,pos);
+    Console->setItem(i  , 0, new QTableWidgetItem("Station Lat/Lon/Height (deg,m)"));
+    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1, %2, %3").arg(pos[0]*R2D,0,'f',8).arg(pos[1]*R2D,0,'f',8).arg(pos[2],0,'f',3)));
 
-    Console->setItem(i, 0, new QTableWidgetItem(tr("Signal Level (dBHz)")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString::number(raw.lexmsg.snr * 0.25, 'f', 1)));
+    Console->setItem(i  , 0, new QTableWidgetItem("ITRF Realization Year"));
+    Console->setItem(i++, 1, new QTableWidgetItem(QString::number(sta.itrf)));
 
-    Console->setItem(i, 0, new QTableWidgetItem(tr("PRN Number")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString::number(raw.lexmsg.prn)));
+    Console->setItem(i  , 0, new QTableWidgetItem("Antenna Delta Type"));
+    Console->setItem(i++, 1, new QTableWidgetItem(sta.deltype?"X/Y/Z":"E/N/U"));
 
-    Console->setItem(i, 0, new QTableWidgetItem(tr("Message Type")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString::number(raw.lexmsg.type)));
+    Console->setItem(i  , 0, new QTableWidgetItem("Antenna Delta (m)"));
+    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1,%2,%3").arg(sta.del[0],0,'f',3).arg(sta.del[1],0,'f',3).arg(sta.del[2],0,'f',3)));
 
-    Console->setItem(i, 0, new QTableWidgetItem(tr("Alert Flag")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString::number(raw.lexmsg.alert)));
+    Console->setItem(i  , 0, new QTableWidgetItem("Antenna Height (m)"));
+    Console->setItem(i++, 1, new QTableWidgetItem(QString::number(sta.hgt,'f',3)));
 
-    for (j = 0; j < 7; j++) {
-        for (k = 0; k < 32 && j * 32 + k < 212; k++)
-            mstr += QString("%1%2").arg(raw.lexmsg.msg[j * 32 + k], 16).arg(k % 4 == 3 ? " " : "");
-        Console->setItem(i, 0, new QTableWidgetItem(QString(tr("Data Part (%1-%2)")).arg(j * 32 * 8)
-                                .arg((j * 32 + k) * 8 - 1 < 1695 ? (j * 32 + k) * 8 - 1 : 1694)));
-        Console->setItem(i++, 1, new QTableWidgetItem(mstr));
-	}
-}
-//---------------------------------------------------------------------------
-void MonitorDialog::SetLexEph(void)
-{
-    header.clear();
-    header	<< tr("SAT") << tr("Status") << tr("Tof") << tr("Health") << tr("Toe") << tr("URA") << tr("PosX(m)") << tr("PosY(m)") << tr("PosZ(m)")
-        << tr("VelX(m/s)") << tr("VelY(m/s)") << tr("VelZ(m/s)")
-        << tr("AccX(m/s2)") << tr("AccY(m/s2)") << tr("AccZ(m/s2)")
-        << tr("JerkX(m/s3)") << tr("JerkY(m/s3)") << tr("JerkZ(m/s3)")
-        << tr("Af0(ns)") << tr("Af1(ns/s)") << tr("TGD(ns)")
-        << tr("ISCL1C/A(ns)") << tr("ISCL2C(ns)") << tr("ISCL5I(ns)") << tr("ISCL5Q(ns)")
-        << tr("ISCL1CP(ns)") << tr("ISCL1CD(ns)") << tr("ISCLEX(ns)");
-    int i, width[] = {
-        25, 30, 115, 35, 115, 25, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 60, 50, 50, 50,
-        50, 50, 50,  50, 50,  50
-	};
+    Console->setItem(i  , 0, new QTableWidgetItem("Antenna Descriptor"));
+    Console->setItem(i++, 1, new QTableWidgetItem(sta.antdes));
 
-    Console->setColumnCount(28);
-    Console->setRowCount(0);
-    for (i = 0; i < 28; i++)
-        Console->setColumnWidth(i, width[i] * FontScale / 96);
-    Console->setHorizontalHeaderLabels(header);
-}
-//---------------------------------------------------------------------------
-void MonitorDialog::ShowLexEph(void)
-{
-	gtime_t time;
-	lexeph_t lexeph[MAXSAT];
-    int i, j, k, n, valid;
-    char tstr[64], health[16], id[32], *p;
+    Console->setItem(i  , 0, new QTableWidgetItem("Antenna Setup Id"));
+    Console->setItem(i++, 1, new QTableWidgetItem(QString::number(sta.antsetup)));
 
-	rtksvrlock(&rtksvr);
-    time = rtksvr.rtk.sol.time;
-    for (i = 0; i < MAXSAT; i++) lexeph[i] = rtksvr.nav.lexeph[i];
-	rtksvrunlock(&rtksvr);
+    Console->setItem(i  , 0, new QTableWidgetItem("Antenna Serial No"));
+    Console->setItem(i++, 1, new QTableWidgetItem(sta.antsno));
 
-    Label->setText("");
-    Console->setRowCount(MAXSAT);
-    Console->setHorizontalHeaderLabels(header);
+    Console->setItem(i  , 0, new QTableWidgetItem("Receiver Type Descriptor"));
+    Console->setItem(i++, 1, new QTableWidgetItem(sta.rectype));
 
-    for (i = 0, n = 0; i < MAXSAT; i++) {
-        int sys = satsys(i + 1, NULL);
-        if (sys != SYS_GPS && sys != SYS_QZS) continue;
-        j = 0;
-        satno2id(i + 1, id);
-        Console->setItem(n, j++, new QTableWidgetItem(id));
-        valid = lexeph[i].toe.time && fabs(timediff(time, lexeph[i].toe)) <= 360.0;
-        Console->setItem(n, j++, new QTableWidgetItem(valid ? tr("OK") : tr("-")));
+    Console->setItem(i  , 0, new QTableWidgetItem("Receiver Firmware Version"));
+    Console->setItem(i++, 1, new QTableWidgetItem(sta.recver));
 
-        if (lexeph[i].tof.time == 0) sprintf(tstr, "-");
-        else time2str(lexeph[i].tof, tstr, 0);
-        Console->setItem(n, j++, new QTableWidgetItem(tstr));
+    Console->setItem(i  , 0, new QTableWidgetItem("Receiver Serial No"));
+    Console->setItem(i++, 1, new QTableWidgetItem(sta.recsno));
 
-        for (k = 0, p = health; k < 5; k++)
-            p += sprintf(p, "%d", (lexeph[i].health >> (4 - k)) & 1);
-        Console->setItem(n, j++, new QTableWidgetItem(health));
+    Console->setItem(i  , 0, new QTableWidgetItem("GLONASS Code-Phase Alignment"));
+    Console->setItem(i++, 1, new QTableWidgetItem(sta.glo_cp_align?"Aligned":"Not aligned"));
 
-        if (lexeph[i].toe.time == 0) sprintf(tstr, "-");
-        else time2str(lexeph[i].toe, tstr, 0);
-        Console->setItem(n, j++, new QTableWidgetItem(tstr));
+    Console->setItem(i  , 0, new QTableWidgetItem("GLONASS Code-Phase Bias C1/P1/C2/P2 (m)"));
+    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1, %2, %3, %4").arg(sta.glo_cp_bias[0],0,'f',2).arg(
+                                   sta.glo_cp_bias[1],0,'f',2).arg(sta.glo_cp_bias[2],0,'f',2).arg(sta.glo_cp_bias[3],0,'f',2)));
 
-        Console->setItem(n, j++, new QTableWidgetItem(QString::number(lexeph[i].ura)));
-
-        for (k = 0; k < 3; k++)
-            Console->setItem(n, j++, new QTableWidgetItem(QString::number(lexeph[i].pos[k], 'f', 3)));
-        for (k = 0; k < 3; k++)
-            Console->setItem(n, j++, new QTableWidgetItem(QString::number(lexeph[i].vel[k], 'f', 6)));
-        for (k = 0; k < 3; k++)
-            Console->setItem(n, j++, new QTableWidgetItem(QString::number(lexeph[i].acc[k], 'E', 6)));
-        for (k = 0; k < 3; k++)
-            Console->setItem(n, j++, new QTableWidgetItem(QString::number(lexeph[i].jerk[k], 'E', 6)));
-        Console->setItem(n, j++, new QTableWidgetItem(QString::number(lexeph[i].af0 * 1E9, 'f', 1)));
-        Console->setItem(n, j++, new QTableWidgetItem(QString::number(lexeph[i].af1 * 1E9, 'f', 4)));
-        Console->setItem(n, j++, new QTableWidgetItem(QString::number(lexeph[i].tgd * 1E9, 'f', 1)));
-        for (k = 0; k < 7; k++)
-            Console->setItem(n, j++, new QTableWidgetItem(QString::number(lexeph[i].isc[k] * 1E9, 'f', 1)));
-		n++;
-	}
-    Console->setRowCount(n);
-}
-//---------------------------------------------------------------------------
-void MonitorDialog::SetLexIon(void)
-{
-    header.clear();
-    header << tr("Parameter") << tr("Value");
-    int i, width[] = { 220, 380 };
-
-    Console->setColumnCount(2);
-    Console->setRowCount(0);
-    for (i = 0; i < Console->columnCount(); i++)
-        Console->setColumnWidth(i, width[i] * FontScale / 96);
-    Console->setHorizontalHeaderLabels(header);
-}
-//---------------------------------------------------------------------------
-void MonitorDialog::ShowLexIon(void)
-{
-	lexion_t lexion;
-    int i = 0;
-    char tstr[64] = "-";
-
-	rtksvrlock(&rtksvr);
-    lexion = rtksvr.nav.lexion;
-	rtksvrunlock(&rtksvr);
-
-    Label->setText("");
-
-    if (lexion.t0.time) time2str(lexion.t0, tstr, 3);
-
-    Console->setRowCount(9);
-    Console->setHorizontalHeaderLabels(header);
-
-    Console->setItem(i, 0, new QTableWidgetItem(tr("Reference Time (GPST)")));
-    Console->setItem(i++, 1, new QTableWidgetItem(tstr));
-
-    Console->setItem(i, 0, new QTableWidgetItem(tr("Valid Time Tspan (s)")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString::number(lexion.tspan, 'f', 1)));
-
-    Console->setItem(i, 0, new QTableWidgetItem(tr("Origin of Approx Function Lat/Lon (deg)")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString("%1 %2").arg(lexion.pos0[0] * R2D, 0, 'f', 4).arg(lexion.pos0[1] * R2D, 0, 'f', 4)));
-
-    Console->setItem(i, 0, new QTableWidgetItem(tr("0-0 Degree Coefficient E00 (m)")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString::number(lexion.coef[0][0], 'f', 3)));
-
-    Console->setItem(i, 0, new QTableWidgetItem(tr("1-1 Degree Coefficient E10 (m/rad)")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString::number(lexion.coef[1][0], 'f', 3)));
-
-    Console->setItem(i, 0, new QTableWidgetItem(tr("2-0 Degree Coefficient E20 (m/rad^2)")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString::number(lexion.coef[2][0], 'f', 3)));
-
-    Console->setItem(i, 0, new QTableWidgetItem(tr("0-1 Degree Coefficient E01 (m/rad)")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString::number(lexion.coef[0][1], 'f', 3)));
-
-    Console->setItem(i, 0, new QTableWidgetItem(tr("1-1 Degree Coefficient E11 (m/rad^2)")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString::number(lexion.coef[1][1], 'f', 3)));
-
-    Console->setItem(i, 0, new QTableWidgetItem(tr("2-1 Degree Coefficient E21 (m/rad^3)")));
-    Console->setItem(i++, 1, new QTableWidgetItem(QString::number(lexion.coef[2][1], 'f', 3)));
-}
-//---------------------------------------------------------------------------
-void MonitorDialog::SetIonCorr(void)
-{
-    int i, j;
-
-    header.clear();
-
-    Console->setColumnCount((IONLON2 - IONLON1) / DIONLON + 2);
-    Console->setRowCount((IONLAT1 - IONLAT2) / DIONLAT + 2);
-
-    Console->setColumnWidth(0, 40 * FontScale / 96);
-    Console->setItem(0, 0, new QTableWidgetItem(""));
-
-    for (i = 0; i < Console->columnCount(); i++) {
-        Console->setColumnWidth(i, 40 * FontScale / 96);
-        Console->setItem(0, i, new QTableWidgetItem(QString("%1E").arg(IONLON1 + (i - 1) * DIONLON, 0, 'f', 0)));
-	}
-    for (j = 0; j < Console->rowCount(); j++)
-        Console->setItem(j, 0, new QTableWidgetItem(QString("%1N").arg(IONLAT1 - (j - 1) * DIONLAT, 0, 'f', 0)));
-    for (i = 0; i < Console->columnCount(); i++)
-        for (j = 0; j < Console->rowCount(); j++) Console->setItem(j, i, new QTableWidgetItem("-"));
-}
-//---------------------------------------------------------------------------
-void MonitorDialog::ShowIonCorr(void)
-{
-	gtime_t time;
-    nav_t nav;
-    double pos[3] = { 0, 0, 0 }, ion, var, azel[] = { 0.0, PI / 2.0 };
-    int i, j, ionoopt;
-
-    memset(&nav, 0, sizeof(nav_t));
-
-	rtksvrlock(&rtksvr);
-    time = rtksvr.rtk.sol.time;
-    for (i = 0; i < 8; i++) nav.ion_gps[i] = rtksvr.nav.ion_gps[i];
-    for (i = 0; i < 4; i++) nav.ion_gal[i] = rtksvr.nav.ion_gal[i];
-    for (i = 0; i < 8; i++) nav.ion_qzs[i] = rtksvr.nav.ion_qzs[i];
-    for (i = 0; i < MAXBAND + 1; i++) nav.sbsion[i] = rtksvr.nav.sbsion[i];
-    nav.lexion = rtksvr.nav.lexion;
-	rtksvrunlock(&rtksvr);
-
-    Label->setText(tr("Vertical L1 Ionospheric Delay (m)"));
-
-    Console->setHorizontalHeaderLabels(header);
-    ionoopt = SelIon->currentIndex();
-
-    for (i = 0; i < Console->columnCount(); i++)
-        for (j = 0; j < Console->rowCount(); j++) {
-            pos[0] = (IONLAT1 - (j - 1) * DIONLAT) * D2R;
-            pos[1] = (IONLON1 + (i - 1) * DIONLON) * D2R;
-
-            if (!ionocorr(time, &nav, 0, pos, azel, ionoopt, &ion, &var) || ion == 0.0)
-                Console->setItem(j, i, new QTableWidgetItem("-"));
-            else
-                Console->setItem(j, i, new QTableWidgetItem(QString::number(ion, 'f', 2)));
-		}
 }
 //---------------------------------------------------------------------------

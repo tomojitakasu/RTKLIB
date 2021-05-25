@@ -70,7 +70,7 @@ static void num2cnum(int num, char *str)
 {
     char buff[256],*p=buff,*q=str;
     int i,n;
-    n=sprintf(buff,"%u",(unsigned int)num);
+    n=sprintf(buff,"%u",(uint32_t)num);
     for (i=0;i<n;i++) {
         *q++=*p++;
         if ((n-i-1)%3==0&&i<n-1) *q++=',';
@@ -126,22 +126,40 @@ MainForm::MainForm(QWidget *parent)
     connect(BtnCmd1, SIGNAL(clicked(bool)), this, SLOT(BtnCmdClick()));
     connect(BtnCmd2, SIGNAL(clicked(bool)), this, SLOT(BtnCmdClick()));
     connect(BtnCmd3, SIGNAL(clicked(bool)), this, SLOT(BtnCmdClick()));
+    connect(BtnCmd4, SIGNAL(clicked(bool)), this, SLOT(BtnCmdClick()));
+    connect(BtnCmd5, SIGNAL(clicked(bool)), this, SLOT(BtnCmdClick()));
+    connect(BtnCmd6, SIGNAL(clicked(bool)), this, SLOT(BtnCmdClick()));
     connect(BtnAbout, SIGNAL(clicked(bool)), this, SLOT(BtnAboutClick()));
     connect(BtnStrMon, SIGNAL(clicked(bool)), this, SLOT(BtnStrMonClick()));
-    connect(BtnOutput1, SIGNAL(clicked(bool)), this, SLOT(BtnOutput1Click()));
-    connect(BtnOutput2, SIGNAL(clicked(bool)), this, SLOT(BtnOutput2Click()));
-    connect(BtnOutput3, SIGNAL(clicked(bool)), this, SLOT(BtnOutput3Click()));
-    connect(BtnTaskIcon, SIGNAL(clicked(bool)), this, SLOT(BtnTaskIconClick()));
     connect(MenuStart, SIGNAL(triggered(bool)), this, SLOT(MenuStartClick()));
     connect(MenuStop, SIGNAL(triggered(bool)), this, SLOT(MenuStopClick()));
     connect(MenuExit, SIGNAL(triggered(bool)), this, SLOT(MenuExitClick()));
     connect(MenuExpand, SIGNAL(triggered(bool)), this, SLOT(MenuExpandClick()));
-    connect(Output1, SIGNAL(currentIndexChanged(int)), this, SLOT(Output1Change()));
-    connect(Output2, SIGNAL(currentIndexChanged(int)), this, SLOT(Output2Change()));
-    connect(Output3, SIGNAL(currentIndexChanged(int)), this, SLOT(Output3Change()));
-    connect(BtnConv1, SIGNAL(clicked(bool)), this, SLOT(BtnConv1Click()));
-    connect(BtnConv2, SIGNAL(clicked(bool)), this, SLOT(BtnConv2Click()));
-    connect(BtnConv3, SIGNAL(clicked(bool)), this, SLOT(BtnConv3Click()));
+    connect(BtnOutput1, SIGNAL(clicked(bool)), this, SLOT(BtnOutputClick()));
+    connect(BtnOutput2, SIGNAL(clicked(bool)), this, SLOT(BtnOutputClick()));
+    connect(BtnOutput3, SIGNAL(clicked(bool)), this, SLOT(BtnOutputClick()));
+    connect(BtnOutput4, SIGNAL(clicked(bool)), this, SLOT(BtnOutputClick()));
+    connect(BtnOutput5, SIGNAL(clicked(bool)), this, SLOT(BtnOutputClick()));
+    connect(BtnOutput6, SIGNAL(clicked(bool)), this, SLOT(BtnOutputClick()));
+    connect(BtnTaskIcon, SIGNAL(clicked(bool)), this, SLOT(BtnTaskIconClick()));
+    connect(Output1, SIGNAL(currentIndexChanged(int)), this, SLOT(OutputChange()));
+    connect(Output2, SIGNAL(currentIndexChanged(int)), this, SLOT(OutputChange()));
+    connect(Output3, SIGNAL(currentIndexChanged(int)), this, SLOT(OutputChange()));
+    connect(Output4, SIGNAL(currentIndexChanged(int)), this, SLOT(OutputChange()));
+    connect(Output5, SIGNAL(currentIndexChanged(int)), this, SLOT(OutputChange()));
+    connect(Output6, SIGNAL(currentIndexChanged(int)), this, SLOT(OutputChange()));
+    connect(BtnConv1, SIGNAL(clicked(bool)), this, SLOT(BtnConvClick()));
+    connect(BtnConv2, SIGNAL(clicked(bool)), this, SLOT(BtnConvClick()));
+    connect(BtnConv3, SIGNAL(clicked(bool)), this, SLOT(BtnConvClick()));
+    connect(BtnConv4, SIGNAL(clicked(bool)), this, SLOT(BtnConvClick()));
+    connect(BtnConv5, SIGNAL(clicked(bool)), this, SLOT(BtnConvClick()));
+    connect(BtnConv6, SIGNAL(clicked(bool)), this, SLOT(BtnConvClick()));
+    connect(BtnLog1, SIGNAL(clicked(bool)), this, SLOT(BtnLogClick()));
+    connect(BtnLog2, SIGNAL(clicked(bool)), this, SLOT(BtnLogClick()));
+    connect(BtnLog3, SIGNAL(clicked(bool)), this, SLOT(BtnLogClick()));
+    connect(BtnLog4, SIGNAL(clicked(bool)), this, SLOT(BtnLogClick()));
+    connect(BtnLog5, SIGNAL(clicked(bool)), this, SLOT(BtnLogClick()));
+    connect(BtnLog6, SIGNAL(clicked(bool)), this, SLOT(BtnLogClick()));
     connect(&Timer1, SIGNAL(timeout()), this, SLOT(Timer1Timer()));
     connect(&Timer2, SIGNAL(timeout()), this, SLOT(Timer2Timer()));
     connect(TrayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(TrayIconActivated(QSystemTrayIcon::ActivationReason)));
@@ -157,7 +175,7 @@ void MainForm::FormCreate()
 {
     int autorun = 0, tasktray = 0;
 
-    strsvrinit(&strsvr, 3);
+    strsvrinit(&strsvr, MAXSTR-1);
 
     setWindowTitle(QString("%1 ver.%2 %3").arg(PRGNAME).arg(VER_RTKLIB).arg(PATCH_LEVEL));
 
@@ -253,7 +271,6 @@ void MainForm::BtnOptClick()
     svrOptDialog->StaSel = StaSel;
     svrOptDialog->AntType = AntType;
     svrOptDialog->RcvType = RcvType;
-    svrOptDialog->SrcTblFile = SrcTblFile;
     svrOptDialog->LogFile = LogFile;
 
     svrOptDialog->exec();
@@ -275,7 +292,6 @@ void MainForm::BtnOptClick()
     StaSel = svrOptDialog->StaSel;
     AntType = svrOptDialog->AntType;
     RcvType = svrOptDialog->RcvType;
-    SrcTblFile = svrOptDialog->SrcTblFile;
     LogFile = svrOptDialog->LogFile;
 }
 // callback on button-input-opt ---------------------------------------------
@@ -283,14 +299,11 @@ void MainForm::BtnInputClick()
 {
     switch (Input->currentIndex()) {
         case 0: SerialOpt(0, 0); break;
-        case 1: TcpOpt(0, 1); break; // TCP Client
-        case 2: TcpOpt(0, 0); break; // TCP Server
-        case 3: TcpOpt(0, 3); break; // Ntrip Client
-        case 4: TcpOpt(0, 5); break;  // Ntrip Caster Server
-        case 5: TcpOpt(0, 6); break;  // UDP Server
-        case 6: FileOpt(0, 0); break;
-        case 7: FtpOpt(0, 0); break; // FTP
-        case 8: FtpOpt(0, 1); break; // HTTP
+        case 1: TcpCliOpt(0, 1); break; // TCP Client
+        case 2: TcpSvrOpt(0, 2); break; // TCP Server
+        case 3: NtripCliOpt(0, 3); break; // Ntrip Client
+        case 4: UdpSvrOpt(0, 6); break;  // UDP Server
+        case 5: FileOpt(0, 0); break;
     }
 }
 // callback on button-input-cmd ---------------------------------------------
@@ -299,8 +312,8 @@ void MainForm::BtnCmdClick()
     CmdOptDialog *cmdOptDialog = new CmdOptDialog(this);
 
 
-    QPushButton *btn[] = { BtnCmd, BtnCmd1, BtnCmd2, BtnCmd3 };
-    QComboBox *type[] = { Input, Output1, Output2, Output3 };
+    QPushButton *btn[] = { BtnCmd, BtnCmd1, BtnCmd2, BtnCmd3, BtnCmd4, BtnCmd5, BtnCmd6 };
+    QComboBox *type[] = { Input, Output1, Output2, Output3, Output4, Output5, Output6 };
     int i, j;
 
     for (i = 0; i < MAXSTR; i++)
@@ -317,6 +330,8 @@ void MainForm::BtnCmdClick()
             cmdOptDialog->CmdEna[j] = CmdEnaTcp[i][j];
         }
     }
+	if (i==0) cmdOptDialog->setWindowTitle("Input Serial/TCP Commands");
+	else cmdOptDialog->setWindowTitle(QString("Output%1 Serial/TCP Commands").arg(i));
 
     cmdOptDialog->exec();
     if (cmdOptDialog->result() != QDialog::Accepted) return;
@@ -335,107 +350,55 @@ void MainForm::BtnCmdClick()
     delete cmdOptDialog;
 }
 // callback on button-output1-opt -------------------------------------------
-void MainForm::BtnOutput1Click()
+void MainForm::BtnOutputClick()
 {
-    switch (Output1->currentIndex()) {
-        case 1: SerialOpt(1,0); break;
-        case 2: TcpOpt(1,1); break; // TCP Client
-        case 3: TcpOpt(1,0); break; // TCP Server
-        case 4: TcpOpt(1,2); break; // NTRIP Server
-        case 5: TcpOpt(1,4); break; // NTRIP Caster Client
-        case 6: TcpOpt(1,7); break; // UDP Client
-        case 7: FileOpt(1,1); break;
-    }
+    QPushButton *btn[]={BtnOutput1,BtnOutput2,BtnOutput3,BtnOutput4,BtnOutput5,BtnOutput6};
+	QComboBox *type[]={Output1,Output2,Output3,Output4,Output5,Output6};
+	int i;
+
+	for (i=0;i<MAXSTR-1;i++) {
+		if ((QPushButton *)sender()==btn[i]) break;
+	}
+	if (i>=MAXSTR-1) return;
+
+	switch (type[i]->currentIndex()) {
+		case 1: SerialOpt  (i+1,0); break;
+		case 2: TcpCliOpt  (i+1,1); break;
+		case 3: TcpSvrOpt  (i+1,2); break;
+		case 4: NtripSvrOpt(i+1,3); break;
+		case 5: NtripCasOpt(i+1,4); break;
+		case 6: UdpCliOpt  (i+1,5); break;
+		case 7: FileOpt    (i+1,6); break;
+	}
 }
-// callback on button-output2-opt -------------------------------------------
-void MainForm::BtnOutput2Click()
+// callback on button-output-conv ------------------------------------------
+void MainForm::BtnConvClick()
 {
-    switch (Output2->currentIndex()) {
-        case 1: SerialOpt(1,0); break;
-        case 2: TcpOpt(1,1); break; // TCP Client
-        case 3: TcpOpt(1,0); break; // TCP Server
-        case 4: TcpOpt(1,2); break; // NTRIP Server
-        case 5: TcpOpt(1,4); break; // NTRIP Caster Client
-        case 6: TcpOpt(1,7); break; // UDP Client
-        case 7: FileOpt(1,1); break;
+    QPushButton *btn[]={BtnConv1,BtnConv2,BtnConv3,BtnConv4,BtnConv5,BtnConv6};
+    int i;
+
+    for (i=0;i<MAXSTR-1;i++) {
+        if ((QPushButton *)sender()==btn[i]) break;
     }
-}
-// callback on button-output3-opt -------------------------------------------
-void MainForm::BtnOutput3Click()
-{
-    switch (Output3->currentIndex()) {
-        case 1: SerialOpt(1,0); break;
-        case 2: TcpOpt(1,1); break; // TCP Client
-        case 3: TcpOpt(1,0); break; // TCP Server
-        case 4: TcpOpt(1,2); break; // NTRIP Server
-        case 5: TcpOpt(1,4); break; // NTRIP Caster Client
-        case 6: TcpOpt(1,7); break; // UDP Client
-        case 7: FileOpt(1,1); break;
-    }
-}
-// callback on button-output1-conv ------------------------------------------
-void MainForm::BtnConv1Click()
-{
+    if (i>=MAXSTR-1) return;
+
     ConvDialog *convDialog = new ConvDialog(this);
 
-    convDialog->ConvEna = ConvEna[0];
-    convDialog->ConvInp = ConvInp[0];
-    convDialog->ConvOut = ConvOut[0];
-    convDialog->ConvMsg = ConvMsg[0];
-    convDialog->ConvOpt = ConvOpt[0];
+    convDialog->ConvEna=ConvEna[i];
+    convDialog->ConvInp=ConvInp[i];
+    convDialog->ConvOut=ConvOut[i];
+    convDialog->ConvMsg=ConvMsg[i];
+    convDialog->ConvOpt=ConvOpt[i];
+	convDialog->setWindowTitle(QString("Output%1 Conversion Options").arg(i+1));
 
     convDialog->exec();
     if (convDialog->result() != QDialog::Accepted) return;
 
-    ConvEna[0] = convDialog->ConvEna;
-    ConvInp[0] = convDialog->ConvInp;
-    ConvOut[0] = convDialog->ConvOut;
-    ConvMsg[0] = convDialog->ConvMsg;
-    ConvOpt[0] = convDialog->ConvOpt;
-
-    delete convDialog;
-}
-// callback on button-output2-conv ------------------------------------------
-void MainForm::BtnConv2Click()
-{
-    ConvDialog *convDialog = new ConvDialog(this);
-
-    convDialog->ConvEna = ConvEna[1];
-    convDialog->ConvInp = ConvInp[1];
-    convDialog->ConvOut = ConvOut[1];
-    convDialog->ConvMsg = ConvMsg[1];
-    convDialog->ConvOpt = ConvOpt[1];
-
-    convDialog->exec();
-    if (convDialog->result() != QDialog::Accepted) return;
-
-    ConvEna[1] = convDialog->ConvEna;
-    ConvInp[1] = convDialog->ConvInp;
-    ConvOut[1] = convDialog->ConvOut;
-    ConvMsg[1] = convDialog->ConvMsg;
-    ConvOpt[1] = convDialog->ConvOpt;
-
-    delete convDialog;
-}
-// callback on button-output3-conv ------------------------------------------
-void MainForm::BtnConv3Click()
-{
-    ConvDialog *convDialog = new ConvDialog(this);
-
-    convDialog->ConvEna = ConvEna[2];
-    convDialog->ConvInp = ConvInp[2];
-    convDialog->ConvOut = ConvOut[2];
-    convDialog->ConvMsg = ConvMsg[2];
-    convDialog->ConvOpt = ConvOpt[2];
-
-    convDialog->exec();
-    if (convDialog->result() != QDialog::Accepted) return;
-
-    ConvEna[2] = convDialog->ConvEna;
-    ConvInp[2] = convDialog->ConvInp;
-    ConvOut[2] = convDialog->ConvOut;
-    ConvMsg[2] = convDialog->ConvMsg;
-    ConvOpt[2] = convDialog->ConvOpt;
+    ConvEna[i]=convDialog->ConvEna;
+    ConvInp[i]=convDialog->ConvInp;
+    ConvOut[i]=convDialog->ConvOut;
+    ConvMsg[i]=convDialog->ConvMsg;
+    ConvOpt[i]=convDialog->ConvOpt;
 
     delete convDialog;
 }
@@ -495,18 +458,8 @@ void MainForm::InputChange()
 {
     UpdateEnable();
 }
-// callback on output1 type change ------------------------------------------
-void MainForm::Output1Change()
-{
-    UpdateEnable();
-}
-// callback on output2 type change ------------------------------------------
-void MainForm::Output2Change()
-{
-    UpdateEnable();
-}
-// callback on output3 type change ------------------------------------------
-void MainForm::Output3Change()
+// callback on output type change ------------------------------------------
+void MainForm::OutputChange()
 {
     UpdateEnable();
 }
@@ -514,21 +467,23 @@ void MainForm::Output3Change()
 void MainForm::Timer1Timer()
 {
     QColor color[] = { Qt::red, Qt::white, CLORANGE, Qt::green, QColor(0x00, 0xff, 0x00), QColor(0xff, 0xff, 0x00) };
-    QLabel *e0[] = { IndInput, IndOutput1, IndOutput2, IndOutput3 };
-    QLabel *e1[] = { InputByte, Output1Byte, Output2Byte, Output3Byte };
-    QLabel *e2[] = { InputBps, Output1Bps, Output2Bps, Output3Bps };
+    QLabel *e0[] = { IndInput, IndOutput1, IndOutput2, IndOutput3, IndOutput4, IndOutput5, IndOutput6 };
+    QLabel *e1[] = { InputByte, Output1Byte, Output2Byte, Output3Byte, Output4Byte,Output5Byte, Output6Byte };
+    QLabel *e2[] = { InputBps, Output1Bps, Output2Bps, Output3Bps, Output4Bps, Output5Bps, Output6Bps};
+    QLabel *e3[] = {IndLog,IndLog1,IndLog2,IndLog3,IndLog4,IndLog5,IndLog6};
     gtime_t time = utc2gpst(timeget());
-    int stat[MAXSTR] = { 0 }, byte[MAXSTR] = { 0 }, bps[MAXSTR] = { 0 };
+    int stat[MAXSTR] = { 0 }, byte[MAXSTR] = { 0 }, bps[MAXSTR] = { 0 }, log_stat[MAXSTR]={0};
     char msg[MAXSTRMSG * MAXSTR] = "", s1[256], s2[256];
     double ctime, t[4], pos;
 
-    strsvrstat(&strsvr, stat, byte, bps, msg);
+    strsvrstat(&strsvr, stat, log_stat, byte, bps, msg);
     for (int i = 0; i < MAXSTR; i++) {
         num2cnum(byte[i], s1);
         num2cnum(bps[i], s2);
         e0[i]->setStyleSheet(QString("background-color: %1").arg(color2String(color[stat[i] + 1])));
         e1[i]->setText(s1);
         e2[i]->setText(s2);
+        e3[i]->setStyleSheet(QString("color :%1").arg(color2String(color[log_stat[i]+1])));
     }
     pos = fmod(byte[0] / 1e3 / MAX(ProgBarRange, 1), 1.0) * 110.0;
     Progress->setValue(!stat[0] ? 0 : MIN((int)pos, 100));
@@ -552,22 +507,24 @@ void MainForm::Timer1Timer()
     SetTrayIcon(stat[0] <= 0 ? 0 : (stat[0] == 3 ? 2 : 1));
 
     Message->setText(msg);
+    Message->setToolTip(msg);
 }
 // start stream server ------------------------------------------------------
 void MainForm::SvrStart(void)
 {
-    strconv_t *conv[3]={0};
-    static char str[MAXSTR][1024];
+    QComboBox *type[]={Input,Output1,Output2,Output3,Output4,Output5,Output6};
+    strconv_t *conv[MAXSTR-1]={0};
+    static char str1[MAXSTR][1024], str2[MAXSTR][1024];
     int itype[]={
-        STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPCLI,STR_NTRIPC_S,STR_UDPSVR,
+        STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPCLI,STR_UDPSVR,
         STR_FILE,STR_FTP,STR_HTTP
     };
     int otype[]={
-        STR_NONE,STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPSVR,STR_NTRIPC_C,
+        STR_NONE,STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPSVR,STR_NTRIPCAS,
         STR_UDPCLI,STR_FILE
     };
-    int ip[]={0,1,1,1,1,1,2,3,3},strs[4]={0},opt[8]={0};
-    char *paths[MAXSTR],*cmds[MAXSTR]={0},*cmds_periodic[MAXSTR]={0};
+    int strs[MAXSTR]={0},opt[8]={0};
+    char *paths[MAXSTR],*logs[MAXSTR],*cmds[MAXSTR]={0},*cmds_periodic[MAXSTR]={0};
     char filepath[1024];
     char *p;
 
@@ -575,17 +532,20 @@ void MainForm::SvrStart(void)
         traceopen(!LogFile.isEmpty()?qPrintable(LogFile):TRACEFILE);
         tracelevel(TraceLevel);
     }
-    for (int i = 0; i < 4; i++) paths[i] = str[i];
+    for (int i = 0; i < MAXSTR; i++) {
+        paths[i] = str1[i];
+        logs[i] = str2[i];
+    }
 
-    strs[0] = itype[Input->currentIndex()];
-    strs[1] = otype[Output1->currentIndex()];
-    strs[2] = otype[Output2->currentIndex()];
-    strs[3] = otype[Output3->currentIndex()];
+    strs[0] = itype[type[0]->currentIndex()];
+    strcpy(paths[0], qPrintable(Paths[0][type[0]->currentIndex()]));
+    strcpy(logs[0],type[0]->currentIndex()>5||!PathEna[0]?"":qPrintable(PathLog[0]));
 
-    strcpy(paths[0], qPrintable(Paths[0][ip[Input->currentIndex()]]));
-    strcpy(paths[1], !Output1->currentIndex() ? "" : qPrintable(Paths[1][ip[Output1->currentIndex() - 1]]));
-    strcpy(paths[2], !Output2->currentIndex() ? "" : qPrintable(Paths[2][ip[Output2->currentIndex() - 1]]));
-    strcpy(paths[3], !Output3->currentIndex() ? "" : qPrintable(Paths[3][ip[Output3->currentIndex() - 1]]));
+    for (int i=1;i<MAXSTR;i++) {
+        strs[i]=otype[type[i]->currentIndex()];
+        strcpy(paths[1], !type[i]->currentIndex() ? "" : qPrintable(Paths[i][type[i]->currentIndex() - 1]));
+        strcpy(logs[i],!PathEna[i]?"":qPrintable(PathLog[i]));
+    }
 
     for (int i=0;i<MAXSTR;i++) {
         cmds[i] = cmds_periodic[i] = NULL;
@@ -617,6 +577,15 @@ void MainForm::SvrStart(void)
         if (!QFile::exists(filepath)) continue;
         if (QMessageBox::question(this, tr("Overwrite"), tr("File %1 exists. \nDo you want to overwrite?").arg(filepath)) != QMessageBox::Yes) return;
     }
+    for (int i=0;i<MAXSTR;i++) { // for each log stream
+        if (!*logs[i]) continue;
+        strcpy(filepath,logs[i]);
+        if (strstr(filepath,"::A")) continue;
+        if ((p=strstr(filepath,"::"))) *p='\0';
+        if (!QFile::exists(filepath)) continue;
+        if (QMessageBox::question(this, tr("Overwrite"), tr("File %1 exists. \nDo you want to overwrite?").arg(filepath)) != QMessageBox::Yes) return;
+    }
+
     strsetdir(qPrintable(LocalDirectory));
     strsetproxy(qPrintable(ProxyAddress));
 
@@ -643,11 +612,9 @@ void MainForm::SvrStart(void)
         matcpy(conv[i]->out.sta.del,AntOff,3,1);
     }
     // stream server start
-    if (!strsvrstart(&strsvr, opt, strs, paths, conv, cmds, cmds_periodic, AntPos)) {
+    if (!strsvrstart(&strsvr, opt, strs, paths, logs, conv, cmds, cmds_periodic, AntPos)) {
         return;
     }
-    // set ntrip source table
-    strsvrsetsrctbl(&strsvr, qPrintable(SrcTblFile));
 
     for (int i = 0; i < 4; i++) {
         if (cmds[i]) delete[] cmds[i];
@@ -670,19 +637,20 @@ void MainForm::SvrStart(void)
 void MainForm::SvrStop(void)
 {
     char *cmds[MAXSTR];
+    QComboBox *type[]={Input,Output1,Output2,Output3,Output4,Output5,Output6};
     const int itype[] = {
-        STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPCLI,STR_NTRIPC_S,STR_FILE,
+        STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPCLI,STR_UDPSVR,STR_FILE,
         STR_FTP,STR_HTTP    };
     const int otype[] = {
-        STR_NONE,STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPSVR,STR_NTRIPC_C,
+        STR_NONE,STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPSVR,STR_NTRIPCAS,
         STR_FILE
     };
     int strs[MAXSTR];
 
     strs[0] = itype[Input->currentIndex()];
-    strs[1] = otype[Output1->currentIndex()];
-    strs[2] = otype[Output2->currentIndex()];
-    strs[3] = otype[Output3->currentIndex()];
+    for (int i=1;i<MAXSTR;i++) {
+        strs[1] = otype[type[i]->currentIndex()];
+    }
 
     for (int i = 0; i < MAXSTR; i++) {
         cmds[i] = NULL;
@@ -718,7 +686,7 @@ void MainForm::Timer2Timer()
 {
     const QString types[]={
         tr("None"),tr("Serial"),tr("File"),tr("TCP Server"),tr("TCP Client"),tr("UDP"),tr("Ntrip Sever"),
-        tr("Ntrip Client"),tr("FTP"),tr("HTTP"),tr("Ntrip Cast S"),tr("Ntrip Cast C"),tr("UDP Sever"),
+        tr("Ntrip Client"),tr("FTP"),tr("HTTP"),tr("Ntrip Cast"),tr("UDP Server"),
         tr("UDP Client")
     };
     const QString modes[]={tr("-"),tr("R"),tr("W"),tr("R/W")};
@@ -762,73 +730,123 @@ void MainForm::Timer2Timer()
     }
 }
 // set serial options -------------------------------------------------------
-void MainForm::SerialOpt(int index, int opt)
+void MainForm::SerialOpt(int index, int path)
 {
-    serialOptDialog->Path = Paths[index][0];
-    serialOptDialog->Opt = opt;
+    serialOptDialog->Path = Paths[index][path];
+    serialOptDialog->Opt = (index==0)?0:1;
 
     serialOptDialog->exec();
     if (serialOptDialog->result() != QDialog::Accepted) return;
-    Paths[index][0] = serialOptDialog->Path;
+    Paths[index][path] = serialOptDialog->Path;
 }
-// set tcp/ip options -------------------------------------------------------
-void MainForm::TcpOpt(int index, int opt)
+// set tcp server options -------------------------------------------------------
+void MainForm::TcpSvrOpt(int index, int path)
 {
-    tcpOptDialog->Path = Paths[index][1];
-    tcpOptDialog->Opt = opt;
+    tcpOptDialog->Path = Paths[index][path];
+    tcpOptDialog->Opt = 0;
+    tcpOptDialog->exec();
+    if (tcpOptDialog->result()!=QDialog::Accepted) return;
+	Paths[index][path]=tcpOptDialog->Path;
+}
+// set tcp client options ---------------------------------------------------
+void MainForm::TcpCliOpt(int index, int path)
+{
+	tcpOptDialog->Path=Paths[index][path];
+	tcpOptDialog->Opt=1;
     for (int i = 0; i < MAXHIST; i++) tcpOptDialog->History[i] = TcpHistory[i];
-    for (int i = 0; i < MAXHIST; i++) tcpOptDialog->MntpHist[i] = TcpMntpHist[i];
 
     tcpOptDialog->exec();
     if (tcpOptDialog->result() != QDialog::Accepted) return;
 
-    Paths[index][1] = tcpOptDialog->Path;
+    Paths[index][path] = tcpOptDialog->Path;
     for (int i = 0; i < MAXHIST; i++) TcpHistory[i] = tcpOptDialog->History[i];
-    for (int i = 0; i < MAXHIST; i++) TcpMntpHist[i] = tcpOptDialog->MntpHist[i];
+}
+// set ntrip server options ---------------------------------------------------------
+void MainForm::NtripSvrOpt(int index, int path)
+{
+    tcpOptDialog->Path = Paths[index][path];
+    tcpOptDialog->Opt = 2;
+    for (int i = 0; i < MAXHIST; i++) tcpOptDialog->History[i] = TcpHistory[i];
+    tcpOptDialog->exec();
+    if (tcpOptDialog->result() != QDialog::Accepted) return;
+
+    Paths[index][path] = tcpOptDialog->Path;
+    for (int i = 0; i < MAXHIST; i++) TcpHistory[i] = tcpOptDialog->History[i];
+}
+// set ntrip client options ---------------------------------------------------------
+void MainForm::NtripCliOpt(int index, int path)
+{
+    tcpOptDialog->Path = Paths[index][path];
+    tcpOptDialog->Opt = 3;
+    for (int i = 0; i < MAXHIST; i++) tcpOptDialog->History[i] = TcpHistory[i];
+    tcpOptDialog->exec();
+    if (tcpOptDialog->result() != QDialog::Accepted) return;
+
+    Paths[index][path] = tcpOptDialog->Path;
+    for (int i = 0; i < MAXHIST; i++) TcpHistory[i] = tcpOptDialog->History[i];
+}
+// set ntrip caster options ---------------------------------------------------------
+void MainForm::NtripCasOpt(int index, int path)
+{
+    tcpOptDialog->Path = Paths[index][path];
+    tcpOptDialog->Opt = 4;
+    tcpOptDialog->exec();
+    if (tcpOptDialog->result() != QDialog::Accepted) return;
+
+    Paths[index][path] = tcpOptDialog->Path;
+}
+// set udp server options ---------------------------------------------------------
+void MainForm::UdpSvrOpt(int index, int path)
+{
+    tcpOptDialog->Path = Paths[index][path];
+    tcpOptDialog->Opt = 6;
+    tcpOptDialog->exec();
+    if (tcpOptDialog->result() != QDialog::Accepted) return;
+
+    Paths[index][path] = tcpOptDialog->Path;
+}
+// set udp client options ---------------------------------------------------------
+void MainForm::UdpCliOpt(int index, int path)
+{
+    tcpOptDialog->Path = Paths[index][path];
+    tcpOptDialog->Opt = 7;
+    tcpOptDialog->exec();
+    if (tcpOptDialog->result() != QDialog::Accepted) return;
+
+    Paths[index][path] = tcpOptDialog->Path;
 }
 // set file options ---------------------------------------------------------
-void MainForm::FileOpt(int index, int opt)
+void MainForm::FileOpt(int index, int path)
 {
-    fileOptDialog->Path = Paths[index][2];
-    fileOptDialog->Opt = opt;
-
+    fileOptDialog->Path = Paths[index][path];
+    fileOptDialog->setWindowTitle("File Options");
+    fileOptDialog->Opt = (index==0)?0:1;
     fileOptDialog->exec();
     if (fileOptDialog->result() != QDialog::Accepted) return;
-    Paths[index][2] = fileOptDialog->Path;
-}
-// set ftp/http options -----------------------------------------------------
-void MainForm::FtpOpt(int index, int opt)
-{
-    ftpOptDialog->Path = Paths[index][3];
-    ftpOptDialog->Opt = opt;
-
-    ftpOptDialog->exec();
-    if (ftpOptDialog->result() != QDialog::Accepted) return;
-
-    Paths[index][3] = ftpOptDialog->Path;
+    Paths[index][path] = fileOptDialog->Path;
 }
 // undate enable of widgets -------------------------------------------------
 void MainForm::UpdateEnable(void)
 {
+    QComboBox *type[]={Output1,Output2,Output3,Output4,Output5,Output6};
+	QLabel *label1[]={LabelOutput1,LabelOutput2,LabelOutput3,LabelOutput4,LabelOutput5,LabelOutput6};
+	QLabel *label2[]={Output1Byte,Output2Byte,Output3Byte,Output4Byte,Output5Byte,Output6Byte};
+	QLabel *label3[]={Output1Bps,Output2Bps,Output3Bps,Output4Bps,Output5Bps,Output6Bps};
+	QPushButton *btn1[]={BtnOutput1,BtnOutput2,BtnOutput3,BtnOutput4,BtnOutput5,BtnOutput6};
+	QPushButton *btn2[]={BtnCmd1,BtnCmd2,BtnCmd3,BtnCmd4,BtnCmd5,BtnCmd6};
+	QPushButton *btn3[]={BtnConv1,BtnConv2,BtnConv3,BtnConv4,BtnConv5,BtnConv6};
+	QPushButton *btn4[]={BtnLog1,BtnLog2,BtnLog3,BtnLog4,BtnLog5,BtnLog6};
+
     BtnCmd->setEnabled(Input->currentIndex() < 2 || Input->currentIndex() == 3);
-    LabelOutput1->setStyleSheet(QString("color :%1").arg(color2String(Output1->currentIndex() > 0 ? Qt::black : Qt::gray)));
-    LabelOutput2->setStyleSheet(QString("color :%1").arg(color2String(Output2->currentIndex() > 0 ? Qt::black : Qt::gray)));
-    LabelOutput3->setStyleSheet(QString("color :%1").arg(color2String(Output3->currentIndex() > 0 ? Qt::black : Qt::gray)));
-    Output1Byte->setStyleSheet(QString("color :%1").arg(color2String(Output1->currentIndex() > 0 ? Qt::black : Qt::gray)));
-    Output2Byte->setStyleSheet(QString("color :%1").arg(color2String(Output2->currentIndex() > 0 ? Qt::black : Qt::gray)));
-    Output3Byte->setStyleSheet(QString("color :%1").arg(color2String(Output3->currentIndex() > 0 ? Qt::black : Qt::gray)));
-    Output1Bps->setStyleSheet(QString("color :%1").arg(color2String(Output1->currentIndex() > 0 ? Qt::black : Qt::gray)));
-    Output2Bps->setStyleSheet(QString("color :%1").arg(color2String(Output2->currentIndex() > 0 ? Qt::black : Qt::gray)));
-    Output3Bps->setStyleSheet(QString("color :%1").arg(color2String(Output3->currentIndex() > 0 ? Qt::black : Qt::gray)));
-    BtnOutput1->setEnabled(Output1->currentIndex() > 0);
-    BtnOutput2->setEnabled(Output2->currentIndex() > 0);
-    BtnOutput3->setEnabled(Output3->currentIndex() > 0);
-    BtnCmd1->setEnabled(BtnOutput1->isEnabled() && (Output1->currentIndex() == 1 || Output1->currentIndex() == 2));
-    BtnCmd2->setEnabled(BtnOutput2->isEnabled() && (Output2->currentIndex() == 1 || Output2->currentIndex() == 2));
-    BtnCmd3->setEnabled(BtnOutput3->isEnabled() && (Output3->currentIndex() == 1 || Output3->currentIndex() == 2));
-    BtnConv1->setEnabled(BtnOutput1->isEnabled() && Input->currentIndex() != 2 && Input->currentIndex() != 4);
-    BtnConv2->setEnabled(BtnOutput2->isEnabled() && Input->currentIndex() != 2 && Input->currentIndex() != 4);
-    BtnConv3->setEnabled(BtnOutput3->isEnabled() && Input->currentIndex() != 2 && Input->currentIndex() != 4);
+    for (int i=0;i<MAXSTR-1;i++) {
+        label1[i]->setStyleSheet(QString("color :%1").arg(color2String(type[i]->currentIndex() > 0 ? Qt::black : Qt::gray)));
+        label2[i]->setStyleSheet(QString("color :%1").arg(color2String(type[i]->currentIndex() > 0 ? Qt::black : Qt::gray)));
+        label3[i]->setStyleSheet(QString("color :%1").arg(color2String(type[i]->currentIndex() > 0 ? Qt::black : Qt::gray)));
+        btn1[i]->setEnabled(type[i]->currentIndex() > 0);
+        btn2[i]->setEnabled(btn1[i]->isEnabled() && (type[i]->currentIndex() == 1 || type[i]->currentIndex() == 2));
+        btn3[i]->setEnabled(btn1[i]->isEnabled() && Input->currentIndex() != 2 && Input->currentIndex() != 4);
+        btn4[i]->setEnabled(btn1[i]->isEnabled()&&(type[i]->currentIndex()==1||type[i]->currentIndex()==2));
+    }
 }
 // set task-tray icon -------------------------------------------------------
 void MainForm::SetTrayIcon(int index)
@@ -841,12 +859,13 @@ void MainForm::SetTrayIcon(int index)
 void MainForm::LoadOpt(void)
 {
     QSettings settings(IniFile, QSettings::IniFormat);
+    QComboBox *type[]={Output1,Output2,Output3,Output4,Output5,Output6};
     int optdef[] = { 10000, 10000, 1000, 32768, 10, 0 };
 
     Input->setCurrentIndex(settings.value("set/input", 0).toInt());
-    Output1->setCurrentIndex(settings.value("set/output1", 0).toInt());
-    Output2->setCurrentIndex(settings.value("set/output2", 0).toInt());
-    Output3->setCurrentIndex(settings.value("set/output3", 0).toInt());
+    for (int i=0;i<MAXSTR-1;i++) {
+        type[i]->setCurrentIndex(settings.value(QString("set/output%1").arg(i), 0).toInt());
+    }
     TraceLevel = settings.value("set/tracelevel", 0).toInt();
     NmeaReq = settings.value("set/nmeareq", 0).toInt();
     FileSwapMargin = settings.value("set/fswapmargin", 30).toInt();
@@ -877,7 +896,10 @@ void MainForm::LoadOpt(void)
         }
     for (int i = 0; i < MAXSTR; i++) for (int j = 0; j < 4; j++)
             Paths[i][j] = settings.value(QString("path/path_%1_%2").arg(i).arg(j), "").toString();
-
+	for (int i=0;i<MAXSTR;i++) {
+		PathLog[i]=settings.value(QString("path/path_log_%1").arg(i),"").toString();
+		PathEna[i]=settings.value(QString("path/path_ena_%1").arg(i),0).toInt();
+	}
     for (int i = 0; i < MAXSTR; i++)
         for (int j = 0; j < 2; j++) {
             Cmds[i][j] = settings.value(QString("serial/cmd_%1_%2").arg(i).arg(j), "").toString();
@@ -896,7 +918,6 @@ void MainForm::LoadOpt(void)
     ExeDirectory = settings.value("dirs/exedirectory", "").toString();
     LocalDirectory = settings.value("dirs/localdirectory", "").toString();
     ProxyAddress = settings.value("dirs/proxyaddress", "").toString();
-    SrcTblFile = settings.value("file/srctblfile",    "").toString();
     LogFile = settings.value("file/logfile",       "").toString();
 
     UpdateEnable();
@@ -905,11 +926,12 @@ void MainForm::LoadOpt(void)
 void MainForm::SaveOpt(void)
 {
     QSettings settings(IniFile, QSettings::IniFormat);
+    QComboBox *type[]={Output1,Output2,Output3,Output4,Output5,Output6};
 
     settings.setValue("set/input", Input->currentIndex());
-    settings.setValue("set/output1", Output1->currentIndex());
-    settings.setValue("set/output2", Output2->currentIndex());
-    settings.setValue("set/output3", Output3->currentIndex());
+    for (int i=0;i<MAXSTR-1;i++) {
+        settings.setValue(QString("set/output%1").arg(i), type[i]->currentIndex());
+    }
     settings.setValue("set/tracelevel", TraceLevel);
     settings.setValue("set/nmeareq", NmeaReq);
     settings.setValue("set/fswapmargin", FileSwapMargin);
@@ -941,6 +963,11 @@ void MainForm::SaveOpt(void)
     for (int i = 0; i < MAXSTR; i++) for (int j = 0; j < 4; j++)
             settings.setValue(QString("path/path_%1_%2").arg(i).arg(j), Paths[i][j]);
 
+    for (int i=0;i<MAXSTR;i++) {
+        settings.setValue(QString("path/path_log_%1").arg(i), PathLog[i]);
+        settings.setValue(QString("path/path_ena_%1").arg(i), PathEna[i]);
+    }
+
     for (int i = 0; i < MAXSTR; i++)
         for (int j = 0; j < 2; j++) {
             Cmds[j][i] = Cmds[j][i].replace("\n", "@@");
@@ -953,13 +980,32 @@ void MainForm::SaveOpt(void)
         }
     for (int i = 0; i < MAXHIST; i++)
         settings.setValue(QString("tcpopt/history%1").arg(i), tcpOptDialog->History[i]);
-    for (int i = 0; i < MAXHIST; i++)
-        settings.setValue(QString("tcpopt/mntphist%1").arg(i), tcpOptDialog->MntpHist[i]);
+
     settings.setValue("stapos/staposfile", StaPosFile);
     settings.setValue("dirs/exedirectory", ExeDirectory);
     settings.setValue("dirs/localdirectory", LocalDirectory);
     settings.setValue("dirs/proxyaddress", ProxyAddress);
-    settings.setValue("file/srctblfile",SrcTblFile);
     settings.setValue("file/logfile",LogFile);
+}
+//---------------------------------------------------------------------------
+void MainForm::BtnLogClick()
+{
+	QPushButton *btn[]={BtnLog,BtnLog1,BtnLog2,BtnLog3,BtnLog4,BtnLog5,BtnLog6};
+	int i;
+
+	for (i=0;i<MAXSTR;i++) {
+		if ((QPushButton *)sender()==btn[i]) break;
+	}
+	if (i>=MAXSTR) return;
+
+	fileOptDialog->Path=PathLog[i];
+	fileOptDialog->PathEna=PathEna[i];
+	fileOptDialog->setWindowTitle((i==0)?tr("Input Log Options"):tr("Return Log Options"));
+	fileOptDialog->Opt=2;
+    fileOptDialog->exec();
+
+	if (fileOptDialog->result()!=QDialog::Accepted) return;
+	PathLog[i]=fileOptDialog->Path;
+	PathEna[i]=fileOptDialog->PathEna;
 }
 //---------------------------------------------------------------------------

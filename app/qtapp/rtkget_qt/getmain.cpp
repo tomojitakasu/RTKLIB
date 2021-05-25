@@ -45,7 +45,7 @@
 
 #define PRGNAME     "RTKGET-QT"  // program name
 
-#define URL_FILE    "..\\data\\URL_LIST.txt"
+#define URL_FILE    "../../../data/URL_LIST.txt"
 #define TEST_FILE   "rtkget_test.txt"
 #define TRACE_FILE  "rtkget_qt.trace"
 
@@ -188,6 +188,7 @@ MainForm::MainForm(QWidget *parent)
     connect(&Timer, SIGNAL(timeout()), this, SLOT(TimerTimer()));
     connect(BtnTime1, SIGNAL(clicked(bool)), this, SLOT(BtnTime1Click()));
     connect(BtnTime2, SIGNAL(clicked(bool)), this, SLOT(BtnTime2Click()));
+    connect(TimeInt, SIGNAL(currentIndexChanged(int)), this, SLOT(UpdateEnable()));
 
     for (int i = 0; i < 8; i++)
         Images[i].load(QString(":/buttons/wait%1.bmp").arg(i + 1));
@@ -208,7 +209,7 @@ void MainForm::FormCreate()
 
     IniFile = fi.absolutePath() + "/" + fi.baseName() + ".ini";
 
-    setWindowTitle(QString("%1 v.%2 %3").arg(PRGNAME).arg(VER_RTKLIB).arg(PATCH_LEVEL));
+    setWindowTitle(QString("%1 v.%2").arg(PRGNAME).arg(VER_RTKLIB));
 
     QCommandLineParser parser;
     parser.setApplicationDescription("RTK Get Qt");
@@ -267,7 +268,7 @@ void MainForm::BtnFileClick()
 void MainForm::BtnLogClick()
 {
     if (LogFile == "") return;
-
+    viewer = new TextViewer(this);
     viewer->setWindowTitle(LogFile);
     viewer->Read(LogFile);
     viewer->exec();
@@ -516,7 +517,8 @@ void MainForm::BtnTrayClick()
 //---------------------------------------------------------------------------
 void MainForm::TrayIconActivated(QSystemTrayIcon::ActivationReason reason)
 {
-    if (reason != QSystemTrayIcon::DoubleClick) return;
+    if (reason != QSystemTrayIcon::DoubleClick &&
+            reason != QSystemTrayIcon::Trigger) return;
 
     setVisible(true);
     TrayIcon.setVisible(false);
@@ -561,11 +563,11 @@ void MainForm::LoadOpt(void)
     QSettings setting(IniFile, QSettings::IniFormat);
     QStringList stas;
 
-    dateTime1->setDate(setting.value("opt/startd", "2011/01/01").toDate());
+    dateTime1->setDate(setting.value("opt/startd", "2020/01/01").toDate());
     dateTime1->setTime(setting.value("opt/starth", "00:00").toTime());
-    dateTime2->setDate(setting.value("opt/endd", "2011/01/01").toDate());
+    dateTime2->setDate(setting.value("opt/endd", "2020/01/01").toDate());
     dateTime2->setTime(setting.value("opt/endh", "00:00").toTime());
-    TimeInt->insertItem(0, setting.value("opt/timeint", "24 H").toString()); TimeInt->setCurrentIndex(0);
+    TimeInt->setCurrentText(setting.value("opt/timeint", "24 H").toString());
     Number->setValue(setting.value("opt/number", 0).toInt());
     UrlFile = setting.value("opt/urlfile", "").toString();
     LogFile = setting.value("opt/logfile", "").toString();
@@ -727,7 +729,13 @@ void MainForm::GetTime(gtime_t *ts, gtime_t *te, double *ti)
     *ti = 86400.0;
 
     str = TimeInt->currentText();
+
+    if (str=="-") {
+        *te=*ts;
+    }
     QStringList tokens = str.split(" ");
+
+    if (tokens.size() == 0) return;
 
     val = tokens.at(0).toDouble();
     if (tokens.size() != 2) {
@@ -845,6 +853,9 @@ void MainForm::UpdateEnable(void)
         FtpPasswd->setEchoMode(QLineEdit::Password);
     else
         FtpPasswd->setEchoMode(QLineEdit::Normal);
+    Label3->setEnabled(TimeInt->currentText()!="-");
+    dateTime2->setEnabled(TimeInt->currentText()!="-");
+    BtnTime2->setEnabled(TimeInt->currentText()!="-");
 }
 //---------------------------------------------------------------------------
 void MainForm::PanelEnable(int ena)
@@ -857,23 +868,6 @@ void MainForm::PanelEnable(int ena)
     BtnTest->setEnabled(ena);
     BtnDownload->setEnabled(ena);
     BtnExit->setEnabled(ena);
-    BtnAll->setEnabled(ena);
-    BtnStas->setEnabled(ena);
-    DataType->setEnabled(ena);
-    SubType->setEnabled(ena);
-    DataList->setEnabled(ena);
-    dateTime1->setEnabled(ena);
-    dateTime2->setEnabled(ena);
-    TimeInt->setEnabled(ena);
-    Number->setEnabled(ena);
-    StaList->setEnabled(ena);
-    FtpLogin->setEnabled(ena);
-    FtpPasswd->setEnabled(ena);
-    SkipExist->setEnabled(ena);
-    UnZip->setEnabled(ena);
-    LocalDir->setEnabled(ena);
-    Dir->setEnabled(ena);
-    BtnDir->setEnabled(ena);
 }
 // --------------------------------------------------------------------------
 void MainForm::ReadHist(QSettings &setting, QString key, QComboBox *combo)
@@ -909,8 +903,8 @@ void MainForm::AddHist(QComboBox *combo)
     combo->setCurrentIndex(0);
 }
 //---------------------------------------------------------------------------
-int MainForm::ExecCmd(QString cmd)
+int MainForm::ExecCmd(const QString &cmd, const QStringList &opt)
 {
-    return QProcess::startDetached(cmd);
+    return QProcess::startDetached(cmd, opt);
 }
 //---------------------------------------------------------------------------

@@ -52,6 +52,7 @@ public slots:
     void  DownloadFinished();
     void  BtnTime1Click();
     void  BtnTime2Click();
+    void  UpdateEnable(void);
 
 private:
     QStringList Types;
@@ -68,14 +69,13 @@ private:
     void  UpdateType(void);
     void  UpdateMsg(void);
     void  UpdateStaList(void);
-    void  UpdateEnable(void);
     void  PanelEnable(int ena);
     void  GetTime(gtime_t *ts, gtime_t *te, double *ti);
     int   SelectUrl(url_t *urls);
     int   SelectSta(char **stas);
     void  LoadUrl(QString file);
     void  LoadSta(QString file);
-    int   ExecCmd(QString cmd);
+    int   ExecCmd(const QString &cmd, const QStringList &opt);
     void  ReadHist(QSettings &, QString key, QComboBox *);
     void  WriteHist(QSettings &, QString key, QComboBox *);
     void  AddHist(QComboBox *combo);

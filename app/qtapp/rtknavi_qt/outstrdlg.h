@@ -42,7 +42,7 @@ private:
 public:
     int StreamC[2], Stream[2], Format[2], OutTimeTag, OutAppend;
     QString Paths[2][4], SwapInterval;
-    QString History[10], MntpHist[10];
+    QString History[10];
 
     explicit OutputStrDialog(QWidget* parent);
 };

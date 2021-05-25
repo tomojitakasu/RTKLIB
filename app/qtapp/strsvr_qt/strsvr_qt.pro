@@ -6,9 +6,9 @@
 
 QT       += core gui widgets serialport
 
-include(../app.pri)
+include(../qtapp.pri)
 
-INCLUDEPATH += ../../src/ ../appcmn_qt
+INCLUDEPATH += ../../../src/ ../appcmn_qt
 
 TARGET = strsvr_qt
 TEMPLATE = app
@@ -26,6 +26,7 @@ SOURCES += \
     ../appcmn_qt/fileoptdlg.cpp \
     ../appcmn_qt/ftpoptdlg.cpp \
     ../appcmn_qt/refdlg.cpp \
+    ../appcmn_qt/mntpoptdlg.cpp \
     ../appcmn_qt/keydlg.cpp \
     mondlg.cpp
 
@@ -41,6 +42,7 @@ HEADERS  += \
     ../appcmn_qt/fileoptdlg.h \
     ../appcmn_qt/ftpoptdlg.h \
     ../appcmn_qt/refdlg.h \
+    ../appcmn_qt/mntpoptdlg.h \
     ../appcmn_qt/keydlg.h \
     mondlg.h
 
@@ -56,6 +58,7 @@ FORMS    += \
     ../appcmn_qt/fileoptdlg.ui \
     ../appcmn_qt/ftpoptdlg.ui \
     ../appcmn_qt/refdlg.ui \
+    ../appcmn_qt/mntpoptdlg.ui \
     ../appcmn_qt/keydlg.ui \
     mondlg.ui
 

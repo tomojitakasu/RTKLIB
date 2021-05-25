@@ -25,7 +25,6 @@ SvrOptDialog::SvrOptDialog(QWidget *parent)
     connect(BtnOk, SIGNAL(clicked(bool)), this, SLOT(BtnOkClick()));
     connect(BtnCancel, SIGNAL(clicked(bool)), this, SLOT(reject()));
     connect(BtnPos, SIGNAL(clicked(bool)), this, SLOT(BtnPosClick()));
-    connect(BtnSrcTblFile, SIGNAL(clicked(bool)), this, SLOT(BtnSrcTblFileClick()));
     connect(BtnLogFile, SIGNAL(clicked(bool)), this, SLOT(BtnLogFileClick()));
     connect(NmeaReqT, SIGNAL(clicked(bool)), this, SLOT(NmeaReqTClick()));
     connect(BtnLocalDir, SIGNAL(clicked(bool)), this, SLOT(BtnLocalDirClick()));
@@ -69,7 +68,6 @@ void SvrOptDialog::showEvent(QShowEvent *event)
     AntOff1->setValue(AntOff[0]);
     AntOff2->setValue(AntOff[1]);
     AntOff3->setValue(AntOff[2]);
-    SrcTblFileF->setText(SrcTblFile);
     LogFileF->setText(LogFile);
 
 	UpdateEnable();
@@ -121,6 +119,7 @@ void SvrOptDialog::BtnPosClick()
     refDialog->RovPos[2] = AntPos3->value();
     refDialog->BtnLoad->setEnabled(true);
     refDialog->StaPosFile = StaPosFile;
+    refDialog->Opt=1;
 
     refDialog->exec();
 
@@ -130,7 +129,6 @@ void SvrOptDialog::BtnPosClick()
     AntPos2->setValue(refDialog->Pos[1]);
     AntPos3->setValue(refDialog->Pos[2]);
     StaPosFile = refDialog->StaPosFile;
-    SrcTblFile=SrcTblFileF->text();
     LogFile=LogFileF->text();
 
     delete refDialog;
@@ -167,11 +165,6 @@ void SvrOptDialog::NmeaReqTClick()
 void SvrOptDialog::StaInfoSelClick()
 {
 	UpdateEnable();
-}
-//---------------------------------------------------------------------------
-void SvrOptDialog::BtnSrcTblFileClick()
-{
-    SrcTblFileF->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("NTRIP Source Table File"),QString(),tr("All (*.*)"))));
 }
 //---------------------------------------------------------------------------
 void SvrOptDialog::BtnLogFileClick()

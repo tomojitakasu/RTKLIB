@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>636</width>
-    <height>494</height>
+    <width>635</width>
+    <height>612</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,18 +17,6 @@
    <string/>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <property name="leftMargin">
-    <number>0</number>
-   </property>
-   <property name="topMargin">
-    <number>0</number>
-   </property>
-   <property name="rightMargin">
-    <number>0</number>
-   </property>
-   <property name="bottomMargin">
-    <number>0</number>
-   </property>
    <item row="12" column="2">
     <widget class="QDoubleSpinBox" name="AntOff1">
      <property name="suffix">
@@ -498,6 +486,12 @@
      </property>
      <property name="text">
       <string>&amp;OK</string>
+     </property>
+     <property name="autoDefault">
+      <bool>true</bool>
+     </property>
+     <property name="default">
+      <bool>true</bool>
      </property>
      <property name="flat">
       <bool>false</bool>

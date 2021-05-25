@@ -17,7 +17,6 @@ public slots:
     void NmeaReqTClick();
     void BtnLocalDirClick();
     void StaInfoSelClick();
-    void BtnSrcTblFileClick();
     void BtnLogFileClick();
 
 protected:
@@ -28,7 +27,7 @@ private:
 
 public:
     QString StaPosFile, ExeDirectory, LocalDirectory, ProxyAddress;
-    QString AntType, RcvType, SrcTblFile, LogFile;
+    QString AntType, RcvType, LogFile;
     int SvrOpt[6], TraceLevel, NmeaReq, FileSwapMargin, StaId, StaSel, RelayBack;
     int ProgBarRange;
     double AntPos[3], AntOff[3];

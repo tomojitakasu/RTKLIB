@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1098</width>
-    <height>394</height>
+    <height>457</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -81,13 +81,13 @@
              <bool>true</bool>
             </property>
             <property name="toolTip">
-             <string/>
+             <string>Update Caster List</string>
             </property>
             <property name="text">
              <string/>
             </property>
             <property name="icon">
-             <iconset resource="../strsvr_qt/strsvr_qt.qrc">
+             <iconset resource="srctblbrows_qt.qrc">
               <normaloff>:/buttons/reload.bmp</normaloff>:/buttons/reload.bmp</iconset>
             </property>
            </widget>
@@ -104,7 +104,7 @@
              </sizepolicy>
             </property>
             <property name="toolTip">
-             <string/>
+             <string>Caster Address:Port</string>
             </property>
             <property name="editable">
              <bool>true</bool>
@@ -117,13 +117,13 @@
              <bool>true</bool>
             </property>
             <property name="toolTip">
-             <string/>
+             <string>Update Data Streams</string>
             </property>
             <property name="text">
              <string/>
             </property>
             <property name="icon">
-             <iconset resource="../strsvr_qt/strsvr_qt.qrc">
+             <iconset resource="srctblbrows_qt.qrc">
               <normaloff>:/buttons/load.bmp</normaloff>:/buttons/load.bmp</iconset>
             </property>
             <property name="flat">
@@ -143,7 +143,7 @@
              </sizepolicy>
             </property>
             <property name="toolTip">
-             <string/>
+             <string>Data Streams</string>
             </property>
             <property name="text">
              <string>STR</string>
@@ -187,7 +187,7 @@
              </sizepolicy>
             </property>
             <property name="toolTip">
-             <string/>
+             <string>Networks</string>
             </property>
             <property name="text">
              <string>NET</string>
@@ -209,7 +209,7 @@
              </sizepolicy>
             </property>
             <property name="toolTip">
-             <string/>
+             <string>Source Table</string>
             </property>
             <property name="text">
              <string>SRC</string>
@@ -446,7 +446,7 @@
      <x>0</x>
      <y>0</y>
      <width>1098</width>
-     <height>27</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="File1">
@@ -576,7 +576,7 @@
   </action>
  </widget>
  <resources>
-  <include location="../strsvr_qt/strsvr_qt.qrc"/>
+  <include location="srctblbrows_qt.qrc"/>
  </resources>
  <connections/>
 </ui>

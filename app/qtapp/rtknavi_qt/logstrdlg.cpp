@@ -208,7 +208,6 @@ void LogStrDialog::TcpOpt(int index, int opt)
     tcpOptDialog->Opt = opt;
     for (int i = 0; i < 10; i++) {
         tcpOptDialog->History[i] = History[i];
-        tcpOptDialog->MntpHist[i] = MntpHist[i];
 	}
     tcpOptDialog->exec();
     if (tcpOptDialog->result() != QDialog::Accepted) return;
@@ -216,7 +215,6 @@ void LogStrDialog::TcpOpt(int index, int opt)
     Paths[index][1] = tcpOptDialog->Path;
     for (int i = 0; i < 10; i++) {
         History[i] = tcpOptDialog->History[i];
-        MntpHist[i] = tcpOptDialog->MntpHist[i];
 	}
 }
 //---------------------------------------------------------------------------

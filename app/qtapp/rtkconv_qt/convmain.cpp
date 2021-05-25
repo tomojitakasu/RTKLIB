@@ -341,7 +341,10 @@ void MainWindow::BtnPlotClick()
     QString file7 = OutFile7->text();
     QString file8 = OutFile8->text();
     QString file[] = { file1, file2, file3, file4, file5, file6, file7, file8};
-    QString cmd1 = "rtkplot_qt", cmd2 = "..\\..\\..\\bin\\rtkplot_qt", cmd3 = "..\\rtkplot_qt\\rtkplot_qt", opts = " -r";
+    QString cmd1 = "rtkplot_qt", cmd2 = "..\\..\\..\\bin\\rtkplot_qt", cmd3 = "..\\rtkplot_qt\\rtkplot_qt";
+    QStringList opts;
+
+    opts << " -r";
     QCheckBox *cb[] = {
         OutFileEna1, OutFileEna2, OutFileEna3, OutFileEna4, OutFileEna5, OutFileEna6, OutFileEna7, OutFileEna8
     };
@@ -350,31 +353,32 @@ void MainWindow::BtnPlotClick()
     for (i = 0; i < 8; i++) ena[i] = cb[i]->isEnabled() && cb[i]->isChecked();
 
     for (i = 0; i < 8; i++)
-        if (ena[i]) opts = opts + " \"" + RepPath(file[i]) + "\"";
-    if (opts == " -r") return;
+        if (ena[i]) opts << " \"" + RepPath(file[i]) + "\"";
+    if (opts.size() == 1) return;
 
-    if (!ExecCmd(cmd1 + opts) && !ExecCmd(cmd2 + opts) && !ExecCmd(cmd3 + opts))
+    if (!ExecCmd(cmd1, opts) && !ExecCmd(cmd2, opts) && !ExecCmd(cmd3, opts))
         Message->setText(tr("error : rtkplot_qt execution"));
 }
 // callback on button-post-proc ---------------------------------------------
 void MainWindow::BtnPostClick()
 {
-    QString cmd1 = CmdPostExe, cmd2 = QString("..\\..\\..\\bin\\") + CmdPostExe, cmd3 = QString("..\\rtkpost_qt\\") + CmdPostExe, opts = " ";
+    QString cmd1 = CmdPostExe, cmd2 = QString("..\\..\\..\\bin\\") + CmdPostExe, cmd3 = QString("..\\rtkpost_qt\\") + CmdPostExe;
+    QStringList opts;
 
     if (!OutFileEna1->isChecked()) return;
 
-    opts = opts + " -r \"" + OutFile1->text() + "\"";
-    opts = opts + " -n \"\" -n \"\"";
+    opts << + " -r \"" + OutFile1->text() + "\"";
+    opts << " -n \"\" -n \"\"";
 
     if (OutFileEna9->isChecked())
-        opts = opts + " -n \"" + OutFile9->text() + "\"";
+        opts << " -n \"" + OutFile9->text() + "\"";
 
-    if (TimeStartF->isChecked()) opts = opts + " -ts " + dateTime1->dateTime().toString("yyyy/MM/dd hh:mm:ss");
-    if (TimeEndF->isChecked()) opts = opts + " -te " + dateTime2->dateTime().toString("yyyy/MM/dd hh:mm:ss");
-    if (TimeIntF->isChecked()) opts = opts + " -ti " + TimeInt->currentText();
-    if (TimeUnitF->isChecked()) opts = opts + " -tu " + TimeUnit->text();
+    if (TimeStartF->isChecked()) opts << + " -ts " + dateTime1->dateTime().toString("yyyy/MM/dd hh:mm:ss");
+    if (TimeEndF->isChecked()) opts << " -te " + dateTime2->dateTime().toString("yyyy/MM/dd hh:mm:ss");
+    if (TimeIntF->isChecked()) opts << " -ti " + TimeInt->currentText();
+    if (TimeUnitF->isChecked()) opts << " -tu " + TimeUnit->text();
 
-    if (!ExecCmd(cmd1 + opts) && !ExecCmd(cmd2 + opts) && !ExecCmd(cmd3 + opts))
+    if (!ExecCmd(cmd1, opts) && !ExecCmd(cmd2, opts) && !ExecCmd(cmd3, opts))
         Message->setText(tr("error : rtkpost_qt execution"));
 }
 // callback on button-options -----------------------------------------------
@@ -714,9 +718,9 @@ QString MainWindow::RepPath(const QString &File)
     return Path = path;
 }
 // execute command ----------------------------------------------------------
-int MainWindow::ExecCmd(const QString &cmd)
+int MainWindow::ExecCmd(const QString &cmd, QStringList &opt)
 {
-    return QProcess::startDetached(cmd);
+    return QProcess::startDetached(cmd, opt);
 }
 // update enable/disable of widgets -----------------------------------------
 void MainWindow::UpdateEnable(void)

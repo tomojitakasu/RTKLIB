@@ -28,7 +28,7 @@ public slots:
     void FormatGPXClick();
 
 private:
-    int ExecCmd(const QString &cmd);
+    int ExecCmd(const QString &cmd, const QStringList &opt);
     void UpdateEnable(void);
     void ShowMsg(const QString &msg);
     void UpdateOutFile(void);

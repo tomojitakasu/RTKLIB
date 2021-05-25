@@ -19,11 +19,12 @@
 #include "staoptdlg.h"
 //---------------------------------------------------------------------------
 
-#define PRGNAME                 "Ntrip Browser Qt"
+#define PRGNAME                 "NTRIP Browser Qt"
 #define NTRIP_HOME              "rtcm-ntrip.org:2101"   // caster list home
 #define NTRIP_TIMEOUT   10000                           // response timeout (ms)
 #define MAXSRCTBL               512000                  // max source table size (bytes)
 #define ENDSRCTBL               "ENDSOURCETABLE"        // end marker of table
+#define ADDRESS_WIDTH   184                 // width of Address (px)
 
 static char buff[MAXSRCTBL];                            // source table buffer
 
@@ -56,15 +57,15 @@ static char *getsrctbl(const QString addr)
     QMetaObject::invokeMethod(mainForm, "ShowMsg", Qt::QueuedConnection, Q_ARG(QString, QT_TR_NOOP("connecting...")));
 
     while (p < buff + MAXSRCTBL - 1) {
-        int ns = strread(&str, (unsigned char *)p, (buff + MAXSRCTBL - p - 1)); *(p + ns) = '\0';
-        if (p - len - 3 > buff && strstr(p - len - 3, ENDSRCTBL)) break;
-        p += ns;
+        int ns = strread(&str, (uint8_t *)p, (buff + MAXSRCTBL - p - 1));
+        p += ns; *p='\0';
         qApp->processEvents();
         int stat = strstat(&str, msg);
 
         QMetaObject::invokeMethod(mainForm, "ShowMsg", Qt::QueuedConnection, Q_ARG(QString, msg));
 
-        if (stat < 1) break;
+        if (stat <= 1) break;
+        if (strstr(buff,ENDSRCTBL)) break;
         if ((int)(tickget() - tick) > NTRIP_TIMEOUT) {
             QMetaObject::invokeMethod(mainForm, "ShowMsg", Qt::QueuedConnection, Q_ARG(QString, QT_TR_NOOP("response timeout")));
 			break;
@@ -142,9 +143,9 @@ void MainForm::showEvent(QShowEvent *event)
 {
     if (event->spontaneous()) return;
 
-    const QString colw0 = "74,116,56,244,18,52,62,28,50,50,18,18,120,28,18,18,40,600,";
-    const QString colw1 = "112,40,96,126,18,28,50,50,160,40,600,0,0,0,0,0,0,0,";
-    const QString colw2 = "80,126,18,18,300,300,300,600,0,0,0,0,0,0,0,0,0,0,";
+    const QString colw0 = "30,74,116,56,244,18,52,62,28,50,50,18,18,120,28,18,18,40,600,";
+    const QString colw1 = "30,112,40,96,126,18,28,50,50,160,40,600,0,0,0,0,0,0,0,";
+    const QString colw2 = "30,80,126,18,18,300,300,300,600,0,0,0,0,0,0,0,0,0,0,";
     QSettings setting(IniFile, QSettings::IniFormat);
     QString list, url = "";
     QStringList colw, stas;
@@ -205,6 +206,8 @@ void MainForm::showEvent(QShowEvent *event)
 
 	ShowTable();
 	UpdateEnable();
+    GetTable();
+    QTimer::singleShot(0, this, SLOT(UpdateTable()));
 }
 //---------------------------------------------------------------------------
 void MainForm::closeEvent(QCloseEvent *)
@@ -331,9 +334,9 @@ void MainForm::Table0SelectCell(int ARow, int ACol)
     Q_UNUSED(ACol);
     QString title;
     if (0 <= ARow && ARow < Table0->rowCount()) {
-        title = Table0->item(ARow,0)->text();
+        title = Table0->item(ARow,1)->text();
         googleMapView->HighlightMark(title);
-        googleMapView->setWindowTitle(QString(tr("NTRIP STR Map: %1/%2")).arg(Address->currentText()).arg(title));
+        googleMapView->setWindowTitle(QString(tr("NTRIP Data Stream Map: %1/%2")).arg(Address->currentText()).arg(title));
 	}
 }
 //---------------------------------------------------------------------------
@@ -396,7 +399,6 @@ void MainForm::UpdateCaster()
         Address->addItem(tokens.at(1) + ":" + tokens.at(2));
 	}
     if (Address->count() > 1) Address->setCurrentIndex(0);
-    ShowMsg(tr("update caster list"));
 }
 //---------------------------------------------------------------------------
 void MainForm::GetTable(void)
@@ -424,8 +426,9 @@ void MainForm::UpdateTable(void)
     BtnUpdate->setEnabled(true);
     Address->setEnabled(true);
     MenuUpdateTable->setEnabled(true);
+    srctbl = TableWatcher.result();
 
-    if (!(srctbl = TableWatcher.result()).isEmpty()) {
+    if (!srctbl.isEmpty()) {
         SrcTable = srctbl;
         AddrCaster = Address->currentText();
 	}
@@ -434,12 +437,12 @@ void MainForm::UpdateTable(void)
 //---------------------------------------------------------------------------
 void MainForm::ShowTable(void)
 {
-    const QString ti[3][18] = { { tr("Mountpoint"), tr("ID"),	tr("Format"),	      tr("Format-Details"), tr("Carrier"), tr("Nav-System"),
+    const QString ti[3][19] = { {tr("No"), tr("Mountpoint"), tr("ID"),	tr("Format"),	      tr("Format-Details"), tr("Carrier"), tr("Nav-System"),
                       tr("Network"), tr("Country"), tr("Latitude"), tr("Longitude"), tr("NMEA"), tr("Solution"),
                       tr("Generator"), "Compr-Encrp", "Authentication", "Fee", "Bitrate", "" },
-                    { tr("Host"),	tr("Port"),	tr("ID"),	      tr("Operator"),	    tr("NMEA"),	   tr("Country"),   tr("Latitude"), tr("Longitude"),
+                    { tr("No"), tr("Host"),	tr("Port"),	tr("ID"),	      tr("Operator"),	    tr("NMEA"),	   tr("Country"),   tr("Latitude"), tr("Longitude"),
                       tr("Fallback_Host"), tr("Fallback_Port"), "", "", "", "", "", "", "" },
-                    { tr("ID"),		tr("Operator"), tr("Authentication"), tr("Fee"),	    tr("Web-Net"), tr("Web-Str"),   tr("Web-Reg"),  "",		    "","", "",
+                    { tr("No"), tr("ID"),		tr("Operator"), tr("Authentication"), tr("Fee"),	    tr("Web-Net"), tr("Web-Str"),   tr("Web-Reg"),  "",		    "","", "",
                       "", "", "", "", "", "" } };
 
 
@@ -484,13 +487,14 @@ void MainForm::ShowTable(void)
     j = 0;
     foreach(QString line, lines) {
 		switch (type) {
-        case 0: if (line.contains("STR")) break; else continue;
-        case 1: if (line.contains("CAS")) break; else continue;
-        case 2: if (line.contains("NET")) break; else continue;
+            case 0: if (line.contains("STR")) break; else continue;
+            case 1: if (line.contains("CAS")) break; else continue;
+            case 2: if (line.contains("NET")) break; else continue;
 		}
+        table[type]->setItem(j, 0, new QTableWidgetItem(QString::number(j)));
         QStringList tokens = line.split(";");
         for (int i = 0; i < 18 && i < tokens.size(); i++)
-            table[type]->setItem(j, i - 1, new QTableWidgetItem(tokens.at(i)));
+            table[type]->setItem(j, i, new QTableWidgetItem(tokens.at(i)));
 		j++;
 	}
 	UpdateMap();
@@ -510,24 +514,24 @@ void MainForm::UpdateMap(void)
     bool okay;
 
     if (Address->currentText() == "")
-        googleMapView->setWindowTitle(tr("NTRIP STR Map"));
+        googleMapView->setWindowTitle(tr("NTRIP Data Stream Map"));
     else
-        googleMapView->setWindowTitle(QString(tr("NTRIP STR Map: %1")).arg(Address->currentText()));
+        googleMapView->setWindowTitle(QString(tr("NTRIP Data Stream Map: %1")).arg(Address->currentText()));
     googleMapView->ClearMark();
 
     for (int i = 0; i < Table0->rowCount(); i++) {
         if (Table0->item(i, 8)->text() == "") continue;
-        LatText = Table0->item(i, 8)->text();
-        LonText = Table0->item(i, 9)->text();
+        LatText = Table0->item(i, 9)->text();
+        LonText = Table0->item(i, 10)->text();
         lat = LatText.toDouble(&okay); if (!okay) continue;
         lon = LonText.toDouble(&okay); if (!okay) continue;
-        title = Table0->item(i, 0)->text();
-        msg = "<b>" + Table0->item(i, 0)->text() + "</b>: " +
-              Table0->item(i, 1)->text() + " (" + Table0->item(i, 7)->text() + "), POS: " +
-              Table0->item(i, 8)->text() + ", " + Table0->item(i, 9)->text() + "<br>" +
-              Table0->item(i, 2)->text() + ": " + Table0->item(i, 3)->text() + "<br>" +
-              Table0->item(i, 5)->text() + ", " + Table0->item(i, 6)->text() + ", " +
-              Table0->item(i, 12)->text();
+        title = Table0->item(i, 1)->text();
+        msg = "<b>" + Table0->item(i, 1)->text() + "</b>: " + Table0->item(i, 2)->text() + " (" + Table0->item(i,8)->text()+")<br>"+
+              "Format: "+ Table0->item(i, 3)->text() + ", " + Table0->item(i, 4)->text() + ", <br> " +
+              "Nav-Sys: "+Table0->item(i, 6)->text() + "<br>" +
+              "Network: "+Table0->item(i, 7)->text() + "<br>" +
+              "Latitude/Longitude: "+Table0->item(i, 9)->text()+", "+Table0->item(i, 10)->text()+"<br>"+
+              "Generator: "+Table0->item(i, 13)->text();
         googleMapView->AddMark(lat, lon, title, msg);
 	}
 }

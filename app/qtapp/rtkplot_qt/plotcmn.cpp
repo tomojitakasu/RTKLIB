@@ -36,9 +36,9 @@ void Plot::ShowMsg(const QString &msg)
     Panel21->updateGeometry();
 }
 // execute command ----------------------------------------------------------
-int Plot::ExecCmd(const QString &cmd)
+int Plot::ExecCmd(const QString &cmd, const QStringList &opt)
 {
-    return QProcess::startDetached(cmd);
+    return QProcess::startDetached(cmd, opt);
 }
 // get time span and time interval ------------------------------------------
 void Plot::TimeSpan(gtime_t *ts, gtime_t *te, double *tint)

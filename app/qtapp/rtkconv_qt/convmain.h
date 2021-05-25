@@ -119,7 +119,7 @@ private:
     void ConvertFile(void);
     void SetOutFiles(const QString &infile);
     void GetTime(gtime_t *ts, gtime_t *te, double *tint, double *tunit);
-    int  ExecCmd(const QString &cmd);
+    int  ExecCmd(const QString &cmd, QStringList &opt);
     QString RepPath(const QString &File);
     void LoadOpt(void);
     void SaveOpt(void);

@@ -14,6 +14,7 @@
 #include "refdlg.h"
 #include "navimain.h"
 #include "maskoptdlg.h"
+#include "freqdlg.h"
 
 //---------------------------------------------------------------------------
 #define MAXSTR      1024                /* max length of a string */
@@ -89,7 +90,7 @@ OptDialog::OptDialog(QWidget *parent)
     : QDialog(parent)
 {
     QString label;
-    int freq[] = { 1, 2, 5, 6, 7, 8, 9 }, nglo = MAXPRNGLO, ngal = MAXPRNGAL, nqzs = MAXPRNQZS;
+    int nglo = MAXPRNGLO, ngal = MAXPRNGAL, nqzs = MAXPRNQZS;
     int ncmp = MAXPRNCMP, nirn = MAXPRNIRN;
 
     setupUi(this);
@@ -98,12 +99,16 @@ OptDialog::OptDialog(QWidget *parent)
     SolOpt = solopt_default;
 
     textViewer = new TextViewer(this);
+    freqDialog = new FreqDialog(this);
 
     UpdateEnable();
 
     Freq->clear();
     for (int i = 0; i < NFREQ; i++) {
-        label = label + (i > 0 ? "+" : "") + QString(tr("L%1")).arg(freq[i]);
+        label="L1";
+                for (int j=1;j<=i;j++) {
+                    label+=QString("+%1").arg(j+1);
+                }
         Freq->addItem(label);
 	}
     if (nglo <= 0) NavSys2->setEnabled(false);
@@ -123,8 +128,6 @@ OptDialog::OptDialog(QWidget *parent)
     GeoidDataFile->setCompleter(fileCompleter);
     EOPFile->setCompleter(fileCompleter);
     OLFile->setCompleter(fileCompleter);
-    TLEFile->setCompleter(fileCompleter);
-    TLESatFile->setCompleter(fileCompleter);
 
     QCompleter *dirCompleter = new QCompleter(this);
     QFileSystemModel *dirModel = new QFileSystemModel(dirCompleter);
@@ -141,7 +144,8 @@ OptDialog::OptDialog(QWidget *parent)
     connect(BtnDCBFile, SIGNAL(clicked(bool)), this, SLOT(BtnDCBFileClick()));
     connect(BtnEOPFile, SIGNAL(clicked(bool)), this, SLOT(BtnEOPFileClick()));
     connect(BtnEOPView, SIGNAL(clicked(bool)), this, SLOT(BtnEOPViewClick()));
-    connect(BtnFont, SIGNAL(clicked(bool)), this, SLOT(BtnFontClick()));
+    connect(BtnFont1, SIGNAL(clicked(bool)), this, SLOT(BtnFont1Click()));
+    connect(BtnFont2, SIGNAL(clicked(bool)), this, SLOT(BtnFont2Click()));
     connect(BtnGeoidDataFile, SIGNAL(clicked(bool)), this, SLOT(BtnGeoidDataFileClick()));
     connect(BtnLoad, SIGNAL(clicked(bool)), this, SLOT(BtnLoadClick()));
     connect(BtnLocalDir, SIGNAL(clicked(bool)), this, SLOT(BtnLocalDirClick()));
@@ -155,8 +159,6 @@ OptDialog::OptDialog(QWidget *parent)
     connect(BtnSnrMask, SIGNAL(clicked(bool)), this, SLOT(BtnSnrMaskClick()));
     connect(BtnStaPosFile, SIGNAL(clicked(bool)), this, SLOT(BtnStaPosFileClick()));
     connect(BtnStaPosView, SIGNAL(clicked(bool)), this, SLOT(BtnStaPosViewClick()));
-    connect(BtnTLEFile, SIGNAL(clicked(bool)), this, SLOT(BtnTLEFileClick()));
-    connect(BtnTLESatFile, SIGNAL(clicked(bool)), this, SLOT(BtnTLESatFileClick()));
     connect(PosMode, SIGNAL(currentIndexChanged(int)), this, SLOT(PosModeChange(int)));
     connect(SolFormat, SIGNAL(currentIndexChanged(int)), this, SLOT(SolFormatChange(int)));
     connect(RefPosTypeP, SIGNAL(currentIndexChanged(int)), this, SLOT(RefPosTypePChange(int)));
@@ -168,6 +170,10 @@ OptDialog::OptDialog(QWidget *parent)
     connect(NavSys2, SIGNAL(clicked(bool)), this, SLOT(NavSys2Click()));
     connect(NavSys6, SIGNAL(clicked(bool)), this, SLOT(NavSys6Click()));
     connect(BaselineConst, SIGNAL(clicked(bool)), this, SLOT(BaselineConstClick()));
+    connect(BtnFreq, SIGNAL(clicked(bool)), this, SLOT(BtnFreqClick()));
+    connect(RefAnt, SIGNAL(currentIndexChanged(int)), this, SLOT(RefAntClick()));
+    connect(RovAnt, SIGNAL(currentIndexChanged(int)), this, SLOT(RovAntClick()));
+
 }
 //---------------------------------------------------------------------------
 void OptDialog::showEvent(QShowEvent *event)
@@ -321,7 +327,7 @@ void OptDialog::BtnSatPcvViewClick()
 //---------------------------------------------------------------------------
 void OptDialog::BtnSatPcvFileClick()
 {
-    SatPcvFile->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Satellite Antenna PCV File"), QString(), tr("PCV File (*.pcv *.atx);;All (*.*)"))));
+    SatPcvFile->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Satellite Antenna PCV File"), QString(), tr("PCV File (*.pcv *.atx);Position File (*.pcv *.snx);All (*.*)"))));
 }
 //---------------------------------------------------------------------------
 void OptDialog::BtnAntPcvViewClick()
@@ -335,7 +341,7 @@ void OptDialog::BtnAntPcvViewClick()
 //---------------------------------------------------------------------------
 void OptDialog::BtnAntPcvFileClick()
 {
-    AntPcvFile->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Receiver Antenna PCV File"), QString(), tr("PCV File (*.pcv *.atx);;All (*.*)"))));
+    AntPcvFile->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Receiver Antenna PCV File"), QString(), tr("PCV File (*.pcv *.atx);Position File (*.pcv *.snx);All (*.*)"))));
     ReadAntList();
 }
 //---------------------------------------------------------------------------
@@ -377,30 +383,28 @@ void OptDialog::BtnLocalDirClick()
     LocalDir->setText(dir);
 }
 //---------------------------------------------------------------------------
-void OptDialog::BtnFontClick()
+void OptDialog::BtnFont1Click()
 {
     QFontDialog dialog(this);
 
-    dialog.setCurrentFont(FontLabel->font());
+    dialog.setCurrentFont(FontLabel1->font());
     dialog.exec();
 
-    FontLabel->setFont(dialog.selectedFont());
-    FontLabel->setText(FontLabel->font().family() + QString::number(FontLabel->font().pointSize()) + " pt");
+    FontLabel1->setFont(dialog.selectedFont());
+    FontLabel1->setText(FontLabel1->font().family() + QString::number(FontLabel1->font().pointSize()) + " pt");
 }
 //---------------------------------------------------------------------------
-void OptDialog::BtnTLESatFileClick()
+void OptDialog::BtnFont2Click()
 {
-    QString fileName = QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("TLE Satellite Number File"), QString(), tr("All (*.*)")));
+    QFontDialog dialog(this);
 
-    TLESatFile->setText(fileName);
-}
-//---------------------------------------------------------------------------
-void OptDialog::BtnTLEFileClick()
-{
-    QString fileName = QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("TLE Data File"), QString(), tr("All (*.*)")));
+    dialog.setCurrentFont(FontLabel2->font());
+    dialog.exec();
 
-    TLEFile->setText(fileName);
+    FontLabel2->setFont(dialog.selectedFont());
+    FontLabel2->setText(FontLabel2->font().family() + QString::number(FontLabel2->font().pointSize()) + " pt");
 }
+
 //---------------------------------------------------------------------------
 void OptDialog::FreqChange()
 {
@@ -491,6 +495,7 @@ void OptDialog::GetOpt(void)
     FieldSep->setText(SolOpt.sep);
     OutputHead->setCurrentIndex(SolOpt.outhead);
     OutputOpt->setCurrentIndex(SolOpt.outopt);
+    OutputVel->setCurrentIndex(SolOpt.outvel);
     OutputSingle->setCurrentIndex(PrcOpt.outsingle);
     MaxSolStd->setValue(SolOpt.maxsolstd);
     OutputDatum->setCurrentIndex(SolOpt.datum);
@@ -539,8 +544,6 @@ void OptDialog::GetOpt(void)
     GeoidDataFile->setText(GeoidDataFileF);
     DCBFile->setText(DCBFileF);
     EOPFile->setText(EOPFileF);
-    TLEFile->setText(TLEFileF);
-    TLESatFile->setText(TLESatFileF);
     LocalDir->setText(LocalDirectory);
 	ReadAntList();
 
@@ -562,8 +565,10 @@ void OptDialog::GetOpt(void)
     SolBuffSizeE->setValue(SolBuffSize);
     PanelStackE->setCurrentIndex(PanelStack);
 
-    FontLabel->setFont(PosFont);
-    FontLabel->setText(FontLabel->font().family() + QString::number(FontLabel->font().pointSize()) + "pt");
+    FontLabel1->setFont(PanelFont);
+    FontLabel1->setText(FontLabel1->font().family() + QString::number(FontLabel1->font().pointSize()) + "pt");
+    FontLabel2->setFont(PosFont);
+    FontLabel2->setText(FontLabel2->font().family() + QString::number(FontLabel2->font().pointSize()) + "pt");
 
 	UpdateEnable();
 }
@@ -621,6 +626,7 @@ void OptDialog::SetOpt(void)
     strcpy(SolOpt.sep, qPrintable(FieldSep_Text));
     SolOpt.outhead = OutputHead->currentIndex();
     SolOpt.outopt = OutputOpt->currentIndex();
+    SolOpt.outvel = OutputVel->currentIndex();
     PrcOpt.outsingle = OutputSingle->currentIndex();
     SolOpt.maxsolstd = MaxSolStd->value();
     SolOpt.datum = OutputDatum->currentIndex();
@@ -671,8 +677,6 @@ void OptDialog::SetOpt(void)
     GeoidDataFileF = GeoidDataFile->text();
     DCBFileF = DCBFile->text();
     EOPFileF = EOPFile->text();
-    TLEFileF = TLEFile->text();
-    TLESatFileF = TLESatFile->text();
     LocalDirectory = LocalDir->text();
 
     SvrCycle = SvrCycleE->value();
@@ -688,7 +692,8 @@ void OptDialog::SetOpt(void)
     ProxyAddr = ProxyAddrE->text();
     MoniPort = MoniPortE->value();
     PanelStack = PanelStackE->currentIndex();
-    PosFont = FontLabel->font();
+    PanelFont = FontLabel1->font();
+    PosFont = FontLabel2->font();
 
 	UpdateEnable();
 }
@@ -696,7 +701,7 @@ void OptDialog::SetOpt(void)
 void OptDialog::LoadOpt(const QString &file)
 {
     int itype[] = { STR_SERIAL, STR_TCPCLI, STR_TCPSVR, STR_NTRIPCLI, STR_FILE, STR_FTP, STR_HTTP };
-    int otype[] = { STR_SERIAL, STR_TCPCLI, STR_TCPSVR, STR_NTRIPSVR, STR_NTRIPC_C, STR_FILE };
+    int otype[] = { STR_SERIAL, STR_TCPCLI, STR_TCPSVR, STR_NTRIPSVR, STR_NTRIPCAS, STR_FILE };
     QLineEdit *editu[] = { RovPos1, RovPos2, RovPos3 };
     QLineEdit *editr[] = { RefPos1, RefPos2, RefPos3 };
     QString buff;
@@ -793,6 +798,7 @@ void OptDialog::LoadOpt(const QString &file)
     FieldSep->setText(solopt.sep);
     OutputHead->setCurrentIndex(solopt.outhead);
     OutputOpt->setCurrentIndex(solopt.outopt);
+    OutputVel->setCurrentIndex(solopt.outvel);
     OutputSingle->setCurrentIndex(prcopt.outsingle);
     MaxSolStd->setValue(solopt.maxsolstd);
     OutputDatum->setCurrentIndex(solopt.datum);
@@ -828,13 +834,10 @@ void OptDialog::LoadOpt(const QString &file)
     RefAntU->setValue(prcopt.antdel[1][2]);
     MaxAveEp->setValue(prcopt.maxaveep);
 
-    ChkInitRestart->setChecked(prcopt.initrst);
-
     RovPosTypeP->setCurrentIndex(0);
     RefPosTypeP->setCurrentIndex(0);
-    if (prcopt.refpos == POSOPT_RTCM) RefPosTypeP->setCurrentIndex(3);
-    else if (prcopt.refpos == POSOPT_RAW) RefPosTypeP->setCurrentIndex(4);
-    else if (prcopt.refpos == POSOPT_SINGLE) RefPosTypeP->setCurrentIndex(5);
+    if      (prcopt.refpos==POSOPT_RTCM  ) RefPosTypeP->setCurrentIndex(3);
+    else if (prcopt.refpos==POSOPT_SINGLE) RefPosTypeP->setCurrentIndex(4);
 
     RovPosTypeF = RovPosTypeP->currentIndex();
     RefPosTypeF = RefPosTypeP->currentIndex();
@@ -865,7 +868,7 @@ void OptDialog::SaveOpt(const QString &file)
     QString DCBFile_Text = DCBFile->text();
     QString LocalDir_Text = LocalDir->text();
     int itype[] = { STR_SERIAL, STR_TCPCLI, STR_TCPSVR, STR_NTRIPCLI, STR_FILE, STR_FTP, STR_HTTP };
-    int otype[] = { STR_SERIAL, STR_TCPCLI, STR_TCPSVR, STR_NTRIPSVR, STR_NTRIPC_C, STR_FILE };
+    int otype[] = { STR_SERIAL, STR_TCPCLI, STR_TCPSVR, STR_NTRIPSVR, STR_NTRIPCAS, STR_FILE };
     QLineEdit *editu[] = { RovPos1, RovPos2, RovPos3 };
     QLineEdit *editr[] = { RefPos1, RefPos2, RefPos3 };
     char buff[1024], *p, *q, comment[256], s[64];
@@ -921,7 +924,7 @@ void OptDialog::SaveOpt(const QString &file)
             if ((p=strchr(buff,'/'))&&(q=strchr(p+1,':'))) *q='\0';
             strcpy(strpath[i],buff);
         }
-        else if (strtype[i]==STR_NTRIPC_S||strtype[i]==STR_NTRIPC_C) {
+        else if (strtype[i]==STR_NTRIPCAS) {
             strcpy(buff,qPrintable(mainForm->Paths[i][1]));
             if ((p=strchr(buff,'/'))&&(q=strchr(p+1,':'))) *q='\0';
             if ((p=strchr(buff,'@'))) {
@@ -1011,6 +1014,7 @@ void OptDialog::SaveOpt(const QString &file)
     strcpy(solopt.sep, qPrintable(FieldSep_Text));
     solopt.outhead = OutputHead->currentIndex();
     solopt.outopt = OutputOpt->currentIndex();
+    solopt.outvel =OutputVel->currentIndex();
     prcopt.outsingle = OutputSingle->currentIndex();
     solopt.maxsolstd = MaxSolStd->value();
     solopt.datum = OutputDatum->currentIndex();
@@ -1045,11 +1049,10 @@ void OptDialog::SaveOpt(const QString &file)
     prcopt.maxaveep = MaxAveEp->value();
     prcopt.initrst = ChkInitRestart->isChecked();
 
-    prcopt.rovpos = POSOPT_POS;
-    prcopt.refpos = POSOPT_POS;
-    if (RefPosTypeP->currentIndex() == 3) prcopt.refpos = POSOPT_RTCM;
-    else if (RefPosTypeP->currentIndex() == 4) prcopt.refpos = POSOPT_RAW;
-    else if (RefPosTypeP->currentIndex() == 5) prcopt.refpos = POSOPT_SINGLE;
+    prcopt.rovpos = 4;
+    prcopt.refpos = 4;
+    if      (RefPosTypeP->currentIndex()==3) prcopt.refpos=POSOPT_RTCM;
+    else if (RefPosTypeP->currentIndex()==4) prcopt.refpos=POSOPT_SINGLE;
 
     if (prcopt.rovpos == POSOPT_POS) GetPos(RovPosTypeP->currentIndex(), editu, prcopt.ru);
     if (prcopt.refpos == POSOPT_POS) GetPos(RefPosTypeP->currentIndex(), editr, prcopt.rb);
@@ -1117,16 +1120,16 @@ void OptDialog::UpdateEnable(void)
 
     RovAntPcv->setEnabled(rel || ppp);
     RovAnt->setEnabled((rel || ppp) && RovAntPcv->isChecked());
-    RovAntE->setEnabled((rel || ppp) && RovAntPcv->isChecked());
-    RovAntN->setEnabled((rel || ppp) && RovAntPcv->isChecked());
-    RovAntU->setEnabled((rel || ppp) && RovAntPcv->isChecked());
-    LabelRovAntD->setEnabled((rel || ppp) && RovAntPcv->isChecked());
+    RovAntE->setEnabled((rel || ppp) && RovAntPcv->isChecked()&&RovAnt->currentText()!="*");
+    RovAntN->setEnabled((rel || ppp) && RovAntPcv->isChecked()&&RovAnt->currentText()!="*");
+    RovAntU->setEnabled((rel || ppp) && RovAntPcv->isChecked()&&RovAnt->currentText()!="*");
+    LabelRovAntD->setEnabled((rel || ppp) && RovAntPcv->isChecked()&&RovAnt->currentText()!="*");
     RefAntPcv->setEnabled(rel);
     RefAnt->setEnabled(rel && RefAntPcv->isChecked());
-    RefAntE->setEnabled(rel && RefAntPcv->isChecked());
-    RefAntN->setEnabled(rel && RefAntPcv->isChecked());
-    RefAntU->setEnabled(rel && RefAntPcv->isChecked());
-    LabelRefAntD->setEnabled(rel && RefAntPcv->isChecked());
+    RefAntE->setEnabled(rel && RefAntPcv->isChecked()&&RefAnt->currentText()!="*");
+    RefAntN->setEnabled(rel && RefAntPcv->isChecked()&&RefAnt->currentText()!="*");
+    RefAntU->setEnabled(rel && RefAntPcv->isChecked()&&RefAnt->currentText()!="*");
+    LabelRefAntD->setEnabled(rel && RefAntPcv->isChecked()&&RefAnt->currentText()!="*");
 
     RovPosTypeP->setEnabled(PosMode->currentIndex() == PMODE_FIXED || PosMode->currentIndex() == PMODE_PPP_FIXED);
     RovPos1->setEnabled(RovPosTypeP->isEnabled() && RovPosTypeP->currentIndex() <= 2);
@@ -1140,9 +1143,9 @@ void OptDialog::UpdateEnable(void)
     RefPos3->setEnabled(RefPosTypeP->isEnabled() && RefPosTypeP->currentIndex() <= 2);
     BtnRefPos->setEnabled(RefPosTypeP->isEnabled() && RefPosTypeP->currentIndex() <= 2);
 
-    LabelMaxAveEp->setVisible(RefPosTypeP->currentIndex() == 5);
-    MaxAveEp->setVisible(RefPosTypeP->currentIndex() == 5);
-    ChkInitRestart->setVisible(RefPosTypeP->currentIndex() == 5);
+    LabelMaxAveEp->setVisible(RefPosTypeP->currentIndex() == 4);
+    MaxAveEp->setVisible(RefPosTypeP->currentIndex() == 4);
+    ChkInitRestart->setVisible(RefPosTypeP->currentIndex() == 4);
 
     SbasSatE->setEnabled(PosMode->currentIndex() == 0);
 }
@@ -1234,3 +1237,21 @@ void OptDialog::NavSys6Click()
 	UpdateEnable();
 }
 //---------------------------------------------------------------------------
+void OptDialog::BtnFreqClick()
+{
+    freqDialog->exec();
+}
+//---------------------------------------------------------------------------
+void OptDialog::RefAntClick()
+{
+    UpdateEnable();
+}
+//---------------------------------------------------------------------------
+void OptDialog::RovAntClick()
+{
+    UpdateEnable();
+}
+//---------------------------------------------------------------------------
+
+
+

@@ -42,7 +42,7 @@ private:
     LaunchOptDlg *launchOptDlg;
     int Tray;
 	
-    int ExecCmd(const QString &cmd);
+    int ExecCmd(const QString &cmd, const QStringList &opt);
     void UpdatePanel();
 
 public:

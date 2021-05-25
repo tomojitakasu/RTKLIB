@@ -159,7 +159,7 @@ void TcpOptDialog::BtnBrowsClick()
     QString Port_Text = Port->text();
 
     if (Port_Text!="") Addr_Text+=":"+Port_Text;
-    ExecCmd("srctblbrows_qt " + Addr_Text, 1);
+    ExecCmd("srctblbrows_qt ", QStringList(Addr_Text), 1);
 }
 //---------------------------------------------------------------------------
 void TcpOptDialog::BtnMountpClick()
@@ -172,13 +172,13 @@ void TcpOptDialog::BtnMountpClick()
     MntpStr=mntpOptDialog->MntpStr;
 }
 //---------------------------------------------------------------------------
-int TcpOptDialog::ExecCmd(QString cmd, int show)
+int TcpOptDialog::ExecCmd(const QString &cmd, const QStringList &opt, int show)
 {
     QProcess prog;
 
     Q_UNUSED(show);
 
-    prog.start(cmd); /* FIXME: show option not yet supported */
+    prog.start(cmd, opt); /* FIXME: show option not yet supported */
     return 1;
 }
 //---------------------------------------------------------------------------

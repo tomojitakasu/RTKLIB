@@ -5,7 +5,7 @@
 #include "keydlg.h"
 #include "viewer.h"
 #include "refdlg.h"
-#include "extopt.h"
+#include "freqdlg.h"
 #include "maskoptdlg.h"
 
 #include <QShowEvent>
@@ -25,14 +25,15 @@ OptDialog::OptDialog(QWidget *parent)
     int nglo = MAXPRNGLO, ngal = MAXPRNGAL, nqzs = MAXPRNQZS, ncmp = MAXPRNCMP;
     int nirn = MAXPRNIRN;
 
-#if 0
     QString label, s;
-    Freq->Items->Clear();
+    Freq->clear();
     for (int i = 0; i < NFREQ; i++) {
-        label = label + (i > 0 ? "+" : "L") + s.sprintf("%d", freq[i]);
-        Freq->Items->Add(label);
+        label="L1";
+        for (int j=1;j<=i;j++) {
+            label+=QString("+%1").arg(j+1);
+        }
+        Freq->addItem(label);
     }
-#endif
 
     QCompleter *fileCompleter = new QCompleter(this);
     QFileSystemModel *fileModel = new QFileSystemModel(fileCompleter);
@@ -91,7 +92,7 @@ OptDialog::OptDialog(QWidget *parent)
     connect(BtnBLQFileView, SIGNAL(clicked(bool)), this, SLOT(BtnBLQFileViewClick()));
     connect(BtnEOPFile, SIGNAL(clicked(bool)), this, SLOT(BtnEOPFileClick()));
     connect(BtnEOPView, SIGNAL(clicked(bool)), this, SLOT(BtnEOPViewClick()));
-    connect(BtnExtOpt, SIGNAL(clicked(bool)), this, SLOT(BtnExtOptClick()));
+    connect(BtnFreq, SIGNAL(clicked(bool)), this, SLOT(BtnFreqClick()));
     connect(BtnMask, SIGNAL(clicked(bool)), this, SLOT(BtnMaskClick()));
 
     if (nglo <= 0) NavSys2->setEnabled(false);
@@ -443,7 +444,6 @@ void OptDialog::GetOpt(void)
     PosOpt4->setChecked(mainForm->PosOpt[3]);
     PosOpt5->setChecked(mainForm->PosOpt[4]);
     PosOpt6->setChecked(mainForm->PosOpt[5]);
-//	MapFunc->setCurrentIndex(mainForm->MapFunc);
 
     AmbRes->setCurrentIndex(mainForm->AmbRes);
     GloAmbRes->setCurrentIndex(mainForm->GloAmbRes);
@@ -473,6 +473,7 @@ void OptDialog::GetOpt(void)
     FieldSep->setText(mainForm->FieldSep);
     OutputHead->setCurrentIndex(mainForm->OutputHead);
     OutputOpt->setCurrentIndex(mainForm->OutputOpt);
+    OutputVel->setCurrentIndex(mainForm->OutputVel);
     OutputSingle->setCurrentIndex(mainForm->OutputSingle);
     MaxSolStd->setValue(mainForm->MaxSolStd);
     OutputDatum->setCurrentIndex(mainForm->OutputDatum);
@@ -532,8 +533,6 @@ void OptDialog::GetOpt(void)
     RovList->setPlainText(mainForm->RovList);
     BaseList->setPlainText(mainForm->BaseList);
 
-    ExtErr = mainForm->ExtErr;
-
 	UpdateEnable();
 }
 //---------------------------------------------------------------------------
@@ -567,7 +566,6 @@ void OptDialog::SetOpt(void)
     mainForm->PosOpt[3] = PosOpt4->isChecked();
     mainForm->PosOpt[4] = PosOpt5->isChecked();
     mainForm->PosOpt[5] = PosOpt6->isChecked();
-//	mainForm->MapFunc=MapFunc->currentIndex();
 
     mainForm->AmbRes = AmbRes->currentIndex();
     mainForm->GloAmbRes = GloAmbRes->currentIndex();
@@ -598,6 +596,7 @@ void OptDialog::SetOpt(void)
     mainForm->FieldSep = FieldSep->text();
     mainForm->OutputHead = OutputHead->currentIndex();
     mainForm->OutputOpt = OutputOpt->currentIndex();
+    mainForm->OutputVel = OutputVel->currentIndex();
     mainForm->OutputSingle = OutputSingle->currentIndex();
     mainForm->MaxSolStd = MaxSolStd->value();
     mainForm->OutputDatum = OutputDatum->currentIndex();
@@ -653,8 +652,6 @@ void OptDialog::SetOpt(void)
     mainForm->RovList = RovList->toPlainText();
     mainForm->BaseList = BaseList->toPlainText();
 
-    mainForm->ExtErr = ExtErr;
-
 	UpdateEnable();
 }
 //---------------------------------------------------------------------------
@@ -698,13 +695,13 @@ void OptDialog::LoadOpt(const QString &file)
     NavSys4->setChecked(prcopt.navsys & SYS_QZS);
     NavSys5->setChecked(prcopt.navsys & SYS_SBS);
     NavSys6->setChecked(prcopt.navsys & SYS_CMP);
+    NavSys7->setChecked(prcopt.navsys & SYS_IRN);
     PosOpt1->setChecked(prcopt.posopt[0]);
     PosOpt2->setChecked(prcopt.posopt[1]);
     PosOpt3->setChecked(prcopt.posopt[2]);
     PosOpt4->setChecked(prcopt.posopt[3]);
     PosOpt5->setChecked(prcopt.posopt[4]);
     PosOpt6->setChecked(prcopt.posopt[5]);
-//	MapFunc->setCurrentIndex(prcopt.mapfunc);
 
     AmbRes->setCurrentIndex(prcopt.modear);
     GloAmbRes->setCurrentIndex(prcopt.glomodear);
@@ -997,16 +994,16 @@ void OptDialog::UpdateEnable(void)
 
     RovAntPcv->setEnabled(rel || ppp);
     RovAnt->setEnabled((rel || ppp) && RovAntPcv->isChecked());
-    RovAntE->setEnabled((rel || ppp) && RovAntPcv->isChecked());
-    RovAntN->setEnabled((rel || ppp) && RovAntPcv->isChecked());
-    RovAntU->setEnabled((rel || ppp) && RovAntPcv->isChecked());
-    LabelRovAntD->setEnabled((rel || ppp) && RovAntPcv->isChecked());
+    RovAntE->setEnabled((rel || ppp) && RovAntPcv->isChecked()&&RovAnt->currentText()!="*");
+    RovAntN->setEnabled((rel || ppp) && RovAntPcv->isChecked()&&RovAnt->currentText()!="*");
+    RovAntU->setEnabled((rel || ppp) && RovAntPcv->isChecked()&&RovAnt->currentText()!="*");
+    LabelRovAntD->setEnabled((rel || ppp) && RovAntPcv->isChecked()&&RovAnt->currentText()!="*");
     RefAntPcv->setEnabled(rel);
     RefAnt->setEnabled(rel && RefAntPcv->isChecked());
-    RefAntE->setEnabled(rel && RefAntPcv->isChecked());
-    RefAntN->setEnabled(rel && RefAntPcv->isChecked());
-    RefAntU->setEnabled(rel && RefAntPcv->isChecked());
-    LabelRefAntD->setEnabled(rel && RefAntPcv->isChecked());
+    RefAntE->setEnabled(rel && RefAntPcv->isChecked()&&RefAnt->currentText()!="*");
+    RefAntN->setEnabled(rel && RefAntPcv->isChecked()&&RefAnt->currentText()!="*");
+    RefAntU->setEnabled(rel && RefAntPcv->isChecked()&&RefAnt->currentText()!="*");
+    LabelRefAntD->setEnabled(rel && RefAntPcv->isChecked()&&RefAnt->currentText()!="*");
 
     RovPosType->setEnabled(PosMode->currentIndex() == PMODE_FIXED || PosMode->currentIndex() == PMODE_PPP_FIXED);
     RovPos1->setEnabled(RovPosType->isEnabled() && RovPosType->currentIndex() <= 2);
@@ -1126,15 +1123,6 @@ void OptDialog::ExtEna2Click()
 	UpdateEnable();
 }
 //---------------------------------------------------------------------------
-void OptDialog::BtnExtOptClick()
-{
-    ExtOptDialog *extOptDialog = new ExtOptDialog(this);
-
-    extOptDialog->exec();
-
-    delete extOptDialog;
-}
-//---------------------------------------------------------------------------
 void OptDialog::BtnMaskClick()
 {
     MaskOptDialog *maskOptDialog = new MaskOptDialog(this);
@@ -1152,3 +1140,12 @@ void OptDialog::NavSys6Click()
 	UpdateEnable();
 }
 //---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+void OptDialog::BtnFreqClick()
+{
+    FreqDialog *freqDialog = new FreqDialog(this);
+
+    freqDialog->exec();
+
+    delete freqDialog;
+}

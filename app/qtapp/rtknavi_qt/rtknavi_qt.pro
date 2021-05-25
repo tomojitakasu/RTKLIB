@@ -6,12 +6,12 @@
 
 QT       += widgets core gui serialport
 
-include(../app.pri)
+include(../qtapp.pri)
 
 TARGET = rtknavi_qt
 TEMPLATE = app
 
-INCLUDEPATH += ../../src/ ../appcmn_qt
+INCLUDEPATH += ../../../src/ ../appcmn_qt
 
 SOURCES += \
     ../appcmn_qt/aboutdlg.cpp \
@@ -22,9 +22,11 @@ SOURCES += \
     ../appcmn_qt/maskoptdlg.cpp \
     ../appcmn_qt/refdlg.cpp \
     ../appcmn_qt/serioptdlg.cpp \
+    ../appcmn_qt/mntpoptdlg.cpp \
     ../appcmn_qt/tcpoptdlg.cpp \
     ../appcmn_qt/viewer.cpp \
     ../appcmn_qt/vieweropt.cpp \
+    ../appcmn_qt/freqdlg.cpp \
     instrdlg.cpp \
     logstrdlg.cpp \
     main.cpp \
@@ -53,8 +55,10 @@ HEADERS  += \
     ../appcmn_qt/refdlg.h \
     ../appcmn_qt/serioptdlg.h \
     ../appcmn_qt/tcpoptdlg.h \
+    ../appcmn_qt/mntpoptdlg.h \
     ../appcmn_qt/viewer.h \
     ../appcmn_qt/vieweropt.h \
+    ../appcmn_qt/freqdlg.h \
     markdlg.h \
     ../appcmn_qt/graph.h
 
@@ -77,6 +81,8 @@ FORMS    += \
     ../appcmn_qt/viewer.ui \
     ../appcmn_qt/vieweropt.ui \
     ../appcmn_qt/tcpoptdlg.ui \
+    ../appcmn_qt/mntpoptdlg.ui \
+    ../appcmn_qt/freqdlg.ui \
     markdlg.ui
 
 RESOURCES += \
