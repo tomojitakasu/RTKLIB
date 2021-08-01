@@ -487,17 +487,20 @@ extern "C" {
 
 #define P2_5        0.03125             /* 2^-5 */
 #define P2_6        0.015625            /* 2^-6 */
+#define P2_9        1.953125000000000E-03 /* 2^-9 */
 #define P2_11       4.882812500000000E-04 /* 2^-11 */
 #define P2_12       2.441406250000000E-04 /* 2^-12 */
 #define P2_13       1.220703125000000E-04 /* 2^-13 */
 #define P2_14       6.103515625000000E-05 /* 2^-14 */
 #define P2_15       3.051757812500000E-05 /* 2^-15 */
+#define P2_16       1.525878906250000E-05 /* 2^-16 */
 #define P2_17       7.629394531250000E-06 /* 2^-17 */
 #define P2_19       1.907348632812500E-06 /* 2^-19 */
 #define P2_20       9.536743164062500E-07 /* 2^-20 */
 #define P2_21       4.768371582031250E-07 /* 2^-21 */
 #define P2_23       1.192092895507810E-07 /* 2^-23 */
 #define P2_24       5.960464477539063E-08 /* 2^-24 */
+#define P2_25       2.980232238769531E-08 /* 2^-25 */
 #define P2_27       7.450580596923828E-09 /* 2^-27 */
 #define P2_29       1.862645149230957E-09 /* 2^-29 */
 #define P2_30       9.313225746154785E-10 /* 2^-30 */
@@ -505,13 +508,17 @@ extern "C" {
 #define P2_32       2.328306436538696E-10 /* 2^-32 */
 #define P2_33       1.164153218269348E-10 /* 2^-33 */
 #define P2_35       2.910383045673370E-11 /* 2^-35 */
+#define P2_37       7.275957614183426E-12 /* 2^-37 */
 #define P2_38       3.637978807091710E-12 /* 2^-38 */
 #define P2_39       1.818989403545856E-12 /* 2^-39 */
 #define P2_40       9.094947017729280E-13 /* 2^-40 */
 #define P2_43       1.136868377216160E-13 /* 2^-43 */
+#define P2_44       5.684341886080802E-14 /* 2^-44 */
 #define P2_48       3.552713678800501E-15 /* 2^-48 */
 #define P2_50       8.881784197001252E-16 /* 2^-50 */
 #define P2_55       2.775557561562891E-17 /* 2^-55 */
+#define P2_57       6.938893903907228E-18 /* 2^-57 */
+#define P2_60       8.673617379884035E-19 /* 2^-60 */
 
 #define CSSR_MAX_GNSS       16
 #define CSSR_MAX_GP         64
@@ -558,6 +565,14 @@ typedef struct {        /* observation data */
     int n,nmax;         /* number of obervation data/allocated */
     obsd_t *data;       /* observation data records */
 } obs_t;
+
+typedef struct {        /* earth orientation parameter data type */
+    double teops;
+    double xp,yp;       /* pole offset (rad) */
+    double xpr,ypr;     /* pole offset rate (rad/day) */
+    double ut1_utc;     /* ut1-utc (s) */
+    double dut1_utc;    /* ut1-utc rate (s/day) */
+} eop_t;
 
 typedef struct {        /* earth rotation parameter data type */
     double mjd;         /* mjd (days) */
@@ -768,6 +783,30 @@ typedef struct {        /* SBAS ionospheric corrections type */
     sbsigp_t igp[MAXNIGP]; /* ionospheric correction */
 } sbsion_t;
 
+typedef struct {
+    int src;            /* source GNSS */
+    int dst;            /* destination GNSS */
+    gtime_t t0;         /* reference time */
+    double a[3];        /* GGTO offset [s,s/s,s/s^2] */
+} ggto_t;
+
+/* EDC/CDC */
+typedef struct {
+    int sat;
+    int iodc;
+    double df0;
+    double df1;
+    unsigned char udra;
+    double dalp;
+    double dbet;
+    double dgam;
+    double di;
+    double dOMG;
+    double dA;
+    int dudra;
+    gtime_t tod;
+} ecdcd_t;
+
 typedef struct {        /* DGPS/GNSS correction type */
     gtime_t t0;         /* correction time */
     double prc;         /* pseudorange correction (PRC) (m) */
@@ -811,6 +850,8 @@ typedef struct {        /* navigation data type */
     alm_t *alm;         /* almanac data */
     tec_t *tec;         /* tec grid data */
     erp_t  erp;         /* earth rotation parameters */
+    eop_t  eop;         /* earth orientation parameters */
+    ggto_t ggto;        /* GGTO parameters */
     double utc_gps[8];  /* GPS delta-UTC parameters {A0,A1,Tot,WNt,dt_LS,WN_LSF,DN,dt_LSF} */
     double utc_glo[8];  /* GLONASS UTC time parameters {tau_C,tau_GPS} */
     double utc_gal[8];  /* Galileo UTC parameters */
@@ -823,6 +864,7 @@ typedef struct {        /* navigation data type */
     double ion_qzs[8];  /* QZSS iono model parameters {a0,a1,a2,a3,b0,b1,b2,b3} */
     double ion_cmp[8];  /* BeiDou iono model parameters {a0,a1,a2,a3,b0,b1,b2,b3} */
     double ion_irn[8];  /* IRNSS iono model parameters {a0,a1,a2,a3,b0,b1,b2,b3} */
+    int leaps;          /* leap seconds (s) */
     int glo_fcn[32];    /* GLONASS FCN + 8 */
     double cbias[MAXSAT][3]; /* satellite DCB (0:P1-P2,1:P1-C1,2:P2-C2) (m) */
     double rbias[MAXRCV][2][3]; /* receiver DCB (0:P1-P2,1:P1-C1,2:P2-C2) (m) */
@@ -1198,6 +1240,16 @@ typedef struct {        /* RTK control/result type */
     prcopt_t opt;       /* processing options */
 } rtk_t;
 
+typedef struct { /* QZSS L6 message type */
+    int prn;            /* satellite PRN number */
+    int type;           /* message type */
+    int alert;          /* alert flag */
+    uint8_t stat; /* signal tracking status */
+    uint8_t snr;  /* signal C/N0 (0.25 dBHz) */
+    uint32_t ttt;   /* tracking time (ms) */
+    uint8_t msg[212]; /* LEX message data part 1695 bits */
+} l6msg_t;
+
 typedef struct {        /* receiver raw data control type */
     gtime_t time;       /* message time */
     gtime_t tobs[MAXSAT][NFREQ+NEXOBS]; /* observation data time */
@@ -1208,6 +1260,7 @@ typedef struct {        /* receiver raw data control type */
     int ephsat;         /* update satelle of ephemeris (0:no satellite) */
     int ephset;         /* update set of ephemeris (0-1) */
     sbsmsg_t sbsmsg;    /* SBAS message */
+    l6msg_t l6msg[NSATQZS*2];  /* QZSS L6 message */
     char msgtype[256];  /* last message type */
     uint8_t subfrm[MAXSAT][380]; /* subframe buffer */
     double lockt[MAXSAT][NFREQ+NEXOBS]; /* lock time (s) */
@@ -1609,8 +1662,11 @@ EXPORT int decode_gal_inav(const uint8_t *buff, eph_t *eph, double *ion,
                            double *utc);
 EXPORT int decode_gal_fnav(const uint8_t *buff, eph_t *eph, double *ion,
                            double *utc);
+EXPORT int decode_gal_cnav(const unsigned char *buff, nav_t *nav);
 EXPORT int decode_irn_nav(const uint8_t *buff, eph_t *eph, double *ion,
                           double *utc);
+EXPORT int decode_gps_cnav1(const unsigned char *buff,nav_t *nav,int sys);
+EXPORT int decode_gps_cnav2(const unsigned char *buff,nav_t *nav,int sys);
 
 EXPORT int init_raw   (raw_t *raw, int format);
 EXPORT void free_raw  (raw_t *raw);

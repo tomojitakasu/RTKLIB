@@ -9,14 +9,15 @@ SRC    = ../../../../src
 INCLUDE= -I$(SRC)
 OPTIONS= -DTRACE -DENAGLO -DENAQZS -DENAGAL -DENACMP -DENAIRN -DNFREQ=5 -DNEXOBS=3
 
-CFLAGS = -O3 -ansi -pedantic -Wall -Wno-unused-but-set-variable $(INCLUDE) $(OPTIONS) -g
+#CFLAGS = -O3 -ansi -pedantic -Wall -Wno-unused-but-set-variable $(INCLUDE) $(OPTIONS) -g
+CFLAGS = -ansi -Wall -Wno-unused-but-set-variable $(INCLUDE) $(OPTIONS) -g
 
 LDLIBS = -lm -lrt
 
 all  : convbin
 
 convbin    : convbin.o rtkcmn.o rinex.o sbas.o preceph.o rcvraw.o convrnx.o
-convbin    : rtcm.o rtcm2.o rtcm3.o rtcm3e.o pntpos.o ephemeris.o ionex.o
+convbin    : rtcm.o rtcm2.o rtcm3.o rtcm3e.o cssr.o pntpos.o ephemeris.o ionex.o
 convbin    : novatel.o ss2.o ublox.o crescent.o skytraq.o javad.o nvs.o
 convbin    : binex.o rt17.o septentrio.o
 
@@ -42,6 +43,8 @@ rtcm3.o    : $(SRC)/rtcm3.c
 	$(CC) -c $(CFLAGS) $(SRC)/rtcm3.c
 rtcm3e.o   : $(SRC)/rtcm3e.c
 	$(CC) -c $(CFLAGS) $(SRC)/rtcm3e.c
+cssr.o     : $(SRC)/cssr.c
+	$(CC) -c $(CFLAGS) $(SRC)/cssr.c
 pntpos.o   : $(SRC)/pntpos.c
 	$(CC) -c $(CFLAGS) $(SRC)/pntpos.c
 ionex.o    : $(SRC)/ionex.c
@@ -94,7 +97,7 @@ binex.o    : $(SRC)/rtklib.h
 rt17.o     : $(SRC)/rtklib.h
 septentrio.o: $(SRC)/rtklib.h
 
-DATDIR = ../../../test/data/rcvraw
+DATDIR = ../../../../test/data/rcvraw
 
 install:
 	cp convbin $(BINDIR)
@@ -143,4 +146,6 @@ test21:
 	stty raw < /dev/ttyACM0
 	./convbin -r ubx -o ubx.obs -n ubx.nav -s ubx.sbs -h ubx.hnav /dev/ttyACM0
 
-
+test30:
+	./convbin $(DATDIR)/JAV32021212m.jps -trace 4 -d out -v 3.04 -f 5 -od -os
+	
