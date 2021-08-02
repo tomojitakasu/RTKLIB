@@ -69,6 +69,11 @@
 
 #define SQR(x)      ((x)*(x))
 
+/* CNAV,CNAV 2 */
+#define PREAMB_CNAV 0x8B
+#define MODE_CNAV   0
+#define MODE_CNAV2  1
+
 /* get two component bits ----------------------------------------------------*/
 static uint32_t getbitu2(const uint8_t *buff, int p1, int l1, int p2, int l2)
 {
@@ -392,7 +397,7 @@ static int decode_gal_inav_utc(const uint8_t *buff, double *utc)
 extern int decode_gal_inav(const uint8_t *buff, eph_t *eph, double *ion,
                            double *utc)
 {
-    trace(4,"decode_gal_fnav:\n");
+    trace(4,"decode_gal_inav:\n");
     
     if (eph&&!decode_gal_inav_eph(buff,eph)) return 0;
     if (ion&&!decode_gal_inav_ion(buff,ion)) return 0;
@@ -546,6 +551,40 @@ extern int decode_gal_fnav(const uint8_t *buff, eph_t *eph, double *ion,
     if (ion&&!decode_gal_fnav_ion(buff,ion)) return 0;    
     if (utc&&!decode_gal_fnav_utc(buff,utc)) return 0;
     return 1; 
+}
+/* decode Galileo C/NAV pages ----------------------------------------------
+* decode Galileo C/NAV (ref [5] 4.3)
+* args   : unsigned char *buff I Galileo C/NAV subframe bits
+*                                  buff[ 0-13]: reserved
+*                                  buff[14-461]: HAS page
+*                                  buff[462-485]: CRC
+*                                  buff[486-491]: tail
+*          nav_t    *nav    IO  navigation structure
+* return : status (1:ok,0:error)
+*-----------------------------------------------------------------------------*/
+extern int decode_gal_cnav(const unsigned char *buff, nav_t *nav)
+{
+    int i=14;
+    uint32_t header;
+    uint8_t status,mt,mid,ms,pid;
+
+    header = getbitu(buff,i, 24); i+=24;    /* HAS page header (24bit) */
+    if (header==0xaf3bc3) {
+        trace(4,"decode_gal_cnav: dummy page\n");
+        return 0;
+    }
+
+    /* decode HAS page header */
+    status = (header>>22)&0x3;
+    mt = (header>>18)&0x3;
+    mid = (header>>13)&0x1f;
+    ms = (header>>8)&0x1d;
+    pid = header&0xff;
+
+    trace(3,"decode_gal_cnav: sts=%d mt=%d mid=%d ms=%d pid=%d\n",
+            status,mt,mid,ms,pid);
+
+    return 1;
 }
 /* decode BDS D1 navigation data ---------------------------------------------*/
 static int decode_bds_d1_eph(const uint8_t *buff, eph_t *eph)
@@ -1284,6 +1323,482 @@ extern int decode_frame(const uint8_t *buff, eph_t *eph, alm_t *alm,
     if (alm&&!decode_frame_alm(buff,alm)) return 0;
     if (ion&&!decode_frame_ion(buff,ion)) return 0;
     if (utc&&!decode_frame_utc(buff,utc)) return 0;
+    return 1;
+}
+/* decode midi almanac (149bits or 151bits) */
+static int decode_gps_malm(const unsigned char *buff,int i,int sys,alm_t *alm,int mode)
+{
+    int prn,sat,week,is_geo=0;
+    double toas,sqrtA;
+
+    week = getbitu(buff,i,13); i+=13;
+    toas  = getbitu(buff,i, 8)*4096; i+= 8;
+    if (mode==MODE_CNAV) { /* CNAV */
+        prn  = getbitu(buff,i, 6); i+= 6;
+        if (sys==SYS_QZS) prn += MINPRNQZS-1;
+    } else { /* CNAV 2 */
+        prn   =getbitu(buff,i, 8); i+= 8;
+    }
+    if (prn==0) return 0;
+    sat  = satno(sys,prn);
+
+    if (sys==SYS_QZS) {
+        is_geo = (prn>=199)?1:0;
+    }
+
+    alm[sat-1].sat = sat;
+    alm[sat-1].toas = toas;
+    alm[sat-1].toa  = gpst2time(week,toas);
+    alm[sat-1].svh = getbitu(buff,i, 3); i+= 3;
+    alm[sat-1].e   = getbitu(buff,i,11)*P2_16; i+= 11;
+    if (sys==SYS_QZS) {
+        alm[sat-1].e   = is_geo?0.0:0.06;
+    }
+    alm[sat-1].i0  = getbits(buff,i,11)*P2_14*SC2RAD; i+= 11;
+    if (sys==SYS_GPS) {
+        alm[sat-1].i0  +=0.30*SC2RAD;
+    } else {
+        alm[sat-1].i0  +=(is_geo?0.0:0.25)*SC2RAD;
+    }
+    alm[sat-1].OMGd = getbits(buff,i,11)*P2_33*SC2RAD; i+= 11;
+    sqrtA = getbitu(buff,i,17)*0.0625; i+= 17;
+    alm[sat-1].A = sqrtA*sqrtA;
+    alm[sat-1].OMG0 = getbits(buff,i,16)*P2_15*SC2RAD; i+= 16;
+    alm[sat-1].omg = getbits(buff,i,16)*P2_15*SC2RAD; i+= 16;
+    alm[sat-1].M0 = getbits(buff,i,16)*P2_15*SC2RAD; i+= 16;
+    alm[sat-1].f0 = getbits(buff,i,11)*P2_20; i+= 11;
+    alm[sat-1].f1 = getbits(buff,i,10)*P2_37; i+=10;
+
+    return 1;
+}
+/* decode reduced almanac (31bits or 33bits) */
+static int decode_gps_ralm(const unsigned char *buff,int i,int sys,gtime_t toa,alm_t *alm,int mode)
+{
+    int prn,sat,week,is_geo=0;
+    double dela,Phi0,toas;
+
+    if (mode == MODE_CNAV) { /* CNAV */
+        prn   =getbitu(buff,i, 6); i+= 6;
+        if (sys==SYS_QZS) prn += MINPRNQZS-1;
+    } else { /* CNAV 2 */
+        prn   =getbitu(buff,i, 8); i+= 8;
+    }
+    if (prn==0) return 0;
+    sat   = satno(sys,prn);
+    alm[sat-1].sat = sat;
+    dela=getbits(buff,i, 8)/P2_9; i+= 8;
+    alm[sat-1].OMG0=getbits(buff,i, 7); i+= 7;
+    Phi0=getbits(buff,i, 7); i+= 7;
+
+    toas = time2gpst(toa,&week);
+
+    if (sys==SYS_QZS) {
+        is_geo = (prn>=199)?1:0;
+    }
+
+    alm[sat-1].toa = toa;
+    alm[sat-1].toas = toas;
+    alm[sat-1].week = week;
+    alm[sat-1].svh=getbitu(buff,i, 3); i+= 3;
+    alm[sat-1].A = ((sys==SYS_GPS)?26559710.0:42164200.0) + dela;
+    alm[sat-1].e = (sys==SYS_GPS)?0.0:(is_geo?0.0:0.075);
+    alm[sat-1].i0 = ((sys==SYS_GPS)?0.3056:(is_geo?0:0.2389))*SC2RAD;
+    alm[sat-1].OMGd = ((sys==SYS_GPS)?-2.6e-9:(is_geo?0.0:-8.7e-10))*SC2RAD;
+    alm[sat-1].M0 = Phi0;
+    alm[sat-1].omg = (sys==SYS_GPS)?0.0:(is_geo?0.0:4.7124);
+
+    return 1;
+}
+/* decode CDC (34bits) */
+static int decode_gps_cdc(const unsigned char *buff,int i,int sys,gtime_t tod,ecdcd_t *p)
+{
+    int prn,sat;
+
+    prn    =getbitu(buff,i, 8); i+= 8;
+    sat = satno(sys,prn);
+    p->sat = sat;
+    p->df0 =getbits(buff,i, 13)*P2_35; i+= 13;
+    p->df1 =getbits(buff,i, 8)*P2_51; i+= 8;
+    p->udra=getbitu(buff,i, 5); i+= 5;
+    p->tod = tod;
+    return 1;
+}
+/* decode EDC (92bits) */
+static int decode_gps_edc(const unsigned char *buff,int i,int sys,gtime_t tod,ecdcd_t *p)
+{
+    int prn,sat;
+
+    prn    =getbitu(buff,i, 8); i+= 8;
+    sat = satno(sys,prn);
+    p->sat = sat;
+    p->dalp =getbits(buff,i, 14)*P2_34; i+= 14;
+    p->dbet =getbits(buff,i, 14)*P2_34; i+= 14;
+    p->dgam =getbits(buff,i, 15)*P2_32; i+= 15;
+    p->di =getbits(buff,i, 12)*P2_32; i+= 12;
+    p->dOMG =getbits(buff,i, 12)*P2_32; i+= 12;
+    p->dA =getbits(buff,i, 12)*P2_9; i+= 12;
+    p->dudra=getbitu(buff,i, 5); i+= 5;
+    p->tod = tod;
+    return 1;
+}
+/* decode GPS/QZS CNAV1 ephemeris --------------------------------------------------
+* args   : unsigned char *buff I GPS CNAV1 subframe bits
+*                                  buff[ 0- 22] : toi (23 bits)
+*                                  buff[23- 622]: data2 (600bits)
+*                                  buff[623- +274]: data3 (274bits)
+*
+*          eph_t    *eph    IO  ephemeris structure
+* return : status (1:ok,0:error)
+*-----------------------------------------------------------------------------*/
+extern int decode_gps_cnav1(const unsigned char *buff,nav_t *nav,int sys)
+{
+    static double dA,toas;
+    int i=0,j,prn,sat;
+    static uint8_t preamb,msgid,alert,ura[4],integ,l2cphase,dc,gnss,page,cbuff[30];
+    uint32_t tow;
+    int top,toe,toc,week,toa,tod;
+    eph_t *eph=NULL;
+    alm_t *alm=nav->alm;
+    gtime_t t;
+    static ecdcd_t ecdcd;
+    double *ion=NULL;
+
+    preamb=getbitu(buff,i, 8); i+= 8;
+    if (preamb!=PREAMB_CNAV) {
+        trace(2,"decode_gps_cnav1 sys=%2d L2 CNAV preamble error preamb=%02X\n",sys,preamb);
+        return 0;
+    }
+
+    prn   =getbitu(buff,i, 6); i+= 6;
+    msgid =getbitu(buff,i, 6); i+= 6;
+    tow   =getbitu(buff,i,17)*6; i+=17;
+    alert =getbitu(buff,i, 1); i+= 1;
+
+    if (sys==SYS_QZS) prn += MINPRNQZS-1;
+
+    sat = satno(sys,prn);
+    eph = &nav->eph[sat-1];
+
+    trace(3,"decode_gps_cnav1 sys=%2d prn=%3d tow=%6d msgid=%2d\n",sys,prn,tow,msgid);
+
+    switch (msgid) {
+        case 10: /* ephemeris 1 */
+            eph->week = getbitu(buff,i, 13); i+= 13;
+            eph->svh  = getbitu(buff,i, 3);  i+= 3;
+            top       = getbitu(buff,i, 11)*300; i+= 11;
+            ura[0]    = getbitu(buff,i, 5);  i+= 5;
+            eph->toes = getbitu(buff,i, 11)*300; i+= 11;
+            eph->toe  = gpst2time(eph->week,eph->toes);
+            dA        = getbits(buff,i, 26)*P2_9; i+= 26;
+            eph->A    = ((sys==SYS_GPS)? 26559710.0:0) + dA;
+            eph->Adot = getbits(buff,i, 25)*P2_21; i+= 25;
+            eph->deln = getbits(buff,i, 17)*P2_44*SC2RAD; i+= 17;
+            eph->ndot = getbits(buff,i, 23)*P2_57*SC2RAD; i+= 23;
+            eph->M0   = getbits2(buff,i,32,i+32,1)*P2_32*SC2RAD; i+= 33;
+            eph->e    = getbitu2(buff,i,32,i+32,1)*P2_34; i+= 33;
+            eph->omg  = getbits2(buff,i,32,i+32,1)*P2_32*SC2RAD; i+= 33;
+            integ     = getbitu(buff,i, 1);  i+= 1;
+            l2cphase  = getbitu(buff,i, 1);  i+= 1;
+            break;
+        case 11: /* ephemeris 2 */
+            toe       = getbitu(buff,i, 11)*300; i+= 11;
+            if ((double)toe != eph->toes) return 0;
+            eph->OMG0 = getbits2(buff,i,32,i+32,1)*P2_32*SC2RAD; i+= 33;
+            eph->i0   = getbits2(buff,i,32,i+32,1)*P2_32*SC2RAD; i+= 33;
+            eph->OMGd = (getbits(buff,i, 17)*P2_44-2.6e-9)*SC2RAD; i+= 17;
+            eph->idot = getbits(buff,i, 15)*P2_44*SC2RAD; i+= 15;
+            eph->cis  = getbits(buff,i, 16)*P2_30; i+= 16;
+            eph->cic  = getbits(buff,i, 16)*P2_30; i+= 16;
+            eph->crs  = getbits(buff,i, 24)*P2_8; i+= 24;
+            eph->crc  = getbits(buff,i, 24)*P2_8; i+= 24;
+            eph->cus  = getbits(buff,i, 21)*P2_30; i+= 21;
+            eph->cuc  = getbits(buff,i, 21)*P2_30; i+= 21;
+            break;
+        case 12: /* reduced almanac */
+            week = getbitu(buff,i,13); i+=13;
+            toas  = getbitu(buff,i, 8)*4096; i+= 8;
+            t = gpst2time(week,toas);
+            for (j=0;j<7;j++) {
+                decode_gps_ralm(buff,i,sys,t,alm,0); i+=31;
+            }
+            break;
+        case 13: /* clock differential correction */
+            top = getbitu(buff,i, 11)*300; i+= 11;
+            tod = getbitu(buff,i, 11)*300; i+= 11;
+            for (j=0;j<6;j++) {
+                dc = getbitu(buff,i, 1); i+= 1;
+                decode_gps_cdc(buff,i,sys,gpst2time(eph->week,tod),&ecdcd);i+=34; /* CDC */
+            }
+            break;
+        case 14: /* ephemeris differential correction */
+            top = getbitu(buff,i, 11)*300; i+= 11;
+            tod = getbitu(buff,i, 11)*300; i+= 11;
+            for (j=0;j<2;j++) {
+                dc = getbitu(buff,i, 1); i+= 1;
+                decode_gps_edc(buff,i,sys,gpst2time(eph->week,tod),&ecdcd);i+=92; /* EDC */
+            }
+            break;
+        case 15: /* text */
+            for (j=0;j<29;j++) {
+                cbuff[j] = getbitu(buff,i, 8); i+= 8;
+            }
+            page = getbitu(buff,i, 4); i+= 4;
+            break;
+        case 30: /* clock + iono/group delay */
+        case 31: /* clock + reduced almanac */
+        case 32: /* clock + EOP */
+        case 33: /* clock + UTC */
+        case 34: /* clock + differential correction */
+        case 35: /* clock + GGTO */
+        case 36: /* clock + text */
+        case 37: /* clock + midi almanac */
+        case 61: /* clock + iono/tgd (japan) */
+            top       = getbitu(buff,i, 11)*300; i+= 11;
+            ura[0]    = getbitu(buff,i, 5);  i+= 5;
+            ura[1]    = getbitu(buff,i, 3);  i+= 3;
+            ura[2]    = getbitu(buff,i, 3);  i+= 3;
+            toc       = getbitu(buff,i, 11)*300; i+= 11;
+            eph->toc  = gpst2time(eph->week,toc);
+            eph->f0   = getbits(buff,i, 26)*P2_35; i+= 26;
+            eph->f1   = getbits(buff,i, 20)*P2_48; i+= 20;
+            eph->f2   = getbits(buff,i, 10)*P2_60; i+= 10;
+
+            switch (msgid) {
+                case 30:
+                case 61: /* clock + iono (japan) */
+                    eph->tgd[0] = getbits(buff,i, 13)*P2_35; i+= 13;
+                    eph->tgd[1] = getbits(buff,i, 13)*P2_35; i+= 13; /* ISC L1C/A */
+                    eph->tgd[2] = getbits(buff,i, 13)*P2_35; i+= 13; /* ISC L2C */
+                    eph->tgd[3] = getbits(buff,i, 13)*P2_35; i+= 13; /* ISC L5I */
+                    eph->tgd[4] = getbits(buff,i, 13)*P2_35; i+= 13; /* ISC L5Q */
+                    ion = (msgid==30)?nav->ion_gps:nav->ion_qzs;
+                    ion[0] = getbits(buff,i, 8)*P2_30; i+= 8;
+                    ion[1] = getbits(buff,i, 8)*P2_27; i+= 8;
+                    ion[2] = getbits(buff,i, 8)*P2_24; i+= 8;
+                    ion[3] = getbits(buff,i, 8)*P2_24; i+= 8;
+                    ion[4] = getbits(buff,i, 8)/P2_11; i+= 8;
+                    ion[5] = getbits(buff,i, 8)/P2_14; i+= 8;
+                    ion[6] = getbits(buff,i, 8)/P2_16; i+= 8;
+                    ion[7] = getbits(buff,i, 8)/P2_16; i+= 8;
+                    week = getbitu(buff,i, 8); i+= 8;
+                    break;
+                case 31:
+                    week = getbitu(buff,i,13); i+=13;
+                    toa  = getbitu(buff,i, 8); i+= 8;
+                    t = gpst2time(week,toa);
+                    for (j=0;j<4;j++) {
+                        decode_gps_ralm(buff,i,sys,t,alm,MODE_CNAV);i+=31;
+                    }
+                    break;
+                case 32:
+                    nav->eop.teops = getbitu(buff,i, 16)*16.0; i+= 16;
+                    nav->eop.xp = getbits(buff,i, 21)*P2_20; i+= 21;
+                    nav->eop.xpr= getbits(buff,i, 15)*P2_21; i+= 15;
+                    nav->eop.yp = getbits(buff,i, 21)*P2_20; i+= 21;
+                    nav->eop.ypr= getbits(buff,i, 15)*P2_21; i+= 15;
+                    nav->eop.ut1_utc = getbits(buff,i, 31)*P2_24; i+= 31;
+                    nav->eop.dut1_utc = getbits(buff,i, 19)*P2_25; i+= 19;
+                    break;
+                case 33:
+                    nav->utc_gps[0] = getbits(buff,i, 16)*P2_35; i+= 16;
+                    nav->utc_gps[1] = getbits(buff,i, 13)*P2_51; i+= 13;
+                    nav->utc_gps[2] = getbits(buff,i, 7)*P2_68;  i+= 7;
+                    nav->leaps = getbits(buff,i, 8); i+= 8;
+                    nav->utc_gps[3] = getbits(buff,i, 16)*16;    i+= 16; /* epoch of UTC */
+                    nav->utc_gps[4] = getbits(buff,i, 13);       i+= 13; /* week */
+                    nav->utc_gps[5] = getbits(buff,i, 13);       i+= 13; /* week LSF */
+                    nav->utc_gps[6] = getbits(buff,i, 4);        i+= 4; /* day number LSF */
+                    nav->utc_gps[7] = getbits(buff,i, 8); i+= 8; /* current or future LS */
+                    break;
+                case 34:
+                    top       = getbitu(buff,i, 11)*300; i+= 11;
+                    tod       = getbitu(buff,i, 11)*300; i+= 11;
+                    dc = getbitu(buff,i, 1); i+= 1;
+                    t = gpst2time(eph->week,tod);
+                    decode_gps_cdc(buff,i,sys,t,&ecdcd);i+=34; /* CDC */
+                    decode_gps_edc(buff,i,sys,t,&ecdcd);i+=92; /* EDC */
+                    break;
+                case 35:
+                    top = getbitu(buff,i, 16)*16; i+= 16;
+                    week = getbitu(buff,i, 13); i+= 13;
+                    nav->ggto.t0 = gpst2time(week,top);
+                    gnss = getbitu(buff,i, 3); i+= 3; /* 0:no-data,1:gal,2:glo,3:GPS */
+                    nav->ggto.a[0] = getbits(buff,i, 16)*P2_35; i+= 16;
+                    nav->ggto.a[1] = getbits(buff,i, 13)*P2_51; i+= 13;
+                    nav->ggto.a[2] = getbits(buff,i, 7)*P2_68; i+= 7;
+                    break;
+                case 36:
+                    for (j=0;j<18;j++) {
+                        cbuff[j] = getbitu(buff,i, 8); i+= 8;
+                    }
+                    page = getbitu(buff,i, 4); i+= 4;
+                    if (sys==SYS_QZS&&page==0&&cbuff[0]==0x29&&cbuff[1]==0x29) { /* QZSS SV config */
+                        for (j=0;j<10;j++) {
+                            sat = satno(sys,j+193);
+                            alm[sat-1].svconf = cbuff[j+2]&0xf;
+                            /* 0x60:no config,0x61:blk-I,0x62:blk-II,0x63:blk-III,0x6f:not available */
+                        }
+                    }
+                    break;
+                case 37:
+                    decode_gps_malm(buff,i,sys,alm,MODE_CNAV); i+=149;
+                    break;
+            }
+            break;
+    }
+    return 1;
+}
+/* decode GPS/QZS CNAV2 ephemeris --------------------------------------------------
+* args   : unsigned char *buff I GPS CNAV2 subframe bits
+*                                  buff[ 0- 8] : toi (9 bits)
+*                                  buff[9- 608]: data2 (600bits)
+*                                  buff[609- 882]: data3 (274bits)
+*
+*          eph_t    *eph    IO  ephemeris structure
+* return : status (1:ok,0:error)
+*-----------------------------------------------------------------------------*/
+extern int decode_gps_cnav2(const unsigned char *buff,nav_t *nav,int sys)
+{
+    double dA,toas,*ion;
+    int i=0,j,prn,sat;
+    uint8_t ura[4],dc,gnss,page,cbuff[30],isf;
+    uint32_t tow;
+    uint16_t top,week,tod,toi,week_op;
+    eph_t *eph;
+    alm_t *alm=nav->alm;
+    gtime_t t;
+    ecdcd_t ecdcd;
+
+    prn  = getbitu(buff,i+609,8); /* subframe 3 */
+    sat  = satno(sys,prn);
+    if (sat==0) {
+        return 0;
+    }
+    eph  = &nav->eph[sat-1];
+    eph->sat = sat;
+
+    /* subframe 1 */
+    toi  = getbitu(buff,i,9)*18; i+=9;
+
+    /* subframe 2 */
+    week =getbitu(buff,i, 13); i+= 13;
+    tow  =getbitu(buff,i, 8)*7200+toi; i+= 8;
+    top  =getbitu(buff,i, 11)*300; i+= 11;
+    eph->svh =getbitu(buff,i, 1); i+= 1;
+    ura[0] =getbitu(buff,i, 5); i+= 5;
+    eph->toes =getbitu(buff,i, 11)*300; i+= 11;
+    eph->toe  = gpst2time(eph->week,eph->toes);
+    dA     =getbits(buff,i,26)*P2_9; i+= 26;
+    eph->A    = ((sys==SYS_GPS)? 26559710.0:42164200.0) + dA;
+    eph->Adot = getbits(buff,i, 25)*P2_21; i+= 25;
+    eph->deln = getbits(buff,i, 17)*P2_44*SC2RAD; i+= 17;
+    eph->ndot = getbits(buff,i, 23)*P2_57*SC2RAD; i+= 23;
+    eph->M0   = getbits2(buff,i,32,i+32,1)*P2_32*SC2RAD; i+= 33;
+    eph->e    = getbitu2(buff,i,32,i+32,1)*P2_34; i+= 33;
+    eph->omg  = getbits2(buff,i,32,i+32,1)*P2_32*SC2RAD; i+= 33;
+    eph->OMG0 = getbits2(buff,i,32,i+32,1)*P2_32*SC2RAD; i+= 33;
+    eph->i0   = getbits2(buff,i,32,i+32,1)*P2_32*SC2RAD; i+= 33;
+    eph->OMGd = (getbits(buff,i, 17)*P2_44-2.6e-9)*SC2RAD; i+= 17;
+    eph->idot = getbits(buff,i, 15)*P2_44*SC2RAD; i+= 15;
+    eph->cis  = getbits(buff,i, 16)*P2_30; i+= 16;
+    eph->cic  = getbits(buff,i, 16)*P2_30; i+= 16;
+    eph->crs  = getbits(buff,i, 24)*P2_8; i+= 24;
+    eph->crc  = getbits(buff,i, 24)*P2_8; i+= 24;
+    eph->cus  = getbits(buff,i, 21)*P2_30; i+= 21;
+    eph->cuc  = getbits(buff,i, 21)*P2_30; i+= 21;
+    ura[0]    = getbitu(buff,i, 5);  i+= 5;
+    ura[1]    = getbitu(buff,i, 3);  i+= 3;
+    ura[2]    = getbitu(buff,i, 3);  i+= 3;
+    eph->f0   = getbits(buff,i, 26)*P2_35; i+= 26;
+    eph->f1   = getbits(buff,i, 20)*P2_48; i+= 20;
+    eph->f2   = getbits(buff,i, 10)*P2_60; i+= 10;
+    eph->tgd[0] = getbits(buff,i, 13)*P2_35; i+= 13;
+    eph->tgd[5] = getbits(buff,i, 13)*P2_35; i+= 13; /* ISC L1CP */
+    eph->tgd[6] = getbits(buff,i, 13)*P2_35; i+= 13; /* ISC L1CD */
+    isf = getbitu(buff,i, 1);  i+= 1;
+    week_op = getbitu(buff,i, 8);  i+= 8;
+
+    i=609;
+    /* subframe 3 */
+    prn =getbitu(buff,i, 8); i+= 8;
+    page = getbitu(buff,i, 6); i+= 6;
+
+    trace(3,"decode_gps_cnav2 sys=%2d prn=%3d tow=%6d page=%2d\n",sys,prn,tow,page);
+
+    switch (page) {
+        case 1: /* utc+iono */
+        case 61: /* utc+iono japan area */
+            ion = (page==1)?nav->ion_gps:nav->ion_qzs;
+            nav->utc_gps[0] = getbits(buff,i, 16)*P2_35; i+= 16;
+            nav->utc_gps[1] = getbits(buff,i, 13)*P2_51; i+= 13;
+            nav->utc_gps[2] = getbits(buff,i, 7)*P2_68;  i+= 7;
+            nav->leaps = getbits(buff,i, 8); i+= 8;
+            nav->utc_gps[3] = getbits(buff,i, 16)*16;    i+= 16; /* epoch of UTC */
+            nav->utc_gps[4] = getbits(buff,i, 13);       i+= 13; /* week */
+            nav->utc_gps[5] = getbits(buff,i, 13);       i+= 13; /* week LSF */
+            nav->utc_gps[6] = getbits(buff,i, 4);        i+= 4; /* day number LSF */
+            nav->utc_gps[7] = getbits(buff,i, 8); i+= 8; /* current or future LS */
+            ion[0] = getbits(buff,i, 8)*P2_30; i+= 8;
+            ion[1] = getbits(buff,i, 8)*P2_27; i+= 8;
+            ion[2] = getbits(buff,i, 8)*P2_24; i+= 8;
+            ion[3] = getbits(buff,i, 8)*P2_24; i+= 8;
+            ion[4] = getbits(buff,i, 8)/P2_11; i+= 8;
+            ion[5] = getbits(buff,i, 8)/P2_14; i+= 8;
+            ion[6] = getbits(buff,i, 8)/P2_16; i+= 8;
+            ion[7] = getbits(buff,i, 8)/P2_16; i+= 8;
+            eph->tgd[1] = getbits(buff,i, 13)*P2_35; i+= 13; /* ISC L1CA */
+            eph->tgd[2] = getbits(buff,i, 13)*P2_35; i+= 13; /* ISC L2C */
+            eph->tgd[3] = getbits(buff,i, 13)*P2_35; i+= 13; /* ISC L5I */
+            eph->tgd[4] = getbits(buff,i, 13)*P2_35; i+= 13; /* ISC L5Q */
+            break;
+        case 2: /* GGTO + EOP */
+            gnss = getbitu(buff,i, 3); i+= 3; /* 0:no-data,1:gal,2:glo,3:gps */
+            nav->ggto.a[0] = getbits(buff,i, 16)*P2_35; i+= 16;
+            nav->ggto.a[1] = getbits(buff,i, 13)*P2_51; i+= 13;
+            nav->ggto.a[2] = getbits(buff,i, 7)*P2_68; i+= 7;
+            top = getbitu(buff,i, 16)*16; i+= 16;
+            nav->ggto.t0 = gpst2time(eph->week,top);
+
+            nav->eop.xp = getbits(buff,i, 21)*P2_20; i+= 21;
+            nav->eop.xpr= getbits(buff,i, 15)*P2_21; i+= 15;
+            nav->eop.yp = getbits(buff,i, 21)*P2_20; i+= 21;
+            nav->eop.ypr= getbits(buff,i, 15)*P2_21; i+= 15;
+            nav->eop.ut1_utc = getbits(buff,i, 31)*P2_24; i+= 31;
+            nav->eop.dut1_utc = getbits(buff,i, 19)*P2_25; i+= 19;
+            break;
+        case 3: /* reduced almanac */
+            week = getbitu(buff,i,13); i+=13;
+            toas  = getbitu(buff,i, 8)*4096; i+= 8;
+            t = gpst2time(week,toas);
+            for (j=0;j<6;j++) {
+                decode_gps_ralm(buff,i,sys,t,alm,MODE_CNAV2);i+=33;
+            }
+            break;
+        case 4: /* midi-almanac */
+            decode_gps_malm(buff,i,sys,alm,MODE_CNAV2); i+=151;
+            break;
+        case 5: /* CDC/EDC */
+            top       = getbitu(buff,i, 11)*300; i+= 11;
+            tod       = getbitu(buff,i, 11)*300; i+= 11;
+            dc = getbitu(buff,i, 1); i+= 1;
+            t = gpst2time(eph->week,tod);
+            decode_gps_cdc(buff,i,sys,t,&ecdcd);i+=34; /* CDC */
+            decode_gps_edc(buff,i,sys,t,&ecdcd);i+=92; /* EDC */
+            break;
+        case 6: /* text */
+            page = getbitu(buff,i, 4); i+= 4;
+            for (j=0;j<29;j++) {
+                cbuff[j] = getbitu(buff,i, 8); i+= 8;
+            }
+            if (sys==SYS_QZS&&page==0&&cbuff[0]==0x29&&cbuff[1]==0x29) { /* QZSS SV config */
+                for (j=0;j<10;j++) {
+                    sat = satno(sys,j+MINPRNQZS);
+                    alm[sat-1].svconf = cbuff[j+2]&0xf;
+                    /* 0x60:no config,0x61:blk-I,0x62:blk-II,0x63:blk-III,0x6f:not available */
+                }
+            }
+            break;
+    }
     return 1;
 }
 /* initialize receiver raw data control ----------------------------------------

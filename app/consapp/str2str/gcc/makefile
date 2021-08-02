@@ -14,7 +14,7 @@ LDLIBS  = -lm -lrt -lpthread
 
 all        : str2str
 str2str    : str2str.o stream.o rtkcmn.o solution.o sbas.o geoid.o
-str2str    : rcvraw.o novatel.o ublox.o ss2.o crescent.o skytraq.o javad.o
+str2str    : rcvraw.o novatel.o ublox.o ss2.o crescent.o skytraq.o javad.o cssr.o
 str2str    : nvs.o binex.o rt17.o rtcm.o rtcm2.o rtcm3.o rtcm3e.o preceph.o streamsvr.o
 str2str    : septentrio.o
 
@@ -30,6 +30,8 @@ solution.o : $(SRC)/solution.c
 	$(CC) -c $(CFLAGS) $(SRC)/solution.c
 sbas.o     : $(SRC)/sbas.c
 	$(CC) -c $(CFLAGS) $(SRC)/sbas.c
+cssr.o     : $(SRC)/cssr.c
+	$(CC) -c $(CFLAGS) $(SRC)/cssr.c
 geoid.o    : $(SRC)/geoid.c
 	$(CC) -c $(CFLAGS) $(SRC)/geoid.c
 rcvraw.o   : $(SRC)/rcvraw.c
