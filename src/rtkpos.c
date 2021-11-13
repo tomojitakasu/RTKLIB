@@ -1276,7 +1276,7 @@ static int ddidx(rtk_t *rtk, int *ix)
     return nb;
 }
 /* restore SD (single-differenced) ambiguity ---------------------------------*/
-static void restamb(rtk_t *rtk, const double *bias, int nb, double *xa)
+static void restamb(rtk_t *rtk, const double *bias, double *xa)
 {
     int i,n,m,f,index[MAXSAT],nv=0,nf=NF(&rtk->opt);
     
@@ -1310,7 +1310,7 @@ static void holdamb(rtk_t *rtk, const double *xa)
     
     trace(3,"holdamb :\n");
     
-    v=mat(nb,1); H=zeros(nb,rtk->nx);
+    v=mat(nb,1); H=zeros(rtk->nx,nb);
     
     for (m=0;m<5;m++) for (f=0;f<nf;f++) {
         
@@ -1414,7 +1414,7 @@ static int resamb_LAMBDA(rtk_t *rtk, double *bias, double *xa)
                       nb,s[0]==0.0?0.0:s[1]/s[0],s[0],s[1]);
                 
                 /* restore SD ambiguity */
-                restamb(rtk,bias,nb,xa);
+                restamb(rtk,bias,xa);
             }
             else nb=0;
         }
