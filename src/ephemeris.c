@@ -228,9 +228,9 @@ extern void eph2pos(gtime_t time, const eph_t *eph, double *rs, double *dts,
         yg=x*sinO+y*cosi*cosO;
         zg=y*sin(i);
         sino=sin(omge*tk); coso=cos(omge*tk);
-        rs[0]= xg*coso+yg*sino*COS_5+zg*sino*SIN_5;
-        rs[1]=-xg*sino+yg*coso*COS_5+zg*coso*SIN_5;
-        rs[2]=-yg*SIN_5+zg*COS_5;
+        rs[0]=xg*COS_5+yg*SIN_5;
+        rs[1]=xg*coso*(-SIN_5)+yg*coso*COS_5+zg*sino;
+        rs[2]=xg*(-sino)*(-SIN_5)+yg*(-sino)*COS_5+zg*coso;
     }
     else {
         O=eph->OMG0+(eph->OMGd-omge)*tk-omge*eph->toes;
