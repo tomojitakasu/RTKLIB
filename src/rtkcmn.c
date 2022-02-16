@@ -2339,7 +2339,7 @@ static int readngspcv(const char *file, pcvs_t *pcvs)
     return 1;
 }
 /* read antex file ----------------------------------------------------------*/
-static int readantex(const char *file, pcvs_t *pcvs)
+int readantex(const char *file, pcvs_t *pcvs)
 {
     FILE *fp;
     static const pcv_t pcv0={0};
@@ -2369,11 +2369,13 @@ static int readantex(const char *file, pcvs_t *pcvs)
         if (!state) continue;
         
         if (strstr(buff+60,"TYPE / SERIAL NO")) {
+            pcv.sat = -1;
             strncpy(pcv.type,buff   ,20); pcv.type[20]='\0';
             strncpy(pcv.code,buff+20,20); pcv.code[20]='\0';
             if (!strncmp(pcv.code+3,"        ",8)) {
                 pcv.sat=satid2no(pcv.code);
             }
+            strncpy(pcv.code,buff+40,10); pcv.code[10]='\0';
         }
         else if (strstr(buff+60,"VALID FROM")) {
             if (!str2time(buff,0,43,&pcv.ts)) continue;
@@ -4025,8 +4027,8 @@ extern int rtk_uncompress(const char *file, char *uncfile)
     return stat;
 }
 /* dummy application functions for shared library ----------------------------*/
-#ifdef WIN_DLL
-extern int showmsg(char *format,...) {return 0;}
+#ifdef IS_DLL
+extern int showmsg(const char *format,...) {return 0;}
 extern void settspan(gtime_t ts, gtime_t te) {}
 extern void settime(gtime_t time) {}
 #endif
