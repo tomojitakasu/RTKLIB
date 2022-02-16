@@ -2374,8 +2374,8 @@ int readantex(const char *file, pcvs_t *pcvs)
             strncpy(pcv.code,buff+20,20); pcv.code[20]='\0';
             if (!strncmp(pcv.code+3,"        ",8)) {
                 pcv.sat=satid2no(pcv.code);
+                strncpy(pcv.code,buff+40,10); pcv.code[10]='\0';
             }
-            strncpy(pcv.code,buff+40,10); pcv.code[10]='\0';
         }
         else if (strstr(buff+60,"VALID FROM")) {
             if (!str2time(buff,0,43,&pcv.ts)) continue;
