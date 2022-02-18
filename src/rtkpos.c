@@ -48,6 +48,7 @@
 *                           use integer types in stdint.h
 *-----------------------------------------------------------------------------*/
 #include <stdarg.h>
+#include <assert.h>
 #include "rtklib.h"
 
 /* constants/macros ----------------------------------------------------------*/
@@ -1278,7 +1279,7 @@ static int ddidx(rtk_t *rtk, int *ix)
 /* restore SD (single-differenced) ambiguity ---------------------------------*/
 static void restamb(rtk_t *rtk, const double *bias, int nb, double *xa)
 {
-    int i,n,m,f,index[MAXSAT],nv=0,nf=NF(&rtk->opt);
+    int i,n,m,f,index[MAXSAT]={0},index0[MAXSAT]={0},nv=0,nf=NF(&rtk->opt);
     
     trace(3,"restamb :\n");
     
@@ -1291,23 +1292,41 @@ static void restamb(rtk_t *rtk, const double *bias, int nb, double *xa)
             if (!test_sys(rtk->ssat[i].sys,m)||rtk->ssat[i].fix[f]!=2) {
                 continue;
             }
+            if (f==0) {
+                index0[n]=IB(i+1,0,&rtk->opt);
+            }
             index[n++]=IB(i+1,f,&rtk->opt);
         }
         if (n<2) continue;
         
-        xa[index[0]]=rtk->x[index[0]];
-        
-        for (i=1;i<n;i++) {
-            xa[index[i]]=xa[index[0]]-bias[nv++];
+        /* in case of ARMODE_WL, use float ambiguity for L1 */
+        if (rtk->opt.modear==ARMODE_WL) {
+            for (i=1;i<n;i++) {
+                if (f>0&&index0[0]!=0&&
+                    index0[i]!=0&&
+                    index[0] !=0&&
+                    index[i] !=0) {
+                    xa[index[i]]=bias[nv++]-(xa[index0[0]]-xa[index0[i]]-xa[index[0]]);
+                }
+            }
+        }
+        else {
+            xa[index[0]]=rtk->x[index[0]];
+
+            for (i=1;i<n;i++) {
+                xa[index[i]]=xa[index[0]]-bias[nv++];
+            }
         }
     }
+    assert(nv==nb);
 }
 /* hold integer ambiguity ----------------------------------------------------*/
 static void holdamb(rtk_t *rtk, const double *xa)
 {
     double *v,*H,*R;
-    int i,n,m,f,info,index[MAXSAT],nb=rtk->nx-rtk->na,nv=0,nf=NF(&rtk->opt);
-    
+    int i,n,m,f,info,index[MAXSAT]={0},index0[MAXSAT]={0},nb=rtk->nx-rtk->na;
+    int nv=0,nf=NF(&rtk->opt);
+
     trace(3,"holdamb :\n");
     
     v=mat(nb,1); H=zeros(nb,rtk->nx);
@@ -1319,16 +1338,43 @@ static void holdamb(rtk_t *rtk, const double *xa)
                 rtk->ssat[i].azel[1]<rtk->opt.elmaskhold) {
                 continue;
             }
+            if (f==0) {
+                index0[n]=IB(i+1,0,&rtk->opt);
+            }
             index[n++]=IB(i+1,f,&rtk->opt);
             rtk->ssat[i].fix[f]=3; /* hold */
         }
         /* constraint to fixed ambiguity */
-        for (i=1;i<n;i++) {
-            v[nv]=(xa[index[0]]-xa[index[i]])-(rtk->x[index[0]]-rtk->x[index[i]]);
-            
-            H[index[0]+nv*rtk->nx]= 1.0;
-            H[index[i]+nv*rtk->nx]=-1.0;
-            nv++;
+        if (rtk->opt.modear==ARMODE_WL) {
+            for (i=1;i<n;i++) {
+                if (f>0&&index0[0]!=0&&
+                    index0[i]!=0&&
+                    index[0] !=0&&
+                    index[i] !=0) {
+                    v[nv]=xa[index0[0]]-xa[index0[i]]
+                            -(xa[index[0]]-xa[index[i]])
+                            -(rtk->x[index0[0]]-rtk->x[index0[i]]
+                            -(rtk->x[index[0]]-rtk->x[index[i]]));
+
+                    trace(3,"hold_amb = %lf \n",xa[index0[0]]-xa[index0[i]]
+                                                -(xa[index[0]]-xa[index[i]]));
+
+                    H[index[0]+nv*rtk->nx]= -1.0;
+                    H[index[i]+nv*rtk->nx]=  1.0;
+                    H[index0[0]+nv*rtk->nx]= 1.0;
+                    H[index0[i]+nv*rtk->nx]=-1.0;
+                    nv++;
+                }
+            }
+        } else {
+            for (i=1;i<n;i++) {
+                v[nv]=(xa[index[0]]-xa[index[i]])
+                        -(rtk->x[index[0]]-rtk->x[index[i]]);
+
+                H[index[0]+nv*rtk->nx]= 1.0;
+                H[index[i]+nv*rtk->nx]=-1.0;
+                nv++;
+            }
         }
     }
     if (nv>0) {
@@ -1342,6 +1388,174 @@ static void holdamb(rtk_t *rtk, const double *xa)
         free(R);
     }
     free(v); free(H);
+}
+
+/* single to double-differenced wide-lane transformation matrix (D') ---------*/
+static int dd_wl_mat(rtk_t *rtk, double *D)
+{
+    int i,j,k,m,f,nb=0,nx=rtk->nx,na=rtk->na,nf=NF(&rtk->opt),nofix;
+
+    trace(3,"dd_wl_mat   :\n");
+
+    for (i=0;i<MAXSAT;i++) for (j=0;j<NFREQ;j++) {
+        rtk->ssat[i].fix[j]=0;
+    }
+    for (i=0;i<na;i++) D[i+i*nx]=1.0;
+
+    for (m=0;m<5;m++) { /* m=0:gps/sbs,1:glo,2:gal,3:bds,4:qzs */
+        nofix=(m==1&&rtk->opt.glomodear==0)||(m==3&&rtk->opt.bdsmodear==0);
+        if (nofix) {
+            continue;
+        }
+
+        k=na;
+        f=nf==2?1:2;
+        for (i=k;i<k+MAXSAT;i++) {
+            if (rtk->x[i]==0.0||
+                rtk->x[i+f*MAXSAT]==0.0||
+                !test_sys(rtk->ssat[i-k].sys,m)||
+                !rtk->ssat[i-k].vsat[0]||
+                !rtk->ssat[i-k].half[0]||
+                !rtk->ssat[i-k].vsat[f]||
+                !rtk->ssat[i-k].half[f]) {
+                    continue;
+            }
+            if (rtk->ssat[i-k].lock[0]>0&&
+                rtk->ssat[i-k].lock[f]>0&&
+                !(rtk->ssat[i-k].slip[f]&2)&&
+                !(rtk->ssat[i-k].slip[0]&2)&&
+                rtk->ssat[i-k].azel[1]>=rtk->opt.elmaskar) {
+                rtk->ssat[i-k].fix[0]=2; /* fix */
+                rtk->ssat[i-k].fix[f]=2; /* fix */
+                break;
+            }
+            else {
+                rtk->ssat[i-k].fix[0]=1;
+                rtk->ssat[i-k].fix[f]=1;
+            }
+        }
+
+        for (j=k;j<k+MAXSAT;j++) {
+            if (i==j||
+                rtk->x[j]==0.0||
+                rtk->x[j+f*MAXSAT]==0.0||
+                !test_sys(rtk->ssat[j-k].sys,m)||
+                !rtk->ssat[j-k].vsat[0]||
+                !rtk->ssat[j-k].vsat[f]) {
+                continue;
+            }
+            if (rtk->ssat[j-k].lock[0]>0&&
+                rtk->ssat[j-k].lock[f]>0&&
+                !(rtk->ssat[j-k].slip[0]&2)&&
+                !(rtk->ssat[j-k].slip[f]&2)&&
+                rtk->ssat[j-k].azel[1]>=rtk->opt.elmaskar) {
+                D[i+(na+nb)*nx]= 1.0;
+                D[i+f*MAXSAT+(na+nb)*nx]=-1.0;
+                D[j+(na+nb)*nx]=-1.0;
+                D[j+f*MAXSAT+(na+nb)*nx]=1.0;
+                nb++;
+                rtk->ssat[j-k].fix[f]=2; /* fix */
+                rtk->ssat[j-k].fix[0]=2; /* fix */
+            }
+            else {
+                rtk->ssat[j-k].fix[0]=1;
+                rtk->ssat[j-k].fix[f]=1;
+            }
+        }
+    }
+
+    trace(4,"Dw=\n"); tracemat(4,D,nx,na+nb,2,0);
+    return nb;
+}
+
+/* resolve integer ambiguity by LAMBDA ---------------------------------------*/
+static int resamb_WL(rtk_t *rtk, double *bias, double *xa)
+{
+    prcopt_t *opt=&rtk->opt;
+    int i,j,ny,nb,info,nx=rtk->nx,na=rtk->na;
+    double *D,*DP,*y,*Qy,*b,*db,*Qb,*Qab,*QQ,s[2];
+
+    trace(3,"resamb_WL : nx=%d\n",nx);
+
+    rtk->sol.ratio=0.0;
+
+    if (rtk->opt.modear!=ARMODE_WL||rtk->opt.thresar[0]<1.0||rtk->opt.nf<2) {
+        return 0;
+    }
+    /* single to double-differenced wide-lane transformation matrix (D') */
+    D=zeros(nx,nx);
+    if ((nb=dd_wl_mat(rtk,D))<=0) {
+        errmsg(rtk,"no valid double, wide-lane difference\n");
+        free(D);
+        return 0;
+    };
+    trace(2,"na = %d, nb = %d\n", na, nb);
+    ny=na+nb; y=mat(ny,1); Qy=mat(ny,ny); DP=mat(ny,nx);
+    b=mat(nb,2); db=mat(nb,1); Qb=mat(nb,nb); Qab=mat(na,nb); QQ=mat(na,nb);
+
+    /* transform single to DD wide-lane phase-bias (y=D'*x, Qy=D'*P*D) */
+    matmul("TN",ny, 1,nx,1.0,D ,rtk->x,0.0,y );
+    matmul("TN",ny,nx,nx,1.0,D ,rtk->P,0.0,DP);
+    matmul("NN",ny,ny,nx,1.0,DP,D     ,0.0,Qy);
+
+    /* phase-bias covariance (Qb) and real-parameters to bias covariance (Qab) */
+    for (i=0;i<nb;i++) for (j=0;j<nb;j++) Qb [i+j*nb]=Qy[na+i+(na+j)*ny];
+    for (i=0;i<na;i++) for (j=0;j<nb;j++) Qab[i+j*na]=Qy[   i+(na+j)*ny];
+
+    trace(4,"N(0)="); tracemat(4,y+na,1,nb,10,3);
+
+    /* lambda/mlambda integer least-square estimation */
+    if (!(info=lambda(nb,2,y+na,Qb,b,s))) {
+
+        trace(4,"N(1)="); tracemat(4,b   ,1,nb,10,3);
+        trace(4,"N(2)="); tracemat(4,b+nb,1,nb,10,3);
+
+        rtk->sol.ratio=s[0]>0?(float)(s[1]/s[0]):0.0f;
+        if (rtk->sol.ratio>999.9) rtk->sol.ratio=999.9f;
+
+        /* validation by popular ratio-test */
+        if (s[0]<=0.0||s[1]/s[0]>=opt->thresar[0]) {
+
+            /* transform float to fixed solution (xa=xa-Qab*Qb\(b0-b)) */
+            for (i=0;i<na;i++) {
+                rtk->xa[i]=rtk->x[i];
+                for (j=0;j<na;j++) rtk->Pa[i+j*na]=rtk->P[i+j*nx];
+            }
+            for (i=0;i<nb;i++) {
+                bias[i]=b[i];
+                y[na+i]-=b[i];
+            }
+            if (!matinv(Qb,nb)) {
+                matmul("NN",nb,1,nb, 1.0,Qb ,y+na,0.0,db);
+                matmul("NN",na,1,nb,-1.0,Qab,db  ,1.0,rtk->xa);
+
+                /* covariance of fixed solution (Qa=Qa-Qab*Qb^-1*Qab') */
+                matmul("NN",na,nb,nb, 1.0,Qab,Qb ,0.0,QQ);
+                matmul("NT",na,na,nb,-1.0,QQ ,Qab,1.0,rtk->Pa);
+
+                trace(3,"resamb : validation ok (nb=%d ratio=%.2f s=%.2f/%.2f)\n",
+                      nb,s[0]==0.0?0.0:s[1]/s[0],s[0],s[1]);
+
+                /* restore single-differenced ambiguity */
+                trace(2,"nb = %d\n",nb);
+                restamb(rtk,bias,nb,xa);
+            }
+            else nb=0;
+        }
+        else { /* validation failed */
+            errmsg(rtk,"ambiguity validation failed (nb=%d ratio=%.2f s=%.2f/%.2f)\n",
+                   nb,s[1]/s[0],s[0],s[1]);
+            nb=0;
+        }
+    }
+    else {
+        errmsg(rtk,"lambda error (info=%d)\n",info);
+        nb=0;
+    }
+    free(D); free(y); free(Qy); free(DP);
+    free(b); free(db); free(Qb); free(Qab); free(QQ);
+
+    return nb; /* number of ambiguities */
 }
 /* resolve integer ambiguity by LAMBDA ---------------------------------------*/
 static int resamb_LAMBDA(rtk_t *rtk, double *bias, double *xa)
@@ -1567,8 +1781,15 @@ static int relpos(rtk_t *rtk, const obsd_t *obs, int nu, int nr,
         }
         else stat=SOLQ_NONE;
     }
+    /* resolve integer ambiguity by WL */
+    if (stat!=SOLQ_NONE&&rtk->opt.modear==ARMODE_WL) {
+        if (resamb_WL(rtk,bias,xa)>1) {
+            if (rtk->opt.wlmodear==1) holdamb(rtk,xa);
+            stat=SOLQ_FIX;
+        }
+    }
     /* resolve integer ambiguity by LAMBDA */
-    if (stat!=SOLQ_NONE&&resamb_LAMBDA(rtk,bias,xa)>1) {
+    else if (stat!=SOLQ_NONE&&resamb_LAMBDA(rtk,bias,xa)>1) {
         
         if (zdres(0,obs,nu,rs,dts,var,svh,nav,xa,opt,0,y,e,azel,freq)) {
             
@@ -1773,7 +1994,7 @@ extern int rtkpos(rtk_t *rtk, const obsd_t *obs, int n, const nav_t *nav)
     /* count rover/base station observations */
     for (nu=0;nu   <n&&obs[nu   ].rcv==1;nu++) ;
     for (nr=0;nu+nr<n&&obs[nu+nr].rcv==2;nr++) ;
-    
+
     time=rtk->sol.time; /* previous epoch */
     
     /* rover position by single point positioning */
