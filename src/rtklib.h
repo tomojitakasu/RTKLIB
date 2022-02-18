@@ -425,7 +425,9 @@ extern "C" {
 #define POSOPT_SINGLE 1                 /* pos option: average of single pos */
 #define POSOPT_FILE  2                  /* pos option: read from pos file */
 #define POSOPT_RINEX 3                  /* pos option: rinex header pos */
-#define POSOPT_RTCM  4                  /* pos option: rtcm/raw station pos */
+#define POSOPT_RTCM  4                  /* pos option: rtcm station pos */
+#define POSOPT_RAW   5                  /* pos option: raw station pos */
+#define POSOPT_RINEX_DYN 6              /* pos option: rinex site occupation pos */
 
 #define STR_NONE     0                  /* stream type: none */
 #define STR_SERIAL   1                  /* stream type: serial */
@@ -543,6 +545,8 @@ typedef struct {        /* observation data record */
     double L[NFREQ+NEXOBS]; /* observation data carrier-phase (cycle) */
     double P[NFREQ+NEXOBS]; /* observation data pseudorange (m) */
     float  D[NFREQ+NEXOBS]; /* observation data doppler frequency (Hz) */
+    /* only used if refpos == POSOPT_RINEX_DYN */
+    double refpos[3];   /* station coordinates associated with this observation */
 } obsd_t;
 
 typedef struct {        /* observation data */
@@ -1170,6 +1174,9 @@ typedef struct {        /* receiver raw data control type */
     char opt[256];      /* receiver dependent options */
     int format;         /* receiver stream format */
     void *rcv_data;     /* receiver dependent data */
+
+    /* only used for STRFMT_SBP and STRFMT_SBPJSON */
+    int staid;          /* station id */
 } raw_t;
 
 typedef struct {        /* stream type */

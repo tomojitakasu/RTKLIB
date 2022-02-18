@@ -59,7 +59,7 @@ static char snrmask_[NFREQ][1024];
 #define STAOPT  "0:all,1:single"
 #define STSOPT  "0:off,1:state,2:residual"
 #define ARMOPT  "0:off,1:continuous,2:instantaneous,3:fix-and-hold,4:WLNL,5:TCAR,6:wide-lane"
-#define POSOPT  "0:llh,1:xyz,2:single,3:posfile,4:rinexhead,5:rtcm,6:raw"
+#define POSOPT  "0:llh,1:xyz,2:single,3:posfile,4:rinexhead,5:rtcm,6:raw,7:rinexdynamic"
 #define TIDEOPT "0:off,1:on,2:otl"
 #define PHWOPT  "0:off,1:on,2:precise"
 
