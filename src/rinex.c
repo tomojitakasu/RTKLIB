@@ -1974,7 +1974,7 @@ static void outrnx_phase_shift(FILE *fp, const rnxopt_t *opt, const nav_t *nav)
 static void outrnx_glo_fcn(FILE *fp, const rnxopt_t *opt, const nav_t *nav)
 {
     const char *label="GLONASS SLOT / FRQ #";
-    int i,j,k,n=0,sat,prn[MAXPRNGLO],fcn[MAXPRNGLO];
+    int i,j,k,n=0,sat,prn[MAXPRNGLO+1],fcn[MAXPRNGLO+1];
     
     if (opt->navsys&SYS_GLO) {
         for (i=0;i<MAXPRNGLO;i++) {

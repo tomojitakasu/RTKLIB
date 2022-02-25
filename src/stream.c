@@ -191,7 +191,7 @@ typedef struct {            /* serial control type */
     int state,wp,rp;        /* state,write/read pointer */
     int buffsize;           /* write buffer size (bytes) */
     HANDLE thread;          /* write thread */
-    lock_t lock;            /* lock flag */
+    rtklock_t lock;            /* lock flag */
     uint8_t *buff;          /* write buffer */
 #endif
     tcpsvr_t *tcpsvr;       /* tcp server for received stream */
