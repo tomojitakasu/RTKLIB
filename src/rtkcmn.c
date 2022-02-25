@@ -1848,7 +1848,8 @@ extern int adjgpsweek(int week)
 extern uint32_t tickget(void)
 {
 #ifdef WIN32
-    return (uint32_t)timeGetTime();
+    return 0;
+//    return (uint32_t)timeGetTime();
 #else
     struct timespec tp={0};
     struct timeval  tv={0};
