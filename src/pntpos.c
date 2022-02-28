@@ -179,7 +179,7 @@ static double prange(const obsd_t *obs, const nav_t *nav, const prcopt_t *opt,
 extern int ionocorr(gtime_t time, const nav_t *nav, int sat, const double *pos,
                     const double *azel, int ionoopt, double *ion, double *var)
 {
-    trace(4,"ionocorr: time=%s opt=%d sat=%2d pos=%.3f %.3f azel=%.3f %.3f\n",
+    rtktrace(4,"ionocorr: time=%s opt=%d sat=%2d pos=%.3f %.3f azel=%.3f %.3f\n",
           time_str(time,3),ionoopt,sat,pos[0]*R2D,pos[1]*R2D,azel[0]*R2D,
           azel[1]*R2D);
     
@@ -221,7 +221,7 @@ extern int ionocorr(gtime_t time, const nav_t *nav, int sat, const double *pos,
 extern int tropcorr(gtime_t time, const nav_t *nav, const double *pos,
                     const double *azel, int tropopt, double *trp, double *var)
 {
-    trace(4,"tropcorr: time=%s opt=%d pos=%.3f %.3f azel=%.3f %.3f\n",
+    rtktrace(4,"tropcorr: time=%s opt=%d pos=%.3f %.3f azel=%.3f %.3f\n",
           time_str(time,3),tropopt,pos[0]*R2D,pos[1]*R2D,azel[0]*R2D,
           azel[1]*R2D);
     
@@ -252,7 +252,7 @@ static int rescode(int iter, const obsd_t *obs, int n, const double *rs,
     double r,freq,dion,dtrp,vmeas,vion,vtrp,rr[3],pos[3],dtr,e[3],P;
     int i,j,nv=0,sat,sys,mask[NX-3]={0};
     
-    trace(3,"resprng : n=%d\n",n);
+    rtktrace(3,"resprng : n=%d\n",n);
     
     for (i=0;i<3;i++) rr[i]=x[i];
     dtr=x[3];
@@ -267,7 +267,7 @@ static int rescode(int iter, const obsd_t *obs, int n, const double *rs,
         
         /* reject duplicated observation data */
         if (i<n-1&&i<MAXOBS-1&&sat==obs[i+1].sat) {
-            trace(2,"duplicated obs data %s sat=%d\n",time_str(time,3),sat);
+            rtktrace(2,"duplicated obs data %s sat=%d\n",time_str(time,3),sat);
             i++;
             continue;
         }
@@ -322,7 +322,7 @@ static int rescode(int iter, const obsd_t *obs, int n, const double *rs,
         /* variance of pseudorange error */
         var[nv++]=varerr(opt,azel[1+i*2],sys)+vare[i]+vmeas+vion+vtrp;
         
-        trace(4,"sat=%2d azel=%5.1f %4.1f res=%7.3f sig=%5.3f\n",obs[i].sat,
+        rtktrace(4,"sat=%2d azel=%5.1f %4.1f res=%7.3f sig=%5.3f\n",obs[i].sat,
               azel[i*2]*R2D,azel[1+i*2]*R2D,resp[i],sqrt(var[nv-1]));
     }
     /* constraint to avoid rank-deficient */
@@ -342,7 +342,7 @@ static int valsol(const double *azel, const int *vsat, int n,
     double azels[MAXOBS*2],dop[4],vv;
     int i,ns;
     
-    trace(3,"valsol  : n=%d nv=%d\n",n,nv);
+    rtktrace(3,"valsol  : n=%d nv=%d\n",n,nv);
     
     /* Chi-square validation of residuals */
     vv=dot(v,v,nv);
@@ -373,7 +373,7 @@ static int estpos(const obsd_t *obs, int n, const double *rs, const double *dts,
     double x[NX]={0},dx[NX],Q[NX*NX],*v,*H,*var,sig;
     int i,j,k,info,stat,nv,ns;
     
-    trace(3,"estpos  : n=%d\n",n);
+    rtktrace(3,"estpos  : n=%d\n",n);
     
     v=mat(n+4,1); H=mat(NX,n+4); var=mat(n+4,1);
     
@@ -444,7 +444,7 @@ static int raim_fde(const obsd_t *obs, int n, const double *rs,
     double *rs_e,*dts_e,*vare_e,*azel_e,*resp_e,rms_e,rms=100.0;
     int i,j,k,nvsat,stat=0,*svh_e,*vsat_e,sat=0;
     
-    trace(3,"raim_fde: %s n=%2d\n",time_str(obs[0].time,0),n);
+    rtktrace(3,"raim_fde: %s n=%2d\n",time_str(obs[0].time,0),n);
     
     if (!(obs_e=(obsd_t *)malloc(sizeof(obsd_t)*n))) return 0;
     rs_e = mat(6,n); dts_e = mat(2,n); vare_e=mat(1,n); azel_e=zeros(2,n);
@@ -464,7 +464,7 @@ static int raim_fde(const obsd_t *obs, int n, const double *rs,
         /* estimate receiver position without a satellite */
         if (!estpos(obs_e,n-1,rs_e,dts_e,vare_e,svh_e,nav,opt,&sol_e,azel_e,
                     vsat_e,resp_e,msg_e)) {
-            trace(3,"raim_fde: exsat=%2d (%s)\n",obs[i].sat,msg);
+            rtktrace(3,"raim_fde: exsat=%2d (%s)\n",obs[i].sat,msg);
             continue;
         }
         for (j=nvsat=0,rms_e=0.0;j<n-1;j++) {
@@ -473,13 +473,13 @@ static int raim_fde(const obsd_t *obs, int n, const double *rs,
             nvsat++;
         }
         if (nvsat<5) {
-            trace(3,"raim_fde: exsat=%2d lack of satellites nvsat=%2d\n",
+            rtktrace(3,"raim_fde: exsat=%2d lack of satellites nvsat=%2d\n",
                   obs[i].sat,nvsat);
             continue;
         }
         rms_e=sqrt(rms_e/nvsat);
         
-        trace(3,"raim_fde: exsat=%2d rms=%8.3f\n",obs[i].sat,rms_e);
+        rtktrace(3,"raim_fde: exsat=%2d rms=%8.3f\n",obs[i].sat,rms_e);
         
         if (rms_e>rms) continue;
         
@@ -499,7 +499,7 @@ static int raim_fde(const obsd_t *obs, int n, const double *rs,
     }
     if (stat) {
         time2str(obs[0].time,tstr,2); satno2id(sat,name);
-        trace(2,"%s: %s excluded by raim\n",tstr+11,name);
+        rtktrace(2,"%s: %s excluded by raim\n",tstr+11,name);
     }
     free(obs_e);
     free(rs_e ); free(dts_e ); free(vare_e); free(azel_e);
@@ -515,7 +515,7 @@ static int resdop(const obsd_t *obs, int n, const double *rs, const double *dts,
     double freq,rate,pos[3],E[9],a[3],e[3],vs[3],cosel,sig;
     int i,j,nv=0;
     
-    trace(3,"resdop  : n=%d\n",n);
+    rtktrace(3,"resdop  : n=%d\n",n);
     
     ecef2pos(rr,pos); xyz2enu(pos,E);
     
@@ -564,7 +564,7 @@ static void estvel(const obsd_t *obs, int n, const double *rs, const double *dts
     double err=opt->err[4]; /* Doppler error (Hz) */
     int i,j,nv;
     
-    trace(3,"estvel  : n=%d\n",n);
+    rtktrace(3,"estvel  : n=%d\n",n);
     
     v=mat(n,1); H=mat(4,n);
     
@@ -613,7 +613,7 @@ extern int pntpos(const obsd_t *obs, int n, const nav_t *nav,
     double *rs,*dts,*var,*azel_,*resp;
     int i,stat,vsat[MAXOBS]={0},svh[MAXOBS];
     
-    trace(3,"pntpos  : tobs=%s n=%d\n",time_str(obs[0].time,3),n);
+    rtktrace(3,"pntpos  : tobs=%s n=%d\n",time_str(obs[0].time,3),n);
     
     sol->stat=SOLQ_NONE;
     

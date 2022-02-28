@@ -150,7 +150,7 @@ static strfile_t *gen_strfile(int format, const char *opt)
     gtime_t time0={0};
     int i,j;
     
-    trace(3,"init_strfile:\n");
+    rtktrace(3,"init_strfile:\n");
     
     if (!(str=(strfile_t *)calloc(sizeof(strfile_t),1))) return NULL;
     
@@ -209,7 +209,7 @@ static void free_strfile(strfile_t *str)
     halfc_t *hp,*hp_next;
     int i,j;
 
-    trace(3,"free_strfile:\n");
+    rtktrace(3,"free_strfile:\n");
     
     if (str->format==STRFMT_RTCM2||str->format==STRFMT_RTCM3) {
         free_rtcm(&str->rtcm);
@@ -237,7 +237,7 @@ static int input_strfile(strfile_t *str)
 {
     int type=0;
     
-    trace(4,"input_strfile:\n");
+    rtktrace(4,"input_strfile:\n");
     
     if (str->format==STRFMT_RTCM2) {
         if ((type=input_rtcm2f(&str->rtcm,str->fp))>=1) {
@@ -274,13 +274,13 @@ static int input_strfile(strfile_t *str)
     if (!str->tstart.time&&str->time.time) {
         str->tstart=str->time;
     }
-    trace(4,"input_strfile: time=%s type=%d\n",time_str(str->time,3),type);
+    rtktrace(4,"input_strfile: time=%s type=%d\n",time_str(str->time,3),type);
     return type;
 }
 /* open stream file ----------------------------------------------------------*/
 static int open_strfile(strfile_t *str, const char *file)
 {
-    trace(3,"open_strfile: file=%s\n",file);
+    rtktrace(3,"open_strfile: file=%s\n",file);
     
     if (str->format==STRFMT_RTCM2||str->format==STRFMT_RTCM3) {
         if (!(str->fp=fopen(file,"rb"))) {
@@ -314,7 +314,7 @@ static int open_strfile(strfile_t *str, const char *file)
 /* close stream file ---------------------------------------------------------*/
 static void close_strfile(strfile_t *str)
 {
-    trace(3,"close_strfile:\n");
+    rtktrace(3,"close_strfile:\n");
     
     if (str->format==STRFMT_RTCM2||str->format==STRFMT_RTCM3) {
         if (str->fp) fclose(str->fp);
@@ -378,7 +378,7 @@ static void setopt_obstype(const uint8_t *codes, const uint8_t *types, int sys,
     char type[16],*id,ver;
     int i,j,k,idx;
     
-    trace(3,"setopt_obstype: sys=%d\n",sys);
+    rtktrace(3,"setopt_obstype: sys=%d\n",sys);
     
     opt->nobs[sys]=0;
     
@@ -394,7 +394,7 @@ static void setopt_obstype(const uint8_t *codes, const uint8_t *types, int sys,
         if (opt->rnxver>=300) {
             ver=vercode[sys][codes[i]-1];
             if (ver<'0'||ver>'0'+opt->rnxver-300) {
-                trace(2,"unsupported obs type: rnxver=%.2f sys=%d code=%s\n",
+                rtktrace(2,"unsupported obs type: rnxver=%.2f sys=%d code=%s\n",
                       opt->rnxver/100.0,sys,code2obs(codes[i]));
                 continue;
             }
@@ -512,7 +512,7 @@ static void setopt_sta(const strfile_t *str, rnxopt_t *opt)
     const sta_t *sta;
     double pos[3],enu[3];
     
-    trace(3,"setopt_sta:\n");
+    rtktrace(3,"setopt_sta:\n");
     
     /* search first station in station list */
     for (p=str->stas;p;p=p->next) {
@@ -604,8 +604,8 @@ static void dump_stas(const strfile_t *str)
     double pos[3];
     char s1[32],s2[32];
 
-    trace(2,"# STATION LIST\n");
-    trace(2,"# %17s %19s %5s %6s %16s %16s %12s %13s %9s %2s %6s %6s %6s\n",
+    rtktrace(2,"# STATION LIST\n");
+    rtktrace(2,"# %17s %19s %5s %6s %16s %16s %12s %13s %9s %2s %6s %6s %6s\n",
           "TIME","STAID","MARKER","ANTENNA","RECEIVER","LATITUDE","LONGITUDE",
           "HIGHT","DT","DEL1","DEL2","DEL3");
     
@@ -613,7 +613,7 @@ static void dump_stas(const strfile_t *str)
         time2str(p->ts,s1,0);
         time2str(p->te,s2,0);
         ecef2pos(p->sta.pos,pos);
-        trace(2,"%s %s  %04d %-6.6s %-16.16s %-16.16s %12.8f %13.8f %9.3f %2d "
+        rtktrace(2,"%s %s  %04d %-6.6s %-16.16s %-16.16s %12.8f %13.8f %9.3f %2d "
               "%6.3f %6.3f %6.3f\n",s1,s2,p->staid,p->sta.name,p->sta.antdes,
               p->sta.rectype,pos[0]*R2D,pos[1]*R2D,pos[2],p->sta.deltype,
               p->sta.del[0],p->sta.del[1],p->sta.del[2]);
@@ -675,8 +675,8 @@ static void dump_halfc(const strfile_t *str)
     char s0[32],s1[32],s2[32],*stats[]={"ADD","SUB","NON"};
     int i,j;
     
-    trace(2,"# HALF-CYCLE AMBIGUITY CORRECTIONS\n");
-    trace(2,"# %20s %22s %4s %3s %3s\n","START","END","SAT","FRQ","COR");
+    rtktrace(2,"# HALF-CYCLE AMBIGUITY CORRECTIONS\n");
+    rtktrace(2,"# %20s %22s %4s %3s %3s\n","START","END","SAT","FRQ","COR");
     
     for (i=0;i<MAXSAT;i++) for (j=0;j<NFREQ+NEXOBS;j++) {
         for (p=str->halfc[i][j];p;p=p->next) {
@@ -684,7 +684,7 @@ static void dump_halfc(const strfile_t *str)
             satno2id(i+1,s0);
             time2str(p->ts,s1,2);
             time2str(p->te,s2,2);
-            trace(2,"%s %s %4s %3d %3s\n",s1,s2,s0,j+1,stats[p->stat-2]);
+            rtktrace(2,"%s %s %4s %3d %3s\n",s1,s2,s0,j+1,stats[p->stat-2]);
         }
     }
 #endif
@@ -726,7 +726,7 @@ static int scan_file(char **files, int nf, rnxopt_t *opt, strfile_t *str,
     char msg[128];
     int i,j,k,l,m,c=0,type,sys,prn,abort=0,n[NSATSYS]={0};
     
-    trace(3,"scan_file: nf=%d\n",nf);
+    rtktrace(3,"scan_file: nf=%d\n",nf);
     
     for (m=0;m<nf&&!abort;m++) {
         
@@ -786,11 +786,11 @@ static int scan_file(char **files, int nf, rnxopt_t *opt, strfile_t *str,
     showmsg("");
     
     if (abort) {
-        trace(2,"aborted in scan\n");
+        rtktrace(2,"aborted in scan\n");
         return 0;
     }
     for (i=0;i<NSATSYS;i++) for (j=0;j<n[i];j++) {
-        trace(2,"scan_file: sys=%d code=%s type=%d\n",i,code2obs(codes[i][j]),
+        rtktrace(2,"scan_file: sys=%d code=%s type=%d\n",i,code2obs(codes[i][j]),
               types[i][j]);
     }
     /* sort and set obs-types in RINEX options */
@@ -799,7 +799,7 @@ static int scan_file(char **files, int nf, rnxopt_t *opt, strfile_t *str,
         setopt_obstype(codes[i],types[i],i,opt);
         
         for (j=0;j<n[i];j++) {
-            trace(3,"scan_file: sys=%d code=%s\n",i,code2obs(codes[i][j]));
+            rtktrace(3,"scan_file: sys=%d code=%s\n",i,code2obs(codes[i][j]));
         }
     }
     /* set station info in RINEX options */
@@ -847,7 +847,7 @@ static int openfile(FILE **ofp, char *files[], const char *file,
     char path[1024];
     int i;
     
-    trace(3,"openfile:\n");
+    rtktrace(3,"openfile:\n");
     
     for (i=0;i<NOUTFILE;i++) {
         
@@ -876,7 +876,7 @@ static void closefile(FILE **ofp, const rnxopt_t *opt, nav_t *nav)
 {
     int i;
     
-    trace(3,"closefile:\n");
+    rtktrace(3,"closefile:\n");
     
     for (i=0;i<NOUTFILE;i++) {
         
@@ -896,7 +896,7 @@ static void outrnxevent(FILE *fp, const rnxopt_t *opt, gtime_t time, int event,
     const stas_t *p=NULL,*q;
     double ep[6],pos[3],enu[3],del[3];
 
-    trace(3,"outrnxevent: event=%d\n",event);
+    rtktrace(3,"outrnxevent: event=%d\n",event);
     
     if (event==EVENT_STARTMOVE) {
         fprintf(fp,"%*s%d%3d\n",(opt->rnxver>=300)?31:28,"",event,2);
@@ -990,7 +990,7 @@ static void convobs(FILE **ofp, rnxopt_t *opt, strfile_t *str, int *n,
     gtime_t time;
     int i,j;
     
-    trace(3,"convobs :\n");
+    rtktrace(3,"convobs :\n");
     
     if (!ofp[0]||str->obs->n<=0) return;
     
@@ -1041,7 +1041,7 @@ static void convnav(FILE **ofp, rnxopt_t *opt, strfile_t *str, int *n)
     double dtoe;
     int sat,set,sys,prn,sep_nav=(opt->rnxver<=299||opt->sep_nav);
     
-    trace(3,"convnav :\n");
+    rtktrace(3,"convnav :\n");
     
     sat=str->ephsat;
     set=str->ephset;
@@ -1135,7 +1135,7 @@ static void convsbs(FILE **ofp, rnxopt_t *opt, strfile_t *str, int *n,
     gtime_t time;
     int prn,sat,sys,sep_nav=opt->rnxver<=299||opt->sep_nav;
     
-    trace(3,"convsbs :\n");
+    rtktrace(3,"convsbs :\n");
     
     time=gpst2time(str->raw.sbsmsg.week,str->raw.sbsmsg.tow);
 
@@ -1154,7 +1154,7 @@ static void convsbs(FILE **ofp, rnxopt_t *opt, strfile_t *str, int *n,
         prn+=10;
     }
     else {
-        trace(2,"sbas message satellite error: prn=%d\n",prn);
+        rtktrace(2,"sbas message satellite error: prn=%d\n",prn);
         return;
     }
     if (!(sat=satno(sys,prn))||opt->exsats[sat-1]==1) return;
@@ -1189,7 +1189,7 @@ static void setopt_apppos(strfile_t *str, rnxopt_t *opt)
     /* point positioning with last obs data */
     if (!pntpos(str->obs->data,str->obs->n,str->nav,&prcopt,&sol,NULL,NULL,
                 msg)) {
-        trace(2,"point position error (%s)\n",msg);
+        rtktrace(2,"point position error (%s)\n",msg);
         return;
     }
     matcpy(opt->apppos,sol.rr,3,1);
@@ -1231,7 +1231,7 @@ static int convrnx_s(int sess, int format, rnxopt_t *opt, const char *file,
     char path[1024],*paths[NOUTFILE],s[NOUTFILE][1024];
     char *epath[MAXEXFILE]={0},*staname=*opt->staid?opt->staid:"0000";
     
-    trace(3,"convrnx_s: sess=%d format=%d file=%s ofile=%s %s %s %s %s %s %s "
+    rtktrace(3,"convrnx_s: sess=%d format=%d file=%s ofile=%s %s %s %s %s %s %s "
           "%s %s\n",sess,format,file,ofile[0],ofile[1],ofile[2],ofile[3],
           ofile[4],ofile[5],ofile[6],ofile[7],ofile[8]);
     
@@ -1369,7 +1369,7 @@ extern int convrnx(int format, rnxopt_t *opt, const char *file, char **ofile)
     double tu,ts;
     int i,week,stat=1,sys_GRS=SYS_GPS|SYS_GLO|SYS_SBS;
     
-    trace(3,"convrnx: format=%d file=%s ofile=%s %s %s %s %s %s %s %s %s\n",
+    rtktrace(3,"convrnx: format=%d file=%s ofile=%s %s %s %s %s %s %s %s %s\n",
           format,file,ofile[0],ofile[1],ofile[2],ofile[3],ofile[4],ofile[5],
           ofile[6],ofile[7],ofile[8]);
     

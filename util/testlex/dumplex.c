@@ -25,8 +25,8 @@ int main(int argc, char **argv)
         else file=argv[i];
     }
     if (trl>0) {
-        traceopen("dumplex.trace");
-        tracelevel(trl);
+        rtktraceopen("dumplex.trace");
+        rtktracelevel(trl);
     }
     if (!lexreadmsg(file,0,&lex)) {
         fprintf(stderr,"file read error: %s\n",file);
@@ -35,6 +35,6 @@ int main(int argc, char **argv)
     for (i=0;i<lex.n;i++) {
         lexupdatecorr(lex.msgs+i,&nav,&tof);
     }
-    if (trl>0) traceclose();
+    if (trl>0) rtktraceclose();
     return 0;
 }

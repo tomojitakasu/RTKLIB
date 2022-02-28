@@ -39,7 +39,7 @@
 * version : $Revision: 1.1 $ $Date: 2008/07/17 21:48:06 $
 * history : 2007/01/12 1.0 new
 *           2007/03/06 1.1 input initial rover pos of pntpos()
-*                          update only effective states of filter()
+*                          update only effective states of rtkfilter()
 *                          fix bug of atan2() domain error
 *           2007/04/11 1.2 add function antmodel()
 *                          add gdop mask for pntpos()
@@ -49,7 +49,7 @@
 *                          replace geodist() by sagnac correction way
 *           2008/10/29 1.5 fix bug of ionospheric mapping function
 *                          fix bug of seasonal variation term of tropmapf
-*           2008/12/27 1.6 add function tickget(), sleepms(), tracenav(),
+*           2008/12/27 1.6 add function tickget(), sleepms(), rtktracenav(),
 *                          xyz2enu(), satposv(), pntvel(), covecef()
 *           2009/03/12 1.7 fix bug on error-stop when localtime() returns NULL
 *           2009/03/13 1.8 fix bug on time adjustment for summer time
@@ -57,7 +57,7 @@
 *                          add function geph2pos()
 *           2009/06/08 1.10 add function seph2pos()
 *           2009/11/28 1.11 change function pntpos()
-*                           add function tracegnav(),tracepeph()
+*                           add function rtktracegnav(),rtktracepeph()
 *           2009/12/22 1.12 change default parameter of ionos std
 *                           valid under second for timeget()
 *           2010/07/28 1.13 fix bug in tropmapf()
@@ -65,7 +65,7 @@
 *                               obs2code(),code2obs(),cross3(),normv3(),
 *                               gst2time(),time2gst(),time_str(),timeset(),
 *                               deg2dms(),dms2deg(),searchpcv(),antmodel_s(),
-*                               tracehnav(),tracepclk(),reppath(),reppaths(),
+*                               rtktracehnav(),rtktracepclk(),reppath(),reppaths(),
 *                               createdir()
 *                           changed api:
 *                               readpcv(),
@@ -100,7 +100,7 @@
 *                           support BDS L1 in satwavelen()
 *           2014/05/29 1.27 fix bug on obs2code() to search obs code table
 *           2014/08/26 1.28 fix problem on output of uncompress() for tar file
-*                           add function to swap trace file with keywords
+*                           add function to swap rtktrace file with keywords
 *           2014/10/21 1.29 strtok() -> strtok_r() in expath() for thread-safe
 *                           add bdsmodear in procopt_default
 *           2015/03/19 1.30 fix bug on interpolation of erp values in geterp()
@@ -112,7 +112,7 @@
 *                           support usno leapsec.dat for api read_leaps()
 *           2016/01/23 1.33 enable septentrio
 *           2016/02/05 1.34 support GLONASS for savenav(), loadnav()
-*           2016/06/11 1.35 delete trace() in reppath() to avoid deadlock
+*           2016/06/11 1.35 delete rtktrace() in reppath() to avoid deadlock
 *           2016/07/01 1.36 support IRNSS
 *                           add leap second before 2017/1/1 00:00:00
 *           2016/07/29 1.37 rename api compress() -> rtk_uncompress()
@@ -224,7 +224,7 @@ const prcopt_t prcopt_default={ /* defaults processing options */
 const solopt_t solopt_default={ /* defaults solution output options */
     SOLF_LLH,TIMES_GPST,1,3,    /* posf,times,timef,timeu */
     0,1,0,0,0,0,0,              /* degf,outhead,outopt,outvel,datum,height,geoid */
-    0,0,0,                      /* solstatic,sstat,trace */
+    0,0,0,                      /* solstatic,sstat,rtktrace */
     {0.0,0.0},                  /* nmeaintv */
     " ",""                      /* separator/program name */
 };
@@ -534,11 +534,11 @@ extern int satexclude(int sat, double var, int svh, const prcopt_t *opt)
     }
     if (sys==SYS_QZS) svh&=0xFE; /* mask QZSS LEX health */
     if (svh) {
-        trace(3,"unhealthy satellite: sat=%3d svh=%02X\n",sat,svh);
+        rtktrace(3,"unhealthy satellite: sat=%3d svh=%02X\n",sat,svh);
         return 1;
     }
     if (var>MAX_VAR_EPH) {
-        trace(3,"invalid ura satellite: sat=%3d ura=%.2f\n",sat,sqrt(var));
+        rtktrace(3,"invalid ura satellite: sat=%3d ura=%.2f\n",sat,sqrt(var));
         return 1;
     }
     return 0;
@@ -777,7 +777,7 @@ extern double sat2freq(int sat, uint8_t code, const nav_t *nav)
 *-----------------------------------------------------------------------------*/
 extern void setcodepri(int sys, int idx, const char *pri)
 {
-    trace(3,"setcodepri:sys=%d idx=%d pri=%s\n",sys,idx,pri);
+    rtktrace(3,"setcodepri:sys=%d idx=%d pri=%s\n",sys,idx,pri);
     
     if (idx<0||idx>=MAXFREQ) return;
     if (sys&SYS_GPS) strcpy(codepris[0][idx],pri);
@@ -876,7 +876,7 @@ extern uint32_t rtk_crc32(const uint8_t *buff, int len)
     uint32_t crc=0;
     int i,j;
     
-    trace(4,"rtk_crc32: len=%d\n",len);
+    rtktrace(4,"rtk_crc32: len=%d\n",len);
     
     for (i=0;i<len;i++) {
         crc^=buff[i];
@@ -898,7 +898,7 @@ extern uint32_t rtk_crc24q(const uint8_t *buff, int len)
     uint32_t crc=0;
     int i;
     
-    trace(4,"rtk_crc24q: len=%d\n",len);
+    rtktrace(4,"rtk_crc24q: len=%d\n",len);
     
     for (i=0;i<len;i++) crc=((crc<<8)&0xFFFFFF)^tbl_CRC24Q[(crc>>16)^buff[i]];
     return crc;
@@ -915,7 +915,7 @@ extern uint16_t rtk_crc16(const uint8_t *buff, int len)
     uint16_t crc=0;
     int i;
     
-    trace(4,"rtk_crc16: len=%d\n",len);
+    rtktrace(4,"rtk_crc16: len=%d\n",len);
     
     for (i=0;i<len;i++) {
         crc=(crc<<8)^tbl_CRC16[((crc>>8)^buff[i])&0xFF];
@@ -939,7 +939,7 @@ extern int decode_word(uint32_t word, uint8_t *data)
     uint32_t parity=0,w;
     int i;
     
-    trace(5,"decodeword: word=%08x\n",word);
+    rtktrace(5,"decodeword: word=%08x\n",word);
     
     if (word&0x40000000) word^=0x3FFFFFC0;
     
@@ -1265,8 +1265,8 @@ extern int lsq(const double *A, const double *y, int n, int m, double *x,
     free(Ay);
     return info;
 }
-/* kalman filter ---------------------------------------------------------------
-* kalman filter state update as follows:
+/* kalman rtkfilter ---------------------------------------------------------------
+* kalman rtkfilter state update as follows:
 *
 *   K=P*H*(H'*P*H+R)^-1, xp=x+K*v, Pp=(I-K*H')*P
 *
@@ -1302,7 +1302,7 @@ static int filter_(const double *x, const double *P, const double *H,
     free(F); free(Q); free(K); free(I);
     return info;
 }
-extern int filter(double *x, double *P, const double *H, const double *v,
+extern int rtkfilter(double *x, double *P, const double *H, const double *v,
                   const double *R, int n, int m)
 {
     double *x_,*xp_,*P_,*Pp_,*H_;
@@ -1848,7 +1848,8 @@ extern int adjgpsweek(int week)
 extern uint32_t tickget(void)
 {
 #ifdef WIN32
-    return (uint32_t)timeGetTime();
+    return 0;
+//    return (uint32_t)timeGetTime();
 #else
     struct timespec tp={0};
     struct timeval  tv={0};
@@ -2211,7 +2212,7 @@ extern void eci2ecef(gtime_t tutc, const double *erpv, double *U, double *gmst)
     double R1[9],R2[9],R3[9],R[9],W[9],N[9],P[9],NP[9];
     int i;
     
-    trace(4,"eci2ecef: tutc=%s\n",time_str(tutc,3));
+    rtktrace(4,"eci2ecef: tutc=%s\n",time_str(tutc,3));
     
     if (fabs(timediff(tutc,tutc_))<0.01) { /* read cache */
         for (i=0;i<9;i++) U[i]=U_[i];
@@ -2258,11 +2259,11 @@ extern void eci2ecef(gtime_t tutc, const double *erpv, double *U, double *gmst)
     for (i=0;i<9;i++) U[i]=U_[i];
     if (gmst) *gmst=gmst_; 
     
-    trace(5,"gmst=%.12f gast=%.12f\n",gmst_,gast);
-    trace(5,"P=\n"); tracemat(5,P,3,3,15,12);
-    trace(5,"N=\n"); tracemat(5,N,3,3,15,12);
-    trace(5,"W=\n"); tracemat(5,W,3,3,15,12);
-    trace(5,"U=\n"); tracemat(5,U,3,3,15,12);
+    rtktrace(5,"gmst=%.12f gast=%.12f\n",gmst_,gast);
+    rtktrace(5,"P=\n"); rtktracemat(5,P,3,3,15,12);
+    rtktrace(5,"N=\n"); rtktracemat(5,N,3,3,15,12);
+    rtktrace(5,"W=\n"); rtktracemat(5,W,3,3,15,12);
+    rtktrace(5,"U=\n"); rtktracemat(5,U,3,3,15,12);
 }
 /* decode antenna parameter field --------------------------------------------*/
 static int decodef(char *p, int n, double *v)
@@ -2283,7 +2284,7 @@ static void addpcv(const pcv_t *pcv, pcvs_t *pcvs)
     if (pcvs->nmax<=pcvs->n) {
         pcvs->nmax+=256;
         if (!(pcvs_pcv=(pcv_t *)realloc(pcvs->pcv,sizeof(pcv_t)*pcvs->nmax))) {
-            trace(1,"addpcv: memory allocation error\n");
+            rtktrace(1,"addpcv: memory allocation error\n");
             free(pcvs->pcv); pcvs->pcv=NULL; pcvs->n=pcvs->nmax=0;
             return;
         }
@@ -2302,7 +2303,7 @@ static int readngspcv(const char *file, pcvs_t *pcvs)
     char buff[256];
     
     if (!(fp=fopen(file,"r"))) {
-        trace(2,"ngs pcv file open error: %s\n",file);
+        rtktrace(2,"ngs pcv file open error: %s\n",file);
         return 0;
     }
     while (fgets(buff,sizeof(buff),fp)) {
@@ -2339,7 +2340,7 @@ static int readngspcv(const char *file, pcvs_t *pcvs)
     return 1;
 }
 /* read antex file ----------------------------------------------------------*/
-static int readantex(const char *file, pcvs_t *pcvs)
+int readantex(const char *file, pcvs_t *pcvs)
 {
     FILE *fp;
     static const pcv_t pcv0={0};
@@ -2348,10 +2349,10 @@ static int readantex(const char *file, pcvs_t *pcvs)
     int i,f,freq=0,state=0,freqs[]={1,2,5,0};
     char buff[256];
     
-    trace(3,"readantex: file=%s\n",file);
+    rtktrace(3,"readantex: file=%s\n",file);
     
     if (!(fp=fopen(file,"r"))) {
-        trace(2,"antex pcv file open error: %s\n",file);
+        rtktrace(2,"antex pcv file open error: %s\n",file);
         return 0;
     }
     while (fgets(buff,sizeof(buff),fp)) {
@@ -2369,10 +2370,12 @@ static int readantex(const char *file, pcvs_t *pcvs)
         if (!state) continue;
         
         if (strstr(buff+60,"TYPE / SERIAL NO")) {
+            pcv.sat = -1;
             strncpy(pcv.type,buff   ,20); pcv.type[20]='\0';
             strncpy(pcv.code,buff+20,20); pcv.code[20]='\0';
             if (!strncmp(pcv.code+3,"        ",8)) {
                 pcv.sat=satid2no(pcv.code);
+                strncpy(pcv.code,buff+40,10); pcv.code[10]='\0';
             }
         }
         else if (strstr(buff+60,"VALID FROM")) {
@@ -2423,7 +2426,7 @@ extern int readpcv(const char *file, pcvs_t *pcvs)
     char *ext;
     int i,j,stat;
     
-    trace(3,"readpcv: file=%s\n",file);
+    rtktrace(3,"readpcv: file=%s\n",file);
     
     if (!(ext=strrchr(file,'.'))) ext="";
     
@@ -2435,7 +2438,7 @@ extern int readpcv(const char *file, pcvs_t *pcvs)
     }
     for (i=0;i<pcvs->n;i++) {
         pcv=pcvs->pcv+i;
-        trace(4,"sat=%2d type=%20s code=%s off=%8.4f %8.4f %8.4f  %8.4f %8.4f %8.4f\n",
+        rtktrace(4,"sat=%2d type=%20s code=%s off=%8.4f %8.4f %8.4f  %8.4f %8.4f %8.4f\n",
               pcv->sat,pcv->type,pcv->code,pcv->off[0][0],pcv->off[0][1],
               pcv->off[0][2],pcv->off[1][0],pcv->off[1][1],pcv->off[1][2]);
         
@@ -2463,7 +2466,7 @@ extern pcv_t *searchpcv(int sat, const char *type, gtime_t time,
     char buff[MAXANT],*types[2],*p;
     int i,j,n=0;
     
-    trace(3,"searchpcv: sat=%2d type=%s\n",sat,type);
+    rtktrace(3,"searchpcv: sat=%2d type=%s\n",sat,type);
     
     if (sat) { /* search satellite antenna */
         for (i=0;i<pcvs->n;i++) {
@@ -2490,7 +2493,7 @@ extern pcv_t *searchpcv(int sat, const char *type, gtime_t time,
             pcv=pcvs->pcv+i;
             if (strstr(pcv->type,types[0])!=pcv->type) continue;
             
-            trace(2,"pcv without radome is used type=%s\n",type);
+            rtktrace(2,"pcv without radome is used type=%s\n",type);
             return pcv;
         }
     }
@@ -2513,7 +2516,7 @@ extern void readpos(const char *file, const char *rcv, double *pos)
     int i,j,len,np=0;
     char buff[256],str[256];
     
-    trace(3,"readpos: file=%s\n",file);
+    rtktrace(3,"readpos: file=%s\n",file);
     
     if (!(fp=fopen(file,"r"))) {
         fprintf(stderr,"reference position file open error : %s\n",file);
@@ -2568,7 +2571,7 @@ extern int readblq(const char *file, const char *sta, double *odisp)
     for (p=staname;(*p=(char)toupper((int)(*p)));p++) ;
     
     if (!(fp=fopen(file,"r"))) {
-        trace(2,"blq file open error: file=%s\n",file);
+        rtktrace(2,"blq file open error: file=%s\n",file);
         return 0;
     }
     while (fgets(buff,sizeof(buff),fp)) {
@@ -2585,7 +2588,7 @@ extern int readblq(const char *file, const char *sta, double *odisp)
         }
     }
     fclose(fp);
-    trace(2,"no otl parameters: sta=%s file=%s\n",sta,file);
+    rtktrace(2,"no otl parameters: sta=%s file=%s\n",sta,file);
     return 0;
 }
 /* read earth rotation parameters ----------------------------------------------
@@ -2601,10 +2604,10 @@ extern int readerp(const char *file, erp_t *erp)
     double v[14]={0};
     char buff[256];
     
-    trace(3,"readerp: file=%s\n",file);
+    rtktrace(3,"readerp: file=%s\n",file);
     
     if (!(fp=fopen(file,"r"))) {
-        trace(2,"erp file open error: file=%s\n",file);
+        rtktrace(2,"erp file open error: file=%s\n",file);
         return 0;
     }
     while (fgets(buff,sizeof(buff),fp)) {
@@ -2646,7 +2649,7 @@ extern int geterp(const erp_t *erp, gtime_t time, double *erpv)
     double mjd,day,a;
     int i,j,k;
     
-    trace(4,"geterp:\n");
+    rtktrace(4,"geterp:\n");
     
     if (erp->n<=0) return 0;
     
@@ -2698,7 +2701,7 @@ static void uniqeph(nav_t *nav)
     eph_t *nav_eph;
     int i,j;
     
-    trace(3,"uniqeph: n=%d\n",nav->n);
+    rtktrace(3,"uniqeph: n=%d\n",nav->n);
     
     if (nav->n<=0) return;
     
@@ -2713,14 +2716,14 @@ static void uniqeph(nav_t *nav)
     nav->n=j+1;
     
     if (!(nav_eph=(eph_t *)realloc(nav->eph,sizeof(eph_t)*nav->n))) {
-        trace(1,"uniqeph malloc error n=%d\n",nav->n);
+        rtktrace(1,"uniqeph malloc error n=%d\n",nav->n);
         free(nav->eph); nav->eph=NULL; nav->n=nav->nmax=0;
         return;
     }
     nav->eph=nav_eph;
     nav->nmax=nav->n;
     
-    trace(4,"uniqeph: n=%d\n",nav->n);
+    rtktrace(4,"uniqeph: n=%d\n",nav->n);
 }
 /* compare glonass ephemeris -------------------------------------------------*/
 static int cmpgeph(const void *p1, const void *p2)
@@ -2736,7 +2739,7 @@ static void uniqgeph(nav_t *nav)
     geph_t *nav_geph;
     int i,j;
     
-    trace(3,"uniqgeph: ng=%d\n",nav->ng);
+    rtktrace(3,"uniqgeph: ng=%d\n",nav->ng);
     
     if (nav->ng<=0) return;
     
@@ -2752,14 +2755,14 @@ static void uniqgeph(nav_t *nav)
     nav->ng=j+1;
     
     if (!(nav_geph=(geph_t *)realloc(nav->geph,sizeof(geph_t)*nav->ng))) {
-        trace(1,"uniqgeph malloc error ng=%d\n",nav->ng);
+        rtktrace(1,"uniqgeph malloc error ng=%d\n",nav->ng);
         free(nav->geph); nav->geph=NULL; nav->ng=nav->ngmax=0;
         return;
     }
     nav->geph=nav_geph;
     nav->ngmax=nav->ng;
     
-    trace(4,"uniqgeph: ng=%d\n",nav->ng);
+    rtktrace(4,"uniqgeph: ng=%d\n",nav->ng);
 }
 /* compare sbas ephemeris ----------------------------------------------------*/
 static int cmpseph(const void *p1, const void *p2)
@@ -2775,7 +2778,7 @@ static void uniqseph(nav_t *nav)
     seph_t *nav_seph;
     int i,j;
     
-    trace(3,"uniqseph: ns=%d\n",nav->ns);
+    rtktrace(3,"uniqseph: ns=%d\n",nav->ns);
     
     if (nav->ns<=0) return;
     
@@ -2790,14 +2793,14 @@ static void uniqseph(nav_t *nav)
     nav->ns=j+1;
     
     if (!(nav_seph=(seph_t *)realloc(nav->seph,sizeof(seph_t)*nav->ns))) {
-        trace(1,"uniqseph malloc error ns=%d\n",nav->ns);
+        rtktrace(1,"uniqseph malloc error ns=%d\n",nav->ns);
         free(nav->seph); nav->seph=NULL; nav->ns=nav->nsmax=0;
         return;
     }
     nav->seph=nav_seph;
     nav->nsmax=nav->ns;
     
-    trace(4,"uniqseph: ns=%d\n",nav->ns);
+    rtktrace(4,"uniqseph: ns=%d\n",nav->ns);
 }
 /* unique ephemerides ----------------------------------------------------------
 * unique ephemerides in navigation data
@@ -2806,7 +2809,7 @@ static void uniqseph(nav_t *nav)
 *-----------------------------------------------------------------------------*/
 extern void uniqnav(nav_t *nav)
 {
-    trace(3,"uniqnav: neph=%d ngeph=%d nseph=%d\n",nav->n,nav->ng,nav->ns);
+    rtktrace(3,"uniqnav: neph=%d ngeph=%d nseph=%d\n",nav->n,nav->ng,nav->ns);
     
     /* unique ephemeris */
     uniqeph (nav);
@@ -2831,7 +2834,7 @@ extern int sortobs(obs_t *obs)
 {
     int i,j,n;
     
-    trace(3,"sortobs: nobs=%d\n",obs->n);
+    rtktrace(3,"sortobs: nobs=%d\n",obs->n);
     
     if (obs->n<=0) return 0;
     
@@ -2883,7 +2886,7 @@ extern int readnav(const char *file, nav_t *nav)
     long toe_time,tof_time,toc_time,ttr_time;
     int i,sat,prn;
     
-    trace(3,"loadnav: file=%s\n",file);
+    rtktrace(3,"loadnav: file=%s\n",file);
     
     if (!(fp=fopen(file,"r"))) return 0;
     
@@ -2947,7 +2950,7 @@ extern int savenav(const char *file, const nav_t *nav)
     int i;
     char id[32];
     
-    trace(3,"savenav: file=%s\n",file);
+    rtktrace(3,"savenav: file=%s\n",file);
     
     if (!(fp=fopen(file,"w"))) return 0;
     
@@ -3019,32 +3022,32 @@ extern void freenav(nav_t *nav, int opt)
     if (opt&0x20) {free(nav->alm ); nav->alm =NULL; nav->na=nav->namax=0;}
     if (opt&0x40) {free(nav->tec ); nav->tec =NULL; nav->nt=nav->ntmax=0;}
 }
-/* debug trace functions -----------------------------------------------------*/
+/* debug rtktrace functions -----------------------------------------------------*/
 #ifdef TRACE
 
-static FILE *fp_trace=NULL;     /* file pointer of trace */
-static char file_trace[1024];   /* trace file */
-static int level_trace=0;       /* level of trace */
-static uint32_t tick_trace=0;   /* tick time at traceopen (ms) */
-static gtime_t time_trace={0};  /* time at traceopen */
-static lock_t lock_trace;       /* lock for trace */
+static FILE *fp_trace=NULL;     /* file pointer of rtktrace */
+static char file_trace[1024];   /* rtktrace file */
+static int level_trace=0;       /* level of rtktrace */
+static uint32_t tick_trace=0;   /* tick time at rtktraceopen (ms) */
+static gtime_t time_trace={0};  /* time at rtktraceopen */
+static rtklock_t lock_trace;       /* lock for rtktrace */
 
 static void traceswap(void)
 {
     gtime_t time=utc2gpst(timeget());
     char path[1024];
     
-    lock(&lock_trace);
+    rtklock(&lock_trace);
     
     if ((int)(time2gpst(time      ,NULL)/INT_SWAP_TRAC)==
         (int)(time2gpst(time_trace,NULL)/INT_SWAP_TRAC)) {
-        unlock(&lock_trace);
+        rtkunlock(&lock_trace);
         return;
     }
     time_trace=time;
     
     if (!reppath(file_trace,path,time,"","")) {
-        unlock(&lock_trace);
+        rtkunlock(&lock_trace);
         return;
     }
     if (fp_trace) fclose(fp_trace);
@@ -3052,9 +3055,9 @@ static void traceswap(void)
     if (!(fp_trace=fopen(path,"w"))) {
         fp_trace=stderr;
     }
-    unlock(&lock_trace);
+    rtkunlock(&lock_trace);
 }
-extern void traceopen(const char *file)
+extern void rtktraceopen(const char *file)
 {
     gtime_t time=utc2gpst(timeget());
     char path[1024];
@@ -3064,19 +3067,19 @@ extern void traceopen(const char *file)
     strcpy(file_trace,file);
     tick_trace=tickget();
     time_trace=time;
-    initlock(&lock_trace);
+    rtkinitlock(&lock_trace);
 }
-extern void traceclose(void)
+extern void rtktraceclose(void)
 {
     if (fp_trace&&fp_trace!=stderr) fclose(fp_trace);
     fp_trace=NULL;
     file_trace[0]='\0';
 }
-extern void tracelevel(int level)
+extern void rtktracelevel(int level)
 {
     level_trace=level;
 }
-extern void trace(int level, const char *format, ...)
+extern void rtktrace(int level, const char *format, ...)
 {
     va_list ap;
     
@@ -3090,7 +3093,7 @@ extern void trace(int level, const char *format, ...)
     va_start(ap,format); vfprintf(fp_trace,format,ap); va_end(ap);
     fflush(fp_trace);
 }
-extern void tracet(int level, const char *format, ...)
+extern void rtktracet(int level, const char *format, ...)
 {
     va_list ap;
     
@@ -3100,12 +3103,12 @@ extern void tracet(int level, const char *format, ...)
     va_start(ap,format); vfprintf(fp_trace,format,ap); va_end(ap);
     fflush(fp_trace);
 }
-extern void tracemat(int level, const double *A, int n, int m, int p, int q)
+extern void rtktracemat(int level, const double *A, int n, int m, int p, int q)
 {
     if (!fp_trace||level>level_trace) return;
     matfprint(A,n,m,p,q,fp_trace); fflush(fp_trace);
 }
-extern void traceobs(int level, const obsd_t *obs, int n)
+extern void rtktraceobs(int level, const obsd_t *obs, int n)
 {
     char str[64],id[16];
     int i;
@@ -3121,7 +3124,7 @@ extern void traceobs(int level, const obsd_t *obs, int n)
     }
     fflush(fp_trace);
 }
-extern void tracenav(int level, const nav_t *nav)
+extern void rtktracenav(int level, const nav_t *nav)
 {
     char s1[64],s2[64],id[16];
     int i;
@@ -3141,7 +3144,7 @@ extern void tracenav(int level, const nav_t *nav)
     fprintf(fp_trace,"(ion) %9.4e %9.4e %9.4e %9.4e\n",nav->ion_gal[0],
             nav->ion_gal[1],nav->ion_gal[2],nav->ion_gal[3]);
 }
-extern void tracegnav(int level, const nav_t *nav)
+extern void rtktracegnav(int level, const nav_t *nav)
 {
     char s1[64],s2[64],id[16];
     int i;
@@ -3155,7 +3158,7 @@ extern void tracegnav(int level, const nav_t *nav)
                 id,s1,s2,nav->geph[i].frq,nav->geph[i].svh,nav->geph[i].taun*1E6);
     }
 }
-extern void tracehnav(int level, const nav_t *nav)
+extern void rtktracehnav(int level, const nav_t *nav)
 {
     char s1[64],s2[64],id[16];
     int i;
@@ -3169,7 +3172,7 @@ extern void tracehnav(int level, const nav_t *nav)
                 id,s1,s2,nav->seph[i].svh,nav->seph[i].sva);
     }
 }
-extern void tracepeph(int level, const nav_t *nav)
+extern void rtktracepeph(int level, const nav_t *nav)
 {
     char s[64],id[16];
     int i,j;
@@ -3189,7 +3192,7 @@ extern void tracepeph(int level, const nav_t *nav)
         }
     }
 }
-extern void tracepclk(int level, const nav_t *nav)
+extern void rtktracepclk(int level, const nav_t *nav)
 {
     char s[64],id[16];
     int i,j;
@@ -3206,7 +3209,7 @@ extern void tracepclk(int level, const nav_t *nav)
         }
     }
 }
-extern void traceb(int level, const uint8_t *p, int n)
+extern void rtktraceb(int level, const uint8_t *p, int n)
 {
     int i;
     if (!fp_trace||level>level_trace) return;
@@ -3214,19 +3217,19 @@ extern void traceb(int level, const uint8_t *p, int n)
     fprintf(fp_trace,"\n");
 }
 #else
-extern void traceopen(const char *file) {}
-extern void traceclose(void) {}
-extern void tracelevel(int level) {}
-extern void trace   (int level, const char *format, ...) {}
-extern void tracet  (int level, const char *format, ...) {}
-extern void tracemat(int level, const double *A, int n, int m, int p, int q) {}
-extern void traceobs(int level, const obsd_t *obs, int n) {}
-extern void tracenav(int level, const nav_t *nav) {}
-extern void tracegnav(int level, const nav_t *nav) {}
-extern void tracehnav(int level, const nav_t *nav) {}
-extern void tracepeph(int level, const nav_t *nav) {}
-extern void tracepclk(int level, const nav_t *nav) {}
-extern void traceb  (int level, const uint8_t *p, int n) {}
+extern void rtktraceopen(const char *file) {}
+extern void rtktraceclose(void) {}
+extern void rtktracelevel(int level) {}
+extern void rtktrace   (int level, const char *format, ...) {}
+extern void rtktracet  (int level, const char *format, ...) {}
+extern void rtktracemat(int level, const double *A, int n, int m, int p, int q) {}
+extern void rtktraceobs(int level, const obsd_t *obs, int n) {}
+extern void rtktracenav(int level, const nav_t *nav) {}
+extern void rtktracegnav(int level, const nav_t *nav) {}
+extern void rtktracehnav(int level, const nav_t *nav) {}
+extern void rtktracepeph(int level, const nav_t *nav) {}
+extern void rtktracepclk(int level, const nav_t *nav) {}
+extern void rtktraceb  (int level, const uint8_t *p, int n) {}
 
 #endif /* TRACE */
 
@@ -3243,7 +3246,7 @@ extern int execcmd(const char *cmd)
     DWORD stat;
     char cmds[1024];
     
-    trace(3,"execcmd: cmd=%s\n",cmd);
+    rtktrace(3,"execcmd: cmd=%s\n",cmd);
     
     si.cb=sizeof(si);
     sprintf(cmds,"cmd /c %s",cmd);
@@ -3255,7 +3258,7 @@ extern int execcmd(const char *cmd)
     CloseHandle(info.hThread);
     return (int)stat;
 #else
-    trace(3,"execcmd: cmd=%s\n",cmd);
+    rtktrace(3,"execcmd: cmd=%s\n",cmd);
     
     return system(cmd);
 #endif
@@ -3277,7 +3280,7 @@ extern int expath(const char *path, char *paths[], int nmax)
     HANDLE h;
     char dir[1024]="",*p;
     
-    trace(3,"expath  : path=%s nmax=%d\n",path,nmax);
+    rtktrace(3,"expath  : path=%s nmax=%d\n",path,nmax);
     
     if ((p=strrchr(path,'\\'))) {
         strncpy(dir,path,p-path+1); dir[p-path+1]='\0';
@@ -3298,7 +3301,7 @@ extern int expath(const char *path, char *paths[], int nmax)
     const char *file=path;
     char dir[1024]="",s1[1024],s2[1024],*p,*q,*r;
     
-    trace(3,"expath  : path=%s nmax=%d\n",path,nmax);
+    rtktrace(3,"expath  : path=%s nmax=%d\n",path,nmax);
     
     if ((p=strrchr(path,'/'))||(p=strrchr(path,'\\'))) {
         file=p+1; strncpy(dir,path,p-path+1); dir[p-path+1]='\0';
@@ -3328,7 +3331,7 @@ extern int expath(const char *path, char *paths[], int nmax)
             }
         }
     }
-    for (i=0;i<n;i++) trace(3,"expath  : file=%s\n",paths[i]);
+    for (i=0;i<n;i++) rtktrace(3,"expath  : file=%s\n",paths[i]);
     
     return n;
 }
@@ -3370,7 +3373,7 @@ static int mkdir_r(const char *dir)
     }
     if (!mkdir(dir,0777)||errno==EEXIST) return 1;
 #endif
-    trace(2,"directory generation error: dir=%s\n",dir);
+    rtktrace(2,"directory generation error: dir=%s\n",dir);
     return 0;
 }
 /* create directory ------------------------------------------------------------
@@ -3383,7 +3386,7 @@ extern void createdir(const char *path)
 {
     char buff[1024],*p;
     
-    tracet(3,"createdir: path=%s\n",path);
+    rtktracet(3,"createdir: path=%s\n",path);
     
     strcpy(buff,path);
     if (!(p=strrchr(buff,FILEPATHSEP))) return;
@@ -3499,7 +3502,7 @@ extern int reppaths(const char *path, char *rpath[], int nmax, gtime_t ts,
     double tow,tint=86400.0;
     int i,n=0,week;
     
-    trace(3,"reppaths: path =%s nmax=%d rov=%s base=%s\n",path,nmax,rov,base);
+    rtktrace(3,"reppaths: path =%s nmax=%d rov=%s base=%s\n",path,nmax,rov,base);
     
     if (ts.time==0||te.time==0||timediff(ts,te)>0.0) return 0;
     
@@ -3514,7 +3517,7 @@ extern int reppaths(const char *path, char *rpath[], int nmax, gtime_t ts,
         if (n==0||strcmp(rpath[n],rpath[n-1])) n++;
         time=timeadd(time,tint);
     }
-    for (i=0;i<n;i++) trace(3,"reppaths: rpath=%s\n",rpath[i]);
+    for (i=0;i<n;i++) rtktrace(3,"reppaths: rpath=%s\n",rpath[i]);
     return n;
 }
 /* geometric distance ----------------------------------------------------------
@@ -3792,7 +3795,7 @@ extern double tropmapf(gtime_t time, const double pos[], const double azel[],
     const double ep[]={2000,1,1,12,0,0};
     double mjd,lat,lon,hgt,zd,gmfh,gmfw;
 #endif
-    trace(4,"tropmapf: pos=%10.6f %11.6f %6.1f azel=%5.1f %4.1f\n",
+    rtktrace(4,"tropmapf: pos=%10.6f %11.6f %6.1f azel=%5.1f %4.1f\n",
           pos[0]*R2D,pos[1]*R2D,pos[2],azel[0]*R2D,azel[1]*R2D);
     
     if (pos[2]<-1000.0||pos[2]>20000.0) {
@@ -3839,7 +3842,7 @@ extern void antmodel(const pcv_t *pcv, const double *del, const double *azel,
     double e[3],off[3],cosel=cos(azel[1]);
     int i,j;
     
-    trace(4,"antmodel: azel=%6.1f %4.1f opt=%d\n",azel[0]*R2D,azel[1]*R2D,opt);
+    rtktrace(4,"antmodel: azel=%6.1f %4.1f opt=%d\n",azel[0]*R2D,azel[1]*R2D,opt);
     
     e[0]=sin(azel[0])*cosel;
     e[1]=cos(azel[0])*cosel;
@@ -3850,7 +3853,7 @@ extern void antmodel(const pcv_t *pcv, const double *del, const double *azel,
         
         dant[i]=-dot(off,e,3)+(opt?interpvar(90.0-azel[1]*R2D,pcv->var[i]):0.0);
     }
-    trace(5,"antmodel: dant=%6.3f %6.3f\n",dant[0],dant[1]);
+    rtktrace(5,"antmodel: dant=%6.3f %6.3f\n",dant[0],dant[1]);
 }
 /* satellite antenna model ------------------------------------------------------
 * compute satellite antenna phase center parameters
@@ -3863,12 +3866,12 @@ extern void antmodel_s(const pcv_t *pcv, double nadir, double *dant)
 {
     int i;
     
-    trace(4,"antmodel_s: nadir=%6.1f\n",nadir*R2D);
+    rtktrace(4,"antmodel_s: nadir=%6.1f\n",nadir*R2D);
     
     for (i=0;i<NFREQ;i++) {
         dant[i]=interpvar(nadir*R2D*5.0,pcv->var[i]);
     }
-    trace(5,"antmodel_s: dant=%6.3f %6.3f\n",dant[0],dant[1]);
+    rtktrace(5,"antmodel_s: dant=%6.3f %6.3f\n",dant[0],dant[1]);
 }
 /* sun and moon position in eci (ref [4] 5.1.1, 5.2.1) -----------------------*/
 static void sunmoonpos_eci(gtime_t tut, double *rsun, double *rmoon)
@@ -3876,7 +3879,7 @@ static void sunmoonpos_eci(gtime_t tut, double *rsun, double *rmoon)
     const double ep2000[]={2000,1,1,12,0,0};
     double t,f[5],eps,Ms,ls,rs,lm,pm,rm,sine,cose,sinp,cosp,sinl,cosl;
     
-    trace(4,"sunmoonpos_eci: tut=%s\n",time_str(tut,3));
+    rtktrace(4,"sunmoonpos_eci: tut=%s\n",time_str(tut,3));
     
     t=timediff(tut,epoch2time(ep2000))/86400.0/36525.0;
     
@@ -3897,7 +3900,7 @@ static void sunmoonpos_eci(gtime_t tut, double *rsun, double *rmoon)
         rsun[1]=rs*cose*sinl;
         rsun[2]=rs*sine*sinl;
         
-        trace(5,"rsun =%.3f %.3f %.3f\n",rsun[0],rsun[1],rsun[2]);
+        rtktrace(5,"rsun =%.3f %.3f %.3f\n",rsun[0],rsun[1],rsun[2]);
     }
     /* moon position in eci */
     if (rmoon) {
@@ -3913,7 +3916,7 @@ static void sunmoonpos_eci(gtime_t tut, double *rsun, double *rmoon)
         rmoon[1]=rm*(cose*cosp*sinl-sine*sinp);
         rmoon[2]=rm*(sine*cosp*sinl+cose*sinp);
         
-        trace(5,"rmoon=%.3f %.3f %.3f\n",rmoon[0],rmoon[1],rmoon[2]);
+        rtktrace(5,"rmoon=%.3f %.3f %.3f\n",rmoon[0],rmoon[1],rmoon[2]);
     }
 }
 /* sun and moon position -------------------------------------------------------
@@ -3931,7 +3934,7 @@ extern void sunmoonpos(gtime_t tutc, const double *erpv, double *rsun,
     gtime_t tut;
     double rs[3],rm[3],U[9],gmst_;
     
-    trace(4,"sunmoonpos: tutc=%s\n",time_str(tutc,3));
+    rtktrace(4,"sunmoonpos: tutc=%s\n",time_str(tutc,3));
     
     tut=timeadd(tutc,erpv[2]); /* utc -> ut1 */
     
@@ -3959,7 +3962,7 @@ extern int rtk_uncompress(const char *file, char *uncfile)
     int stat=0;
     char *p,cmd[64+2048]="",tmpfile[1024]="",buff[1024],*fname,*dir="";
     
-    trace(3,"rtk_uncompress: file=%s\n",file);
+    rtktrace(3,"rtk_uncompress: file=%s\n",file);
     
     strcpy(tmpfile,file);
     if (!(p=strrchr(tmpfile,'.'))) return 0;
@@ -4021,12 +4024,12 @@ extern int rtk_uncompress(const char *file, char *uncfile)
         if (stat) remove(tmpfile);
         stat=1;
     }
-    trace(3,"rtk_uncompress: stat=%d\n",stat);
+    rtktrace(3,"rtk_uncompress: stat=%d\n",stat);
     return stat;
 }
 /* dummy application functions for shared library ----------------------------*/
-#ifdef WIN_DLL
-extern int showmsg(char *format,...) {return 0;}
+#ifdef IS_DLL
+extern int showmsg(const char *format,...) {return 0;}
 extern void settspan(gtime_t ts, gtime_t te) {}
 extern void settime(gtime_t time) {}
 #endif
