@@ -5,7 +5,7 @@ object OptDialog: TOptDialog
   BorderStyle = bsDialog
   Caption = 'Options'
   ClientHeight = 297
-  ClientWidth = 411
+  ClientWidth = 491
   Color = clWhite
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -55,7 +55,7 @@ object OptDialog: TOptDialog
   object Options: TPageControl
     Left = 0
     Top = 0
-    Width = 411
+    Width = 491
     Height = 263
     ActivePage = TabSheet1
     Align = alTop
@@ -481,7 +481,7 @@ object OptDialog: TOptDialog
       object AmbRes: TComboBox
         Left = 248
         Top = 4
-        Width = 61
+        Width = 141
         Height = 21
         Style = csDropDownList
         ItemIndex = 0
@@ -492,7 +492,9 @@ object OptDialog: TOptDialog
           'OFF'
           'Continuous'
           'Instantaneous'
-          'Fix and Hold')
+          'Fix and Hold'
+          'Wide Lane'
+          'Wide Lane with Fix and Hold')
       end
       object ValidThresAR: TEdit
         Left = 248
@@ -559,7 +561,7 @@ object OptDialog: TOptDialog
         Text = '1'
       end
       object GloAmbRes: TComboBox
-        Left = 311
+        Left = 391
         Top = 4
         Width = 43
         Height = 21
@@ -653,7 +655,7 @@ object OptDialog: TOptDialog
           'ON')
       end
       object BdsAmbRes: TComboBox
-        Left = 356
+        Left = 436
         Top = 4
         Width = 43
         Height = 21
@@ -1832,7 +1834,7 @@ object OptDialog: TOptDialog
       ExplicitWidth = 0
       ExplicitHeight = 0
       DesignSize = (
-        403
+        483
         235)
       object Label19: TLabel
         Left = 32
@@ -1849,7 +1851,7 @@ object OptDialog: TOptDialog
         Caption = 'Solution Font'
       end
       object FontLabel2: TLabel
-        Left = 265
+        Left = 345
         Top = 188
         Width = 80
         Height = 18
@@ -1921,7 +1923,7 @@ object OptDialog: TOptDialog
         Caption = 'Panel Font'
       end
       object FontLabel1: TLabel
-        Left = 265
+        Left = 345
         Top = 164
         Width = 80
         Height = 18
