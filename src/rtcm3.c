@@ -113,7 +113,7 @@ const char *msm_sig_sbs[32]={
 const char *msm_sig_cmp[32]={
     /* BeiDou: ref [17] table 3.5-108 */
     ""  ,"2I","2Q","2X",""  ,""  ,""  ,"6I","6Q","6X",""  ,""  ,
-    ""  ,"7I","7Q","7X",""  ,""  ,""  ,""  ,""  ,""  ,""  ,""  ,
+    ""  ,"7I","7Q","7X",""  ,""  ,""  ,""  ,""  ,"5D","5P","5X",
     ""  ,""  ,""  ,""  ,""  ,""  ,""  ,""
 };
 const char *msm_sig_irn[32]={
@@ -2088,7 +2088,7 @@ static void save_msm_obs(rtcm_t *rtcm, int sys, msm_h_t *h, const double *r,
                         (float)(-(rr[i]+rrf[j])*freq/CLIGHT);
                 }
                 rtcm->obs.data[index].LLI[idx[k]]=
-                    lossoflock(rtcm,sat,idx[k],lock[j])+(half[j]?3:0);
+                    lossoflock(rtcm,sat,idx[k],lock[j])+(half[j]?2:0);
                 rtcm->obs.data[index].SNR [idx[k]]=(uint16_t)(cnr[j]/SNR_UNIT+0.5);
                 rtcm->obs.data[index].code[idx[k]]=code[k];
             }

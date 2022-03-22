@@ -28,7 +28,7 @@ static const char *help[]={
 "",
 " usage: rnx2rtkp [option]... file file [...]",
 "",
-" Read RINEX OBS/NAV/GNAV/HNAV/CLK, SP3, SBAS message log files and ccompute ",
+" Read RINEX OBS/NAV/GNAV/HNAV/CLK, SP3, SBAS message log files and compute ",
 " receiver (rover) positions and output position solutions.",
 " The first RINEX OBS file shall contain receiver (rover) observations. For the",
 " relative mode, the second RINEX OBS file shall contain reference",
@@ -57,16 +57,22 @@ static const char *help[]={
 " -c        forward/backward combined solutions [off]",
 " -i        instantaneous integer ambiguity resolution [off]",
 " -h        fix and hold for integer ambiguity resolution [off]",
+" -w        widelane integer ambiguity resolution [off]",
 " -e        output x/y/z-ecef position [latitude/longitude/height]",
 " -a        output e/n/u-baseline [latitude/longitude/height]",
 " -n        output NMEA-0183 GGA sentence [off]",
 " -g        output latitude/longitude in the form of ddd mm ss.ss' [ddd.ddd]",
 " -t        output time in the form of yyyy/mm/dd hh:mm:ss.ss [sssss.ss]",
 " -u        output time in utc [gpst]",
+" -z        output single point position when unable to compute",
+"           DGPS/float/fix/PPP position",
 " -d col    number of decimals in time [3]",
 " -s sep    field separator [' ']",
 " -r x y z  reference (base) receiver ecef pos (m) [average of single pos]",
 "           rover receiver ecef pos (m) for fixed or ppp-fixed mode",
+" -rb mode  reference (base) receiver position mode (1:average of single pos,",
+"           2:read from file,3:read from RINEX header,6:read from RINEX header",
+"           and subsequent site occupancy events) [1]",
 " -l lat lon hgt reference (base) receiver latitude/longitude/height (deg/m)",
 "           rover latitude/longitude/height for fixed or ppp-fixed mode",
 " -y level  output soltion status (0:off,1:states,2:residuals) [0]",
@@ -99,16 +105,18 @@ int main(int argc, char **argv)
     gtime_t ts={0},te={0};
     double tint=0.0,es[]={2000,1,1,0,0,0},ee[]={2000,12,31,23,59,59},pos[3];
     int i,j,n,ret;
-    char *infile[MAXFILE],*outfile="",*p;
-    
-    prcopt.mode  =PMODE_KINEMA;
+    char *infile[MAXFILE] = {[0 ... (MAXFILE-1)] = ""};
+    char *outfile = "";
+    char *p = NULL;
+
+    prcopt.mode = PMODE_KINEMA;
     prcopt.navsys=0;
     prcopt.refpos=1;
     prcopt.glomodear=1;
     solopt.timef=0;
     sprintf(solopt.prog ,"%s ver.%s %s",PROGNAME,VER_RTKLIB,PATCH_LEVEL);
     sprintf(filopt.trace,"%s.trace",PROGNAME);
-    
+
     /* load options from configuration file */
     for (i=1;i<argc;i++) {
         if (!strcmp(argv[i],"-k")&&i+1<argc) {
@@ -136,12 +144,12 @@ int main(int argc, char **argv)
         else if (!strcmp(argv[i],"-sys")&&i+1<argc) {
             for (p=argv[++i];*p;p++) {
                 switch (*p) {
-                    case 'G': prcopt.navsys|=SYS_GPS;
-                    case 'R': prcopt.navsys|=SYS_GLO;
-                    case 'E': prcopt.navsys|=SYS_GAL;
-                    case 'J': prcopt.navsys|=SYS_QZS;
-                    case 'C': prcopt.navsys|=SYS_CMP;
-                    case 'I': prcopt.navsys|=SYS_IRN;
+                    case 'G': prcopt.navsys|=SYS_GPS; break;
+                    case 'R': prcopt.navsys|=SYS_GLO; break;
+                    case 'E': prcopt.navsys|=SYS_GAL; break;
+                    case 'J': prcopt.navsys|=SYS_QZS; break;
+                    case 'C': prcopt.navsys|=SYS_CMP; break;
+                    case 'I': prcopt.navsys|=SYS_IRN; break;
                 }
                 if (!(p=strchr(p,','))) break;
             }
@@ -152,21 +160,27 @@ int main(int argc, char **argv)
         else if (!strcmp(argv[i],"-d")&&i+1<argc) solopt.timeu=atoi(argv[++i]);
         else if (!strcmp(argv[i],"-b")) prcopt.soltype=1;
         else if (!strcmp(argv[i],"-c")) prcopt.soltype=2;
-        else if (!strcmp(argv[i],"-i")) prcopt.modear=2;
-        else if (!strcmp(argv[i],"-h")) prcopt.modear=3;
+        else if (!strcmp(argv[i],"-i")) prcopt.modear=ARMODE_INST;
+        else if (!strcmp(argv[i],"-h")) {
+            if (prcopt.modear!=ARMODE_WL) prcopt.modear=ARMODE_FIXHOLD;
+            prcopt.wlmodear=1;
+        }
         else if (!strcmp(argv[i],"-t")) solopt.timef=1;
         else if (!strcmp(argv[i],"-u")) solopt.times=TIMES_UTC;
+        else if (!strcmp(argv[i],"-z")) prcopt.outsingle=1;
         else if (!strcmp(argv[i],"-e")) solopt.posf=SOLF_XYZ;
         else if (!strcmp(argv[i],"-a")) solopt.posf=SOLF_ENU;
         else if (!strcmp(argv[i],"-n")) solopt.posf=SOLF_NMEA;
         else if (!strcmp(argv[i],"-g")) solopt.degf=1;
+        else if (!strcmp(argv[i],"-w")) prcopt.modear=ARMODE_WL;
         else if (!strcmp(argv[i],"-r")&&i+3<argc) {
-            prcopt.refpos=prcopt.rovpos=0;
+            prcopt.refpos=prcopt.rovpos=POSOPT_POS;
             for (j=0;j<3;j++) prcopt.rb[j]=atof(argv[++i]);
             matcpy(prcopt.ru,prcopt.rb,3,1);
         }
+        else if (!strcmp(argv[i],"-rb")&&i+1<argc) prcopt.refpos=atoi(argv[++i]);
         else if (!strcmp(argv[i],"-l")&&i+3<argc) {
-            prcopt.refpos=prcopt.rovpos=0;
+            prcopt.refpos=prcopt.rovpos=POSOPT_POS;
             for (j=0;j<3;j++) pos[j]=atof(argv[++i]);
             for (j=0;j<2;j++) pos[j]*=D2R;
             pos2ecef(pos,prcopt.rb);
@@ -180,12 +194,15 @@ int main(int argc, char **argv)
     if (!prcopt.navsys) {
         prcopt.navsys=SYS_GPS|SYS_GLO;
     }
+    if (prcopt.modear==ARMODE_WL&&(prcopt.navsys&SYS_CMP)) {
+        prcopt.bdsmodear=0;
+    }
     if (n<=0) {
         showmsg("error : no input file");
         return -2;
     }
     ret=postpos(ts,te,tint,0.0,&prcopt,&solopt,&filopt,infile,n,outfile,"","");
-    
+
     if (!ret) fprintf(stderr,"%40s\r","");
     return ret;
 }

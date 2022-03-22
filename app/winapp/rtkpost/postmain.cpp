@@ -894,6 +894,11 @@ int __fastcall TMainForm::GetOption(prcopt_t &prcopt, solopt_t &solopt,
     prcopt.maxgdop  =RejectGdop;
     prcopt.maxinno  =RejectThres;
     prcopt.outsingle=OutputSingle;
+    prcopt.wlmodear=0;
+    if (AmbRes>3) {
+        prcopt.modear=ARMODE_WL;
+        if(AmbRes==5) prcopt.wlmodear=1;
+    }
     if (BaseLineConst) {
         prcopt.baseline[0]=BaseLine[0];
         prcopt.baseline[1]=BaseLine[1];
@@ -916,7 +921,7 @@ int __fastcall TMainForm::GetOption(prcopt_t &prcopt, solopt_t &solopt,
     else if (RefPosType<=2) {
         for (int i=0;i<3;i++) prcopt.rb[i]=RefPos[i];
     }
-    else prcopt.refpos=RefPosType-2;
+    else prcopt.refpos=RefPosType==6?6:RefPosType-2;
     
     if (RovAntPcv) {
         strcpy(prcopt.anttype[0],RovAnt.c_str());

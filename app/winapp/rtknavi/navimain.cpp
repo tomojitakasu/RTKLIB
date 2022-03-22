@@ -2453,6 +2453,7 @@ void __fastcall TMainForm::LoadOpt(void)
     PrcOpt.dynamics =ini->ReadInteger("prcopt", "dynamics",        0);
     PrcOpt.tidecorr =ini->ReadInteger("prcopt", "tidecorr",        0);
     PrcOpt.modear   =ini->ReadInteger("prcopt", "modear",          1);
+    PrcOpt.wlmodear =ini->ReadInteger("prcopt", "wlmodear",        0);
     PrcOpt.glomodear=ini->ReadInteger("prcopt", "glomodear",       0);
     PrcOpt.bdsmodear=ini->ReadInteger("prcopt", "bdsmodear",       0);
     PrcOpt.maxout   =ini->ReadInteger("prcopt", "maxout",          5);
@@ -2701,6 +2702,7 @@ void __fastcall TMainForm::SaveOpt(void)
     ini->WriteInteger("prcopt", "dynamics",   PrcOpt.dynamics    );
     ini->WriteInteger("prcopt", "tidecorr",   PrcOpt.tidecorr    );
     ini->WriteInteger("prcopt", "modear",     PrcOpt.modear      );
+    ini->WriteInteger("prcopt", "wlmodear",   PrcOpt.wlmodear    );
     ini->WriteInteger("prcopt", "glomodear",  PrcOpt.glomodear   );
     ini->WriteInteger("prcopt", "bdsmodear",  PrcOpt.bdsmodear   );
     ini->WriteInteger("prcopt", "maxout",     PrcOpt.maxout      );

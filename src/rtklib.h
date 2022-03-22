@@ -414,6 +414,7 @@ extern "C" {
 #define ARMODE_FIXHOLD 3                /* AR mode: fix and hold */
 #define ARMODE_WLNL 4                   /* AR mode: wide lane/narrow lane */
 #define ARMODE_TCAR 5                   /* AR mode: triple carrier ar */
+#define ARMODE_WL   6                   /* AR mode: wide lane ar */
 
 #define SBSOPT_LCORR 1                  /* SBAS option: long term correction */
 #define SBSOPT_FCORR 2                  /* SBAS option: fast correction */
@@ -424,7 +425,9 @@ extern "C" {
 #define POSOPT_SINGLE 1                 /* pos option: average of single pos */
 #define POSOPT_FILE  2                  /* pos option: read from pos file */
 #define POSOPT_RINEX 3                  /* pos option: rinex header pos */
-#define POSOPT_RTCM  4                  /* pos option: rtcm/raw station pos */
+#define POSOPT_RTCM  4                  /* pos option: rtcm station pos */
+#define POSOPT_RAW   5                  /* pos option: raw station pos */
+#define POSOPT_RINEX_DYN 6              /* pos option: rinex site occupation pos */
 
 #define STR_NONE     0                  /* stream type: none */
 #define STR_SERIAL   1                  /* stream type: serial */
@@ -542,6 +545,8 @@ typedef struct {        /* observation data record */
     double L[NFREQ+NEXOBS]; /* observation data carrier-phase (cycle) */
     double P[NFREQ+NEXOBS]; /* observation data pseudorange (m) */
     float  D[NFREQ+NEXOBS]; /* observation data doppler frequency (Hz) */
+    /* only used if refpos == POSOPT_RINEX_DYN */
+    double refpos[3];   /* station coordinates associated with this observation */
 } obsd_t;
 
 typedef struct {        /* observation data */
@@ -964,6 +969,7 @@ typedef struct {        /* processing options type */
     snrmask_t snrmask;  /* SNR mask */
     int sateph;         /* satellite ephemeris/clock (EPHOPT_???) */
     int modear;         /* AR mode (0:off,1:continuous,2:instantaneous,3:fix and hold,4:ppp-ar) */
+    int wlmodear;       /* wide lane AR fix and hold (0: off, 1: on) */
     int glomodear;      /* GLONASS AR mode (0:off,1:on,2:auto cal,3:ext cal) */
     int bdsmodear;      /* BeiDou AR mode (0:off,1:on) */
     int maxout;         /* obs outage count to reset bias */
@@ -1102,7 +1108,7 @@ typedef struct {        /* satellite status type */
     double resc[NFREQ]; /* residuals of carrier-phase (m) */
     uint8_t vsat[NFREQ]; /* valid satellite flag */
     uint16_t snr[NFREQ]; /* signal strength (*SNR_UNIT dBHz) */
-    uint8_t fix [NFREQ]; /* ambiguity fix flag (1:fix,2:float,3:hold) */
+    uint8_t fix [NFREQ]; /* ambiguity fix flag (1:float,2:fix,3:hold) */
     uint8_t slip[NFREQ]; /* cycle-slip flag */
     uint8_t half[NFREQ]; /* half-cycle valid flag */
     int lock [NFREQ];   /* lock counter of phase */
@@ -1168,6 +1174,9 @@ typedef struct {        /* receiver raw data control type */
     char opt[256];      /* receiver dependent options */
     int format;         /* receiver stream format */
     void *rcv_data;     /* receiver dependent data */
+
+    /* only used for STRFMT_SBP and STRFMT_SBPJSON */
+    int staid;          /* station id */
 } raw_t;
 
 typedef struct {        /* stream type */

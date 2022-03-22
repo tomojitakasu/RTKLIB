@@ -405,7 +405,15 @@ void __fastcall TOptDialog::GetOpt(void)
 	IonoOpt		 ->ItemIndex=PrcOpt.ionoopt;
 	TropOpt		 ->ItemIndex=PrcOpt.tropopt;
 	SatEphem	 ->ItemIndex=PrcOpt.sateph;
-	AmbRes		 ->ItemIndex=PrcOpt.modear;
+	if(PrcOpt.modear>ARMODE_FIXHOLD) {
+		if(PrcOpt.wlmodear==0) {
+			AmbRes   ->ItemIndex    =4;
+		} else {
+			AmbRes   ->ItemIndex    =5;
+		}
+	} else {
+		AmbRes  ->ItemIndex	    =PrcOpt.modear;
+	}
 	GloAmbRes	 ->ItemIndex=PrcOpt.glomodear;
 	BdsAmbRes	 ->ItemIndex=PrcOpt.bdsmodear;
 	ValidThresAR ->Text     =s.sprintf("%.1f",PrcOpt.thresar[0]);
@@ -533,6 +541,11 @@ void __fastcall TOptDialog::SetOpt(void)
 	PrcOpt.tropopt   =TropOpt     ->ItemIndex;
 	PrcOpt.sateph    =SatEphem    ->ItemIndex;
 	PrcOpt.modear    =AmbRes      ->ItemIndex;
+	PrcOpt.wlmodear=0;
+	if(AmbRes->ItemIndex>3) {
+		PrcOpt.modear=ARMODE_WL;
+		if(AmbRes->ItemIndex==5) PrcOpt.wlmodear=1;
+	}
 	PrcOpt.glomodear =GloAmbRes   ->ItemIndex;
 	PrcOpt.bdsmodear =BdsAmbRes   ->ItemIndex;
 	PrcOpt.thresar[0]=str2dbl(ValidThresAR->Text);
@@ -720,8 +733,15 @@ void __fastcall TOptDialog::LoadOpt(AnsiString file)
 	PosOpt4		 ->Checked		=prcopt.posopt[3];
 	PosOpt5		 ->Checked		=prcopt.posopt[4];
 	PosOpt6		 ->Checked		=prcopt.posopt[5];
-	
-	AmbRes		 ->ItemIndex	=prcopt.modear;
+	if(prcopt.modear>ARMODE_FIXHOLD) {
+		if(prcopt.wlmodear==0) {
+			AmbRes   ->ItemIndex    =4;
+		} else {
+			AmbRes   ->ItemIndex    =5;
+		}
+	} else {
+		AmbRes  ->ItemIndex	    =prcopt.modear;
+	}
 	GloAmbRes	 ->ItemIndex	=prcopt.glomodear;
 	BdsAmbRes	 ->ItemIndex	=prcopt.bdsmodear;
 	ValidThresAR ->Text			=s.sprintf("%.1f",prcopt.thresar[0]);
@@ -937,6 +957,11 @@ void __fastcall TOptDialog::SaveOpt(AnsiString file)
 	prcopt.posopt[5]=PosOpt6->Checked;
 	
 	prcopt.modear	=AmbRes		->ItemIndex;
+	prcopt.wlmodear=0;
+	if(AmbRes->ItemIndex>3) {
+		prcopt.modear=ARMODE_WL;
+		if(AmbRes->ItemIndex==5) prcopt.wlmodear=1;
+	}
 	prcopt.glomodear=GloAmbRes	->ItemIndex;
 	prcopt.bdsmodear=BdsAmbRes	->ItemIndex;
 	prcopt.thresar[0]=str2dbl(ValidThresAR->Text);
