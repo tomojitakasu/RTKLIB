@@ -56,6 +56,8 @@ extern "C" {
 #endif
 
 /* constants -----------------------------------------------------------------*/
+#define MAXERRDAT 200
+int dcbf;
 
 #define VER_RTKLIB  "2.4.3"             /* library version */
 

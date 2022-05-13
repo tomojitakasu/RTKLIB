@@ -343,44 +343,103 @@ extern int readsap(const char *file, gtime_t time, nav_t *nav)
 /* read DCB parameters file --------------------------------------------------*/
 static int readdcbf(const char *file, nav_t *nav, const sta_t *sta)
 {
-    FILE *fp;
+    FILE *fp,*fpd;
     double cbias;
-    char buff[256],str1[32],str2[32]="";
-    int i,j,sat,type=0;
+     /*
+     str1 -> BIAS, str2 -> SVN, str3 -> PRN, str4 -> OBS1, 
+     str5 -> OBS2, str6 -> BIAS_START, str7 -> BIAS_END, 
+     str8 -> UNIT, str9 -> VALUE, str10 -> STD
+     */
+    char buff[2048],str1[32]="",str2[32]="",str3[32]="";
+    char str4[32],str5[32]="",str6[32]="",str7[32],str8[32]="";
+    char str9[32]="",str10[32]="",str11[32]="",target_code1[4]="",target_code2[4]="",target_sat[4]="",target_rcv[32]="";    
+    int sat,start=0;
+
     
+
     trace(3,"readdcbf: file=%s\n",file);
     
     if (!(fp=fopen(file,"r"))) {
-        trace(2,"dcb parameters file open error: %s\n",file);
+        trace(0,"dcb parameters file open error: %s\n",file);
         return 0;
     }
+
+
+    
     while (fgets(buff,sizeof(buff),fp)) {
-        
-        if      (strstr(buff,"DIFFERENTIAL (P1-P2) CODE BIASES")) type=1;
-        else if (strstr(buff,"DIFFERENTIAL (P1-C1) CODE BIASES")) type=2;
-        else if (strstr(buff,"DIFFERENTIAL (P2-C2) CODE BIASES")) type=3;
-        
-        if (!type||sscanf(buff,"%s %s",str1,str2)<1) continue;
-        
-        if ((cbias=str2num(buff,26,9))==0.0) continue;
-        
-        if (sta&&(!strcmp(str1,"G")||!strcmp(str1,"R"))) { /* receiver DCB */
-            for (i=0;i<MAXRCV;i++) {
-                if (!strcmp(sta[i].name,str2)) break;
-            }
-            if (i<MAXRCV) {
-                j=!strcmp(str1,"G")?0:1;
-                nav->rbias[i][j][type-1]=cbias*1E-9*CLIGHT; /* ns -> m */
-            }
+        if (strstr(buff, "*BIAS SVN_ PRN STATION__ OBS1 OBS2 BIAS_START____ BIAS_END______ UNIT __ESTIMATED_VALUE____ _STD_DEV___")) start=1;
+        if (strstr(buff,"POINTS")) start=0;
+        if (!start||sscanf(buff,"%s %s %s %3s %s %s %s %s %s %s",str1,str2,str3,str4,str5,str6,str7,str8,str9,str10)<0) continue;
+        /*trace(3,"%s %s %s %3s %s %s %s %s %s %s \n\r",str1,str2,str3,str4,str5,str6,str7,str8,str9,str10);*/
+        if (start == 2)
+        {
+            strcpy(target_code1, str4);
+            strcpy(target_code2, str5);
+            strcpy(target_sat, str3);
+            if(!strcmp(target_code1, str4) && !strcmp(target_code2, str5))
+            {
+                cbias = atof(str9); /*DCB*/
+                sat=satid2no(target_sat);
+                nav->cbias[sat-1][codeconv(target_code1)][codeconv(target_code2)]=cbias*1E-9*CLIGHT;
+            }   
         }
-        else if ((sat=satid2no(str1))) { /* satellite dcb */
-            nav->cbias[sat-1][type-1]=cbias*1E-9*CLIGHT; /* ns -> m */
-        }
+        start=2;
     }
+    
     fclose(fp);
+
+    if (!(fpd=fopen(file,"r"))) {
+        trace(0,"dcb parameters file open error: %s\n",file);
+        return 0;
+    }
+
+    while (fgets(buff,sizeof(buff),fpd)) {
+        if (strstr(buff, "POINTS")) start=1;
+        if (strstr(buff,"-BIAS/SOLUTION ")) start=0;
+        if (!start||sscanf(buff,"%s %s %s %s %s %s %s %s %s %s %s",str1,str2,str3,str4,str5,str6,str7,str8,str9,str10,str11)<0)
+        /*trace(3,"%s %s %s %s %s %s %s %s %s %s %s\n\r",str1,str2,str3,str4,str5,str6,str7,str8,str9,str10,str11);*/
+        if (start == 2){
+            if (!strcmp(station,str4))
+            {
+                strcpy(target_code1, str5);
+                strcpy(target_code2, str6);
+                strcpy(target_rcv, str4);
+                if(!strcmp(target_code1, str5) && !strcmp(target_code2, str6))
+                {
+                    cbias = atof(str10); /*DCB*/
+                    nav->rbias[codeconv(target_code1)][codeconv(target_code2)] = cbias*1E-9*CLIGHT;
+                }
+            }
+        }
+        if (start == 1) start = 2;
+        
+    }
+    fclose(fpd);
     
     return 1;
 }
+
+/*convert observation code CHAR to NUM*/
+int codeconv(char *obscode)
+{
+    int i;
+    
+    int codeL[] = {CODE_L1C,CODE_L1P,CODE_L1W,CODE_L1Y,CODE_L1M,CODE_L1N,CODE_L1S,CODE_L1L,CODE_L1E,CODE_L1A
+    ,CODE_L1B,CODE_L1X,CODE_L1Z,CODE_L2C,CODE_L2D,CODE_L2S,CODE_L2L,CODE_L2X,CODE_L2P,CODE_L2W,CODE_L2Y,CODE_L2M
+    ,CODE_L2N,CODE_L5I,CODE_L5Q,CODE_L5X,CODE_L7I,CODE_L7Q,CODE_L7X,CODE_L6A,CODE_L6B,CODE_L6C,CODE_L6X,CODE_L6Z
+    ,CODE_L6S,CODE_L6L,CODE_L8I,CODE_L8Q,CODE_L8X,CODE_L2I,CODE_L2Q,CODE_L6I,CODE_L6Q,CODE_L3I,CODE_L3Q,CODE_L3X
+    ,CODE_L1I,CODE_L1Q,CODE_L5A,CODE_L5B,CODE_L5C,CODE_L9A,CODE_L9B,CODE_L9C,CODE_L9X,CODE_L1D,CODE_L5D,CODE_L5P
+    ,CODE_L5Z,CODE_L6E,CODE_L7D,CODE_L7P,CODE_L7Z,CODE_L8D,CODE_L8P,CODE_L4A,CODE_L4B,CODE_L4X};
+    char *codeC[] = {"C1C","C1P","C1W","C1Y","C1M","C1N","C1S","C1L","C1E","C1A","C1B","C1X","C1Z","C2C","C2D"
+    ,"C2S","C2L","C2X","C2P","C2W","C2Y","C2M","C2N","C5I","C5Q","C5X","C7I","C7Q","C7X","C6A","C6B","C6C","C6X","C6Z","C6S"
+    ,"C6L","C8I","C8Q","C8X","C2I","C2Q","C6I","C6Q","C3I","C3Q","C3X","C1I","C1Q","C5A","C5B","C5C","C9A","C9B"
+    ,"C9C","C9X","C1D","C5D","C5P","C5Z","C6E","C7D","C7P","C7Z","C8D","C8P","C4A","C4B","C4X"};
+      
+    for (i = 0; i < 68; i++) if(!strcmp(codeC[i], obscode)) return codeL[i];
+
+    return 0;
+}
+
 /* read DCB parameters ---------------------------------------------------------
 * read differential code bias (DCB) parameters
 * args   : char   *file       I   DCB parameters file (wild-card * expanded)
@@ -392,13 +451,13 @@ static int readdcbf(const char *file, nav_t *nav, const sta_t *sta)
 *-----------------------------------------------------------------------------*/
 extern int readdcb(const char *file, nav_t *nav, const sta_t *sta)
 {
-    int i,j,n;
+    int i,j,k,n;
     char *efiles[MAXEXFILE]={0};
     
     trace(3,"readdcb : file=%s\n",file);
     
-    for (i=0;i<MAXSAT;i++) for (j=0;j<3;j++) {
-        nav->cbias[i][j]=0.0;
+    for (i=0;i<MAXSAT;i++) for (j=0;j<MAXCODE;j++) for (k=0;k<MAXCODE;k++) {
+        nav->cbias[i][j][k]=0.0;
     }
     for (i=0;i<MAXEXFILE;i++) {
         if (!(efiles[i]=(char *)malloc(1024))) {
@@ -412,7 +471,7 @@ extern int readdcb(const char *file, nav_t *nav, const sta_t *sta)
         readdcbf(efiles[i],nav,sta);
     }
     for (i=0;i<MAXEXFILE;i++) free(efiles[i]);
-    
+    dcbf = 1;
     return 1;
 }
 /* polynomial interpolation by Neville's algorithm ---------------------------*/

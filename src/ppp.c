@@ -373,9 +373,13 @@ static void corr_meas(const obsd_t *obs, const nav_t *nav, const double *azel,
                       double *Lc, double *Pc)
 {
     double freq[NFREQ]={0},C1,C2;
+    int *codes;
     int i,sys=satsys(obs->sat,NULL);
     
+    codes = (int *)malloc(NFREQ * sizeof(int));
+    
     for (i=0;i<NFREQ;i++) {
+        
         L[i]=P[i]=0.0;
         freq[i]=sat2freq(obs->sat,obs->code[i],nav);
         if (freq[i]==0.0||obs->L[i]==0.0||obs->P[i]==0.0) continue;
@@ -384,13 +388,128 @@ static void corr_meas(const obsd_t *obs, const nav_t *nav, const double *azel,
         /* antenna phase center and phase windup correction */
         L[i]=obs->L[i]*CLIGHT/freq[i]-dants[i]-dantr[i]-phw*CLIGHT/freq[i];
         P[i]=obs->P[i]-dants[i]-dantr[i];
+        codes[i] = obs->code[i];
+        /*if (sys==SYS_GPS||sys==SYS_GLO) {
+        if (obs->code[i]==CODE_L1C) P[i]+=nav->cbias[obs->sat-1][1][1];
+        if (obs->code[i]==CODE_L2C) P[i]+=nav->cbias[obs->sat-1][2][2];
+    }*/
+    }
+    
+    
+    if (sys==SYS_GPS) 
+    {
+        if (dcbf != 1)
+        {
+            if (codes[0]==CODE_L1C)
+            {   
+                P[0]+=nav->ssr[obs->sat-1].cbias[CODE_L1C-1]-nav->ssr[obs->sat-1].cbias[CODE_L1W-1];   
+                L[0]+=nav->ssr[obs->sat-1].pbias[CODE_L1C-1];
+            }
+            if (codes[1]==CODE_L2W)
+            {
+                P[1]-=nav->ssr[obs->sat-1].cbias[CODE_L2W-1]-nav->ssr[obs->sat-1].cbias[CODE_L2W-1];
+                L[1]-=nav->ssr[obs->sat-1].pbias[CODE_L2W-1];
+            }
+        }
+        else
+        {
+            if (codes[0]==CODE_L1C)
+            {   
+                P[0]+=nav->ssr[obs->sat-1].cbias[CODE_L1C-1]-nav->ssr[obs->sat-1].cbias[CODE_L1W-1]-nav->rbias[CODE_L1C][CODE_L1W];   
+            }
+            if (codes[1]==CODE_L2W)
+            {
+                P[1]-=nav->ssr[obs->sat-1].cbias[CODE_L2W-1]-nav->ssr[obs->sat-1].cbias[CODE_L2W-1];
+            }
+        }
         
-        /* P1-C1,P2-C2 dcb correction (C1->P1,C2->P2) */
-        if (sys==SYS_GPS||sys==SYS_GLO) {
-            if (obs->code[i]==CODE_L1C) P[i]+=nav->cbias[obs->sat-1][1];
-            if (obs->code[i]==CODE_L2C) P[i]+=nav->cbias[obs->sat-1][2];
+        
+    }
+    if (sys==SYS_GLO)
+    {
+        if (dcbf != 1)
+        {
+            if (codes[0]==CODE_L1C)
+            {
+                P[0]+=nav->ssr[obs->sat-1].cbias[CODE_L1C-1]-nav->ssr[obs->sat-1].cbias[CODE_L1P-1];
+            }
+            if (codes[1]==CODE_L2P)
+            {
+                P[1]+=nav->ssr[obs->sat-1].cbias[CODE_L2C-1]-nav->ssr[obs->sat-1].cbias[CODE_L2P-1];
+            }
+        }
+        else 
+        {
+            if (codes[0]==CODE_L1C)
+            {
+                P[0]+=nav->ssr[obs->sat-1].cbias[CODE_L1C-1]-nav->ssr[obs->sat-1].cbias[CODE_L1P-1]-nav->rbias[CODE_L1C][CODE_L1P];
+            }
+            if (codes[1]==CODE_L2P)
+            {
+                P[1]+=nav->ssr[obs->sat-1].cbias[CODE_L2C-1]-nav->ssr[obs->sat-1].cbias[CODE_L2P-1]-nav->rbias[CODE_L2C][CODE_L2P];
+            }
         }
     }
+    if (sys == SYS_GAL)
+    {
+        if (dcbf != 1)
+        {
+            if (codes[0]==CODE_L1X)
+            {
+                P[0]+=nav->ssr[obs->sat-1].cbias[CODE_L1C-1]-nav->ssr[obs->sat-1].cbias[CODE_L1X-1]-nav->rbias[CODE_L1C][CODE_L1X];
+                L[0]+=nav->ssr[obs->sat-1].pbias[CODE_L1C-1];
+            }
+            if (codes[1]==CODE_L7X)
+            {
+                P[1]+=nav->ssr[obs->sat-1].cbias[CODE_L7Q-1]-nav->ssr[obs->sat-1].cbias[CODE_L7X-1]-nav->rbias[CODE_L7Q][CODE_L7X];
+                L[1]+=nav->ssr[obs->sat-1].pbias[CODE_L7Q-1];
+            }
+        }
+        else 
+        {
+            if (codes[0]==CODE_L1X)
+            {
+                P[0]+=nav->ssr[obs->sat-1].cbias[CODE_L1C-1]-nav->ssr[obs->sat-1].cbias[CODE_L1X-1]-nav->rbias[CODE_L1C][CODE_L1X];
+            }
+            if (codes[1]==CODE_L7X)
+            {
+                P[1]+=nav->ssr[obs->sat-1].cbias[CODE_L7Q-1]-nav->ssr[obs->sat-1].cbias[CODE_L7X-1]-nav->rbias[CODE_L7Q][CODE_L7X];;
+            }
+        }
+    }
+    
+    
+    if (sys == SYS_CMP)
+    {
+        if (obs->code[0]==CODE_L2I)
+        {
+            P[0]+=nav->ssr[obs->sat-1].cbias[CODE_L2I]-nav->ssr[obs->sat-1].cbias[CODE_L6I];
+        }
+        if (obs->code[1]==CODE_L7I)
+        {
+            P[1]-=nav->ssr[obs->sat-1].cbias[CODE_L7I];
+        }
+        /* BDS-2 */
+        /*Hence BDS-2/3 SSR-DCB not working
+        if (obs->code[0]==CODE_L2I)
+        {
+            P[0]-=nav->cbias[obs->sat-1][CODE_L2I][CODE_L6I];
+        }
+        if (obs->code[1]==CODE_L7I)
+        {
+            P[1]-=nav->cbias[obs->sat-1][CODE_L2I][CODE_L7I]+nav->cbias[obs->sat-1][CODE_L2I][CODE_L6I];
+        }
+        if (obs->code[2]==CODE_L5X)
+        {
+            P[1]-=nav->cbias[obs->sat-1][CODE_L1X][CODE_L5X]+nav->cbias[obs->sat-1][CODE_L1X][CODE_L6I]-nav->cbias[obs->sat-1][CODE_L2I][CODE_L6I];
+        }
+        if (obs->code[2]==CODE_L5P)
+        {
+            P[1]-=nav->cbias[obs->sat-1][CODE_L1P][CODE_L5P]+nav->cbias[obs->sat-1][CODE_L1P][CODE_L6I]-nav->cbias[obs->sat-1][CODE_L2I][CODE_L6I];
+        }*/
+    }
+    
+
     /* iono-free LC */
     *Lc=*Pc=0.0;
     if (freq[0]==0.0||freq[1]==0.0) return;
@@ -399,6 +518,7 @@ static void corr_meas(const obsd_t *obs, const nav_t *nav, const double *azel,
     
     if (L[0]!=0.0&&L[1]!=0.0) *Lc=C1*L[0]+C2*L[1];
     if (P[0]!=0.0&&P[1]!=0.0) *Pc=C1*P[0]+C2*P[1];
+    free(codes);
 }
 /* detect cycle slip by LLI --------------------------------------------------*/
 static void detslp_ll(rtk_t *rtk, const obsd_t *obs, int n)
