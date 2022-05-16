@@ -2,5 +2,5 @@
 
 ### For post-processing use BSX file (https://cddis.nasa.gov/Data_and_Derived_Products/GNSS/gnss_differential_code_bias_product.html)
 
-### For real-time any SSR-stream with DCB or use SSRA00CNE1 from IGS
+### For real-time you can use any SSR-stream with DCB or use SSRA00CNE1 from IGS
 
