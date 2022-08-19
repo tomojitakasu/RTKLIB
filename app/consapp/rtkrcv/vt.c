@@ -50,6 +50,39 @@
 #define C_DONT      (char)254           /* telnet option negotiation */
 #define C_IAC       (char)255           /* telnet interpret as command */
 
+/* open virtual console on stdout --------------------------------------------
+* open virtual console
+* args   : 
+* return : virtual console (NULL: error)
+*-----------------------------------------------------------------------------*/
+extern vt_t *vt_open_stdout()
+{
+    vt_t *vt;
+    int i;
+    struct termios tio={0};
+    
+    trace(3,"vt_open_stdout\n");
+    
+    if (!(vt=(vt_t *)malloc(sizeof(vt_t)))) {
+        return NULL;
+    }
+    /* set terminal mode echo-off */
+    vt->in=fileno(stdin);
+    vt->out=fileno(stdout);
+    tcgetattr(vt->in,&vt->tio);
+    tcsetattr(vt->in,TCSANOW,&tio);
+
+    vt->n=vt->nesc=vt->cur=vt->cur_h=vt->brk=vt->blind=0;
+    vt->logfp=NULL;
+    for (i=0;i<MAXHIST;i++) {
+        vt->hist[i]=NULL;
+    }
+    vt->type=VT_TYPE_STDOUT;
+    
+    vt->state=1;
+    return vt;
+}
+
 /* open virtual console --------------------------------------------------------
 * open virtual console
 * args   : vt_t   *vt       I   virtual console
@@ -69,7 +102,8 @@ extern vt_t *vt_open(int sock, const char *dev)
     if (!(vt=(vt_t *)malloc(sizeof(vt_t)))) {
         return NULL;
     }
-    vt->type=vt->n=vt->nesc=vt->cur=vt->cur_h=vt->brk=vt->blind=0;
+    vt->type=VT_TYPE_DEV;
+    vt->n=vt->nesc=vt->cur=vt->cur_h=vt->brk=vt->blind=0;
     vt->logfp=NULL;
     for (i=0;i<MAXHIST;i++) {
         vt->hist[i]=NULL;
@@ -84,7 +118,7 @@ extern vt_t *vt_open(int sock, const char *dev)
         tcsetattr(vt->in,TCSANOW,&tio);
     }
     else {
-        vt->type=1;
+        vt->type=VT_TYPE_TELNET;
         vt->in=vt->out=sock;
         
         /* send telnet character mode */
@@ -106,12 +140,20 @@ extern void vt_close(vt_t *vt)
     int i;
     
     trace(3,"vt_close:\n");
-    
-    /* restore terminal mode */
-    if (!vt->type) {
-        tcsetattr(vt->in,TCSANOW,&vt->tio);
+    switch ( vt->type ) {
+        case VT_TYPE_DEV:
+            tcsetattr(vt->in,TCSANOW,&vt->tio);
+            close(vt->in);
+            break;
+        case VT_TYPE_TELNET:
+            close(vt->in);
+            break;
+        default:
+        case VT_TYPE_STDOUT:
+            tcsetattr(vt->in,TCSANOW,&vt->tio);
+            break;
+
     }
-    close(vt->in);
     if (vt->logfp) fclose(vt->logfp);
     for (i=0;i<MAXHIST;i++) {
         free(vt->hist[i]);
@@ -273,7 +315,7 @@ extern int vt_getc(vt_t *vt, char *c)
     if (!(stat=select(vt->in+1,&rs,NULL,NULL,&tv))) return 1; /* no data */
     if (stat<0||read(vt->in,c,1)!=1) return 0; /* error */
     
-    if ((vt->type&&*c==C_IAC)||*c==C_ESC) { /* escape or telnet */
+    if (( (vt->type==VT_TYPE_TELNET)&&*c==C_IAC)||*c==C_ESC) { /* escape or telnet */
         vt->esc[0]=*c; *c='\0';
         vt->nesc=1;
     }

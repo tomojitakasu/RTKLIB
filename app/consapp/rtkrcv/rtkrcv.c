@@ -1407,6 +1407,7 @@ static void *con_thread(void *arg)
         }
     }
     vt_close(con->vt);
+    con->vt = NULL;
     return 0;
 }
 /* open console --------------------------------------------------------------*/
@@ -1418,9 +1419,16 @@ static con_t *con_open(int sock, const char *dev)
     
     if (!(con=(con_t *)malloc(sizeof(con_t)))) return NULL;
     
-    if (!(con->vt=vt_open(sock,dev))) {
-        free(con);
-        return NULL;
+    if ( sock == 0 ) {
+        if (!(con->vt=vt_open_stdout())) {
+            free(con);
+            return NULL;
+        }
+    } else {
+        if (!(con->vt=vt_open(sock,dev))) {
+            free(con);
+            return NULL;
+        }
     }
     /* start console thread */
     con->state=1;
@@ -1436,7 +1444,10 @@ static void con_close(con_t *con)
     trace(3,"con_close:\n");
     
     if (!con) return;
-    con->state=con->vt->state=0;
+    con->state=0;
+    if ( con->vt ) {
+        con->vt->state = 0;
+    }
     pthread_join(con->thread,NULL);
     free(con);
 }
