@@ -1407,6 +1407,7 @@ static void *con_thread(void *arg)
         }
     }
     vt_close(con->vt);
+    con->vt = NULL;
     return 0;
 }
 /* open console --------------------------------------------------------------*/
@@ -1443,7 +1444,10 @@ static void con_close(con_t *con)
     trace(3,"con_close:\n");
     
     if (!con) return;
-    con->state=con->vt->state=0;
+    con->state=0;
+    if ( con->vt ) {
+        con->vt->state = 0;
+    }
     pthread_join(con->thread,NULL);
     free(con);
 }
@@ -1648,27 +1652,19 @@ int main(int argc, char **argv)
     if (!loadopts(file,rcvopts)||!loadopts(file,sysopts)) {
         fprintf(stderr,"no options file: %s. defaults used\n",file);
     }
-    fprintf(stderr,"> option loaded\n");
-    fflush(stderr);
     getsysopts(&prcopt,solopt,&filopt);
     
     /* read navigation data */
     if (!readnav(NAVIFILE,&svr.nav)) {
         fprintf(stderr,"no navigation data: %s\n",NAVIFILE);
     }
-    fprintf(stderr,"> NAVIFILE\n");
-    fflush(stderr);
     if (outstat>0) {
         rtkopenstat(STATFILE,outstat);
     }
-    fflush(stderr);
     /* open monitor port */
-    fprintf(stderr,"> open monitoring\n"); fflush(stderr);
     if (moniport>0&&!openmoni(moniport)) {
         fprintf(stderr,"monitor port open error: %d\n",moniport);
     }
-    fprintf(stderr,"> open monitoring done\n");
-    fflush(stderr);
     if (port) {
         /* open socket for remote console */
         if ((sock=open_sock(port))<=0) {
