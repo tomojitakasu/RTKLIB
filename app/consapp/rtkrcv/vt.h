@@ -15,9 +15,15 @@
 #define MAXHIST     256                 /* size of history buffer */
 
 /* type definitions ----------------------------------------------------------*/
+typedef enum {
+    VT_TYPE_DEV = 0,
+    VT_TYPE_TELNET = 1,
+    VT_TYPE_STDOUT = 2
+} vt_type_t;
+
 typedef struct vt_tag {                 /* virtual console type */
     int state;                          /* state(0:close,1:open) */
-    int type;                           /* type (0:dev,1:telnet) */
+    vt_type_t type;                     /* type (0:dev,1:telnet,2:stdout) */
     int in,out;                         /* input/output file descriptor */
     int n,nesc;                         /* number of line buffer/escape */
     int cur;                            /* cursor position */
@@ -33,6 +39,7 @@ typedef struct vt_tag {                 /* virtual console type */
 
 /* function prototypes -------------------------------------------------------*/
 extern vt_t *vt_open(int sock, const char *dev);
+extern vt_t *vt_open_stdout();
 extern void vt_close(vt_t *vt);
 extern int vt_getc(vt_t *vt, char *c);
 extern int vt_gets(vt_t *vt, char *buff, int n);
