@@ -415,7 +415,7 @@ static void corr_meas(const obsd_t *obs, const nav_t *nav, const double *azel,
         {
             if (codes[0]==CODE_L1C)
             {   
-                P[0]+=nav->ssr[obs->sat-1].cbias[CODE_L1C-1]-nav->ssr[obs->sat-1].cbias[CODE_L1W-1]-nav->rbias[CODE_L1C][CODE_L1W];   
+                P[0]+=nav->ssr[obs->sat-1].cbias[CODE_L1C-1]-nav->ssr[obs->sat-1].cbias[CODE_L1W-1];   
             }
             if (codes[1]==CODE_L2W)
             {
@@ -442,11 +442,11 @@ static void corr_meas(const obsd_t *obs, const nav_t *nav, const double *azel,
         {
             if (codes[0]==CODE_L1C)
             {
-                P[0]+=nav->ssr[obs->sat-1].cbias[CODE_L1C-1]-nav->ssr[obs->sat-1].cbias[CODE_L1P-1]-nav->rbias[CODE_L1C][CODE_L1P];
+                P[0]+=nav->ssr[obs->sat-1].cbias[CODE_L1C-1]-nav->ssr[obs->sat-1].cbias[CODE_L1P-1];
             }
             if (codes[1]==CODE_L2P)
             {
-                P[1]+=nav->ssr[obs->sat-1].cbias[CODE_L2C-1]-nav->ssr[obs->sat-1].cbias[CODE_L2P-1]-nav->rbias[CODE_L2C][CODE_L2P];
+                P[1]+=nav->ssr[obs->sat-1].cbias[CODE_L2C-1]-nav->ssr[obs->sat-1].cbias[CODE_L2P-1];
             }
         }
     }
@@ -456,12 +456,12 @@ static void corr_meas(const obsd_t *obs, const nav_t *nav, const double *azel,
         {
             if (codes[0]==CODE_L1X)
             {
-                P[0]+=nav->ssr[obs->sat-1].cbias[CODE_L1C-1]-nav->ssr[obs->sat-1].cbias[CODE_L1X-1]-nav->rbias[CODE_L1C][CODE_L1X];
+                P[0]+=nav->ssr[obs->sat-1].cbias[CODE_L1C-1]-nav->ssr[obs->sat-1].cbias[CODE_L1X-1];
                 L[0]+=nav->ssr[obs->sat-1].pbias[CODE_L1C-1];
             }
             if (codes[1]==CODE_L7X)
             {
-                P[1]+=nav->ssr[obs->sat-1].cbias[CODE_L7Q-1]-nav->ssr[obs->sat-1].cbias[CODE_L7X-1]-nav->rbias[CODE_L7Q][CODE_L7X];
+                P[1]+=nav->ssr[obs->sat-1].cbias[CODE_L7Q-1]-nav->ssr[obs->sat-1].cbias[CODE_L7X-1];
                 L[1]+=nav->ssr[obs->sat-1].pbias[CODE_L7Q-1];
             }
         }
@@ -469,11 +469,11 @@ static void corr_meas(const obsd_t *obs, const nav_t *nav, const double *azel,
         {
             if (codes[0]==CODE_L1X)
             {
-                P[0]+=nav->ssr[obs->sat-1].cbias[CODE_L1C-1]-nav->ssr[obs->sat-1].cbias[CODE_L1X-1]-nav->rbias[CODE_L1C][CODE_L1X];
+                P[0]+=nav->ssr[obs->sat-1].cbias[CODE_L1C-1]-nav->ssr[obs->sat-1].cbias[CODE_L1X-1];
             }
             if (codes[1]==CODE_L7X)
             {
-                P[1]+=nav->ssr[obs->sat-1].cbias[CODE_L7Q-1]-nav->ssr[obs->sat-1].cbias[CODE_L7X-1]-nav->rbias[CODE_L7Q][CODE_L7X];;
+                P[1]+=nav->ssr[obs->sat-1].cbias[CODE_L7Q-1]-nav->ssr[obs->sat-1].cbias[CODE_L7X-1];
             }
         }
     }

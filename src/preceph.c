@@ -407,7 +407,7 @@ static int readdcbf(const char *file, nav_t *nav, const sta_t *sta)
                 if(!strcmp(target_code1, str5) && !strcmp(target_code2, str6))
                 {
                     cbias = atof(str10); /*DCB*/
-                    nav->rbias[codeconv(target_code1)][codeconv(target_code2)] = cbias*1E-9*CLIGHT;
+                    nav->rbias[(int)station][codeconv(target_code1)][codeconv(target_code2)] = cbias*1E-9*CLIGHT;
                 }
             }
         }

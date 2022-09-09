@@ -58,6 +58,7 @@ extern "C" {
 /* constants -----------------------------------------------------------------*/
 #define MAXERRDAT 200
 int dcbf;
+char *station[32];
 
 #define VER_RTKLIB  "2.4.3"             /* library version */
 
@@ -579,6 +580,15 @@ typedef struct {        /* antenna parameters type */
     pcv_t *pcv;         /* antenna parameters data */
 } pcvs_t;
 
+typedef struct {
+    char name_station[32];
+    int code_f1;
+    int code_f2;
+    double rbias_DCB; 
+} rcv_t;
+
+rcv_t rbias[50];
+
 typedef struct {        /* almanac type */
     int sat;            /* satellite number */
     int svh;            /* sv health (0:ok) */
@@ -816,8 +826,8 @@ typedef struct {        /* navigation data type */
     double ion_cmp[8];  /* BeiDou iono model parameters {a0,a1,a2,a3,b0,b1,b2,b3} */
     double ion_irn[8];  /* IRNSS iono model parameters {a0,a1,a2,a3,b0,b1,b2,b3} */
     int glo_fcn[32];    /* GLONASS FCN + 8 */
-    double cbias[MAXSAT][3]; /* satellite DCB (0:P1-P2,1:P1-C1,2:P2-C2) (m) */
-    double rbias[MAXRCV][2][3]; /* receiver DCB (0:P1-P2,1:P1-C1,2:P2-C2) (m) */
+    double cbias[MAXSAT][MAXCODE][MAXCODE]; /* satellite DCB observation codes (m) */
+    float rbias[MAXRCV][2][3]; /* receiver DCB (0:P1-P2,1:P1-C1,2:P2-C2) (m) */
     pcv_t pcvs[MAXSAT]; /* satellite antenna pcv */
     sbssat_t sbssat;    /* SBAS satellite corrections */
     sbsion_t sbsion[MAXBAND+1]; /* SBAS ionosphere corrections */
