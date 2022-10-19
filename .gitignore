@@ -13,3 +13,4 @@ Makefile
 __astcache
 bin/*
 app/consapp/*/gcc/*
+*.qmake.stash
