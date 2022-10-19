@@ -4,7 +4,7 @@
 #export CC = clang
 export CC = gcc
 
-BINDIR = /usr/local/bin
+BINDIR = $${HOME}/bin # /usr/local/bin
 DIRS   = pos2kml str2str rnx2rtkp convbin rtkrcv
 
 all:
