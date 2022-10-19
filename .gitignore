@@ -11,3 +11,5 @@ __history
 Makefile
 *.pro.user
 __astcache
+bin/*
+app/consapp/*/gcc/*
