@@ -92,7 +92,7 @@ extern int showmsg(const char *format, ...)
         va_end(arg);
         QMetaObject::invokeMethod(mainForm, "ShowMsg",Qt::QueuedConnection,
                                   Q_ARG(QString,QString(buff)));
-    }    
+    }
     return mainForm->AbortFlag;
 }
 // set time span of progress bar --------------------------------------------
@@ -177,11 +177,11 @@ MainForm::MainForm(QWidget *parent)
     setWindowIcon(QIcon(":/icons/rktpost_Icon.ico"));
     setlocale(LC_NUMERIC,"C");
     int i;
-    
+
     QString file=QApplication::applicationFilePath();
     QFileInfo fi(file);
     IniFile=fi.absolutePath()+"/"+fi.baseName()+".ini";
-    
+
     DynamicModel=IonoOpt=TropOpt=RovAntPcv=RefAntPcv=AmbRes=0;
     RovPosType=RefPosType=0;
     OutCntResetAmb=5; LockCntFixAmb=5; FixCntHoldAmb=10;
@@ -264,7 +264,7 @@ MainForm::MainForm(QWidget *parent)
 void MainForm::FormCreate()
 {
     setWindowTitle(QString("%1 ver.%2 %3").arg(PRGNAME).arg(VER_RTKLIB).arg(PATCH_LEVEL));
-    
+
 }
 // callback on form show ----------------------------------------------------
 void MainForm::showEvent(QShowEvent* event)
@@ -383,7 +383,7 @@ void MainForm::showEvent(QShowEvent* event)
     LoadOpt();
 
     if (inputflag) SetOutFile();
-    
+
     UpdateEnable();
 }
 // callback on form close ---------------------------------------------------
@@ -401,7 +401,7 @@ void  MainForm::dropEvent(QDropEvent *event)
 {
     QPoint point=event->pos();
     int top;
-    
+
     if (!event->mimeData()->hasFormat("text/uri-list")) return;
 
     QString file=QDir::toNativeSeparators(event->mimeData()->text());
@@ -434,9 +434,9 @@ void MainForm::BtnPlotClick()
     QString file=FilePath(OutputFile_Text);
     QString cmd1="rtkplot_qt",cmd2="../../../bin/rtkplot_qt";
     QStringList opts;
-    
+
     opts+=" \""+file+"\"";
-    
+
     if (!ExecCmd(cmd1, opts, 1)&&!ExecCmd(cmd2, opts, 1)) {
         ShowMsg("error : rtkplot_qt execution");
     }
@@ -582,28 +582,28 @@ void MainForm::BtnTime2Click()
 // callback on button-inputfile-1 -------------------------------------------
 void MainForm::BtnInputFile1Click()
 {
-    InputFile1->setCurrentText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("RINEX OBS (Rover) File"),InputFile1->currentText(),tr("All (*.*);;RINEX OBS (*.obs *.*O *.*D)"))));
+    InputFile1->setCurrentText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("RINEX OBS (Rover) File"),InputFile1->currentText(),tr("All (*.*);;RINEX OBS (*.rnx *.obs *.*O *.*D)"))));
     SetOutFile();
 }
 // callback on button-inputfile-2 -------------------------------------------
 void MainForm::BtnInputFile2Click()
 {
-    InputFile2->setCurrentText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("RINEX OBS (Base Station) File"),InputFile2->currentText(),tr("All (*.*);;RINEX OBS (*.obs *.*O *.*D)"))));
+    InputFile2->setCurrentText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("RINEX OBS (Base Station) File"),InputFile2->currentText(),tr("All (*.*);;RINEX OBS (*.rnx *.obs *.*O *.*D)"))));
 }
 // callback on button-inputfile-3 -------------------------------------------
 void MainForm::BtnInputFile3Click()
 {
-    InputFile3->setCurrentText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("RINEX NAV/CLK,SP3,FCB,IONEX or SBAS/EMS File"),InputFile3->currentText(),tr("All (*.*);;RINEX NAV (*.*nav *.*N *.*P *.*G *.*H *.*Q)"))));
+    InputFile3->setCurrentText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("RINEX NAV/CLK,SP3,FCB,IONEX or SBAS/EMS File"),InputFile3->currentText(),tr("All (*.*);;RINEX NAV (*.rnx *.*nav *.*N *.*P *.*G *.*H *.*Q)"))));
 }
 // callback on button-inputfile-4 -------------------------------------------
 void MainForm::BtnInputFile4Click()
 {
-    InputFile4->setCurrentText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("RINEX NAV/CLK,SP3,FCB,IONEX or SBAS/EMS File"),InputFile4->currentText(),tr("All (*.*);;Precise Ephemeris/Clock (*.sp3 *.eph* *.clk*)"))));
+    InputFile4->setCurrentText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("RINEX NAV/CLK,SP3,FCB,IONEX or SBAS/EMS File"),InputFile4->currentText(),tr("All (*.*);;Precise Ephemeris/Clock (*.SP3 *.sp3 *.eph* *.clk*)"))));
 }
 // callback on button-inputfile-5 -------------------------------------------
 void MainForm::BtnInputFile5Click()
 {
-    InputFile5->setCurrentText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("RINEX NAV/CLK,SP3,FCB,IONEX or SBAS/EMS File"),InputFile5->currentText(),tr("All (*.*);;Precise Ephemeris/Clock (*.sp3 *.eph* *.clk*)"))));
+    InputFile5->setCurrentText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("RINEX NAV/CLK,SP3,FCB,IONEX or SBAS/EMS File"),InputFile5->currentText(),tr("All (*.*);;Precise Ephemeris/Clock (*.CLK *.sp3 *.eph* *.clk*)"))));
 }
 // callback on button-inputfile-6 -------------------------------------------
 void MainForm::BtnInputFile6Click()
@@ -634,7 +634,7 @@ void MainForm::BtnInputView3Click()
     QString InputFile3_Text=InputFile3->currentText();
     QString file=FilePath(InputFile3_Text);
     QString f;
-    
+
     if (file=="") {
         file=FilePath(InputFile1_Text);
         if (!ObsToNav(file,f)) return;
@@ -689,21 +689,21 @@ void MainForm::BtnInputPlot1Click()
     QString cmd1="rtkplot_qt",cmd2="../../../bin/rtkplot_qt";
     QStringList opts;
     QString navfile;
-    
+
     files[0]=FilePath(InputFile1_Text); /* obs rover */
     files[1]=FilePath(InputFile2_Text); /* obs base */
     files[2]=FilePath(InputFile3_Text);
     files[3]=FilePath(InputFile4_Text);
     files[4]=FilePath(InputFile5_Text);
     files[5]=FilePath(InputFile6_Text);
-    
+
     if (files[2]=="") {
         if (ObsToNav(files[0],navfile)) files[2]=navfile;
     }
     opts << "-r";
     for (int i=0;i<5;i++)
             opts <<"\""+files[i]+"\"";
-    
+
     if (!ExecCmd(cmd1, opts,1)&&!ExecCmd(cmd2, opts,1)) {
         ShowMsg("error : rtkplot_qt execution");
     }
@@ -721,14 +721,14 @@ void MainForm::BtnInputPlot2Click()
     QString cmd1="rtkplot_qt",cmd2="../../../bin/rtkplot_qt";
     QStringList opts;
     QString navfile;
-    
+
     files[0]=FilePath(InputFile1_Text); /* obs rover */
     files[1]=FilePath(InputFile2_Text); /* obs base */
     files[2]=FilePath(InputFile3_Text);
     files[3]=FilePath(InputFile4_Text);
     files[4]=FilePath(InputFile5_Text);
     files[5]=FilePath(InputFile6_Text);
-    
+
     if (files[2]=="") {
         if (ObsToNav(files[0],navfile)) files[2]=navfile;
     }
@@ -802,11 +802,11 @@ void MainForm::SetOutFile(void)
     QString InputFile1_Text=InputFile1->currentText();
     QString OutDir_Text=OutDir->text();
     QString ofile,ifile;
-    
+
     if (InputFile1->currentText()=="") return;
-    
+
     ifile=InputFile1_Text;
-    
+
     if (OutDirEna->isChecked()) {
         QFileInfo f(ifile);
         ofile=OutDir_Text+"/"+f.baseName();
@@ -828,7 +828,7 @@ void MainForm::ExecProc(void)
     QString InputFile5_Text=InputFile5->currentText(),InputFile6_Text=InputFile6->currentText();
     QString OutputFile_Text=OutputFile->currentText();
     QString temp;
-    
+
     ProcessingThread *thread= new ProcessingThread(this);
 
     // get processing options
@@ -841,9 +841,9 @@ void MainForm::ExecProc(void)
     if (!GetOption(thread->prcopt,thread->solopt,thread->filopt)) {ProcessingFinished(0);return;}
 
     // set input/output files
-    
+
     thread->addInput(InputFile1_Text);
-    
+
     if (PMODE_DGPS<=thread->prcopt.mode&&thread->prcopt.mode<=PMODE_FIXED) {
         thread->addInput(InputFile2_Text);
     }
@@ -866,13 +866,13 @@ void MainForm::ExecProc(void)
         thread->addInput(InputFile6_Text);
     }
     strcpy(thread->outfile,qPrintable(OutputFile_Text));
-    
+
     // confirm overwrite
     if (!TimeStart->isChecked()||!TimeEnd->isChecked()) {
         if (QFileInfo::exists(thread->outfile)) {
             if (QMessageBox::question(this,tr("Overwrite"),QString(tr("Overwrite existing file %1.")).arg(thread->outfile))!=QMessageBox::Yes) {ProcessingFinished(0);return;}
         }
-    }    
+    }
     // set rover and base station list
     thread->addList(thread->rov,RovList);
     thread->addList(thread->base,BaseList);
@@ -882,12 +882,12 @@ void MainForm::ExecProc(void)
     showmsg("reading...");
 
     setCursor(Qt::WaitCursor);
-    
+
     // post processing positioning
     connect(thread,SIGNAL(done(int)),this,SLOT(ProcessingFinished(int)));
 
     thread->start();
-    
+
     return;
 }
 // get processing and solution options --------------------------------------
@@ -896,7 +896,7 @@ int MainForm::GetOption(prcopt_t &prcopt, solopt_t &solopt,
 {
     char buff[1024],*p;
     int sat,ex;
-    
+
     // processing options
     prcopt.mode     =PosMode;
     prcopt.soltype  =Solution;
@@ -963,7 +963,7 @@ int MainForm::GetOption(prcopt_t &prcopt, solopt_t &solopt,
         for (int i=0;i<3;i++) prcopt.ru[i]=RovPos[i];
     }
     else prcopt.rovpos=RovPosType-2; /* 1:single,2:posfile,3:rinex */
-    
+
     if (PosMode==PMODE_SINGLE||PosMode==PMODE_MOVEB) {
         for (int i=0;i<3;i++) prcopt.rb[i]=0.0;
     }
@@ -971,7 +971,7 @@ int MainForm::GetOption(prcopt_t &prcopt, solopt_t &solopt,
         for (int i=0;i<3;i++) prcopt.rb[i]=RefPos[i];
     }
     else prcopt.refpos=RefPosType-2;
-    
+
     if (RovAntPcv) {
         strcpy(prcopt.anttype[0],qPrintable(RovAnt));
         prcopt.antdel[0][0]=RovAntE;
@@ -992,11 +992,11 @@ int MainForm::GetOption(prcopt_t &prcopt, solopt_t &solopt,
             prcopt.exsats[sat-1]=ex;
         }
     }
-    
+
     strcpy(prcopt.rnxopt[0],qPrintable(RnxOpts1));
     strcpy(prcopt.rnxopt[1],qPrintable(RnxOpts2));
     strcpy(prcopt.pppopt,qPrintable(PPPOpts));
-    
+
     // solution options
     solopt.posf     =SolFormat;
     solopt.times    =TimeFormat==0?0:TimeFormat-1;
@@ -1015,7 +1015,7 @@ int MainForm::GetOption(prcopt_t &prcopt, solopt_t &solopt,
     solopt.trace    =DebugTrace;
     strcpy(solopt.sep,FieldSep!=""?qPrintable(FieldSep):" ");
     strcpy(solopt.prog,qPrintable(QString("%1 ver.%2 %3").arg(PRGNAME).arg(VER_RTKLIB).arg(PATCH_LEVEL)));
-    
+
     // file options
     strcpy(filopt.satantp,qPrintable(SatPcvFile));
     strcpy(filopt.rcvantp,qPrintable(AntPcvFile));
@@ -1025,7 +1025,7 @@ int MainForm::GetOption(prcopt_t &prcopt, solopt_t &solopt,
     strcpy(filopt.eop,    qPrintable(EOPFile));
     strcpy(filopt.dcb,    qPrintable(DCBFile));
     strcpy(filopt.blq,    qPrintable(BLQFile));
-    
+
     return 1;
 }
 // observation file to nav file ---------------------------------------------
@@ -1055,9 +1055,9 @@ QString MainForm::FilePath(const QString &file)
     gtime_t ts={0,0};
     int p;
     char rov[256]="",base[256]="",path[1024];
-    
+
     if (TimeStart->isChecked()) ts=GetTime1();
-    
+
     p=0;
     while ((p=RovList.indexOf("\n",p))!=-1){
         if ((p<RovList.count())&&(RovList.at(p)!='#')) break;
@@ -1071,7 +1071,7 @@ QString MainForm::FilePath(const QString &file)
     if (p!=-1) strcpy(base,qPrintable(BaseList.mid(p))); else strcpy(base,qPrintable(RovList));
 
     reppath(qPrintable(file),path,ts,rov,base);
-    
+
     return QString(path);
 }
 // read history -------------------------------------------------------------
@@ -1079,7 +1079,7 @@ void MainForm::ReadList(QComboBox* combo, QSettings *ini, const QString &key)
 {
     QString item;
     int i;
-    
+
     for (i=0;i<100;i++) {
         item=ini->value(QString("%1_%2").arg(key).arg(i,3),"").toString();
         if (item!=""&& combo->findText(item)==-1) combo->addItem(item); else break;
@@ -1089,7 +1089,7 @@ void MainForm::ReadList(QComboBox* combo, QSettings *ini, const QString &key)
 void MainForm::WriteList(QSettings *ini, const QString &key, const QComboBox *combo)
 {
     int i;
-    
+
     for (i=0;i<combo->count();i++) {
         ini->setValue(QString("%1_%2").arg(key).arg(i,3),combo->itemText(i));
     }
@@ -1117,11 +1117,11 @@ void MainForm::ViewFile(const QString &file)
     QString f;
     char tmpfile[1024];
     int cstat;
-    
+
     if (file=="") return;
     cstat=rtk_uncompress(qPrintable(file),tmpfile);
     f=!cstat?file:tmpfile;
-    
+
     textViewer->setWindowTitle(file);
     textViewer->show();
     if (!textViewer->Read(f)) textViewer->close();
@@ -1168,7 +1168,7 @@ void MainForm::SetTime2(gtime_t time)
 void MainForm::UpdateEnable(void)
 {
     bool moder=PMODE_DGPS<=PosMode&&PosMode<=PMODE_FIXED;
-    
+
     LabelInputFile1->setText(moder?tr("RINEX OBS: Rover"):tr("RINEX OBS"));
     InputFile2     ->setEnabled(moder);
     BtnInputFile2  ->setEnabled(moder);
@@ -1194,7 +1194,7 @@ void MainForm::UpdateEnable(void)
 void MainForm::LoadOpt(void)
 {
     QSettings ini(IniFile,QSettings::IniFormat);
-    
+
     TimeStart->setChecked(ini.value("set/timestart",   0).toBool());
     TimeEnd->setChecked(ini.value("set/timeend",     0).toBool());
     dateTime1->setDate(ini.value ("set/timey1",      "2000/01/01").toDate());
@@ -1214,7 +1214,7 @@ void MainForm::LoadOpt(void)
     OutDirEna->setChecked(ini.value("set/outputdirena", 0).toBool());
     OutDir->setText(ini.value ("set/outputdir",   "").toString());
     OutputFile->setCurrentText(ini.value ("set/outputfile",  "").toString());
-    
+
     ReadList(InputFile1,&ini,"hist/inputfile1");
     ReadList(InputFile2,&ini,"hist/inputfile2");
     ReadList(InputFile3,&ini,"hist/inputfile3");
@@ -1222,7 +1222,7 @@ void MainForm::LoadOpt(void)
     ReadList(InputFile5,&ini,"hist/inputfile5");
     ReadList(InputFile6,&ini,"hist/inputfile6");
     ReadList(OutputFile,&ini,"hist/outputfile");
-    
+
     PosMode            =ini.value("opt/posmode",        0).toInt();
     Freq               =ini.value("opt/freq",           1).toInt();
     Solution           =ini.value("opt/solution",       0).toInt();
@@ -1248,7 +1248,7 @@ void MainForm::LoadOpt(void)
     PosOpt[4]          =ini.value("opt/posopt5",        0).toInt();
     PosOpt[5]          =ini.value("opt/posopt6",        0).toInt();
     MapFunc            =ini.value("opt/mapfunc",        0).toInt();
-    
+
     AmbRes             =ini.value("opt/ambres",         1).toInt();
     GloAmbRes          =ini.value("opt/gloambres",      1).toInt();
     BdsAmbRes          =ini.value("opt/bdsambres",      1).toInt();
@@ -1270,7 +1270,7 @@ void MainForm::LoadOpt(void)
     BaseLine[0]        =ini.value  ("opt/baselinelen",  0.0).toDouble();
     BaseLine[1]        =ini.value  ("opt/baselinesig",  0.0).toDouble();
     BaseLineConst      =ini.value("opt/baselineconst",  0).toInt();
-    
+
     SolFormat          =ini.value("opt/solformat",      0).toInt();
     TimeFormat         =ini.value("opt/timeformat",     1).toInt();
     TimeDecimal        =ini.value("opt/timedecimal",    3).toInt();
@@ -1287,7 +1287,7 @@ void MainForm::LoadOpt(void)
     SolStatic          =ini.value("opt/solstatic",      0).toInt();
     DebugTrace         =ini.value("opt/debugtrace",     0).toInt();
     DebugStatus        =ini.value("opt/debugstatus",    0).toInt();
-    
+
     MeasErrR1          =ini.value  ("opt/measeratio1",100.0).toDouble();
     MeasErrR2          =ini.value  ("opt/measeratio2",100.0).toDouble();
     MeasErr2           =ini.value  ("opt/measerr2",   0.003).toDouble();
@@ -1300,7 +1300,7 @@ void MainForm::LoadOpt(void)
     PrNoise3           =ini.value  ("opt/prnoise3",    1E-4).toDouble();
     PrNoise4           =ini.value  ("opt/prnoise4",    1E+1).toDouble();
     PrNoise5           =ini.value  ("opt/prnoise5",    1E+1).toDouble();
-    
+
     RovPosType         =ini.value("opt/rovpostype",     0).toInt();
     RefPosType         =ini.value("opt/refpostype",     0).toInt();
     RovPos[0]          =ini.value  ("opt/rovpos1",      0.0).toDouble();
@@ -1319,11 +1319,11 @@ void MainForm::LoadOpt(void)
     RefAntE            =ini.value  ("opt/refante",      0.0).toDouble();
     RefAntN            =ini.value  ("opt/refantn",      0.0).toDouble();
     RefAntU            =ini.value  ("opt/refantu",      0.0).toDouble();
-    
+
     RnxOpts1           =ini.value ("opt/rnxopts1",      "").toString();
     RnxOpts2           =ini.value ("opt/rnxopts2",      "").toString();
     PPPOpts            =ini.value ("opt/pppopts",       "").toString();
-    
+
     AntPcvFile         =ini.value ("opt/antpcvfile",    "").toString();
     IntpRefObs         =ini.value("opt/intprefobs",     0).toInt();
     SbasSat            =ini.value("opt/sbassat",        0).toInt();
@@ -1344,7 +1344,7 @@ void MainForm::LoadOpt(void)
     DCBFile            =ini.value ("opt/dcbfile",       "").toString();
     BLQFile            =ini.value ("opt/blqfile",       "").toString();
     GoogleEarthFile    =ini.value ("opt/googleearthfile",GOOGLE_EARTH).toString();
-    
+
     RovList="";
     for (int i=0;i<10;i++) {
         RovList +=ini.value(QString("opt/rovlist%1").arg(i+1),"").toString();
@@ -1383,7 +1383,7 @@ void MainForm::LoadOpt(void)
 void MainForm::SaveOpt(void)
 {
     QSettings ini(IniFile,QSettings::IniFormat);
-    
+
     ini.setValue("set/timestart",   TimeStart ->isChecked()?1:0);
     ini.setValue("set/timeend",     TimeEnd   ->isChecked()?1:0);
     ini.setValue("set/timey1",      dateTime1    ->date());
@@ -1403,7 +1403,7 @@ void MainForm::SaveOpt(void)
     ini.setValue("set/outputdirena",OutDirEna ->isChecked());
     ini.setValue("set/outputdir",   OutDir    ->text());
     ini.setValue("set/outputfile",  OutputFile->currentText());
-    
+
     WriteList(&ini,"hist/inputfile1",     InputFile1);
     WriteList(&ini,"hist/inputfile2",     InputFile2);
     WriteList(&ini,"hist/inputfile3",     InputFile3);
@@ -1411,7 +1411,7 @@ void MainForm::SaveOpt(void)
     WriteList(&ini,"hist/inputfile5",     InputFile5);
     WriteList(&ini,"hist/inputfile6",     InputFile6);
     WriteList(&ini,"hist/outputfile",     OutputFile);
-    
+
     ini.setValue("opt/posmode",     PosMode     );
     ini.setValue("opt/freq",        Freq        );
     ini.setValue("opt/solution",    Solution    );
@@ -1437,7 +1437,7 @@ void MainForm::SaveOpt(void)
     ini.setValue("opt/posopt5",     PosOpt[4]   );
     ini.setValue("opt/posopt6",     PosOpt[5]   );
     ini.setValue("opt/mapfunc",     MapFunc     );
-    
+
     ini.setValue("opt/ambres",      AmbRes      );
     ini.setValue("opt/gloambres",   GloAmbRes   );
     ini.setValue("opt/bdsambres",   BdsAmbRes   );
@@ -1459,7 +1459,7 @@ void MainForm::SaveOpt(void)
     ini.setValue("opt/baselinelen", BaseLine[0] );
     ini.setValue("opt/baselinesig", BaseLine[1] );
     ini.setValue("opt/baselineconst",BaseLineConst);
-    
+
     ini.setValue("opt/solformat",   SolFormat   );
     ini.setValue("opt/timeformat",  TimeFormat  );
     ini.setValue("opt/timedecimal", TimeDecimal );
@@ -1476,7 +1476,7 @@ void MainForm::SaveOpt(void)
     ini.setValue("opt/solstatic",   SolStatic   );
     ini.setValue("opt/debugtrace",  DebugTrace  );
     ini.setValue("opt/debugstatus", DebugStatus );
-    
+
     ini.setValue("opt/measeratio1", MeasErrR1   );
     ini.setValue("opt/measeratio2", MeasErrR2   );
     ini.setValue("opt/measerr2",    MeasErr2    );
@@ -1489,7 +1489,7 @@ void MainForm::SaveOpt(void)
     ini.setValue("opt/prnoise3",    PrNoise3    );
     ini.setValue("opt/prnoise4",    PrNoise4    );
     ini.setValue("opt/prnoise5",    PrNoise5    );
-    
+
     ini.setValue("opt/rovpostype",  RovPosType  );
     ini.setValue("opt/refpostype",  RefPosType  );
     ini.setValue("opt/rovpos1",     RovPos[0]   );
@@ -1508,11 +1508,11 @@ void MainForm::SaveOpt(void)
     ini.setValue("opt/refante",     RefAntE     );
     ini.setValue("opt/refantn",     RefAntN     );
     ini.setValue("opt/refantu",     RefAntU     );
-    
+
     ini.setValue("opt/rnxopts1",    RnxOpts1    );
     ini.setValue("opt/rnxopts2",    RnxOpts2    );
     ini.setValue("opt/pppopts",     PPPOpts     );
-    
+
     ini.setValue("opt/antpcvfile",  AntPcvFile  );
     ini.setValue("opt/intprefobs",  IntpRefObs  );
     ini.setValue("opt/sbassat",     SbasSat     );
@@ -1533,7 +1533,7 @@ void MainForm::SaveOpt(void)
     ini.setValue("opt/dcbfile",     DCBFile     );
     ini.setValue("opt/blqfile",     BLQFile     );
     ini.setValue("opt/googleearthfile",GoogleEarthFile);
-    
+
     RovList.replace("\n","@@");
     for (int i=0;i<10;i++) {
         ini.setValue(QString("opt/rovlist%1").arg(i+1),RovList.mid(i*2000,2000));
@@ -1543,7 +1543,7 @@ void MainForm::SaveOpt(void)
     for (int i=0;i<10;i++) {
         ini.setValue(QString("opt/baselist%1").arg(i+1),BaseList.mid(i*2000,2000));
     }
-    
+
     ini.setValue ("conv/timespan",   convDialog->TimeSpan  ->isChecked());
     ini.setValue ("conv/timey1",     convDialog->dateTime1 ->date());
     ini.setValue ("conv/timeh1",     convDialog->dateTime1 ->time());
