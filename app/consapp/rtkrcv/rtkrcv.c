@@ -166,6 +166,8 @@ static const char *pathopts[]={         /* path options help */
     "file     : path[::T[::+offset][::xspeed]]",
     "tcpsvr   : :port",
     "tcpcli   : addr:port",
+    "udpsvr   : :port",
+    "udpcli   : addr:port",    
     "ntripsvr : user:passwd@addr:port/mntpnt[:str]",
     "ntripcli : user:passwd@addr:port/mntpnt",
     "ntripc_s : :passwd@:port",
