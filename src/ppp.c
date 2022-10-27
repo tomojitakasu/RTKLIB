@@ -492,7 +492,7 @@ static void udpos_ppp(rtk_t *rtk)
         }
         return;
     }
-    /* kinmatic mode without dynamics */
+    /* kinematic mode without dynamics */
     if (!rtk->opt.dynamics) {
         for (i=0;i<3;i++) {
             initx(rtk,rtk->sol.rr[i],VAR_POS,i);
@@ -556,7 +556,7 @@ static void udclk_ppp(rtk_t *rtk)
     for (i=0;i<NSYS;i++) {
         if (rtk->opt.sateph==EPHOPT_PREC) {
             /* time of prec ephemeris is based gpst */
-            /* negelect receiver inter-system bias  */
+            /* neglect receiver inter-system bias  */
             dtr=rtk->sol.dtr[0];
         }
         else {
