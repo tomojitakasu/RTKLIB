@@ -3696,7 +3696,7 @@ extern double ionppp(const double *pos, const double *azel, double re,
 extern double tropmodel(gtime_t time, const double *pos, const double *azel,
                         double humi)
 {
-    const double temp0=15.0; /* temparature at sea level */
+    const double temp0=15.0; /* temperature at sea level */
     double hgt,pres,temp,e,z,trph,trpw;
     
     if (pos[2]<-100.0||1E4<pos[2]||azel[1]<=0) return 0.0;
@@ -3708,7 +3708,7 @@ extern double tropmodel(gtime_t time, const double *pos, const double *azel,
     temp=temp0-6.5E-3*hgt+273.16;
     e=6.108*humi*exp((17.15*temp-4684.0)/(temp-38.45));
     
-    /* saastamoninen model */
+    /* saastamoinen model */
     z=PI/2.0-azel[1];
     trph=0.0022768*pres/(1.0-0.00266*cos(2.0*pos[0])-0.00028*hgt/1E3)/cos(z);
     trpw=0.002277*(1255.0/temp+0.05)*e/cos(z);
