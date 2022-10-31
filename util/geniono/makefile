@@ -4,23 +4,33 @@ RTKLIBDIR=../../src
 
 CFLAGS = -Wall -O3 -I$(RTKLIBDIR) -DTRACE
 LDFLAGS = -lm
+LDLIBS  = -lm
 
 BIN = genstec
 
 all        : $(BIN)
-genstec    : genstec.o rtkcmn.o ephemeris.o preceph.o sbas.o rinex.o
+genstec    : genstec.o rtkcmn.o ephemeris.o ionex.o ppp.o ppp_ar.o preceph.o rinex.o sbas.o tides.o
 #gengrid    : gengrid.o rtkcmn.o stec.o preceph.o
 
 rtkcmn.o   : $(RTKLIBDIR)/rtklib.h $(RTKLIBDIR)/rtkcmn.c
 	$(CC) -c $(CFLAGS) $(RTKLIBDIR)/rtkcmn.c
 ephemeris.o: $(RTKLIBDIR)/ephemeris.c
 	$(CC) -c $(CFLAGS) $(RTKLIBDIR)/ephemeris.c
+ionex.o      : $(RTKLIBDIR)/ionex.c
+	$(CC) -c $(CFLAGS) $(RTKLIBDIR)/ionex.c
+ppp.o      : $(RTKLIBDIR)/ppp.c
+	$(CC) -c $(CFLAGS) $(RTKLIBDIR)/ppp.c
+ppp_ar.o   : $(RTKLIBDIR)/ppp_ar.c
+	$(CC) -c $(CFLAGS) $(RTKLIBDIR)/ppp_ar.c
 preceph.o  : $(RTKLIBDIR)/preceph.c
 	$(CC) -c $(CFLAGS) $(RTKLIBDIR)/preceph.c
-sbas.o     : $(RTKLIBDIR)/sbas.c
-	$(CC) -c $(CFLAGS) $(RTKLIBDIR)/sbas.c
 rinex.o    : $(RTKLIBDIR)/rinex.c
 	$(CC) -c $(CFLAGS) $(RTKLIBDIR)/rinex.c
+sbas.o     : $(RTKLIBDIR)/sbas.c
+	$(CC) -c $(CFLAGS) $(RTKLIBDIR)/sbas.c
+tides.o    : $(RTKLIBDIR)/tides.c
+	$(CC) -c $(CFLAGS) $(RTKLIBDIR)/tides.c
+
 stec.o     : $(RTKLIBDIR)/stec.c
 	$(CC) -c $(CFLAGS) $(RTKLIBDIR)/stec.c
 

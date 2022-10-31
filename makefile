@@ -21,6 +21,11 @@ IERS       = $(RTKLIB)/lib/iers/gcc
 CONSAPP    = $(RTKLIB)/app/consapp
 QTAPP      = $(RTKLIB)/app/qtapp
 
+GENCRC     = $(RTKLIB)/util/gencrc
+GENIONO    = $(RTKLIB)/util/geniono
+RNX2RTCM   = $(RTKLIB)/util/rnx2rtcm
+SIMOBS     = $(RTKLIB)/util/simobs/gcc
+
 # Get number of parallel build jobs
 
 ifneq ($(shell which nproc 2> /dev/null),)
@@ -56,7 +61,10 @@ endif
 
 # Targets
 
-all: init iers_ consapp_ qtapp_ install_
+all: init \
+	 iers_ consapp_ qtapp_ \
+	 gencrc_ rnx2rtcm_  simobs_ \
+	 install_
 
 # Create directory tree
 
@@ -72,6 +80,18 @@ consapp_:
 qtapp_:
 	cd $(QTAPP); $(QMAKE) qtapp.pro; $(PMAKE);
 
+gencrc_:
+	cd $(GENCRC); $(PMAKE)
+
+geniono_:
+	cd $(GENIONO); $(PMAKE)
+
+rnx2rtcm_:
+	cd $(RNX2RTCM); $(PMAKE)
+	
+simobs_:
+	cd $(SIMOBS); $(PMAKE)
+	
 install_:
 	cd $(CONSAPP); make install
 	for F in $$(ls -d $(QTAPP)/*/*_qt); do cp $$F $(RTKLIB_bin); done

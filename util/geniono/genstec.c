@@ -113,13 +113,18 @@ static void ekf_pred(ekf_t *ekf, double *F, double *Q, int ix, int nx)
     free(A);
 }
 /* raw pseudorange and phase range  with dcb correction ----------------------*/
-static int raw_obs(const obsd_t *obs, const nav_t *nav, double *P1, double *P2,
+static int raw_obs(int i, const obsd_t *obs, const nav_t *nav, double *P1, double *P2,
                    double *L1, double *L2)
 {
-    double gamma=SQR(lam[0]/lam[1]);
-    
-    *L1=obs->L[0]*lam[0];
-    *L2=obs->L[1]*lam[1];
+    double lam0,lam1,gamma;
+
+    lam0 = CLIGHT/sat2freq(obs[i].sat, obs[i].code[0], nav);
+    lam1 = CLIGHT/sat2freq(obs[i].sat, obs[i].code[1], nav);
+
+    gamma=SQR(lam0/lam1);
+
+    *L1=obs->L[0]*lam0;
+    *L2=obs->L[1]*lam1;
     *P1=obs->P[0];
     *P2=obs->P[1];
     if (*L1==0.0||*L2==0.0||*P1==0.0||*P2==0.0) return 0;
@@ -135,13 +140,13 @@ static void ud_state(const obsd_t *obs, int n, const nav_t *nav,
                      sstat_t *sstat)
 {
     double P1,P2,L1,L2,PG,LG,tt,F[4]={0},Q[2]={0};
-    double x[2]={0},P[2],c_iono=1.0-SQR(lam[1]/lam[0]);
+    double x[2]={0},P[2],c_iono,lam1,lam0;
     int i,sat,slip;
     
     for (i=0;i<n;i++) {
         
         /* raw pseudorange and phase range */
-        if (!raw_obs(obs+i,nav,&P1,&P2,&L1,&L2)||azel[i*2+1]<MIN_EL) continue;
+        if (!raw_obs(i,obs+i,nav,&P1,&P2,&L1,&L2)||azel[i*2+1]<MIN_EL) continue;
         
         sat=obs[i].sat;
         tt=timediff(obs[i].time,sstat[sat-1].time);
@@ -150,6 +155,14 @@ static void ud_state(const obsd_t *obs, int n, const nav_t *nav,
         slip=(obs[i].LLI[0]&3)||(obs[i].LLI[1]&3);
         slip|=fabs(LG-sstat[sat-1].LG)>THRES_LG;
         
+
+        sat=obs[i].sat;
+
+        lam0 = CLIGHT/sat2freq(obs[i].sat, obs[i].code[0], nav);
+        lam1 = CLIGHT/sat2freq(obs[i].sat, obs[i].code[1], nav);
+
+        c_iono=1.0-SQR(lam1/lam0);
+
         if (fabs(tt)>MAXGAP_IONO) {
 #if 1
             x[0]=PG/c_iono;
@@ -187,30 +200,36 @@ static int res_iono(const obsd_t *obs, int n, const nav_t *nav,
                     const double *azel, const pcv_t *pcv, const ekf_t *ekf,
                     double *phw, double *v, double *H, double *R)
 {
-    double *sig,P1,P2,L1,L2,c_iono=1.0-SQR(lam[1]/lam[0]);
+    double *sig,P1,P2,L1,L2,c_iono,lam1,lam0;
     double LG,PG,antdel[3]={0},dant[NFREQ]={0};
     int i,j,nv=0,sat;
-    
+
     sig=mat(1,2*n);
     
     for (i=0;i<n;i++) {
-        if (!raw_obs(obs+i,nav,&P1,&P2,&L1,&L2)||azel[i*2+1]<MIN_EL) continue;
+        if (!raw_obs(i,obs+i,nav,&P1,&P2,&L1,&L2)||azel[i*2+1]<MIN_EL) continue;
         
         sat=obs[i].sat;
-        
+
+        lam0 = CLIGHT/sat2freq(obs[i].sat, obs[i].code[0], nav);
+        lam1 = CLIGHT/sat2freq(obs[i].sat, obs[i].code[1], nav);
+
+        c_iono=1.0-SQR(lam1/lam0);
+
         /* ionosphere-LC model */
         LG=-c_iono*ekf->x[II(sat)]+ekf->x[IB(sat)];
         PG= c_iono*ekf->x[II(sat)]+nav->cbias[sat-1][0];
         
         /* receiver antenna phase center offset and variation */
         if (pcv) {
-            antmodel(pcv,antdel,azel+i*2,dant);
+            antmodel(pcv,antdel,azel+i*2,1,dant);
             LG+=dant[0]-dant[1];
             PG+=dant[0]-dant[1];
         }
         /* phase windup correction */
-        windupcorr(obs[i].time,rs+i*6,rr,phw+obs[i].sat-1);
-        LG+=(lam[0]-lam[1])*phw[obs[i].sat-1];
+        /*model_phw(obs[i].time,rs+i*6,rr,phw[obs[i].sat-1]);*/
+        model_phw(obs[i].time,sat,nav->pcvs[sat-1].type,2,rs+i*6,rr,phw[obs[i].sat-1]);
+        LG+=(lam0-lam1)*phw[obs[i].sat-1];
         
         /* residuals of ionosphere (geometriy-free) LC */
         v[nv  ]=(L1-L2)-LG;
@@ -388,7 +407,7 @@ int main(int argc, char **argv)
         }
     }
     /* read p1-c1 dcb parameters */
-    if (*dfile) readdcb(dfile,&nav);
+    if (*dfile) readdcb(dfile,&nav,&sta);
     
     /* set p1-p2 dcb parameters */
     for (i=0;i<MAXSAT;i++) {
