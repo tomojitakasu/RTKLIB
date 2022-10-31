@@ -331,8 +331,8 @@ extern "C" {
 #define CODE_L3I    44                  /* obs code: G3I        (GLO) */
 #define CODE_L3Q    45                  /* obs code: G3Q        (GLO) */
 #define CODE_L3X    46                  /* obs code: G3I+Q      (GLO) */
-#define CODE_L1I    47                  /* obs code: B1I        (BDS) (obsolute) */
-#define CODE_L1Q    48                  /* obs code: B1Q        (BDS) (obsolute) */
+#define CODE_L1I    47                  /* obs code: B1I        (BDS) (obsolete) */
+#define CODE_L1Q    48                  /* obs code: B1Q        (BDS) (obsolete) */
 #define CODE_L5A    49                  /* obs code: L5A SPS    (IRN) */
 #define CODE_L5B    50                  /* obs code: L5B RS(D)  (IRN) */
 #define CODE_L5C    51                  /* obs code: L5C RS(P)  (IRN) */
@@ -379,7 +379,7 @@ extern "C" {
 #define SOLQ_DGPS   4                   /* solution status: DGPS/DGNSS */
 #define SOLQ_SINGLE 5                   /* solution status: single */
 #define SOLQ_PPP    6                   /* solution status: PPP */
-#define SOLQ_DR     7                   /* solution status: dead reconing */
+#define SOLQ_DR     7                   /* solution status: dead reckoning */
 #define MAXSOLQ     7                   /* max number of solution status */
 
 #define TIMES_GPST  0                   /* time system: gps time */
@@ -480,7 +480,7 @@ extern "C" {
 #define DLOPT_HOLDLST 0x08              /* download option: hold on listing file */
 
 #define LLI_SLIP    0x01                /* LLI: cycle-slip */
-#define LLI_HALFC   0x02                /* LLI: half-cycle not resovled */
+#define LLI_HALFC   0x02                /* LLI: half-cycle not resolved */
 #define LLI_BOCTRK  0x04                /* LLI: boc tracking of mboc signal */
 #define LLI_HALFA   0x40                /* LLI: half-cycle added */
 #define LLI_HALFS   0x80                /* LLI: half-cycle subtracted */

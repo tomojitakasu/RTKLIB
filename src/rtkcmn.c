@@ -3003,9 +3003,9 @@ extern void freeobs(obs_t *obs)
 * free memory for navigation data
 * args   : nav_t *nav    IO     navigation data
 *          int   opt     I      option (or of followings)
-*                               (0x01: gps/qzs ephmeris, 0x02: glonass ephemeris,
-*                                0x04: sbas ephemeris,   0x08: precise ephemeris,
-*                                0x10: precise clock     0x20: almanac,
+*                               (0x01: gps/qzs ephemeris, 0x02: glonass ephemeris,
+*                                0x04: sbas ephemeris,    0x08: precise ephemeris,
+*                                0x10: precise clock      0x20: almanac,
 *                                0x40: tec data)
 * return : none
 *-----------------------------------------------------------------------------*/
@@ -3519,7 +3519,7 @@ extern int reppaths(const char *path, char *rpath[], int nmax, gtime_t ts,
 }
 /* geometric distance ----------------------------------------------------------
 * compute geometric distance and receiver-to-satellite unit vector
-* args   : double *rs       I   satellilte position (ecef at transmission) (m)
+* args   : double *rs       I   satellite position (ecef at transmission) (m)
 *          double *rr       I   receiver position (ecef at reception) (m)
 *          double *e        O   line-of-sight vector (ecef)
 * return : geometric distance (m) (0>:error/no satellite position)

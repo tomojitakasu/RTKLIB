@@ -37,7 +37,7 @@
 *                           delete scanobs in RINEX options (rnxopt_t)
 *                           add phase shift option (phshift) in rnxopt_t
 *                           sort obs-types by freq-index and code priority
-*                           add test obs-types supportted by RINEX versions
+*                           add test obs-types supported by RINEX versions
 *                           support receiver/antenna info in raw data
 *                           fix bug on writing BDS/IRN nav header in closefile()
 *                           fix bug on screening time in screent_ttol()
@@ -73,7 +73,7 @@ typedef struct halfc_tag {      /* half-cycle ambiguity list type */
 typedef struct {                /* stream file type */
     int format;                 /* stream format (STRFMT_???) */
     int staid;                  /* station ID */
-    int ephsat,ephset;          /* satelite and set of input ephemeris */
+    int ephsat,ephset;          /* satellite and set of input ephemeris */
     gtime_t time;               /* current time */
     gtime_t tstart;             /* start time */
     obs_t  *obs;                /* pointer to input observation data */
@@ -1034,7 +1034,7 @@ static void convobs(FILE **ofp, rnxopt_t *opt, strfile_t *str, int *n,
     
     n[0]++;
 }
-/* convert navigattion data --------------------------------------------------*/
+/* convert navigation data --------------------------------------------------*/
 static void convnav(FILE **ofp, rnxopt_t *opt, strfile_t *str, int *n)
 {
     gtime_t ts;

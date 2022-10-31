@@ -42,7 +42,7 @@
 *           2020/11/30 1.20 include NavIC in default systems
 *                           force option -scan
 *                           delete option -noscan
-*                           surppress warnings
+*                           suppress warnings
 *-----------------------------------------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>
@@ -486,7 +486,7 @@ static int cmdopts(int argc, char **argv, rnxopt_t *opt, char **ifile,
             opt->outleaps=1;
         }
         else if (!strcmp(argv[i],"-scan")) {
-            /* obsolute */ ;
+            /* obsolete */ ;
         }
         else if (!strcmp(argv[i],"-halfc")) {
             opt->halfcyc=1;
