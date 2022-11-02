@@ -1,6 +1,6 @@
 # makefile for simobs
 
-BINDIR = $${HOME}/bin
+BINDIR = ../../../bin
 SRC    = ../../../src
 CFLAGS = -Wall -O3 -ansi -pedantic -I$(SRC) -DTRACE -DENAGLO -DENAGAL -DENAQZS -DNFREQ=4 -DMAXOBS=128
 LDLIBS  = -lm
