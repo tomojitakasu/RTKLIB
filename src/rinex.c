@@ -14,7 +14,7 @@
 *         Version 2.12, June 23, 2009
 *     [5] W.Gurtner and L.Estey, RINEX The Receiver Independent Exchange Format
 *         Version 3.01, June 22, 2009
-*     [6] J.Ray and W.Gurtner, RINEX extentions to handle clock information
+*     [6] J.Ray and W.Gurtner, RINEX extensions to handle clock information
 *         version 3.02, September 2, 2010
 *     [7] RINEX The Receiver Independent Exchange Format Version 3.02,
 *         International GNSS Service (IGS), RINEX Working Group and Radio
@@ -102,7 +102,7 @@
 *                           support high-resolution (16bit) C/N0 in obsd_t
 *                           support dual sets of ephemerides in RINEX control
 *                             (for Galileo I/NAV and F/NAV)
-*                           no support RINEX 2 NAV extentions (QZS and BDS)
+*                           no support RINEX 2 NAV extensions (QZS and BDS)
 *                           no support CNES/GRG clock extension in comments
 *                           fix bug on segfault to read NavIC/IRNSS OBS data
 *                           fix bug on segfault with # obs data >= MAXOBS
@@ -114,7 +114,7 @@
 *                           zero-padded month/date/hour/min/sec
 *                           use exponent letter D instead of E for RINEX NAV
 *                           use API code2idx() to get frequency index
-*                           use intger types in stdint.h
+*                           use integer types in stdint.h
 *                           suppress warnings
 *-----------------------------------------------------------------------------*/
 #include "rtklib.h"

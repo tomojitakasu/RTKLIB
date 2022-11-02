@@ -46,7 +46,7 @@
 *                           fix bug on m2 computation in tide_pole()
 *           2015/03/19 1.7  fix bug on ionosphere correction for GLO and BDS
 *           2015/05/10 1.8  add function to detect slip by MW-LC jump
-*                           fix ppp solutin problem with large clock variance
+*                           fix ppp solution problem with large clock variance
 *           2015/06/08 1.9  add precise satellite yaw-models
 *                           cope with day-boundary problem of satellite clock
 *           2015/07/31 1.10 fix bug on nan-solution without glonass nav-data

@@ -7,7 +7,7 @@
 *     [1] S.Schear, W.Gurtner and J.Feltens, IONEX: The IONosphere Map EXchange
 *         Format Version 1, February 25, 1998
 *     [2] S.Schaer, R.Markus, B.Gerhard and A.S.Timon, Daily Global Ionosphere
-*         Maps based on GPS Carrier Phase Data Routinely producted by CODE
+*         Maps based on GPS Carrier Phase Data Routinely produced by CODE
 *         Analysis Center, Proceeding of the IGS Analysis Center Workshop, 1996
 *
 * version : $Revision:$ $Date:$
