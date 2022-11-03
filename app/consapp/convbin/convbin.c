@@ -9,7 +9,7 @@
 * history : 2008/06/22 1.0 new
 *           2009/06/17 1.1 support glonass
 *           2009/12/19 1.2 fix bug on disable of glonass
-*                          fix bug on inproper header for rtcm2 and rtcm3
+*                          fix bug on improper header for rtcm2 and rtcm3
 *           2010/07/18 1.3 add option -v, -t, -h, -x
 *           2011/01/15 1.4 add option -ro, -hc, -hm, -hn, -ht, -ho, -hr, -ha,
 *                            -hp, -hd, -y, -c, -q 

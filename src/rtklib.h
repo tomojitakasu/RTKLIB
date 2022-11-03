@@ -620,7 +620,7 @@ typedef struct {        /* GLONASS broadcast ephemeris type */
     int iode;           /* IODE (0-6 bit of tb field) */
     int frq;            /* satellite frequency number */
     int svh,sva,age;    /* satellite health, accuracy, age of operation */
-    gtime_t toe;        /* epoch of epherides (gpst) */
+    gtime_t toe;        /* epoch of ephemerides (gpst) */
     gtime_t tof;        /* message frame time (gpst) */
     double pos[3];      /* satellite position (ecef) (m) */
     double vel[3];      /* satellite velocity (ecef) (m/s) */
@@ -1233,7 +1233,7 @@ typedef struct {        /* RTK server type */
     int nsol;           /* number of solution buffer */
     rtk_t rtk;          /* RTK control/result struct */
     int nb [3];         /* bytes in input buffers {rov,base} */
-    int nsb[2];         /* bytes in soulution buffers */
+    int nsb[2];         /* bytes in solution buffers */
     int npb[3];         /* bytes in input peek buffers */
     uint8_t *buff[3];   /* input buffers {rov,base,corr} */
     uint8_t *sbuf[2];   /* output buffers {sol1,sol2} */
@@ -1461,7 +1461,7 @@ EXPORT void sunmoonpos(gtime_t tutc, const double *erpv, double *rsun,
 EXPORT void tidedisp(gtime_t tutc, const double *rr, int opt, const erp_t *erp,
                      const double *odisp, double *dr);
 
-/* geiod models --------------------------------------------------------------*/
+/* geoid models --------------------------------------------------------------*/
 EXPORT int opengeoid(int model, const char *file);
 EXPORT void closegeoid(void);
 EXPORT double geoidh(const double *pos);
