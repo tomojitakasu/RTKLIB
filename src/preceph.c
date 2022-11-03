@@ -385,7 +385,7 @@ static int readdcbf(const char *file, nav_t *nav, const sta_t *sta)
 * read differential code bias (DCB) parameters
 * args   : char   *file       I   DCB parameters file (wild-card * expanded)
 *          nav_t  *nav        IO  navigation data
-*          sta_t  *sta        I   station info data to inport receiver DCB
+*          sta_t  *sta        I   station info data to import receiver DCB
 *                                 (NULL: no use)
 * return : status (1:ok,0:error)
 * notes  : currently only support P1-P2, P1-C1, P2-C2, bias in DCB file
@@ -464,7 +464,7 @@ static int pephpos(gtime_t time, int sat, const nav_t *nav, double *rs,
     }
     for (j=0;j<=NMAX;j++) {
         pos=nav->peph[i+j].pos[sat-1];
-        /* correciton for earh rotation ver.2.4.0 */
+        /* correction for earth rotation ver.2.4.0 */
         sinl=sin(OMGE*t[j]);
         cosl=cos(OMGE*t[j]);
         p[0][j]=cosl*pos[0]-sinl*pos[1];
@@ -638,7 +638,7 @@ extern void satantoff(gtime_t time, const double *rs, int sat, const nav_t *nav,
 * args   : gtime_t time       I   time (gpst)
 *          int    sat         I   satellite number
 *          nav_t  *nav        I   navigation data
-*          int    opt         I   sat postion option
+*          int    opt         I   sat position option
 *                                 (0: center of mass, 1: antenna phase center)
 *          double *rs         O   sat position and velocity (ecef)
 *                                 {x,y,z,vx,vy,vz} (m|m/s)

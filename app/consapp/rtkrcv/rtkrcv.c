@@ -21,7 +21,7 @@
 *           2014/08/10 1.9  fix cpu overload with abnormal telnet shutdown
 *           2014/08/26 1.10 support input format "rt17"
 *                           change file paths of solution status and debug trace
-*           2015/01/10 1.11 add line editting and command history
+*           2015/01/10 1.11 add line editing and command history
 *                           separate codes for virtual console to vt.c
 *           2015/05/22 1.12 fix bug on sp3 id in inpstr*-format options
 *           2015/07/31 1.13 accept 4:stat for outstr1-format or outstr2-format
@@ -71,7 +71,7 @@
 
 #define SQRT(x)     ((x)<=0.0||(x)!=(x)?0.0:sqrt(x))
 
-/* type defintions -----------------------------------------------------------*/
+/* type definitions ----------------------------------------------------------*/
 
 typedef struct {                       /* console type */
     int state;                         /* state (0:stop,1:run) */
@@ -87,7 +87,7 @@ extern int pclose(FILE *);
 static rtksvr_t svr;                    /* rtk server struct */
 static stream_t moni;                   /* monitor stream */
 
-static int intflg       =0;             /* interrupt flag (2:shtdown) */
+static int intflg       =0;             /* interrupt flag (2:shutdown) */
 
 static char passwd[MAXSTR]="admin";     /* login password */
 static int timetype     =0;             /* time format (0:gpst,1:utc,2:jst,3:tow) */
@@ -105,7 +105,7 @@ static int timeout      =10000;         /* timeout time (ms) */
 static int reconnect    =10000;         /* reconnect interval (ms) */
 static int nmeacycle    =5000;          /* nmea request cycle (ms) */
 static int buffsize     =32768;         /* input buffer size (bytes) */
-static int navmsgsel    =0;             /* navigation mesaage select */
+static int navmsgsel    =0;             /* navigation message select */
 static char proxyaddr[256]="";          /* http/ntrip proxy */
 static int nmeareq      =0;             /* nmea request type (0:off,1:lat/lon,2:single) */
 static double nmeapos[] ={0,0,0};       /* nmea position (lat/lon/height) (deg,m) */
@@ -407,7 +407,7 @@ static int startsvr(vt_t *vt)
     
     trace(3,"startsvr:\n");
     
-    /* read start commads from command files */
+    /* read start commands from command files */
     for (i=0;i<3;i++) {
         if (!*rcvcmds[i]) continue;
         if (!readcmd(rcvcmds[i],s1[i],0)) {
@@ -489,7 +489,7 @@ static void stopsvr(vt_t *vt)
     
     if (!svr.state) return;
     
-    /* read stop commads from command files */
+    /* read stop commands from command files */
     for (i=0;i<3;i++) {
         if (!*rcvcmds[i]) continue;
         if (!readcmd(rcvcmds[i],s[i],1)) {
