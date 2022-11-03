@@ -41,10 +41,10 @@ OPT4=-r 36.031339503 140.202443500 70.9029
 OPT5=-r 36.263268936 140.174264100 94.2843
 
 OPT00=-ts 2009/4/1 01:45:00 -te 2009/4/1 02:00:00 -ti 10
-OPT11=../sim/brdc0910.09n
+OPT11=../sim/brdc0910.09n ../sim/brdc0910.09g
 
 sim1:
-	./simobs $(OPT00) $(OPT11) $(OPT2) -o ../sim/base_20080509.obs
+	./simobs $(OPT00) $(OPT11) $(OPT2) -o ../sim/base_20080509.obs -sys G,R,E
 
 sim:
 	./simobs $(OPT0) $(OPT1) $(OPT2) -o ../sim/base_20080509.obs
