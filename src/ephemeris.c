@@ -44,7 +44,7 @@
 *           2013/01/10 1.5  support beidou (compass)
 *                           use newton's method to solve kepler eq.
 *                           update ssr correction algorithm
-*           2013/03/20 1.6  fix problem on ssr clock relativitic correction
+*           2013/03/20 1.6  fix problem on ssr clock relativistic correction
 *           2013/09/01 1.7  support negative pseudorange
 *                           fix bug on variance in case of ura ssr = 63
 *           2013/11/11 1.8  change constant MAXAGESSR 70.0 -> 90.0
@@ -95,7 +95,7 @@
 #define TSTEP    60.0             /* integration step glonass ephemeris (s) */
 #define RTOL_KEPLER 1E-13         /* relative tolerance for Kepler equation */
 
-#define DEFURASSR 0.15            /* default accurary of ssr corr (m) */
+#define DEFURASSR 0.15            /* default accuracy of ssr corr (m) */
 #define MAXECORSSR 10.0           /* max orbit correction of ssr (m) */
 #define MAXCCORSSR (1E-6*CLIGHT)  /* max clock correction of ssr (m) */
 #define MAXAGESSR 90.0            /* max age of ssr orbit and clock (s) */
@@ -103,7 +103,7 @@
 #define STD_BRDCCLK 30.0          /* error of broadcast clock (m) */
 #define STD_GAL_NAPA 500.0        /* error of galileo ephemeris for NAPA (m) */
 
-#define MAX_ITER_KEPLER 30        /* max number of iteration of Kelpler */
+#define MAX_ITER_KEPLER 30        /* max number of iteration of Kepler */
 
 /* ephemeris selections ------------------------------------------------------*/
 static int eph_sel[]={ /* GPS,GLO,GAL,QZS,BDS,IRN,SBS */
@@ -418,7 +418,7 @@ extern void seph2pos(gtime_t time, const seph_t *seph, double *rs, double *dts,
 
     *var=var_uraeph(SYS_SBS,seph->sva);
 }
-/* select ephememeris --------------------------------------------------------*/
+/* select ephemeris ----------------------------------------------------------*/
 static eph_t *seleph(gtime_t time, int sat, int iode, const nav_t *nav)
 {
     double t,tmax,tmin;
@@ -457,7 +457,7 @@ static eph_t *seleph(gtime_t time, int sat, int iode, const nav_t *nav)
     }
     return nav->eph+j;
 }
-/* select glonass ephememeris ------------------------------------------------*/
+/* select glonass ephemeris --------------------------------------------------*/
 static geph_t *selgeph(gtime_t time, int sat, int iode, const nav_t *nav)
 {
     double t,tmax=MAXDTOE_GLO,tmin=tmax+1.0;
@@ -479,7 +479,7 @@ static geph_t *selgeph(gtime_t time, int sat, int iode, const nav_t *nav)
     }
     return nav->geph+j;
 }
-/* select sbas ephememeris ---------------------------------------------------*/
+/* select sbas ephemeris -----------------------------------------------------*/
 static seph_t *selseph(gtime_t time, int sat, const nav_t *nav)
 {
     double t,tmax=MAXDTOE_SBS,tmin=tmax+1.0;
@@ -581,7 +581,7 @@ static int satpos_sbas(gtime_t time, gtime_t teph, int sat, const nav_t *nav,
 
     trace(4,"satpos_sbas: time=%s sat=%2d\n",time_str(time,3),sat);
 
-    /* search sbas satellite correciton */
+    /* search sbas satellite correction */
     for (i=0;i<nav->sbssat.nsat;i++) {
         sbs=nav->sbssat.sat+i;
         if (sbs->sat==sat) break;
@@ -592,7 +592,7 @@ static int satpos_sbas(gtime_t time, gtime_t teph, int sat, const nav_t *nav,
         *svh=-1;
         return 0;
     }
-    /* satellite postion and clock by broadcast ephemeris */
+    /* satellite position and clock by broadcast ephemeris */
     if (!ephpos(time,teph,sat,nav,sbs->lcorr.iode,rs,dts,var,svh)) return 0;
 
     /* sbas satellite correction (long term and fast) */
