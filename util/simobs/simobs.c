@@ -15,12 +15,10 @@ static const char rcsid[]="$Id:$";
 /* simulation parameters -----------------------------------------------------*/
 
 static double minel     = 5.0;          /* minimum elevation angle (deg) */
-static double slipthres =35.0;          /* slip threshold (dBHz) */
-
-static double errcp1    =0.002;         /* carrier-phase meas error (m) */
-static double errcp2    =0.002;         /* carrier-phase meas error/sin(el) (m) */
-static double errpr1    =0.2;           /* pseudorange error (m) */
-static double errpr2    =0.2;           /* pseudorange error/sin(el) (m) */
+static double errcp1    = 0.002;        /* carrier-phase meas error (m) */
+static double errcp2    = 0.002;        /* carrier-phase meas error/sin(el) (m) */
+static double errpr1    = 0.2;          /* pseudorange error (m) */
+static double errpr2    = 0.2;          /* pseudorange error/sin(el) (m) */
 
 /* generate random number with normal distribution ---------------------------*/
 static double randn(double myu, double sig)
@@ -76,20 +74,24 @@ static int simobs(gtime_t ts, gtime_t te, double tint, const double *rr,
                   nav_t *nav, obs_t *obs) {
 
   gtime_t   time;
-  obsd_t    data[MAXSAT]={{{0}}};
-  double    pos[3],rs[6*MAXSAT],dts[2*MAXSAT],r,e[3],azel[2];
-  double    ecp[MAXSAT][NFREQ]={{0}};
-  double    epr[MAXSAT][NFREQ]={{0}};
-  double    snr[MAXSAT][NFREQ]={{0}};
-  double    amb[MAXSAT][NFREQ]={{0}};
-  double    var[MAXSAT];
-  int       svh[MAXSAT];
-  double    iono,trop,fact,cp,pr,dtr=0.0;
+  obsd_t    data[MAXSAT]={0};
+  double    pos[3],rs[6],dts[2],r,e[3],azel[2];
+  double    ecp[NFREQ]={0};
+  double    epr[NFREQ]={0};
+  double    snr[NFREQ]={0};
+  double    var;
+  int       svh;
+  double    iono,trop,fact,cp,pr,dtr=1.0e-9;
   int       i,j,k,n,ns,sys,prn;
   char      s[64];
   double    f0,fk;
 
   trace(3,"simobs:nnav=%d ngnav=%d\n",nav->n,nav->ng);
+
+  for (j=0; j<MAXSAT; j++) {
+      data[j].sat  = j+1;
+      data[j].P[0] = 2.0e7;
+  };
 
   /* Station position */
   ecef2pos(rr,pos);
@@ -98,37 +100,40 @@ static int simobs(gtime_t ts, gtime_t te, double tint, const double *rr,
   n=(int)(timediff(te,ts)/tint+1.0);
   for (i=0;i<n;i++) {
 
-    time=timeadd(ts,tint*i);
+    time = timeadd(ts,tint*i);
     time2str(time,s,0);
 
-    for (j=0;j<MAXSAT;j++) data[j].time=time;
+    for (j=0;j<MAXSAT;j++) data[j].time = time;
 
-    /* iteration for pseudorange */
-    for (j=0;j<3;j++) {
-      for (k=0;k<MAXSAT;k++) {
-        satpos(time,time,MAXSAT,EPHOPT_PREC,nav,rs+k*6,dts+k*2,var+k,svh+k);
-        if ((r=geodist(rs+k*6,rr,e))<=0.0) continue;
-        data[k].P[0]=CLIGHT*(dtr-dts[k*2]);
-      };
-    };
+    /* reset number of satellites */
+    ns = 0;
 
-    satposs(time,data,MAXSAT,nav,EPHOPT_PREC,rs,dts,var,svh);
+    /* loop over satellites */
+    for (j=0;j<MAXSAT;j++) {
 
-    for (j=ns=0;j<MAXSAT;j++) {
+      time = timeadd(data[j].time,dtr);
 
-      if ((r=geodist(rs+j*6,rr,e))<=0.0) continue;
+      satpos(time,time,data[j].sat,EPHOPT_PREC,nav,rs,dts,&var,&svh);
+      if ((r=geodist(rs,rr,e))<=0.0) continue;
+
+      time = timeadd(time,-r/CLIGHT);
+
+      satpos(time,time,data[j].sat,EPHOPT_PREC,nav,rs,dts,&var,&svh);
+      if ((r=geodist(rs,rr,e))<=0.0) continue;
+
       satazel(pos,e,azel);
       if (azel[1]<minel*D2R) continue;
 
       /* Compute L1 ionospheric delay */
-      iono=ionmodel(time,nav->ion_gps,pos,azel);
+      iono = ionmodel(data[j].time,nav->ion_gps,pos,azel);
 
       /* Compute tropospheric delay */
-      trop=tropmodel(time,pos,azel,0.3);
+      trop = tropmodel(data[j].time,pos,azel,0.3);
 
-      snrmodel(azel,snr[j]);
-      errmodel(azel,snr[j],ecp[j],epr[j]);
-      sys=satsys(data[j].sat,&prn);
+      snrmodel(azel,snr);
+      errmodel(azel,snr,ecp,epr);
+
+      sys = satsys(data[j].sat,&prn);
 
       for (k=0;k<NFREQ;k++) {
 
@@ -175,14 +180,12 @@ static int simobs(gtime_t ts, gtime_t te, double tint, const double *rr,
         fact = pow(f0/fk,2);
 
         /* generate observation data */
-        cp=r+CLIGHT*(dtr-dts[j*2])/*-fact*iono+trop+ecp[j][k]*/;
-        pr=r+CLIGHT*(dtr-dts[j*2])/*+fact*iono+trop+epr[j][k]*/;
+        cp = r + CLIGHT*(dtr - dts[0])/*-fact*iono+trop+ecp[k]*/;
+        pr = r + CLIGHT*(dtr - dts[0])/*+fact*iono+trop+epr[k]*/;
 
-        if (amb[j][k]==0) amb[j][k]=(int)(-cp/CLIGHT*fk);
-
-        data[j].L[k] = cp/CLIGHT*fk+amb[j][k];
+        data[j].L[k] = cp/CLIGHT*fk;
         data[j].P[k] = pr;
-        data[j].SNR[k] = (uint16_t)(snr[j][k]/SNR_UNIT+0.5);
+        data[j].SNR[k] = (uint16_t)(snr[k]/SNR_UNIT + 0.5);
         data[j].LLI[k] = 0; /* (data[j].SNR[k]<slipthres? 1 : 0); */
 
       };
@@ -376,7 +379,7 @@ int main(int argc, char **argv) {
   fprintf(stderr,"saving...: %s\n",outfile);
   strcpy(rnxopt.prog,PROGNAME);
   strcpy(rnxopt.comment[0],"SIMULATED OBS DATA");
-  rnxopt.rnxver=300;
+  rnxopt.rnxver=305;
   rnxopt.tstart=ts;
   rnxopt.tend=te;
   rnxopt.tint=tint;
