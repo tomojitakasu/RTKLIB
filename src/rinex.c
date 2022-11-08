@@ -1753,7 +1753,7 @@ extern int init_rnxctr(rnxctr_t *rnx)
     return 1;
 }
 /* free RINEX control ----------------------------------------------------------
-* free observation and ephemris buffer in RINEX control struct
+* free observation and ephemeris buffer in RINEX control struct
 * args   : rnxctr_t *rnx IO  RINEX control struct
 * return : none
 *-----------------------------------------------------------------------------*/
