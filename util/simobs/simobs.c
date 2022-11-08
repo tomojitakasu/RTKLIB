@@ -14,20 +14,14 @@ static const char rcsid[]="$Id:$";
 
 /* simulation parameters -----------------------------------------------------*/
 
-static double minel     =5.0;           /* minimum elevation angle (deg) */
+static double minel     = 5.0;          /* minimum elevation angle (deg) */
 static double slipthres =35.0;          /* slip threshold (dBHz) */
-static double errion    =0.005;         /* ionosphere error (m/10km) */
-static double erreph    =1.2;           /* ephemeris error (m) */
 
 static double errcp1    =0.002;         /* carrier-phase meas error (m) */
 static double errcp2    =0.002;         /* carrier-phase meas error/sin(el) (m) */
 static double errpr1    =0.2;           /* pseudorange error (m) */
 static double errpr2    =0.2;           /* pseudorange error/sin(el) (m) */
 
-static int gpsblock[]={                 /* gps block flag (1:block IIF) */
-    1,1,1,1,1, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0,
-    0,0,0,0,0, 0,0,0,0,0, 0,0
-};
 /* generate random number with normal distribution ---------------------------*/
 static double randn(double myu, double sig)
 {
@@ -84,26 +78,24 @@ static int simobs(gtime_t ts, gtime_t te, double tint, const double *rr,
   gtime_t   time;
   obsd_t    data[MAXSAT]={{{0}}};
   double    pos[3],rs[6*MAXSAT],dts[2*MAXSAT],r,e[3],azel[2];
-  double    ecp[MAXSAT][NFREQ]={{0}},epr[MAXSAT][NFREQ]={{0}};
-  double    snr[MAXSAT][NFREQ]={{0}},ers[MAXSAT][3]={{0}};
-  double    iono,trop,fact,cp,pr,dtr=0.0,var[MAXSAT];
-  int       i,j,k,n,ns,amb[MAXSAT][NFREQ]={{0}},sys,prn,svh[MAXSAT];
+  double    ecp[MAXSAT][NFREQ]={{0}};
+  double    epr[MAXSAT][NFREQ]={{0}};
+  double    snr[MAXSAT][NFREQ]={{0}};
+  double    amb[MAXSAT][NFREQ]={{0}};
+  double    var[MAXSAT];
+  int       svh[MAXSAT];
+  double    iono,trop,fact,cp,pr,dtr=0.0;
+  int       i,j,k,n,ns,sys,prn;
   char      s[64];
   double    f0,fk;
 
   trace(3,"simobs:nnav=%d ngnav=%d\n",nav->n,nav->ng);
 
-  /* ephemeris error */
-  for (i=0;i<MAXSAT;i++) {
-    data[i].sat=i+1;
-    data[i].P[0]=2E7;
-    for (j=0;j<3;j++) ers[i][j]=randn(0.0,erreph);
-  };
-  srand(tickget());
-
+  /* Station position */
   ecef2pos(rr,pos);
-  n=(int)(timediff(te,ts)/tint+1.0);
 
+  /* Loop over measurement epochs */
+  n=(int)(timediff(te,ts)/tint+1.0);
   for (i=0;i<n;i++) {
 
     time=timeadd(ts,tint*i);
@@ -111,18 +103,18 @@ static int simobs(gtime_t ts, gtime_t te, double tint, const double *rr,
 
     for (j=0;j<MAXSAT;j++) data[j].time=time;
 
-    for (j=0;j<3;j++) { /* iteration for pseudorange */
-      satposs(time,data,MAXSAT,nav,EPHOPT_BRDC,rs,dts,var,svh);
+    /* iteration for pseudorange */
+    for (j=0;j<3;j++) {
       for (k=0;k<MAXSAT;k++) {
+        satpos(time,time,MAXSAT,EPHOPT_PREC,nav,rs+k*6,dts+k*2,var+k,svh+k);
         if ((r=geodist(rs+k*6,rr,e))<=0.0) continue;
-        data[k].P[0]=+CLIGHT*(dtr-dts[k*2]);
+        data[k].P[0]=CLIGHT*(dtr-dts[k*2]);
       };
     };
-    satposs(time,data,MAXSAT,nav,EPHOPT_BRDC,rs,dts,var,svh);
-    for (j=ns=0;j<MAXSAT;j++) {
 
-      /* add ephemeris error */
-      for (k=0;k<3;k++) rs[k+j*6]+=ers[j][k];
+    satposs(time,data,MAXSAT,nav,EPHOPT_PREC,rs,dts,var,svh);
+
+    for (j=ns=0;j<MAXSAT;j++) {
 
       if ((r=geodist(rs+j*6,rr,e))<=0.0) continue;
       satazel(pos,e,azel);
@@ -177,18 +169,21 @@ static int simobs(gtime_t ts, gtime_t te, double tint, const double *rr,
           continue;
         };
 
-        /* generate observation data */
+        /* ionosphere scaling factor */
         f0 = sat2freq(data[j].sat, CODE_L1C, nav);
         fk = sat2freq(data[j].sat, data[j].code[k], nav);
-        fact=pow(f0/fk,2);
-        cp=r+CLIGHT*(dtr-dts[j*2])-fact*iono+trop+ecp[j][k];
-        pr=r+CLIGHT*(dtr-dts[j*2])+fact*iono+trop+epr[j][k];
+        fact = pow(f0/fk,2);
+
+        /* generate observation data */
+        cp=r+CLIGHT*(dtr-dts[j*2])/*-fact*iono+trop+ecp[j][k]*/;
+        pr=r+CLIGHT*(dtr-dts[j*2])/*+fact*iono+trop+epr[j][k]*/;
 
         if (amb[j][k]==0) amb[j][k]=(int)(-cp/CLIGHT*fk);
-        data[j].L[k]=cp/CLIGHT*fk+amb[j][k];
-        data[j].P[k]=pr;
-        data[j].SNR[k]=(uint16_t)(snr[j][k]/SNR_UNIT+0.5);
-        data[j].LLI[k]=data[j].SNR[k]<slipthres?1:0;
+
+        data[j].L[k] = cp/CLIGHT*fk+amb[j][k];
+        data[j].P[k] = pr;
+        data[j].SNR[k] = (uint16_t)(snr[j][k]/SNR_UNIT+0.5);
+        data[j].LLI[k] = 0; /* (data[j].SNR[k]<slipthres? 1 : 0); */
 
       };
       if (obs->nmax<=obs->n) {
@@ -205,13 +200,14 @@ static int simobs(gtime_t ts, gtime_t te, double tint, const double *rr,
       ns++;
 
     };
-    fprintf(stderr,"time=%s nsat=%2d\r",s,ns);
+    fprintf(stdout,"time=%s nsat=%2d\r",s,ns);
   };
 
-  fprintf(stderr,"\n");
+  fprintf(stdout,"\n");
+
   return 1;
 
-};
+}
 
 /* simobs main ---------------------------------------------------------------*/
 int main(int argc, char **argv) {
@@ -222,10 +218,16 @@ int main(int argc, char **argv) {
   nav_t     nav={0};
   sta_t     sta={0};
   gtime_t   ts={0},te={0};
-  double    es[]={2000,1,1,0,0,0},ee[]={2000,1,1,0,0,0},tint=30.0;
+  double    es[]={2000,1,1,0,0,0};
+  double    ee[]={2000,1,1,0,0,0};
+  double    tint=30.0;
   double    pos[3]={0},rr[3];
-  char      *infile[16]={0},*outfile="";
+  char      *navFileName[16]={0};
+  char      *sp3FileName[16]={0};
+  char      *clkFileName[16]={0};
+  char      *outfile="";
   int       i,j,n=0;
+  int       nNav=0,nSp3=0,nClk=0;
 
   traceopen("simobs.log");
   tracelevel(5);
@@ -294,13 +296,21 @@ int main(int argc, char **argv) {
         if (!(p=strchr(p,','))) break;
       };
     }
+    /* SP3 files */
+    else if (!strcmp(argv[i],"-s")&&i+1<argc) {
+      sp3FileName[nSp3++]=argv[++i];
+    }
+    /* Clock-RINEX files */
+    else if (!strcmp(argv[i],"-c")&&i+1<argc) {
+      clkFileName[nClk++]=argv[++i];
+    }
     else {
-      infile[n++]=argv[i];
+      navFileName[nNav++]=argv[i];
     };
   };
 
-  if (n<=0) {
-    fprintf(stderr,"no input file\n");
+  if (nNav<=0) {
+    fprintf(stderr,"no RINEX-NAV input file\n");
     return -1;
   };
   if (!*outfile) {
@@ -320,14 +330,38 @@ int main(int argc, char **argv) {
     rnxopt.navsys=SYS_GPS|SYS_GLO;
   };
 
-  /* read simulated/real rinex nav files */
-  for (i=0; i<n; i++) {
-    fprintf(stdout,"infile %s\n",infile[i]);
-    readrnx(infile[i],0,"",&obs,&nav,&sta);
+  /* read RINEX-NAV files */
+  for (i=0;i<nNav;i++) {
+    fprintf(stdout,"Reading %s\n",navFileName[i]);
+    readrnx(navFileName[i],0,"",&obs,&nav,&sta);
   };
   if (nav.n<=0) {
-    fprintf(stderr,"no nav data\n");
+    fprintf(stderr,"no BRDC data\n");
     return -1;
+  };
+
+  /* read precise ephemeris files */
+  if (nSp3>0) {
+    for (i=0;i<nSp3;i++) {
+      fprintf(stdout,"Reading %s\n",sp3FileName[i]);
+      readsp3(sp3FileName[i],&nav,0);
+    };
+    if (nav.ne<=0) {
+      fprintf(stderr,"no SP3 data\n");
+      return -1;
+    };
+  };
+
+  /* read precise clock-RINEX files */
+  if (nClk>0) {
+    for (i=0;i<nClk;i++) {
+      fprintf(stdout,"Reading %s\n",clkFileName[i]);
+      readrnxc(clkFileName[i],&nav);
+    };
+    if (nav.nc<=0) {
+      fprintf(stderr,"no Clk-RINEX data\n");
+      return -1;
+    };
   };
 
   /* generate simulated observation data */
@@ -338,6 +372,7 @@ int main(int argc, char **argv) {
     fprintf(stderr,"error : outfile open %s\n",outfile);
     return -1;
   };
+
   fprintf(stderr,"saving...: %s\n",outfile);
   strcpy(rnxopt.prog,PROGNAME);
   strcpy(rnxopt.comment[0],"SIMULATED OBS DATA");
@@ -393,8 +428,8 @@ int main(int argc, char **argv) {
       for (iTyp=0;iTyp<nTyp;iTyp++) {
         sprintf(type,"%c%s",type_str[iTyp],code2obs(codes[iSys][iObs]));
         setstr(rnxopt.tobs[iSys][n++],type,3);
-      }
-    }
+      };
+    };
 
   };
 
@@ -405,7 +440,9 @@ int main(int argc, char **argv) {
       if (timediff(obs.data[j].time,obs.data[i].time)>0.001) break;
     }
     outrnxobsb(fp,&rnxopt,obs.data+i,j-i,0);
-  }
+  };
   fclose(fp);
+
   return 0;
+
 }
