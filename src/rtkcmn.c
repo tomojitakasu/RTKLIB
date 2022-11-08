@@ -3941,7 +3941,7 @@ extern void sunmoonpos(gtime_t tutc, const double *erpv, double *rsun,
     /* eci to ecef transformation matrix */
     eci2ecef(tutc,erpv,U,&gmst_);
     
-    /* sun and moon postion in ecef */
+    /* sun and moon position in ecef */
     if (rsun ) matmul("NN",3,1,3,1.0,U,rs,0.0,rsun );
     if (rmoon) matmul("NN",3,1,3,1.0,U,rm,0.0,rmoon);
     if (gmst ) *gmst=gmst_;
@@ -3951,7 +3951,7 @@ extern void sunmoonpos(gtime_t tutc, const double *erpv, double *rsun,
 * args   : char   *file     I   input file
 *          char   *uncfile  O   uncompressed file
 * return : status (-1:error,0:not compressed file,1:uncompress completed)
-* note   : creates uncompressed file in tempolary directory
+* note   : creates uncompressed file in temporary directory
 *          gzip, tar and crx2rnx commands have to be installed in commands path
 *-----------------------------------------------------------------------------*/
 extern int rtk_uncompress(const char *file, char *uncfile)
