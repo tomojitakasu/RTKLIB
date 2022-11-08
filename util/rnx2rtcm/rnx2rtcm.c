@@ -147,7 +147,7 @@ static int conv_rtcm(const int *type, int n, const char *outfile,
         fprintf(stderr,"file open error: %s\n",outfile);
         return 0;
     }
-    /* gerate rtcm antenna info messages */
+    /* generate rtcm antenna info messages */
     gen_rtcm_ant(&rtcm,type,n,fp);
 
     for (i=0;i<obs->n;i=j) {
@@ -169,7 +169,7 @@ static int conv_rtcm(const int *type, int n, const char *outfile,
 
         fprintf(stderr,"%s: NOBS=%2d\r",time_str(rtcm.time,0),rtcm.obs.n);
     }
-    /* gerate rtcm nav data messages */
+    /* generate rtcm nav data messages */
     gen_rtcm_nav(time0,&rtcm,nav,index,type,n,fp);
 
     fclose(fp);
