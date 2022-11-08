@@ -1505,7 +1505,7 @@ static void accept_sock(int ssock, con_t **con)
          inet_ntoa(addr.sin_addr));
 }
 /* rtkrcv main -----------------------------------------------------------------
-* sysnopsis
+* synopsis
 *     rtkrcv [-s][-p port][-d dev][-o file][-r level][-t level][-sta sta]
 *
 * description
@@ -1545,7 +1545,7 @@ static void accept_sock(int ssock, con_t **con)
 *
 *     solution [cycle]
 *       Show solutions. Without option, only one solution is shown. With
-*       option, the soluiton is displayed at intervals of cycle (s). To stop
+*       option, the solution is displayed at intervals of cycle (s). To stop
 *       cyclic display, send break (ctr-C).
 *
 *     status [cycle]
@@ -1582,7 +1582,7 @@ static void accept_sock(int ssock, con_t **con)
 *       rtkrcv.conf is used. To enable the changes, restart RTK server.
 *
 *     save [file]
-*       Save current processing optons to file. Without option, default file
+*       Save current processing options to file. Without option, default file
 *       rtkrcv.conf is used.
 *
 *     log [file|off]
