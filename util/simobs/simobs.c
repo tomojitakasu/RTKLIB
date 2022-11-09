@@ -8,8 +8,6 @@
  *-----------------------------------------------------------------------------*/
 #include "rtklib.h"
 
-static const char rcsid[]="$Id:$";
-
 #define PROGNAME    "SIMOBS"            /* program name */
 
 /* simulation parameters -----------------------------------------------------*/
@@ -37,24 +35,53 @@ static void setstr(char *dst, const char *src, int n)
   *p--='\0';
   while (p>=dst&&*p==' ') *p--='\0';
 }
-/* generate snr --------------------------------------------------------------*/
-static void snrmodel(const double *azel, double *snr)
+/* set signal mask -----------------------------------------------------------*/
+static void setmask(const char *argv, rnxopt_t *opt, int mask)
 {
-  /* snr and snr deviation pattern (dbHz) by elevation (5 deg interval) */
+    char buff[1024],*p;
+    int i,code;
+
+    strcpy(buff,argv);
+    for (p=strtok(buff,",");p;p=strtok(NULL,",")) {
+        if (strlen(p)<4||p[1]!='L') continue;
+        if      (p[0]=='G') i=0;
+        else if (p[0]=='R') i=1;
+        else if (p[0]=='E') i=2;
+        else if (p[0]=='J') i=3;
+        else if (p[0]=='S') i=4;
+        else if (p[0]=='C') i=5;
+        else if (p[0]=='I') i=6;
+        else continue;
+        if ((code=obs2code(p+2))) {
+            opt->mask[i][code-1]=mask?'1':'0';
+        }
+    }
+}
+/*
+ * GPS,GLO,GAL,QZS,SBS,CMP,IRN
+ */
+static int sys2idx(int sys) {
+  switch(sys) {
+    case(SYS_GPS): return 0;
+    case(SYS_GLO): return 1;
+    case(SYS_GAL): return 2;
+    case(SYS_QZS): return 3;
+    case(SYS_SBS): return 4;
+    case(SYS_CMP): return 5;
+    case(SYS_IRN): return 6;
+    default      : return -1;
+  };
+};
+/* generate snr --------------------------------------------------------------*/
+static double snrmodel(const double *azel, uint8_t code)
+{
+  /* snr and snr deviation pattern (db-Hz) by elevation (5 deg interval) */
   double snrs[]={40,42,44,45,46,47,48,49,49,50,50,51,51,51,51,51,51,51,51};
   double sdvs[]={ 3, 3, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-  double loss[]={ 0, 3, 0, 3};
-  int i,j;
-  for (i=0;i<NFREQ;i++) {
-    j=(int)(azel[1]*R2D/5.0);
-    if (snr[i]==0.0) {
-      snr[i]=snrs[j]+randn(0.0,sdvs[j])-loss[i];
-    }
-    else {
-      snr[i]=0.5*snr[i]+0.5*(snrs[j]+randn(0.0,sdvs[j])-loss[i]);
-    }
-  }
-}
+  int j;
+  j=(int)(azel[1]*R2D/5.0);
+  return snrs[j] + randn(0.0,sdvs[j]) - (code==CODE_L1W||code==CODE_L2W? 10: 0);
+};
 /* generate error ------------------------------------------------------------*/
 static void errmodel(const double *azel, double *snr, double *ecp, double *epr)
 {
@@ -71,18 +98,17 @@ static void errmodel(const double *azel, double *snr, double *ecp, double *epr)
 }
 /* generate simulated observation data ---------------------------------------*/
 static int simobs(gtime_t ts, gtime_t te, double tint, const double *rr,
-                  nav_t *nav, obs_t *obs) {
+                  rnxopt_t rnxopt, nav_t *nav, obs_t *obs) {
 
   gtime_t   time;
   obsd_t    data[MAXSAT]={0};
   double    pos[3],rs[6],dts[2],r,e[3],azel[2];
-  double    ecp[NFREQ]={0};
-  double    epr[NFREQ]={0};
-  double    snr[NFREQ]={0};
   double    var;
   int       svh;
-  double    iono,trop,fact,cp,pr,dtr=1.0e-9;
-  int       i,j,k,n,ns,sys,prn;
+  double    snr;
+  double    iono,trop,fact,cp,pr,dtr=0.0;
+  int       i,j,k,n,m,ns,sys,prn;
+  int       iSys;
   char      s[64];
   double    f0,fk;
 
@@ -91,15 +117,17 @@ static int simobs(gtime_t ts, gtime_t te, double tint, const double *rr,
   for (j=0; j<MAXSAT; j++) {
       data[j].sat  = j+1;
       data[j].P[0] = 2.0e7;
+      data[j].code[0] = CODE_NONE;
   };
 
   /* Station position */
   ecef2pos(rr,pos);
 
   /* Loop over measurement epochs */
-  n=(int)(timediff(te,ts)/tint+1.0);
+  n = (int)(timediff(te,ts)/tint+1.0);
   for (i=0;i<n;i++) {
 
+    /* set the satellite and observation epoch */
     time = timeadd(ts,tint*i);
     time2str(time,s,0);
 
@@ -113,16 +141,21 @@ static int simobs(gtime_t ts, gtime_t te, double tint, const double *rr,
 
       time = timeadd(data[j].time,dtr);
 
-      satpos(time,time,data[j].sat,EPHOPT_PREC,nav,rs,dts,&var,&svh);
+      if (satpos(time,time,data[j].sat,EPHOPT_PREC,nav,rs,dts,&var,&svh)==0)
+        continue;
       if ((r=geodist(rs,rr,e))<=0.0) continue;
 
       time = timeadd(time,-r/CLIGHT);
 
-      satpos(time,time,data[j].sat,EPHOPT_PREC,nav,rs,dts,&var,&svh);
+      if (satpos(time,time,data[j].sat,EPHOPT_PREC,nav,rs,dts,&var,&svh)==0)
+        continue;
       if ((r=geodist(rs,rr,e))<=0.0) continue;
 
       satazel(pos,e,azel);
       if (azel[1]<minel*D2R) continue;
+
+      fprintf(stdout,"sat=%3d sys=%d elev=%6.2f\n",data[j].sat,iSys,
+                                                   azel[1]*R2D);
 
       /* Compute L1 ionospheric delay */
       iono = ionmodel(data[j].time,nav->ion_gps,pos,azel);
@@ -130,63 +163,40 @@ static int simobs(gtime_t ts, gtime_t te, double tint, const double *rr,
       /* Compute tropospheric delay */
       trop = tropmodel(data[j].time,pos,azel,0.3);
 
-      snrmodel(azel,snr);
-      errmodel(azel,snr,ecp,epr);
+      /* GNSS and system index */
+      sys  = satsys(data[j].sat,&prn);
+      iSys = sys2idx(sys);
 
-      sys = satsys(data[j].sat,&prn);
+      if (iSys<0 || rnxopt.nobs[iSys]==0) continue;
 
-      for (k=0;k<NFREQ;k++) {
+      m = 0;
+      for (k=0;k<rnxopt.nobs[iSys];k++) {
 
-        data[j].L[k]=0.0;
-        data[j].P[k]=0.0;
-        data[j].SNR[k]=0;
-        data[j].LLI[k]=0;
-        data[j].code[k]=CODE_NONE;
+        if (rnxopt.tobs[iSys][k][0]!='C') continue;
 
-        if (sys==SYS_GPS) {
-          switch(k) {
-            case(0) : data[j].code[k]=CODE_L1C; break;
-            case(1) : data[j].code[k]=CODE_L1W; break;
-            case(2) : data[j].code[k]=CODE_L2W; break;
-            case(3) : data[j].code[k]=CODE_L5Q; break;
-            default : continue;
-          };
-        }
-        else if (sys==SYS_GLO) {
-          switch(k) {
-            case(0) : data[j].code[k]=CODE_L1C; break;
-            case(1) : data[j].code[k]=CODE_L1P; break;
-            case(2) : data[j].code[k]=CODE_L1C; break;
-            case(3) : data[j].code[k]=CODE_L2P; break;
-            default : continue;
-          };
-        }
-        else if (sys==SYS_GAL) {
-          switch(k) {
-            case(0) : data[j].code[k]=CODE_L1C; break;
-            case(1) : data[j].code[k]=CODE_L5Q; break;
-            case(2) : data[j].code[k]=CODE_L7Q; break;
-            case(3) : data[j].code[k]=CODE_L6C; break;
-            default : continue;
-          };
-        }
-        else {
-          continue;
-        };
+        data[j].L[m]   = 0.0;
+        data[j].P[m]   = 0.0;
+        data[j].SNR[m] = 0;
+        data[j].LLI[m] = 0;
+
+        data[j].code[m] = obs2code(rnxopt.tobs[iSys][k]+1);
 
         /* ionosphere scaling factor */
         f0 = sat2freq(data[j].sat, CODE_L1C, nav);
-        fk = sat2freq(data[j].sat, data[j].code[k], nav);
+        fk = sat2freq(data[j].sat, data[j].code[m], nav);
         fact = pow(f0/fk,2);
 
         /* generate observation data */
-        cp = r + CLIGHT*(dtr - dts[0])/*-fact*iono+trop+ecp[k]*/;
-        pr = r + CLIGHT*(dtr - dts[0])/*+fact*iono+trop+epr[k]*/;
+        cp  = r + CLIGHT*(dtr - dts[0])/*-fact*iono+trop*/;
+        pr  = r + CLIGHT*(dtr - dts[0])/*+fact*iono+trop*/;
+        snr = snrmodel(azel,data[j].code[m]);
 
-        data[j].L[k] = cp/CLIGHT*fk;
-        data[j].P[k] = pr;
-        data[j].SNR[k] = (uint16_t)(snr[k]/SNR_UNIT + 0.5);
-        data[j].LLI[k] = 0; /* (data[j].SNR[k]<slipthres? 1 : 0); */
+        data[j].L[m]   = cp/CLIGHT*fk;
+        data[j].P[m]   = pr;
+        data[j].SNR[m] = (uint16_t)(snr/SNR_UNIT + 0.5);
+        data[j].LLI[m] = 0; /* (data[j].SNR[m]<slipthres? 1 : 0); */
+
+        m++;
 
       };
       if (obs->nmax<=obs->n) {
@@ -203,7 +213,7 @@ static int simobs(gtime_t ts, gtime_t te, double tint, const double *rr,
       ns++;
 
     };
-    fprintf(stdout,"time=%s nsat=%2d\r",s,ns);
+    fprintf(stdout,"time=%s nsat=%2d\n",s,ns);
   };
 
   fprintf(stdout,"\n");
@@ -211,7 +221,6 @@ static int simobs(gtime_t ts, gtime_t te, double tint, const double *rr,
   return 1;
 
 }
-
 /* simobs main ---------------------------------------------------------------*/
 int main(int argc, char **argv) {
 
@@ -229,11 +238,13 @@ int main(int argc, char **argv) {
   char      *sp3FileName[16]={0};
   char      *clkFileName[16]={0};
   char      *outfile="";
-  int       i,j,n=0;
+  int       i,j,k;
   int       nNav=0,nSp3=0,nClk=0;
 
+  /*
   traceopen("simobs.log");
   tracelevel(5);
+   */
 
   /* Process command line arguments */
 
@@ -299,6 +310,13 @@ int main(int argc, char **argv) {
         if (!(p=strchr(p,','))) break;
       };
     }
+    /* Signal mask
+       -mask   [sig[,...]] signal mask(s) (sig={G|R|E|J|S|C|I}L{1C|1P|1W|...})
+     */
+    else if (!strcmp(argv[i],"-mask")&&i+1<argc) {
+      for (j=0;j<7;j++) for (k=0;k<64;k++) rnxopt.mask[j][k]='0';
+      setmask(argv[++i],&rnxopt,1);
+    }
     /* SP3 files */
     else if (!strcmp(argv[i],"-s")&&i+1<argc) {
       sp3FileName[nSp3++]=argv[++i];
@@ -325,15 +343,14 @@ int main(int argc, char **argv) {
     return -1;
   };
 
-
-  pos[0]*=D2R; pos[1]*=D2R; pos2ecef(pos,rr);
-
   /* Default navigation systems */
+
   if (!rnxopt.navsys) {
-    rnxopt.navsys=SYS_GPS|SYS_GLO;
+    rnxopt.navsys = SYS_GPS|SYS_GAL;
   };
 
   /* read RINEX-NAV files */
+
   for (i=0;i<nNav;i++) {
     fprintf(stdout,"Reading %s\n",navFileName[i]);
     readrnx(navFileName[i],0,"",&obs,&nav,&sta);
@@ -344,6 +361,7 @@ int main(int argc, char **argv) {
   };
 
   /* read precise ephemeris files */
+
   if (nSp3>0) {
     for (i=0;i<nSp3;i++) {
       fprintf(stdout,"Reading %s\n",sp3FileName[i]);
@@ -356,6 +374,7 @@ int main(int argc, char **argv) {
   };
 
   /* read precise clock-RINEX files */
+
   if (nClk>0) {
     for (i=0;i<nClk;i++) {
       fprintf(stdout,"Reading %s\n",clkFileName[i]);
@@ -367,16 +386,12 @@ int main(int argc, char **argv) {
     };
   };
 
-  /* generate simulated observation data */
-  if (!simobs(ts,te,tint,rr,&nav,&obs)) return -1;
+  /* Reference position for RINEX header */
 
-  /* output rinex obs file */
-  if (!(fp=fopen(outfile,"w"))) {
-    fprintf(stderr,"error : outfile open %s\n",outfile);
-    return -1;
-  };
+  pos[0]*=D2R; pos[1]*=D2R; pos2ecef(pos,rr);
 
-  fprintf(stderr,"saving...: %s\n",outfile);
+  /* RINEX OBS file options */
+
   strcpy(rnxopt.prog,PROGNAME);
   strcpy(rnxopt.comment[0],"SIMULATED OBS DATA");
   rnxopt.rnxver=305;
@@ -387,53 +402,48 @@ int main(int argc, char **argv) {
   rnxopt.freqtype=FREQTYPE_L1|FREQTYPE_L2|FREQTYPE_L3|FREQTYPE_L4;
   for (i=0;i<3;i++) rnxopt.apppos[i]=rr[i];
 
-  uint8_t codes[7][33]={{0}};
-
-  const char type_str[]="CLS";
-  char type[16];
+  const char type[]="CLS";
+  char obst[16];
 
   int iSys,iObs,iTyp;
   int nSys,nObs,nTyp;
 
-  nObs = 4;
+  nObs = 64;
   nTyp = 3;
   nSys = 7;
 
-  /* GPS */
-
-  codes[0][0]=CODE_L1C;
-  codes[0][1]=CODE_L1W;
-  codes[0][2]=CODE_L2W;
-  codes[0][3]=CODE_L5Q;
-
-  /* GLONASS */
-
-  codes[1][0]=CODE_L1C;
-  codes[1][1]=CODE_L1P;
-  codes[1][2]=CODE_L2C;
-  codes[1][3]=CODE_L2P;
-
-  /* Galileo */
-
-  codes[2][0]=CODE_L1C;
-  codes[2][1]=CODE_L5Q;
-  codes[2][2]=CODE_L7Q;
-  codes[2][3]=CODE_L6C;
-
   for (iSys=0;iSys<nSys;iSys++) {
 
-    rnxopt.nobs[iSys] = (iSys<3? nObs*nTyp : 0);
-    if (iSys>2) continue;
-
-    n = 0;
+    rnxopt.nobs[iSys] = 0;
+    k=0;
 
     for (iObs=0;iObs<nObs;iObs++) {
+
+      if (rnxopt.mask[iSys][iObs]=='0') continue;
+
       for (iTyp=0;iTyp<nTyp;iTyp++) {
-        sprintf(type,"%c%s",type_str[iTyp],code2obs(codes[iSys][iObs]));
-        setstr(rnxopt.tobs[iSys][n++],type,3);
+
+        sprintf(obst,"%c%s",type[iTyp],code2obs(iObs+1));
+        setstr(rnxopt.tobs[iSys][k++],obst,3);
+        rnxopt.nobs[iSys]++;
+
       };
+
     };
 
+  };
+
+  fprintf(stdout,"Generate observations \n");
+
+  /* generate simulated observation data */
+  if (!simobs(ts,te,tint,rr,rnxopt,&nav,&obs)) return -1;
+
+  fprintf(stderr,"saving...: %s\n",outfile);
+
+  /* output rinex obs file */
+  if (!(fp=fopen(outfile,"w"))) {
+    fprintf(stderr,"error : outfile open %s\n",outfile);
+    return -1;
   };
 
   outrnxobsh(fp,&rnxopt,&nav);
