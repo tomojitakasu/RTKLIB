@@ -13,4 +13,9 @@ Makefile
 __astcache
 bin/*
 app/consapp/*/gcc/*
+util/gencrc/gencrc
+util/gencrc/genmsk
+util/gencrc/genxor
+util/rnx2rtcm/rnx2rtcm
+util/simobs/gcc/simobs
 *.qmake.stash
