@@ -38,24 +38,24 @@ static void setstr(char *dst, const char *src, int n)
 /* set signal mask -----------------------------------------------------------*/
 static void setmask(const char *argv, rnxopt_t *opt, int mask)
 {
-    char buff[1024],*p;
-    int i,code;
+  char buff[1024],*p;
+  int i,code;
 
-    strcpy(buff,argv);
-    for (p=strtok(buff,",");p;p=strtok(NULL,",")) {
-        if (strlen(p)<4||p[1]!='L') continue;
-        if      (p[0]=='G') i=0;
-        else if (p[0]=='R') i=1;
-        else if (p[0]=='E') i=2;
-        else if (p[0]=='J') i=3;
-        else if (p[0]=='S') i=4;
-        else if (p[0]=='C') i=5;
-        else if (p[0]=='I') i=6;
-        else continue;
-        if ((code=obs2code(p+2))) {
-            opt->mask[i][code-1]=mask?'1':'0';
-        }
-    }
+  strcpy(buff,argv);
+  for (p=strtok(buff,",");p;p=strtok(NULL,",")) {
+    if (strlen(p)<4||p[1]!='L') continue;
+    if      (p[0]=='G') { i=0; opt->navsys|=SYS_GPS; }
+    else if (p[0]=='R') { i=1; opt->navsys|=SYS_GLO; }
+    else if (p[0]=='E') { i=2; opt->navsys|=SYS_GAL; }
+    else if (p[0]=='J') { i=3; opt->navsys|=SYS_QZS; }
+    else if (p[0]=='S') { i=4; opt->navsys|=SYS_CMP; }
+    else if (p[0]=='C') { i=5; opt->navsys|=SYS_IRN; }
+    else if (p[0]=='I') { i=6; opt->navsys|=SYS_SBS; }
+    else continue;
+    if ((code=obs2code(p+2))) {
+      opt->mask[i][code-1]=mask?'1':'0';
+    };
+  };
 }
 /*
  * GPS,GLO,GAL,QZS,SBS,CMP,IRN
@@ -291,28 +291,7 @@ int main(int argc, char **argv) {
     else if (!strcmp(argv[i],"-r")&&i+3<argc) {
       for (j=0;j<3;j++) pos[j]=atof(argv[++i]); /* lat,lon,hgt */
     }
-    else if (!strcmp(argv[i],"-sys")&&i+1<argc) {
-      char *p;
-      for (p=argv[++i];*p;p++) {
-        switch (*p) {
-          case 'G': rnxopt.navsys|=SYS_GPS; break;
-          case 'R': rnxopt.navsys|=SYS_GLO; break;
-          case 'E': rnxopt.navsys|=SYS_GAL; break;
-          case 'J': rnxopt.navsys|=SYS_QZS; break;
-          case 'C': rnxopt.navsys|=SYS_CMP; break;
-          case 'I': rnxopt.navsys|=SYS_IRN; break;
-          case 'S': rnxopt.navsys|=SYS_SBS; break;
-          default : {
-            fprintf(stderr,"invalid system %c\n",*p);
-            return -1;
-          };
-        };
-        if (!(p=strchr(p,','))) break;
-      };
-    }
-    /* Signal mask
-       -mask   [sig[,...]] signal mask(s) (sig={G|R|E|J|S|C|I}L{1C|1P|1W|...})
-     */
+    /* Signal mask */
     else if (!strcmp(argv[i],"-mask")&&i+1<argc) {
       for (j=0;j<7;j++) for (k=0;k<64;k++) rnxopt.mask[j][k]='0';
       setmask(argv[++i],&rnxopt,1);
