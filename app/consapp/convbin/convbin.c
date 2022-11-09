@@ -118,7 +118,7 @@ static const char *help[]={
 "     -hm marker   rinex header: marker name",
 "     -hn markno   rinex header: marker number",
 "     -ht marktype rinex header: marker type",
-"     -ho observ   rinex header: oberver name and agency separated by /",
+"     -ho observ   rinex header: observer name and agency separated by /",
 "     -hr rec      rinex header: receiver number, type and version separated by /",
 "     -ha ant      rinex header: antenna number and type separated by /",
 "     -hp pos      rinex header: approx position x/y/z separated by /",

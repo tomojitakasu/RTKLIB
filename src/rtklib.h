@@ -659,7 +659,7 @@ typedef struct {        /* SBAS ephemeris type */
     double af0,af1;     /* satellite clock-offset/drift (s,s/s) */
 } seph_t;
 
-typedef struct {        /* NORAL TLE data type */
+typedef struct {        /* NORAD TLE data type */
     char name [32];     /* common name */
     char alias[32];     /* alias name */
     char satno[16];     /* satellite catalog number */
