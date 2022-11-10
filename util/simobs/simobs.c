@@ -184,8 +184,8 @@ static int simobs(gtime_t ts, gtime_t te, double tint, const double *rr,
         fact = pow(f0/fk,2);
 
         /* generate observation data */
-        cp  = r + CLIGHT*(dtr - dts[0])/*-fact*iono+trop*/;
-        pr  = r + CLIGHT*(dtr - dts[0])/*+fact*iono+trop*/;
+        cp  = r + CLIGHT*(dtr - dts[0])/*-fact*iono*//*+trop*/;
+        pr  = r + CLIGHT*(dtr - dts[0])/*+fact*iono*//*+trop*/;
         snr = snrmodel(azel,data[j].code[m]);
 
         data[j].L[m]   = cp/CLIGHT*fk;
@@ -375,19 +375,15 @@ int main(int argc, char **argv) {
   rnxopt.tend=te;
   rnxopt.tint=tint;
   rnxopt.obstype=OBSTYPE_PR|OBSTYPE_CP|OBSTYPE_SNR;
-/*rnxopt.freqtype=FREQTYPE_L1|FREQTYPE_L2|FREQTYPE_L3|FREQTYPE_L4;*/
   for (i=0;i<3;i++) {
     rnxopt.apppos[i] = rr[i];
   };
 
-  const char type[]="CLS";
-  char obst[16];
-
-  int iSys,iObs,iTyp;
-  int nSys,nObs,nTyp;
+  char  obst[4];
+  int   iSys,iObs;
+  int   nSys,nObs;
 
   nObs = 64;
-  nTyp = 3;
   nSys = 7;
 
   for (iSys=0;iSys<nSys;iSys++) {
@@ -399,12 +395,25 @@ int main(int argc, char **argv) {
 
       if (rnxopt.mask[iSys][iObs]=='0') continue;
 
-      for (iTyp=0;iTyp<nTyp;iTyp++) {
-
-        sprintf(obst,"%c%s",type[iTyp],code2obs(iObs+1));
+      if (rnxopt.obstype & OBSTYPE_PR) {
+        sprintf(obst,"C%s",code2obs(iObs+1));
         setstr(rnxopt.tobs[iSys][k++],obst,3);
         rnxopt.nobs[iSys]++;
-
+      };
+      if (rnxopt.obstype & OBSTYPE_CP) {
+        sprintf(obst,"L%s",code2obs(iObs+1));
+        setstr(rnxopt.tobs[iSys][k++],obst,3);
+        rnxopt.nobs[iSys]++;
+      };
+      if (rnxopt.obstype & OBSTYPE_DOP) {
+        sprintf(obst,"D%s",code2obs(iObs+1));
+        setstr(rnxopt.tobs[iSys][k++],obst,3);
+        rnxopt.nobs[iSys]++;
+      };
+      if (rnxopt.obstype & OBSTYPE_SNR) {
+        sprintf(obst,"S%s",code2obs(iObs+1));
+        setstr(rnxopt.tobs[iSys][k++],obst,3);
+        rnxopt.nobs[iSys]++;
       };
 
     };
@@ -420,7 +429,7 @@ int main(int argc, char **argv) {
 
   /* output RINEX OBS file */
   if (!(fp=fopen(outfile,"w"))) {
-    fprintf(stderr,"ERROR : outfile open %s\n",outfile);
+    fprintf(stderr,"ERROR : cannot open output file %s\n",outfile);
     return -1;
   };
 
