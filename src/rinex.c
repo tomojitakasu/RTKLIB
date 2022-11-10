@@ -1980,16 +1980,19 @@ static void outrnx_glo_fcn(FILE *fp, const rnxopt_t *opt, const nav_t *nav)
     if (opt->navsys&SYS_GLO) {
         for (i=0;i<MAXPRNGLO;i++) {
             sat=satno(SYS_GLO,i+1);
-            if (nav->geph[i].sat==sat) {
+            for (j=0;j<nav->ng;j++) {
+              if (nav->geph[j].sat==sat) break;
+            };
+            if (j<nav->ng) {
                 prn[n]=i+1;
-                fcn[n++]=nav->geph[i].frq;
+                fcn[n++]=nav->geph[j].frq;
             }
             else if (nav->glo_fcn[i]) {
                 prn[n]=i+1;
                 fcn[n++]=nav->glo_fcn[i]-8;
-            }
-        }
-    }
+            };
+        };
+    };
     for (i=j=0;i<(n<=0?1:(n-1)/8+1);i++) {
         if (i==0) fprintf(fp,"%3d",n); else fprintf(fp,"   ");
         for (k=0;k<8&&j<n;k++,j++) {
