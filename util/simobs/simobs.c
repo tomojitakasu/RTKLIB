@@ -154,9 +154,6 @@ static int simobs(gtime_t ts, gtime_t te, double tint, const double *rr,
       satazel(pos,e,azel);
       if (azel[1]<minel*D2R) continue;
 
-      fprintf(stdout,"sat=%3d sys=%d elev=%6.2f\n",data[j].sat,iSys,
-                                                   azel[1]*R2D);
-
       /* Compute L1 ionospheric delay */
       iono = ionmodel(data[j].time,nav->ion_gps,pos,azel);
 
@@ -213,7 +210,7 @@ static int simobs(gtime_t ts, gtime_t te, double tint, const double *rr,
       ns++;
 
     };
-    fprintf(stdout,"time=%s nsat=%2d\n",s,ns);
+    fprintf(stdout,"time=%s nsat=%2d\r",s,ns);
   };
 
   fprintf(stdout,"\n");
@@ -242,9 +239,9 @@ int main(int argc, char **argv) {
   int       nNav=0,nSp3=0,nClk=0;
 
   /*
-  traceopen("simobs.log");
+  traceopen("simobs_tracelog.txt");
   tracelevel(5);
-   */
+  */
 
   /* Process command line arguments */
 
@@ -378,8 +375,10 @@ int main(int argc, char **argv) {
   rnxopt.tend=te;
   rnxopt.tint=tint;
   rnxopt.obstype=OBSTYPE_PR|OBSTYPE_CP|OBSTYPE_SNR;
-  rnxopt.freqtype=FREQTYPE_L1|FREQTYPE_L2|FREQTYPE_L3|FREQTYPE_L4;
-  for (i=0;i<3;i++) rnxopt.apppos[i]=rr[i];
+/*rnxopt.freqtype=FREQTYPE_L1|FREQTYPE_L2|FREQTYPE_L3|FREQTYPE_L4;*/
+  for (i=0;i<3;i++) {
+    rnxopt.apppos[i] = rr[i];
+  };
 
   const char type[]="CLS";
   char obst[16];
@@ -417,11 +416,11 @@ int main(int argc, char **argv) {
   /* generate simulated observation data */
   if (!simobs(ts,te,tint,rr,rnxopt,&nav,&obs)) return -1;
 
-  fprintf(stderr,"saving...: %s\n",outfile);
+  fprintf(stdout,"saving...: %s\n",outfile);
 
-  /* output rinex obs file */
+  /* output RINEX OBS file */
   if (!(fp=fopen(outfile,"w"))) {
-    fprintf(stderr,"error : outfile open %s\n",outfile);
+    fprintf(stderr,"ERROR : outfile open %s\n",outfile);
     return -1;
   };
 
