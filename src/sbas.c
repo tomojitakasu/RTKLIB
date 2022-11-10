@@ -745,8 +745,8 @@ static void getmet(double lat, double *met)
 * compute sbas tropospheric delay correction (mops model)
 * args   : gtime_t time     I   time
 *          double   *pos    I   receiver position {lat,lon,height} (rad/m)
-*          double   *azel   I   satellite azimuth/elavation (rad)
-*          double   *var    O   variance of troposphric error (m^2)
+*          double   *azel   I   satellite azimuth/elevation (rad)
+*          double   *var    O   variance of tropospheric error (m^2)
 * return : slant tropospheric delay (m)
 *-----------------------------------------------------------------------------*/
 extern double sbstropcorr(gtime_t time, const double *pos, const double *azel,
