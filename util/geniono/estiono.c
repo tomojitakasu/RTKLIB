@@ -62,7 +62,7 @@ static void init_iono(const obsd_t *obs, const double *azel, double *x,
     iono=(obs->P[0]-obs->P[1])/map;
     initx(x,P,nx,II(obs->sat),iono,VAR_IONO);
 }
-/* initizlize bias parameter --------------------------------------------------*/
+/* Initialize bias parameter --------------------------------------------------*/
 static void init_bias(const obsd_t *obs, double *x, double *P, int nx)
 {
     double bias;
