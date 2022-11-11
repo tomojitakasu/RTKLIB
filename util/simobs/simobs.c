@@ -83,18 +83,10 @@ static double snrmodel(const double *azel, uint8_t code)
   return snrs[j] + randn(0.0,sdvs[j]) - (code==CODE_L1W||code==CODE_L2W? 10: 0);
 };
 /* generate error ------------------------------------------------------------*/
-static void errmodel(const double *azel, double *snr, double *ecp, double *epr)
+static void errmodel(const double *azel, double *ecp, double *epr)
 {
-  int i;
-  double ec,ep;
-
-  for (i=0;i<NFREQ;i++) {
-    ec=randn(0.0,errcp1)+randn(0.0,errcp2)/sin(azel[1]);
-    ep=randn(0.0,errpr1)+randn(0.0,errpr2)/sin(azel[1]);
-
-    ecp[i]=0.5*ecp[i]+0.5*ec; /* filter */
-    epr[i]=0.5*epr[i]+0.5*ep; /* filter */
-  }
+  ecp[0]=randn(0.0,errcp1)+randn(0.0,errcp2)/sin(azel[1]);
+  epr[0]=randn(0.0,errpr1)+randn(0.0,errpr2)/sin(azel[1]);
 }
 /* generate simulated observation data ---------------------------------------*/
 static int simobs(gtime_t ts, gtime_t te, double tint, const double *rr,
@@ -107,6 +99,7 @@ static int simobs(gtime_t ts, gtime_t te, double tint, const double *rr,
   int       svh;
   double    snr;
   double    iono,trop,fact,cp,pr,dtr=0.0;
+  double    epr,ecp;
   int       i,j,k,n,m,ns,sys,prn;
   int       iSys;
   char      s[64];
@@ -115,9 +108,9 @@ static int simobs(gtime_t ts, gtime_t te, double tint, const double *rr,
   trace(3,"simobs:nnav=%d ngnav=%d\n",nav->n,nav->ng);
 
   for (j=0; j<MAXSAT; j++) {
-      data[j].sat  = j+1;
-      data[j].P[0] = 2.0e7;
-      data[j].code[0] = CODE_NONE;
+    data[j].sat  = j+1;
+    data[j].P[0] = 0.0;
+    data[j].code[0] = CODE_NONE;
   };
 
   /* Station position */
@@ -139,13 +132,13 @@ static int simobs(gtime_t ts, gtime_t te, double tint, const double *rr,
     /* loop over satellites */
     for (j=0;j<MAXSAT;j++) {
 
-      time = timeadd(data[j].time,dtr);
+      time = timeadd(data[j].time,-70e-6+dtr);
 
       if (satpos(time,time,data[j].sat,EPHOPT_PREC,nav,rs,dts,&var,&svh)==0)
         continue;
       if ((r=geodist(rs,rr,e))<=0.0) continue;
 
-      time = timeadd(time,-r/CLIGHT);
+      time = timeadd(data[j].time,-r/CLIGHT);
 
       if (satpos(time,time,data[j].sat,EPHOPT_PREC,nav,rs,dts,&var,&svh)==0)
         continue;
@@ -179,13 +172,16 @@ static int simobs(gtime_t ts, gtime_t te, double tint, const double *rr,
         data[j].code[m] = obs2code(rnxopt.tobs[iSys][k]+1);
 
         /* ionosphere scaling factor */
-        f0 = sat2freq(data[j].sat, CODE_L1C, nav);
+        f0 = sat2freq(data[j].sat, CODE_L1C,        nav);
         fk = sat2freq(data[j].sat, data[j].code[m], nav);
         fact = pow(f0/fk,2);
 
+        /* Measurement noise */
+        errmodel(azel, &epr, &ecp);
+
         /* generate observation data */
-        cp  = r + CLIGHT*(dtr - dts[0])/*-fact*iono*//*+trop*/;
-        pr  = r + CLIGHT*(dtr - dts[0])/*+fact*iono*//*+trop*/;
+        cp  = r + CLIGHT*(dtr - dts[0])/*-fact*iono*//*+trop*/+epr;
+        pr  = r + CLIGHT*(dtr - dts[0])/*+fact*iono*//*+trop*/+ecp;
         snr = snrmodel(azel,data[j].code[m]);
 
         data[j].L[m]   = cp/CLIGHT*fk;
@@ -242,6 +238,9 @@ int main(int argc, char **argv) {
   traceopen("simobs_tracelog.txt");
   tracelevel(5);
   */
+
+  /* seed random number generator for reproducible noise */
+  srand(0);
 
   /* Process command line arguments */
 
