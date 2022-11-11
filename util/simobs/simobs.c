@@ -18,6 +18,23 @@ static double errcp2    = 0.002;        /* carrier-phase meas error/sin(el) (m) 
 static double errpr1    = 0.2;          /* pseudorange error (m) */
 static double errpr2    = 0.2;          /* pseudorange error/sin(el) (m) */
 
+typedef struct {        /* processing options type */
+    int nf;             /* number of frequencies (1:L1,2:L1+L2,3:L1+L2+L5) */
+    int navsys;         /* navigation system */
+    double elmin;       /* elevation mask angle (rad) */
+    int sateph;         /* satellite ephemeris/clock (EPHOPT_???) */
+    int ionoopt;        /* ionosphere option (IONOOPT_???) */
+    int tropopt;        /* troposphere option (TROPOPT_???) */
+    int dynamics;       /* dynamics model (0:none,1:velocity,2:accel) */
+    int tidecorr;       /* earth tide correction (0:off,1:solid,2:solid+otl+pole) */
+    int refpos;               /* base position for relative mode */
+                              /* (0:pos in prcopt,  1:average of single pos, */
+                              /*  2:read from file, 3:rinex header, 4:rtcm pos) */
+    char anttype[MAXANT];     /* antenna types {rover,base} */
+    double antdel[3];         /* antenna delta {d_e,d_n,d_u} */
+    double odisp[2][6*11];    /* ocean tide loading parameters {rov,base} */
+} simopt_t;
+
 /* generate random number with normal distribution ---------------------------*/
 static double randn(double myu, double sig)
 {
@@ -219,6 +236,7 @@ int main(int argc, char **argv) {
 
   FILE      *fp;
   rnxopt_t  rnxopt={{0}};
+  simopt_t  simopt={{0}}; /* TODO: populate and use!! */
   obs_t     obs={0};
   nav_t     nav={0};
   sta_t     sta={0};
