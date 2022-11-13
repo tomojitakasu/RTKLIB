@@ -1226,9 +1226,11 @@ void Plot::UpdateObs(int nobs)
     ReadWaitStart();
     ShowLegend(NULL);
 
+    double *azel;
+    azel = (double*) malloc(sizeof(double)*2*Obs.n);
     for (int i = 0, j = 0; i < Obs.n; i = j) {
         gtime_t time = Obs.data[i].time;
-        double pos[3],azel[2];
+        double pos[3];
         int svh;
 
         for (j = i; j < Obs.n; j++)
@@ -1280,6 +1282,7 @@ void Plot::UpdateObs(int nobs)
             qApp->processEvents();
         }
     }
+    free(azel);
     IndexObs[NObs] = Obs.n;
 
     UpdateSatList();
