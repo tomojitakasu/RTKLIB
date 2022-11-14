@@ -280,8 +280,9 @@ void MainForm::showEvent(QShowEvent* event)
     parser.addVersionOption();
     parser.setSingleDashWordOptionMode(QCommandLineParser::ParseAsLongOptions);
 
-    QCommandLineOption iniFileOption(QStringList() << "i" ,
-            QCoreApplication::translate("main", "use init file <file>"));
+    QCommandLineOption iniFileOption(QStringList() << "i",
+            QCoreApplication::translate("main", "use init file <file>"),
+            QCoreApplication::translate("main", "ini file"));
     parser.addOption(iniFileOption);
 
     QCommandLineOption titleOption(QStringList() << "t",
@@ -339,6 +340,7 @@ void MainForm::showEvent(QShowEvent* event)
     if (parser.isSet(iniFileOption)) {
         IniFile=parser.value(iniFileOption);
     }
+
     LoadOpt();
 
     if (parser.isSet(titleOption)) {
