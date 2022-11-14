@@ -28,7 +28,7 @@ void Plot::UpdateTimeObs(void)
     QString msgs2[] = { " SNR=...45.", "..40.", "..35.", "..30.", "..25 ", "", " <25 " };
     QString msgs3[] = { " SYS=GPS ", "GLO ", "GAL ", "QZS ", "BDS ", "IRN ", "SBS" };
     QString msgs4[] = { " MP=..0.6", "..0.3", "..0.0..", "-0.3..", "-0.6..", "", "" };
-    QString msgs[8];
+    QString msgs[8] = {"", "", "", "", "", "", "", ""};
     QString msg;
     double azel[MAXOBS * 2], dop[4] = { 0 };
     int i, ns = 0, no = 0, ind = ObsIndex;
@@ -78,7 +78,7 @@ void Plot::UpdateTimeSol(void)
     const char *unit[] = { "m", "m/s", "m/s2" }, *u;
     const QString sol[] = { tr(""), tr("FIX"), tr("FLOAT"), tr("SBAS"), tr("DGPS"), tr("Single"), tr("PPP") };
     QString msg;
-    QString msgs[8];
+    QString msgs[8] = {"", "", "", "", "", "", "", ""};
     sol_t *data;
     double pos[3], r, az, el;
     int sel = BtnSol1->isChecked() || !BtnSol2->isChecked() ? 0 : 1, ind = SolIndex[sel];
@@ -128,7 +128,7 @@ void Plot::UpdateInfoObs(void)
     QString msgs3[] = { " SYS=GPS ", "GLO ", "GAL ", "QZS ", "BDS ", "IRN ", "SBS" };
     QString msgs4[] = { " MP=..0.6", "..0.3", "..0.0..", "-0.3..", "-0.6..", "", "" };
     QString msg;
-    QString msgs[8];
+    QString msgs[8] = {"", "", "", "", "", "", "", ""};
     gtime_t ts = { 0, 0 }, te = { 0, 0 }, t, tp = { 0, 0 };
     int i, n = 0, ne = 0, p;
     QString s1, s2;
@@ -167,7 +167,7 @@ void Plot::UpdateInfoObs(void)
 // update statistics-information for solution plot --------------------------
 void Plot::UpdateInfoSol(void)
 {
-    QString msg, msgs[8], s;
+    QString msg, msgs[8] = {"", "", "", "", "", "", "", ""}, s;
     TIMEPOS *pos = NULL, *pos1, *pos2;
     sol_t *data;
     gtime_t ts = { 0, 0 }, te = { 0, 0 };
