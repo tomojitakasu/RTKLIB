@@ -62,7 +62,7 @@ const QChar up2Char(0262);              // character code of ^2     (UTF-8)
 #define ORG_PNTPOS  9                   // plot-origin: way-point position
 
 #define TRACEFILE   "rtkplot.trace"     // trace file
-#define QCTMPFILE   "rtkplot_qc.temp"   // tempolary file for qc
+#define QCTMPFILE   "rtkplot_qc.temp"   // temporary file for qc
 #define QCERRFILE   "rtkplot_qc.err"    // error file for qc
 
 #define SQR(x)      ((x)*(x))
