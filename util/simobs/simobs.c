@@ -19,20 +19,20 @@ static double errpr1    = 0.2;          /* pseudorange error (m) */
 static double errpr2    = 0.2;          /* pseudorange error/sin(el) (m) */
 
 typedef struct {        /* processing options type */
-    int nf;             /* number of frequencies (1:L1,2:L1+L2,3:L1+L2+L5) */
-    int navsys;         /* navigation system */
-    double elmin;       /* elevation mask angle (rad) */
-    int sateph;         /* satellite ephemeris/clock (EPHOPT_???) */
-    int ionoopt;        /* ionosphere option (IONOOPT_???) */
-    int tropopt;        /* troposphere option (TROPOPT_???) */
-    int dynamics;       /* dynamics model (0:none,1:velocity,2:accel) */
-    int tidecorr;       /* earth tide correction (0:off,1:solid,2:solid+otl+pole) */
-    int refpos;               /* base position for relative mode */
-                              /* (0:pos in prcopt,  1:average of single pos, */
-                              /*  2:read from file, 3:rinex header, 4:rtcm pos) */
-    char anttype[MAXANT];     /* antenna types {rover,base} */
-    double antdel[3];         /* antenna delta {d_e,d_n,d_u} */
-    double odisp[2][6*11];    /* ocean tide loading parameters {rov,base} */
+    gtime_t ts;
+    gtime_t te;
+    double  tint;
+    double  rr[3];
+    int     nf;               /* number of frequencies (1:L1,2:L1+L2,3:L1+L2+L5) */
+    int     navsys;           /* navigation system */
+    double  elmin;            /* elevation mask angle (rad) */
+    int     sateph;           /* satellite ephemeris/clock (EPHOPT_???) */
+    int     ionoopt;          /* ionosphere option (IONOOPT_???) */
+    int     tropopt;          /* troposphere option (TROPOPT_???) */
+    int     tidecorr;         /* earth tide correction (0:off,1:solid,5:solid+pole,7:solid+pole+otl) */
+    char    anttype[MAXANT];  /* antenna types */
+    double  antdel[3];        /* antenna delta {d_e,d_n,d_u} */
+    double  odisp[6*11];      /* ocean tide loading parameters */
 } simopt_t;
 
 /* generate random number with normal distribution ---------------------------*/
@@ -106,12 +106,11 @@ static void errmodel(const double *azel, double *ecp, double *epr)
   epr[0]=randn(0.0,errpr1)+randn(0.0,errpr2)/sin(azel[1]);
 }
 /* generate simulated observation data ---------------------------------------*/
-static int simobs(gtime_t ts, gtime_t te, double tint, const double *rr,
-                  rnxopt_t rnxopt, nav_t *nav, obs_t *obs) {
+static int simobs(simopt_t simopt, rnxopt_t rnxopt, nav_t *nav, obs_t *obs) {
 
   gtime_t   time;
   obsd_t    data[MAXSAT]={0};
-  double    pos[3],rs[6],dts[2],r,e[3],azel[2];
+  double    pos[3],rr[3],dr[3],rs[6],dts[2],r,e[3],azel[2];
   double    var;
   int       svh;
   double    snr;
@@ -130,18 +129,25 @@ static int simobs(gtime_t ts, gtime_t te, double tint, const double *rr,
     data[j].code[0] = CODE_NONE;
   };
 
-  /* Station position */
-  ecef2pos(rr,pos);
-
   /* Loop over measurement epochs */
-  n = (int)(timediff(te,ts)/tint+1.0);
+  n = (int)(timediff(simopt.te,simopt.ts)/simopt.tint+1.0);
   for (i=0;i<n;i++) {
 
     /* set the satellite and observation epoch */
-    time = timeadd(ts,tint*i);
+    time = timeadd(simopt.ts,simopt.tint*i);
     time2str(time,s,0);
 
     for (j=0;j<MAXSAT;j++) data[j].time = time;
+
+    /* earth tides correction */
+    if (simopt.tidecorr>0) {
+      tidedisp(gpst2utc(time),simopt.rr,simopt.tidecorr,&nav->erp,
+               simopt.odisp,dr);
+      for (k=0;k<3;k++) rr[k] = simopt.rr[k]+dr[k];
+    };
+
+    /* Station position */
+    ecef2pos(rr,pos);
 
     /* reset number of satellites */
     ns = 0;
@@ -197,8 +203,8 @@ static int simobs(gtime_t ts, gtime_t te, double tint, const double *rr,
         errmodel(azel, &epr, &ecp);
 
         /* generate observation data */
-        cp  = r + CLIGHT*(dtr - dts[0])/*-fact*iono*//*+trop*/+epr;
-        pr  = r + CLIGHT*(dtr - dts[0])/*+fact*iono*//*+trop*/+ecp;
+        cp  = r + CLIGHT*(dtr - dts[0])/*-fact*iono*//*+trop*//*+epr*/;
+        pr  = r + CLIGHT*(dtr - dts[0])/*+fact*iono*//*+trop*//*+ecp*/;
         snr = snrmodel(azel,data[j].code[m]);
 
         data[j].L[m]   = cp/CLIGHT*fk;
@@ -236,26 +242,25 @@ int main(int argc, char **argv) {
 
   FILE      *fp;
   rnxopt_t  rnxopt={{0}};
-  simopt_t  simopt={{0}}; /* TODO: populate and use!! */
+  simopt_t  simopt={{0}};
   obs_t     obs={0};
   nav_t     nav={0};
   sta_t     sta={0};
-  gtime_t   ts={0},te={0};
   double    es[]={2000,1,1,0,0,0};
   double    ee[]={2000,1,1,0,0,0};
-  double    tint=30.0;
-  double    pos[3]={0},rr[3];
+  double    pos[3]={0};
   char      *navFileName[16]={0};
   char      *sp3FileName[16]={0};
   char      *clkFileName[16]={0};
+  char      *erpFileName={0};
   char      *outfile="";
   int       i,j,k;
-  int       nNav=0,nSp3=0,nClk=0;
+  int       nNav=0,nSp3=0,nClk=0,nErp=0;
 
   /*
   traceopen("simobs_tracelog.txt");
   tracelevel(5);
-  */
+   */
 
   /* seed random number generator for reproducible noise */
   srand(0);
@@ -280,7 +285,7 @@ int main(int argc, char **argv) {
         fprintf(stderr,"invalid date/time format for -ts\n");
         return -1;
       };
-      ts=epoch2time(es);
+      simopt.ts=epoch2time(es);
 
     }
     else if (!strcmp(argv[i],"-te")&&i+1<argc) {
@@ -296,11 +301,11 @@ int main(int argc, char **argv) {
         fprintf(stderr,"invalid date/time format for -te\n");
         return -1;
       };
-      te=epoch2time(ee);
+      simopt.te=epoch2time(ee);
 
     }
     else if (!strcmp(argv[i],"-ti")&&i+1<argc) {
-      tint=atof(argv[++i]);
+      simopt.tint=atof(argv[++i]);
     }
     else if (!strcmp(argv[i],"-r")&&i+3<argc) {
       for (j=0;j<3;j++) pos[j]=atof(argv[++i]); /* lat,lon,hgt */
@@ -317,6 +322,11 @@ int main(int argc, char **argv) {
     /* Clock-RINEX files */
     else if (!strcmp(argv[i],"-c")&&i+1<argc) {
       clkFileName[nClk++]=argv[++i];
+    }
+    else if (!strcmp(argv[i],"-e")&&i+1<argc) {
+      erpFileName=argv[++i];
+      nErp++;
+      simopt.tidecorr = 5;
     }
     else {
       navFileName[nNav++]=argv[i];
@@ -341,6 +351,9 @@ int main(int argc, char **argv) {
   if (!rnxopt.navsys) {
     rnxopt.navsys = SYS_GPS|SYS_GAL;
   };
+
+  /* Default step size */
+  simopt.tint = 30.0;
 
   /* read RINEX-NAV files */
 
@@ -379,21 +392,32 @@ int main(int argc, char **argv) {
     };
   };
 
+  /* read erp data */
+  if (nErp>0) {
+    fprintf(stdout,"Reading %s\n",erpFileName);
+    if (!readerp(erpFileName,&nav.erp)) {
+      fprintf("ERROR: cannot read ERP file %\n",erpFileName);
+      return -1;
+    };
+  };
+
   /* Reference position for RINEX header */
 
-  pos[0]*=D2R; pos[1]*=D2R; pos2ecef(pos,rr);
+  pos[0]*=D2R; pos[1]*=D2R; pos2ecef(pos,simopt.rr);
 
   /* RINEX OBS file options */
 
   strcpy(rnxopt.prog,PROGNAME);
   strcpy(rnxopt.comment[0],"SIMULATED OBS DATA");
-  rnxopt.rnxver=305;
-  rnxopt.tstart=ts;
-  rnxopt.tend=te;
-  rnxopt.tint=tint;
+  rnxopt.rnxver = 305;
+  strcpy(rnxopt.rec[1],"UNKNOWN");
+  strcpy(rnxopt.ant[1],"UNKNOWN         NONE");
+  rnxopt.tstart = simopt.ts;
+  rnxopt.tend   = simopt.te;
+  rnxopt.tint   = simopt.tint;
   rnxopt.obstype=OBSTYPE_PR|OBSTYPE_CP|OBSTYPE_SNR;
   for (i=0;i<3;i++) {
-    rnxopt.apppos[i] = rr[i];
+    rnxopt.apppos[i] = simopt.rr[i];
   };
 
   char  obst[4];
@@ -440,7 +464,7 @@ int main(int argc, char **argv) {
   fprintf(stdout,"Generate observations \n");
 
   /* generate simulated observation data */
-  if (!simobs(ts,te,tint,rr,rnxopt,&nav,&obs)) return -1;
+  if (!simobs(simopt,rnxopt,&nav,&obs)) return -1;
 
   fprintf(stdout,"saving...: %s\n",outfile);
 
