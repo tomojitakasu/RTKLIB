@@ -139,11 +139,13 @@ static int simobs(simopt_t simopt, rnxopt_t rnxopt, nav_t *nav, obs_t *obs) {
 
     for (j=0;j<MAXSAT;j++) data[j].time = time;
 
+    for (k=0;k<3;k++) rr[k] = simopt.rr[k];
+
     /* earth tides correction */
     if (simopt.tidecorr>0) {
       tidedisp(gpst2utc(time),simopt.rr,simopt.tidecorr,&nav->erp,
                simopt.odisp,dr);
-      for (k=0;k<3;k++) rr[k] = simopt.rr[k]+dr[k];
+      for (k=0;k<3;k++) rr[k] += dr[k];
     };
 
     /* Station position */
@@ -262,6 +264,9 @@ int main(int argc, char **argv) {
   tracelevel(5);
    */
 
+  /* Default options */
+  simopt.tidecorr = 0;
+
   /* seed random number generator for reproducible noise */
   srand(0);
 
@@ -315,6 +320,10 @@ int main(int argc, char **argv) {
       for (j=0;j<7;j++) for (k=0;k<64;k++) rnxopt.mask[j][k]='0';
       setmask(argv[++i],&rnxopt,1);
     }
+    /* RINEX-NAV files */
+    else if (!strcmp(argv[i],"-n")&&i+1<argc) {
+      navFileName[nNav++]=argv[++i];
+    }
     /* SP3 files */
     else if (!strcmp(argv[i],"-s")&&i+1<argc) {
       sp3FileName[nSp3++]=argv[++i];
@@ -327,16 +336,9 @@ int main(int argc, char **argv) {
       erpFileName=argv[++i];
       nErp++;
       simopt.tidecorr = 5;
-    }
-    else {
-      navFileName[nNav++]=argv[i];
     };
   };
 
-  if (nNav<=0) {
-    fprintf(stderr,"no RINEX-NAV input file\n");
-    return -1;
-  };
   if (!*outfile) {
     fprintf(stderr,"no output file\n");
     return -1;
@@ -357,13 +359,15 @@ int main(int argc, char **argv) {
 
   /* read RINEX-NAV files */
 
-  for (i=0;i<nNav;i++) {
-    fprintf(stdout,"Reading %s\n",navFileName[i]);
-    readrnx(navFileName[i],0,"",&obs,&nav,&sta);
-  };
-  if (nav.n<=0) {
-    fprintf(stderr,"no BRDC data\n");
-    return -1;
+  if (nNav>0) {
+    for (i=0;i<nNav;i++) {
+      fprintf(stdout,"Reading %s\n",navFileName[i]);
+      readrnx(navFileName[i],0,"",&obs,&nav,&sta);
+    };
+    if (nav.n<=0) {
+      fprintf(stderr,"no BRDC data\n");
+      return -1;
+    };
   };
 
   /* read precise ephemeris files */
@@ -393,10 +397,11 @@ int main(int argc, char **argv) {
   };
 
   /* read erp data */
+
   if (nErp>0) {
     fprintf(stdout,"Reading %s\n",erpFileName);
     if (!readerp(erpFileName,&nav.erp)) {
-      fprintf("ERROR: cannot read ERP file %\n",erpFileName);
+      fprintf(stdout,"ERROR: cannot read ERP file %s\n",erpFileName);
       return -1;
     };
   };
