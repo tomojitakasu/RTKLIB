@@ -23,12 +23,13 @@ typedef struct {        /* processing options type */
     gtime_t te;
     double  tint;
     double  rr[3];
-    int     nf;               /* number of frequencies (1:L1,2:L1+L2,3:L1+L2+L5) */
     int     navsys;           /* navigation system */
+    int     noise;            /* Measurement noise  (0:off,1:on) */
+    int     ionoopt;          /* ionosphere  option (0:off,1:on) */
+    int     tropopt;          /* troposphere option (0:off,1:on) */
+    int     nf;               /* number of frequencies (1:L1,2:L1+L2,3:L1+L2+L5) */
     double  elmin;            /* elevation mask angle (rad) */
     int     sateph;           /* satellite ephemeris/clock (EPHOPT_???) */
-    int     ionoopt;          /* ionosphere option (IONOOPT_???) */
-    int     tropopt;          /* troposphere option (TROPOPT_???) */
     int     tidecorr;         /* earth tide correction (0:off,1:solid,5:solid+pole,7:solid+pole+otl) */
     char    anttype[MAXANT];  /* antenna types */
     double  antdel[3];        /* antenna delta {d_e,d_n,d_u} */
@@ -205,8 +206,14 @@ static int simobs(simopt_t simopt, rnxopt_t rnxopt, nav_t *nav, obs_t *obs) {
         errmodel(azel, &epr, &ecp);
 
         /* generate observation data */
-        cp  = r + CLIGHT*(dtr - dts[0])/*-fact*iono*//*+trop*//*+epr*/;
-        pr  = r + CLIGHT*(dtr - dts[0])/*+fact*iono*//*+trop*//*+ecp*/;
+        cp  = r + CLIGHT*(dtr - dts[0]) \
+                 -(simopt.ionoopt>0? fact*iono : 0.0) \
+                 +(simopt.tropopt>0? trop : 0.0) \
+                 +(simopt.noise>0?   epr  : 0.0);
+        pr  = r + CLIGHT*(dtr - dts[0]) \
+                 +(simopt.ionoopt>0? fact*iono : 0.0) \
+                 +(simopt.tropopt>0? trop : 0.0) \
+                 +(simopt.noise>0?   ecp  : 0.0);
         snr = snrmodel(azel,data[j].code[m]);
 
         data[j].L[m]   = cp/CLIGHT*fk;
@@ -265,6 +272,9 @@ int main(int argc, char **argv) {
    */
 
   /* Default options */
+  simopt.noise    = 0;
+  simopt.tropopt  = 0;
+  simopt.ionoopt  = 0;
   simopt.tidecorr = 0;
 
   /* seed random number generator for reproducible noise */
@@ -336,7 +346,17 @@ int main(int argc, char **argv) {
       erpFileName=argv[++i];
       nErp++;
       simopt.tidecorr = 5;
+    }
+    else if (!strcmp(argv[i],"--noise")) {
+      simopt.noise = 1;
+    }
+    else if (!strcmp(argv[i],"--tropo")) {
+      simopt.tropopt = 1;
+    }
+    else if (!strcmp(argv[i],"--iono")) {
+      simopt.ionoopt = 1;
     };
+
   };
 
   if (!*outfile) {
