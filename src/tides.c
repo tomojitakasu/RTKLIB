@@ -212,15 +212,15 @@ static void tide_pole(gtime_t tut, const double *pos, const double *erpv,
 *                                 1: solid earth tide
 *                                 2: ocean tide loading
 *                                 4: pole tide
-*                                 8: elimate permanent deformation
+*                                 8: eliminate permanent deformation
 *          double *erp      I   earth rotation parameters (NULL: not used)
 *          double *odisp    I   ocean loading parameters  (NULL: not used)
-*                                 odisp[0+i*6]: consituent i amplitude radial(m)
-*                                 odisp[1+i*6]: consituent i amplitude west  (m)
-*                                 odisp[2+i*6]: consituent i amplitude south (m)
-*                                 odisp[3+i*6]: consituent i phase radial  (deg)
-*                                 odisp[4+i*6]: consituent i phase west    (deg)
-*                                 odisp[5+i*6]: consituent i phase south   (deg)
+*                                 odisp[0+i*6]: constituent i amplitude radial(m)
+*                                 odisp[1+i*6]: constituent i amplitude west  (m)
+*                                 odisp[2+i*6]: constituent i amplitude south (m)
+*                                 odisp[3+i*6]: constituent i phase radial  (deg)
+*                                 odisp[4+i*6]: constituent i phase west    (deg)
+*                                 odisp[5+i*6]: constituent i phase south   (deg)
 *                                (i=0:M2,1:S2,2:N2,3:K2,4:K1,5:O1,6:P1,7:Q1,
 *                                   8:Mf,9:Mm,10:Ssa)
 *          double *dr       O   displacement by earth tides (ecef) (m)
