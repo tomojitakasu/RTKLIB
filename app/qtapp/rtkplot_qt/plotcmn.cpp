@@ -75,7 +75,7 @@ void Plot::ShowLegend(QString msgs[])
     trace(3, "ShowLegend\n");
 
     for (i = 0; i < 7; i++) {
-        if (!msgs || msgs[i] == NULL) {
+        if (!msgs || msgs[i].isEmpty()) {
             ql[i]->setText("");
             ql[i]->adjustSize();
         } else {
