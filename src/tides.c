@@ -162,7 +162,7 @@ static void tide_oload(gtime_t tut, const double *odisp, double *denu)
     
     trace(5,"tide_oload: denu=%.3f %.3f %.3f\n",denu[0],denu[1],denu[2]);
 }
-/* iers mean pole (ref [7] eq.7.25) ------------------------------------------*/
+/* iers mean pole (ref [5] eq.7.25) ------------------------------------------*/
 static void iers_mean_pole(gtime_t tut, double *xp_bar, double *yp_bar)
 {
     const double ep2000[]={2000,1,1,0,0,0};
@@ -180,7 +180,7 @@ static void iers_mean_pole(gtime_t tut, double *xp_bar, double *yp_bar)
         *yp_bar=358.891-0.6287*y;
     }
 }
-/* displacement by pole tide (ref [7] eq.7.26) --------------------------------*/
+/* displacement by pole tide (ref [5] eq.7.26) --------------------------------*/
 static void tide_pole(gtime_t tut, const double *pos, const double *erpv,
                       double *denu)
 {
@@ -191,7 +191,7 @@ static void tide_pole(gtime_t tut, const double *pos, const double *erpv,
     /* iers mean pole (mas) */
     iers_mean_pole(tut,&xp_bar,&yp_bar);
     
-    /* ref [7] eq.7.24 */
+    /* ref [5] eq.7.24 */
     m1= erpv[0]/AS2R-xp_bar*1E-3; /* (as) */
     m2=-erpv[1]/AS2R+yp_bar*1E-3;
     
