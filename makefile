@@ -26,6 +26,7 @@ GENCRC     = $(RTKLIB)/util/gencrc
 GENIONO    = $(RTKLIB)/util/geniono
 RNX2RTCM   = $(RTKLIB)/util/rnx2rtcm
 SIMOBS     = $(RTKLIB)/util/simobs/gcc
+UTEST      = $(RTKLIB)/test/utest
 
 # Get number of parallel build jobs
 
@@ -64,7 +65,7 @@ endif
 
 all: init \
 	 iers_ consapp_ qtapp_ \
-	 gencrc_ rnx2rtcm_  simobs_ \
+	 gencrc_ rnx2rtcm_  simobs_ utest_ \
 	 install_
 
 # Create directory tree
@@ -92,6 +93,9 @@ rnx2rtcm_:
 	
 simobs_:
 	cd $(SIMOBS); $(PMAKE)
+
+utest_:
+	cd $(UTEST); $(PMAKE)
 	
 install_:
 	cd $(CONSAPP); make install
@@ -105,3 +109,5 @@ clean:
 	cd $(CONSAPP);  make clean
 	for F in $$(ls -d $(QTAPP)/*_qt/Makefile); do rm $$F; done	
 	cd $(QTAPP);    make clean
+	cd $(UTEST);    make clean
+	
