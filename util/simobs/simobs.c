@@ -18,6 +18,57 @@ static double errcp2    = 0.002;        /* carrier-phase error/sin(el) (m) */
 static double errpr1    = 0.200;        /* pseudorange   error (m) */
 static double errpr2    = 0.200;        /* pseudorange   error/sin(el) (m) */
 
+/* help text -----------------------------------------------------------------*/
+static const char *help[]={
+"",
+" Synopsis",
+"",
+" simobs [option ...] file",
+"",
+" Description",
+"",
+" Read RINEX OBS/NAV/CLK and SP3 files and simulate GNSS pseudorange, ",
+" carrier-phase and C/N0 measurements for a given receiver position.",
+" The output will be written to a RINEX OBS file.",
+"",
+" Options (units) [default]",
+"",
+" -?                   print help",
+" -n      file         RINEX NAV input file",
+" -s      file         SP3 input file",
+" -c      file         Clock-RINEX input file",
+" -e      file         ERP input file",
+" -o      file         RINEX OBS output file",
+" -v      ver          RINEX OBS version [3.05]",
+" -ts     ds ts        start date/time (ds=y/m/d ts=h:m:s)",
+" -te     de te        end   date/time (de=y/m/d te=h:m:s)",
+" -ti     tint         time interval (sec) [30]",
+" -hc     comment      rinex header: comment line",
+" -hm     marker       rinex header: marker name",
+" -hn     markno       rinex header: marker number",
+" -ht     marktype     rinex header: marker type",
+" -ho     observ       rinex header: observer name and agency separated by /",
+" -hr     rec          rinex header: receiver number, type and version separated by /",
+" -ha     ant          rinex header: antenna number and type separated by /",
+" -hd     delta        rinex header: antenna delta h/e/n separated by / (m)",
+" -r      x y z        receiver ecef position (m)",
+" -l      lat lon hgt  receiver latitude/longitude/height (deg/m)",
+" --mask  [sig[,...]]  signal mask(s) (sig={G|R|E|J|S|C|I}L{1C|1P|1W|...})",
+" --noise              use observation noise",
+" --tropo              use tropospheric delay",
+" --iono               use ionospheric  delay (requires -n)",
+" --tides              use solid tides and pole tides (requires -e)",
+" -x      level        debug trace level (0:off,>0:on) [0]",
+""
+};
+/* print help ----------------------------------------------------------------*/
+static void printhelp(void)
+{
+    int i;
+    for (i=0;i<(int)(sizeof(help)/sizeof(*help));i++) fprintf(stderr,"%s\n",help[i]);
+    exit(0);
+};
+/* processing options --------------------------------------------------------*/
 typedef struct {        /* processing options type */
     gtime_t ts;
     gtime_t te;
@@ -31,9 +82,9 @@ typedef struct {        /* processing options type */
     double  elmin;            /* elevation mask angle (rad) */
     int     sateph;           /* satellite ephemeris/clock (EPHOPT_???) */
     int     tidecorr;         /* earth tide correction (0:off,1:solid,5:solid+pole,7:solid+pole+otl) */
-    char    anttype[MAXANT];  /* antenna types */
     double  antdel[3];        /* antenna delta {d_e,d_n,d_u} */
     double  odisp[6*11];      /* ocean tide loading parameters */
+    int     trace;            /* trace output for debugging */
 } simopt_t;
 
 /* generate random number with normal distribution ---------------------------*/
@@ -43,7 +94,8 @@ static double randn(double myu, double sig)
   a=((double)rand()+1.0)/((double)RAND_MAX+1.0);  /* 0<a<=1 */
   b=((double)rand()+1.0)/((double)RAND_MAX+1.0);  /* 0<b<=1 */
   return myu+sqrt(-2.0*log(a))*sin(2.0*PI*b)*sig;
-}
+};
+
 /* set string without tail space ---------------------------------------------*/
 static void setstr(char *dst, const char *src, int n)
 {
@@ -52,7 +104,8 @@ static void setstr(char *dst, const char *src, int n)
   while (*q&&q<src+n) *p++=*q++;
   *p--='\0';
   while (p>=dst&&*p==' ') *p--='\0';
-}
+};
+
 /* set signal mask -----------------------------------------------------------*/
 static void setmask(const char *argv, rnxopt_t *opt, int mask)
 {
@@ -74,7 +127,8 @@ static void setmask(const char *argv, rnxopt_t *opt, int mask)
       opt->mask[i][code-1]=mask?'1':'0';
     };
   };
-}
+};
+
 /*
  * GPS,GLO,GAL,QZS,SBS,CMP,IRN
  */
@@ -100,12 +154,14 @@ static double snrmodel(const double *azel, uint8_t code)
   j=(int)(azel[1]*R2D/5.0);
   return snrs[j] + randn(0.0,sdvs[j]) - (code==CODE_L1W||code==CODE_L2W? 10: 0);
 };
-/* generate error ------------------------------------------------------------*/
+
+/* generate errors------------------------------------------------------------*/
 static void errmodel(const double *azel, double *ecp, double *epr)
 {
   ecp[0]=randn(0.0,errcp1)+randn(0.0,errcp2)/sin(azel[1]);
   epr[0]=randn(0.0,errpr1)+randn(0.0,errpr2)/sin(azel[1]);
-}
+};
+
 /* generate simulated observation data ---------------------------------------*/
 static int simobs(simopt_t simopt, rnxopt_t rnxopt, nav_t *nav, obs_t *obs) {
 
@@ -144,6 +200,7 @@ static int simobs(simopt_t simopt, rnxopt_t rnxopt, nav_t *nav, obs_t *obs) {
 
     /* earth tides correction */
     if (simopt.tidecorr>0) {
+      dr[0]=dr[1]=dr[2]=0.0;
       tidedisp(gpst2utc(time),simopt.rr,simopt.tidecorr,&nav->erp,
                simopt.odisp,dr);
       for (k=0;k<3;k++) rr[k] += dr[k];
@@ -151,6 +208,11 @@ static int simobs(simopt_t simopt, rnxopt_t rnxopt, nav_t *nav, obs_t *obs) {
 
     /* Station position */
     ecef2pos(rr,pos);
+
+    /* Apply antenna delta */
+    dr[0]=dr[1]=dr[2]=0.0;
+    enu2ecef(pos, simopt.antdel, dr);
+    for (k=0;k<3;k++) rr[k] += dr[k];
 
     /* reset number of satellites */
     ns = 0;
@@ -245,7 +307,8 @@ static int simobs(simopt_t simopt, rnxopt_t rnxopt, nav_t *nav, obs_t *obs) {
 
   return 1;
 
-}
+};
+
 /* simobs main ---------------------------------------------------------------*/
 int main(int argc, char **argv) {
 
@@ -263,19 +326,30 @@ int main(int argc, char **argv) {
   char      *clkFileName[16]={0};
   char      *erpFileName={0};
   char      *outfile="";
-  int       i,j,k;
+  char      *p,buff[256];
+  int       i,j,k,nc=0;
   int       nNav=0,nSp3=0,nClk=0,nErp=0;
 
-  /*
-  traceopen("simobs_tracelog.txt");
-  tracelevel(5);
-   */
-
-  /* Default options */
+  /* Default simulation options */
   simopt.noise    = 0;
   simopt.tropopt  = 0;
   simopt.ionoopt  = 0;
   simopt.tidecorr = 0;
+  simopt.trace    = 0;
+
+  simopt.tint = 30.0;
+  simopt.antdel[0] = 0.0;
+  simopt.antdel[1] = 0.0;
+  simopt.antdel[2] = 0.0;
+
+  /* Default RINEX options */
+  rnxopt.rnxver = 305;
+  strcpy(rnxopt.comment[0],"SIMULATED OBS DATA");
+  strcpy(rnxopt.rec[1],"UNKNOWN");
+  strcpy(rnxopt.ant[1],"UNKNOWN         NONE");
+  rnxopt.antdel[0] = 0.0;
+  rnxopt.antdel[1] = 0.0;
+  rnxopt.antdel[2] = 0.0;
 
   /* seed random number generator for reproducible noise */
   srand(0);
@@ -322,8 +396,58 @@ int main(int argc, char **argv) {
     else if (!strcmp(argv[i],"-ti")&&i+1<argc) {
       simopt.tint=atof(argv[++i]);
     }
-    else if (!strcmp(argv[i],"-r")&&i+3<argc) {
+
+    else if (!strcmp(argv[i],"-hc")&&i+1<argc) {
+      if (nc<MAXCOMMENT)
+        strcpy(rnxopt.comment[nc++],argv[++i]);
+    }
+    else if (!strcmp(argv[i],"-hm")&&i+1<argc) {
+      strcpy(rnxopt.marker,argv[++i]);
+    }
+    else if (!strcmp(argv[i],"-hn")&&i+1<argc) {
+      strcpy(rnxopt.markerno,argv[++i]);
+    }
+    else if (!strcmp(argv[i],"-ht")&&i+1<argc) {
+      strcpy(rnxopt.markertype,argv[++i]);
+    }
+    else if (!strcmp(argv[i],"-ho")&&i+1<argc) {
+      strcpy(buff,argv[++i]);
+      for (j=0,p=strtok(buff,"/");j<2&&p;j++,p=strtok(NULL,"/")) {
+        strcpy(rnxopt.name[j],p);
+      };
+    }
+    else if (!strcmp(argv[i],"-hr")&&i+1<argc) {
+      strcpy(buff,argv[++i]);
+      for (j=0,p=strtok(buff,"/");j<3&&p;j++,p=strtok(NULL,"/")) {
+        strcpy(rnxopt.rec[j],p);
+      };
+    }
+    else if (!strcmp(argv[i],"-ha")&&i+1<argc) {
+      strcpy(buff,argv[++i]);
+      for (j=0,p=strtok(buff,"/");j<3&&p;j++,p=strtok(NULL,"/")) {
+        strcpy(rnxopt.ant[j],p);
+      };
+    }
+    else if (!strcmp(argv[i],"-hd")&&i+1<argc) {
+      strcpy(buff,argv[++i]);
+      for (j=0,p=strtok(buff,"/");j<3&&p;j++,p=strtok(NULL,"/")) { /* h,e,n */
+        rnxopt.antdel[j]=atof(p);
+      };
+      simopt.antdel[0] = rnxopt.antdel[1]; /* E <- H */
+      simopt.antdel[1] = rnxopt.antdel[2]; /* N <- E */
+      simopt.antdel[2] = rnxopt.antdel[0]; /* U <- N */
+    }
+    else if (!strcmp(argv[i],"-v" )&&i+1<argc) {
+        rnxopt.rnxver=(int)(atof(argv[++i])*100.0);
+    }
+    else if (!strcmp(argv[i],"-l")&&i+3<argc) {
       for (j=0;j<3;j++) pos[j]=atof(argv[++i]); /* lat,lon,hgt */
+      pos[0]*=D2R; pos[1]*=D2R;
+      pos2ecef(pos,simopt.rr);
+    }
+    else if (!strcmp(argv[i],"-r")&&i+3<argc) {
+      for (j=0;j<3;j++) simopt.rr[j]=atof(argv[++i]); /* x,y,z */
+      ecef2pos(simopt.rr, pos);
     }
     /* Signal mask */
     else if (!strcmp(argv[i],"-mask")&&i+1<argc) {
@@ -357,8 +481,20 @@ int main(int argc, char **argv) {
     }
     else if (!strcmp(argv[i],"--tides")) {
       simopt.tidecorr = 5;
+    }
+    else if (!strcmp(argv[i],"-x")&&i+1<argc) {
+      simopt.trace = argv[++i];
+    }
+    else if (*argv[i]=='-') {
+      printhelp();
     };
 
+  };
+
+   /* Debugging output level */
+  if (simopt.trace>0) {
+    traceopen("simobs_tracelog.txt");
+    tracelevel(simopt.trace);
   };
 
   if (!*outfile) {
@@ -375,9 +511,6 @@ int main(int argc, char **argv) {
   if (!rnxopt.navsys) {
     rnxopt.navsys = SYS_GPS|SYS_GAL;
   };
-
-  /* Default step size */
-  simopt.tint = 30.0;
 
   /* read RINEX-NAV files */
 
@@ -428,21 +561,13 @@ int main(int argc, char **argv) {
     };
   };
 
-  /* Reference position for RINEX header */
-
-  pos[0]*=D2R; pos[1]*=D2R; pos2ecef(pos,simopt.rr);
-
   /* RINEX OBS file options */
 
   strcpy(rnxopt.prog,PROGNAME);
-  strcpy(rnxopt.comment[0],"SIMULATED OBS DATA");
-  rnxopt.rnxver = 305;
-  strcpy(rnxopt.rec[1],"UNKNOWN");
-  strcpy(rnxopt.ant[1],"UNKNOWN         NONE");
-  rnxopt.tstart = simopt.ts;
-  rnxopt.tend   = simopt.te;
-  rnxopt.tint   = simopt.tint;
-  rnxopt.obstype=OBSTYPE_PR|OBSTYPE_CP|OBSTYPE_SNR;
+  rnxopt.tstart  = simopt.ts;
+  rnxopt.tend    = simopt.te;
+  rnxopt.tint    = simopt.tint;
+  rnxopt.obstype = OBSTYPE_PR|OBSTYPE_CP|OBSTYPE_SNR;
   for (i=0;i<3;i++) {
     rnxopt.apppos[i] = simopt.rr[i];
   };
@@ -513,4 +638,4 @@ int main(int argc, char **argv) {
 
   return 0;
 
-}
+};
