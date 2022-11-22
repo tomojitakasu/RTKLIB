@@ -18,7 +18,7 @@
 RTKLIB     = .
 RTKLIB_bin = $(RTKLIB)/bin
 
-IERS       = $(RTKLIB)/lib/iers/gcc
+LIB        = $(RTKLIB)/lib
 CONSAPP    = $(RTKLIB)/app/consapp
 QTAPP      = $(RTKLIB)/app/qtapp
 
@@ -64,7 +64,7 @@ endif
 # Targets
 
 all: init \
-	 iers_ consapp_ qtapp_ \
+	 lib_ consapp_ qtapp_ \
 	 gencrc_ rnx2rtcm_  simobs_ utest_ \
 	 install_
 
@@ -73,8 +73,8 @@ all: init \
 init:
 	if [ ! -d "$(RTKLIB_bin)" ]; then mkdir -p $(RTKLIB_bin); fi
 
-iers_:
-	cd $(IERS); $(PMAKE)
+lib_:
+	cd $(LIB); $(PMAKE)
 
 consapp_:
 	cd $(CONSAPP); $(PMAKE)
@@ -104,10 +104,15 @@ install_:
 # Clean up
 
 clean:
-	if [ -d "$(RTKLIB_bin)" ]; then cd $(RTKLIB_bin); rm -f *_qt; fi
-	cd $(IERS);     make clean
+	if [ -d "$(RTKLIB_bin)" ]; then cd $(RTKLIB_bin); rm -f *_qt; fi      
+	cd $(LIB);      make clean; rm libRTKLib.so* libiers.a
 	cd $(CONSAPP);  make clean
-	for F in $$(ls -d $(QTAPP)/*_qt/Makefile); do rm $$F; done	
 	cd $(QTAPP);    make clean
 	cd $(UTEST);    make clean
+	cd $(GENCRC);   make clean
+	cd $(GENIONO);  make clean
+	cd $(RNX2RTCM); make clean
+	cd $(SIMOBS);   make clean 
+	for F in $$(ls -d $(QTAPP)/*_qt); do rm $${F}/$${F##*/}; rm $$F/Makefile; done
+	
 	
