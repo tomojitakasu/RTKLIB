@@ -141,7 +141,7 @@
 *                           update stream format strings table
 *                           update obs code strings and priority table
 *                           use integer types in stdint.h
-*                           surppress warnings
+*                           suppress warnings
 *-----------------------------------------------------------------------------*/
 #define _POSIX_C_SOURCE 199506
 #include <stdarg.h>
@@ -1679,7 +1679,7 @@ static int read_leaps_usno(FILE *fp)
 * return : status (1:ok,0:error)
 * notes  : The leap second table should be as follows or leapsec.dat provided
 *          by USNO.
-*          (1) The records in the table file cosist of the following fields:
+*          (1) The records in the table file consist of the following fields:
 *              year month day hour min sec UTC-GPST(s)
 *          (2) The date and time indicate the start UTC time for the UTC-GPST
 *          (3) The date and time should be descending order.
@@ -1870,7 +1870,7 @@ extern uint32_t tickget(void)
 }
 /* sleep ms --------------------------------------------------------------------
 * sleep ms
-* args   : int   ms         I   miliseconds to sleep (<0:no sleep)
+* args   : int   ms         I   milliseconds to sleep (<0:no sleep)
 * return : none
 *-----------------------------------------------------------------------------*/
 extern void sleepms(int ms)
@@ -1956,12 +1956,12 @@ extern void pos2ecef(const double *pos, double *r)
     r[1]=(v+pos[2])*cosp*sinl;
     r[2]=(v*(1.0-e2)+pos[2])*sinp;
 }
-/* ecef to local coordinate transfromation matrix ------------------------------
-* compute ecef to local coordinate transfromation matrix
+/* ecef to local coordinate transformation matrix ------------------------------
+* compute ecef to local coordinate transformation matrix
 * args   : double *pos      I   geodetic position {lat,lon} (rad)
 *          double *E        O   ecef to local coord transformation matrix (3x3)
 * return : none
-* notes  : matirix stored by column-major order (fortran convention)
+* notes  : matrix stored by column-major order (fortran convention)
 *-----------------------------------------------------------------------------*/
 extern void xyz2enu(const double *pos, double *E)
 {
@@ -1971,11 +1971,11 @@ extern void xyz2enu(const double *pos, double *E)
     E[1]=-sinp*cosl; E[4]=-sinp*sinl; E[7]=cosp;
     E[2]=cosp*cosl;  E[5]=cosp*sinl;  E[8]=sinp;
 }
-/* transform ecef vector to local tangental coordinate -------------------------
-* transform ecef vector to local tangental coordinate
+/* transform ecef vector to local tangential coordinate -------------------------
+* transform ecef vector to local tangential coordinate
 * args   : double *pos      I   geodetic position {lat,lon} (rad)
 *          double *r        I   vector in ecef coordinate {x,y,z}
-*          double *e        O   vector in local tangental coordinate {e,n,u}
+*          double *e        O   vector in local tangential coordinate {e,n,u}
 * return : none
 *-----------------------------------------------------------------------------*/
 extern void ecef2enu(const double *pos, const double *r, double *e)
@@ -1986,9 +1986,9 @@ extern void ecef2enu(const double *pos, const double *r, double *e)
     matmul("NN",3,1,3,1.0,E,r,0.0,e);
 }
 /* transform local vector to ecef coordinate -----------------------------------
-* transform local tangental coordinate vector to ecef
+* transform local tangential coordinate vector to ecef
 * args   : double *pos      I   geodetic position {lat,lon} (rad)
-*          double *e        I   vector in local tangental coordinate {e,n,u}
+*          double *e        I   vector in local tangential coordinate {e,n,u}
 *          double *r        O   vector in ecef coordinate {x,y,z}
 * return : none
 *-----------------------------------------------------------------------------*/
@@ -1999,11 +1999,11 @@ extern void enu2ecef(const double *pos, const double *e, double *r)
     xyz2enu(pos,E);
     matmul("TN",3,1,3,1.0,E,e,0.0,r);
 }
-/* transform covariance to local tangental coordinate --------------------------
-* transform ecef covariance to local tangental coordinate
+/* transform covariance to local tangential coordinate --------------------------
+* transform ecef covariance to local tangential coordinate
 * args   : double *pos      I   geodetic position {lat,lon} (rad)
 *          double *P        I   covariance in ecef coordinate
-*          double *Q        O   covariance in local tangental coordinate
+*          double *Q        O   covariance in local tangential coordinate
 * return : none
 *-----------------------------------------------------------------------------*/
 extern void covenu(const double *pos, const double *P, double *Q)
