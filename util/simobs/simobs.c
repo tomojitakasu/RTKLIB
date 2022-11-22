@@ -13,10 +13,10 @@
 /* simulation parameters -----------------------------------------------------*/
 
 static double minel     = 5.0;          /* minimum elevation angle (deg) */
-static double errcp1    = 0.002;        /* carrier-phase meas error (m) */
-static double errcp2    = 0.002;        /* carrier-phase meas error/sin(el) (m) */
-static double errpr1    = 0.2;          /* pseudorange error (m) */
-static double errpr2    = 0.2;          /* pseudorange error/sin(el) (m) */
+static double errcp1    = 0.002;        /* carrier-phase error (m) */
+static double errcp2    = 0.002;        /* carrier-phase error/sin(el) (m) */
+static double errpr1    = 0.200;        /* pseudorange   error (m) */
+static double errpr2    = 0.200;        /* pseudorange   error/sin(el) (m) */
 
 typedef struct {        /* processing options type */
     gtime_t ts;
@@ -345,7 +345,6 @@ int main(int argc, char **argv) {
     else if (!strcmp(argv[i],"-e")&&i+1<argc) {
       erpFileName=argv[++i];
       nErp++;
-      simopt.tidecorr = 5;
     }
     else if (!strcmp(argv[i],"--noise")) {
       simopt.noise = 1;
@@ -355,6 +354,9 @@ int main(int argc, char **argv) {
     }
     else if (!strcmp(argv[i],"--iono")) {
       simopt.ionoopt = 1;
+    }
+    else if (!strcmp(argv[i],"--tides")) {
+      simopt.tidecorr = 5;
     };
 
   };
