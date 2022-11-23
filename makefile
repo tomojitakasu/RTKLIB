@@ -10,6 +10,7 @@
 #
 #   2021/06/10  AHA  Created
 #   2022/11/02  AHA  Added clean-up of old Qt makefiles
+#   2022/11/22  AHA  Restored compilation of iers lib
 #
 #-------------------------------------------------------------------------------
 
@@ -18,7 +19,7 @@
 RTKLIB     = .
 RTKLIB_bin = $(RTKLIB)/bin
 
-LIB        = $(RTKLIB)/lib
+IERS       = $(RTKLIB)/lib/iers/gcc
 CONSAPP    = $(RTKLIB)/app/consapp
 QTAPP      = $(RTKLIB)/app/qtapp
 
@@ -64,7 +65,7 @@ endif
 # Targets
 
 all: init \
-	 lib_ consapp_ qtapp_ \
+	 iers_ consapp_ qtapp_ \
 	 gencrc_ rnx2rtcm_  simobs_ utest_ \
 	 install_
 
@@ -73,8 +74,8 @@ all: init \
 init:
 	if [ ! -d "$(RTKLIB_bin)" ]; then mkdir -p $(RTKLIB_bin); fi
 
-lib_:
-	cd $(LIB); $(PMAKE)
+iers_:
+	cd $(IERS); $(PMAKE)
 
 consapp_:
 	cd $(CONSAPP); $(PMAKE)
@@ -104,8 +105,8 @@ install_:
 # Clean up
 
 clean:
-	if [ -d "$(RTKLIB_bin)" ]; then cd $(RTKLIB_bin); rm -f *_qt; fi      
-	cd $(LIB);      make clean; rm libRTKLib.so* libiers.a
+	if [ -d "$(RTKLIB_bin)" ]; then cd $(RTKLIB_bin); rm -f *_qt; fi
+	cd $(IERS);     make clean
 	cd $(CONSAPP);  make clean
 	cd $(QTAPP);    make clean
 	cd $(UTEST);    make clean
@@ -114,5 +115,3 @@ clean:
 	cd $(RNX2RTCM); make clean
 	cd $(SIMOBS);   make clean 
 	for F in $$(ls -d $(QTAPP)/*_qt); do rm $${F}/$${F##*/}; rm $$F/Makefile; done
-	
-	
