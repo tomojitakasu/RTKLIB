@@ -10,6 +10,7 @@
 #
 #   2021/06/10  AHA  Created
 #   2022/11/02  AHA  Added clean-up of old Qt makefiles
+#   2022/11/22  AHA  Restored compilation of iers lib
 #
 #-------------------------------------------------------------------------------
 
@@ -107,7 +108,10 @@ clean:
 	if [ -d "$(RTKLIB_bin)" ]; then cd $(RTKLIB_bin); rm -f *_qt; fi
 	cd $(IERS);     make clean
 	cd $(CONSAPP);  make clean
-	for F in $$(ls -d $(QTAPP)/*_qt/Makefile); do rm $$F; done	
 	cd $(QTAPP);    make clean
 	cd $(UTEST);    make clean
-	
+	cd $(GENCRC);   make clean
+	cd $(GENIONO);  make clean
+	cd $(RNX2RTCM); make clean
+	cd $(SIMOBS);   make clean 
+	for F in $$(ls -d $(QTAPP)/*_qt); do rm $${F}/$${F##*/}; rm $$F/Makefile; done
