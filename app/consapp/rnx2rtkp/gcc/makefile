@@ -97,12 +97,23 @@ tides.o    : $(SRC)/rtklib.h
 CMD1    = ./rnx2rtkp
 INPUT11 = ../../../../test/data/rinex/07590920.05o ../../../../test/data/rinex/30400920.05n
 INPUT12 = ../../../../test/data/rinex/30400920.05o
-OPTS1   = -r -3978241.958 3382840.234 3649900.853
+OPTS1   = -r -3978241.958  3382840.234  3649900.853
 
+RNX_OBS = $(HOME)/GNSS_OBS/IGS/DAILY/2022/091/FFMJ00DEU_R_20220910000_01D_30S_MO.rnx
+RNX_NAV = $(HOME)/GNSS_NAV/IGS/2022/BRDC00IGS_R_20220910000_01D_MN.rnx
+SP3 = $(HOME)/GNSS_DAT/COD0IGSRAP/2022/COD0IGSRAP_20220910000_01D_05M_ORB.SP3
+CLK_RNX = $(HOME)/GNSS_DAT/COD0IGSRAP/2022/COD0IGSRAP_20220910000_01D_30S_CLK.CLK
+
+INPUT10 = $(RNX_OBS) $(RNX_NAV) $(SP3) $(CLK_RNX)
+OPTS0   = -r 4053455.7000 617729.9000 4869395.9000
+
+test : test0
 test : test1 test2 test3 test4 test5 test6 test7 test8 test9 test10
 test : test11 test12 test13 test14 test15 test16 test17 test18 test19 test20
 test : test21 test22 test23 test24
 
+test0 :
+	$(CMD1) -k opts0.conf -e $(OPTS0) $(INPUT10) -p 6 -o test0.pos
 test1 :
 	$(CMD1) $(INPUT11) -x 5 -o test1.pos
 test2 :
