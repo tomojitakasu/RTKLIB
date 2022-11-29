@@ -95,8 +95,8 @@ ionex.o    : $(SRC)/rtklib.h
 tides.o    : $(SRC)/rtklib.h
 
 CMD1    = ./rnx2rtkp
-INPUT11 = ../../../test/data/rinex/07590920.05o ../../../test/data/rinex/30400920.05n
-INPUT12 = ../../../test/data/rinex/30400920.05o
+INPUT11 = ../../../../test/data/rinex/07590920.05o ../../../../test/data/rinex/30400920.05n
+INPUT12 = ../../../../test/data/rinex/30400920.05o
 OPTS1   = -r -3978241.958 3382840.234 3649900.853
 
 test : test1 test2 test3 test4 test5 test6 test7 test8 test9 test10
