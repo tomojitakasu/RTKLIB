@@ -184,6 +184,7 @@ extern int pppoutstat(rtk_t *rtk, char *buff)
     }
 #ifdef OUTSTAT_AMB
     /* ambiguity parameters */
+    int k;
     for (i=0;i<MAXSAT;i++) for (j=0;j<NF(&rtk->opt);j++) {
         k=IB(i+1,j,&rtk->opt);
         if (rtk->x[k]==0.0) continue;
