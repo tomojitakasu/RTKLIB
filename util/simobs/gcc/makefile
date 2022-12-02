@@ -2,16 +2,20 @@
 
 BINDIR = ../../../bin
 SRC    = ../../../src
-CFLAGS = -Wall -O3 -ansi -pedantic -I$(SRC) -DTRACE -DENAGLO -DENAGAL -DENAQZS -DNFREQ=4 -DMAXOBS=128
-LDLIBS  = -lm
+#CFLAGS = -Wall -O3 -ansi -pedantic -I$(SRC) -DTRACE -DENAGLO -DENAGAL -DENAQZS -DNFREQ=4 -DMAXOBS=128
+CFLAGS = -Wall -O3 -ansi -pedantic -I$(SRC) -DTRACE -DENAGLO -DENAQZS -DENAGAL -DENACMP -DENAIRN -DNFREQ=5 -DIERS_MODEL
+#LDLIBS  = -lm
+LDLIBS  = ../../../lib/iers/gcc/iers.a -lgfortran -lm -lrt
 
-simobs     : simobs.o ephemeris.o preceph.o rinex.o rtkcmn.o sbas.o tides.o
+simobs     : simobs.o geoid.o ephemeris.o preceph.o rinex.o rtkcmn.o sbas.o tides.o
 
 
 simobs.o   : ../simobs.c
 	$(CC) -c $(CFLAGS) ../simobs.c
 ephemeris.o   : $(SRC)/ephemeris.c
 	$(CC) -c $(CFLAGS) $(SRC)/ephemeris.c
+geoid.o    : $(SRC)/geoid.c
+	$(CC) -c $(CFLAGS) $(SRC)/geoid.c
 preceph.o    : $(SRC)/preceph.c
 	$(CC) -c $(CFLAGS) $(SRC)/preceph.c	
 rinex.o    : $(SRC)/rinex.c
@@ -24,6 +28,7 @@ tides.o   : $(SRC)/tides.c
 	$(CC) -c $(CFLAGS) $(SRC)/tides.c
 
 simobs.o    : $(SRC)/rtklib.h
+geoid.o     : $(SRC)/rtklib.h
 ephemeris.o : $(SRC)/rtklib.h
 preceph.o   : $(SRC)/rtklib.h
 rtkcmn.o    : $(SRC)/rtklib.h
