@@ -661,14 +661,14 @@ void OptDialog::LoadOpt(const QString &file)
     QLineEdit *editr[] = { RefPos1, RefPos2, RefPos3 };
     QString buff;
     char id[32];
-	int sat;
+    int sat;
     prcopt_t prcopt = prcopt_default;
     solopt_t solopt = solopt_default;
     filopt_t filopt;
 
     memset(&filopt, 0, sizeof(filopt_t));
 
-	resetsysopts();
+    resetsysopts();
     if (!loadopts(qPrintable(file), sysopts)) return;
     getsysopts(&prcopt, &solopt, &filopt);
 
@@ -687,7 +687,7 @@ void OptDialog::LoadOpt(const QString &file)
         if (!prcopt.exsats[sat - 1]) continue;
         satno2id(sat, id);
         buff += QString("%1%2%3").arg(buff.isEmpty() ? "" : " ").arg(prcopt.exsats[sat - 1] == 2 ? "+" : "").arg(id);
-	}
+    }
     ExSats->setText(buff);
     NavSys1->setChecked(prcopt.navsys & SYS_GPS);
     NavSys2->setChecked(prcopt.navsys & SYS_GLO);
@@ -837,14 +837,14 @@ void OptDialog::SaveOpt(const QString &file)
             }
             if (!(sat = satid2no(p))) continue;
             prcopt.exsats[sat - 1] = ex;
-		}
-	}
+        }
+    }
     prcopt.navsys = (NavSys1->isChecked() ? SYS_GPS : 0) |
-            (NavSys2->isChecked() ? SYS_GLO : 0) |
-            (NavSys3->isChecked() ? SYS_GAL : 0) |
-            (NavSys4->isChecked() ? SYS_QZS : 0) |
-            (NavSys5->isChecked() ? SYS_SBS : 0) |
-            (NavSys6->isChecked() ? SYS_CMP : 0);
+                    (NavSys2->isChecked() ? SYS_GLO : 0) |
+                    (NavSys3->isChecked() ? SYS_GAL : 0) |
+                    (NavSys4->isChecked() ? SYS_QZS : 0) |
+                    (NavSys5->isChecked() ? SYS_SBS : 0) |
+                    (NavSys6->isChecked() ? SYS_CMP : 0);
     prcopt.posopt[0] = PosOpt1->isChecked();
     prcopt.posopt[1] = PosOpt2->isChecked();
     prcopt.posopt[2] = PosOpt3->isChecked();
@@ -873,7 +873,7 @@ void OptDialog::SaveOpt(const QString &file)
     if (prcopt.mode == PMODE_MOVEB && BaselineConst->isChecked()) {
         prcopt.baseline[0] = BaselineLen->value();
         prcopt.baseline[1] = BaselineSig->value();
-	}
+    }
     solopt.posf = SolFormat->currentIndex();
     solopt.timef = TimeFormat->currentIndex() == 0 ? 0 : 1;
     solopt.times = TimeFormat->currentIndex() == 0 ? 0 : TimeFormat->currentIndex() - 1;
