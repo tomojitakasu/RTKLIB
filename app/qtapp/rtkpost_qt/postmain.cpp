@@ -508,7 +508,7 @@ void MainForm::BtnExecClick()
 
     ExecProc();
 }
-// callback on prcoessing finished-------------------------------------------
+// callback on processing finished-------------------------------------------
 void MainForm::ProcessingFinished(int stat)
 {
     setCursor(Qt::ArrowCursor);
