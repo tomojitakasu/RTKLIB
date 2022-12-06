@@ -7,29 +7,37 @@ CFLAGS = -Wall -O3 -ansi -pedantic -I$(SRC) -DTRACE -DENAGLO -DENAQZS -DENAGAL -
 #LDLIBS  = -lm
 LDLIBS  = ../../../lib/iers/gcc/iers.a -lgfortran -lm -lrt
 
-simobs     : simobs.o geoid.o ephemeris.o preceph.o rinex.o rtkcmn.o sbas.o tides.o
-
+simobs     : simobs.o geoid.o ephemeris.o ionex.o ppp.o ppp_ar.o preceph.o rinex.o rtkcmn.o sbas.o tides.o
 
 simobs.o   : ../simobs.c
 	$(CC) -c $(CFLAGS) ../simobs.c
-ephemeris.o   : $(SRC)/ephemeris.c
+ephemeris.o : $(SRC)/ephemeris.c
 	$(CC) -c $(CFLAGS) $(SRC)/ephemeris.c
-geoid.o    : $(SRC)/geoid.c
+geoid.o     : $(SRC)/geoid.c
 	$(CC) -c $(CFLAGS) $(SRC)/geoid.c
-preceph.o    : $(SRC)/preceph.c
-	$(CC) -c $(CFLAGS) $(SRC)/preceph.c	
-rinex.o    : $(SRC)/rinex.c
+ionex.o     : $(SRC)/ionex.c
+	$(CC) -c $(CFLAGS) $(SRC)/ionex.c
+ppp.o       : $(SRC)/ppp.c
+	$(CC) -c $(CFLAGS) $(SRC)/ppp.c
+ppp_ar.o    : $(SRC)/ppp_ar.c
+	$(CC) -c $(CFLAGS) $(SRC)/ppp_ar.c
+preceph.o   : $(SRC)/preceph.c
+	$(CC) -c $(CFLAGS) $(SRC)/preceph.c
+rinex.o     : $(SRC)/rinex.c
 	$(CC) -c $(CFLAGS) $(SRC)/rinex.c
-rtkcmn.o   : $(SRC)/rtkcmn.c
+rtkcmn.o    : $(SRC)/rtkcmn.c
 	$(CC) -c $(CFLAGS) $(SRC)/rtkcmn.c
-sbas.o   : $(SRC)/sbas.c
+sbas.o      : $(SRC)/sbas.c
 	$(CC) -c $(CFLAGS) $(SRC)/sbas.c
-tides.o   : $(SRC)/tides.c
+tides.o     : $(SRC)/tides.c
 	$(CC) -c $(CFLAGS) $(SRC)/tides.c
 
 simobs.o    : $(SRC)/rtklib.h
-geoid.o     : $(SRC)/rtklib.h
 ephemeris.o : $(SRC)/rtklib.h
+geoid.o     : $(SRC)/rtklib.h
+ionex.o     : $(SRC)/rtklib.h
+ppp.o       : $(SRC)/rtklib.h
+ppp_ar.o    : $(SRC)/rtklib.h
 preceph.o   : $(SRC)/rtklib.h
 rtkcmn.o    : $(SRC)/rtklib.h
 sbas.o      : $(SRC)/rtklib.h
