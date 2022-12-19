@@ -59,10 +59,15 @@ int Graph::IsInArea(QPoint &p)
 int Graph::ToPoint(const double &x, const double &y, QPoint &p)
 {
     const double xt = 0.1;
+    double tempx, tempy;
 
-    p.setX(int((X + (Width - 1) / 2.0 + (x - XCent) / XScale) + 0.5));
-    p.setY(int((Y + (Height - 1) / 2.0 - (y - YCent) / YScale) + 0.5));
-    return (X - xt < x) && (x < X + Width - 1 + xt) && (Y - xt < y) && (y < Y + Height - 1 + xt);
+    tempx = X + (Width - 1) / 2.0 + (x - XCent) / XScale;
+    tempy = Y + (Height - 1) / 2.0 - (y - YCent) / YScale;
+    p.setX((int)floor((tempx + 0.5)));
+    p.setY((int)floor((tempy + 0.5)));
+
+    return (X - xt < tempx) && (tempx < X + Width - 1 + xt) && 
+	    (Y - xt < tempy) && (tempy < Y + Height - 1 + xt);
 }
 //---------------------------------------------------------------------------
 void Graph::resize()
