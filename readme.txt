@@ -1,3 +1,8 @@
+** Modification by yoronneko **
+
+- Update rtkrcv.c and naviopt for reflecting API change in stream.c
+
+
 #
 #  RTKLIB 2.4.3 Betas
 #
