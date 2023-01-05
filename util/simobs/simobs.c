@@ -497,12 +497,17 @@ int main(int argc, char **argv) {
     tracelevel(simopt.trace);
   };
 
+  /* Check required inputs */
   if (!*outfile) {
     fprintf(stderr,"no output file\n");
     return -1;
   };
   if (norm(pos,3)<=0.0) {
     fprintf(stderr,"no receiver pos\n");
+    return -1;
+  };
+  if (simopt.ionoopt>0 && nNav==0) {
+    fprintf(stderr,"ERROR: require RINEX-NAV file for iono dealy modeling!\n");
     return -1;
   };
 
