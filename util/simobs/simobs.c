@@ -507,7 +507,7 @@ int main(int argc, char **argv) {
     return -1;
   };
   if (simopt.ionoopt>0 && nNav==0) {
-    fprintf(stderr,"ERROR: require RINEX-NAV file for iono dealy modeling!\n");
+    fprintf(stderr,"ERROR: require RINEX-NAV file for iono delay modeling!\n");
     return -1;
   };
 
@@ -543,7 +543,7 @@ int main(int argc, char **argv) {
     };
   };
 
-  /* read precise clock-RINEX files */
+  /* read precise Clock-RINEX files */
 
   if (nClk>0) {
     for (i=0;i<nClk;i++) {
@@ -556,7 +556,7 @@ int main(int argc, char **argv) {
     };
   };
 
-  /* read erp data */
+  /* read ERP data */
 
   if (nErp>0) {
     fprintf(stdout,"Reading %s\n",erpFileName);
