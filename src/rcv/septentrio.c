@@ -206,7 +206,7 @@ static int decode_measepoch(raw_t *raw)
         info=U1(p+18);
         n2  =U1(p+19);
         fcn =0;
-        if (sig==31) sig+=(info>>3)*32;
+        if (sig==31) sig=32+(info>>3);
         else if (sig>=8&&sig<=11) fcn=(info>>3)-8;
         
         if (ant!=ant_sel) {
@@ -255,7 +255,7 @@ static int decode_measepoch(raw_t *raw)
             sig =U1(p)&0x1f;
             ant =U1(p)>>5;
             info=U1(p+5);
-            if (sig==31) sig+=(info>>3)*32;
+            if (sig==31) sig=32+(info>>3);
             
             if (ant!=ant_sel) {
                 trace(3,"sbf measepoch ant error: sat=%d ant=%d\n",sat,ant);
