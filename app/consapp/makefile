@@ -4,8 +4,7 @@
 #export CC = clang
 export CC = gcc
 
-BINDIR = $${HOME}/Software/RTKLIB/bin 
-#BINDIR = /usr/local/bin
+BINDIR = $${HOME}/bin # /usr/local/bin
 DIRS   = pos2kml str2str rnx2rtkp convbin rtkrcv
 
 all:
