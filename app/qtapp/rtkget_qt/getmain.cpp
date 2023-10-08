@@ -450,7 +450,7 @@ void MainForm::BtnTime1Click()
     QDateTime time(dateTime1->dateTime());
     gtime_t t1;
 
-    t1.time = static_cast<time_t>(time.toTime_t()); t1.sec = time.time().msec() / 1000;
+    t1.time = static_cast<time_t>(time.toSecsSinceEpoch()); t1.sec = time.time().msec() / 1000;
     timeDialog->Time = t1;
     timeDialog->exec();
 }
@@ -460,7 +460,7 @@ void MainForm::BtnTime2Click()
     QDateTime time(dateTime2->dateTime());
     gtime_t t2;
 
-    t2.time = static_cast<time_t>(time.toTime_t()); t2.sec = time.time().msec() / 1000;
+    t2.time = static_cast<time_t>(time.toSecsSinceEpoch()); t2.sec = time.time().msec() / 1000;
     timeDialog->Time = t2;
     timeDialog->exec();
 }

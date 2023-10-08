@@ -322,7 +322,7 @@ QColor Plot::ObsColor(const obsd_t *obs, double az, double el)
             return Qt::black;
         }
         color=MColor[0][6-n];
-    } else if ((freq=obstype.midRef(1).toInt(&ok)) && ok) {
+    } else if ((freq=obstype.mid(1).toInt(&ok)) && ok) {
         if (obs->L[freq-1]==0.0&&obs->P[freq-1]==0.0) {
             return Qt::black;
         }

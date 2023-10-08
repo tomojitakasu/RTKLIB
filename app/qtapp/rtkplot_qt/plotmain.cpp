@@ -1420,7 +1420,7 @@ void Plot::PlotTypeSChange()
 
     trace(3, "PlotTypeSChnage\n");
 
-    for (i = 0; PTypes[i] != NULL; i++)
+    for (i = 0; !PTypes[i].isNull(); i++)
         if (PlotTypeS->currentText() == PTypes[i]) UpdateType(i);
 
     UpdateTime();
@@ -1476,8 +1476,8 @@ void Plot::TimeScrollChange()
 // callback on mouse-down event ---------------------------------------------
 void Plot::mousePressEvent(QMouseEvent *event)
 {
-    X0 = Disp->mapFromGlobal(event->globalPos()).x();
-    Y0 = Disp->mapFromGlobal(event->globalPos()).y();
+    X0 = Disp->mapFromGlobal(event->globalPosition()).x();
+    Y0 = Disp->mapFromGlobal(event->globalPosition()).y();
     Xcent0 = Xcent;
 
     trace(3, "DispMouseDown: X=%d Y=%d\n", X0, Y0);
@@ -1499,11 +1499,11 @@ void Plot::mouseMove(QMouseEvent *event)
 {
     double dx, dy, dxs, dys;
 
-    if ((abs(Disp->mapFromGlobal(event->globalPos()).x() - Xn) < 1) &&
-        (abs(Disp->mapFromGlobal(event->globalPos()).y() - Yn) < 1)) return;
+    if ((abs(Disp->mapFromGlobal(event->globalPosition()).x() - Xn) < 1) &&
+        (abs(Disp->mapFromGlobal(event->globalPosition()).y() - Yn) < 1)) return;
 
-    Xn = Disp->mapFromGlobal(event->globalPos()).x();
-    Yn = Disp->mapFromGlobal(event->globalPos()).y();
+    Xn = Disp->mapFromGlobal(event->globalPosition()).x();
+    Yn = Disp->mapFromGlobal(event->globalPosition()).y();
 
     trace(4, "DispMouseMove: X=%d Y=%d\n", Xn, Yn);
 
@@ -1527,7 +1527,7 @@ void Plot::mouseMove(QMouseEvent *event)
 // callback on mouse-up event -----------------------------------------------
 void Plot::mouseReleaseEvent(QMouseEvent *event)
 {
-    trace(3, "DispMouseUp: X=%d Y=%d\n", Disp->mapFromGlobal(event->globalPos()).x(), Disp->mapFromGlobal(event->globalPos()).y());
+    trace(3, "DispMouseUp: X=%d Y=%d\n", Disp->mapFromGlobal(event->globalPosition()).x(), Disp->mapFromGlobal(event->globalPosition()).y());
 
     Drag = 0;
     setCursor(Qt::ArrowCursor);

@@ -688,14 +688,14 @@ void MainWindow::GetTime(gtime_t *ts, gtime_t *te, double *tint,
 {
     if (TimeStartF->isChecked()) {
         QDateTime start(dateTime1->dateTime());
-        ts->time = start.toTime_t(); ts->sec = start.time().msec() / 1000;
+        ts->time = start.toSecsSinceEpoch(); ts->sec = start.time().msec() / 1000;
     } else {
         ts->time = 0; ts->sec = 0;
     }
 
     if (TimeEndF->isChecked()) {
         QDateTime end(dateTime2->dateTime());
-        te->time = end.toTime_t(); te->sec = end.time().msec() / 1000;
+        te->time = end.toSecsSinceEpoch(); te->sec = end.time().msec() / 1000;
     } else {
         te->time = 0; te->sec = 0;
     }

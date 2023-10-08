@@ -32,8 +32,8 @@ void SpanDialog::showEvent(QShowEvent *event)
     TimeEndF->setChecked(TimeEna[1]);
     TimeIntF->setChecked(TimeEna[2]);
 
-    QDateTime start = QDateTime::fromTime_t(TimeStart.time); start = start.addMSecs(TimeStart.sec * 1000);
-    QDateTime end = QDateTime::fromTime_t(TimeEnd.time); start = start.addMSecs(TimeEnd.sec * 1000);
+    QDateTime start = QDateTime::fromSecsSinceEpoch(TimeStart.time); start = start.addMSecs(TimeStart.sec * 1000);
+    QDateTime end = QDateTime::fromSecsSinceEpoch(TimeEnd.time); start = start.addMSecs(TimeEnd.sec * 1000);
 
     dateTime1->setTime(start.time());
     dateTime1->setDate(start.date());
@@ -54,8 +54,8 @@ void SpanDialog::BtnOkClick()
     QDateTime start(dateTime1->dateTime());
     QDateTime end(dateTime2->dateTime());
 
-    TimeStart.time = start.toTime_t(); TimeStart.sec = start.time().msec() / 1000;
-    TimeEnd.time = end.toTime_t(); TimeEnd.sec = end.time().msec() / 1000;
+    TimeStart.time = start.toSecsSinceEpoch(); TimeStart.sec = start.time().msec() / 1000;
+    TimeEnd.time = end.toSecsSinceEpoch(); TimeEnd.sec = end.time().msec() / 1000;
     TimeInt = EditTimeInt->currentText().toDouble();
 
     accept();

@@ -45,7 +45,7 @@ void StartDialog::showEvent(QShowEvent *event)
         }
     }
 
-    QDateTime date = QDateTime::fromTime_t(Time.time); date = date.addMSecs(Time.sec*1000);
+    QDateTime date = QDateTime::fromSecsSinceEpoch(Time.time); date = date.addMSecs(Time.sec*1000);
     Time1->setDateTime(date);
 }
 //---------------------------------------------------------------------------
@@ -53,7 +53,7 @@ void StartDialog::BtnOkClick()
 {
     QDateTime date(Time1->dateTime());
 
-    Time.time = date.toTime_t(); Time.sec = date.time().msec() / 1000;
+    Time.time = date.toSecsSinceEpoch(); Time.sec = date.time().msec() / 1000;
 
     accept();
 }

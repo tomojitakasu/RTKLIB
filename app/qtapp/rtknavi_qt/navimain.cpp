@@ -2659,7 +2659,7 @@ void MainWindow::SaveOpt(void)
     settings.setValue("solopt/timef", SolOpt.timef);
     settings.setValue("solopt/timeu", SolOpt.timeu);
     settings.setValue("solopt/degf", SolOpt.degf);
-    settings.setValue("solopt/sep", SolOpt.sep);
+    settings.setValue("solopt/sep", QString(SolOpt.sep));
     settings.setValue("solopt/outhead", SolOpt.outhead);
     settings.setValue("solopt/outopt", SolOpt.outopt);
     settings.setValue("solopt/outvel", SolOpt.outvel);

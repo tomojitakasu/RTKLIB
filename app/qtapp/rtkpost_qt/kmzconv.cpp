@@ -103,8 +103,8 @@ void ConvDialog::BtnConvertClick()
     if (TimeSpan->isChecked()) {
         QDateTime start(dateTime1->dateTime());
         QDateTime end(dateTime2->dateTime());
-        ts.time = start.toTime_t(); ts.sec = start.time().msec() / 1000;
-        te.time = end.toTime_t(); te.sec = end.time().msec() / 1000;
+        ts.time = start.toSecsSinceEpoch(); ts.sec = start.time().msec() / 1000;
+        te.time = end.toSecsSinceEpoch(); te.sec = end.time().msec() / 1000;
 	}
 
     if (AddOffset->isChecked()) {
@@ -215,7 +215,7 @@ void ConvDialog::UpdateOutFile(void)
 
     if (InputFile_Text == "") return;
     QFileInfo fi(InputFile_Text);
-    if (fi.suffix() == NULL) return;
+    if (fi.suffix().isNull()) return;
     InputFile_Text = QDir::toNativeSeparators(fi.absolutePath() + "/" + fi.baseName());
     InputFile_Text += FormatGPX->isChecked() ? ".gpx" : (Compress->isChecked() ? ".kmz" : ".kml");
     OutputFile->setText(InputFile_Text);

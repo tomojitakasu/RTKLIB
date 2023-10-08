@@ -53,12 +53,12 @@ endif
 # Default: use standard qmake
 QMAKE = qmake
 
-# Linux: use qmake or qmake-qt5
+# Linux: use qmake or qmake6
 ifeq ($(OS),GNU/Linux)
   ifeq ($(shell which qmake-qt5  2> /dev/null),)
     QMAKE = qmake
   else
-    QMAKE = qmake-qt5  # if qmake is not available (e.g. openSuse)
+    QMAKE = qmake6  # if qmake is not available (e.g. openSuse)
   endif
 endif
 

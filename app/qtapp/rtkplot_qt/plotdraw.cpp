@@ -1031,7 +1031,7 @@ void Plot::GenObsSlip(int *LLI)
                 }
             }
             else {
-                k = obstype.midRef(1).toInt(&ok);
+                k = obstype.mid(1).toInt(&ok);
                 if (ok) {
                     j=k-1;
                 }
@@ -1057,7 +1057,7 @@ void Plot::GenObsSlip(int *LLI)
                 }
             }
             else {
-                k = obstype.midRef(1).toInt(&ok);
+                k = obstype.mid(1).toInt(&ok);
                 if (ok) {
                     j=k-1;
                 }
@@ -1342,7 +1342,7 @@ void Plot::DrawSky(QPainter &c, int level)
             satno2id(obs->sat, id);
             s = QString("%1: ").arg(id, 3, QChar('-'));
 
-            freq=obstype.midRef(1).toInt(&ok);
+            freq=obstype.mid(1).toInt(&ok);
 
             if (obstype == "ALL") {
                 for (j = 0; j < NFREQ; j++) s += obs->P[j] == 0.0 ? "-" : "C";
@@ -1635,7 +1635,7 @@ void Plot::DrawSnr(QPainter &c, int level)
 
                     if (obs->sat!=sat) continue;
 
-                    freq=obstype.midRef(1).toInt(&ok);
+                    freq=obstype.mid(1).toInt(&ok);
                     if (ok) {
                         k=freq-1;
                     }
@@ -1796,7 +1796,7 @@ void Plot::DrawSnrE(QPainter &c, int level)
 
                 if (obs->sat!=sat||El[j]<=0.0) continue;
 
-                freq = obstype.midRef(1).toInt(&ok);
+                freq = obstype.mid(1).toInt(&ok);
 
                 if (ok) {
                     k=freq-1;
@@ -1929,7 +1929,7 @@ void Plot::DrawMpS(QPainter &c, int level)
 
             if (obs->sat!=sat||El[i]<=0.0) continue;
 
-            freq = obstype.midRef(1).toInt(&ok);
+            freq = obstype.mid(1).toInt(&ok);
 
             if (ok) {
                 j=freq-1;
