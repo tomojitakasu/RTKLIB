@@ -120,7 +120,9 @@ void utest2(void)
     printf("%s utset2 : OK\n",__FILE__);
 }
 static rnxopt_t opt1={{0}};
-static rnxopt_t opt2= {
+static rnxopt_t opt2={{0}};
+/*
+static rnxopt_t opt2={
     {0},{0},0.0,0.0,2.10,SYS_ALL,OBSTYPE_ALL,FREQTYPE_ALL,{{0}},
     "STAID",
     "RROG567890123456789012345678901",
@@ -146,6 +148,7 @@ static rnxopt_t opt2= {
      "",{0},1,1,1,1,1,
     {0},{0},{0}
 };
+*/
 /* outrneobsh() */
 void utest3(void)
 {
@@ -183,7 +186,6 @@ void utest5(void)
     int i;
     for (i=0;i<8;i++) nav.ion_gps[i]=ion[i];
     for (i=0;i<4;i++) nav.utc_gps[i]=utc[i];
-    nav.leaps=14;
 
     readrnx(file1,1,"",NULL,&nav,NULL);
 

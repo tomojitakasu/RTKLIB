@@ -2,7 +2,7 @@
 
 SRC    = ../../src
 #CFLAGS = -Wall -O3 -ansi -pedantic -I$(SRC) -DENAGLO
-CFLAGS = -Wall -O3 -ansi -pedantic -I$(SRC) -DTRACE -DENAGLO -DENAQZS
+CFLAGS = -Wall -O3 -ansi -pedantic -I$(SRC) -DTRACE -DENAGLO -DENAGAL -DENAQZS
 LDLIBS = -lm -llapack -lblas
 CC = gcc
 
@@ -17,11 +17,11 @@ t_rinex    : t_rinex.o rtkcmn.o rinex.o preceph.o
 t_lambda   : t_lambda.o rtkcmn.o lambda.o preceph.o
 t_atmos    : t_atmos.o rtkcmn.o preceph.o
 t_misc     : t_misc.o rtkcmn.o preceph.o
-t_preceph  : t_preceph.o rtkcmn.o preceph.o rinex.o ephemeris.o sbas.o qzslex.o
-t_gloeph   : t_gloeph.o rtkcmn.o rinex.o ephemeris.o sbas.o preceph.o qzslex.o
+t_preceph  : t_preceph.o rtkcmn.o preceph.o rinex.o ephemeris.o sbas.o
+t_gloeph   : t_gloeph.o rtkcmn.o rinex.o ephemeris.o sbas.o preceph.o 
 t_geoid    : t_geoid.o rtkcmn.o preceph.o geoid.o
-t_ppp      : t_ppp.o rtkcmn.o ephemeris.o preceph.o sbas.o ionex.o pntpos.o ppp.o ppp_ar.o qzslex.o
-t_ppp      : lambda.o
+t_ppp      : t_ppp.o rtkcmn.o ephemeris.o preceph.o sbas.o ionex.o pntpos.o ppp.o ppp_ar.o
+t_ppp      : lambda.o tides.o
 t_ionex    : t_ionex.o rtkcmn.o preceph.o ionex.o
 t_tle      : t_tle.o rtkcmn.o rinex.o ephemeris.o sbas.o preceph.o tle.o
 
@@ -51,8 +51,8 @@ ionex.o    : $(SRC)/rtklib.h $(SRC)/ionex.c
 	$(CC) -c $(CFLAGS) $(SRC)/ionex.c
 tle.o      : $(SRC)/rtklib.h $(SRC)/tle.c
 	$(CC) -c $(CFLAGS) $(SRC)/tle.c
-qzslex.o   : $(SRC)/rtklib.h $(SRC)/qzslex.c
-	$(CC) -c $(CFLAGS) $(SRC)/qzslex.c
+tides.o   : $(SRC)/rtklib.h $(SRC)/tides.c
+	$(CC) -c $(CFLAGS) $(SRC)/tides.c
 
 utest : utest1 utest2 utest3 utest4 utest5 utest6 utest7 utest8
 utest : utest9 utest10 utest11 utest12 utest14

@@ -162,7 +162,7 @@ static void tide_oload(gtime_t tut, const double *odisp, double *denu)
     
     trace(5,"tide_oload: denu=%.3f %.3f %.3f\n",denu[0],denu[1],denu[2]);
 }
-/* iers mean pole (ref [7] eq.7.25) ------------------------------------------*/
+/* iers mean pole (ref [5] eq.7.25) ------------------------------------------*/
 static void iers_mean_pole(gtime_t tut, double *xp_bar, double *yp_bar)
 {
     const double ep2000[]={2000,1,1,0,0,0};
@@ -180,7 +180,7 @@ static void iers_mean_pole(gtime_t tut, double *xp_bar, double *yp_bar)
         *yp_bar=358.891-0.6287*y;
     }
 }
-/* displacement by pole tide (ref [7] eq.7.26) --------------------------------*/
+/* displacement by pole tide (ref [5] eq.7.26) --------------------------------*/
 static void tide_pole(gtime_t tut, const double *pos, const double *erpv,
                       double *denu)
 {
@@ -191,7 +191,7 @@ static void tide_pole(gtime_t tut, const double *pos, const double *erpv,
     /* iers mean pole (mas) */
     iers_mean_pole(tut,&xp_bar,&yp_bar);
     
-    /* ref [7] eq.7.24 */
+    /* ref [5] eq.7.24 */
     m1= erpv[0]/AS2R-xp_bar*1E-3; /* (as) */
     m2=-erpv[1]/AS2R+yp_bar*1E-3;
     
@@ -212,15 +212,15 @@ static void tide_pole(gtime_t tut, const double *pos, const double *erpv,
 *                                 1: solid earth tide
 *                                 2: ocean tide loading
 *                                 4: pole tide
-*                                 8: elimate permanent deformation
+*                                 8: eliminate permanent deformation
 *          double *erp      I   earth rotation parameters (NULL: not used)
 *          double *odisp    I   ocean loading parameters  (NULL: not used)
-*                                 odisp[0+i*6]: consituent i amplitude radial(m)
-*                                 odisp[1+i*6]: consituent i amplitude west  (m)
-*                                 odisp[2+i*6]: consituent i amplitude south (m)
-*                                 odisp[3+i*6]: consituent i phase radial  (deg)
-*                                 odisp[4+i*6]: consituent i phase west    (deg)
-*                                 odisp[5+i*6]: consituent i phase south   (deg)
+*                                 odisp[0+i*6]: constituent i amplitude radial(m)
+*                                 odisp[1+i*6]: constituent i amplitude west  (m)
+*                                 odisp[2+i*6]: constituent i amplitude south (m)
+*                                 odisp[3+i*6]: constituent i phase radial  (deg)
+*                                 odisp[4+i*6]: constituent i phase west    (deg)
+*                                 odisp[5+i*6]: constituent i phase south   (deg)
 *                                (i=0:M2,1:S2,2:N2,3:K2,4:K1,5:O1,6:P1,7:Q1,
 *                                   8:Mf,9:Mm,10:Ssa)
 *          double *dr       O   displacement by earth tides (ecef) (m)

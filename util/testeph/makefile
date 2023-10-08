@@ -7,7 +7,7 @@ LDFLAGS = -lm
 all        : diffeph dumpssr
 
 diffeph    : rtkcmn.o ephemeris.o sbas.o rinex.o preceph.o rtcm.o rtcm2.o rtcm3.o
-diffeph    : ionex.o pntpos.o ppp.o ppp_ar.o stec.o qzslex.o
+diffeph    : ionex.o pntpos.o ppp.o ppp_ar.o qzslex.o
 dumpssr    : rtkcmn.o preceph.o rtcm.o rtcm2.o rtcm3.o
 
 rtkcmn.o   : $(SRC)/rtklib.h $(SRC)/rtkcmn.c
@@ -34,8 +34,6 @@ ppp.o      : $(SRC)/rtklib.h $(SRC)/ppp.c
 	$(CC) -c $(CFLAGS) $(SRC)/ppp.c
 ppp_ar.o   : $(SRC)/rtklib.h $(SRC)/ppp_ar.c
 	$(CC) -c $(CFLAGS) $(SRC)/ppp_ar.c
-stec.o     : $(SRC)/rtklib.h $(SRC)/stec.c
-	$(CC) -c $(CFLAGS) $(SRC)/stec.c
 qzslex.o   : $(SRC)/rtklib.h $(SRC)/qzslex.c
 	$(CC) -c $(CFLAGS) $(SRC)/qzslex.c
 

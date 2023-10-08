@@ -13,6 +13,7 @@ class OptDialog : public QDialog, public Ui::OptDialog
     Q_OBJECT
 
 public slots:
+
     void BtnOkClick();
     void RovAntPcvClick();
     void BtnAntPcvFileClick();
@@ -71,10 +72,12 @@ public slots:
     void NavSys6Click();
 
 protected:
+
     void showEvent(QShowEvent*);
 
 private:
-	snrmask_t SnrMask;
+
+    snrmask_t SnrMask;
     int RovPosTypeP, RefPosTypeP;
 
     void GetOpt(void);

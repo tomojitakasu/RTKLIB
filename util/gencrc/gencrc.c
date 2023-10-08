@@ -7,6 +7,7 @@
 * history : 2013/02/28 1.0 new
 *-----------------------------------------------------------------------------*/
 #include <stdio.h>
+#include <stdint.h>
 #include <string.h>
 
 static const char rcsid[]="$Id:$";
@@ -19,7 +20,7 @@ static void gen_crc16(FILE *fp)
 {
     uint16_t crcs[256]={0};
     int i,j;
-    
+
     for (i=0;i<256;i++) {
         crcs[i]=(uint16_t)i<<8;
         for (j=0;j<8;j++) {
@@ -28,7 +29,7 @@ static void gen_crc16(FILE *fp)
         }
     }
     fprintf(fp,"static const uint16_t tbl_CRC16[]={\n");
-    
+
     for (i=0;i<32;i++) {
         fprintf(fp,"    ");
         for (j=0;j<8;j++) {
@@ -43,13 +44,13 @@ static void gen_crc24(FILE *fp)
 {
     uint32_t crcs[256]={0};
     int i,j;
-    
+
     for (i=0;i<256;i++) {
         crcs[i]=(uint32_t)i<<16;
         for (j=0;j<8;j++) if ((crcs[i]<<=1)&0x1000000) crcs[i]^=POLYCRC24Q;
     }
     fprintf(fp,"static const uint32_t tbl_CRC24Q[]={\n");
-    
+
     for (i=0;i<32;i++) {
         fprintf(fp,"    ");
         for (j=0;j<8;j++) {
@@ -64,7 +65,7 @@ int main(int argc, char **argv)
 {
     FILE *fp=stdout;
     int i,crc=0;
-    
+
     for (i=1;i<argc;i++) {
         if      (!strcmp(argv[i],"-16")) crc=0;
         else if (!strcmp(argv[i],"-24")) crc=1;

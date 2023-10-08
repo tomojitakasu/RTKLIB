@@ -131,7 +131,7 @@ public:
     QString IniFile;
     bool AbortFlag;
 	
-	// options
+    // options
     int PosMode, Freq, Solution, DynamicModel, IonoOpt, TropOpt, RcvBiasEst;
     int ARIter, NumIter, CodeSmooth, TideCorr;
     int OutCntResetAmb, FixCntHoldAmb, LockCntFixAmb, RovPosType, RefPosType;
@@ -142,7 +142,7 @@ public:
     int SolFormat, TimeFormat, LatLonFormat, IntpRefObs, NetRSCorr, SatClkCorr;
     int SbasCorr, SbasCorr1, SbasCorr2, SbasCorr3, SbasCorr4, TimeDecimal;
     int SolStatic, SbasSat, MapFunc;
-	int PosOpt[6];
+    int PosOpt[6];
     double ElMask, MaxAgeDiff, RejectThres, RejectGdop;
     double MeasErrR1, MeasErrR2, MeasErr2, MeasErr3, MeasErr4, MeasErr5;
     double SatClkStab, RovAntE, RovAntN, RovAntU, RefAntE, RefAntN, RefAntU;
@@ -151,7 +151,7 @@ public:
     double ThresAR2, ThresAR3;
     double RovPos[3], RefPos[3], BaseLine[2];
     double MaxSolStd;
-	snrmask_t SnrMask;
+    snrmask_t SnrMask;
 	
     QString RnxOpts1, RnxOpts2, PPPOpts;
     QString FieldSep, RovAnt, RefAnt, AntPcvFile, StaPosFile, PrecEphFile;

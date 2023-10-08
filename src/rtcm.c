@@ -71,9 +71,9 @@ extern int init_rtcm(rtcm_t *rtcm)
     geph_t geph0={0,-1};
     ssr_t ssr0={{{0}}};
     int i,j;
-    
+
     trace(3,"init_rtcm:\n");
-    
+
     rtcm->staid=rtcm->stah=rtcm->seqno=rtcm->outtype=0;
     rtcm->time=rtcm->time_s=time0;
     rtcm->sta.name[0]=rtcm->sta.marker[0]='\0';
@@ -100,11 +100,11 @@ extern int init_rtcm(rtcm_t *rtcm)
     rtcm->word=0;
     for (i=0;i<100;i++) rtcm->nmsg2[i]=0;
     for (i=0;i<400;i++) rtcm->nmsg3[i]=0;
-    
+
     rtcm->obs.data=NULL;
     rtcm->nav.eph =NULL;
     rtcm->nav.geph=NULL;
-    
+
     /* reallocate memory for observation and ephemeris buffer */
     if (!(rtcm->obs.data=(obsd_t *)malloc(sizeof(obsd_t)*MAXOBS))||
         !(rtcm->nav.eph =(eph_t  *)malloc(sizeof(eph_t )*MAXSAT*2))||
@@ -128,7 +128,7 @@ extern int init_rtcm(rtcm_t *rtcm)
 extern void free_rtcm(rtcm_t *rtcm)
 {
     trace(3,"free_rtcm:\n");
-    
+
     /* free memory for observation and ephemeris buffer */
     free(rtcm->obs.data); rtcm->obs.data=NULL; rtcm->obs.n=0;
     free(rtcm->nav.eph ); rtcm->nav.eph =NULL; rtcm->nav.n=0;
@@ -152,27 +152,27 @@ extern int input_rtcm2(rtcm_t *rtcm, uint8_t data)
 {
     uint8_t preamb;
     int i;
-    
+
     trace(5,"input_rtcm2: data=%02x\n",data);
-    
+
     if ((data&0xC0)!=0x40) return 0; /* ignore if upper 2bit != 01 */
-    
+
     for (i=0;i<6;i++,data>>=1) { /* decode 6-of-8 form */
         rtcm->word=(rtcm->word<<1)+(data&1);
-        
+
         /* synchronize frame */
         if (rtcm->nbyte==0) {
             preamb=(uint8_t)(rtcm->word>>22);
             if (rtcm->word&0x40000000) preamb^=0xFF; /* decode preamble */
             if (preamb!=RTCM2PREAMB) continue;
-            
+
             /* check parity */
             if (!decode_word(rtcm->word,rtcm->buff)) continue;
             rtcm->nbyte=3; rtcm->nbit=0;
             continue;
         }
         if (++rtcm->nbit<30) continue; else rtcm->nbit=0;
-        
+
         /* check parity */
         if (!decode_word(rtcm->word,rtcm->buff+rtcm->nbyte)) {
             trace(2,"rtcm2 partity error: i=%d word=%08x\n",i,rtcm->word);
@@ -183,7 +183,7 @@ extern int input_rtcm2(rtcm_t *rtcm, uint8_t data)
         if (rtcm->nbyte==6) rtcm->len=(rtcm->buff[5]>>3)*3+6;
         if (rtcm->nbyte<rtcm->len) continue;
         rtcm->nbyte=0; rtcm->word&=0x3;
-        
+
         /* decode rtcm2 message */
         return decode_rtcm2(rtcm);
     }
@@ -199,7 +199,7 @@ extern int input_rtcm2(rtcm_t *rtcm, uint8_t data)
 * notes  : before firstly calling the function, time in rtcm control struct has
 *          to be set to the approximate time within 1/2 week in order to resolve
 *          ambiguity of time in rtcm messages.
-*          
+*
 *          to specify input options, set rtcm->opt to the following option
 *          strings separated by spaces.
 *
@@ -230,9 +230,9 @@ extern int input_rtcm2(rtcm_t *rtcm, uint8_t data)
 *              2        : 1072~   1082~   1092~   1112~   1122~   1102~   1132~
 *              3        : 1073~   1083~   1093~   1113~   1123~   1103~   1133~
 *              4        : 1074    1084    1094    1114    1124    1104    1134
-*              5        : 1075    1085    1095    1115    1125    1105    1135 
-*              6        : 1076    1086    1096    1116    1126    1106    1136 
-*              7        : 1077    1087    1097    1117    1127    1107    1137 
+*              5        : 1075    1085    1095    1115    1125    1105    1135
+*              6        : 1076    1086    1096    1116    1126    1106    1136
+*              7        : 1077    1087    1097    1117    1127    1107    1137
 *
 *          SSR ORBIT    : 1057    1063    1240*   1246*   1258*     -       -
 *              CLOCK    : 1058    1064    1241*   1247*   1259*     -       -
@@ -258,12 +258,12 @@ extern int input_rtcm2(rtcm_t *rtcm, uint8_t data)
 *            | preamble | 000000 |  length   |    data message    |  parity  |
 *            +----------+--------+-----------+--------------------+----------+
 *            |<-- 8 --->|<- 6 -->|<-- 10 --->|<--- length x 8 --->|<-- 24 -->|
-*            
+*
 *-----------------------------------------------------------------------------*/
 extern int input_rtcm3(rtcm_t *rtcm, uint8_t data)
 {
     trace(5,"input_rtcm3: data=%02x\n",data);
-    
+
     /* synchronize frame */
     if (rtcm->nbyte==0) {
         if (data!=RTCM3PREAMB) return 0;
@@ -271,13 +271,13 @@ extern int input_rtcm3(rtcm_t *rtcm, uint8_t data)
         return 0;
     }
     rtcm->buff[rtcm->nbyte++]=data;
-    
+
     if (rtcm->nbyte==3) {
         rtcm->len=getbitu(rtcm->buff,14,10)+3; /* length without parity */
     }
     if (rtcm->nbyte<3||rtcm->nbyte<rtcm->len+3) return 0;
     rtcm->nbyte=0;
-    
+
     /* check parity */
     if (rtk_crc24q(rtcm->buff,rtcm->len)!=getbitu(rtcm->buff,rtcm->len*8,24)) {
         trace(2,"rtcm3 parity error: len=%d\n",rtcm->len);
@@ -287,7 +287,7 @@ extern int input_rtcm3(rtcm_t *rtcm, uint8_t data)
     return decode_rtcm3(rtcm);
 }
 /* input RTCM 2 message from file ----------------------------------------------
-* fetch next RTCM 2 message and input a messsage from file
+* fetch next RTCM 2 message and input a message from file
 * args   : rtcm_t *rtcm     IO  rtcm control struct
 *          FILE  *fp        I   file pointer
 * return : status (-2: end of file, -1...10: same as above)
@@ -296,9 +296,9 @@ extern int input_rtcm3(rtcm_t *rtcm, uint8_t data)
 extern int input_rtcm2f(rtcm_t *rtcm, FILE *fp)
 {
     int i,data=0,ret;
-    
+
     trace(4,"input_rtcm2f: data=%02x\n",data);
-    
+
     for (i=0;i<4096;i++) {
         if ((data=fgetc(fp))==EOF) return -2;
         if ((ret=input_rtcm2(rtcm,(uint8_t)data))) return ret;
@@ -306,7 +306,7 @@ extern int input_rtcm2f(rtcm_t *rtcm, FILE *fp)
     return 0; /* return at every 4k bytes */
 }
 /* input RTCM 3 message from file ----------------------------------------------
-* fetch next RTCM 3 message and input a messsage from file
+* fetch next RTCM 3 message and input a message from file
 * args   : rtcm_t *rtcm     IO  rtcm control struct
 *          FILE  *fp        I   file pointer
 * return : status (-2: end of file, -1...10: same as above)
@@ -315,9 +315,9 @@ extern int input_rtcm2f(rtcm_t *rtcm, FILE *fp)
 extern int input_rtcm3f(rtcm_t *rtcm, FILE *fp)
 {
     int i,data=0,ret;
-    
+
     trace(4,"input_rtcm3f: data=%02x\n",data);
-    
+
     for (i=0;i<4096;i++) {
         if ((data=fgetc(fp))==EOF) return -2;
         if ((ret=input_rtcm3(rtcm,(uint8_t)data))) return ret;
@@ -334,11 +334,11 @@ extern int input_rtcm3f(rtcm_t *rtcm, FILE *fp)
 extern int gen_rtcm2(rtcm_t *rtcm, int type, int sync)
 {
     trace(4,"gen_rtcm2: type=%d sync=%d\n",type,sync);
-    
+
     rtcm->nbit=rtcm->len=rtcm->nbyte=0;
-    
+
     /* not yet implemented */
-    
+
     return 0;
 }
 /* generate RTCM 3 message -----------------------------------------------------
@@ -353,25 +353,25 @@ extern int gen_rtcm2(rtcm_t *rtcm, int type, int sync)
 *          them to multiple ones and call gen_rtcm3() multiple times as user
 *          responsibility.
 *          ({nsat} = number of valid satellites, {nsig} = number of signals in
-*          the obs data) 
+*          the obs data)
 *-----------------------------------------------------------------------------*/
 extern int gen_rtcm3(rtcm_t *rtcm, int type, int subtype, int sync)
 {
     uint32_t crc;
     int i=0;
-    
+
     trace(4,"gen_rtcm3: type=%d subtype=%d sync=%d\n",type,subtype,sync);
-    
+
     rtcm->nbit=rtcm->len=rtcm->nbyte=0;
-    
+
     /* set preamble and reserved */
     setbitu(rtcm->buff,i, 8,RTCM3PREAMB); i+= 8;
     setbitu(rtcm->buff,i, 6,0          ); i+= 6;
     setbitu(rtcm->buff,i,10,0          ); i+=10;
-    
+
     /* encode rtcm 3 message body */
     if (!encode_rtcm3(rtcm,type,subtype,sync)) return 0;
-    
+
     /* padding to align 8 bit boundary */
     for (i=rtcm->nbit;i%8;i++) {
         setbitu(rtcm->buff,i,1,0);
@@ -384,13 +384,13 @@ extern int gen_rtcm3(rtcm_t *rtcm, int type, int subtype, int sync)
     }
     /* message length without header and parity */
     setbitu(rtcm->buff,14,10,rtcm->len-3);
-    
+
     /* crc-24q */
     crc=rtk_crc24q(rtcm->buff,rtcm->len);
     setbitu(rtcm->buff,i,24,crc);
-    
+
     /* length total (bytes) */
     rtcm->nbyte=rtcm->len+3;
-    
+
     return 1;
 }

@@ -4,23 +4,23 @@
 #
 #-------------------------------------------------
 
-QT       += widgets core gui widgets
+QT       += widgets core gui
 
 TARGET = rtklaunch_qt
 TEMPLATE = app
 
-INCLUDEPATH += ../../../src/  
+INCLUDEPATH += ../../../src/
 
-SOURCES += \ 
+SOURCES += \
     launchmain.cpp \
     main.cpp \
     launchoptdlg.cpp
 
-HEADERS  += \ 
+HEADERS  += \
     launchmain.h \
     launchoptdlg.h
 
-FORMS    += \ 
+FORMS    += \
     launchmain.ui \
     launchoptdlg.ui
 
