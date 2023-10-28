@@ -7,10 +7,6 @@
 
 #include "ui_gmview.h"
 
-#ifdef QWEBKIT
-class QWebView;
-#endif
-#ifdef QWEBENGINE
 class QWebEngineView;
 class GMPageState : public QObject
 {
@@ -24,7 +20,6 @@ signals:
 private:
     QString text;
 };
-#endif
 
 class QResizeEvent;
 class QShowEvent;
@@ -34,48 +29,43 @@ class GoogleMapView : public QDialog, private Ui::GoogleMapView
     Q_OBJECT
 
 public slots:
-    void Timer1Timer();
-    void BtnShrinkClick();
-    void BtnExpandClick();
-    void BtnFixCentClick();
-    void BtnCloseClick();
-    void PageLoaded(bool);
+    void loadTimerExpired();
+    void btnShrinkClick();
+    void btnExpandClick();
+    void btnFixCentClick();
+    void btnCloseClick();
+    void pageLoaded(bool);
 
 protected:
     void resizeEvent(QResizeEvent*);
 
 private:
-	int State;
-    double Lat,Lon;
-    int Zoom;
-	double MarkPos[2][2];
-    QTimer Timer1;
+    int state;
+    double latitude, longitude;
+    int zoom;
+    double markPosition[2][2];
+    QTimer loadTimer;
     bool loaded;
-#ifdef QWEBKIT
-    QWebView *WebBrowser;
-#endif
-#ifdef QWEBENGINE
-    QWebEngineView *WebBrowser;
+    QWebEngineView *webBrowser;
     GMPageState *pageState;
-#endif
     void ExecFunc(const QString &func);
 
 public:
-    int FixCent;
+    bool fixCenter;
 
     explicit GoogleMapView(QWidget *parent = NULL);
 
     int setApiKey(QString key);
-    int  GetState(void);
-    void SetView(double lat, double lon, int zoom);
-    void SetCent(double lat, double lon);
-    void SetZoom(int zoom);
-    void ClearMark(void);
-    void AddMark(double lat, double lon, const QString &title, const QString &msg);
-    void SetMark(int index, const double *pos);
-    void ShowMark(int index);
-    void HideMark(int index);
-    void HighlightMark(const QString &title);
+    int  getState(void);
+    void setView(double latitude, double longitude, int zoom);
+    void setCent(double latitude, double longitude);
+    void setZoom(int zoom);
+    void clearMark(void);
+    void addMark(double latitude, double longitude, const QString &title, const QString &msg);
+    void setMark(int index, const double *pos);
+    void showMark(int index);
+    void hideMark(int index);
+    void highlightMark(const QString &title);
 };
 //---------------------------------------------------------------------------
 #endif

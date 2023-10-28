@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>637</width>
+    <width>653</width>
     <height>497</height>
    </rect>
   </property>
@@ -31,14 +31,8 @@
    </property>
    <item>
     <widget class="QWidget" name="Panel3" native="true">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
      <property name="toolTip">
       <string/>
-     </property>
-     <property name="layoutDirection">
-      <enum>Qt::LeftToRight</enum>
      </property>
      <property name="text" stdset="0">
       <string/>
@@ -58,9 +52,6 @@
       </property>
       <item>
        <widget class="QWidget" name="Panel2" native="true">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -69,9 +60,6 @@
         </property>
         <property name="toolTip">
          <string/>
-        </property>
-        <property name="layoutDirection">
-         <enum>Qt::LeftToRight</enum>
         </property>
         <property name="text" stdset="0">
          <string/>
@@ -90,47 +78,7 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QLabel" name="Time">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="palette">
-            <palette>
-             <active>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>128</red>
-                 <green>128</green>
-                 <blue>128</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </active>
-             <inactive>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>128</red>
-                 <green>128</green>
-                 <blue>128</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </inactive>
-             <disabled>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>128</red>
-                 <green>128</green>
-                 <blue>128</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </disabled>
-            </palette>
-           </property>
+          <widget class="QLabel" name="lblTime">
            <property name="toolTip">
             <string/>
            </property>
@@ -141,46 +89,6 @@
          </item>
          <item>
           <widget class="QLabel" name="Label8">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="palette">
-            <palette>
-             <active>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>128</red>
-                 <green>128</green>
-                 <blue>128</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </active>
-             <inactive>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>128</red>
-                 <green>128</green>
-                 <blue>128</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </inactive>
-             <disabled>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>128</red>
-                 <green>128</green>
-                 <blue>128</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </disabled>
-            </palette>
-           </property>
            <property name="toolTip">
             <string/>
            </property>
@@ -190,46 +98,9 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="ConTime">
+          <widget class="QLabel" name="lblConnectionTime">
            <property name="enabled">
             <bool>true</bool>
-           </property>
-           <property name="palette">
-            <palette>
-             <active>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>128</red>
-                 <green>128</green>
-                 <blue>128</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </active>
-             <inactive>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>128</red>
-                 <green>128</green>
-                 <blue>128</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </inactive>
-             <disabled>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>128</red>
-                 <green>128</green>
-                 <blue>128</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </disabled>
-            </palette>
            </property>
            <property name="toolTip">
             <string/>
@@ -244,14 +115,8 @@
       </item>
       <item>
        <widget class="QWidget" name="Panel1" native="true">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
         <property name="toolTip">
          <string/>
-        </property>
-        <property name="layoutDirection">
-         <enum>Qt::LeftToRight</enum>
         </property>
         <property name="text" stdset="0">
          <string/>
@@ -289,47 +154,7 @@
           </widget>
          </item>
          <item row="5" column="1">
-          <widget class="QLabel" name="LabelOutput2">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="palette">
-            <palette>
-             <active>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </active>
-             <inactive>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </inactive>
-             <disabled>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </disabled>
-            </palette>
-           </property>
+          <widget class="QLabel" name="lblOutput2">
            <property name="toolTip">
             <string/>
            </property>
@@ -339,47 +164,7 @@
           </widget>
          </item>
          <item row="6" column="10">
-          <widget class="QLabel" name="Output3Byte">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="palette">
-            <palette>
-             <active>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </active>
-             <inactive>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </inactive>
-             <disabled>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </disabled>
-            </palette>
-           </property>
+          <widget class="QLabel" name="lblOutput3Byte">
            <property name="toolTip">
             <string/>
            </property>
@@ -389,47 +174,7 @@
           </widget>
          </item>
          <item row="9" column="10">
-          <widget class="QLabel" name="Output5Byte">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="palette">
-            <palette>
-             <active>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </active>
-             <inactive>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </inactive>
-             <disabled>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </disabled>
-            </palette>
-           </property>
+          <widget class="QLabel" name="lblOutput5Byte">
            <property name="toolTip">
             <string/>
            </property>
@@ -458,7 +203,7 @@
           </widget>
          </item>
          <item row="6" column="6">
-          <widget class="QPushButton" name="BtnConv3">
+          <widget class="QPushButton" name="btnConv3">
            <property name="enabled">
             <bool>false</bool>
            </property>
@@ -468,16 +213,10 @@
            <property name="text">
             <string>...</string>
            </property>
-           <property name="flat">
-            <bool>false</bool>
-           </property>
           </widget>
          </item>
          <item row="5" column="8">
-          <widget class="QLabel" name="IndLog2">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QLabel" name="indLog2">
            <property name="minimumSize">
             <size>
              <width>25</width>
@@ -493,25 +232,16 @@
            <property name="toolTip">
             <string/>
            </property>
-           <property name="layoutDirection">
-            <enum>Qt::LeftToRight</enum>
-           </property>
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
            <property name="frameShadow">
             <enum>QFrame::Sunken</enum>
            </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
           </widget>
          </item>
          <item row="9" column="6">
-          <widget class="QPushButton" name="BtnConv5">
+          <widget class="QPushButton" name="btnConv5">
            <property name="enabled">
             <bool>false</bool>
            </property>
@@ -521,53 +251,10 @@
            <property name="text">
             <string>...</string>
            </property>
-           <property name="flat">
-            <bool>false</bool>
-           </property>
           </widget>
          </item>
          <item row="9" column="11">
-          <widget class="QLabel" name="Output5Bps">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="palette">
-            <palette>
-             <active>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </active>
-             <inactive>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </inactive>
-             <disabled>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </disabled>
-            </palette>
-           </property>
+          <widget class="QLabel" name="lblOutput5Bps">
            <property name="toolTip">
             <string/>
            </property>
@@ -577,10 +264,7 @@
           </widget>
          </item>
          <item row="10" column="2">
-          <widget class="QComboBox" name="Output6">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QComboBox" name="cBOutput6">
            <property name="toolTip">
             <string/>
            </property>
@@ -627,18 +311,12 @@
           </widget>
          </item>
          <item row="5" column="3" colspan="2">
-          <widget class="QPushButton" name="BtnOutput2">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QPushButton" name="btnOutput2">
            <property name="toolTip">
             <string/>
            </property>
            <property name="text">
             <string>...</string>
-           </property>
-           <property name="flat">
-            <bool>false</bool>
            </property>
           </widget>
          </item>
@@ -662,54 +340,14 @@
           </widget>
          </item>
          <item row="10" column="5">
-          <widget class="QPushButton" name="BtnCmd6">
+          <widget class="QPushButton" name="btnCmd6">
            <property name="text">
             <string>...</string>
            </property>
           </widget>
          </item>
          <item row="5" column="10">
-          <widget class="QLabel" name="Output2Byte">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="palette">
-            <palette>
-             <active>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </active>
-             <inactive>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </inactive>
-             <disabled>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </disabled>
-            </palette>
-           </property>
+          <widget class="QLabel" name="lblOutput2Byte">
            <property name="toolTip">
             <string/>
            </property>
@@ -719,17 +357,14 @@
           </widget>
          </item>
          <item row="9" column="3" colspan="2">
-          <widget class="QPushButton" name="BtnOutput5">
+          <widget class="QPushButton" name="btnOutput5">
            <property name="text">
             <string>...</string>
            </property>
           </widget>
          </item>
          <item row="6" column="8">
-          <widget class="QLabel" name="IndLog3">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QLabel" name="indLog3">
            <property name="minimumSize">
             <size>
              <width>25</width>
@@ -745,35 +380,23 @@
            <property name="toolTip">
             <string/>
            </property>
-           <property name="layoutDirection">
-            <enum>Qt::LeftToRight</enum>
-           </property>
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
            <property name="frameShadow">
             <enum>QFrame::Sunken</enum>
            </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
           </widget>
          </item>
          <item row="5" column="5">
-          <widget class="QPushButton" name="BtnCmd2">
+          <widget class="QPushButton" name="btnCmd2">
            <property name="text">
             <string>...</string>
            </property>
           </widget>
          </item>
          <item row="4" column="2">
-          <widget class="QComboBox" name="Output1">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QComboBox" name="cBOutput1">
            <property name="toolTip">
             <string/>
            </property>
@@ -815,17 +438,14 @@
           </widget>
          </item>
          <item row="4" column="5">
-          <widget class="QPushButton" name="BtnCmd1">
+          <widget class="QPushButton" name="btnCmd1">
            <property name="text">
             <string>...</string>
            </property>
           </widget>
          </item>
          <item row="10" column="8">
-          <widget class="QLabel" name="IndLog6">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QLabel" name="indLog6">
            <property name="minimumSize">
             <size>
              <width>25</width>
@@ -841,20 +461,11 @@
            <property name="toolTip">
             <string/>
            </property>
-           <property name="layoutDirection">
-            <enum>Qt::LeftToRight</enum>
-           </property>
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
            <property name="frameShadow">
             <enum>QFrame::Sunken</enum>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
            </property>
           </widget>
          </item>
@@ -878,10 +489,7 @@
           </widget>
          </item>
          <item row="4" column="0">
-          <widget class="QLabel" name="IndOutput1">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QLabel" name="indOutput1">
            <property name="minimumSize">
             <size>
              <width>25</width>
@@ -897,65 +505,16 @@
            <property name="toolTip">
             <string/>
            </property>
-           <property name="layoutDirection">
-            <enum>Qt::LeftToRight</enum>
-           </property>
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
            <property name="frameShadow">
             <enum>QFrame::Sunken</enum>
            </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
           </widget>
          </item>
          <item row="4" column="10">
-          <widget class="QLabel" name="Output1Byte">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="palette">
-            <palette>
-             <active>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </active>
-             <inactive>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </inactive>
-             <disabled>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </disabled>
-            </palette>
-           </property>
+          <widget class="QLabel" name="lblOutput1Byte">
            <property name="toolTip">
             <string/>
            </property>
@@ -965,47 +524,7 @@
           </widget>
          </item>
          <item row="7" column="11">
-          <widget class="QLabel" name="Output4Bps">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="palette">
-            <palette>
-             <active>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </active>
-             <inactive>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </inactive>
-             <disabled>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </disabled>
-            </palette>
-           </property>
+          <widget class="QLabel" name="lblOutput4Bps">
            <property name="toolTip">
             <string/>
            </property>
@@ -1015,26 +534,17 @@
           </widget>
          </item>
          <item row="1" column="5">
-          <widget class="QPushButton" name="BtnCmd">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QPushButton" name="btnCmd">
            <property name="toolTip">
             <string/>
            </property>
            <property name="text">
             <string>...</string>
            </property>
-           <property name="flat">
-            <bool>false</bool>
-           </property>
           </widget>
          </item>
          <item row="6" column="2">
-          <widget class="QComboBox" name="Output3">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QComboBox" name="cBOutput3">
            <property name="toolTip">
             <string/>
            </property>
@@ -1081,47 +591,7 @@
           </widget>
          </item>
          <item row="4" column="11">
-          <widget class="QLabel" name="Output1Bps">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="palette">
-            <palette>
-             <active>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </active>
-             <inactive>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </inactive>
-             <disabled>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </disabled>
-            </palette>
-           </property>
+          <widget class="QLabel" name="lblOutput1Bps">
            <property name="toolTip">
             <string/>
            </property>
@@ -1131,10 +601,7 @@
           </widget>
          </item>
          <item row="9" column="2">
-          <widget class="QComboBox" name="Output5">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QComboBox" name="cBOutput5">
            <property name="toolTip">
             <string/>
            </property>
@@ -1181,47 +648,7 @@
           </widget>
          </item>
          <item row="6" column="1">
-          <widget class="QLabel" name="LabelOutput3">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="palette">
-            <palette>
-             <active>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </active>
-             <inactive>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </inactive>
-             <disabled>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </disabled>
-            </palette>
-           </property>
+          <widget class="QLabel" name="lblOutput3">
            <property name="toolTip">
             <string/>
            </property>
@@ -1231,10 +658,7 @@
           </widget>
          </item>
          <item row="1" column="0">
-          <widget class="QLabel" name="IndInput">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QLabel" name="indInput">
            <property name="minimumSize">
             <size>
              <width>25</width>
@@ -1250,9 +674,6 @@
            <property name="toolTip">
             <string/>
            </property>
-           <property name="layoutDirection">
-            <enum>Qt::LeftToRight</enum>
-           </property>
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
@@ -1262,13 +683,10 @@
            <property name="text">
             <string/>
            </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
           </widget>
          </item>
          <item row="4" column="6">
-          <widget class="QPushButton" name="BtnConv1">
+          <widget class="QPushButton" name="btnConv1">
            <property name="enabled">
             <bool>false</bool>
            </property>
@@ -1277,70 +695,21 @@
            </property>
            <property name="text">
             <string>...</string>
-           </property>
-           <property name="flat">
-            <bool>false</bool>
            </property>
           </widget>
          </item>
          <item row="4" column="3" colspan="2">
-          <widget class="QPushButton" name="BtnOutput1">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QPushButton" name="btnOutput1">
            <property name="toolTip">
             <string/>
            </property>
            <property name="text">
             <string>...</string>
            </property>
-           <property name="flat">
-            <bool>false</bool>
-           </property>
           </widget>
          </item>
          <item row="6" column="11">
-          <widget class="QLabel" name="Output3Bps">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="palette">
-            <palette>
-             <active>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </active>
-             <inactive>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </inactive>
-             <disabled>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </disabled>
-            </palette>
-           </property>
+          <widget class="QLabel" name="lblOutput3Bps">
            <property name="toolTip">
             <string/>
            </property>
@@ -1350,47 +719,7 @@
           </widget>
          </item>
          <item row="10" column="11">
-          <widget class="QLabel" name="Output6Bps">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="palette">
-            <palette>
-             <active>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </active>
-             <inactive>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </inactive>
-             <disabled>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </disabled>
-            </palette>
-           </property>
+          <widget class="QLabel" name="lblOutput6Bps">
            <property name="toolTip">
             <string/>
            </property>
@@ -1400,47 +729,7 @@
           </widget>
          </item>
          <item row="5" column="11">
-          <widget class="QLabel" name="Output2Bps">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="palette">
-            <palette>
-             <active>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </active>
-             <inactive>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </inactive>
-             <disabled>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </disabled>
-            </palette>
-           </property>
+          <widget class="QLabel" name="lblOutput2Bps">
            <property name="toolTip">
             <string/>
            </property>
@@ -1450,10 +739,7 @@
           </widget>
          </item>
          <item row="7" column="0">
-          <widget class="QLabel" name="IndOutput4">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QLabel" name="indOutput4">
            <property name="minimumSize">
             <size>
              <width>25</width>
@@ -1469,41 +755,26 @@
            <property name="toolTip">
             <string/>
            </property>
-           <property name="layoutDirection">
-            <enum>Qt::LeftToRight</enum>
-           </property>
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
            <property name="frameShadow">
             <enum>QFrame::Sunken</enum>
            </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
           </widget>
          </item>
          <item row="1" column="3" colspan="2">
-          <widget class="QPushButton" name="BtnInput">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QPushButton" name="btnInput">
            <property name="toolTip">
             <string/>
            </property>
            <property name="text">
             <string>...</string>
-           </property>
-           <property name="flat">
-            <bool>false</bool>
            </property>
           </widget>
          </item>
          <item row="7" column="6">
-          <widget class="QPushButton" name="BtnConv4">
+          <widget class="QPushButton" name="btnConv4">
            <property name="enabled">
             <bool>false</bool>
            </property>
@@ -1513,13 +784,10 @@
            <property name="text">
             <string>...</string>
            </property>
-           <property name="flat">
-            <bool>false</bool>
-           </property>
           </widget>
          </item>
          <item row="9" column="1">
-          <widget class="QLabel" name="LabelOutput5">
+          <widget class="QLabel" name="lblOutput5">
            <property name="text">
             <string>(5) Output</string>
            </property>
@@ -1545,10 +813,7 @@
           </widget>
          </item>
          <item row="1" column="8">
-          <widget class="QLabel" name="IndLog">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QLabel" name="indLog">
            <property name="minimumSize">
             <size>
              <width>25</width>
@@ -1564,28 +829,16 @@
            <property name="toolTip">
             <string/>
            </property>
-           <property name="layoutDirection">
-            <enum>Qt::LeftToRight</enum>
-           </property>
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
            <property name="frameShadow">
             <enum>QFrame::Sunken</enum>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
            </property>
           </widget>
          </item>
          <item row="7" column="8">
-          <widget class="QLabel" name="IndLog4">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QLabel" name="indLog4">
            <property name="minimumSize">
             <size>
              <width>25</width>
@@ -1601,39 +854,30 @@
            <property name="toolTip">
             <string/>
            </property>
-           <property name="layoutDirection">
-            <enum>Qt::LeftToRight</enum>
-           </property>
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
            <property name="frameShadow">
             <enum>QFrame::Sunken</enum>
            </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
           </widget>
          </item>
          <item row="10" column="3" colspan="2">
-          <widget class="QPushButton" name="BtnOutput6">
+          <widget class="QPushButton" name="btnOutput6">
            <property name="text">
             <string>...</string>
            </property>
           </widget>
          </item>
          <item row="7" column="3" colspan="2">
-          <widget class="QPushButton" name="BtnOutput4">
+          <widget class="QPushButton" name="btnOutput4">
            <property name="text">
             <string>...</string>
            </property>
           </widget>
          </item>
          <item row="10" column="6">
-          <widget class="QPushButton" name="BtnConv6">
+          <widget class="QPushButton" name="btnConv6">
            <property name="enabled">
             <bool>false</bool>
            </property>
@@ -1643,23 +887,17 @@
            <property name="text">
             <string>...</string>
            </property>
-           <property name="flat">
-            <bool>false</bool>
-           </property>
           </widget>
          </item>
          <item row="6" column="5">
-          <widget class="QPushButton" name="BtnCmd3">
+          <widget class="QPushButton" name="btnCmd3">
            <property name="text">
             <string>...</string>
            </property>
           </widget>
          </item>
          <item row="5" column="0">
-          <widget class="QLabel" name="IndOutput2">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QLabel" name="indOutput2">
            <property name="minimumSize">
             <size>
              <width>25</width>
@@ -1675,28 +913,16 @@
            <property name="toolTip">
             <string/>
            </property>
-           <property name="layoutDirection">
-            <enum>Qt::LeftToRight</enum>
-           </property>
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
            <property name="frameShadow">
             <enum>QFrame::Sunken</enum>
            </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
           </widget>
          </item>
          <item row="1" column="2">
-          <widget class="QComboBox" name="Input">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QComboBox" name="cBInput">
            <property name="toolTip">
             <string/>
            </property>
@@ -1733,17 +959,14 @@
           </widget>
          </item>
          <item row="10" column="1">
-          <widget class="QLabel" name="LabelOutput6">
+          <widget class="QLabel" name="lblOutput6">
            <property name="text">
             <string>(6) Output</string>
            </property>
           </widget>
          </item>
          <item row="4" column="8">
-          <widget class="QLabel" name="IndLog1">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QLabel" name="indLog1">
            <property name="minimumSize">
             <size>
              <width>25</width>
@@ -1759,65 +982,16 @@
            <property name="toolTip">
             <string/>
            </property>
-           <property name="layoutDirection">
-            <enum>Qt::LeftToRight</enum>
-           </property>
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
            <property name="frameShadow">
             <enum>QFrame::Sunken</enum>
            </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
           </widget>
          </item>
          <item row="7" column="10">
-          <widget class="QLabel" name="Output4Byte">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="palette">
-            <palette>
-             <active>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </active>
-             <inactive>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </inactive>
-             <disabled>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </disabled>
-            </palette>
-           </property>
+          <widget class="QLabel" name="lblOutput4Byte">
            <property name="toolTip">
             <string/>
            </property>
@@ -1827,23 +1001,17 @@
           </widget>
          </item>
          <item row="6" column="3" colspan="2">
-          <widget class="QPushButton" name="BtnOutput3">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QPushButton" name="btnOutput3">
            <property name="toolTip">
             <string/>
            </property>
            <property name="text">
             <string>...</string>
-           </property>
-           <property name="flat">
-            <bool>false</bool>
            </property>
           </widget>
          </item>
          <item row="5" column="6">
-          <widget class="QPushButton" name="BtnConv2">
+          <widget class="QPushButton" name="btnConv2">
            <property name="enabled">
             <bool>false</bool>
            </property>
@@ -1853,16 +1021,10 @@
            <property name="text">
             <string>...</string>
            </property>
-           <property name="flat">
-            <bool>false</bool>
-           </property>
           </widget>
          </item>
          <item row="7" column="2">
-          <widget class="QComboBox" name="Output4">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QComboBox" name="cBOutput4">
            <property name="toolTip">
             <string/>
            </property>
@@ -1909,10 +1071,7 @@
           </widget>
          </item>
          <item row="4" column="1">
-          <widget class="QLabel" name="LabelOutput1">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QLabel" name="lblOutput1">
            <property name="palette">
             <palette>
              <active>
@@ -1978,17 +1137,14 @@
           </widget>
          </item>
          <item row="7" column="5">
-          <widget class="QPushButton" name="BtnCmd4">
+          <widget class="QPushButton" name="btnCmd4">
            <property name="text">
             <string>...</string>
            </property>
           </widget>
          </item>
          <item row="9" column="0">
-          <widget class="QLabel" name="IndOutput5">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QLabel" name="indOutput5">
            <property name="minimumSize">
             <size>
              <width>25</width>
@@ -2004,20 +1160,11 @@
            <property name="toolTip">
             <string/>
            </property>
-           <property name="layoutDirection">
-            <enum>Qt::LeftToRight</enum>
-           </property>
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
            <property name="frameShadow">
             <enum>QFrame::Sunken</enum>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
            </property>
           </widget>
          </item>
@@ -2041,10 +1188,7 @@
           </widget>
          </item>
          <item row="10" column="0">
-          <widget class="QLabel" name="IndOutput6">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QLabel" name="indOutput6">
            <property name="minimumSize">
             <size>
              <width>25</width>
@@ -2068,20 +1212,11 @@
            </property>
            <property name="frameShadow">
             <enum>QFrame::Sunken</enum>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
            </property>
           </widget>
          </item>
          <item row="9" column="8">
-          <widget class="QLabel" name="IndLog5">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QLabel" name="indLog5">
            <property name="minimumSize">
             <size>
              <width>25</width>
@@ -2097,28 +1232,16 @@
            <property name="toolTip">
             <string/>
            </property>
-           <property name="layoutDirection">
-            <enum>Qt::LeftToRight</enum>
-           </property>
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
            <property name="frameShadow">
             <enum>QFrame::Sunken</enum>
            </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
           </widget>
          </item>
          <item row="5" column="2">
-          <widget class="QComboBox" name="Output2">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QComboBox" name="cBOutput2">
            <property name="toolTip">
             <string/>
            </property>
@@ -2165,10 +1288,7 @@
           </widget>
          </item>
          <item row="6" column="0">
-          <widget class="QLabel" name="IndOutput3">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QLabel" name="indOutput3">
            <property name="minimumSize">
             <size>
              <width>25</width>
@@ -2184,65 +1304,16 @@
            <property name="toolTip">
             <string/>
            </property>
-           <property name="layoutDirection">
-            <enum>Qt::LeftToRight</enum>
-           </property>
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
            <property name="frameShadow">
             <enum>QFrame::Sunken</enum>
            </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
           </widget>
          </item>
          <item row="1" column="11">
-          <widget class="QLabel" name="InputBps">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="palette">
-            <palette>
-             <active>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </active>
-             <inactive>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </inactive>
-             <disabled>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </disabled>
-            </palette>
-           </property>
+          <widget class="QLabel" name="lblInputBps">
            <property name="toolTip">
             <string/>
            </property>
@@ -2252,54 +1323,14 @@
           </widget>
          </item>
          <item row="7" column="1">
-          <widget class="QLabel" name="LabelOutput4">
+          <widget class="QLabel" name="lblOutput4">
            <property name="text">
             <string>(4) Output</string>
            </property>
           </widget>
          </item>
          <item row="10" column="10">
-          <widget class="QLabel" name="Output6Byte">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="palette">
-            <palette>
-             <active>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </active>
-             <inactive>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </inactive>
-             <disabled>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </disabled>
-            </palette>
-           </property>
+          <widget class="QLabel" name="lblOutput6Byte">
            <property name="toolTip">
             <string/>
            </property>
@@ -2309,54 +1340,14 @@
           </widget>
          </item>
          <item row="9" column="5">
-          <widget class="QPushButton" name="BtnCmd5">
+          <widget class="QPushButton" name="btnCmd5">
            <property name="text">
             <string>...</string>
            </property>
           </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QLabel" name="LabelInput">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="palette">
-            <palette>
-             <active>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </active>
-             <inactive>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </inactive>
-             <disabled>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </disabled>
-            </palette>
-           </property>
+          <widget class="QLabel" name="lblInput">
            <property name="toolTip">
             <string/>
            </property>
@@ -2366,47 +1357,7 @@
           </widget>
          </item>
          <item row="1" column="10">
-          <widget class="QLabel" name="InputByte">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="palette">
-            <palette>
-             <active>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </active>
-             <inactive>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </inactive>
-             <disabled>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </disabled>
-            </palette>
-           </property>
+          <widget class="QLabel" name="lblInputByte">
            <property name="toolTip">
             <string/>
            </property>
@@ -2423,114 +1374,72 @@
           </widget>
          </item>
          <item row="4" column="7">
-          <widget class="QPushButton" name="BtnLog1">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QPushButton" name="btnLog1">
            <property name="toolTip">
             <string/>
            </property>
            <property name="text">
             <string>...</string>
-           </property>
-           <property name="flat">
-            <bool>false</bool>
            </property>
           </widget>
          </item>
          <item row="5" column="7">
-          <widget class="QPushButton" name="BtnLog2">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QPushButton" name="btnLog2">
            <property name="toolTip">
             <string/>
            </property>
            <property name="text">
             <string>...</string>
-           </property>
-           <property name="flat">
-            <bool>false</bool>
            </property>
           </widget>
          </item>
          <item row="6" column="7">
-          <widget class="QPushButton" name="BtnLog3">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QPushButton" name="btnLog3">
            <property name="toolTip">
             <string/>
            </property>
            <property name="text">
             <string>...</string>
-           </property>
-           <property name="flat">
-            <bool>false</bool>
            </property>
           </widget>
          </item>
          <item row="7" column="7">
-          <widget class="QPushButton" name="BtnLog4">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QPushButton" name="btnLog4">
            <property name="toolTip">
             <string/>
            </property>
            <property name="text">
             <string>...</string>
-           </property>
-           <property name="flat">
-            <bool>false</bool>
            </property>
           </widget>
          </item>
          <item row="9" column="7">
-          <widget class="QPushButton" name="BtnLog5">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QPushButton" name="btnLog5">
            <property name="toolTip">
             <string/>
            </property>
            <property name="text">
             <string>...</string>
-           </property>
-           <property name="flat">
-            <bool>false</bool>
            </property>
           </widget>
          </item>
          <item row="10" column="7">
-          <widget class="QPushButton" name="BtnLog6">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QPushButton" name="btnLog6">
            <property name="toolTip">
             <string/>
            </property>
            <property name="text">
             <string>...</string>
-           </property>
-           <property name="flat">
-            <bool>false</bool>
            </property>
           </widget>
          </item>
          <item row="1" column="7">
-          <widget class="QPushButton" name="BtnLog">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QPushButton" name="btnLog">
            <property name="toolTip">
             <string/>
            </property>
            <property name="text">
             <string>...</string>
-           </property>
-           <property name="flat">
-            <bool>false</bool>
            </property>
           </widget>
          </item>
@@ -2538,32 +1447,14 @@
        </widget>
       </item>
       <item>
-       <widget class="QProgressBar" name="Progress">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QProgressBar" name="pBProgress">
         <property name="toolTip">
          <string/>
-        </property>
-        <property name="minimum">
-         <number>0</number>
-        </property>
-        <property name="maximum">
-         <number>100</number>
-        </property>
-        <property name="value">
-         <number>0</number>
-        </property>
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QWidget" name="Panel4" native="true">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -2572,9 +1463,6 @@
         </property>
         <property name="toolTip">
          <string/>
-        </property>
-        <property name="layoutDirection">
-         <enum>Qt::LeftToRight</enum>
         </property>
         <property name="text" stdset="0">
          <string/>
@@ -2593,10 +1481,7 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QPushButton" name="BtnStrMon">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QPushButton" name="btnStreamMonitor">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -2606,11 +1491,8 @@
            <property name="toolTip">
             <string>Stream Monitor</string>
            </property>
-           <property name="text">
-            <string/>
-           </property>
            <property name="icon">
-            <iconset>
+            <iconset resource="strsvr_qt.qrc">
              <normaloff>:/buttons/sqr.bmp</normaloff>:/buttons/sqr.bmp</iconset>
            </property>
            <property name="flat">
@@ -2619,47 +1501,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="Message">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="palette">
-            <palette>
-             <active>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>128</red>
-                 <green>128</green>
-                 <blue>128</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </active>
-             <inactive>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>128</red>
-                 <green>128</green>
-                 <blue>128</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </inactive>
-             <disabled>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>128</red>
-                 <green>128</green>
-                 <blue>128</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </disabled>
-            </palette>
-           </property>
+          <widget class="QLabel" name="lblMessage">
            <property name="toolTip">
             <string/>
            </property>
@@ -2669,61 +1511,18 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="BtnTaskIcon">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QPushButton" name="btnTaskIcon">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
-           <property name="palette">
-            <palette>
-             <active>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>128</red>
-                 <green>128</green>
-                 <blue>128</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </active>
-             <inactive>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>128</red>
-                 <green>128</green>
-                 <blue>128</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </inactive>
-             <disabled>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>128</red>
-                 <green>128</green>
-                 <blue>128</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </disabled>
-            </palette>
-           </property>
            <property name="toolTip">
             <string>Task Tray Icon</string>
            </property>
-           <property name="text">
-            <string/>
-           </property>
            <property name="icon">
-            <iconset>
+            <iconset resource="strsvr_qt.qrc">
              <normaloff>:/buttons/ttray.bmp</normaloff>:/buttons/ttray.bmp</iconset>
            </property>
            <property name="flat">
@@ -2732,52 +1531,12 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="BtnAbout">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QPushButton" name="btnAbout">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
-           </property>
-           <property name="palette">
-            <palette>
-             <active>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>128</red>
-                 <green>128</green>
-                 <blue>128</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </active>
-             <inactive>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>128</red>
-                 <green>128</green>
-                 <blue>128</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </inactive>
-             <disabled>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>128</red>
-                 <green>128</green>
-                 <blue>128</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </disabled>
-            </palette>
            </property>
            <property name="toolTip">
             <string/>
@@ -2818,10 +1577,7 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QPushButton" name="BtnStart">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnStart">
         <property name="toolTip">
          <string/>
         </property>
@@ -2829,16 +1585,13 @@
          <string>&amp;Start</string>
         </property>
         <property name="icon">
-         <iconset>
+         <iconset resource="strsvr_qt.qrc">
           <normaloff>:/buttons/start.bmp</normaloff>:/buttons/start.bmp</iconset>
-        </property>
-        <property name="flat">
-         <bool>false</bool>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnStop">
+       <widget class="QPushButton" name="btnStop">
         <property name="toolTip">
          <string/>
         </property>
@@ -2846,19 +1599,13 @@
          <string>S&amp;top</string>
         </property>
         <property name="icon">
-         <iconset>
+         <iconset resource="strsvr_qt.qrc">
           <normaloff>:/buttons/stop2.bmp</normaloff>:/buttons/stop2.bmp</iconset>
-        </property>
-        <property name="flat">
-         <bool>false</bool>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnOpt">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnOpt">
         <property name="toolTip">
          <string/>
         </property>
@@ -2866,27 +1613,18 @@
          <string>&amp;Options...</string>
         </property>
         <property name="icon">
-         <iconset>
+         <iconset resource="strsvr_qt.qrc">
           <normaloff>:/buttons/toolbmp</normaloff>:/buttons/toolbmp</iconset>
-        </property>
-        <property name="flat">
-         <bool>false</bool>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnExit">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnExit">
         <property name="toolTip">
          <string/>
         </property>
         <property name="text">
          <string>E&amp;xit</string>
-        </property>
-        <property name="flat">
-         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -2894,57 +1632,57 @@
     </widget>
    </item>
   </layout>
-  <action name="MenuExpand">
+  <action name="acMenuExpand">
    <property name="text">
     <string>E&amp;xpand</string>
    </property>
   </action>
-  <action name="MenuStart">
+  <action name="acMenuStart">
    <property name="text">
     <string>&amp;Start</string>
    </property>
   </action>
-  <action name="MenuStop">
+  <action name="acMenuStop">
    <property name="text">
     <string>&amp;Stop</string>
    </property>
   </action>
-  <action name="MenuExit">
+  <action name="acMenuExit">
    <property name="text">
     <string>&amp;Exit</string>
    </property>
   </action>
-  <addaction name="MenuExpand"/>
-  <addaction name="MenuStart"/>
-  <addaction name="MenuStop"/>
-  <addaction name="MenuExit"/>
+  <addaction name="acMenuExpand"/>
+  <addaction name="acMenuStart"/>
+  <addaction name="acMenuStop"/>
+  <addaction name="acMenuExit"/>
  </widget>
  <tabstops>
-  <tabstop>BtnStart</tabstop>
-  <tabstop>BtnStop</tabstop>
-  <tabstop>BtnOpt</tabstop>
-  <tabstop>BtnExit</tabstop>
-  <tabstop>Input</tabstop>
-  <tabstop>BtnInput</tabstop>
-  <tabstop>BtnCmd</tabstop>
-  <tabstop>Output1</tabstop>
-  <tabstop>BtnOutput1</tabstop>
-  <tabstop>BtnCmd1</tabstop>
-  <tabstop>BtnConv1</tabstop>
-  <tabstop>Output2</tabstop>
-  <tabstop>BtnOutput2</tabstop>
-  <tabstop>BtnCmd2</tabstop>
-  <tabstop>BtnConv2</tabstop>
-  <tabstop>Output3</tabstop>
-  <tabstop>BtnOutput3</tabstop>
-  <tabstop>BtnCmd3</tabstop>
-  <tabstop>BtnConv3</tabstop>
-  <tabstop>BtnStrMon</tabstop>
-  <tabstop>BtnTaskIcon</tabstop>
-  <tabstop>BtnAbout</tabstop>
+  <tabstop>btnStart</tabstop>
+  <tabstop>btnStop</tabstop>
+  <tabstop>btnOpt</tabstop>
+  <tabstop>btnExit</tabstop>
+  <tabstop>cBInput</tabstop>
+  <tabstop>btnInput</tabstop>
+  <tabstop>btnCmd</tabstop>
+  <tabstop>cBOutput1</tabstop>
+  <tabstop>btnOutput1</tabstop>
+  <tabstop>btnCmd1</tabstop>
+  <tabstop>btnConv1</tabstop>
+  <tabstop>cBOutput2</tabstop>
+  <tabstop>btnOutput2</tabstop>
+  <tabstop>btnCmd2</tabstop>
+  <tabstop>btnConv2</tabstop>
+  <tabstop>cBOutput3</tabstop>
+  <tabstop>btnOutput3</tabstop>
+  <tabstop>btnCmd3</tabstop>
+  <tabstop>btnConv3</tabstop>
+  <tabstop>btnStreamMonitor</tabstop>
+  <tabstop>btnTaskIcon</tabstop>
+  <tabstop>btnAbout</tabstop>
  </tabstops>
  <resources>
-  <include location="../rtkpost_qt/rtkpost_qt.qrc"/>
+  <include location="strsvr_qt.qrc"/>
  </resources>
  <connections/>
 </ui>

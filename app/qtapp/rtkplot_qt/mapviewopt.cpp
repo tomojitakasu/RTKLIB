@@ -56,9 +56,9 @@ void MapViewOptDialog::BtnNotesClick()
     file=dir+"/gmview_notes.txt";
     viewer=new TextViewer(this);
     viewer->setWindowTitle(file);
-    viewer->Option=0;
+    viewer->option=0;
     viewer->exec();
-    viewer->Read(file);	
+    viewer->read(file);	
 }
 //---------------------------------------------------------------------------
 

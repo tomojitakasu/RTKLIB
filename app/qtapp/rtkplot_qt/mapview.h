@@ -7,9 +7,6 @@
 
 #include "ui_mapview.h"
 
-#ifdef QWEBKIT
-class QWebView;
-#endif
 #ifdef QWEBENGINE
 class QWebEngineView;
 class MapViewPageState : public QObject
@@ -52,9 +49,6 @@ protected:
      void showEvent(QShowEvent*);
 
 private:
-#ifdef QWEBKIT
-    QWebView *WebBrowser;
-#endif
 #ifdef QWEBENGINE
     QWebEngineView *WebBrowser;
     MapViewPageState *pageState;

@@ -16,11 +16,11 @@ protected:
     void  showEvent(QShowEvent*);
 
 public slots:
-    void  BtnOkClick();
-    void  MaskEnaClick();
+    void  btnOkClicked();
+    void  MaskEnabledClicked();
 
 private:
-    void  UpdateEnable(void);
+    void  updateEnable(void);
 
 public:
 	snrmask_t Mask;

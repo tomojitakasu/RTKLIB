@@ -23,9 +23,10 @@ void AboutDialog::showEvent(QShowEvent *event)
                        QPixmap(":/icons/rtk6.bmp"),
                        QPixmap(":/icons/rtk7.bmp") };
 
-    if ((IconIndex > 0) && (IconIndex < 7)) wgIcon->setPixmap(icon[IconIndex - 1]);
-    lbAbout->setText(About);
-    lbVersion->setText(QString(tr("with RTKLIB ver.%1 %2")).arg(VER_RTKLIB).arg(PATCH_LEVEL));
+    if ((iconIndex > 0) && (iconIndex < 7)) wgIcon->setPixmap(icon[iconIndex - 1]);
+
+    lbAbout->setText(aboutString);
+    lbVersion->setText(tr("with RTKLIB ver.%1 %2").arg(VER_RTKLIB).arg(PATCH_LEVEL));
     lbCopyright->setText(COPYRIGHT_RTKLIB);
 
     connect(pbOkay, SIGNAL(clicked(bool)), this, SLOT(accept()));

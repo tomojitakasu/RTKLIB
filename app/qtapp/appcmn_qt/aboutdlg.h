@@ -18,8 +18,8 @@ protected:
     void showEvent(QShowEvent *);
 
 public:
-	int IconIndex;
-    QString About;
+    int iconIndex;
+    QString aboutString;
 
     explicit AboutDialog(QWidget*);
 };

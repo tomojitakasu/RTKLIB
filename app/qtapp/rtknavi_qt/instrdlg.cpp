@@ -235,12 +235,12 @@ void InputStrDialog::BtnCmd1Click()
 {
     for (int i = 0;i<3;i++) {
         if (Stream1->currentIndex() == 0) {
-            cmdOptDialog->Cmds  [i] = Cmds  [0][i];
-            cmdOptDialog->CmdEna[i] = CmdEna[0][i];
+            cmdOptDialog->commands  [i] = Cmds  [0][i];
+            cmdOptDialog->commandsEnabled[i] = CmdEna[0][i];
         }
         else {
-            cmdOptDialog->Cmds  [i] = CmdsTcp  [0][i];
-            cmdOptDialog->CmdEna[i] = CmdEnaTcp[0][i];
+            cmdOptDialog->commands  [i] = CmdsTcp  [0][i];
+            cmdOptDialog->commandsEnabled[i] = CmdEnaTcp[0][i];
         }
     }
 
@@ -249,12 +249,12 @@ void InputStrDialog::BtnCmd1Click()
 
     for (int i = 0; i < 3; i++) {
         if (Stream1->currentIndex() == 0) {
-            Cmds  [0][i] = cmdOptDialog->Cmds  [i];
-            CmdEna[0][i] = cmdOptDialog->CmdEna[i];
+            Cmds  [0][i] = cmdOptDialog->commands  [i];
+            CmdEna[0][i] = cmdOptDialog->commandsEnabled[i];
         }
         else {
-            CmdsTcp  [0][i] = cmdOptDialog->Cmds  [i];
-            CmdEnaTcp[0][i] = cmdOptDialog->CmdEna[i];
+            CmdsTcp  [0][i] = cmdOptDialog->commands  [i];
+            CmdEnaTcp[0][i] = cmdOptDialog->commandsEnabled[i];
         }
     }
 }
@@ -263,12 +263,12 @@ void InputStrDialog::BtnCmd2Click()
 {
     for (int i = 0;i<3;i++) {
         if (Stream2->currentIndex() == 0) {
-            cmdOptDialog->Cmds  [i] = Cmds  [1][i];
-            cmdOptDialog->CmdEna[i] = CmdEna[1][i];
+            cmdOptDialog->commands  [i] = Cmds  [1][i];
+            cmdOptDialog->commandsEnabled[i] = CmdEna[1][i];
         }
         else {
-            cmdOptDialog->Cmds  [i] = CmdsTcp  [1][i];
-            cmdOptDialog->CmdEna[i] = CmdEnaTcp[1][i];
+            cmdOptDialog->commands  [i] = CmdsTcp  [1][i];
+            cmdOptDialog->commandsEnabled[i] = CmdEnaTcp[1][i];
         }
     }
 
@@ -277,12 +277,12 @@ void InputStrDialog::BtnCmd2Click()
 
     for (int i = 0; i < 3; i++) {
         if (Stream2->currentIndex() == 0) {
-            Cmds  [1][i] = cmdOptDialog->Cmds  [i];
-            CmdEna[1][i] = cmdOptDialog->CmdEna[i];
+            Cmds  [1][i] = cmdOptDialog->commands  [i];
+            CmdEna[1][i] = cmdOptDialog->commandsEnabled[i];
         }
         else {
-            CmdsTcp  [1][i] = cmdOptDialog->Cmds  [i];
-            CmdEnaTcp[1][i] = cmdOptDialog->CmdEna[i];
+            CmdsTcp  [1][i] = cmdOptDialog->commands  [i];
+            CmdEnaTcp[1][i] = cmdOptDialog->commandsEnabled[i];
         }
     }}
 //---------------------------------------------------------------------------
@@ -290,12 +290,12 @@ void InputStrDialog::BtnCmd3Click()
 {
     for (int i = 0;i<3;i++) {
         if (Stream3->currentIndex() == 0) {
-            cmdOptDialog->Cmds  [i] = Cmds  [2][i];
-            cmdOptDialog->CmdEna[i] = CmdEna[2][i];
+            cmdOptDialog->commands  [i] = Cmds  [2][i];
+            cmdOptDialog->commandsEnabled[i] = CmdEna[2][i];
         }
         else {
-            cmdOptDialog->Cmds  [i] = CmdsTcp  [2][i];
-            cmdOptDialog->CmdEna[i] = CmdEnaTcp[2][i];
+            cmdOptDialog->commands  [i] = CmdsTcp  [2][i];
+            cmdOptDialog->commandsEnabled[i] = CmdEnaTcp[2][i];
         }
     }
 
@@ -304,12 +304,12 @@ void InputStrDialog::BtnCmd3Click()
 
     for (int i = 0; i < 3; i++) {
         if (Stream3->currentIndex() == 0) {
-            Cmds  [2][i] = cmdOptDialog->Cmds  [i];
-            CmdEna[2][i] = cmdOptDialog->CmdEna[i];
+            Cmds  [2][i] = cmdOptDialog->commands  [i];
+            CmdEna[2][i] = cmdOptDialog->commandsEnabled[i];
         }
         else {
-            CmdsTcp  [2][i] = cmdOptDialog->Cmds  [i];
-            CmdEnaTcp[2][i] = cmdOptDialog->CmdEna[i];
+            CmdsTcp  [2][i] = cmdOptDialog->commands  [i];
+            CmdEnaTcp[2][i] = cmdOptDialog->commandsEnabled[i];
         }
     }}
 //---------------------------------------------------------------------------
@@ -344,28 +344,28 @@ void InputStrDialog::BtnRcvOpt3Click()
 //---------------------------------------------------------------------------
 void InputStrDialog::BtnPosClick()
 {
-    refDialog->RovPos[0] = NmeaPos1->value();
-    refDialog->RovPos[1] = NmeaPos2->value();
-    refDialog->RovPos[2] = NmeaPos3->value();
-    refDialog->StaPosFile = mainForm->StaPosFileF;
+    refDialog->RoverPosition[0] = NmeaPos1->value();
+    refDialog->RoverPosition[1] = NmeaPos2->value();
+    refDialog->RoverPosition[2] = NmeaPos3->value();
+    refDialog->stationPositionFile = mainForm->StaPosFileF;
 
     refDialog->exec();
     if (refDialog->result() != QDialog::Accepted) return;
 
-    NmeaPos1->setValue(refDialog->Pos[0]);
-    NmeaPos2->setValue(refDialog->Pos[1]);
-    NmeaPos3->setValue(refDialog->Pos[2]);
+    NmeaPos1->setValue(refDialog->position[0]);
+    NmeaPos2->setValue(refDialog->position[1]);
+    NmeaPos3->setValue(refDialog->position[2]);
 }
 //---------------------------------------------------------------------------
 void InputStrDialog::SerialOpt(int index, int opt)
 {
-    serialOptDialog->Path = Paths[index][0];
-    serialOptDialog->Opt = opt;
+    serialOptDialog->path = Paths[index][0];
+    serialOptDialog->options = opt;
 
     serialOptDialog->exec();
     if (serialOptDialog->result() != QDialog::Accepted) return;
 
-    Paths[index][0] = serialOptDialog->Path;
+    Paths[index][0] = serialOptDialog->path;
 }
 //---------------------------------------------------------------------------
 void InputStrDialog::BtnFile1Click()
@@ -385,30 +385,30 @@ void InputStrDialog::BtnFile3Click()
 //---------------------------------------------------------------------------
 void InputStrDialog::TcpOpt(int index, int opt)
 {
-    tcpOptDialog->Path = Paths[index][1];
-    tcpOptDialog->Opt = opt;
+    tcpOptDialog->path = Paths[index][1];
+    tcpOptDialog->options = opt;
     for (int i = 0; i < 10; i++) {
-        tcpOptDialog->History[i] = History[i];
+        tcpOptDialog->history[i] = History[i];
 	}
 
     tcpOptDialog->exec();
     if (tcpOptDialog->result() != QDialog::Accepted) return;
 
-    Paths[index][1] = tcpOptDialog->Path;
+    Paths[index][1] = tcpOptDialog->path;
     for (int i = 0; i < 10; i++) {
-        History[i] = tcpOptDialog->History[i];
+        History[i] = tcpOptDialog->history[i];
 	}
 }
 //---------------------------------------------------------------------------
 void InputStrDialog::FtpOpt(int index, int opt)
 {
-    ftpOptDialog->Path = Paths[index][3];
-    ftpOptDialog->Opt = opt;
+    ftpOptDialog->path = Paths[index][3];
+    ftpOptDialog->options = opt;
 
     ftpOptDialog->exec();
     if (ftpOptDialog->result() != QDialog::Accepted) return;
 
-    Paths[index][3] = ftpOptDialog->Path;
+    Paths[index][3] = ftpOptDialog->path;
 }
 //---------------------------------------------------------------------------
 void InputStrDialog::UpdateEnable(void)

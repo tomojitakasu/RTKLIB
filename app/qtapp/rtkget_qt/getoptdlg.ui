@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>427</width>
-    <height>389</height>
+    <height>397</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,37 +18,16 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QWidget" name="Panel1" native="true">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QWidget" name="panel1" native="true">
      <property name="toolTip">
       <string/>
-     </property>
-     <property name="layoutDirection">
-      <enum>Qt::LeftToRight</enum>
      </property>
      <property name="text" stdset="0">
       <string/>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
       <item row="4" column="0">
-       <widget class="QLabel" name="Label5">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QLabel" name="label5">
         <property name="toolTip">
          <string/>
         </property>
@@ -58,68 +37,47 @@
        </widget>
       </item>
       <item row="9" column="2">
-       <widget class="QPushButton" name="BtnUrlFile">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnUrlFile">
         <property name="toolTip">
          <string/>
         </property>
         <property name="text">
          <string>...</string>
         </property>
-        <property name="flat">
-         <bool>false</bool>
-        </property>
        </widget>
       </item>
       <item row="0" column="0" colspan="2">
-       <widget class="QCheckBox" name="HoldErr">
+       <widget class="QCheckBox" name="cBKeepErr">
         <property name="toolTip">
          <string/>
         </property>
         <property name="text">
          <string> Keep Error Info on Download Error (*.err)</string>
         </property>
-        <property name="checked">
-         <bool>false</bool>
-        </property>
        </widget>
       </item>
       <item row="1" column="0" colspan="2">
-       <widget class="QCheckBox" name="HoldList">
+       <widget class="QCheckBox" name="cBKeepList">
         <property name="toolTip">
          <string/>
         </property>
         <property name="text">
          <string> Keep Remote Directory Listings (.listing)</string>
         </property>
-        <property name="checked">
-         <bool>false</bool>
-        </property>
        </widget>
       </item>
       <item row="7" column="2">
-       <widget class="QPushButton" name="BtnLogFile">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnLogFile">
         <property name="toolTip">
          <string/>
         </property>
         <property name="text">
          <string>...</string>
         </property>
-        <property name="flat">
-         <bool>false</bool>
-        </property>
        </widget>
       </item>
       <item row="9" column="0" colspan="2">
-       <widget class="QLabel" name="Label1">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QLabel" name="label1">
         <property name="toolTip">
          <string/>
         </property>
@@ -129,10 +87,7 @@
        </widget>
       </item>
       <item row="5" column="0">
-       <widget class="QLabel" name="Label2">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QLabel" name="label2">
         <property name="toolTip">
          <string/>
         </property>
@@ -142,10 +97,7 @@
        </widget>
       </item>
       <item row="3" column="0">
-       <widget class="QLabel" name="Label6">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QLabel" name="label6">
         <property name="toolTip">
          <string/>
         </property>
@@ -155,10 +107,7 @@
        </widget>
       </item>
       <item row="4" column="1">
-       <widget class="QComboBox" name="DateFormat">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QComboBox" name="cBDateFormat">
         <property name="toolTip">
          <string/>
         </property>
@@ -180,23 +129,14 @@
        </widget>
       </item>
       <item row="10" column="0" colspan="3">
-       <widget class="QLineEdit" name="UrlFile">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QLineEdit" name="lEUrlFilename">
         <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
          <string/>
         </property>
        </widget>
       </item>
       <item row="6" column="0">
-       <widget class="QLabel" name="Label3">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QLabel" name="label3">
         <property name="toolTip">
          <string/>
         </property>
@@ -206,10 +146,7 @@
        </widget>
       </item>
       <item row="7" column="0">
-       <widget class="QLabel" name="Label4">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QLabel" name="label4">
         <property name="toolTip">
          <string/>
         </property>
@@ -219,23 +156,17 @@
        </widget>
       </item>
       <item row="7" column="1">
-       <widget class="QCheckBox" name="LogAppend">
+       <widget class="QCheckBox" name="cBLogAppend">
         <property name="toolTip">
          <string/>
         </property>
         <property name="text">
          <string>Append</string>
         </property>
-        <property name="checked">
-         <bool>false</bool>
-        </property>
        </widget>
       </item>
       <item row="8" column="0" colspan="3">
-       <widget class="QLineEdit" name="LogFile">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QLineEdit" name="lELogFilename">
         <property name="toolTip">
          <string/>
         </property>
@@ -245,10 +176,7 @@
        </widget>
       </item>
       <item row="5" column="1">
-       <widget class="QComboBox" name="TraceLevel">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QComboBox" name="cBTraceLevel">
         <property name="toolTip">
          <string/>
         </property>
@@ -285,20 +213,17 @@
        </widget>
       </item>
       <item row="6" column="1" colspan="2">
-       <widget class="QLineEdit" name="Proxy">
+       <widget class="QLineEdit" name="lEProxy">
         <property name="enabled">
          <bool>false</bool>
         </property>
         <property name="toolTip">
          <string/>
         </property>
-        <property name="text">
-         <string/>
-        </property>
        </widget>
       </item>
       <item row="3" column="1">
-       <widget class="QSpinBox" name="NCol">
+       <widget class="QSpinBox" name="sBTestColumnCount">
         <property name="maximum">
          <number>9999</number>
         </property>
@@ -316,26 +241,8 @@
       </sizepolicy>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout">
-      <property name="spacing">
-       <number>0</number>
-      </property>
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
       <item>
-       <widget class="QPushButton" name="BtnOk">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnOk">
         <property name="toolTip">
          <string/>
         </property>
@@ -351,10 +258,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnCancel">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnCancel">
         <property name="toolTip">
          <string/>
         </property>
@@ -369,19 +273,19 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>HoldErr</tabstop>
-  <tabstop>HoldList</tabstop>
-  <tabstop>NCol</tabstop>
-  <tabstop>DateFormat</tabstop>
-  <tabstop>TraceLevel</tabstop>
-  <tabstop>Proxy</tabstop>
-  <tabstop>LogAppend</tabstop>
-  <tabstop>BtnLogFile</tabstop>
-  <tabstop>LogFile</tabstop>
-  <tabstop>BtnUrlFile</tabstop>
-  <tabstop>UrlFile</tabstop>
-  <tabstop>BtnOk</tabstop>
-  <tabstop>BtnCancel</tabstop>
+  <tabstop>cBKeepErr</tabstop>
+  <tabstop>cBKeepList</tabstop>
+  <tabstop>sBTestColumnCount</tabstop>
+  <tabstop>cBDateFormat</tabstop>
+  <tabstop>cBTraceLevel</tabstop>
+  <tabstop>lEProxy</tabstop>
+  <tabstop>cBLogAppend</tabstop>
+  <tabstop>btnLogFile</tabstop>
+  <tabstop>lELogFilename</tabstop>
+  <tabstop>btnUrlFile</tabstop>
+  <tabstop>lEUrlFilename</tabstop>
+  <tabstop>btnOk</tabstop>
+  <tabstop>btnCancel</tabstop>
  </tabstops>
  <resources/>
  <connections/>

@@ -9,7 +9,7 @@ FreqDialog::FreqDialog(QWidget* parent)
 {
     setupUi(this);
 
-    connect(BtnOk, SIGNAL(clicked(bool)), this, SLOT(accept()));
+    connect(btnOk, SIGNAL(clicked(bool)), this, SLOT(accept()));
 
 }
 //---------------------------------------------------------------------------

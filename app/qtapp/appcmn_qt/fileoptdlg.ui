@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>556</width>
+    <width>584</width>
     <height>158</height>
    </rect>
   </property>
@@ -39,7 +39,7 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QCheckBox" name="ChkTimeTag">
+       <widget class="QCheckBox" name="cBTimeTag">
         <property name="toolTip">
          <string/>
         </property>
@@ -49,20 +49,17 @@
        </widget>
       </item>
       <item>
-       <widget class="QLabel" name="Label4">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QLabel" name="lbSwapInterval">
         <property name="toolTip">
          <string/>
         </property>
         <property name="text">
-         <string>Swap Intv</string>
+         <string>Swap Interval</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="SwapIntv">
+       <widget class="QComboBox" name="cBSwapInterval">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -120,10 +117,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QLabel" name="Label5">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QLabel" name="lbH">
         <property name="toolTip">
          <string/>
         </property>
@@ -133,17 +127,14 @@
        </widget>
       </item>
       <item>
-       <widget class="QCheckBox" name="Chk64Bit">
+       <widget class="QCheckBox" name="cB64Bit">
         <property name="text">
          <string>64bit</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnKey">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnKey">
         <property name="toolTip">
          <string/>
         </property>
@@ -156,10 +147,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnOk">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnOk">
         <property name="toolTip">
          <string/>
         </property>
@@ -175,10 +163,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnCancel">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnCancel">
         <property name="toolTip">
          <string/>
         </property>
@@ -191,7 +176,7 @@
     </widget>
    </item>
    <item row="1" column="3">
-    <widget class="QDoubleSpinBox" name="TimeStart">
+    <widget class="QDoubleSpinBox" name="sBTimeStart">
      <property name="suffix">
       <string> s</string>
      </property>
@@ -201,10 +186,7 @@
     </widget>
    </item>
    <item row="3" column="6">
-    <widget class="QPushButton" name="BtnFilePath">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QPushButton" name="btnFilePath">
      <property name="toolTip">
       <string/>
      </property>
@@ -214,10 +196,7 @@
     </widget>
    </item>
    <item row="3" column="1">
-    <widget class="QLabel" name="Label1">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QLabel" name="lbFilePath">
      <property name="toolTip">
       <string/>
      </property>
@@ -227,14 +206,14 @@
     </widget>
    </item>
    <item row="1" column="2">
-    <widget class="QLabel" name="Label2">
+    <widget class="QLabel" name="lbPlus">
      <property name="text">
       <string>+</string>
      </property>
     </widget>
    </item>
    <item row="3" column="3">
-    <widget class="QLineEdit" name="FilePath">
+    <widget class="QLineEdit" name="lEFilePath">
      <property name="enabled">
       <bool>true</bool>
      </property>
@@ -247,10 +226,7 @@
     </widget>
    </item>
    <item row="1" column="1">
-    <widget class="QComboBox" name="TimeSpeed">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QComboBox" name="cBTimeSpeed">
      <property name="toolTip">
       <string/>
      </property>
@@ -292,9 +268,9 @@
     </widget>
    </item>
    <item row="2" column="1">
-    <widget class="QCheckBox" name="PathEnable">
+    <widget class="QCheckBox" name="cBPathEnable">
      <property name="text">
-      <string>CheckBox</string>
+      <string>File Path</string>
      </property>
      <property name="checked">
       <bool>true</bool>
@@ -304,15 +280,15 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>TimeSpeed</tabstop>
-  <tabstop>TimeStart</tabstop>
-  <tabstop>FilePath</tabstop>
-  <tabstop>BtnFilePath</tabstop>
-  <tabstop>ChkTimeTag</tabstop>
-  <tabstop>SwapIntv</tabstop>
-  <tabstop>BtnKey</tabstop>
-  <tabstop>BtnOk</tabstop>
-  <tabstop>BtnCancel</tabstop>
+  <tabstop>cBTimeSpeed</tabstop>
+  <tabstop>sBTimeStart</tabstop>
+  <tabstop>lEFilePath</tabstop>
+  <tabstop>btnFilePath</tabstop>
+  <tabstop>cBTimeTag</tabstop>
+  <tabstop>cBSwapInterval</tabstop>
+  <tabstop>btnKey</tabstop>
+  <tabstop>btnOk</tabstop>
+  <tabstop>btnCancel</tabstop>
  </tabstops>
  <resources/>
  <connections/>

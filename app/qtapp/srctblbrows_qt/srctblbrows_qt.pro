@@ -4,18 +4,13 @@
 #
 #-------------------------------------------------
 
-QT       += core gui widgets
+QT       += core gui widgets quickwidgets
 
 include(../qtapp.pri)
 
 qtHaveModule(webenginewidgets) {
     QT+= webenginewidgets
     DEFINES+=QWEBENGINE
-} else {
-    qtHaveModule(webkitwidgets) {
-        QT+= webkitwidgets
-        DEFINES+= QWEBKIT
-    }
 }
 
 INCLUDEPATH += ../../../src/ ../appcmn_qt

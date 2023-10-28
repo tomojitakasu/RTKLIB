@@ -193,28 +193,28 @@ QString LogStrDialog::SetFilePath(const QString &p)
 //---------------------------------------------------------------------------
 void LogStrDialog::SerialOpt(int index, int opt)
 {
-    serialOptDialog->Path = Paths[index][0];
-    serialOptDialog->Opt = opt;
+    serialOptDialog->path = Paths[index][0];
+    serialOptDialog->options = opt;
 
     serialOptDialog->exec();
     if (serialOptDialog->result() != QDialog::Accepted) return;
 
-    Paths[index][0] = serialOptDialog->Path;
+    Paths[index][0] = serialOptDialog->path;
 }
 //---------------------------------------------------------------------------
 void LogStrDialog::TcpOpt(int index, int opt)
 {
-    tcpOptDialog->Path = Paths[index][1];
-    tcpOptDialog->Opt = opt;
+    tcpOptDialog->path = Paths[index][1];
+    tcpOptDialog->options = opt;
     for (int i = 0; i < 10; i++) {
-        tcpOptDialog->History[i] = History[i];
+        tcpOptDialog->history[i] = History[i];
 	}
     tcpOptDialog->exec();
     if (tcpOptDialog->result() != QDialog::Accepted) return;
 
-    Paths[index][1] = tcpOptDialog->Path;
+    Paths[index][1] = tcpOptDialog->path;
     for (int i = 0; i < 10; i++) {
-        History[i] = tcpOptDialog->History[i];
+        History[i] = tcpOptDialog->history[i];
 	}
 }
 //---------------------------------------------------------------------------

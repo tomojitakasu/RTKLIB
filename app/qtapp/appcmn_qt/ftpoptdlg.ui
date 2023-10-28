@@ -18,10 +18,7 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="6" column="5">
-    <widget class="QPushButton" name="BtnCancel">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QPushButton" name="btnCancel">
      <property name="toolTip">
       <string/>
      </property>
@@ -31,10 +28,7 @@
     </widget>
    </item>
    <item row="2" column="4" colspan="2">
-    <widget class="QLineEdit" name="User">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QLineEdit" name="lEUser">
      <property name="toolTip">
       <string/>
      </property>
@@ -57,10 +51,7 @@
     </widget>
    </item>
    <item row="3" column="1">
-    <widget class="QComboBox" name="Offset">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QComboBox" name="cBOffset">
      <property name="toolTip">
       <string/>
      </property>
@@ -143,10 +134,7 @@
     </widget>
    </item>
    <item row="3" column="3">
-    <widget class="QLabel" name="LabelPasswd">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QLabel" name="lbPassword">
      <property name="toolTip">
       <string/>
      </property>
@@ -156,14 +144,8 @@
     </widget>
    </item>
    <item row="3" column="4" colspan="2">
-    <widget class="QLineEdit" name="Passwd">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QLineEdit" name="lEPassword">
      <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
       <string/>
      </property>
     </widget>
@@ -182,10 +164,7 @@
     </widget>
    </item>
    <item row="4" column="1">
-    <widget class="QComboBox" name="PathOffset">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QComboBox" name="cBPathOffset">
      <property name="toolTip">
       <string/>
      </property>
@@ -276,10 +255,7 @@
     </widget>
    </item>
    <item row="6" column="3" colspan="2">
-    <widget class="QPushButton" name="BtnOk">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QPushButton" name="btnOk">
      <property name="toolTip">
       <string/>
      </property>
@@ -295,10 +271,7 @@
     </widget>
    </item>
    <item row="2" column="3">
-    <widget class="QLabel" name="LabelUser">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QLabel" name="lbUser">
      <property name="toolTip">
       <string/>
      </property>
@@ -327,10 +300,7 @@
     </widget>
    </item>
    <item row="0" column="3">
-    <widget class="QPushButton" name="BtnKey">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QPushButton" name="btnKey">
      <property name="toolTip">
       <string/>
      </property>
@@ -343,10 +313,7 @@
     </widget>
    </item>
    <item row="1" column="0" colspan="6">
-    <widget class="QComboBox" name="Addr">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QComboBox" name="cBAddress">
      <property name="toolTip">
       <string/>
      </property>
@@ -369,10 +336,7 @@
     </widget>
    </item>
    <item row="2" column="1">
-    <widget class="QComboBox" name="Interval">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QComboBox" name="cBInterval">
      <property name="toolTip">
       <string/>
      </property>
@@ -430,7 +394,7 @@
     </widget>
    </item>
    <item row="6" column="1">
-    <widget class="QSpinBox" name="RetryInterval">
+    <widget class="QSpinBox" name="cBRetryInterval">
      <property name="suffix">
       <string> s</string>
      </property>
@@ -445,16 +409,16 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>BtnKey</tabstop>
-  <tabstop>Addr</tabstop>
-  <tabstop>Interval</tabstop>
-  <tabstop>User</tabstop>
-  <tabstop>Offset</tabstop>
-  <tabstop>Passwd</tabstop>
-  <tabstop>PathOffset</tabstop>
-  <tabstop>RetryInterval</tabstop>
-  <tabstop>BtnOk</tabstop>
-  <tabstop>BtnCancel</tabstop>
+  <tabstop>btnKey</tabstop>
+  <tabstop>cBAddress</tabstop>
+  <tabstop>cBInterval</tabstop>
+  <tabstop>lEUser</tabstop>
+  <tabstop>cBOffset</tabstop>
+  <tabstop>lEPassword</tabstop>
+  <tabstop>cBPathOffset</tabstop>
+  <tabstop>cBRetryInterval</tabstop>
+  <tabstop>btnOk</tabstop>
+  <tabstop>btnCancel</tabstop>
  </tabstops>
  <resources/>
  <connections/>

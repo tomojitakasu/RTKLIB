@@ -348,18 +348,18 @@ void PlotOptDialog::BtnTLESatFileClick()
 //---------------------------------------------------------------------------
 void PlotOptDialog::BtnRefPosClick()
 {
-    refDialog->RovPos[0] = RefPos1->value();
-    refDialog->RovPos[1] = RefPos2->value();
-    refDialog->RovPos[2] = RefPos3->value();
+    refDialog->RoverPosition[0] = RefPos1->value();
+    refDialog->RoverPosition[1] = RefPos2->value();
+    refDialog->RoverPosition[2] = RefPos3->value();
     refDialog->move(pos().x() + size().width() / 2 - refDialog->size().width() / 2,
             pos().y() + size().height() / 2 - refDialog->size().height() / 2);
-    refDialog->Opt=1;
+    refDialog->options=1;
     refDialog->exec();
 
     if (refDialog->result() != QDialog::Accepted) return;
-    RefPos1->setValue(refDialog->Pos[0]);
-    RefPos2->setValue(refDialog->Pos[1]);
-    RefPos3->setValue(refDialog->Pos[2]);
+    RefPos1->setValue(refDialog->position[0]);
+    RefPos2->setValue(refDialog->position[1]);
+    RefPos3->setValue(refDialog->position[2]);
 }
 //---------------------------------------------------------------------------
 void PlotOptDialog::AutoScaleChange()
@@ -402,7 +402,7 @@ void PlotOptDialog::BtnTLEViewClick()
     viewer = new TextViewer(this);
     viewer->setWindowTitle(file);
     viewer->show();
-    viewer->Read(file);
+    viewer->read(file);
 }
 //---------------------------------------------------------------------------
 void PlotOptDialog::BtnTLESatViewClick()
@@ -414,7 +414,7 @@ void PlotOptDialog::BtnTLESatViewClick()
     viewer = new TextViewer(this);
     viewer->setWindowTitle(file);
     viewer->show();
-    viewer->Read(file);
+    viewer->read(file);
 }
 //---------------------------------------------------------------------------
 void PlotOptDialog::ChkTimeSyncClick()

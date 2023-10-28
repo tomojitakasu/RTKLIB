@@ -12,19 +12,19 @@ class ConvDialog : public QDialog, private Ui::ConvDialog
     Q_OBJECT
 
 public slots:
-    void BtnOkClick();
-    void ConversionClick();
+    void btnOkClicked();
+    void conversionClicked();
 
 protected:
     void showEvent(QShowEvent*);
 
 private:
-    void UpdateEnable(void);
+    void updateEnable(void);
 
 public:
-    QString ConvMsg, ConvOpt, AntType, RcvType;
-    int ConvEna, ConvInp, ConvOut, StaId;
-    double AntPos[3], AntOff[3];
+    QString conversionMessage, conversionOptions, antennaType, receiverType;
+    int conversionEnabled, conversionInputFormat, conversionOutputFormat, stationId;
+    double antennaPos[3], antennaOffset[3];
 	
     explicit ConvDialog(QWidget *parent);
 };

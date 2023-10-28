@@ -20,15 +20,15 @@ SvrOptDialog::SvrOptDialog(QWidget *parent)
     dirModel->setRootPath("");
     dirModel->setFilter(QDir::AllDirs | QDir::Drives | QDir::NoDotAndDotDot);
     dirCompleter->setModel(dirModel);
-    LocalDir->setCompleter(dirCompleter);
+    lELocalDir->setCompleter(dirCompleter);
 
-    connect(BtnOk, SIGNAL(clicked(bool)), this, SLOT(BtnOkClick()));
-    connect(BtnCancel, SIGNAL(clicked(bool)), this, SLOT(reject()));
-    connect(BtnPos, SIGNAL(clicked(bool)), this, SLOT(BtnPosClick()));
-    connect(BtnLogFile, SIGNAL(clicked(bool)), this, SLOT(BtnLogFileClick()));
-    connect(NmeaReqT, SIGNAL(clicked(bool)), this, SLOT(NmeaReqTClick()));
-    connect(BtnLocalDir, SIGNAL(clicked(bool)), this, SLOT(BtnLocalDirClick()));
-    connect(StaInfoSel, SIGNAL(clicked(bool)), this, SLOT(StaInfoSelClick()));
+    connect(btnOk, SIGNAL(clicked(bool)), this, SLOT(btnOkClicked()));
+    connect(btnCancel, SIGNAL(clicked(bool)), this, SLOT(reject()));
+    connect(btnPosition, SIGNAL(clicked(bool)), this, SLOT(btnPosClicked()));
+    connect(btnLogFile, SIGNAL(clicked(bool)), this, SLOT(btnLogFileClicked()));
+    connect(cBNmeaReq, SIGNAL(clicked(bool)), this, SLOT(nmeaReqChecked()));
+    connect(btnLocalDir, SIGNAL(clicked(bool)), this, SLOT(btnLocalDirClicked()));
+    connect(cBStationId, SIGNAL(clicked(bool)), this, SLOT(stationIdChecked()));
 
 }
 //---------------------------------------------------------------------------
@@ -36,139 +36,139 @@ void SvrOptDialog::showEvent(QShowEvent *event)
 {
     if (event->spontaneous()) return;
 
-    DataTimeout->setValue(SvrOpt[0]);
-    ConnectInterval->setValue(SvrOpt[1]);
-    AvePeriodRate->setValue(SvrOpt[2]);
-    SvrBuffSize->setValue(SvrOpt[3]);
-    SvrCycle->setValue(SvrOpt[4]);
-    RelayMsg->setCurrentIndex(RelayBack);
-    ProgBarR->setValue(ProgBarRange);
-    NmeaCycle->setValue(SvrOpt[5]);
-    FileSwapMarginE->setValue(FileSwapMargin);
-    if (norm(AntPos, 3) > 0.0) {
+    sBDataTimeout->setValue(serverOptions[0]);
+    sBReconnectInterval->setValue(serverOptions[1]);
+    sBAveragePeriodRate->setValue(serverOptions[2]);
+    sBServerBufferSize->setValue(serverOptions[3]);
+    sBServerCycle->setValue(serverOptions[4]);
+    cBRelayMessage->setCurrentIndex(RelayBack);
+    sBProgressBar->setValue(progressBarRange);
+    sBNmeaCycle->setValue(serverOptions[5]);
+    sBFileSwapMargin->setValue(fileSwapMargin);
+    if (norm(antennaPos, 3) > 0.0) {
         double pos[3];
 
-        ecef2pos(AntPos, pos);
-        AntPos1->setValue(pos[0] * R2D);
-        AntPos2->setValue(pos[1] * R2D);
-        AntPos3->setValue(pos[2]);
+        ecef2pos(antennaPos, pos);
+        sBAntennaPos1->setValue(pos[0] * R2D);
+        sBAntennaPos2->setValue(pos[1] * R2D);
+        sBAntennaPos3->setValue(pos[2]);
     } else {
-        AntPos1->setValue(0);
-        AntPos2->setValue(0);
-        AntPos3->setValue(0);
+        sBAntennaPos1->setValue(0);
+        sBAntennaPos2->setValue(0);
+        sBAntennaPos3->setValue(0);
 	}
-    TraceLevelS->setCurrentIndex(TraceLevel);
-    NmeaReqT->setChecked(NmeaReq);
-    LocalDir->setText(LocalDirectory);
-    ProxyAddr->setText(ProxyAddress);
-    StationId->setValue(StaId);
-    StaInfoSel->setChecked(StaSel);
-    AntInfo->setText(AntType);
-    RcvInfo->setText(RcvType);
-    AntOff1->setValue(AntOff[0]);
-    AntOff2->setValue(AntOff[1]);
-    AntOff3->setValue(AntOff[2]);
-    LogFileF->setText(LogFile);
+    cBTraceLevel->setCurrentIndex(traceLevel);
+    cBNmeaReq->setChecked(NmeaReq);
+    lELocalDir->setText(localDirectory);
+    lEProxyAddress->setText(proxyAddress);
+    sBStationId->setValue(stationId);
+    cBStationId->setChecked(StaSel);
+    lEAntennaInfo->setText(antennaType);
+    lEReceiverInfo->setText(receiverType);
+    sBAntennaOffset1->setValue(antennaOffset[0]);
+    sBAntennaOffset2->setValue(antennaOffset[1]);
+    sBAntennaOffset3->setValue(antennaOffset[2]);
+    lELogFile->setText(logFile);
 
-	UpdateEnable();
+	updateEnable();
 }
 //---------------------------------------------------------------------------
-void SvrOptDialog::BtnOkClick()
+void SvrOptDialog::btnOkClicked()
 {
 	double pos[3];
 
-    SvrOpt[0] = DataTimeout->value();
-    SvrOpt[1] = ConnectInterval->value();
-    SvrOpt[2] = AvePeriodRate->value();
-    SvrOpt[3] = SvrBuffSize->value();
-    SvrOpt[4] = SvrCycle->value();
-    SvrOpt[5] = NmeaCycle->value();
-    FileSwapMargin = FileSwapMarginE->value();
-    RelayBack = RelayMsg->currentIndex();
-    ProgBarRange = ProgBarR->value();
-    pos[0] = AntPos1->value() * D2R;
-    pos[1] = AntPos2->value() * D2R;
-    pos[2] = AntPos3->value();
+    serverOptions[0] = sBDataTimeout->value();
+    serverOptions[1] = sBReconnectInterval->value();
+    serverOptions[2] = sBAveragePeriodRate->value();
+    serverOptions[3] = sBServerBufferSize->value();
+    serverOptions[4] = sBServerCycle->value();
+    serverOptions[5] = sBNmeaCycle->value();
+    fileSwapMargin = sBFileSwapMargin->value();
+    RelayBack = cBRelayMessage->currentIndex();
+    progressBarRange = sBProgressBar->value();
+    pos[0] = sBAntennaPos1->value() * D2R;
+    pos[1] = sBAntennaPos2->value() * D2R;
+    pos[2] = sBAntennaPos3->value();
 
     if (norm(pos, 3) > 0.0)
-        pos2ecef(pos, AntPos);
+        pos2ecef(pos, antennaPos);
     else
-        for (int i = 0; i < 3; i++) AntPos[i] = 0.0;
+        for (int i = 0; i < 3; i++) antennaPos[i] = 0.0;
 
-    TraceLevel = TraceLevelS->currentIndex();
-    NmeaReq = NmeaReqT->isChecked();
-    LocalDirectory = LocalDir->text();
-    ProxyAddress = ProxyAddr->text();
-    StaId = StationId->value();
-    StaSel = StaInfoSel->isChecked();
-    AntType = AntInfo->text();
-    RcvType = RcvInfo->text();
-    AntOff[0] = AntOff1->value();
-    AntOff[1] = AntOff2->value();
-    AntOff[2] = AntOff3->value();
+    traceLevel = cBTraceLevel->currentIndex();
+    NmeaReq = cBNmeaReq->isChecked();
+    localDirectory = lELocalDir->text();
+    proxyAddress = lEProxyAddress->text();
+    stationId = sBStationId->value();
+    StaSel = cBStationId->isChecked();
+    antennaType = lEAntennaInfo->text();
+    receiverType = lEReceiverInfo->text();
+    antennaOffset[0] = sBAntennaOffset1->value();
+    antennaOffset[1] = sBAntennaOffset2->value();
+    antennaOffset[2] = sBAntennaOffset3->value();
 
     accept();
 }
 //---------------------------------------------------------------------------
-void SvrOptDialog::BtnPosClick()
+void SvrOptDialog::btnPosClicked()
 {
     RefDialog *refDialog = new RefDialog(this);
 
-    refDialog->RovPos[0] = AntPos1->value();
-    refDialog->RovPos[1] = AntPos2->value();
-    refDialog->RovPos[2] = AntPos3->value();
-    refDialog->BtnLoad->setEnabled(true);
-    refDialog->StaPosFile = StaPosFile;
-    refDialog->Opt=1;
+    refDialog->RoverPosition[0] = sBAntennaPos1->value();
+    refDialog->RoverPosition[1] = sBAntennaPos2->value();
+    refDialog->RoverPosition[2] = sBAntennaPos3->value();
+    refDialog->btnLoad->setEnabled(true);
+    refDialog->stationPositionFile = stationPositionFile;
+    refDialog->options=1;
 
     refDialog->exec();
 
     if (refDialog->result() != QDialog::Accepted) return;
 
-    AntPos1->setValue(refDialog->Pos[0]);
-    AntPos2->setValue(refDialog->Pos[1]);
-    AntPos3->setValue(refDialog->Pos[2]);
-    StaPosFile = refDialog->StaPosFile;
-    LogFile=LogFileF->text();
+    sBAntennaPos1->setValue(refDialog->position[0]);
+    sBAntennaPos2->setValue(refDialog->position[1]);
+    sBAntennaPos3->setValue(refDialog->position[2]);
+    stationPositionFile = refDialog->stationPositionFile;
+    logFile=lELogFile->text();
 
     delete refDialog;
 }
 //---------------------------------------------------------------------------
-void SvrOptDialog::BtnLocalDirClick()
+void SvrOptDialog::btnLocalDirClicked()
 {
-    QString dir = LocalDir->text();
+    QString dir = lELocalDir->text();
 
     dir = QFileDialog::getExistingDirectory(this, tr("Local Directory"), dir);
-    LocalDir->setText(dir);
+    lELocalDir->setText(dir);
 }
 //---------------------------------------------------------------------------
-void SvrOptDialog::UpdateEnable(void)
+void SvrOptDialog::updateEnable(void)
 {
-    NmeaCycle->setEnabled(NmeaReqT->isChecked());
-    StationId->setEnabled(StaInfoSel->isChecked());
-    AntPos1->setEnabled(StaInfoSel->isChecked() || NmeaReqT->isChecked());
-    AntPos2->setEnabled(StaInfoSel->isChecked() || NmeaReqT->isChecked());
-    AntPos3->setEnabled(StaInfoSel->isChecked() || NmeaReqT->isChecked());
-    BtnPos->setEnabled(StaInfoSel->isChecked() || NmeaReqT->isChecked());
-    AntOff1->setEnabled(StaInfoSel->isChecked());
-    AntOff2->setEnabled(StaInfoSel->isChecked());
-    AntOff3->setEnabled(StaInfoSel->isChecked());
-    AntInfo->setEnabled(StaInfoSel->isChecked());
-    RcvInfo->setEnabled(StaInfoSel->isChecked());
+    sBNmeaCycle->setEnabled(cBNmeaReq->isChecked());
+    cBStationId->setEnabled(cBStationId->isChecked());
+    sBAntennaPos1->setEnabled(cBStationId->isChecked() || cBNmeaReq->isChecked());
+    sBAntennaPos2->setEnabled(cBStationId->isChecked() || cBNmeaReq->isChecked());
+    sBAntennaPos3->setEnabled(cBStationId->isChecked() || cBNmeaReq->isChecked());
+    btnPosition->setEnabled(cBStationId->isChecked() || cBNmeaReq->isChecked());
+    sBAntennaOffset1->setEnabled(cBStationId->isChecked());
+    sBAntennaOffset2->setEnabled(cBStationId->isChecked());
+    sBAntennaOffset3->setEnabled(cBStationId->isChecked());
+    lEAntennaInfo->setEnabled(cBStationId->isChecked());
+    lEReceiverInfo->setEnabled(cBStationId->isChecked());
 }
 //---------------------------------------------------------------------------
-void SvrOptDialog::NmeaReqTClick()
+void SvrOptDialog::nmeaReqChecked()
 {
-	UpdateEnable();
+	updateEnable();
 }
 //---------------------------------------------------------------------------
-void SvrOptDialog::StaInfoSelClick()
+void SvrOptDialog::stationIdChecked()
 {
-	UpdateEnable();
+	updateEnable();
 }
 //---------------------------------------------------------------------------
-void SvrOptDialog::BtnLogFileClick()
+void SvrOptDialog::btnLogFileClicked()
 {
-    LogFileF->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Log File"),QString(),tr("All (*.*)"))));
+    lELogFile->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Log File"),QString(),tr("All (*.*)"))));
 }
 //---------------------------------------------------------------------------

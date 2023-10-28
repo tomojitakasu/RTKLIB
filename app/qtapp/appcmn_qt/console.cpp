@@ -15,78 +15,78 @@ Console::Console(QWidget *parent)
 {
     setupUi(this);
 
-    ConBuff.reserve(MAXLINE);
-    ConBuff.append("");
+    consoleBuffer.reserve(MAXLINE);
+    consoleBuffer.append("");
 
-    BtnHex->setChecked(true);
-    BtnAsc->setChecked(false);
+    btnHex->setChecked(true);
+    btnAsc->setChecked(false);
 
-    connect(BtnClose,SIGNAL(clicked(bool)),this,SLOT(BtnCloseClick()));
-    connect(BtnClear,SIGNAL(clicked(bool)),this,SLOT(BtnClearClick()));
-    connect(BtnAsc,SIGNAL(clicked(bool)),this,SLOT(BtnAscClick()));
-    connect(BtnDown,SIGNAL(clicked(bool)),this,SLOT(BtnDownClick()));
-    connect(BtnHex,SIGNAL(clicked(bool)),this,SLOT(BtnHexClick()));
+    connect(btnClose,SIGNAL(clicked(bool)),this,SLOT(btnCloseClicked()));
+    connect(btnClear,SIGNAL(clicked(bool)),this,SLOT(btnClearClicked()));
+    connect(btnAsc,SIGNAL(clicked(bool)),this,SLOT(btnAsciiClicked()));
+    connect(btnDown,SIGNAL(clicked(bool)),this,SLOT(btnDownClicked()));
+    connect(btnHex,SIGNAL(clicked(bool)),this,SLOT(btnHexClicked()));
 }
 //---------------------------------------------------------------------------
-void Console::BtnCloseClick()
+void Console::btnCloseClicked()
 {
     close();
 }
 //---------------------------------------------------------------------------
-void Console::BtnAscClick()
+void Console::btnAsciiClicked()
 {
-    BtnHex->setChecked(!BtnAsc->isChecked());
+    btnHex->setChecked(!btnAsc->isChecked());
 }
 //---------------------------------------------------------------------------
-void Console::BtnHexClick()
+void Console::btnHexClicked()
 {
-    BtnAsc->setChecked(!BtnHex->isChecked());
+    btnAsc->setChecked(!btnHex->isChecked());
 }
 //---------------------------------------------------------------------------
-void Console::BtnClearClick()
+void Console::btnClearClicked()
 {
-    ConBuff.clear();
-    ConBuff.reserve(MAXLINE);
-    ConBuff.append("");
+    consoleBuffer.clear();
+    consoleBuffer.reserve(MAXLINE);
+    consoleBuffer.append("");
     textEdit->setPlainText("");
 }
 //---------------------------------------------------------------------------
-void Console::BtnDownClick()
+void Console::btnDownClicked()
 {
     textEdit->verticalScrollBar()->setValue(textEdit->verticalScrollBar()->maximum());
 }
 //---------------------------------------------------------------------------
-void Console::AddMsg(uint8_t *msg, int n)
+void Console::addMessage(uint8_t *msg, int n)
 {
     char buff[MAXLEN+16],*p=buff;
-    int mode=BtnAsc->isChecked();
+    int mode=btnAsc->isChecked();
 
     if (n<=0) return;
 
-    if (BtnStop->isChecked()) return;
+    if (btnStop->isChecked()) return;
 
-    p+=sprintf(p,"%s",qPrintable(ConBuff.last()));
+    p+=sprintf(p,"%s",qPrintable(consoleBuffer.last()));
 
     for (int i=0;i<n;i++) {
             if (mode) {
                     if (msg[i]=='\r') continue;
-                    p+=sprintf(p,"%c",msg[i]=='\n'||isprint(msg[i])?msg[i]:'.');
+                    p+=sprintf(p, "%c", msg[i]=='\n'||isprint(msg[i])?msg[i]:'.');
             }
             else {
-                    p+=sprintf(p,"%s%02X",(p-buff)%17==16?" ":"",msg[i]);
+                    p+=sprintf(p, "%s%02X", (p-buff)%17==16?" ":"", msg[i]);
                     if (p-buff>=67) p+=sprintf(p,"\n");
             }
             if (p-buff>=MAXLEN) p+=sprintf(p,"\n");
 
             if (*(p-1)=='\n') {
-                    ConBuff.last()=buff;
-                    ConBuff.append("");
+                    consoleBuffer.last()=buff;
+                    consoleBuffer.append("");
                     *(p=buff)=0;
-                    if (ConBuff.count()>=MAXLINE) ConBuff.removeFirst();
+                    if (consoleBuffer.count()>=MAXLINE) consoleBuffer.removeFirst();
             }
     }
-    ConBuff.last()=buff;
+    consoleBuffer.last()=buff;
 
-    textEdit->setPlainText(ConBuff.join(QString()));
+    textEdit->setPlainText(consoleBuffer.join(QString()));
 }
 //---------------------------------------------------------------------------

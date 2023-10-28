@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>264</width>
-    <height>147</height>
+    <height>164</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -29,7 +29,7 @@
       <enum>Qt::LeftToRight</enum>
      </property>
      <property name="text">
-      <string>&amp;Normal APs (32 bit without MKL)</string>
+      <string>&amp;Normal APs (without MKL)</string>
      </property>
      <property name="checked">
       <bool>false</bool>

@@ -19,33 +19,35 @@ void MntpOptDialog::showEvent(QShowEvent* event)
 {
     if (event->spontaneous()) return;
     QLineEdit *edit[]={
-        SrcTbl1,SrcTbl2,SrcTbl3,NULL,SrcTbl5,SrcTbl6,SrcTbl7,SrcTbl8,SrcTbl9,
-        NULL,NULL,SrcTbl12,SrcTbl13,NULL,NULL,SrcTbl16
-	};
+        lESourceTable1, lESourceTable2, lESourceTable3, NULL, lESourceTable5,
+        lESourceTable6, lESourceTable7, lESourceTable8, lESourceTable9,
+        NULL, NULL, lESourceTable12, lESourceTable13, NULL, NULL, lESourceTable16
+    };
     QComboBox *box[]={
-        NULL,NULL,NULL,SrcTbl4,NULL,NULL,NULL,NULL,NULL,SrcTbl10,SrcTbl11,NULL,
-		NULL,SrcTbl14,SrcTbl15,NULL
-	};
+        NULL, NULL, NULL, lESourceTable4, NULL, NULL, NULL, NULL, NULL, lESourceTable10,
+        lESourceTable11, NULL, NULL, lESourceTable14, lESourceTable15, NULL
+    };
     
-    MntPntE->setText(MntPnt);
+    lEMountPoint->setText(mountPoint);
 
     QStringList tokens=MntpStr.split(";");
-	
-	for (int i=0;i<16;i++) {
+
+    for (int i=0;i<16;i++) {
         if (edit[i]==NULL) edit[i]->setText(""); else box[i]->setCurrentIndex(0);
-	}
+    }
 
     for (int i=0;i<tokens.size()&& i<16;i++) {
         if (edit[i]) edit[i]->setText(tokens.at(i)); else box[i]->setCurrentText(tokens.at(i));
-	}
+    }
 }
 //---------------------------------------------------------------------------
-void MntpOptDialog::BtnOkClick()
+void MntpOptDialog::btnOkClicked()
 {
-    MntPnt=MntPntE->text();
-    MntpStr=SrcTbl1->text()+";"+SrcTbl2->text()+";"+SrcTbl3->text()+";"+SrcTbl4->currentText()+";"+
-            SrcTbl5->text()+";"+SrcTbl6->text()+";"+SrcTbl7->text()+";"+SrcTbl8->text()+";"+
-            SrcTbl9->text()+";"+SrcTbl10->currentText()+";"+SrcTbl11->currentText()+";"+SrcTbl12->text()+";"+
-            SrcTbl13->text()+";"+SrcTbl14->currentText()+";"+SrcTbl15->currentText()+";"+SrcTbl16->text();
+    mountPoint = lEMountPoint->text();
+    MntpStr = lESourceTable1->text()+";"+lESourceTable2->text()+";"+lESourceTable3->text()+";"+lESourceTable4->currentText()+";"+
+              lESourceTable5->text()+";"+lESourceTable6->text()+";"+lESourceTable7->text()+";"+lESourceTable8->text()+";"+
+              lESourceTable9->text()+";"+lESourceTable10->currentText()+";"+lESourceTable11->currentText()+";"+lESourceTable12->text()+";"+
+              lESourceTable13->text()+";"+lESourceTable14->currentText()+";"+lESourceTable15->currentText()+";"+lESourceTable16->text();
 }
 //---------------------------------------------------------------------------
+

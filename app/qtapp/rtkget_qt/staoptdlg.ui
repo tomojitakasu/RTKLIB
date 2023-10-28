@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>318</width>
-    <height>300</height>
+    <width>356</width>
+    <height>242</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,33 +17,18 @@
    <string/>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <property name="leftMargin">
-    <number>9</number>
-   </property>
-   <property name="topMargin">
-    <number>9</number>
-   </property>
    <item>
-    <widget class="QListWidget" name="StaList"/>
+    <widget class="QListWidget" name="stationListWidget"/>
    </item>
    <item>
-    <widget class="QWidget" name="Panel1" native="true">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QWidget" name="panel1" native="true">
      <property name="toolTip">
       <string/>
-     </property>
-     <property name="layoutDirection">
-      <enum>Qt::LeftToRight</enum>
      </property>
      <property name="text" stdset="0">
       <string/>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout">
-      <property name="spacing">
-       <number>0</number>
-      </property>
       <property name="leftMargin">
        <number>0</number>
       </property>
@@ -57,10 +42,7 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QPushButton" name="BtnLoad">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnLoad">
         <property name="toolTip">
          <string/>
         </property>
@@ -70,10 +52,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnSave">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnSave">
         <property name="toolTip">
          <string/>
         </property>
@@ -83,10 +62,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnOk">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnOk">
         <property name="toolTip">
          <string/>
         </property>
@@ -102,10 +78,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnCancel">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnCancel">
         <property name="toolTip">
          <string/>
         </property>

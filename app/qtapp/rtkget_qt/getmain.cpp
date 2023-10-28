@@ -77,11 +77,11 @@ extern "C" {
             buff2.append(str.right(66));
             if (buff2.endsWith('_')) buff2.remove(buff2.length() - 1, 1);
             buff2.append(p + 5);
-            QMetaObject::invokeMethod(mainForm->MsgLabel3, "setText", Qt::QueuedConnection, Q_ARG(QString, QString(buff2)));
+            QMetaObject::invokeMethod(mainForm->messageLabel3, "setText", Qt::QueuedConnection, Q_ARG(QString, QString(buff2)));
         } else if ((p = strstr(buff, "->"))) {
             *p = '\0';
-            QMetaObject::invokeMethod(mainForm->MsgLabel1, "setText", Qt::QueuedConnection, Q_ARG(QString, QString(buff)));
-            QMetaObject::invokeMethod(mainForm->MsgLabel2, "setText", Qt::QueuedConnection, Q_ARG(QString, QString(p + 2)));
+            QMetaObject::invokeMethod(mainForm->messageLabel1, "setText", Qt::QueuedConnection, Q_ARG(QString, QString(buff)));
+            QMetaObject::invokeMethod(mainForm->messageLabel2, "setText", Qt::QueuedConnection, Q_ARG(QString, QString(p + 2)));
         }
         return abortf;
     }
@@ -163,39 +163,39 @@ MainForm::MainForm(QWidget *parent)
     dirModel->setRootPath("");
     dirModel->setFilter(QDir::AllDirs | QDir::Drives | QDir::NoDotAndDotDot);
     dirCompleter->setModel(dirModel);
-    Dir->setCompleter(dirCompleter);
+    cBDirectory->setCompleter(dirCompleter);
 
-    connect(BtnAll, SIGNAL(clicked(bool)), this, SLOT(BtnAllClick()));
-    connect(BtnDir, SIGNAL(clicked(bool)), this, SLOT(BtnDirClick()));
-    connect(BtnDownload, SIGNAL(clicked(bool)), this, SLOT(BtnDownloadClick()));
-    connect(BtnExit, SIGNAL(clicked(bool)), this, SLOT(BtnExitClick()));
-    connect(BtnFile, SIGNAL(clicked(bool)), this, SLOT(BtnFileClick()));
-    connect(BtnHelp, SIGNAL(clicked(bool)), this, SLOT(BtnHelpClick()));
-    connect(BtnKeyword, SIGNAL(clicked(bool)), this, SLOT(BtnKeywordClick()));
-    connect(BtnLog, SIGNAL(clicked(bool)), this, SLOT(BtnLogClick()));
-    connect(BtnOpts, SIGNAL(clicked(bool)), this, SLOT(BtnOptsClick()));
-    connect(BtnStas, SIGNAL(clicked(bool)), this, SLOT(BtnStasClick()));
-    connect(BtnTest, SIGNAL(clicked(bool)), this, SLOT(BtnTestClick()));
-    connect(BtnTray, SIGNAL(clicked(bool)), this, SLOT(BtnTrayClick()));
-    connect(DataType, SIGNAL(currentIndexChanged(int)), this, SLOT(DataTypeChange()));
-    connect(SubType, SIGNAL(currentIndexChanged(int)), this, SLOT(DataTypeChange()));
-    connect(Dir, SIGNAL(currentIndexChanged(int)), this, SLOT(DirChange()));
-    connect(LocalDir, SIGNAL(clicked(bool)), this, SLOT(LocalDirClick()));
-    connect(HidePasswd, SIGNAL(clicked(bool)), this, SLOT(HidePasswdClick()));
-    connect(DataList, SIGNAL(clicked(QModelIndex)), this, SLOT(DataListClick()));
-    connect(StaList, SIGNAL(clicked(QModelIndex)), this, SLOT(StaListClick()));
-    connect(&TrayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(TrayIconActivated(QSystemTrayIcon::ActivationReason)));
+    connect(btnAll, SIGNAL(clicked(bool)), this, SLOT(btnAllClicked()));
+    connect(btnDir, SIGNAL(clicked(bool)), this, SLOT(btnDirClicked()));
+    connect(btnDownload, SIGNAL(clicked(bool)), this, SLOT(btnDownloadClicked()));
+    connect(btnExit, SIGNAL(clicked(bool)), this, SLOT(btnExitClicked()));
+    connect(btnFile, SIGNAL(clicked(bool)), this, SLOT(btnFileClicked()));
+    connect(btnHelp, SIGNAL(clicked(bool)), this, SLOT(btnHelpClicked()));
+    connect(btnKeywords, SIGNAL(clicked(bool)), this, SLOT(btnKeywordClicked()));
+    connect(btnLog, SIGNAL(clicked(bool)), this, SLOT(btnLogClicked()));
+    connect(btnOpts, SIGNAL(clicked(bool)), this, SLOT(btnOptionsClicked()));
+    connect(btnStations, SIGNAL(clicked(bool)), this, SLOT(btnStationsClicked()));
+    connect(btnTest, SIGNAL(clicked(bool)), this, SLOT(btnTestClicked()));
+    connect(btnTray, SIGNAL(clicked(bool)), this, SLOT(btnTrayClicked()));
+    connect(cBDataType, SIGNAL(currentIndexChanged(int)), this, SLOT(dataTypeChanged()));
+    connect(cBSubType, SIGNAL(currentIndexChanged(int)), this, SLOT(dataTypeChanged()));
+    connect(cBDirectory, SIGNAL(currentIndexChanged(int)), this, SLOT(directoryChanged()));
+    connect(cBLocalDirectory, SIGNAL(clicked(bool)), this, SLOT(localDirClicked()));
+    connect(cBHidePasswd, SIGNAL(clicked(bool)), this, SLOT(hidePasswordClicked()));
+    connect(dataListWidget, SIGNAL(clicked(QModelIndex)), this, SLOT(dataListClicked()));
+    connect(stationListWidget, SIGNAL(clicked(QModelIndex)), this, SLOT(StationListClicked()));
+    connect(&trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
     connect(&Timer, SIGNAL(timeout()), this, SLOT(TimerTimer()));
-    connect(BtnTime1, SIGNAL(clicked(bool)), this, SLOT(BtnTime1Click()));
-    connect(BtnTime2, SIGNAL(clicked(bool)), this, SLOT(BtnTime2Click()));
-    connect(TimeInt, SIGNAL(currentIndexChanged(int)), this, SLOT(UpdateEnable()));
+    connect(btnTimeStart, SIGNAL(clicked(bool)), this, SLOT(btnTimeStartClicked()));
+    connect(btnTimeStop, SIGNAL(clicked(bool)), this, SLOT(btnTimeStopClicked()));
+    connect(cBTimeInterval, SIGNAL(currentIndexChanged(int)), this, SLOT(updateEnable()));
 
     for (int i = 0; i < 8; i++)
-        Images[i].load(QString(":/buttons/wait%1.bmp").arg(i + 1));
+        images[i].load(QString(":/buttons/wait%1.bmp").arg(i + 1));
 
-    TimerCnt = 0;
+    timerCnt = 0;
 
-    TrayIcon.setIcon(QPixmap(":/icons/rtk8.bmp"));
+    trayIcon.setIcon(QPixmap(":/icons/rtk8.bmp"));
     setWindowIcon(QIcon(":/icons/rtk8.bmp"));
 
     FormCreate();
@@ -204,10 +204,10 @@ MainForm::MainForm(QWidget *parent)
 //---------------------------------------------------------------------------
 void MainForm::FormCreate()
 {
-    QString file = QApplication::applicationFilePath();
-    QFileInfo fi(file);
+    QString appFilename = QApplication::applicationFilePath();
+    QFileInfo fi(appFilename);
 
-    IniFile = fi.absolutePath() + "/" + fi.baseName() + ".ini";
+    iniFilename = fi.absolutePath() + "/" + fi.baseName() + ".ini";
 
     setWindowTitle(QString("%1 v.%2").arg(PRGNAME).arg(VER_RTKLIB));
 
@@ -229,88 +229,88 @@ void MainForm::FormCreate()
     parser.process(*QApplication::instance());
 
     if (parser.isSet(iniFileOption))
-        IniFile = parser.value(iniFileOption);
+        iniFilename = parser.value(iniFileOption);
 
     if (parser.isSet(titleOption))
         setWindowTitle(parser.value(titleOption));
 
-    LoadOpt();
-    LoadUrl(UrlFile);
-    UpdateType();
-    UpdateEnable();
+    loadOptions();
+    loadUrl(urlFile);
+    updateType();
+    updateEnable();
 
-    if (TraceLevel > 0) {
+    if (traceLevel > 0) {
         traceopen(TRACE_FILE);
-        tracelevel(TraceLevel);
+        tracelevel(traceLevel);
     }
 }
 //---------------------------------------------------------------------------
 void MainForm::closeEvent(QCloseEvent *)
 {
     traceclose();
-    SaveOpt();
+    saveOptions();
 }
 //---------------------------------------------------------------------------
-void MainForm::BtnFileClick()
+void MainForm::btnFileClicked()
 {
     QString str;
     gtime_t ts, te;
     double ti;
     char path[1024] = ".";
 
-    str = LocalDir->isChecked() ? Dir->currentText() : MsgLabel2->text();
-    GetTime(&ts, &te, &ti);
+    str = cBLocalDirectory->isChecked() ? cBDirectory->currentText() : messageLabel2->text();
+    getTime(&ts, &te, &ti);
     if (str != "") reppath(qPrintable(str), path, ts, "", "");
 
     QDesktopServices::openUrl(QUrl::fromLocalFile(path));
 }
 //---------------------------------------------------------------------------
-void MainForm::BtnLogClick()
+void MainForm::btnLogClicked()
 {
-    if (LogFile == "") return;
+    if (logFile == "") return;
     viewer = new TextViewer(this);
-    viewer->setWindowTitle(LogFile);
-    viewer->Read(LogFile);
+    viewer->setWindowTitle(logFile);
+    viewer->read(logFile);
     viewer->exec();
 }
 //---------------------------------------------------------------------------
-void MainForm::BtnTestClick()
+void MainForm::btnTestClicked()
 {
-    if (BtnTest->text().remove('&') == tr("Abort")) {
-        BtnTest->setEnabled(false);
+    if (btnTest->text().remove('&') == tr("Abort")) {
+        btnTest->setEnabled(false);
         abortf = 1;
         return;
     }
 
     thread = new DownloadThread(this, TEST_FILE, false, true);
-    GetTime(&thread->ts, &thread->te, &thread->ti);
-    thread->nurl = SelectUrl(thread->urls);
+    getTime(&thread->ts, &thread->te, &thread->ti);
+    thread->nurl = selectUrl(thread->urls);
     if (timediff(thread->ts, thread->te) > 0.0 || thread->nurl <= 0) {
-        MsgLabel3->setText(tr("no local data"));
+        messageLabel3->setText(tr("no local data"));
         return;
     }
 
-    thread->nsta = SelectSta(thread->stas);
+    thread->nsta = selectStation(thread->stas);
 
-    if (LocalDir->isChecked())
-        strcpy(thread->dir, qPrintable(Dir->currentText()));
+    if (cBLocalDirectory->isChecked())
+        strcpy(thread->dir, qPrintable(cBDirectory->currentText()));
 
-    PanelEnable(0);
+    panelEnable(0);
 
-    BtnTest->setEnabled(true);
-    BtnTest->setText(tr("Abort"));
-    MsgLabel1->setStyleSheet("QLabel { color: gray;}");
-    MsgLabel3->setText("");
+    btnTest->setEnabled(true);
+    btnTest->setText(tr("Abort"));
+    messageLabel1->setStyleSheet("QLabel { color: gray;}");
+    messageLabel3->setText("");
     abortf = 0;
 
-    connect(thread, SIGNAL(finished()), this, SLOT(DownloadFinished()));
+    connect(thread, SIGNAL(finished()), this, SLOT(downloadFinished()));
 
     thread->start();
 }
 //---------------------------------------------------------------------------
-void MainForm::BtnOptsClick()
+void MainForm::btnOptionsClicked()
 {
-    QString urlfile = UrlFile;
+    QString urlfile = urlFile;
 
     DownOptDialog downOptDialog(this);
 
@@ -318,27 +318,27 @@ void MainForm::BtnOptsClick()
 
     if (downOptDialog.result() != QDialog::Accepted) return;
 
-    if (UrlFile == urlfile) return;
+    if (urlFile == urlfile) return;
 
-    LoadUrl(UrlFile);
-    UpdateType();
+    loadUrl(urlFile);
+    updateType();
 }
 //---------------------------------------------------------------------------
-void MainForm::BtnDownloadClick()
+void MainForm::btnDownloadClicked()
 {
     QString str;
     int i;
 
-    if (BtnDownload->text().remove('&') == tr("Abort")) {
-        BtnDownload->setEnabled(false);
+    if (btnDownload->text().remove('&') == tr("Abort")) {
+        btnDownload->setEnabled(false);
         abortf = 1;
         return;
     }
 
-    thread = new DownloadThread(this, LogFile, LogAppend, false);
-    GetTime(&thread->ts, &thread->te, &thread->ti);
+    thread = new DownloadThread(this, logFile, logAppend, false);
+    getTime(&thread->ts, &thread->te, &thread->ti);
 
-    str = Number->text();
+    str = sBNumber->text();
     QStringList tokens = str.split('-');
     if (tokens.size() == 2) {
         thread->seqnos = tokens.at(0).toInt();
@@ -349,136 +349,136 @@ void MainForm::BtnDownloadClick()
         return;
     }
 
-    thread->nurl = SelectUrl(thread->urls);
+    thread->nurl = selectUrl(thread->urls);
     if (timediff(thread->ts, thread->te) > 0.0 || thread->nurl <= 0) {
-        MsgLabel3->setText(tr("no download data"));
+        messageLabel3->setText(tr("no download data"));
         return;
     }
     for (i = 0; i < MAX_STA; i++) thread->stas[i] = new char [16];
 
-    thread->nsta = SelectSta(thread->stas);
-    thread->usr = FtpLogin->text();
-    thread->pwd = FtpPasswd->text();
-    thread->proxy = ProxyAddr;
+    thread->nsta = selectStation(thread->stas);
+    thread->usr = lEFtpLogin->text();
+    thread->pwd = lEFtpPasswd->text();
+    thread->proxy = proxyAddr;
 
-    if (!SkipExist->isChecked()) thread->opts |= DLOPT_FORCE;
-    if (!UnZip->isChecked()) thread->opts |= DLOPT_KEEPCMP;
-    if (HoldErr) thread->opts |= DLOPT_HOLDERR;
-    if (HoldList) thread->opts |= DLOPT_HOLDLST;
+    if (!cBSkipExist->isChecked()) thread->opts |= DLOPT_FORCE;
+    if (!cBUnzip->isChecked()) thread->opts |= DLOPT_KEEPCMP;
+    if (holdErr) thread->opts |= DLOPT_HOLDERR;
+    if (holdList) thread->opts |= DLOPT_HOLDLST;
 
-    if (LocalDir->isChecked())
-        strcpy(thread->dir, qPrintable(Dir->currentText()));
+    if (cBLocalDirectory->isChecked())
+        strcpy(thread->dir, qPrintable(cBDirectory->currentText()));
     abortf = 0;
-    PanelEnable(0);
-    BtnDownload->setEnabled(true);
-    BtnDownload->setText(tr("Abort"));
-    MsgLabel3->setText("");
+    panelEnable(0);
+    btnDownload->setEnabled(true);
+    btnDownload->setText(tr("Abort"));
+    messageLabel3->setText("");
 
-    connect(thread, SIGNAL(finished()), this, SLOT(DownloadFinished()));
+    connect(thread, SIGNAL(finished()), this, SLOT(downloadFinished()));
 
     Timer.start(200);
 
     thread->start();
 }
 //---------------------------------------------------------------------------
-void MainForm::DownloadFinished()
+void MainForm::downloadFinished()
 {
-    PanelEnable(1);
-    UpdateEnable();
+    panelEnable(1);
+    updateEnable();
     Timer.stop();
 
-    if (Dir->isEnabled()) AddHist(Dir);
+    if (cBDirectory->isEnabled()) addHistory(cBDirectory);
 
     if (thread->test) {
-        BtnTest->setText(tr("&Test..."));
-        MsgLabel1->setStyleSheet("QLabel { color: bloack;}");
-        MsgLabel3->setText("");
+        btnTest->setText(tr("&Test..."));
+        messageLabel1->setStyleSheet("QLabel { color: bloack;}");
+        messageLabel3->setText("");
 
         TextViewer *viewer;
 
         viewer = new TextViewer(this);
-        viewer->Option = 2;
-        viewer->Read(TEST_FILE);
+        viewer->option = 2;
+        viewer->read(TEST_FILE);
         viewer->setWindowTitle(tr("Local File Test"));
         viewer->exec();
 
         remove(TEST_FILE);
     } else {
-        BtnDownload->setText(tr("&Download"));
-        MsgLabel3->setText(thread->msg);
+        btnDownload->setText(tr("&Download"));
+        messageLabel3->setText(thread->msg);
     }
 
-    UpdateMsg();
-    UpdateEnable();
+    updateMessage();
+    updateEnable();
 
     for (int i = 0; i < MAX_STA; i++) delete[] thread->stas[i];
     delete thread;
 }
 //---------------------------------------------------------------------------
-void MainForm::BtnExitClick()
+void MainForm::btnExitClicked()
 {
     close();
 }
 //---------------------------------------------------------------------------
-void MainForm::BtnStasClick()
+void MainForm::btnStationsClicked()
 {
     StaListDialog staListDialog(this);
 
     staListDialog.exec();
 
     if (staListDialog.result() != QDialog::Accepted) return;
-    UpdateStaList();
-    BtnAll->setText("A");
+    updateStationList();
+    btnAll->setText("A");
 }
 //---------------------------------------------------------------------------
-void MainForm::BtnDirClick()
+void MainForm::btnDirClicked()
 {
-    QString dir = Dir->currentText();
+    QString dir = cBDirectory->currentText();
 
     dir = QDir::toNativeSeparators(QFileDialog::getExistingDirectory(this, tr("Output Directory"), dir));
-    Dir->insertItem(0, dir);
-    Dir->setCurrentIndex(0);
+    cBDirectory->insertItem(0, dir);
+    cBDirectory->setCurrentIndex(0);
 }
 //---------------------------------------------------------------------------
-void MainForm::DirChange()
+void MainForm::directoryChanged()
 {
-    UpdateMsg();
+    updateMessage();
 }
 //---------------------------------------------------------------------------
-void MainForm::BtnTime1Click()
+void MainForm::btnTimeStartClicked()
 {
-    QDateTime time(dateTime1->dateTime());
+    QDateTime time(dateTimeStart->dateTime());
     gtime_t t1;
 
     t1.time = static_cast<time_t>(time.toSecsSinceEpoch()); t1.sec = time.time().msec() / 1000;
-    timeDialog->Time = t1;
+    timeDialog->time = t1;
     timeDialog->exec();
 }
 //---------------------------------------------------------------------------
-void MainForm::BtnTime2Click()
+void MainForm::btnTimeStopClicked()
 {
-    QDateTime time(dateTime2->dateTime());
+    QDateTime time(dateTimeStop->dateTime());
     gtime_t t2;
 
     t2.time = static_cast<time_t>(time.toSecsSinceEpoch()); t2.sec = time.time().msec() / 1000;
-    timeDialog->Time = t2;
+    timeDialog->time = t2;
     timeDialog->exec();
 }
 //---------------------------------------------------------------------------
-void MainForm::BtnAllClick()
+void MainForm::btnAllClicked()
 {
     int i, n = 0;
 
-    for (i = StaList->count() - 1; i >= 0; i--) {
-        StaList->item(i)->setSelected(BtnAll->text() == "A");
-        if (StaList->item(i)->isSelected()) n++;
+    for (i = stationListWidget->count() - 1; i >= 0; i--) {
+        stationListWidget->item(i)->setSelected(btnAll->text() == "A");
+        if (stationListWidget->item(i)->isSelected()) n++;
     }
 
-    BtnAll->setText(BtnAll->text() == "A" ? "C" : "A");
-    LabelSta->setText(QString(tr("Stations (%1)")).arg(n));
+    btnAll->setText(btnAll->text() == "A" ? "C" : "A");
+    lbStation->setText(QString(tr("Stations (%1)")).arg(n));
 }
 //---------------------------------------------------------------------------
-void MainForm::BtnKeywordClick()
+void MainForm::btnKeywordClicked()
 {
     KeyDialog keyDialog(this);
 
@@ -486,13 +486,13 @@ void MainForm::BtnKeywordClick()
     keyDialog.exec();
 }
 //---------------------------------------------------------------------------
-void MainForm::BtnHelpClick()
+void MainForm::btnHelpClicked()
 {
     AboutDialog aboutDialog(this);
     QString prog = PRGNAME;
 
-    aboutDialog.About = prog;
-    aboutDialog.IconIndex = 8;
+    aboutDialog.aboutString = prog;
+    aboutDialog.iconIndex = 8;
     aboutDialog.exec();
 }
 //---------------------------------------------------------------------------
@@ -504,231 +504,231 @@ void MainForm::dragEnterEvent(QDragEnterEvent *event)
 //---------------------------------------------------------------------------
 void MainForm::dropEvent(QDropEvent *event)
 {
-    if (StaList == childAt(event->pos()))
-        LoadSta(event->mimeData()->text());
+    if (stationListWidget == childAt(event->position().toPoint()))
+        loadStation(event->mimeData()->text());
     event->acceptProposedAction();
 }
 //---------------------------------------------------------------------------
-void MainForm::BtnTrayClick()
+void MainForm::btnTrayClicked()
 {
     setVisible(false);
-    TrayIcon.setVisible(true);
+    trayIcon.setVisible(true);
 }
 //---------------------------------------------------------------------------
-void MainForm::TrayIconActivated(QSystemTrayIcon::ActivationReason reason)
+void MainForm::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
 {
     if (reason != QSystemTrayIcon::DoubleClick &&
             reason != QSystemTrayIcon::Trigger) return;
 
     setVisible(true);
-    TrayIcon.setVisible(false);
+    trayIcon.setVisible(false);
 }
 //---------------------------------------------------------------------------
-void MainForm::HidePasswdClick()
+void MainForm::hidePasswordClicked()
 {
-    UpdateEnable();
+    updateEnable();
 }
 //---------------------------------------------------------------------------
-void MainForm::LocalDirClick()
+void MainForm::localDirClicked()
 {
-    UpdateMsg();
-    UpdateEnable();
+    updateMessage();
+    updateEnable();
 }
 //---------------------------------------------------------------------------
-void MainForm::DataTypeChange()
+void MainForm::dataTypeChanged()
 {
-    UpdateType();
+    updateType();
 }
 //---------------------------------------------------------------------------
-void MainForm::DataListClick()
+void MainForm::dataListClicked()
 {
-    UpdateMsg();
-    MsgLabel3->setText("");
+    updateMessage();
+    messageLabel3->setText("");
 }
 //---------------------------------------------------------------------------
-void MainForm::StaListClick()
+void MainForm::StationListClicked()
 {
-    UpdateStaList();
+    updateStationList();
 }
 //---------------------------------------------------------------------------
 void MainForm::TimerTimer()
 {
-    lbImage->setPixmap(Images[TimerCnt % 8]);
+    lbImage->setPixmap(images[timerCnt % 8]);
     qApp->processEvents();
-    TimerCnt++;
+    timerCnt++;
 }
 //---------------------------------------------------------------------------
-void MainForm::LoadOpt(void)
+void MainForm::loadOptions(void)
 {
-    QSettings setting(IniFile, QSettings::IniFormat);
+    QSettings setting(iniFilename, QSettings::IniFormat);
     QStringList stas;
 
-    dateTime1->setDate(setting.value("opt/startd", "2020/01/01").toDate());
-    dateTime1->setTime(setting.value("opt/starth", "00:00").toTime());
-    dateTime2->setDate(setting.value("opt/endd", "2020/01/01").toDate());
-    dateTime2->setTime(setting.value("opt/endh", "00:00").toTime());
-    TimeInt->setCurrentText(setting.value("opt/timeint", "24 H").toString());
-    Number->setValue(setting.value("opt/number", 0).toInt());
-    UrlFile = setting.value("opt/urlfile", "").toString();
-    LogFile = setting.value("opt/logfile", "").toString();
-    Stations = setting.value("opt/stations", "").toString();
-    ProxyAddr = setting.value("opt/proxyaddr", "").toString();
-    FtpLogin->setText(setting.value("opt/login", "anonymous").toString());
-    FtpPasswd->setText(setting.value("opt/passwd", "user@").toString());
-    UnZip->setChecked(setting.value("opt/unzip", 1).toBool());
-    SkipExist->setChecked(setting.value("opt/skipexist", 1).toBool());
-    HidePasswd->setChecked(setting.value("opt/hidepasswd", 0).toBool());
-    HoldErr = setting.value("opt/holderr", 0).toInt();
-    HoldList = setting.value("opt/holdlist", 0).toInt();
-    NCol = setting.value("opt/ncol", 35).toInt();
-    LogAppend = setting.value("opt/logappend", 0).toInt();
-    DateFormat = setting.value("opt/dateformat", 0).toInt();
-    TraceLevel = setting.value("opt/tracelevel", 0).toInt();
-    LocalDir->setChecked(setting.value("opt/localdirena", 0).toBool());
+    dateTimeStart->setDate(setting.value("opt/startd", "2020/01/01").toDate());
+    dateTimeStart->setTime(setting.value("opt/starth", "00:00").toTime());
+    dateTimeStop->setDate(setting.value("opt/endd", "2020/01/01").toDate());
+    dateTimeStop->setTime(setting.value("opt/endh", "00:00").toTime());
+    cBTimeInterval->setCurrentText(setting.value("opt/timeint", "24 H").toString());
+    sBNumber->setValue(setting.value("opt/number", 0).toInt());
+    urlFile = setting.value("opt/urlfile", "").toString();
+    logFile = setting.value("opt/logfile", "").toString();
+    stations = setting.value("opt/stations", "").toString();
+    proxyAddr = setting.value("opt/proxyaddr", "").toString();
+    lEFtpLogin->setText(setting.value("opt/login", "anonymous").toString());
+    lEFtpPasswd->setText(setting.value("opt/passwd", "user@").toString());
+    cBUnzip->setChecked(setting.value("opt/unzip", 1).toBool());
+    cBSkipExist->setChecked(setting.value("opt/skipexist", 1).toBool());
+    cBHidePasswd->setChecked(setting.value("opt/hidepasswd", 0).toBool());
+    holdErr = setting.value("opt/holderr", 0).toInt();
+    holdList = setting.value("opt/holdlist", 0).toInt();
+    columnCnt = setting.value("opt/ncol", 35).toInt();
+    logAppend = setting.value("opt/logappend", 0).toInt();
+    dateFormat = setting.value("opt/dateformat", 0).toInt();
+    traceLevel = setting.value("opt/tracelevel", 0).toInt();
+    cBLocalDirectory->setChecked(setting.value("opt/localdirena", 0).toBool());
 
-    StaList->clear();
+    stationListWidget->clear();
 
     for (int i = 0; i < 10; i++) {
         stas = setting.value(QString("sta/station%1").arg(i), "").toString().split(",");
         foreach(const QString &s, stas) {
-            StaList->addItem(s);
+            stationListWidget->addItem(s);
         }
     }
-    ReadHist(setting, "dir", Dir);
+    readHistory(setting, "dir", cBDirectory);
 
-    Dir->insertItem(0, setting.value("opt/localdir", "").toString()); Dir->setCurrentIndex(0);
-    DataType->insertItem(0, setting.value("opt/datatype", "").toString()); DataType->setCurrentIndex(0);
+    cBDirectory->insertItem(0, setting.value("opt/localdir", "").toString()); cBDirectory->setCurrentIndex(0);
+    cBDataType->insertItem(0, setting.value("opt/datatype", "").toString()); cBDataType->setCurrentIndex(0);
 
-    TextViewer::Color1 = setting.value("viewer/color1", QColor(Qt::black)).value<QColor>();
-    TextViewer::Color2 = setting.value("viewer/color2", QColor(Qt::white)).value<QColor>();
-    TextViewer::FontD.setFamily(setting.value("viewer/fontname", "Courier New").toString());
-    TextViewer::FontD.setPixelSize(setting.value("viewer/fontsize", 9).toInt());
+    TextViewer::colorText = setting.value("viewer/color1", QColor(Qt::black)).value<QColor>();
+    TextViewer::colorBackground = setting.value("viewer/color2", QColor(Qt::white)).value<QColor>();
+    TextViewer::font.setFamily(setting.value("viewer/fontname", "Courier New").toString());
+    TextViewer::font.setPixelSize(setting.value("viewer/fontsize", 9).toInt());
 }
 //---------------------------------------------------------------------------
-void MainForm::SaveOpt(void)
+void MainForm::saveOptions(void)
 {
-    QSettings setting(IniFile, QSettings::IniFormat);
+    QSettings setting(iniFilename, QSettings::IniFormat);
     QString sta;
 
-    setting.setValue("opt/startd", dateTime1->date());
-    setting.setValue("opt/starth", dateTime1->time());
-    setting.setValue("opt/endd", dateTime2->date());
-    setting.setValue("opt/endh", dateTime2->time());
-    setting.setValue("opt/timeint", TimeInt->currentText());
-    setting.setValue("opt/number", Number->value());
-    setting.setValue("opt/urlfile", UrlFile);
-    setting.setValue("opt/logfile", LogFile);
-    setting.setValue("opt/stations", Stations);
-    setting.setValue("opt/proxyaddr", ProxyAddr);
-    setting.setValue("opt/login", FtpLogin->text());
-    setting.setValue("opt/passwd", FtpPasswd->text());
-    setting.setValue("opt/unzip", UnZip->isChecked());
-    setting.setValue("opt/skipexist", SkipExist->isChecked());
-    setting.setValue("opt/hidepasswd", HidePasswd->isChecked());
-    setting.setValue("opt/holderr", HoldErr);
-    setting.setValue("opt/holdlist", HoldList);
-    setting.setValue("opt/ncol", NCol);
-    setting.setValue("opt/logappend", LogAppend);
-    setting.setValue("opt/dateformat", DateFormat);
-    setting.setValue("opt/tracelevel", TraceLevel);
-    setting.setValue("opt/localdirena", LocalDir->isChecked());
-    setting.setValue("opt/localdir", Dir->currentText());
-    setting.setValue("opt/datatype", DataType->currentText());
+    setting.setValue("opt/startd", dateTimeStart->date());
+    setting.setValue("opt/starth", dateTimeStart->time());
+    setting.setValue("opt/endd", dateTimeStop->date());
+    setting.setValue("opt/endh", dateTimeStop->time());
+    setting.setValue("opt/timeint", cBTimeInterval->currentText());
+    setting.setValue("opt/number", sBNumber->value());
+    setting.setValue("opt/urlfile", urlFile);
+    setting.setValue("opt/logfile", logFile);
+    setting.setValue("opt/stations", stations);
+    setting.setValue("opt/proxyaddr", proxyAddr);
+    setting.setValue("opt/login", lEFtpLogin->text());
+    setting.setValue("opt/passwd", lEFtpPasswd->text());
+    setting.setValue("opt/unzip", cBUnzip->isChecked());
+    setting.setValue("opt/skipexist", cBSkipExist->isChecked());
+    setting.setValue("opt/hidepasswd", cBHidePasswd->isChecked());
+    setting.setValue("opt/holderr", holdErr);
+    setting.setValue("opt/holdlist", holdList);
+    setting.setValue("opt/ncol", columnCnt);
+    setting.setValue("opt/logappend", logAppend);
+    setting.setValue("opt/dateformat", dateFormat);
+    setting.setValue("opt/tracelevel", traceLevel);
+    setting.setValue("opt/localdirena", cBLocalDirectory->isChecked());
+    setting.setValue("opt/localdir", cBDirectory->currentText());
+    setting.setValue("opt/datatype", cBDataType->currentText());
 
     for (int i = 0, j = 0; i < 10; i++) {
-        for (int k = 0; k < 256 && j < StaList->count(); k++)
-            sta.append(k == 0 ? QString("") : QString(",") + StaList->item(i)->text());
+        for (int k = 0; k < 256 && j < stationListWidget->count(); k++)
+            sta.append(k == 0 ? QString("") : QString(",") + stationListWidget->item(i)->text());
         setting.setValue(QString("sta/station%1").arg(i), sta);
     }
-    WriteHist(setting, "dir", Dir);
-    setting.setValue("viewer/color1", TextViewer::Color1);
-    setting.setValue("viewer/color2", TextViewer::Color2);
-    setting.setValue("viewer/fontname", TextViewer::FontD.family());
-    setting.setValue("viewer/fontsize", TextViewer::FontD.pixelSize());
+    writeHistory(setting, "dir", cBDirectory);
+    setting.setValue("viewer/color1", TextViewer::colorText);
+    setting.setValue("viewer/color2", TextViewer::colorBackground);
+    setting.setValue("viewer/fontname", TextViewer::font.family());
+    setting.setValue("viewer/fontsize", TextViewer::font.pixelSize());
 }
 //---------------------------------------------------------------------------
-void MainForm::LoadUrl(QString file)
+void MainForm::loadUrl(QString file)
 {
-    url_t *urls;
+    url_t *urls_list;
     QString subtype, basetype;
     const char *sel[1];
     int i, n;
 
     sel[0]=(char*)"*";
 
-    urls = new url_t [MAX_URL];
+    urls_list = new url_t [MAX_URL];
 
-    Types.clear();
-    Urls.clear();
-    Locals.clear();
-    DataType->clear();
-    SubType->clear();
-    DataList->clear();
-    DataType->addItem(tr("ALL"));
-    SubType->addItem("");
+    types.clear();
+    urls.clear();
+    locals.clear();
+    cBDataType->clear();
+    cBSubType->clear();
+    dataListWidget->clear();
+    cBDataType->addItem(tr("ALL"));
+    cBSubType->addItem("");
 
     if (file == "") file = URL_FILE; // default url
 
-    n = dl_readurls(qPrintable(file), (char **)sel, 1, urls, MAX_URL);
+    n = dl_readurls(qPrintable(file), (char **)sel, 1, urls_list, MAX_URL);
 
     for (i = 0; i < n; i++) {
         int p;
-        Types.append(urls[i].type);
-        Urls.append(urls[i].path);
-        Locals.append(urls[i].dir);
+        types.append(urls_list[i].type);
+        urls.append(urls_list[i].path);
+        locals.append(urls_list[i].dir);
 
-        p = Types.last().indexOf('_');
+        p = types.last().indexOf('_');
         if (p == -1) continue;
-        basetype = Types.last().mid(0, p);
-        if (DataType->findText(basetype) == -1)
-            DataType->addItem(basetype);
+        basetype = types.last().mid(0, p);
+        if (cBDataType->findText(basetype) == -1)
+            cBDataType->addItem(basetype);
 
-        subtype = Types.last().mid(p + 1);
+        subtype = types.last().mid(p + 1);
         if ((p = subtype.indexOf('_')) != -1) subtype = subtype.mid(0, p);
 
-        if (SubType->findText(subtype) == -1)
-            SubType->addItem(subtype);
+        if (cBSubType->findText(subtype) == -1)
+            cBSubType->addItem(subtype);
     }
-    DataType->setCurrentIndex(0);
-    SubType->setCurrentIndex(0);
+    cBDataType->setCurrentIndex(0);
+    cBSubType->setCurrentIndex(0);
 
-    delete [] urls;
+    delete [] urls_list;
 }
 //---------------------------------------------------------------------------
-void MainForm::LoadSta(QString file)
+void MainForm::loadStation(QString file)
 {
     QFile f(file);
     QByteArray buff;
 
     if (!f.open(QIODevice::ReadOnly)) return;
 
-    StaList->clear();
+    stationListWidget->clear();
 
     while (!f.atEnd()) {
         buff = f.readLine();
         buff = buff.mid(buff.indexOf('#'));
-        StaList->addItem(buff);
+        stationListWidget->addItem(buff);
     }
 
-    UpdateStaList();
-    BtnAll->setText("A");
+    updateStationList();
+    btnAll->setText("A");
 }
 //---------------------------------------------------------------------------
-void MainForm::GetTime(gtime_t *ts, gtime_t *te, double *ti)
+void MainForm::getTime(gtime_t *ts, gtime_t *te, double *ti)
 {
     QString str;
     double eps[6] = { 2010, 1, 1 }, epe[6] = { 2010, 1, 1 }, val;
 
-    eps[0] = dateTime1->date().year(); eps[1] = dateTime1->date().month(); eps[2] = dateTime1->date().day();
-    eps[3] = dateTime1->time().hour(); eps[4] = dateTime1->time().minute();
-    epe[0] = dateTime2->date().year(); epe[1] = dateTime2->date().month(); epe[2] = dateTime2->date().day();
-    epe[3] = dateTime2->time().hour(); epe[4] = dateTime2->time().minute();
+    eps[0] = dateTimeStart->date().year(); eps[1] = dateTimeStart->date().month(); eps[2] = dateTimeStart->date().day();
+    eps[3] = dateTimeStart->time().hour(); eps[4] = dateTimeStart->time().minute();
+    epe[0] = dateTimeStop->date().year(); epe[1] = dateTimeStop->date().month(); epe[2] = dateTimeStop->date().day();
+    epe[3] = dateTimeStop->time().hour(); epe[4] = dateTimeStop->time().minute();
 
     *ts = epoch2time(eps);
     *te = epoch2time(epe);
     *ti = 86400.0;
 
-    str = TimeInt->currentText();
+    str = cBTimeInterval->currentText();
 
     if (str=="-") {
         *te=*ts;
@@ -747,20 +747,20 @@ void MainForm::GetTime(gtime_t *ts, gtime_t *te, double *ti)
     }
 }
 //---------------------------------------------------------------------------
-int MainForm::SelectUrl(url_t *urls)
+int MainForm::selectUrl(url_t *urls)
 {
-    QString str, file = UrlFile;
+    QString str, file = urlFile;
     char *types[MAX_URL_SEL];
     int i, nurl = 0;
 
     for (i = 0; i < MAX_URL_SEL; i++) types[i] = new char [64];
 
-    for (i = 0; i < DataList->count() && nurl < MAX_URL_SEL; i++) {
-        if (!DataList->item(i)->isSelected()) continue;
-        str = DataList->item(i)->text();
+    for (i = 0; i < dataListWidget->count() && nurl < MAX_URL_SEL; i++) {
+        if (!dataListWidget->item(i)->isSelected()) continue;
+        str = dataListWidget->item(i)->text();
         strcpy(types[nurl++], qPrintable(str));
     }
-    if (UrlFile == "") file = URL_FILE;
+    if (urlFile == "") file = URL_FILE;
 
     nurl = dl_readurls(qPrintable(file), types, nurl, urls, MAX_URL_SEL);
 
@@ -769,14 +769,14 @@ int MainForm::SelectUrl(url_t *urls)
     return nurl;
 }
 //---------------------------------------------------------------------------
-int MainForm::SelectSta(char **stas)
+int MainForm::selectStation(char **stas)
 {
     QString str;
     int i, nsta = 0, len;
 
-    for (i = 0; i < StaList->count() && nsta < MAX_STA; i++) {
-        if (!StaList->item(i)->isSelected()) continue;
-        str = StaList->item(i)->text();
+    for (i = 0; i < stationListWidget->count() && nsta < MAX_STA; i++) {
+        if (!stationListWidget->item(i)->isSelected()) continue;
+        str = stationListWidget->item(i)->text();
         len = str.length();
         if (str.indexOf(' ') != -1) len = str.indexOf(' ');
         if (len > 15) len = 15;
@@ -786,16 +786,16 @@ int MainForm::SelectSta(char **stas)
     return nsta;
 }
 //---------------------------------------------------------------------------
-void MainForm::UpdateType(void)
+void MainForm::updateType(void)
 {
     QString str;
     QString type, subtype;
     int i;
 
-    DataList->clear();
+    dataListWidget->clear();
 
-    for (i = 0; i < Types.size(); i++) {
-        str = Types.at(i);
+    for (i = 0; i < types.size(); i++) {
+        str = types.at(i);
         QStringList tokens = str.split('_');
 
         type = subtype = "";
@@ -806,71 +806,71 @@ void MainForm::UpdateType(void)
             type = tokens.at(0);
         }
 
-        if (DataType->currentText() != tr("ALL") && DataType->currentText() != type) continue;
-        if (SubType->currentText() != "" && SubType->currentText() != subtype) continue;
-        DataList->addItem(Types.at(i));
+        if (cBDataType->currentText() != tr("ALL") && cBDataType->currentText() != type) continue;
+        if (cBSubType->currentText() != "" && cBSubType->currentText() != subtype) continue;
+        dataListWidget->addItem(types.at(i));
     }
-    MsgLabel1->setText("");
-    MsgLabel2->setText("");
+    messageLabel1->setText("");
+    messageLabel2->setText("");
 }
 //---------------------------------------------------------------------------
-void MainForm::UpdateMsg(void)
+void MainForm::updateMessage(void)
 {
     int i, j, n = 0;
 
-    for (i = 0; i < DataList->count(); i++) {
-        if (!DataList->item(i)->isSelected()) continue;
-        for (j = 0; j < Types.count(); j++) {
-            if (DataList->item(i)->text() != Types.at(j)) continue;
-            MsgLabel1->setText(Urls.at(j));
-            MsgLabel2->setText(LocalDir->isChecked() ? Dir->currentText() : Locals.at(j));
-            Msg1->setToolTip(MsgLabel1->text());
-            Msg2->setToolTip(MsgLabel2->text());
+    for (i = 0; i < dataListWidget->count(); i++) {
+        if (!dataListWidget->item(i)->isSelected()) continue;
+        for (j = 0; j < types.count(); j++) {
+            if (dataListWidget->item(i)->text() != types.at(j)) continue;
+            messageLabel1->setText(urls.at(j));
+            messageLabel2->setText(cBLocalDirectory->isChecked() ? cBDirectory->currentText() : locals.at(j));
+            msg1->setToolTip(messageLabel1->text());
+            msg2->setToolTip(messageLabel2->text());
             n++;
             break;
         }
     }
     if (n >= 2) {
-        MsgLabel1->setText(MsgLabel1->text() + " ...");
-        MsgLabel2->setText(MsgLabel2->text() + " ...");
+        messageLabel1->setText(messageLabel1->text() + " ...");
+        messageLabel2->setText(messageLabel2->text() + " ...");
     }
 }
 //---------------------------------------------------------------------------
-void MainForm::UpdateStaList(void)
+void MainForm::updateStationList(void)
 {
     int i, n = 0;
 
-    for (i = 0; i < StaList->count(); i++)
-        if (StaList->item(i)->isSelected()) n++;
-    LabelSta->setText(QString(tr("Stations (%1)")).arg(n));
+    for (i = 0; i < stationListWidget->count(); i++)
+        if (stationListWidget->item(i)->isSelected()) n++;
+    lbStation->setText(QString(tr("Stations (%1)")).arg(n));
 }
 //---------------------------------------------------------------------------
-void MainForm::UpdateEnable(void)
+void MainForm::updateEnable(void)
 {
-    Dir->setEnabled(LocalDir->isChecked());
-    BtnDir->setEnabled(LocalDir->isChecked());
-    if (HidePasswd->isChecked())
-        FtpPasswd->setEchoMode(QLineEdit::Password);
+    cBDirectory->setEnabled(cBLocalDirectory->isChecked());
+    btnDir->setEnabled(cBLocalDirectory->isChecked());
+    if (cBHidePasswd->isChecked())
+        lEFtpPasswd->setEchoMode(QLineEdit::Password);
     else
-        FtpPasswd->setEchoMode(QLineEdit::Normal);
-    Label3->setEnabled(TimeInt->currentText()!="-");
-    dateTime2->setEnabled(TimeInt->currentText()!="-");
-    BtnTime2->setEnabled(TimeInt->currentText()!="-");
+        lEFtpPasswd->setEchoMode(QLineEdit::Normal);
+    lbEnd->setEnabled(cBTimeInterval->currentText()!="-");
+    dateTimeStop->setEnabled(cBTimeInterval->currentText()!="-");
+    btnTimeStop->setEnabled(cBTimeInterval->currentText()!="-");
 }
 //---------------------------------------------------------------------------
-void MainForm::PanelEnable(int ena)
+void MainForm::panelEnable(int ena)
 {
-    Panel1->setEnabled(ena);
-    Panel2->setEnabled(ena);
-    BtnFile->setEnabled(ena);
-    BtnLog->setEnabled(ena);
-    BtnOpts->setEnabled(ena);
-    BtnTest->setEnabled(ena);
-    BtnDownload->setEnabled(ena);
-    BtnExit->setEnabled(ena);
+    panel1->setEnabled(ena);
+    panel2->setEnabled(ena);
+    btnFile->setEnabled(ena);
+    btnLog->setEnabled(ena);
+    btnOpts->setEnabled(ena);
+    btnTest->setEnabled(ena);
+    btnDownload->setEnabled(ena);
+    btnExit->setEnabled(ena);
 }
 // --------------------------------------------------------------------------
-void MainForm::ReadHist(QSettings &setting, QString key, QComboBox *combo)
+void MainForm::readHistory(QSettings &setting, QString key, QComboBox *combo)
 {
     QString item;
     int i;
@@ -883,7 +883,7 @@ void MainForm::ReadHist(QSettings &setting, QString key, QComboBox *combo)
     }
 }
 // --------------------------------------------------------------------------
-void MainForm::WriteHist(QSettings &setting, QString key, QComboBox *combo)
+void MainForm::writeHistory(QSettings &setting, QString key, QComboBox *combo)
 {
     int i;
 
@@ -891,7 +891,7 @@ void MainForm::WriteHist(QSettings &setting, QString key, QComboBox *combo)
         setting.setValue(QString("history/%1_%2").arg(key).arg(i), combo->itemText(i));
 }
 // --------------------------------------------------------------------------
-void MainForm::AddHist(QComboBox *combo)
+void MainForm::addHistory(QComboBox *combo)
 {
     QString hist = combo->currentText();
 
@@ -903,7 +903,7 @@ void MainForm::AddHist(QComboBox *combo)
     combo->setCurrentIndex(0);
 }
 //---------------------------------------------------------------------------
-int MainForm::ExecCmd(const QString &cmd, const QStringList &opt)
+int MainForm::execCommand(const QString &cmd, const QStringList &opt)
 {
     return QProcess::startDetached(cmd, opt);
 }

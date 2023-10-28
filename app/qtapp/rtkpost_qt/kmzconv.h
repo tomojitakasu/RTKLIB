@@ -13,25 +13,21 @@ class ConvDialog : public QDialog, public Ui::ConvDialog
     Q_OBJECT
 
 public slots:
-    void BtnCloseClick();
-    void AddOffsetClick();
-    void BtnConvertClick();
-    void BtnViewClick();
-    void TimeSpanClick();
-    void TimeIntFClick();
-    void BtnInputFileClick();
-    void InputFileChange();
-    void CompressClick();
-    void GoogleEarthFileChange();
-    void BtnGoogleEarthFileClick();
-    void FormatKMLClick();
-    void FormatGPXClick();
+    void btnCloseClicked();
+    void btnConvertClicked();
+    void btnViewClicked();
+    void btnInputFileClicked();
+    void compressClicked();
+    void googleEarthFileChanged();
+    void btnGoogleEarthFileClicked();
+    void formatKMLClicked();
+    void formatGPXClicked();
+    void updateEnable(void);
 
 private:
-    int ExecCmd(const QString &cmd, const QStringList &opt);
-    void UpdateEnable(void);
-    void ShowMsg(const QString &msg);
-    void UpdateOutFile(void);
+    int ExecCommand(const QString &cmd, const QStringList &opt);
+    void showMessage(const QString &msg);
+    void updateOutputFile(void);
 
 protected:
     void showEvent(QShowEvent*);

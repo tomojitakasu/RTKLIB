@@ -125,15 +125,15 @@ void QMarkDialog::BtnPosClick()
 {
     RefDialog *refDialog =  new RefDialog(this);
 
-    refDialog->Pos[0]=EditLat->value();
-    refDialog->Pos[1]=EditLon->value();
-    refDialog->Pos[2]=EditHgt->value();
-    refDialog->StaPosFile=mainForm->optDialog->StaPosFileF;
+    refDialog->position[0]=EditLat->value();
+    refDialog->position[1]=EditLon->value();
+    refDialog->position[2]=EditHgt->value();
+    refDialog->stationPositionFile=mainForm->optDialog->StaPosFileF;
 
     if (refDialog->result() != QDialog::Accepted) return;
 
-    EditLat->setValue(refDialog->Pos[0]);
-    EditLon->setValue(refDialog->Pos[1]);
-    EditHgt->setValue(refDialog->Pos[2]);
+    EditLat->setValue(refDialog->position[0]);
+    EditLon->setValue(refDialog->position[1]);
+    EditHgt->setValue(refDialog->position[2]);
 }
 //---------------------------------------------------------------------------

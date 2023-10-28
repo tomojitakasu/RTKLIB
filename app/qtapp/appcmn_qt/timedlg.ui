@@ -18,7 +18,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QLabel" name="Message">
+    <widget class="QLabel" name="message">
      <property name="enabled">
       <bool>true</bool>
      </property>
@@ -31,10 +31,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="BtnOk">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QPushButton" name="btnOk">
      <property name="toolTip">
       <string/>
      </property>

@@ -14,7 +14,7 @@ KeyDialog::KeyDialog(QWidget *parent)
 
     Flag = 0;
 
-    connect(BtnOk, SIGNAL(clicked(bool)), this, SLOT(BtnOkClick()));
+    connect(btnOk, SIGNAL(clicked(bool)), this, SLOT(btnOkClicked()));
 }
 //---------------------------------------------------------------------------
 void KeyDialog::showEvent(QShowEvent *event)
@@ -41,7 +41,7 @@ void KeyDialog::showEvent(QShowEvent *event)
     Label38->setVisible(Flag == 3);
 }
 //---------------------------------------------------------------------------
-void KeyDialog::BtnOkClick()
+void KeyDialog::btnOkClicked()
 {
     close();
 }

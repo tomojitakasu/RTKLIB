@@ -937,9 +937,9 @@ void Plot::MenuSrcSolClick()
     if (SolFiles[sel].count() <= 0) return;
 
     viewer->setWindowTitle(SolFiles[sel].at(0));
-    viewer->Option = 0;
+    viewer->option = 0;
     viewer->show();
-    viewer->Read(SolFiles[sel].at(0));
+    viewer->read(SolFiles[sel].at(0));
 }
 // callback on menu-obs-data-source -----------------------------------------
 void Plot::MenuSrcObsClick()
@@ -957,9 +957,9 @@ void Plot::MenuSrcObsClick()
 
     viewer = new TextViewer(this);
     viewer->setWindowTitle(ObsFiles.at(0));
-    viewer->Option = 0;
+    viewer->option = 0;
     viewer->show();
-    viewer->Read(!cstat ? file : tmpfile);
+    viewer->read(!cstat ? file : tmpfile);
     if (cstat) remove(tmpfile);
 }
 // callback on menu-copy-to-clipboard ---------------------------------------
@@ -1278,8 +1278,8 @@ void Plot::MenuAboutClick()
 {
     trace(3, "MenuAboutClick\n");
 
-    aboutDialog->About = PRGNAME;
-    aboutDialog->IconIndex = 2;
+    aboutDialog->aboutString = PRGNAME;
+    aboutDialog->iconIndex = 2;
     aboutDialog->exec();
 }
 // callback on button-connect/disconnect ------------------------------------
@@ -2002,7 +2002,7 @@ void Plot::TimerTimer()
                     }
                     nmsg[i]++;
                 }
-                console[i]->AddMsg(buff, n);
+                console[i]->addMessage(buff, n);
             }
             if (nmsg[i] > 0) {
                 strstatus[i]->setStyleSheet(QStringLiteral("QLabel {color %1;}").arg(color2String(color[4])));
@@ -2789,7 +2789,7 @@ void Plot::LoadOpt(void)
     CColor[2] = settings.value("plot/color3", QColor(Qt::black)).value<QColor>();
     CColor[3] = settings.value("plot/color4", QColor(0xc0, 0xc0, 0xc0)).value<QColor>();
 
-    plotOptDialog->refDialog->StaPosFile = settings.value("plot/staposfile", "").toString();
+    plotOptDialog->refDialog->stationPositionFile = settings.value("plot/staposfile", "").toString();
 
     ElMask = settings.value("plot/elmask", 0.0).toDouble();
     MaxDop = settings.value("plot/maxdop", 30.0).toDouble();
@@ -2833,10 +2833,10 @@ void Plot::LoadOpt(void)
         StrHistory [i] = settings.value(QString("str/strhistry_%1").arg(i), "").toString();
     }
 
-    TextViewer::Color1 = settings.value("viewer/color1", QColor(Qt::black)).value<QColor>();
-    TextViewer::Color2 = settings.value("viewer/color2", QColor(Qt::white)).value<QColor>();
-    TextViewer::FontD.setFamily(settings.value("viewer/fontname", "Consolas").toString());
-    TextViewer::FontD.setPointSize(settings.value("viewer/fontsize", 9).toInt());
+    TextViewer::colorText = settings.value("viewer/color1", QColor(Qt::black)).value<QColor>();
+    TextViewer::colorBackground = settings.value("viewer/color2", QColor(Qt::white)).value<QColor>();
+    TextViewer::font.setFamily(settings.value("viewer/fontname", "Consolas").toString());
+    TextViewer::font.setPointSize(settings.value("viewer/fontsize", 9).toInt());
 
     MenuBrowse->setChecked(settings.value("solbrows/show",       0).toBool());
     BrowseSplitter->restoreState(settings.value("solbrows/split1",   100).toByteArray());
@@ -2952,7 +2952,7 @@ void Plot::SaveOpt(void)
     settings.setValue("plot/color3", CColor[2]);
     settings.setValue("plot/color4", CColor[3]);
 
-    settings.setValue("plot/staposfile", plotOptDialog->refDialog->StaPosFile);
+    settings.setValue("plot/staposfile", plotOptDialog->refDialog->stationPositionFile);
 
     settings.setValue("plot/elmask", ElMask);
     settings.setValue("plot/maxdop", MaxDop);
@@ -2991,10 +2991,10 @@ void Plot::SaveOpt(void)
         settings.setValue(QString("str/strhistry_%1").arg(i), StrHistory [i]);
     }
 
-    settings.setValue("viewer/color1", TextViewer::Color1);
-    settings.setValue("viewer/color2", TextViewer::Color2);
-    settings.setValue("viewer/fontname", TextViewer::FontD.family());
-    settings.setValue("viewer/fontsize", TextViewer::FontD.pointSize());
+    settings.setValue("viewer/color1", TextViewer::colorText);
+    settings.setValue("viewer/color2", TextViewer::colorBackground);
+    settings.setValue("viewer/fontname", TextViewer::font.family());
+    settings.setValue("viewer/fontsize", TextViewer::font.pointSize());
 
     settings.setValue("solbrows/dir", fileSelDialog->Dir);
     settings.setValue("solbrows/split1", BrowseSplitter->saveState());

@@ -17,25 +17,25 @@ class ConvOptDialog : public QDialog, private Ui::ConvOptDialog
     Q_OBJECT
 
 public slots:
-    void BtnOkClick();
-    void RnxFileClick();
-    void BtnMaskClick();
-    void RnxVerChange();
-    void AutoPosClick();
-    void BtnFreqClick();
-    void BtnFcnClick();
+    void btnOkClicked();
+    void rinexFileClicked();
+    void btnMaskClicked();
+    void rinexVersionChanged();
+    void autoPositionClicked();
+    void btnFreqClicked();
+    void btnFcnClicked();
 
 protected:
     void showEvent(QShowEvent*);
 
 private:
-    void UpdateEnable(void);
+    void updateEnable(void);
 
     CodeOptDialog *codeOptDialog;
     GloFcnDialog *gloFcnDialog;
     FreqDialog *freqDialog;
 public:
-    QString CodeMask[7];
+    QString codeMask[7];
 	
     explicit ConvOptDialog(QWidget *parent);
 };

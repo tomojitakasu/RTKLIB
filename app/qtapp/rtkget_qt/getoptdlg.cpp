@@ -21,51 +21,51 @@ DownOptDialog::DownOptDialog(QWidget *parent)
     QFileSystemModel *fileModel = new QFileSystemModel(fileCompleter);
     fileModel->setRootPath("");
     fileCompleter->setModel(fileModel);
-    UrlFile->setCompleter(fileCompleter);
-    LogFile->setCompleter(fileCompleter);
+    lEUrlFilename->setCompleter(fileCompleter);
+    lELogFilename->setCompleter(fileCompleter);
 
-    connect(BtnCancel, SIGNAL(clicked(bool)), this, SLOT(reject()));
-    connect(BtnLogFile, SIGNAL(clicked(bool)), this, SLOT(BtnLogFileClick()));
-    connect(BtnOk, SIGNAL(clicked(bool)), this, SLOT(BtnOkClick()));
-    connect(BtnUrlFile, SIGNAL(clicked(bool)), this, SLOT(BtnUrlFileClick()));
+    connect(btnCancel, SIGNAL(clicked(bool)), this, SLOT(reject()));
+    connect(btnLogFile, SIGNAL(clicked(bool)), this, SLOT(btnLogFileClicked()));
+    connect(btnOk, SIGNAL(clicked(bool)), this, SLOT(btnOkClicked()));
+    connect(btnUrlFile, SIGNAL(clicked(bool)), this, SLOT(btnUrlFileClicked()));
 }
 //---------------------------------------------------------------------------
-void DownOptDialog::BtnUrlFileClick()
+void DownOptDialog::btnUrlFileClicked()
 {
-    UrlFile->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("GNSS Data URL File"))));
+    lEUrlFilename->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("GNSS Data URL File"))));
 }
 //---------------------------------------------------------------------------
-void DownOptDialog::BtnLogFileClick()
+void DownOptDialog::btnLogFileClicked()
 {
-    LogFile->setText(QDir::toNativeSeparators(QFileDialog::getSaveFileName(this, tr("Download Log File"))));
+    lELogFilename->setText(QDir::toNativeSeparators(QFileDialog::getSaveFileName(this, tr("Download Log File"))));
 }
 //---------------------------------------------------------------------------
 void DownOptDialog::showEvent(QShowEvent *event)
 {
     if (event->spontaneous()) return;
 
-    HoldErr->setChecked(mainForm->HoldErr);
-    HoldList->setChecked(mainForm->HoldList);
-    NCol->setValue(mainForm->NCol);
-    Proxy->setText(mainForm->ProxyAddr);
-    UrlFile->setText(mainForm->UrlFile);
-    LogFile->setText(mainForm->LogFile);
-    LogAppend->setChecked(mainForm->LogAppend);
-    DateFormat->setCurrentIndex(mainForm->DateFormat);
-    TraceLevel->setCurrentIndex(mainForm->TraceLevel);
+    cBKeepErr->setChecked(mainForm->holdErr);
+    cBKeepList->setChecked(mainForm->holdList);
+    sBTestColumnCount->setValue(mainForm->columnCnt);
+    lEProxy->setText(mainForm->proxyAddr);
+    lEUrlFilename->setText(mainForm->urlFile);
+    lELogFilename->setText(mainForm->logFile);
+    cBLogAppend->setChecked(mainForm->logAppend);
+    cBDateFormat->setCurrentIndex(mainForm->dateFormat);
+    cBTraceLevel->setCurrentIndex(mainForm->traceLevel);
 }
 //---------------------------------------------------------------------------
-void DownOptDialog::BtnOkClick()
+void DownOptDialog::btnOkClicked()
 {
-    mainForm->HoldErr = HoldErr->isChecked();
-    mainForm->HoldList = HoldList->isChecked();
-    mainForm->NCol = NCol->value();
-    mainForm->ProxyAddr = Proxy->text();
-    mainForm->UrlFile = UrlFile->text();
-    mainForm->LogFile = LogFile->text();
-    mainForm->LogAppend = LogAppend->isChecked();
-    mainForm->DateFormat = DateFormat->currentIndex();
-    mainForm->TraceLevel = TraceLevel->currentIndex();
+    mainForm->holdErr = cBKeepErr->isChecked();
+    mainForm->holdList = cBKeepList->isChecked();
+    mainForm->columnCnt = sBTestColumnCount->value();
+    mainForm->proxyAddr = lEProxy->text();
+    mainForm->urlFile = lEUrlFilename->text();
+    mainForm->logFile = lELogFilename->text();
+    mainForm->logAppend = cBLogAppend->isChecked();
+    mainForm->dateFormat = cBDateFormat->currentIndex();
+    mainForm->traceLevel = cBTraceLevel->currentIndex();
 
     accept();
 }

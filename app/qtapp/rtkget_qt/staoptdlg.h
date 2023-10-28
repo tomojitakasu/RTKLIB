@@ -14,9 +14,9 @@ protected:
     void  showEvent(QShowEvent*);
 
 public slots:
-    void  BtnLoadClick();
-    void  BtnOkClick();
-    void  BtnSaveClick();
+    void  btnLoadClicked();
+    void  btnOkClicked();
+    void  btnSaveClicked();
 
 public:
     explicit StaListDialog(QWidget* parent);

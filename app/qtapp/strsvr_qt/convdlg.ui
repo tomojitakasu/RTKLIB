@@ -17,18 +17,6 @@
    <string/>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <property name="leftMargin">
-    <number>0</number>
-   </property>
-   <property name="topMargin">
-    <number>0</number>
-   </property>
-   <property name="rightMargin">
-    <number>0</number>
-   </property>
-   <property name="bottomMargin">
-    <number>0</number>
-   </property>
    <item row="4" column="0" colspan="2">
     <widget class="QWidget" name="widget_2" native="true">
      <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -58,23 +46,14 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="Options">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QLineEdit" name="lEOptions">
         <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
          <string/>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnOk">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnOk">
         <property name="toolTip">
          <string/>
         </property>
@@ -90,10 +69,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnCancel">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnCancel">
         <property name="toolTip">
          <string/>
         </property>
@@ -121,20 +97,17 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QCheckBox" name="Conversion">
+       <widget class="QCheckBox" name="cBConversion">
         <property name="toolTip">
          <string/>
         </property>
         <property name="text">
          <string>Conversion From</string>
         </property>
-        <property name="checked">
-         <bool>false</bool>
-        </property>
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="InFormat">
+       <widget class="QComboBox" name="cBInputFormat">
         <property name="enabled">
          <bool>false</bool>
         </property>
@@ -157,7 +130,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="OutFormat">
+       <widget class="QComboBox" name="cBOutputFormat">
         <property name="enabled">
          <bool>false</bool>
         </property>
@@ -193,10 +166,7 @@
     </widget>
    </item>
    <item row="3" column="0" colspan="2">
-    <widget class="QLineEdit" name="OutMsgs">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QLineEdit" name="lEOutputMessages">
      <property name="toolTip">
       <string/>
      </property>
@@ -208,13 +178,13 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>Conversion</tabstop>
-  <tabstop>InFormat</tabstop>
-  <tabstop>OutFormat</tabstop>
-  <tabstop>OutMsgs</tabstop>
-  <tabstop>Options</tabstop>
-  <tabstop>BtnOk</tabstop>
-  <tabstop>BtnCancel</tabstop>
+  <tabstop>cBConversion</tabstop>
+  <tabstop>cBInputFormat</tabstop>
+  <tabstop>cBOutputFormat</tabstop>
+  <tabstop>lEOutputMessages</tabstop>
+  <tabstop>lEOptions</tabstop>
+  <tabstop>btnOk</tabstop>
+  <tabstop>btnCancel</tabstop>
  </tabstops>
  <resources/>
  <connections/>

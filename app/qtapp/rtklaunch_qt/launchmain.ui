@@ -36,7 +36,7 @@
     <number>0</number>
    </property>
    <item row="0" column="0">
-    <widget class="QWidget" name="Panel1" native="true">
+    <widget class="QWidget" name="PanelTop" native="true">
      <layout class="QGridLayout" name="gridLayout_2">
       <property name="leftMargin">
        <number>0</number>
@@ -55,6 +55,12 @@
         <property name="enabled">
          <bool>true</bool>
         </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="toolTip">
          <string>RTKCONV</string>
         </property>
@@ -62,7 +68,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+         <iconset resource="rtklaunch_qt.qrc">
           <normaloff>:/icons/rtk3.bmp</normaloff>:/icons/rtk3.bmp</iconset>
         </property>
         <property name="flat">
@@ -75,6 +81,12 @@
         <property name="enabled">
          <bool>true</bool>
         </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="toolTip">
          <string>NTRIP Browser</string>
         </property>
@@ -82,7 +94,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+         <iconset resource="rtklaunch_qt.qrc">
           <normaloff>:/icons/rtk7.bmp</normaloff>:/icons/rtk7.bmp</iconset>
         </property>
         <property name="flat">
@@ -95,6 +107,12 @@
         <property name="enabled">
          <bool>true</bool>
         </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="toolTip">
          <string>RTKGET</string>
         </property>
@@ -102,7 +120,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+         <iconset resource="rtklaunch_qt.qrc">
           <normaloff>:/icons/rtk8.bmp</normaloff>:/icons/rtk8.bmp</iconset>
         </property>
         <property name="flat">
@@ -115,6 +133,12 @@
         <property name="enabled">
          <bool>true</bool>
         </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="toolTip">
          <string>RTKPOST</string>
         </property>
@@ -122,7 +146,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+         <iconset resource="rtklaunch_qt.qrc">
           <normaloff>:/icons/rtk1.bmp</normaloff>:/icons/rtk1.bmp</iconset>
         </property>
         <property name="flat">
@@ -135,6 +159,12 @@
         <property name="enabled">
          <bool>true</bool>
         </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="toolTip">
          <string>RTKNAVI</string>
         </property>
@@ -142,7 +172,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+         <iconset resource="rtklaunch_qt.qrc">
           <normaloff>:/icons/rtk5.bmp</normaloff>:/icons/rtk5.bmp</iconset>
         </property>
         <property name="flat">
@@ -155,6 +185,12 @@
         <property name="enabled">
          <bool>true</bool>
         </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="toolTip">
          <string>RTKPLOT</string>
         </property>
@@ -162,7 +198,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+         <iconset resource="rtklaunch_qt.qrc">
           <normaloff>:/icons/rtk2.bmp</normaloff>:/icons/rtk2.bmp</iconset>
         </property>
         <property name="flat">
@@ -175,6 +211,12 @@
         <property name="enabled">
          <bool>true</bool>
         </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="toolTip">
          <string>STRSVR</string>
         </property>
@@ -182,7 +224,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+         <iconset resource="rtklaunch_qt.qrc">
           <normaloff>:/icons/rtk6.bmp</normaloff>:/icons/rtk6.bmp</iconset>
         </property>
         <property name="flat">
@@ -227,7 +269,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+      <iconset resource="rtklaunch_qt.qrc">
        <normaloff>:/buttons/sqr.bmp</normaloff>:/buttons/sqr.bmp</iconset>
      </property>
      <property name="flat">
@@ -243,7 +285,7 @@
     </widget>
    </item>
    <item row="2" column="0">
-    <widget class="QWidget" name="Panel2" native="true">
+    <widget class="QWidget" name="PanelBottom" native="true">
      <layout class="QHBoxLayout" name="horizontalLayout">
       <property name="leftMargin">
        <number>0</number>
@@ -266,7 +308,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+         <iconset resource="rtklaunch_qt.qrc">
           <normaloff>:/icons/rtk9.bmp</normaloff>:/icons/rtk9.bmp</iconset>
         </property>
         <property name="flat">
@@ -290,7 +332,7 @@
   </layout>
   <action name="actionRtkConv">
    <property name="icon">
-    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+    <iconset resource="rtklaunch_qt.qrc">
      <normaloff>:/icons/rtk3.bmp</normaloff>:/icons/rtk3.bmp</iconset>
    </property>
    <property name="text">
@@ -302,7 +344,7 @@
   </action>
   <action name="actionRtkGet">
    <property name="icon">
-    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+    <iconset resource="rtklaunch_qt.qrc">
      <normaloff>:/icons/rtk8.bmp</normaloff>:/icons/rtk8.bmp</iconset>
    </property>
    <property name="text">
@@ -314,7 +356,7 @@
   </action>
   <action name="actionRtkNavi">
    <property name="icon">
-    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+    <iconset resource="rtklaunch_qt.qrc">
      <normaloff>:/icons/rtk5.bmp</normaloff>:/icons/rtk5.bmp</iconset>
    </property>
    <property name="text">
@@ -326,7 +368,7 @@
   </action>
   <action name="actionRtkNtrip">
    <property name="icon">
-    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+    <iconset resource="rtklaunch_qt.qrc">
      <normaloff>:/icons/rtk7.bmp</normaloff>:/icons/rtk7.bmp</iconset>
    </property>
    <property name="text">
@@ -338,7 +380,7 @@
   </action>
   <action name="actionRtkPlot">
    <property name="icon">
-    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+    <iconset resource="rtklaunch_qt.qrc">
      <normaloff>:/icons/rtk2.bmp</normaloff>:/icons/rtk2.bmp</iconset>
    </property>
    <property name="text">
@@ -350,7 +392,7 @@
   </action>
   <action name="actionRtkPost">
    <property name="icon">
-    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+    <iconset resource="rtklaunch_qt.qrc">
      <normaloff>:/icons/rtk1.bmp</normaloff>:/icons/rtk1.bmp</iconset>
    </property>
    <property name="text">
@@ -362,7 +404,7 @@
   </action>
   <action name="actionRtkStr">
    <property name="icon">
-    <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
+    <iconset resource="rtklaunch_qt.qrc">
      <normaloff>:/icons/rtk6.bmp</normaloff>:/icons/rtk6.bmp</iconset>
    </property>
    <property name="text">
@@ -396,7 +438,7 @@
   <tabstop>BtnRtklib</tabstop>
  </tabstops>
  <resources>
-  <include location="../rtkconv_qt/rtkconv_qt.qrc"/>
+  <include location="rtklaunch_qt.qrc"/>
  </resources>
  <connections/>
 </ui>

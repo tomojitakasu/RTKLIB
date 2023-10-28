@@ -49,7 +49,7 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="QWidget" name="Panel1" native="true">
+        <widget class="QWidget" name="HeaderPanel" native="true">
          <property name="enabled">
           <bool>true</bool>
          </property>
@@ -390,46 +390,10 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QWidget" name="Panel3" native="true">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="toolTip">
+           <widget class="QLabel" name="Message">
+            <property name="text">
              <string/>
             </property>
-            <property name="layoutDirection">
-             <enum>Qt::LeftToRight</enum>
-            </property>
-            <property name="text" stdset="0">
-             <string/>
-            </property>
-            <layout class="QHBoxLayout" name="horizontalLayout_2">
-             <property name="spacing">
-              <number>0</number>
-             </property>
-             <property name="leftMargin">
-              <number>0</number>
-             </property>
-             <property name="rightMargin">
-              <number>0</number>
-             </property>
-             <property name="bottomMargin">
-              <number>0</number>
-             </property>
-             <item>
-              <widget class="QLabel" name="Message">
-               <property name="enabled">
-                <bool>true</bool>
-               </property>
-               <property name="toolTip">
-                <string/>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-            </layout>
            </widget>
           </item>
          </layout>
@@ -446,10 +410,10 @@
      <x>0</x>
      <y>0</y>
      <width>1098</width>
-     <height>30</height>
+     <height>23</height>
     </rect>
    </property>
-   <widget class="QMenu" name="File1">
+   <widget class="QMenu" name="File">
     <property name="enabled">
      <bool>true</bool>
     </property>
@@ -464,7 +428,7 @@
     <addaction name="separator"/>
     <addaction name="MenuQuit"/>
    </widget>
-   <widget class="QMenu" name="Edit1">
+   <widget class="QMenu" name="Edit">
     <property name="enabled">
      <bool>true</bool>
     </property>
@@ -478,7 +442,7 @@
     <addaction name="separator"/>
     <addaction name="MenuUpdateTable"/>
    </widget>
-   <widget class="QMenu" name="View1">
+   <widget class="QMenu" name="View">
     <property name="enabled">
      <bool>true</bool>
     </property>
@@ -494,7 +458,7 @@
     <addaction name="separator"/>
     <addaction name="MenuViewSrc"/>
    </widget>
-   <widget class="QMenu" name="Help1">
+   <widget class="QMenu" name="Help">
     <property name="enabled">
      <bool>true</bool>
     </property>
@@ -506,10 +470,10 @@
     </property>
     <addaction name="MenuAbout"/>
    </widget>
-   <addaction name="File1"/>
-   <addaction name="Edit1"/>
-   <addaction name="View1"/>
-   <addaction name="Help1"/>
+   <addaction name="File"/>
+   <addaction name="Edit"/>
+   <addaction name="View"/>
+   <addaction name="Help"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="MenuOpen">

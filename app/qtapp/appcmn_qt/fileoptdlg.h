@@ -18,17 +18,17 @@ protected:
     KeyDialog *keyDialog;
 
 public slots:
-    void BtnFilePathClick();
-    void BtnOkClick();
-    void ChkTimeTagClick();
-    void BtnKeyClick();
+    void btnFilePathClicked();
+    void btnOkClicked();
+    void timeTagChecked();
+    void btnKeyClicked();
 
 private:
-    void UpdateEnable(void);
+    void updateEnable(void);
 
 public:
-	int Opt, PathEna;
-    QString Path;
+    int options, pathEnabled;
+    QString path;
     explicit FileOptDialog(QWidget* parent);
 };
 //---------------------------------------------------------------------------

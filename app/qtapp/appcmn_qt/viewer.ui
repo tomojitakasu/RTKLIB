@@ -17,57 +17,18 @@
    <string/>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <property name="spacing">
-    <number>0</number>
-   </property>
-   <property name="leftMargin">
-    <number>0</number>
-   </property>
-   <property name="topMargin">
-    <number>0</number>
-   </property>
-   <property name="rightMargin">
-    <number>0</number>
-   </property>
-   <property name="bottomMargin">
-    <number>0</number>
-   </property>
    <item>
     <widget class="QWidget" name="widget" native="true">
      <layout class="QHBoxLayout" name="horizontalLayout">
-      <property name="spacing">
-       <number>0</number>
-      </property>
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
       <item>
-       <widget class="QLineEdit" name="FindStr">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QLineEdit" name="findStr">
         <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
          <string/>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnFind">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnFind">
         <property name="toolTip">
          <string/>
         </property>
@@ -90,10 +51,7 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnReload">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnReload">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -103,23 +61,14 @@
         <property name="toolTip">
          <string>Reload</string>
         </property>
-        <property name="text">
-         <string/>
-        </property>
         <property name="icon">
          <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
           <normaloff>:/buttons/reload.bmp</normaloff>:/buttons/reload.bmp</iconset>
         </property>
-        <property name="flat">
-         <bool>true</bool>
-        </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnRead">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnRead">
         <property name="toolTip">
          <string/>
         </property>
@@ -129,10 +78,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnOpt">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnOpt">
         <property name="toolTip">
          <string/>
         </property>
@@ -142,10 +88,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnClose">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnClose">
         <property name="toolTip">
          <string/>
         </property>
@@ -164,7 +107,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QPlainTextEdit" name="Text"/>
+    <widget class="QPlainTextEdit" name="textEdit"/>
    </item>
   </layout>
  </widget>

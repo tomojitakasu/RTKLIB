@@ -11,9 +11,9 @@ CodeOptDialog::CodeOptDialog(QWidget *parent, ConvOptDialog *c)
 {
     setupUi(this);
 
-    connect(BtnCancel, SIGNAL(clicked(bool)), this, SLOT(reject()));
-    connect(BtnOk, SIGNAL(clicked(bool)), this, SLOT(BtnOkClick()));
-    connect(BtnSetAll, SIGNAL(clicked(bool)), this, SLOT(BtnSetAllClick()));
+    connect(btnCancel, SIGNAL(clicked(bool)), this, SLOT(reject()));
+    connect(btnOk, SIGNAL(clicked(bool)), this, SLOT(btnOkClicked()));
+    connect(btnSetAll, SIGNAL(clicked(bool)), this, SLOT(btnSetAllClicked()));
 }
 //---------------------------------------------------------------------------
 void CodeOptDialog::showEvent(QShowEvent *event)
@@ -22,7 +22,7 @@ void CodeOptDialog::showEvent(QShowEvent *event)
 
     char mask[7][MAXCODE+1] = { "" };
 
-    for (int i = 0; i < 7; i++) strcpy(mask[i], qPrintable(convOptDialog->CodeMask[i]));
+    for (int i = 0; i < 7; i++) strcpy(mask[i], qPrintable(convOptDialog->codeMask[i]));
 
     G01->setChecked(mask[0][0] == '1');
     G02->setChecked(mask[0][1] == '1');
@@ -133,10 +133,10 @@ void CodeOptDialog::showEvent(QShowEvent *event)
     S25->setChecked(mask[4][24] == '1');
     S26->setChecked(mask[4][25] == '1');
 
-	UpdateEnable();
+	updateEnable();
 }
 //---------------------------------------------------------------------------
-void CodeOptDialog::BtnOkClick()
+void CodeOptDialog::btnOkClicked()
 {
     char mask[7][MAXCODE+1] = { "" };
 
@@ -252,14 +252,14 @@ void CodeOptDialog::BtnOkClick()
     if (S25->isChecked()) mask[4][24] = '1';
     if (S26->isChecked()) mask[4][25] = '1';
 
-    for (int i = 0; i < 7; i++) convOptDialog->CodeMask[i] = mask[i];
+    for (int i = 0; i < 7; i++) convOptDialog->codeMask[i] = mask[i];
 
     accept();
 }
 //---------------------------------------------------------------------------
-void CodeOptDialog::BtnSetAllClick()
+void CodeOptDialog::btnSetAllClicked()
 {
-    bool set = (BtnSetAll->text() == tr("&Set All"));
+    bool set = (btnSetAll->text() == tr("&Set All"));
 
     G01->setChecked(set);
     G02->setChecked(set);
@@ -370,10 +370,10 @@ void CodeOptDialog::BtnSetAllClick()
     S25->setChecked(set);
     S26->setChecked(set);
 
-    BtnSetAll->setText(BtnSetAll->text() == tr("&Set All") ? tr("Un&set All") : tr("&Set All"));
+    btnSetAll->setText(btnSetAll->text() == tr("&Set All") ? tr("Un&set All") : tr("&Set All"));
 }
 //---------------------------------------------------------------------------
-void CodeOptDialog::UpdateEnable(void)
+void CodeOptDialog::updateEnable(void)
 {
     G01->setEnabled((NavSys & SYS_GPS) && (FreqType & FREQTYPE_L1));
     G02->setEnabled((NavSys & SYS_GPS) && (FreqType & FREQTYPE_L1));

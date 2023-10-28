@@ -94,4 +94,7 @@
         <file>rtklib_gm.htm</file>
         <file>qwebchannel.js</file>
     </qresource>
+    <qresource prefix="/">
+        <file>../appcmn_qt/map.qml</file>
+    </qresource>
 </RCC>

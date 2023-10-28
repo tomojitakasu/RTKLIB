@@ -975,8 +975,8 @@ void MainWindow::BtnAboutClick()
     trace(3, "BtnAboutClick\n");
 
     aboutDialog = new AboutDialog(this);
-    aboutDialog->About = prog;
-    aboutDialog->IconIndex = 5;
+    aboutDialog->aboutString = prog;
+    aboutDialog->iconIndex = 5;
     aboutDialog->exec();
 
     delete aboutDialog;
@@ -2558,10 +2558,10 @@ void MainWindow::LoadOpt(void)
     if (settings.value("setting/posfontbold", 0).toInt()) PosFont.setBold(true);
     if (settings.value("setting/posfontitalic", 0).toInt()) PosFont.setItalic(true); ;
 
-    TextViewer::Color1 = QColor(static_cast<QRgb>(settings.value("viewer/color1", static_cast<int>(Qt::black)).toInt()));
-    TextViewer::Color2 = QColor(static_cast<QRgb>(settings.value("viewer/color2", static_cast<int>(Qt::white)).toInt()));
-    TextViewer::FontD.setFamily(settings.value("viewer/fontname", "Courier New").toString());
-    TextViewer::FontD.setPointSize(settings.value("viewer/fontsize", 9).toInt());
+    TextViewer::colorText = QColor(static_cast<QRgb>(settings.value("viewer/color1", static_cast<int>(Qt::black)).toInt()));
+    TextViewer::colorBackground = QColor(static_cast<QRgb>(settings.value("viewer/color2", static_cast<int>(Qt::white)).toInt()));
+    TextViewer::font.setFamily(settings.value("viewer/fontname", "Courier New").toString());
+    TextViewer::font.setPointSize(settings.value("viewer/fontsize", 9).toInt());
 
     UpdatePanel();
 
@@ -2772,10 +2772,10 @@ void MainWindow::SaveOpt(void)
     settings.setValue("setting/posfontbold", PosFont.bold());
     settings.setValue("setting/posfontitalic", PosFont.italic());
 
-    settings.setValue("viewer/color1", static_cast<int>(TextViewer::Color1.rgb()));
-    settings.setValue("viewer/color2", static_cast<int>(TextViewer::Color2.rgb()));
-    settings.setValue("viewer/fontname", TextViewer::FontD.family());
-    settings.setValue("viewer/fontsize", TextViewer::FontD.pointSize());
+    settings.setValue("viewer/color1", static_cast<int>(TextViewer::colorText.rgb()));
+    settings.setValue("viewer/color2", static_cast<int>(TextViewer::colorBackground.rgb()));
+    settings.setValue("viewer/fontname", TextViewer::font.family());
+    settings.setValue("viewer/fontsize", TextViewer::font.pointSize());
 
     settings.setValue("window/width", size().width());
     settings.setValue("window/height", size().height());

@@ -13,19 +13,19 @@ class CmdOptDialog : public QDialog, private Ui_CmdOptDialog
 
 protected:
     void showEvent(QShowEvent *);
-    void UpdateEnable();
+    void updateEnable();
 
 public slots:
-    void BtnOkClick();
-    void ChkCloseCmdClick();
-    void ChkOpenCmdClick();
-    void ChkPeriodicCmdClick();
-    void BtnLoadClick();
-    void BtnSaveClick();
+    void btnOkClicked();
+    void closeCommandsChecked();
+    void openCommandsChecked();
+    void periodicCommandsChecked();
+    void btnLoadClicked();
+    void btnSaveClicked();
 
 public:
-    QString Cmds[3];
-    bool CmdEna[3];
+    QString commands[3];
+    bool commandsEnabled[3];
     explicit CmdOptDialog(QWidget* parent);
 };
 #endif

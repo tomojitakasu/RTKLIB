@@ -15,10 +15,10 @@ MaskOptDialog::MaskOptDialog(QWidget *parent)
     for (int i = 0; i < 3; i++) for (int j = 0; j < 9; j++)
             Mask.mask[i][j] = 0.0;
 
-    connect(BtnOk, SIGNAL(clicked(bool)), this, SLOT(BtnOkClick()));
-    connect(BtnCancel, SIGNAL(clicked(bool)), this, SLOT(reject()));
-    connect(MaskEna1, SIGNAL(clicked(bool)), this, SLOT(MaskEnaClick()));
-    connect(MaskEna2, SIGNAL(clicked(bool)), this, SLOT(MaskEnaClick()));
+    connect(btnOk, SIGNAL(clicked(bool)), this, SLOT(btnOkClicked()));
+    connect(btnCancel, SIGNAL(clicked(bool)), this, SLOT(reject()));
+    connect(cBMaskEnabled1, SIGNAL(clicked(bool)), this, SLOT(MaskEnabledClicked()));
+    connect(cBMaskEnabled2, SIGNAL(clicked(bool)), this, SLOT(MaskEnabledClicked()));
 }
 //---------------------------------------------------------------------------
 void MaskOptDialog::showEvent(QShowEvent *event)
@@ -26,13 +26,13 @@ void MaskOptDialog::showEvent(QShowEvent *event)
     if (event->spontaneous()) return;
 
     QDoubleSpinBox *mask[][9] = {
-        { Mask_1_1, Mask_1_2, Mask_1_3, Mask_1_4, Mask_1_5, Mask_1_6, Mask_1_7, Mask_1_8, Mask_1_9 },
-        { Mask_2_1, Mask_2_2, Mask_2_3, Mask_2_4, Mask_2_5, Mask_2_6, Mask_2_7, Mask_2_8, Mask_2_9 },
-        { Mask_3_1, Mask_3_2, Mask_3_3, Mask_3_4, Mask_3_5, Mask_3_6, Mask_3_7, Mask_3_8, Mask_3_9 }
+        { sBMask_1_1, sBMask_1_2, sBMask_1_3, sBMask_1_4, sBMask_1_5, sBMask_1_6, sBMask_1_7, sBMask_1_8, sBMask_1_9 },
+        { sBMask_2_1, sBMask_2_2, sBMask_2_3, sBMask_2_4, sBMask_2_5, sBMask_2_6, sBMask_2_7, sBMask_2_8, sBMask_2_9 },
+        { sBMask_3_1, sBMask_3_2, sBMask_3_3, sBMask_3_4, sBMask_3_5, sBMask_3_6, sBMask_3_7, sBMask_3_8, sBMask_3_9 }
     };
 
-    MaskEna1->setChecked(Mask.ena[0]);
-    MaskEna2->setChecked(Mask.ena[1]);
+    cBMaskEnabled1->setChecked(Mask.ena[0]);
+    cBMaskEnabled2->setChecked(Mask.ena[1]);
 
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 9; j++) {
@@ -40,19 +40,19 @@ void MaskOptDialog::showEvent(QShowEvent *event)
         }
 	}
 
-	UpdateEnable();
+	updateEnable();
 }
 //---------------------------------------------------------------------------
-void MaskOptDialog::BtnOkClick()
+void MaskOptDialog::btnOkClicked()
 {
     QDoubleSpinBox *mask[][9] = {
-        { Mask_1_1, Mask_1_2, Mask_1_3, Mask_1_4, Mask_1_5, Mask_1_6, Mask_1_7, Mask_1_8, Mask_1_9 },
-        { Mask_2_1, Mask_2_2, Mask_2_3, Mask_2_4, Mask_2_5, Mask_2_6, Mask_2_7, Mask_2_8, Mask_2_9 },
-        { Mask_3_1, Mask_3_2, Mask_3_3, Mask_3_4, Mask_3_5, Mask_3_6, Mask_3_7, Mask_3_8, Mask_3_9 }
+        { sBMask_1_1, sBMask_1_2, sBMask_1_3, sBMask_1_4, sBMask_1_5, sBMask_1_6, sBMask_1_7, sBMask_1_8, sBMask_1_9 },
+        { sBMask_2_1, sBMask_2_2, sBMask_2_3, sBMask_2_4, sBMask_2_5, sBMask_2_6, sBMask_2_7, sBMask_2_8, sBMask_2_9 },
+        { sBMask_3_1, sBMask_3_2, sBMask_3_3, sBMask_3_4, sBMask_3_5, sBMask_3_6, sBMask_3_7, sBMask_3_8, sBMask_3_9 }
 	};
 
-    Mask.ena[0] = MaskEna1->isChecked();
-    Mask.ena[1] = MaskEna2->isChecked();
+    Mask.ena[0] = cBMaskEnabled1->isChecked();
+    Mask.ena[1] = cBMaskEnabled2->isChecked();
     for (int i = 0; i < 3; i++) for (int j = 0; j < 9; j++)
             Mask.mask[i][j] = mask[i][j]->value();
 
@@ -60,21 +60,21 @@ void MaskOptDialog::BtnOkClick()
     accept();
 }
 //---------------------------------------------------------------------------
-void MaskOptDialog::MaskEnaClick()
+void MaskOptDialog::MaskEnabledClicked()
 {
-	UpdateEnable();
+	updateEnable();
 }
 //---------------------------------------------------------------------------
-void MaskOptDialog::UpdateEnable(void)
+void MaskOptDialog::updateEnable(void)
 {
     QDoubleSpinBox *mask[][9] = {
-        { Mask_1_1, Mask_1_2, Mask_1_3, Mask_1_4, Mask_1_5, Mask_1_6, Mask_1_7, Mask_1_8, Mask_1_9 },
-        { Mask_2_1, Mask_2_2, Mask_2_3, Mask_2_4, Mask_2_5, Mask_2_6, Mask_2_7, Mask_2_8, Mask_2_9 },
-        { Mask_3_1, Mask_3_2, Mask_3_3, Mask_3_4, Mask_3_5, Mask_3_6, Mask_3_7, Mask_3_8, Mask_3_9 }
+        { sBMask_1_1, sBMask_1_2, sBMask_1_3, sBMask_1_4, sBMask_1_5, sBMask_1_6, sBMask_1_7, sBMask_1_8, sBMask_1_9 },
+        { sBMask_2_1, sBMask_2_2, sBMask_2_3, sBMask_2_4, sBMask_2_5, sBMask_2_6, sBMask_2_7, sBMask_2_8, sBMask_2_9 },
+        { sBMask_3_1, sBMask_3_2, sBMask_3_3, sBMask_3_4, sBMask_3_5, sBMask_3_6, sBMask_3_7, sBMask_3_8, sBMask_3_9 }
 	};
 
     for (int i = 0; i < 3; i++) for (int j = 0; j < 9; j++)
-            mask[i][j]->setEnabled(MaskEna1->isChecked() || MaskEna2->isChecked());
+            mask[i][j]->setEnabled(cBMaskEnabled1->isChecked() || cBMaskEnabled2->isChecked());
 
 }
 //---------------------------------------------------------------------------

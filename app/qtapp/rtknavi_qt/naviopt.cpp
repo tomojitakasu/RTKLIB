@@ -217,7 +217,7 @@ void OptDialog::BtnStaPosViewClick()
     TextViewer *viewer = new TextViewer(this);
     viewer->show();
 
-    viewer->Read(StaPosFile->text());
+    viewer->read(StaPosFile->text());
 }
 //---------------------------------------------------------------------------
 void OptDialog::BtnStaPosFileClick()
@@ -272,19 +272,19 @@ void OptDialog::BtnRovPosClick()
     GetPos(RovPosTypeP->currentIndex(), edit, p);
     ecef2pos(p, posi);
 
-    refDialog.RovPos[0] = posi[0] * R2D;
-    refDialog.RovPos[1] = posi[1] * R2D;
-    refDialog.Pos[2] = posi[2];
-    refDialog.StaPosFile = StaPosFile->text();
+    refDialog.RoverPosition[0] = posi[0] * R2D;
+    refDialog.RoverPosition[1] = posi[1] * R2D;
+    refDialog.position[2] = posi[2];
+    refDialog.stationPositionFile = StaPosFile->text();
     refDialog.move(pos().x() + size().width() / 2 - refDialog.size().width() / 2,
                pos().y() + size().height() / 2 - refDialog.size().height() / 2);
 
     refDialog.exec();
     if (refDialog.result() != QDialog::Accepted) return;
 
-    posi[0] = refDialog.Pos[0] * D2R;
-    posi[1] = refDialog.Pos[1] * D2R;
-    posi[2] = refDialog.Pos[2];
+    posi[0] = refDialog.position[0] * D2R;
+    posi[1] = refDialog.position[1] * D2R;
+    posi[2] = refDialog.position[2];
 
     pos2ecef(posi, p);
     SetPos(RovPosTypeP->currentIndex(), edit, p);
@@ -298,19 +298,19 @@ void OptDialog::BtnRefPosClick()
 
     GetPos(RefPosTypeP->currentIndex(), edit, p);
     ecef2pos(p, posi);
-    refDialog.RovPos[0] = posi[0] * R2D;
-    refDialog.RovPos[1] = posi[1] * R2D;
-    refDialog.RovPos[2] = posi[2];
-    refDialog.StaPosFile = StaPosFile->text();
+    refDialog.RoverPosition[0] = posi[0] * R2D;
+    refDialog.RoverPosition[1] = posi[1] * R2D;
+    refDialog.RoverPosition[2] = posi[2];
+    refDialog.stationPositionFile = StaPosFile->text();
     refDialog.move(pos().x() + size().width() / 2 - refDialog.size().width() / 2,
                pos().y() + size().height() / 2 - refDialog.size().height() / 2);
 
     refDialog.exec();
     if (refDialog.result() != QDialog::Accepted) return;
 
-    posi[0] = refDialog.Pos[0] * D2R;
-    posi[1] = refDialog.Pos[1] * D2R;
-    posi[2] = refDialog.Pos[2];
+    posi[0] = refDialog.position[0] * D2R;
+    posi[1] = refDialog.position[1] * D2R;
+    posi[2] = refDialog.position[2];
 
     pos2ecef(posi, p);
     SetPos(RefPosTypeP->currentIndex(), edit, p);
@@ -322,7 +322,7 @@ void OptDialog::BtnSatPcvViewClick()
 
     textViewer->show();
 
-    textViewer->Read(SatPcvFile->text());
+    textViewer->read(SatPcvFile->text());
 }
 //---------------------------------------------------------------------------
 void OptDialog::BtnSatPcvFileClick()
@@ -336,7 +336,7 @@ void OptDialog::BtnAntPcvViewClick()
 
     textViewer->show();
 
-    textViewer->Read(AntPcvFile->text());
+    textViewer->read(AntPcvFile->text());
 }
 //---------------------------------------------------------------------------
 void OptDialog::BtnAntPcvFileClick()
@@ -372,7 +372,7 @@ void OptDialog::BtnEOPViewClick()
 
     textViewer->show();
 
-    textViewer->Read(EOPFile->text());
+    textViewer->read(EOPFile->text());
 }
 //---------------------------------------------------------------------------
 void OptDialog::BtnLocalDirClick()

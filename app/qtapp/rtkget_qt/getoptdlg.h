@@ -14,9 +14,9 @@ protected:
     void  showEvent(QShowEvent*);
 
 public slots:
-    void  BtnOkClick();
-    void  BtnUrlFileClick();
-    void  BtnLogFileClick();
+    void  btnOkClicked();
+    void  btnUrlFileClicked();
+    void  btnLogFileClicked();
 
 public:
     explicit DownOptDialog(QWidget* parent);

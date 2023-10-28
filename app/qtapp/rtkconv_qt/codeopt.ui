@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>507</width>
-    <height>592</height>
+    <height>602</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,7 +21,7 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="QGroupBox" name="GroupBox1">
+    <widget class="QGroupBox" name="groupBox1">
      <property name="toolTip">
       <string/>
      </property>
@@ -321,7 +321,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="GroupBox2">
+    <widget class="QGroupBox" name="groupBox2">
      <property name="toolTip">
       <string/>
      </property>
@@ -517,7 +517,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="GroupBox3">
+    <widget class="QGroupBox" name="groupBox3">
      <property name="toolTip">
       <string/>
      </property>
@@ -788,7 +788,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="GroupBox4">
+    <widget class="QGroupBox" name="groupBox4">
      <property name="toolTip">
       <string/>
      </property>
@@ -1062,7 +1062,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="GroupBox6">
+    <widget class="QGroupBox" name="groupBox6">
      <property name="toolTip">
       <string/>
      </property>
@@ -1481,7 +1481,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="GroupBox5">
+    <widget class="QGroupBox" name="groupBox5">
      <property name="toolTip">
       <string/>
      </property>
@@ -1575,7 +1575,7 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QPushButton" name="BtnSetAll">
+       <widget class="QPushButton" name="btnSetAll">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -1588,7 +1588,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnOk">
+       <widget class="QPushButton" name="btnOk">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -1607,7 +1607,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnCancel">
+       <widget class="QPushButton" name="btnCancel">
         <property name="enabled">
          <bool>true</bool>
         </property>

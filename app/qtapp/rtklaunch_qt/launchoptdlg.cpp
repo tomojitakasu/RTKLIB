@@ -18,28 +18,28 @@ void LaunchOptDialog::showEvent(QShowEvent *event)
 {
     if (event->spontaneous()) return;
 
-    if (mainForm->Option == 1) {
+    if (mainForm->option == 1) {
         OptMkl->setChecked(true);
 	}
-    else if (mainForm->Option == 2) {
+    else if (mainForm->option == 2) {
         OptWin64->setChecked(true);
 	}
 	else {
         OptNormal->setChecked(true);
 	}
-    Minimize->setChecked(mainForm->Minimize);
+    Minimize->setChecked(mainForm->minimize);
 }
 //---------------------------------------------------------------------------
-void LaunchOptDialog::BtnOkClick()
+void LaunchOptDialog::btnOkClicked()
 {
     if (OptMkl->isChecked()) {
-        mainForm->Option = 1;
+        mainForm->option = 1;
 	}
     else if (OptWin64->isChecked()) {
-        mainForm->Option = 2;
+        mainForm->option = 2;
 	}
 	else {
-        mainForm->Option = 0;
+        mainForm->option = 0;
 	}
-    mainForm->Minimize=Minimize->isChecked();
+    mainForm->minimize=Minimize->isChecked();
 }//---------------------------------------------------------------------------

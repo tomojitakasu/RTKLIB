@@ -19,221 +19,221 @@ ConvOptDialog::ConvOptDialog(QWidget *parent)
     freqDialog = new FreqDialog(this);
 
     int glo = MAXPRNGLO, gal = MAXPRNGAL, qzs = MAXPRNQZS, cmp = MAXPRNCMP, irn=MAXPRNIRN;;
-    if (glo <= 0) Nav2->setEnabled(false);
-    if (gal <= 0) Nav3->setEnabled(false);
-    if (qzs <= 0) Nav4->setEnabled(false);
-    if (cmp <= 0) Nav6->setEnabled(false);
-    if (irn <= 0) Nav7->setEnabled(false);
+    if (glo <= 0) cBNavSys2->setEnabled(false);
+    if (gal <= 0) cBNavSys3->setEnabled(false);
+    if (qzs <= 0) cBNavSys4->setEnabled(false);
+    if (cmp <= 0) cBNavSys6->setEnabled(false);
+    if (irn <= 0) cBNavSys7->setEnabled(false);
 
-    connect(BtnCancel, SIGNAL(clicked(bool)), this, SLOT(reject()));
-    connect(BtnOk, SIGNAL(clicked(bool)), this, SLOT(BtnOkClick()));
-    connect(BtnMask, SIGNAL(clicked(bool)), this, SLOT(BtnMaskClick()));
-    connect(AutoPos, SIGNAL(clicked(bool)), this, SLOT(AutoPosClick()));
-    connect(RnxFile, SIGNAL(clicked(bool)), this, SLOT(RnxFileClick()));
-    connect(RnxVer, SIGNAL(currentIndexChanged(int)), this, SLOT(RnxVerChange()));
-    connect(BtnFcn, SIGNAL(clicked(bool)), this, SLOT(BtnFcnClick()));
-    connect(BtnFreq, SIGNAL(clicked(bool)), this, SLOT(BtnFreqClick()));
+    connect(btnCancel, SIGNAL(clicked(bool)), this, SLOT(reject()));
+    connect(btnOk, SIGNAL(clicked(bool)), this, SLOT(btnOkClicked()));
+    connect(btnMask, SIGNAL(clicked(bool)), this, SLOT(btnMaskClicked()));
+    connect(cBAutoPosition, SIGNAL(clicked(bool)), this, SLOT(autoPositionClicked()));
+    connect(cBRinexFilename, SIGNAL(clicked(bool)), this, SLOT(rinexFileClicked()));
+    connect(cBRinexVersion, SIGNAL(currentIndexChanged(int)), this, SLOT(rinexVersionChanged()));
+    connect(btnFcn, SIGNAL(clicked(bool)), this, SLOT(btnFcnClicked()));
+    connect(btnFrequencies, SIGNAL(clicked(bool)), this, SLOT(btnFreqClicked()));
 
-	UpdateEnable();
+    updateEnable();
 }
 //---------------------------------------------------------------------------
 void ConvOptDialog::showEvent(QShowEvent *event)
 {
     if (event->spontaneous()) return;
 
-    RnxVer->setCurrentIndex(mainWindow->RnxVer);
-    RnxFile->setChecked(mainWindow->RnxFile);
-    RnxCode->setText(mainWindow->RnxCode);
-    RunBy->setText(mainWindow->RunBy);
-    Marker->setText(mainWindow->Marker);
-    MarkerNo->setText(mainWindow->MarkerNo);
-    MarkerType->setText(mainWindow->MarkerType);
-    Name0->setText(mainWindow->Name[0]);
-    Name1->setText(mainWindow->Name[1]);
-    Rec0->setText(mainWindow->Rec[0]);
-    Rec1->setText(mainWindow->Rec[1]);
-    Rec2->setText(mainWindow->Rec[2]);
-    Ant0->setText(mainWindow->Ant[0]);
-    Ant1->setText(mainWindow->Ant[1]);
-    AppPos0->setValue(mainWindow->AppPos[0]);
-    AppPos1->setValue(mainWindow->AppPos[1]);
-    AppPos2->setValue(mainWindow->AppPos[2]);
-    AntDel0->setValue(mainWindow->AntDel[0]);
-    AntDel1->setValue(mainWindow->AntDel[1]);
-    AntDel2->setValue(mainWindow->AntDel[2]);
-    Comment0->setText(mainWindow->Comment[0]);
-    Comment1->setText(mainWindow->Comment[1]);
-    RcvOption->setText(mainWindow->RcvOption);
+    cBRinexVersion->setCurrentIndex(mainWindow->rinexVersion);
+    cBRinexFilename->setChecked(mainWindow->rinexFile);
+    lERinexStationCode->setText(mainWindow->rinexStationCode);
+    lERunBy->setText(mainWindow->runBy);
+    lEMarker->setText(mainWindow->marker);
+    lEMarkerNo->setText(mainWindow->markerNo);
+    lEMarkerType->setText(mainWindow->markerType);
+    lEObserver->setText(mainWindow->name[0]);
+    lEAgency->setText(mainWindow->name[1]);
+    lEReceiver->setText(mainWindow->receiver[0]);
+    lEReceiverType->setText(mainWindow->receiver[1]);
+    lEReceiverVersion->setText(mainWindow->receiver[2]);
+    lEAntenna->setText(mainWindow->antenna[0]);
+    lEAntennaType->setText(mainWindow->antenna[1]);
+    sBApproxPosition0->setValue(mainWindow->approxPosition[0]);
+    sBApproxPosition1->setValue(mainWindow->approxPosition[1]);
+    sBApproxPosition2->setValue(mainWindow->approxPosition[2]);
+    sBAntennaDelta0->setValue(mainWindow->antennaDelta[0]);
+    sBAntennaDelta1->setValue(mainWindow->antennaDelta[1]);
+    sBAntennaDelta2->setValue(mainWindow->antennaDelta[2]);
+    lEComment0->setText(mainWindow->comment[0]);
+    lEComment1->setText(mainWindow->comment[1]);
+    lEReceiverOptions->setText(mainWindow->receiverOptions);
 
-    for (int i = 0; i < 7; i++) CodeMask[i] = mainWindow->CodeMask[i];
+    for (int i = 0; i < 7; i++) codeMask[i] = mainWindow->modeMask[i];
 
-    AutoPos->setChecked(mainWindow->AutoPos);
-    PhaseShift->setChecked(mainWindow->PhaseShift);
-    HalfCyc->setChecked(mainWindow->HalfCyc);
-    OutIono->setChecked(mainWindow->OutIono);
-    OutTime->setChecked(mainWindow->OutTime);
-    OutLeaps->setChecked(mainWindow->OutLeaps);
-    gloFcnDialog->EnaGloFcn=mainWindow->EnaGloFcn;
+    cBAutoPosition->setChecked(mainWindow->autoPosition);
+    cBPhaseShift->setChecked(mainWindow->phaseShift);
+    cBHalfCycle->setChecked(mainWindow->halfCycle);
+    cBOutputIonoCorr->setChecked(mainWindow->outputIonoCorr);
+    cBOutputTimeCorr->setChecked(mainWindow->outputTimeCorr);
+    cBOutputLeapSecs->setChecked(mainWindow->outputLeapSeconds);
+    gloFcnDialog->EnaGloFcn=mainWindow->enableGlonassFrequency;
     for (int i=0;i<27;i++) {
-        gloFcnDialog->GloFcn[i]=mainWindow->GloFcn[i];
+        gloFcnDialog->GloFcn[i]=mainWindow->glonassFrequency[i];
     }
 
-    Nav1->setChecked(mainWindow->NavSys & SYS_GPS);
-    Nav2->setChecked(mainWindow->NavSys & SYS_GLO);
-    Nav3->setChecked(mainWindow->NavSys & SYS_GAL);
-    Nav4->setChecked(mainWindow->NavSys & SYS_QZS);
-    Nav5->setChecked(mainWindow->NavSys & SYS_SBS);
-    Nav6->setChecked(mainWindow->NavSys & SYS_CMP);
-    Nav7->setChecked(mainWindow->NavSys & SYS_IRN);
-    Obs1->setChecked(mainWindow->ObsType & OBSTYPE_PR);
-    Obs2->setChecked(mainWindow->ObsType & OBSTYPE_CP);
-    Obs3->setChecked(mainWindow->ObsType & OBSTYPE_DOP);
-    Obs4->setChecked(mainWindow->ObsType & OBSTYPE_SNR);
-    Freq1->setChecked(mainWindow->FreqType & FREQTYPE_L1);
-    Freq2->setChecked(mainWindow->FreqType & FREQTYPE_L2);
-    Freq3->setChecked(mainWindow->FreqType & FREQTYPE_L3);
-    Freq4->setChecked(mainWindow->FreqType & FREQTYPE_L4);
-    Freq5->setChecked(mainWindow->FreqType & FREQTYPE_L5);
+    cBNavSys1->setChecked(mainWindow->navSys & SYS_GPS);
+    cBNavSys2->setChecked(mainWindow->navSys & SYS_GLO);
+    cBNavSys3->setChecked(mainWindow->navSys & SYS_GAL);
+    cBNavSys4->setChecked(mainWindow->navSys & SYS_QZS);
+    cBNavSys5->setChecked(mainWindow->navSys & SYS_SBS);
+    cBNavSys6->setChecked(mainWindow->navSys & SYS_CMP);
+    cBNavSys7->setChecked(mainWindow->navSys & SYS_IRN);
+    cBObservationTypeC->setChecked(mainWindow->observationType & OBSTYPE_PR);
+    cBObservationTypeL->setChecked(mainWindow->observationType & OBSTYPE_CP);
+    cBObservationTypeD->setChecked(mainWindow->observationType & OBSTYPE_DOP);
+    cBObservationTypeS->setChecked(mainWindow->observationType & OBSTYPE_SNR);
+    cBFreq1->setChecked(mainWindow->frequencyType & FREQTYPE_L1);
+    cBFreq2->setChecked(mainWindow->frequencyType & FREQTYPE_L2);
+    cBFreq3->setChecked(mainWindow->frequencyType & FREQTYPE_L3);
+    cBFreq4->setChecked(mainWindow->frequencyType & FREQTYPE_L4);
+    cBFreq5->setChecked(mainWindow->frequencyType & FREQTYPE_L5);
 
-    ExSats->setText(mainWindow->ExSats);
-    TraceLevel->setCurrentIndex(mainWindow->TraceLevel);
-    ChkSepNav->setChecked(mainWindow->SepNav);
-    TimeTol->setValue(mainWindow->TimeTol);
+    lEExcludedSatellites->setText(mainWindow->excludedSatellites);
+    cBTraceLevel->setCurrentIndex(mainWindow->traceLevel);
+    cBSeperateNavigation->setChecked(mainWindow->separateNavigation);
+    sBTimeTolerance->setValue(mainWindow->timeTolerance);
 
-	UpdateEnable();
+    updateEnable();
 }
 //---------------------------------------------------------------------------
-void ConvOptDialog::BtnOkClick()
+void ConvOptDialog::btnOkClicked()
 {
-    mainWindow->RnxVer = RnxVer->currentIndex();
-    mainWindow->RnxFile = RnxFile->isChecked();
-    mainWindow->RnxCode = RnxCode->text();
-    mainWindow->RunBy = RunBy->text();
-    mainWindow->Marker = Marker->text();
-    mainWindow->MarkerNo = MarkerNo->text();
-    mainWindow->MarkerType = MarkerType->text();
-    mainWindow->Name[0] = Name0->text();
-    mainWindow->Name[1] = Name1->text();
-    mainWindow->Rec[0] = Rec0->text();
-    mainWindow->Rec[1] = Rec1->text();
-    mainWindow->Rec[2] = Rec2->text();
-    mainWindow->Ant[0] = Ant0->text();
-    mainWindow->Ant[1] = Ant1->text();
-    mainWindow->AppPos[0] = AppPos0->value();
-    mainWindow->AppPos[1] = AppPos1->value();
-    mainWindow->AppPos[2] = AppPos2->value();
-    mainWindow->AntDel[0] = AntDel0->value();
-    mainWindow->AntDel[1] = AntDel1->value();
-    mainWindow->AntDel[2] = AntDel2->value();
-    mainWindow->Comment[0] = Comment0->text();
-    mainWindow->Comment[1] = Comment1->text();
-    mainWindow->RcvOption = RcvOption->text();
+    mainWindow->rinexVersion = cBRinexVersion->currentIndex();
+    mainWindow->rinexFile = cBRinexFilename->isChecked();
+    mainWindow->rinexStationCode = lERinexStationCode->text();
+    mainWindow->runBy = lERunBy->text();
+    mainWindow->marker = lEMarker->text();
+    mainWindow->markerNo = lEMarkerNo->text();
+    mainWindow->markerType = lEMarkerType->text();
+    mainWindow->name[0] = lEObserver->text();
+    mainWindow->name[1] = lEAgency->text();
+    mainWindow->receiver[0] = lEReceiver->text();
+    mainWindow->receiver[1] = lEReceiverType->text();
+    mainWindow->receiver[2] = lEReceiverVersion->text();
+    mainWindow->antenna[0] = lEAntenna->text();
+    mainWindow->antenna[1] = lEAntennaType->text();
+    mainWindow->approxPosition[0] = sBApproxPosition0->value();
+    mainWindow->approxPosition[1] = sBApproxPosition1->value();
+    mainWindow->approxPosition[2] = sBApproxPosition2->value();
+    mainWindow->antennaDelta[0] = sBAntennaDelta0->value();
+    mainWindow->antennaDelta[1] = sBAntennaDelta1->value();
+    mainWindow->antennaDelta[2] = sBAntennaDelta2->value();
+    mainWindow->comment[0] = lEComment0->text();
+    mainWindow->comment[1] = lEComment1->text();
+    mainWindow->receiverOptions = lEReceiverOptions->text();
 
-    for (int i = 0; i < 7; i++) mainWindow->CodeMask[i] = CodeMask[i];
+    for (int i = 0; i < 7; i++) mainWindow->modeMask[i] = codeMask[i];
 
-    mainWindow->AutoPos = AutoPos->isChecked();
-    mainWindow->PhaseShift = PhaseShift->isChecked();
-    mainWindow->HalfCyc = HalfCyc->isChecked();
-    mainWindow->OutIono = OutIono->isChecked();
-    mainWindow->OutTime = OutTime->isChecked();
-    mainWindow->OutLeaps = OutLeaps->isChecked();
-    mainWindow->EnaGloFcn=gloFcnDialog->EnaGloFcn;
+    mainWindow->autoPosition = cBAutoPosition->isChecked();
+    mainWindow->phaseShift = cBPhaseShift->isChecked();
+    mainWindow->halfCycle = cBHalfCycle->isChecked();
+    mainWindow->outputIonoCorr = cBOutputIonoCorr->isChecked();
+    mainWindow->outputTimeCorr = cBOutputTimeCorr->isChecked();
+    mainWindow->outputLeapSeconds = cBOutputLeapSecs->isChecked();
+    mainWindow->enableGlonassFrequency=gloFcnDialog->EnaGloFcn;
     for (int i=0;i<27;i++) {
-        mainWindow->GloFcn[i]=gloFcnDialog->GloFcn[i];
+        mainWindow->glonassFrequency[i]=gloFcnDialog->GloFcn[i];
     }
 
     int navsys = 0, obstype = 0, freqtype = 0;
 
-    if (Nav1->isChecked()) navsys |= SYS_GPS;
-    if (Nav2->isChecked()) navsys |= SYS_GLO;
-    if (Nav3->isChecked()) navsys |= SYS_GAL;
-    if (Nav4->isChecked()) navsys |= SYS_QZS;
-    if (Nav5->isChecked()) navsys |= SYS_SBS;
-    if (Nav6->isChecked()) navsys |= SYS_CMP;
-    if (Nav7->isChecked()) navsys |= SYS_IRN;
+    if (cBNavSys1->isChecked()) navsys |= SYS_GPS;
+    if (cBNavSys2->isChecked()) navsys |= SYS_GLO;
+    if (cBNavSys3->isChecked()) navsys |= SYS_GAL;
+    if (cBNavSys4->isChecked()) navsys |= SYS_QZS;
+    if (cBNavSys5->isChecked()) navsys |= SYS_SBS;
+    if (cBNavSys6->isChecked()) navsys |= SYS_CMP;
+    if (cBNavSys7->isChecked()) navsys |= SYS_IRN;
 
-    if (Obs1->isChecked()) obstype |= OBSTYPE_PR;
-    if (Obs2->isChecked()) obstype |= OBSTYPE_CP;
-    if (Obs3->isChecked()) obstype |= OBSTYPE_DOP;
-    if (Obs4->isChecked()) obstype |= OBSTYPE_SNR;
+    if (cBObservationTypeC->isChecked()) obstype |= OBSTYPE_PR;
+    if (cBObservationTypeL->isChecked()) obstype |= OBSTYPE_CP;
+    if (cBObservationTypeD->isChecked()) obstype |= OBSTYPE_DOP;
+    if (cBObservationTypeS->isChecked()) obstype |= OBSTYPE_SNR;
 
-    if (Freq1->isChecked()) freqtype |= FREQTYPE_L1;
-    if (Freq2->isChecked()) freqtype |= FREQTYPE_L2;
-    if (Freq3->isChecked()) freqtype |= FREQTYPE_L3;
-    if (Freq4->isChecked()) freqtype |= FREQTYPE_L4;
-    if (Freq5->isChecked()) freqtype |= FREQTYPE_L5;
+    if (cBFreq1->isChecked()) freqtype |= FREQTYPE_L1;
+    if (cBFreq2->isChecked()) freqtype |= FREQTYPE_L2;
+    if (cBFreq3->isChecked()) freqtype |= FREQTYPE_L3;
+    if (cBFreq4->isChecked()) freqtype |= FREQTYPE_L4;
+    if (cBFreq5->isChecked()) freqtype |= FREQTYPE_L5;
 
-    mainWindow->NavSys = navsys;
-    mainWindow->ObsType = obstype;
-    mainWindow->FreqType = freqtype;
-    mainWindow->ExSats = ExSats->text();
-    mainWindow->TraceLevel = TraceLevel->currentIndex();
-    mainWindow->SepNav=ChkSepNav->isChecked();
-    mainWindow->TimeTol=TimeTol->value();
+    mainWindow->navSys = navsys;
+    mainWindow->observationType = obstype;
+    mainWindow->frequencyType = freqtype;
+    mainWindow->excludedSatellites = lEExcludedSatellites->text();
+    mainWindow->traceLevel = cBTraceLevel->currentIndex();
+    mainWindow->separateNavigation = cBSeperateNavigation->isChecked();
+    mainWindow->timeTolerance = sBTimeTolerance->value();
 
     accept();
 }
 //---------------------------------------------------------------------------
-void ConvOptDialog::RnxFileClick()
+void ConvOptDialog::rinexFileClicked()
 {
-	UpdateEnable();
+    updateEnable();
 }
 //---------------------------------------------------------------------------
-void ConvOptDialog::RnxVerChange()
+void ConvOptDialog::rinexVersionChanged()
 {
-	UpdateEnable();
+    updateEnable();
 }
 //---------------------------------------------------------------------------
-void ConvOptDialog::AutoPosClick()
+void ConvOptDialog::autoPositionClicked()
 {
-	UpdateEnable();
+    updateEnable();
 }
-void ConvOptDialog::BtnFreqClick()
+void ConvOptDialog::btnFreqClicked()
 {
     freqDialog->exec();
 }
 //---------------------------------------------------------------------------
-void ConvOptDialog::BtnMaskClick()
+void ConvOptDialog::btnMaskClicked()
 {
     codeOptDialog->NavSys = 0;
     codeOptDialog->FreqType = 0;
 
-    if (Nav1->isChecked()) codeOptDialog->NavSys |= SYS_GPS;
-    if (Nav2->isChecked()) codeOptDialog->NavSys |= SYS_GLO;
-    if (Nav3->isChecked()) codeOptDialog->NavSys |= SYS_GAL;
-    if (Nav4->isChecked()) codeOptDialog->NavSys |= SYS_QZS;
-    if (Nav5->isChecked()) codeOptDialog->NavSys |= SYS_SBS;
-    if (Nav6->isChecked()) codeOptDialog->NavSys |= SYS_CMP;
-    if (Nav7->isChecked()) codeOptDialog->NavSys |= SYS_IRN;
+    if (cBNavSys1->isChecked()) codeOptDialog->NavSys |= SYS_GPS;
+    if (cBNavSys2->isChecked()) codeOptDialog->NavSys |= SYS_GLO;
+    if (cBNavSys3->isChecked()) codeOptDialog->NavSys |= SYS_GAL;
+    if (cBNavSys4->isChecked()) codeOptDialog->NavSys |= SYS_QZS;
+    if (cBNavSys5->isChecked()) codeOptDialog->NavSys |= SYS_SBS;
+    if (cBNavSys6->isChecked()) codeOptDialog->NavSys |= SYS_CMP;
+    if (cBNavSys7->isChecked()) codeOptDialog->NavSys |= SYS_IRN;
 
-    if (Freq1->isChecked()) codeOptDialog->FreqType |= FREQTYPE_L1;
-    if (Freq2->isChecked()) codeOptDialog->FreqType |= FREQTYPE_L2;
-    if (Freq3->isChecked()) codeOptDialog->FreqType |= FREQTYPE_L3;
-    if (Freq4->isChecked()) codeOptDialog->FreqType |= FREQTYPE_L4;
-    if (Freq5->isChecked()) codeOptDialog->FreqType |= FREQTYPE_L5;
+    if (cBFreq1->isChecked()) codeOptDialog->FreqType |= FREQTYPE_L1;
+    if (cBFreq2->isChecked()) codeOptDialog->FreqType |= FREQTYPE_L2;
+    if (cBFreq3->isChecked()) codeOptDialog->FreqType |= FREQTYPE_L3;
+    if (cBFreq4->isChecked()) codeOptDialog->FreqType |= FREQTYPE_L4;
+    if (cBFreq5->isChecked()) codeOptDialog->FreqType |= FREQTYPE_L5;
 
     codeOptDialog->show();
 }
 //---------------------------------------------------------------------------
-void ConvOptDialog::UpdateEnable(void)
+void ConvOptDialog::updateEnable(void)
 {
-    AppPos0->setEnabled(AutoPos->isChecked());
-    AppPos1->setEnabled(AutoPos->isChecked());
-    AppPos2->setEnabled(AutoPos->isChecked());
-    ChkSepNav->setEnabled(RnxVer->currentIndex()>=3);
-    Label13->setEnabled(mainWindow->TimeIntF->isChecked());
-    TimeTol->setEnabled(mainWindow->TimeIntF->isChecked());
-    Nav3->setEnabled(RnxVer->currentIndex()>=1);
-    Nav4->setEnabled(RnxVer->currentIndex()>=5);
-    Nav6->setEnabled(RnxVer->currentIndex()==2||RnxVer->currentIndex()>=4);
-    Nav7->setEnabled(RnxVer->currentIndex()>=6);
-    Freq3->setEnabled(RnxVer->currentIndex()>=1);
-    Freq4->setEnabled(RnxVer->currentIndex()>=1);
-    Freq5->setEnabled(RnxVer->currentIndex()>=1);
-    PhaseShift->setEnabled(RnxVer->currentIndex()>=4);
+    sBApproxPosition0->setEnabled(cBAutoPosition->isChecked());
+    sBApproxPosition1->setEnabled(cBAutoPosition->isChecked());
+    sBApproxPosition2->setEnabled(cBAutoPosition->isChecked());
+    cBSeperateNavigation->setEnabled(cBRinexVersion->currentIndex()>=3);
+    lbTimeTolerance->setEnabled(mainWindow->cBTimeInterval->isChecked());
+    sBTimeTolerance->setEnabled(mainWindow->cBTimeInterval->isChecked());
+    cBNavSys3->setEnabled(cBRinexVersion->currentIndex()>=1);
+    cBNavSys4->setEnabled(cBRinexVersion->currentIndex()>=5);
+    cBNavSys6->setEnabled(cBRinexVersion->currentIndex()==2||cBRinexVersion->currentIndex()>=4);
+    cBNavSys7->setEnabled(cBRinexVersion->currentIndex()>=6);
+    cBFreq3->setEnabled(cBRinexVersion->currentIndex()>=1);
+    cBFreq4->setEnabled(cBRinexVersion->currentIndex()>=1);
+    cBFreq5->setEnabled(cBRinexVersion->currentIndex()>=1);
+    cBPhaseShift->setEnabled(cBRinexVersion->currentIndex()>=4);
 }
 //---------------------------------------------------------------------------
-void ConvOptDialog::BtnFcnClick()
+void ConvOptDialog::btnFcnClicked()
 {
     gloFcnDialog->exec();
 }

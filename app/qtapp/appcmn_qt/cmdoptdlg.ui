@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>385</width>
-    <height>361</height>
+    <height>362</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,33 +18,24 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QCheckBox" name="ChkOpenCmd">
+    <widget class="QCheckBox" name="cBOpenCommands">
      <property name="toolTip">
-      <string/>
+      <string>Commands to be executed at startup</string>
      </property>
      <property name="text">
       <string>Commands at startup</string>
      </property>
-     <property name="checked">
-      <bool>false</bool>
-     </property>
     </widget>
    </item>
    <item>
-    <widget class="QPlainTextEdit" name="OpenCmd">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QPlainTextEdit" name="tEOpenCommands">
      <property name="toolTip">
       <string/>
      </property>
-     <property name="plainText">
-      <string/>
-     </property>
     </widget>
    </item>
    <item>
-    <widget class="QCheckBox" name="ChkCloseCmd">
+    <widget class="QCheckBox" name="cBCloseCommands">
      <property name="toolTip">
       <string/>
      </property>
@@ -54,27 +45,21 @@
     </widget>
    </item>
    <item>
-    <widget class="QPlainTextEdit" name="CloseCmd">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QPlainTextEdit" name="tECloseCommands">
      <property name="toolTip">
-      <string/>
-     </property>
-     <property name="plainText">
       <string/>
      </property>
     </widget>
    </item>
    <item>
-    <widget class="QCheckBox" name="ChkPeriodicCmd">
+    <widget class="QCheckBox" name="cBPeriodicCommands">
      <property name="text">
       <string>Periodic Commands : &lt;command&gt; # cycle (ms)</string>
      </property>
     </widget>
    </item>
    <item>
-    <widget class="QPlainTextEdit" name="PeriodicCmd"/>
+    <widget class="QPlainTextEdit" name="tEPeriodicCommands"/>
    </item>
    <item>
     <widget class="QWidget" name="widget" native="true">
@@ -92,10 +77,7 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QPushButton" name="BtnLoad">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnLoad">
         <property name="toolTip">
          <string/>
         </property>
@@ -105,10 +87,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnSave">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnSave">
         <property name="toolTip">
          <string/>
         </property>
@@ -118,10 +97,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnOk">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnOk">
         <property name="toolTip">
          <string/>
         </property>
@@ -137,10 +113,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnCancel">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnCancel">
         <property name="toolTip">
          <string/>
         </property>

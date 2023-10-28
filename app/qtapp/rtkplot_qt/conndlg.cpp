@@ -94,36 +94,36 @@ void ConnectDialog::BtnCmd1Click()
 {
     CmdOptDialog dialog(this);
 
-    dialog.Cmds  [0] = Cmds1  [0];
-    dialog.Cmds  [1] = Cmds1  [1];
-    dialog.CmdEna[0] = CmdEna1[0];
-    dialog.CmdEna[1] = CmdEna1[1];
+    dialog.commands  [0] = Cmds1  [0];
+    dialog.commands  [1] = Cmds1  [1];
+    dialog.commandsEnabled[0] = CmdEna1[0];
+    dialog.commandsEnabled[1] = CmdEna1[1];
     dialog.exec();
 
     if (dialog.result() != QDialog::Accepted) return;
 
-    Cmds1  [0] = dialog.Cmds  [0];
-    Cmds1  [1] = dialog.Cmds  [1];
-    CmdEna1[0] = dialog.CmdEna[0];
-    CmdEna1[1] = dialog.CmdEna[1];
+    Cmds1  [0] = dialog.commands  [0];
+    Cmds1  [1] = dialog.commands  [1];
+    CmdEna1[0] = dialog.commandsEnabled[0];
+    CmdEna1[1] = dialog.commandsEnabled[1];
 }
 //---------------------------------------------------------------------------
 void ConnectDialog::BtnCmd2Click()
 {
     CmdOptDialog dialog(this);
 
-    dialog.Cmds  [0] = Cmds2  [0];
-    dialog.Cmds  [1] = Cmds2  [1];
-    dialog.CmdEna[0] = CmdEna2[0];
-    dialog.CmdEna[1] = CmdEna2[1];
+    dialog.commands  [0] = Cmds2  [0];
+    dialog.commands  [1] = Cmds2  [1];
+    dialog.commandsEnabled[0] = CmdEna2[0];
+    dialog.commandsEnabled[1] = CmdEna2[1];
     dialog.exec();
 
     if (dialog.result() != QDialog::Accepted) return;
 
-    Cmds2  [0] = dialog.Cmds  [0];
-    Cmds2  [1] = dialog.Cmds  [1];
-    CmdEna2[0] = dialog.CmdEna[0];
-    CmdEna2[1] = dialog.CmdEna[1];
+    Cmds2  [0] = dialog.commands  [0];
+    Cmds2  [1] = dialog.commands  [1];
+    CmdEna2[0] = dialog.commandsEnabled[0];
+    CmdEna2[1] = dialog.commandsEnabled[1];
 }
 //---------------------------------------------------------------------------
 void ConnectDialog::SelStream1Change()
@@ -150,82 +150,82 @@ void ConnectDialog::SerialOpt1(int opt)
 {
     SerialOptDialog dialog(this);
 
-    dialog.Path = Paths1[0];
-    dialog.Opt = opt;
+    dialog.path = Paths1[0];
+    dialog.options = opt;
     dialog.exec();
 
     if (dialog.result() != QDialog::Accepted) return;
 
-    Paths1[0] = dialog.Path;
+    Paths1[0] = dialog.path;
 }
 //---------------------------------------------------------------------------
 void ConnectDialog::SerialOpt2(int opt)
 {
     SerialOptDialog dialog(this);
 
-    dialog.Path = Paths2[0];
-    dialog.Opt = opt;
+    dialog.path = Paths2[0];
+    dialog.options = opt;
     dialog.exec();
 
     if (dialog.result() != QDialog::Accepted) return;
 
-    Paths2[0] = dialog.Path;
+    Paths2[0] = dialog.path;
 }
 //---------------------------------------------------------------------------
 void ConnectDialog::TcpOpt1(int opt)
 {
     TcpOptDialog dialog(this);
 
-    dialog.Path = Paths1[1];
-    dialog.Opt = opt;
-    for (int i = 0; i < MAXHIST; i++) dialog.History [i] = TcpHistory [i];
+    dialog.path = Paths1[1];
+    dialog.options = opt;
+    for (int i = 0; i < MAXHIST; i++) dialog.history [i] = TcpHistory [i];
     dialog.exec();
 
     if (dialog.result() != QDialog::Accepted) return;
 
-    Paths1[1] = dialog.Path;
-    for (int i = 0; i < MAXHIST; i++) TcpHistory [i] = dialog.History [i];
+    Paths1[1] = dialog.path;
+    for (int i = 0; i < MAXHIST; i++) TcpHistory [i] = dialog.history [i];
 }
 //---------------------------------------------------------------------------
 void ConnectDialog::TcpOpt2(int opt)
 {
     TcpOptDialog dialog(this);
 
-    dialog.Path = Paths2[1];
-    dialog.Opt = opt;
-    for (int i = 0; i < MAXHIST; i++) dialog.History [i] = TcpHistory [i];
+    dialog.path = Paths2[1];
+    dialog.options = opt;
+    for (int i = 0; i < MAXHIST; i++) dialog.history [i] = TcpHistory [i];
     dialog.exec();
 
     if (dialog.result() != QDialog::Accepted) return;
 
-    Paths2[1] = dialog.Path;
-    for (int i = 0; i < MAXHIST; i++) TcpHistory [i] = dialog.History [i];
+    Paths2[1] = dialog.path;
+    for (int i = 0; i < MAXHIST; i++) TcpHistory [i] = dialog.history [i];
 }
 //---------------------------------------------------------------------------
 void ConnectDialog::FileOpt1(int opt)
 {
     FileOptDialog dialog(this);
 
-    dialog.Path = Paths1[2];
-    dialog.Opt = opt;
+    dialog.path = Paths1[2];
+    dialog.options = opt;
     dialog.exec();
 
     if (dialog.result() != QDialog::Accepted) return;
 
-    Paths1[2] = dialog.Path;
+    Paths1[2] = dialog.path;
 }
 //---------------------------------------------------------------------------
 void ConnectDialog::FileOpt2(int opt)
 {
     FileOptDialog dialog(this);
 
-    dialog.Path = Paths2[2];
-    dialog.Opt = opt;
+    dialog.path = Paths2[2];
+    dialog.options = opt;
     dialog.exec();
 
     if (dialog.result() != QDialog::Accepted) return;
 
-    Paths2[2] = dialog.Path;
+    Paths2[2] = dialog.path;
 }
 //---------------------------------------------------------------------------
 void ConnectDialog::UpdateEnable(void)

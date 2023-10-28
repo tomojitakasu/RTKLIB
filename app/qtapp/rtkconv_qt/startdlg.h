@@ -17,12 +17,12 @@ protected:
     void showEvent(QShowEvent*);
 
 public slots:
-    void BtnOkClick();
-    void BtnFileTimeClick();
+    void btnOkClicked();
+    void btnFileTimeClicked();
 
 public:
-	gtime_t Time;
-    QString FileName;
+    gtime_t time;
+    QString filename;
 
     explicit StartDialog(QWidget *parent=NULL);
 };

@@ -18,10 +18,7 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="1" rowspan="3">
-    <widget class="QComboBox" name="Port">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QComboBox" name="cBPort">
      <property name="toolTip">
       <string/>
      </property>
@@ -46,10 +43,7 @@
     </widget>
    </item>
    <item row="3" column="1" rowspan="3">
-    <widget class="QComboBox" name="BitRate">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QComboBox" name="cBBitRate">
      <property name="toolTip">
       <string/>
      </property>
@@ -137,10 +131,7 @@
     </widget>
    </item>
    <item row="6" column="1">
-    <widget class="QComboBox" name="ByteSize">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QComboBox" name="cBByteSize">
      <property name="toolTip">
       <string/>
      </property>
@@ -196,10 +187,7 @@
     </widget>
    </item>
    <item row="6" column="3">
-    <widget class="QComboBox" name="FlowCtr">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QComboBox" name="cBFlowControl">
      <property name="toolTip">
       <string/>
      </property>
@@ -221,10 +209,7 @@
     </widget>
    </item>
    <item row="4" column="3">
-    <widget class="QComboBox" name="StopBits">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QComboBox" name="cBStopBits">
      <property name="toolTip">
       <string/>
      </property>
@@ -241,10 +226,7 @@
     </widget>
    </item>
    <item row="1" column="3">
-    <widget class="QComboBox" name="Parity">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QComboBox" name="cBParity">
      <property name="toolTip">
       <string/>
      </property>
@@ -281,10 +263,7 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QPushButton" name="BtnOk">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnOk">
         <property name="toolTip">
          <string/>
         </property>
@@ -300,10 +279,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnCancel">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnCancel">
         <property name="toolTip">
          <string/>
         </property>
@@ -316,10 +292,10 @@
     </widget>
    </item>
    <item row="7" column="3">
-    <widget class="QSpinBox" name="TcpPort"/>
+    <widget class="QSpinBox" name="cBTcpPort"/>
    </item>
    <item row="7" column="0" colspan="3">
-    <widget class="QCheckBox" name="OutTcpPort">
+    <widget class="QCheckBox" name="cBOutputTcpPort">
      <property name="text">
       <string>Output Received Stream to  TCP Port :</string>
      </property>
@@ -328,16 +304,16 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>Port</tabstop>
-  <tabstop>Parity</tabstop>
-  <tabstop>BitRate</tabstop>
-  <tabstop>StopBits</tabstop>
-  <tabstop>ByteSize</tabstop>
-  <tabstop>FlowCtr</tabstop>
-  <tabstop>OutTcpPort</tabstop>
-  <tabstop>TcpPort</tabstop>
-  <tabstop>BtnOk</tabstop>
-  <tabstop>BtnCancel</tabstop>
+  <tabstop>cBPort</tabstop>
+  <tabstop>cBParity</tabstop>
+  <tabstop>cBBitRate</tabstop>
+  <tabstop>cBStopBits</tabstop>
+  <tabstop>cBByteSize</tabstop>
+  <tabstop>cBFlowControl</tabstop>
+  <tabstop>cBOutputTcpPort</tabstop>
+  <tabstop>cBTcpPort</tabstop>
+  <tabstop>btnOk</tabstop>
+  <tabstop>btnCancel</tabstop>
  </tabstops>
  <resources/>
  <connections/>

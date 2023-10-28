@@ -22,13 +22,13 @@
     </widget>
    </item>
    <item row="16" column="1">
-    <widget class="QLineEdit" name="SrcTbl16"/>
+    <widget class="QLineEdit" name="lESourceTable16"/>
    </item>
    <item row="7" column="1">
-    <widget class="QLineEdit" name="SrcTbl7"/>
+    <widget class="QLineEdit" name="lESourceTable7"/>
    </item>
    <item row="14" column="1">
-    <widget class="QComboBox" name="SrcTbl14">
+    <widget class="QComboBox" name="lESourceTable14">
      <item>
       <property name="text">
        <string>N</string>
@@ -54,7 +54,7 @@
     </widget>
    </item>
    <item row="10" column="1">
-    <widget class="QComboBox" name="SrcTbl10">
+    <widget class="QComboBox" name="lESourceTable10">
      <item>
       <property name="text">
        <string>0</string>
@@ -75,10 +75,10 @@
     </widget>
    </item>
    <item row="2" column="1">
-    <widget class="QLineEdit" name="SrcTbl2"/>
+    <widget class="QLineEdit" name="lESourceTable2"/>
    </item>
    <item row="3" column="1">
-    <widget class="QLineEdit" name="SrcTbl3"/>
+    <widget class="QLineEdit" name="lESourceTable3"/>
    </item>
    <item row="3" column="0">
     <widget class="QLabel" name="Label16">
@@ -116,7 +116,7 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnOk">
+       <widget class="QPushButton" name="btnOk">
         <property name="text">
          <string>&amp;Ok</string>
         </property>
@@ -126,7 +126,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnCancel">
+       <widget class="QPushButton" name="btnCancel">
         <property name="text">
          <string>&amp;Cancel</string>
         </property>
@@ -143,16 +143,16 @@
     </widget>
    </item>
    <item row="5" column="1">
-    <widget class="QLineEdit" name="SrcTbl5"/>
+    <widget class="QLineEdit" name="lESourceTable5"/>
    </item>
    <item row="9" column="1">
-    <widget class="QLineEdit" name="SrcTbl9"/>
+    <widget class="QLineEdit" name="lESourceTable9"/>
    </item>
    <item row="8" column="1">
-    <widget class="QLineEdit" name="SrcTbl8"/>
+    <widget class="QLineEdit" name="lESourceTable8"/>
    </item>
    <item row="12" column="1">
-    <widget class="QLineEdit" name="SrcTbl12"/>
+    <widget class="QLineEdit" name="lESourceTable12"/>
    </item>
    <item row="10" column="0">
     <widget class="QLabel" name="Label8">
@@ -183,7 +183,7 @@
     </widget>
    </item>
    <item row="0" column="1">
-    <widget class="QLineEdit" name="MntPntE"/>
+    <widget class="QLineEdit" name="lEMountPoint"/>
    </item>
    <item row="8" column="0">
     <widget class="QLabel" name="Label6">
@@ -193,7 +193,7 @@
     </widget>
    </item>
    <item row="4" column="1">
-    <widget class="QComboBox" name="SrcTbl4">
+    <widget class="QComboBox" name="lESourceTable4">
      <item>
       <property name="text">
        <string>0</string>
@@ -217,7 +217,7 @@
     </widget>
    </item>
    <item row="11" column="1">
-    <widget class="QComboBox" name="SrcTbl11">
+    <widget class="QComboBox" name="lESourceTable11">
      <item>
       <property name="text">
        <string>0</string>
@@ -245,10 +245,10 @@
     </widget>
    </item>
    <item row="6" column="1">
-    <widget class="QLineEdit" name="SrcTbl6"/>
+    <widget class="QLineEdit" name="lESourceTable6"/>
    </item>
    <item row="13" column="1">
-    <widget class="QLineEdit" name="SrcTbl13"/>
+    <widget class="QLineEdit" name="lESourceTable13"/>
    </item>
    <item row="4" column="0">
     <widget class="QLabel" name="Label1">
@@ -265,7 +265,7 @@
     </widget>
    </item>
    <item row="1" column="1">
-    <widget class="QLineEdit" name="SrcTbl1"/>
+    <widget class="QLineEdit" name="lESourceTable1"/>
    </item>
    <item row="14" column="0">
     <widget class="QLabel" name="Label11">
@@ -275,7 +275,7 @@
     </widget>
    </item>
    <item row="15" column="1">
-    <widget class="QComboBox" name="SrcTbl15">
+    <widget class="QComboBox" name="lESourceTable15">
      <item>
       <property name="text">
        <string>N</string>

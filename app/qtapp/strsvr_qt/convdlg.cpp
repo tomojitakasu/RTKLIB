@@ -12,48 +12,48 @@ ConvDialog::ConvDialog(QWidget *parent)
 
 	int i;
     for (i = 0; i <= MAXRCVFMT; i++)
-        InFormat->addItem(formatstrs[i]);
-    InFormat->setCurrentIndex(0);
+        cBInputFormat->addItem(formatstrs[i]);
+    cBInputFormat->setCurrentIndex(0);
 
-    connect(BtnOk, SIGNAL(clicked(bool)), this, SLOT(BtnOkClick()));
-    connect(BtnCancel, SIGNAL(clicked(bool)), this, SLOT(reject()));
-    connect(Conversion, SIGNAL(clicked(bool)), this, SLOT(ConversionClick()));
+    connect(btnOk, SIGNAL(clicked(bool)), this, SLOT(btnOkClicked()));
+    connect(btnCancel, SIGNAL(clicked(bool)), this, SLOT(reject()));
+    connect(cBConversion, SIGNAL(clicked(bool)), this, SLOT(conversionClicked()));
 }
 //---------------------------------------------------------------------------
 void ConvDialog::showEvent(QShowEvent *event)
 {
     if (event->spontaneous()) return;
 
-    Conversion->setChecked(ConvEna);
-    InFormat->setCurrentIndex(ConvInp);
-    OutFormat->setCurrentIndex(ConvOut);
-    OutMsgs->setText(ConvMsg);
-    Options->setText(ConvOpt);
+    cBConversion->setChecked(conversionEnabled);
+    cBInputFormat->setCurrentIndex(conversionInputFormat);
+    cBOutputFormat->setCurrentIndex(conversionOutputFormat);
+    lEOutputMessages->setText(conversionMessage);
+    lEOptions->setText(conversionOptions);
 
-	UpdateEnable();
+	updateEnable();
 }
 //---------------------------------------------------------------------------
-void ConvDialog::BtnOkClick()
+void ConvDialog::btnOkClicked()
 {
-    ConvEna = Conversion->isChecked();
-    ConvInp = InFormat->currentIndex();
-    ConvOut = OutFormat->currentIndex();
-    ConvMsg = OutMsgs->text();
-    ConvOpt = Options->text();
+    conversionEnabled = cBConversion->isChecked();
+    conversionInputFormat = cBInputFormat->currentIndex();
+    conversionOutputFormat = cBOutputFormat->currentIndex();
+    conversionMessage = lEOutputMessages->text();
+    conversionOptions = lEOptions->text();
 
     accept();
 }
 //---------------------------------------------------------------------------
-void ConvDialog::ConversionClick()
+void ConvDialog::conversionClicked()
 {
-	UpdateEnable();
+	updateEnable();
 }
 //---------------------------------------------------------------------------
-void ConvDialog::UpdateEnable(void)
+void ConvDialog::updateEnable(void)
 {
-    InFormat->setEnabled(Conversion->isChecked());
-    OutFormat->setEnabled(Conversion->isChecked());
-    OutMsgs->setEnabled(Conversion->isChecked());
-    Options->setEnabled(Conversion->isChecked());
+    cBInputFormat->setEnabled(cBConversion->isChecked());
+    cBOutputFormat->setEnabled(cBConversion->isChecked());
+    lEOutputMessages->setEnabled(cBConversion->isChecked());
+    lEOptions->setEnabled(cBConversion->isChecked());
 }
 //---------------------------------------------------------------------------

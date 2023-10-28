@@ -12,7 +12,7 @@ class LaunchOptDialog : public QDialog, private Ui::LaunchOptDialog
 {
     Q_OBJECT
 public slots:
-    void BtnOkClick();
+    void btnOkClicked();
 
 protected:
     void showEvent(QShowEvent *);

@@ -18,18 +18,18 @@ protected:
     void  showEvent(QShowEvent *);
 
 public slots:
-    void  BtnOkClick();
-    void  BtnKeyClick();
+    void  btnOkClicked();
+    void  btnKeyClicked();
 
 private:
-    void  AddHist(QComboBox *list, QString *hist);
-    void  UpdateEnable(void);
+    void  addHistory(QComboBox *list, QString *hist);
+    void  updateEnable(void);
 
     KeyDialog *keyDlg;
 
 public:
-	int Opt;
-    QString Path, History[MAXHIST], MntpHist[MAXHIST];
+    int options;
+    QString path, history[MAXHIST], MountpointHistory[MAXHIST];
     explicit FtpOptDialog(QWidget *parent);
 };
 //---------------------------------------------------------------------------

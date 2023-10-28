@@ -2,14 +2,6 @@
 <ui version="4.0">
  <class>ViewerOptDialog</class>
  <widget class="QWidget" name="ViewerOptDialog">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>311</width>
-    <height>144</height>
-   </rect>
-  </property>
   <property name="windowTitle">
    <string>Viewer Options</string>
   </property>
@@ -18,10 +10,7 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
-    <widget class="QLabel" name="Label6">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QLabel" name="label6">
      <property name="toolTip">
       <string/>
      </property>
@@ -31,47 +20,7 @@
     </widget>
    </item>
    <item row="0" column="1">
-    <widget class="QLabel" name="lbColor1">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="palette">
-      <palette>
-       <active>
-        <colorrole role="WindowText">
-         <brush brushstyle="SolidPattern">
-          <color alpha="255">
-           <red>0</red>
-           <green>0</green>
-           <blue>0</blue>
-          </color>
-         </brush>
-        </colorrole>
-       </active>
-       <inactive>
-        <colorrole role="WindowText">
-         <brush brushstyle="SolidPattern">
-          <color alpha="255">
-           <red>0</red>
-           <green>0</green>
-           <blue>0</blue>
-          </color>
-         </brush>
-        </colorrole>
-       </inactive>
-       <disabled>
-        <colorrole role="WindowText">
-         <brush brushstyle="SolidPattern">
-          <color alpha="255">
-           <red>0</red>
-           <green>0</green>
-           <blue>0</blue>
-          </color>
-         </brush>
-        </colorrole>
-       </disabled>
-      </palette>
-     </property>
+    <widget class="QLabel" name="lbColorText">
      <property name="toolTip">
       <string/>
      </property>
@@ -81,53 +30,10 @@
      <property name="frameShadow">
       <enum>QFrame::Sunken</enum>
      </property>
-     <property name="text">
-      <string/>
-     </property>
     </widget>
    </item>
    <item row="0" column="2">
-    <widget class="QPushButton" name="BtnColor1">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="palette">
-      <palette>
-       <active>
-        <colorrole role="WindowText">
-         <brush brushstyle="SolidPattern">
-          <color alpha="255">
-           <red>0</red>
-           <green>0</green>
-           <blue>0</blue>
-          </color>
-         </brush>
-        </colorrole>
-       </active>
-       <inactive>
-        <colorrole role="WindowText">
-         <brush brushstyle="SolidPattern">
-          <color alpha="255">
-           <red>0</red>
-           <green>0</green>
-           <blue>0</blue>
-          </color>
-         </brush>
-        </colorrole>
-       </inactive>
-       <disabled>
-        <colorrole role="WindowText">
-         <brush brushstyle="SolidPattern">
-          <color alpha="255">
-           <red>0</red>
-           <green>0</green>
-           <blue>0</blue>
-          </color>
-         </brush>
-        </colorrole>
-       </disabled>
-      </palette>
-     </property>
+    <widget class="QPushButton" name="btnColorText">
      <property name="toolTip">
       <string/>
      </property>
@@ -137,7 +43,7 @@
     </widget>
    </item>
    <item row="1" column="0">
-    <widget class="QLabel" name="Label1">
+    <widget class="QLabel" name="label1">
      <property name="enabled">
       <bool>true</bool>
      </property>
@@ -150,10 +56,7 @@
     </widget>
    </item>
    <item row="1" column="1">
-    <widget class="QLabel" name="lbColor2">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QLabel" name="lbColorBackground">
      <property name="toolTip">
       <string/>
      </property>
@@ -163,56 +66,10 @@
      <property name="frameShadow">
       <enum>QFrame::Sunken</enum>
      </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
     </widget>
    </item>
    <item row="1" column="2">
-    <widget class="QPushButton" name="BtnColor2">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="palette">
-      <palette>
-       <active>
-        <colorrole role="WindowText">
-         <brush brushstyle="SolidPattern">
-          <color alpha="255">
-           <red>0</red>
-           <green>0</green>
-           <blue>0</blue>
-          </color>
-         </brush>
-        </colorrole>
-       </active>
-       <inactive>
-        <colorrole role="WindowText">
-         <brush brushstyle="SolidPattern">
-          <color alpha="255">
-           <red>0</red>
-           <green>0</green>
-           <blue>0</blue>
-          </color>
-         </brush>
-        </colorrole>
-       </inactive>
-       <disabled>
-        <colorrole role="WindowText">
-         <brush brushstyle="SolidPattern">
-          <color alpha="255">
-           <red>0</red>
-           <green>0</green>
-           <blue>0</blue>
-          </color>
-         </brush>
-        </colorrole>
-       </disabled>
-      </palette>
-     </property>
+    <widget class="QPushButton" name="btnColorBackground">
      <property name="toolTip">
       <string/>
      </property>
@@ -222,10 +79,7 @@
     </widget>
    </item>
    <item row="2" column="0">
-    <widget class="QLabel" name="Label15">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QLabel" name="label15">
      <property name="toolTip">
       <string/>
      </property>
@@ -235,10 +89,7 @@
     </widget>
    </item>
    <item row="2" column="1">
-    <widget class="QLabel" name="FontLabel">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QLabel" name="fontLabel">
      <property name="toolTip">
       <string/>
      </property>
@@ -248,47 +99,7 @@
     </widget>
    </item>
    <item row="2" column="2">
-    <widget class="QPushButton" name="BtnFont">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="palette">
-      <palette>
-       <active>
-        <colorrole role="WindowText">
-         <brush brushstyle="SolidPattern">
-          <color alpha="255">
-           <red>0</red>
-           <green>0</green>
-           <blue>0</blue>
-          </color>
-         </brush>
-        </colorrole>
-       </active>
-       <inactive>
-        <colorrole role="WindowText">
-         <brush brushstyle="SolidPattern">
-          <color alpha="255">
-           <red>0</red>
-           <green>0</green>
-           <blue>0</blue>
-          </color>
-         </brush>
-        </colorrole>
-       </inactive>
-       <disabled>
-        <colorrole role="WindowText">
-         <brush brushstyle="SolidPattern">
-          <color alpha="255">
-           <red>0</red>
-           <green>0</green>
-           <blue>0</blue>
-          </color>
-         </brush>
-        </colorrole>
-       </disabled>
-      </palette>
-     </property>
+    <widget class="QPushButton" name="btnFont">
      <property name="toolTip">
       <string/>
      </property>
@@ -298,10 +109,7 @@
     </widget>
    </item>
    <item row="3" column="0">
-    <widget class="QPushButton" name="BtnOk">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QPushButton" name="btnOk">
      <property name="toolTip">
       <string/>
      </property>
@@ -317,10 +125,7 @@
     </widget>
    </item>
    <item row="3" column="1" colspan="2">
-    <widget class="QPushButton" name="BtnCancel">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QPushButton" name="btnCancel">
      <property name="toolTip">
       <string/>
      </property>
