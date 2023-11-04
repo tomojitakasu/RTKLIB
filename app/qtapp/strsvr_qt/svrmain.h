@@ -13,78 +13,84 @@
 
 class QCloseEvent;
 class SvrOptDialog;
-class Console;
 class SerialOptDialog;
 class TcpOptDialog;
 class FileOptDialog;
 class FtpOptDialog;
+class StrMonDialog;
+
+#define MAXSTR        7    // number of streams
 
 //---------------------------------------------------------------------------
 class MainForm : public QDialog, private Ui::MainForm
 {
     Q_OBJECT
+
 public slots:
-    void BtnExitClick();
-    void BtnInputClick();
-    void BtnOutput1Click();
-    void BtnOutput2Click();
-    void BtnStartClick();
-    void BtnStopClick();
-    void Timer1Timer();
-    void BtnOptClick();
-    void Output1Change();
-    void Output2Change();
-    void InputChange();
-    void BtnOutput3Click();
-    void Output3Change();
-    void BtnCmdClick();
-    void BtnAboutClick();
-    void BtnStrMonClick();
-    void Timer2Timer();
-    void BtnTaskIconClick();
-    void MenuExpandClick();
-    void TrayIconActivated(QSystemTrayIcon::ActivationReason);
-    void MenuStartClick();
-    void MenuStopClick();
-    void MenuExitClick();
-    void FormCreate();
-    void BtnConv1Click();
-    void BtnConv2Click();
-    void BtnConv3Click();
+    void btnExitClicked();
+    void btnInputClicked();
+    void btnOutputClicked();
+    void btnStartClicked();
+    void btnStopClicked();
+    void serverStatusTimerTimeout();
+    void btnOptionsClicked();
+    void outputChanged();
+    void inputChanged();
+    void BtnCommandClicked();
+    void btnAboutClicked();
+    void btnStreamMonitorClicked();
+    void streamMonitorTimerTimeout();
+    void btnTaskIconClicked();
+    void trayIconActivated(QSystemTrayIcon::ActivationReason);
+    void menuExpandClicked();
+    void menuStartClicked();
+    void menuStopClicked();
+    void menuExitClicked();
+    void formCreated();
+    void btnConvertClicked();
+    void btnLogClicked();
+
 protected:
     void closeEvent(QCloseEvent*);
 
 private:
-    QString IniFile;
-    QString Paths[4][4],Cmds[2],CmdsTcp[2];
-    QString TcpHistory[MAXHIST],TcpMntpHist[MAXHIST];
-    QString StaPosFile,ExeDirectory,LocalDirectory,SwapInterval;
-    QString ProxyAddress;
-    QString ConvMsg[3],ConvOpt[3],AntType,RcvType;
-	int ConvEna[3],ConvInp[3],ConvOut[3],StaId,StaSel;
-	int TraceLevel,SvrOpt[6],CmdEna[2],CmdEnaTcp[2],NmeaReq,FileSwapMargin;
-	double AntPos[3],AntOff[3];
-	gtime_t StartTime,EndTime;
-    QSystemTrayIcon *TrayIcon;
+    QString iniFile;
+    QString paths[MAXSTR][4], commands[MAXSTR][3], commandsTcp[MAXSTR][3];
+    QString tcpHistory[MAXHIST], tcpMountpointHistory[MAXHIST];
+    QString stationPositionFile, exeDirectory, localDirectory, swapInterval;
+    QString proxyAddress, logFile;
+    QString conversionMessage[MAXSTR - 1], conversionOptions[MAXSTR - 1], antennaType, receiverType;
+    QString pathLog[MAXSTR];
+    int conversionEnabled[MAXSTR - 1], ConversionInput[MAXSTR - 1], ConversionOutput[3], stationId, stationSelect;
+    int traceLevel, serverOptions[6], commandsEnabled[MAXSTR][3], commandsEnabledTcp[MAXSTR][3], nmeaRequest, fileSwapMargin, relayBack, progressBarRange, pathEnabled[MAXSTR];
+    double antennaPosition[3], antennaOffsets[3];
+    gtime_t startTime, endTime;
+    QSystemTrayIcon *trayIcon;
     SvrOptDialog *svrOptDialog;
-    Console *console;
     TcpOptDialog *tcpOptDialog;
     SerialOptDialog *serialOptDialog;
     FileOptDialog *fileOptDialog;
     FtpOptDialog * ftpOptDialog;
-    QTimer Timer1,Timer2;
+    StrMonDialog * strMonDialog;
+    QTimer serverStatusTimer, streamMonitorTimer;
 
-    void SerialOpt(int index, int opt);
-    void TcpOpt(int index, int opt);
-    void FileOpt(int index, int opt);
-    void FtpOpt(int index, int opt);
-    void ShowMsg(const QString &msg);
-    void SvrStart(void);
-    void SvrStop(void);
-    void UpdateEnable(void);
-    void SetTrayIcon(int index);
-    void LoadOpt(void);
-    void SaveOpt(void);
+    void serialOptions(int index, int path);
+    void tcpClientOptions(int index, int path);
+    void tcpServerOptions(int index, int path);
+    void ntripServerOptions(int index, int path);
+    void ntripClientOptions(int index, int path);
+    void ntripCasterOptions(int index, int path);
+    void udpClientOptions(int index, int path);
+    void udpServerOptions(int index, int path);
+    void fileOptions(int index, int path);
+    void showMessage(const QString &msg);
+    void serverStart(void);
+    void serverStop(void);
+    void updateEnable(void);
+    void setTrayIcon(int index);
+    void loadOptions(void);
+    void saveOptions(void);
+
 public:
     explicit MainForm(QWidget *parent=0);
 };

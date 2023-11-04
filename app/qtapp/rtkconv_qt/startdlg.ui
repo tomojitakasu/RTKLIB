@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>324</width>
-    <height>115</height>
+    <height>119</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,25 +18,19 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QWidget" name="Panel1" native="true">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QWidget" name="panel1" native="true">
      <property name="toolTip">
       <string/>
-     </property>
-     <property name="layoutDirection">
-      <enum>Qt::LeftToRight</enum>
      </property>
      <property name="text" stdset="0">
       <string/>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0" colspan="3">
-       <widget class="QLabel" name="Label1">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+      <item row="1" column="0">
+       <widget class="QDateTimeEdit" name="tETime"/>
+      </item>
+      <item row="0" column="0" colspan="2">
+       <widget class="QLabel" name="label1">
         <property name="toolTip">
          <string/>
         </property>
@@ -45,34 +39,8 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
-       <widget class="QDateEdit" name="TimeY1">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="displayFormat">
-         <string>dd.MM.yyyy</string>
-        </property>
-       </widget>
-      </item>
       <item row="1" column="1">
-       <widget class="QTimeEdit" name="TimeH1">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="displayFormat">
-         <string>HH:mm:ss</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="2">
-       <widget class="QPushButton" name="BtnFileTime">
+       <widget class="QPushButton" name="btnFileTime">
         <property name="text">
          <string>File Time</string>
         </property>
@@ -100,10 +68,7 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QPushButton" name="BtnOk">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnOk">
         <property name="toolTip">
          <string/>
         </property>
@@ -119,9 +84,9 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnCancel">
+       <widget class="QPushButton" name="btnCancel">
         <property name="enabled">
-         <bool>true</bool>
+         <bool>false</bool>
         </property>
         <property name="toolTip">
          <string/>

@@ -10,36 +10,44 @@
 
 class QCloseEvent;
 class QCloseEvent;
+class LaunchOptDialog;
 
 //---------------------------------------------------------------------------
 class MainForm : public QDialog, private Ui::MainForm
 {
     Q_OBJECT
+
 protected:
     void showEvent(QShowEvent *);
     void closeEvent(QCloseEvent *);
 
 public slots:
-    void BtnPlotClick();
-    void BtnConvClick();
-    void BtnStrClick();
-    void BtnPostClick();
-    void BtnNtripClick();
-    void BtnNaviClick();
-    void BtnGetClick();
-    void BtnTrayClick();
-    void TrayIconActivated(QSystemTrayIcon::ActivationReason);
-    void MenuExpandClick();
+    void btnPlotClicked();
+    void btnConvClicked();
+    void btnStrClicked();
+    void btnPostClicked();
+    void btnNtripClicked();
+    void btnNaviClicked();
+    void btnGetClicked();
+    void btnVideoClicked();
+    void btnTrayClicked();
+    void btnOptionClicked();
+    void trayIconActivated(QSystemTrayIcon::ActivationReason);
+    void menuExpandClicked();
 
 private:
-    QString IniFile;
-    QSystemTrayIcon TrayIcon;
+    QString iniFile;
+    QSystemTrayIcon trayIcon;
     QMenu *trayMenu;
-    int Tray;
+    LaunchOptDialog *launchOptDlg;
+    bool tray;
 	
-    int ExecCmd(const QString &cmd);
+    int execCmd(const QString &cmd, const QStringList &opt);
+    void updatePanel();
+
 public:
-    explicit MainForm(QWidget *parent=0);
+    int option, minimize;
+    explicit MainForm(QWidget *parent = 0);
 };
 //---------------------------------------------------------------------------
 #endif

@@ -23,15 +23,15 @@ private:
         QPoint p_;
         QColor color_;
         QPaintDevice *Parent;
-        int mark_,size_,rot_;
-        int X,Y,Width,Height;
-        double XCent,YCent,XScale,YScale,XTick,YTick;
+        int mark_, size_, rot_;
+        int X, Y, Width, Height;
+        double XCent, YCent, XScale, YScale, XTick, YTick;
 
 public:
         explicit Graph(QPaintDevice *parent);
 
         int IsInArea(QPoint &p);
-        int ToPoint(double x, double y, QPoint &p);
+        int ToPoint(const double &x, const double &y, QPoint &p);
         int OnAxis(const QPoint &p);
         QString NumText(double x, double dx);
         QString TimeText(double x, double dx);
@@ -60,8 +60,10 @@ public:
         void DrawCircle(QPainter &c,const QPoint &p, const QColor &color, int rx, int ry, int style);
         void DrawCircle(QPainter &c,double x, double y, const QColor &color, double rx, double ry, int style);
         void DrawCircles(QPainter &c,int label);
-        void DrawText(QPainter &c,double x, double y, const QString &str, const QColor &color, int ha,int va, int rot);
+        void DrawText(QPainter &c,double x, double y, const QString &str, const QColor &color, int ha, int va, int rot);
+        void DrawText(QPainter &c,double x, double y, const QString &str, const QColor &color, int ha, int va, int rot, const QFont &font);
         void DrawText(QPainter &c,const QPoint &p, const QString &str, const QColor &color, int ha, int va,int rot);
+        void DrawText(QPainter &c,const QPoint &p, const QString &str, const QColor &color, int ha, int va,int rot, const QFont &font);
         void DrawText(QPainter &c,double x, double y, const QString &str, const QColor &color, const QColor &bgcolor,int ha, int va, int rot);
         void DrawText(QPainter &c,const QPoint &p, const QString &str, const QColor &color, const QColor &bgcolor,int ha, int va, int rot);
         void DrawPoly(QPainter &c,QPoint *p, int n, const QColor &color, int style);
@@ -74,8 +76,8 @@ public:
         void DrawSkyPlot(QPainter &c,const QPoint &p, const QColor &color1, const QColor &color2, const QColor &bgcolor, int size);
         void DrawSkyPlot(QPainter &c,double x, double y, const QColor &color1, const QColor &color2, const QColor &bgcolor,double size);
 
-        int Box,Fit,XGrid,YGrid,XLPos,YLPos,Week;
-        QString Title,XLabel,YLabel;
+        int Box, Fit, XGrid, YGrid, XLPos, YLPos, Week;
+        QString Title, XLabel, YLabel;
         QColor Color[3];
 };
 #endif

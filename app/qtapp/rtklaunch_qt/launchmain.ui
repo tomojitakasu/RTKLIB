@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>196</width>
-    <height>39</height>
+    <width>340</width>
+    <height>131</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -35,147 +35,214 @@
    <property name="bottomMargin">
     <number>0</number>
    </property>
-   <property name="spacing">
-    <number>0</number>
-   </property>
-   <item row="0" column="2">
-    <widget class="QPushButton" name="BtnStr">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string>STRSVR</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="icon">
-      <iconset resource="../rtkget_qt/rtkget_qt.qrc">
-       <normaloff>:/icons/rtk6.bmp</normaloff>:/icons/rtk6.bmp</iconset>
-     </property>
-     <property name="flat">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="5">
-    <widget class="QPushButton" name="BtnNavi">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string>RTKNAVI</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="icon">
-      <iconset resource="../rtkget_qt/rtkget_qt.qrc">
-       <normaloff>:/icons/rtk5.bmp</normaloff>:/icons/rtk5.bmp</iconset>
-     </property>
-     <property name="flat">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="1">
-    <widget class="QPushButton" name="BtnConv">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string>RTKCONV</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="icon">
-      <iconset resource="../rtkget_qt/rtkget_qt.qrc">
-       <normaloff>:/icons/rtk3.bmp</normaloff>:/icons/rtk3.bmp</iconset>
-     </property>
-     <property name="flat">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
    <item row="0" column="0">
-    <widget class="QPushButton" name="BtnPlot">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string>RTKPLOT</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="icon">
-      <iconset resource="../rtkget_qt/rtkget_qt.qrc">
-       <normaloff>:/icons/rtk2.bmp</normaloff>:/icons/rtk2.bmp</iconset>
-     </property>
-     <property name="flat">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="3">
-    <widget class="QPushButton" name="BtnPost">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string>RTKPOST</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="icon">
-      <iconset resource="../rtkget_qt/rtkget_qt.qrc">
-       <normaloff>:/icons/rtk1.bmp</normaloff>:/icons/rtk1.bmp</iconset>
-     </property>
-     <property name="flat">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="4">
-    <widget class="QPushButton" name="BtnNtrip">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string>NTRIP Browser</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="icon">
-      <iconset resource="../rtkget_qt/rtkget_qt.qrc">
-       <normaloff>:/icons/rtk7.bmp</normaloff>:/icons/rtk7.bmp</iconset>
-     </property>
-     <property name="flat">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="6">
-    <widget class="QPushButton" name="BtnGet">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string>RTKGET</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="icon">
-      <iconset resource="../rtkget_qt/rtkget_qt.qrc">
-       <normaloff>:/icons/rtk8.bmp</normaloff>:/icons/rtk8.bmp</iconset>
-     </property>
-     <property name="flat">
-      <bool>true</bool>
-     </property>
+    <widget class="QWidget" name="PanelTop" native="true">
+     <layout class="QGridLayout" name="gridLayout_2">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item row="0" column="1">
+       <widget class="QPushButton" name="BtnConv">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="toolTip">
+         <string>RTKCONV</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="rtklaunch_qt.qrc">
+          <normaloff>:/icons/rtk3.bmp</normaloff>:/icons/rtk3.bmp</iconset>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="4">
+       <widget class="QPushButton" name="BtnNtrip">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="toolTip">
+         <string>NTRIP Browser</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="rtklaunch_qt.qrc">
+          <normaloff>:/icons/rtk7.bmp</normaloff>:/icons/rtk7.bmp</iconset>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="6">
+       <widget class="QPushButton" name="BtnGet">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="toolTip">
+         <string>RTKGET</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="rtklaunch_qt.qrc">
+          <normaloff>:/icons/rtk8.bmp</normaloff>:/icons/rtk8.bmp</iconset>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QPushButton" name="BtnPost">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="toolTip">
+         <string>RTKPOST</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="rtklaunch_qt.qrc">
+          <normaloff>:/icons/rtk1.bmp</normaloff>:/icons/rtk1.bmp</iconset>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="5">
+       <widget class="QPushButton" name="BtnNavi">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="toolTip">
+         <string>RTKNAVI</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="rtklaunch_qt.qrc">
+          <normaloff>:/icons/rtk5.bmp</normaloff>:/icons/rtk5.bmp</iconset>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QPushButton" name="BtnPlot">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="toolTip">
+         <string>RTKPLOT</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="rtklaunch_qt.qrc">
+          <normaloff>:/icons/rtk2.bmp</normaloff>:/icons/rtk2.bmp</iconset>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QPushButton" name="BtnStr">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="toolTip">
+         <string>STRSVR</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="rtklaunch_qt.qrc">
+          <normaloff>:/icons/rtk6.bmp</normaloff>:/icons/rtk6.bmp</iconset>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="7">
+       <widget class="QPushButton" name="BtnVideo">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
    <item row="1" column="6">
@@ -202,7 +269,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../rtkget_qt/rtkget_qt.qrc">
+      <iconset resource="rtklaunch_qt.qrc">
        <normaloff>:/buttons/sqr.bmp</normaloff>:/buttons/sqr.bmp</iconset>
      </property>
      <property name="flat">
@@ -210,10 +277,168 @@
      </property>
     </widget>
    </item>
+   <item row="1" column="0">
+    <widget class="QPushButton" name="BtnOption">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QWidget" name="PanelBottom" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QPushButton" name="BtnRtklib">
+        <property name="toolTip">
+         <string>RTKLIB APs</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="rtklaunch_qt.qrc">
+          <normaloff>:/icons/rtk9.bmp</normaloff>:/icons/rtk9.bmp</iconset>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="BtnExit">
+        <property name="text">
+         <string>Exit</string>
+        </property>
+        <property name="default">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
   </layout>
+  <action name="actionRtkConv">
+   <property name="icon">
+    <iconset resource="rtklaunch_qt.qrc">
+     <normaloff>:/icons/rtk3.bmp</normaloff>:/icons/rtk3.bmp</iconset>
+   </property>
+   <property name="text">
+    <string>rtkConv</string>
+   </property>
+   <property name="toolTip">
+    <string>RTK Convert</string>
+   </property>
+  </action>
+  <action name="actionRtkGet">
+   <property name="icon">
+    <iconset resource="rtklaunch_qt.qrc">
+     <normaloff>:/icons/rtk8.bmp</normaloff>:/icons/rtk8.bmp</iconset>
+   </property>
+   <property name="text">
+    <string>rtkGet</string>
+   </property>
+   <property name="toolTip">
+    <string>RTK Get</string>
+   </property>
+  </action>
+  <action name="actionRtkNavi">
+   <property name="icon">
+    <iconset resource="rtklaunch_qt.qrc">
+     <normaloff>:/icons/rtk5.bmp</normaloff>:/icons/rtk5.bmp</iconset>
+   </property>
+   <property name="text">
+    <string>rtkNavi</string>
+   </property>
+   <property name="toolTip">
+    <string>RTK Navi</string>
+   </property>
+  </action>
+  <action name="actionRtkNtrip">
+   <property name="icon">
+    <iconset resource="rtklaunch_qt.qrc">
+     <normaloff>:/icons/rtk7.bmp</normaloff>:/icons/rtk7.bmp</iconset>
+   </property>
+   <property name="text">
+    <string>rtkNtrip</string>
+   </property>
+   <property name="toolTip">
+    <string>RTK NTRIP</string>
+   </property>
+  </action>
+  <action name="actionRtkPlot">
+   <property name="icon">
+    <iconset resource="rtklaunch_qt.qrc">
+     <normaloff>:/icons/rtk2.bmp</normaloff>:/icons/rtk2.bmp</iconset>
+   </property>
+   <property name="text">
+    <string>rtkPlot</string>
+   </property>
+   <property name="toolTip">
+    <string>RTK Plot</string>
+   </property>
+  </action>
+  <action name="actionRtkPost">
+   <property name="icon">
+    <iconset resource="rtklaunch_qt.qrc">
+     <normaloff>:/icons/rtk1.bmp</normaloff>:/icons/rtk1.bmp</iconset>
+   </property>
+   <property name="text">
+    <string>rtkPost</string>
+   </property>
+   <property name="toolTip">
+    <string>RTK Post</string>
+   </property>
+  </action>
+  <action name="actionRtkStr">
+   <property name="icon">
+    <iconset resource="rtklaunch_qt.qrc">
+     <normaloff>:/icons/rtk6.bmp</normaloff>:/icons/rtk6.bmp</iconset>
+   </property>
+   <property name="text">
+    <string>rtkStr</string>
+   </property>
+   <property name="toolTip">
+    <string>RTK Stream</string>
+   </property>
+  </action>
+  <action name="actionRtkVideo">
+   <property name="text">
+    <string>rtkVideo</string>
+   </property>
+   <property name="toolTip">
+    <string>RTK Video</string>
+   </property>
+  </action>
  </widget>
+ <tabstops>
+  <tabstop>BtnExit</tabstop>
+  <tabstop>BtnPlot</tabstop>
+  <tabstop>BtnConv</tabstop>
+  <tabstop>BtnStr</tabstop>
+  <tabstop>BtnPost</tabstop>
+  <tabstop>BtnNtrip</tabstop>
+  <tabstop>BtnNavi</tabstop>
+  <tabstop>BtnGet</tabstop>
+  <tabstop>BtnVideo</tabstop>
+  <tabstop>BtnOption</tabstop>
+  <tabstop>BtnTray</tabstop>
+  <tabstop>BtnRtklib</tabstop>
+ </tabstops>
  <resources>
-  <include location="../rtkget_qt/rtkget_qt.qrc"/>
+  <include location="rtklaunch_qt.qrc"/>
  </resources>
  <connections/>
 </ui>

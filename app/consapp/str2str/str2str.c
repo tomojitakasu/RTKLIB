@@ -24,7 +24,7 @@
 *           2016/07/23  1.13 add option -c1 -c2 -c3 -c4
 *           2016/09/03  1.14 support ntrip caster
 *                            add option -ft,-fl
-*           2016/09/06  1.15 add reload soure table by USR2 signal
+*           2016/09/06  1.15 add reload source table by USR2 signal
 *           2016/09/17  1.16 add option -b
 *           2017/05/26  1.17 add input format tersus
 *           2020/11/30  1.18 support api change strsvrstart(),strsvrstat()
@@ -127,9 +127,9 @@ static void sigfunc(int sig)
 static void decodefmt(char *path, int *fmt)
 {
     char *p;
-    
+
     *fmt=-1;
-    
+
     if ((p=strrchr(path,'#'))) {
         if      (!strcmp(p,"#rtcm2")) *fmt=STRFMT_RTCM2;
         else if (!strcmp(p,"#rtcm3")) *fmt=STRFMT_RTCM3;
@@ -152,12 +152,12 @@ static void decodefmt(char *path, int *fmt)
 static int decodepath(const char *path, int *type, char *strpath, int *fmt)
 {
     char buff[1024],*p;
-    
+
     strcpy(buff,path);
-    
+
     /* decode format */
     decodefmt(buff,fmt);
-    
+
     /* decode type */
     if (!(p=strstr(buff,"://"))) {
         strcpy(strpath,buff);
@@ -184,11 +184,11 @@ static void readcmd(const char *file, char *cmd, int type)
     FILE *fp;
     char buff[MAXSTR],*p=cmd;
     int i=0;
-    
+
     *p='\0';
-    
+
     if (!(fp=fopen(file,"r"))) return;
-    
+
     while (fgets(buff,sizeof(buff),fp)) {
         if (*buff=='@') i++;
         else if (i==type&&p+strlen(buff)+1<cmd+MAXRCVCMD) {
@@ -214,7 +214,7 @@ int main(int argc, char **argv)
     int i,j,n=0,dispint=5000,trlevel=0,opts[]={10000,10000,2000,32768,10,0,30,0};
     int types[MAXSTR]={STR_FILE,STR_FILE},stat[MAXSTR]={0},log_stat[MAXSTR]={0};
     int byte[MAXSTR]={0},bps[MAXSTR]={0},fmts[MAXSTR]={0},sta=0;
-    
+
     for (i=0;i<MAXSTR;i++) {
         paths[i]=s1[i];
         logs[i]=s2[i];
@@ -268,7 +268,7 @@ int main(int argc, char **argv)
         else if (*argv[i]=='-') printhelp();
     }
     if (n<=0) n=1; /* stdout */
-    
+
     for (i=0;i<n;i++) {
         if (fmts[i+1]<=0) continue;
         if (fmts[i+1]!=STRFMT_RTCM3) {
@@ -300,18 +300,18 @@ int main(int argc, char **argv)
     signal(SIGINT ,sigfunc);
     signal(SIGHUP ,SIG_IGN);
     signal(SIGPIPE,SIG_IGN);
-    
+
     strsvrinit(&strsvr,n+1);
-    
+
     if (trlevel>0) {
         traceopen(*logfile?logfile:TRFILE);
         tracelevel(trlevel);
     }
     fprintf(stderr,"stream server start\n");
-    
+
     strsetdir(local);
     strsetproxy(proxy);
-    
+
     for (i=0;i<MAXSTR;i++) {
         if (*cmdfile[i]) readcmd(cmdfile[i],cmds[i],0);
         if (*cmdfile[i]) readcmd(cmdfile[i],cmds_periodic[i],2);
@@ -323,16 +323,16 @@ int main(int argc, char **argv)
         return -1;
     }
     for (intrflg=0;!intrflg;) {
-        
+
         /* get stream server status */
         strsvrstat(&strsvr,stat,log_stat,byte,bps,strmsg);
-        
+
         /* show stream server status */
         for (i=0,p=buff;i<MAXSTR;i++) p+=sprintf(p,"%c",ss[stat[i]+1]);
-        
+
         fprintf(stderr,"%s [%s] %10d B %7d bps %s\n",
                 time_str(utc2gpst(timeget()),0),buff,byte[0],bps[0],strmsg);
-        
+
         sleepms(dispint);
     }
     for (i=0;i<MAXSTR;i++) {
@@ -340,7 +340,7 @@ int main(int argc, char **argv)
     }
     /* stop stream server */
     strsvrstop(&strsvr,cmds);
-    
+
     for (i=0;i<n;i++) {
         strconvfree(conv[i]);
     }

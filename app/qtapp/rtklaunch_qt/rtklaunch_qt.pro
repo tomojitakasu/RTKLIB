@@ -6,34 +6,27 @@
 
 QT       += widgets core gui
 
-greaterThan(QT_MAJOR_VERSION, 4) {
-    QT += widgets
-    DEFINES += QT5
-}
-
-
-include(../../RTKLib.pri)
-
 TARGET = rtklaunch_qt
 TEMPLATE = app
 
-INCLUDEPATH += ../../src/  
+INCLUDEPATH += ../../../src/
 
-linux {
-LIBS += -lpng
-}
-
-SOURCES += \ 
+SOURCES += \
     launchmain.cpp \
-    main.cpp
+    main.cpp \
+    launchoptdlg.cpp
 
-HEADERS  += \ 
-    launchmain.h
+HEADERS  += \
+    launchmain.h \
+    launchoptdlg.h
 
-FORMS    += \ 
-    launchmain.ui
+FORMS    += \
+    launchmain.ui \
+    launchoptdlg.ui
 
 RESOURCES += \
     rtklaunch_qt.qrc
 
 RC_FILE = rtklaunch_qt.rc
+
+CONFIG += c++11

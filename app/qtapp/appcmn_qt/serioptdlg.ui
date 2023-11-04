@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>540</width>
-    <height>156</height>
+    <width>379</width>
+    <height>210</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,10 +18,7 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="1" rowspan="3">
-    <widget class="QComboBox" name="Port">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QComboBox" name="cBPort">
      <property name="toolTip">
       <string/>
      </property>
@@ -46,10 +43,7 @@
     </widget>
    </item>
    <item row="3" column="1" rowspan="3">
-    <widget class="QComboBox" name="BitRate">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QComboBox" name="cBBitRate">
      <property name="toolTip">
       <string/>
      </property>
@@ -137,10 +131,7 @@
     </widget>
    </item>
    <item row="6" column="1">
-    <widget class="QComboBox" name="ByteSize">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QComboBox" name="cBByteSize">
      <property name="toolTip">
       <string/>
      </property>
@@ -196,10 +187,7 @@
     </widget>
    </item>
    <item row="6" column="3">
-    <widget class="QComboBox" name="FlowCtr">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QComboBox" name="cBFlowControl">
      <property name="toolTip">
       <string/>
      </property>
@@ -221,10 +209,7 @@
     </widget>
    </item>
    <item row="4" column="3">
-    <widget class="QComboBox" name="StopBits">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QComboBox" name="cBStopBits">
      <property name="toolTip">
       <string/>
      </property>
@@ -241,10 +226,7 @@
     </widget>
    </item>
    <item row="1" column="3">
-    <widget class="QComboBox" name="Parity">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QComboBox" name="cBParity">
      <property name="toolTip">
       <string/>
      </property>
@@ -265,7 +247,7 @@
      </item>
     </widget>
    </item>
-   <item row="7" column="0" colspan="4">
+   <item row="8" column="0" colspan="4">
     <widget class="QWidget" name="widget" native="true">
      <layout class="QHBoxLayout" name="horizontalLayout">
       <property name="leftMargin">
@@ -281,23 +263,7 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QPushButton" name="BtnCmd">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>&amp;Commands...</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="BtnOk">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnOk">
         <property name="toolTip">
          <string/>
         </property>
@@ -313,10 +279,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnCancel">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnCancel">
         <property name="toolTip">
          <string/>
         </property>
@@ -328,8 +291,30 @@
      </layout>
     </widget>
    </item>
+   <item row="7" column="3">
+    <widget class="QSpinBox" name="cBTcpPort"/>
+   </item>
+   <item row="7" column="0" colspan="3">
+    <widget class="QCheckBox" name="cBOutputTcpPort">
+     <property name="text">
+      <string>Output Received Stream to  TCP Port :</string>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>cBPort</tabstop>
+  <tabstop>cBParity</tabstop>
+  <tabstop>cBBitRate</tabstop>
+  <tabstop>cBStopBits</tabstop>
+  <tabstop>cBByteSize</tabstop>
+  <tabstop>cBFlowControl</tabstop>
+  <tabstop>cBOutputTcpPort</tabstop>
+  <tabstop>cBTcpPort</tabstop>
+  <tabstop>btnOk</tabstop>
+  <tabstop>btnCancel</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

@@ -5,13 +5,13 @@
 #include <QShowEvent>
 
 //---------------------------------------------------------------------------
-RcvOptDialog::RcvOptDialog(QWidget* parent)
+RcvOptDialog::RcvOptDialog(QWidget *parent)
     : QDialog(parent)
 {
     setupUi(this);
 
-    connect(BtnOk,SIGNAL(clicked(bool)),this,SLOT(BtnOkClick()));
-    connect(BtnCancel,SIGNAL(clicked(bool)),this,SLOT(reject()));
+    connect(BtnOk, SIGNAL(clicked(bool)), this, SLOT(BtnOkClick()));
+    connect(BtnCancel, SIGNAL(clicked(bool)), this, SLOT(reject()));
 }
 //---------------------------------------------------------------------------
 void RcvOptDialog::showEvent(QShowEvent *event)
@@ -23,7 +23,7 @@ void RcvOptDialog::showEvent(QShowEvent *event)
 //---------------------------------------------------------------------------
 void RcvOptDialog::BtnOkClick()
 {
-    Option=OptionE->text();
+    Option = OptionE->text();
 
     accept();
 }

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>438</width>
-    <height>210</height>
+    <width>531</width>
+    <height>244</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,36 +17,42 @@
    <string/>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="4" column="3">
-    <widget class="QLabel" name="LabelUser">
-     <property name="enabled">
-      <bool>true</bool>
+   <item row="7" column="3">
+    <spacer name="verticalSpacer_2">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="0" column="4">
+    <widget class="QLabel" name="lblPort">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
      <property name="toolTip">
       <string/>
      </property>
      <property name="text">
-      <string>User-ID</string>
+      <string>Port</string>
      </property>
     </widget>
    </item>
    <item row="5" column="1">
-    <widget class="QComboBox" name="MntPnt">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="editable">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="1">
-    <widget class="QLabel" name="LabelMntPnt">
-     <property name="enabled">
-      <bool>true</bool>
+    <widget class="QLabel" name="lblMountPoint">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
      <property name="toolTip">
       <string/>
@@ -56,37 +62,48 @@
      </property>
     </widget>
    </item>
-   <item row="7" column="1">
-    <widget class="QLabel" name="LabelStr">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+   <item row="5" column="3">
+    <widget class="QLabel" name="lblUser">
      <property name="toolTip">
       <string/>
      </property>
      <property name="text">
-      <string>String</string>
+      <string>User-ID</string>
      </property>
     </widget>
    </item>
-   <item row="5" column="3">
-    <widget class="QLineEdit" name="User">
-     <property name="enabled">
-      <bool>true</bool>
+   <item row="6" column="3">
+    <widget class="QLineEdit" name="lEUser">
+     <property name="toolTip">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="4">
+    <widget class="QSpinBox" name="sBPort">
+     <property name="maximum">
+      <number>65535</number>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="4">
+    <widget class="QLabel" name="lblPassword">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
      <property name="toolTip">
       <string/>
      </property>
      <property name="text">
-      <string/>
+      <string>Password</string>
      </property>
     </widget>
    </item>
    <item row="2" column="1" colspan="3">
-    <widget class="QComboBox" name="Addr">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QComboBox" name="cBAddress">
      <property name="toolTip">
       <string/>
      </property>
@@ -95,21 +112,14 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="1" colspan="3">
-    <widget class="QLabel" name="LabelAddr">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>TCP Server Address</string>
-     </property>
-    </widget>
-   </item>
-   <item row="8" column="1" colspan="4">
+   <item row="9" column="1" colspan="4">
     <widget class="QWidget" name="widget" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <property name="leftMargin">
        <number>0</number>
@@ -124,23 +134,37 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QPushButton" name="BtnNtrip">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnBrowse">
         <property name="toolTip">
          <string/>
         </property>
         <property name="text">
-         <string>&amp;Ntrip...</string>
+         <string>Browse</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnOk">
-        <property name="enabled">
-         <bool>true</bool>
+       <widget class="QPushButton" name="btnMountpointOptions">
+        <property name="toolTip">
+         <string/>
         </property>
+        <property name="text">
+         <string>Mountpoint Options...</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnNtrip">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>&amp;Get Mountpoint</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnOk">
         <property name="toolTip">
          <string/>
         </property>
@@ -156,10 +180,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnCancel">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnCancel">
         <property name="toolTip">
          <string/>
         </property>
@@ -171,54 +192,9 @@
      </layout>
     </widget>
    </item>
-   <item row="4" column="4">
-    <widget class="QLabel" name="LabelPasswd">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+   <item row="6" column="4">
+    <widget class="QLineEdit" name="lEPassword">
      <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>Password</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="4">
-    <widget class="QLabel" name="LabelPort">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>Port</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="4">
-    <widget class="QLineEdit" name="Port">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="4">
-    <widget class="QLineEdit" name="Passwd">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
       <string/>
      </property>
      <property name="echoMode">
@@ -226,21 +202,57 @@
      </property>
     </widget>
    </item>
-   <item row="7" column="3" colspan="2">
-    <widget class="QLineEdit" name="Str">
-     <property name="enabled">
-      <bool>true</bool>
+   <item row="0" column="1" colspan="3">
+    <widget class="QLabel" name="lblAddress">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
      <property name="toolTip">
       <string/>
      </property>
      <property name="text">
-      <string/>
+      <string>TCP Server Address</string>
      </property>
     </widget>
    </item>
+   <item row="6" column="1">
+    <widget class="QComboBox" name="cBMountPoint">
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="editable">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="3">
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>cBAddress</tabstop>
+  <tabstop>sBPort</tabstop>
+  <tabstop>cBMountPoint</tabstop>
+  <tabstop>lEUser</tabstop>
+  <tabstop>lEPassword</tabstop>
+  <tabstop>btnNtrip</tabstop>
+  <tabstop>btnOk</tabstop>
+  <tabstop>btnCancel</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

@@ -13,79 +13,60 @@ class OptDialog : public QDialog, public Ui::OptDialog
     Q_OBJECT
 
 public slots:
-    void BtnOkClick();
-    void RovAntPcvClick();
-    void BtnAntPcvFileClick();
-    void BtnIonoFileClick();
-    void BtnAntPcvViewClick();
-    void NetRSCorrClick();
-    void SatClkCorrClick();
 
-    void PosModeChange();
-    void SolFormatChange();
-    void AmbResChange();
+    void btnOkClicked();
+    void btnAntennaPcvFileClicked();
+    void btnIonophereFileClicked();
+    void btnAntennaPcvViewClicked();
 
-    void BtnLoadClick();
-    void BtnSaveClick();
-    void FreqChange();
-    void BtnRefPosClick();
-    void BtnRovPosClick();
-    void RovPosClick();
-    void RefPosClick();
-    void BtnStaPosViewClick();
-    void BtnStaPosFileClick();
-    void SbasCorrClick();
-    void OutputHeightClick();
+    void btnLoadClicked();
+    void btnSaveClicked();
+    void btnReferencePositionClicked();
+    void btnRoverPositionClicked();
+    void btnStationPositionViewClicked();
+    void btnStationPositionFileClicked();
 
-    void RefPosTypeChange();
-    void RovPosTypeChange();
-    void GetPos(int type, QLineEdit **edit, double *pos);
-    void SetPos(int type, QLineEdit **edit, double *pos);
+    void referencePositionTypeChanged();
+    void roverPositionTypeChanged();
+    void getPosition(int type, QLineEdit **edit, double *pos);
+    void setPosition(int type, QLineEdit **edit, double *pos);
 
-    void BtnSatPcvFileClick();
-    void BtnSatPcvViewClick();
-    void SatEphemClick();
-    void BtnGeoidDataFileClick();
-    void BaselineConstClick();
-    void NavSys2Click();
+    void btnSatellitePcvFileClicked();
+    void btnSatelitePcvViewClicked();
+    void btnGeoidDataFileClicked();
 
-    void IonoOptChange();
-    void TropOptChange();
-    void DynamicModelChange();
-
-    void SatEphemChange();
-    void RovAntClick();
-    void RefAntClick();
-    void BtnDCBViewClick();
-    void BtnDCBFileClick();
-    void BtnHelpClick();
-    void ExtEna0Click();
-    void ExtEna1Click();
-    void ExtEna2Click();
-    void BtnBLQFileViewClick();
-    void BtnBLQFileClick();
-    void BtnEOPFileClick();
-    void BtnEOPViewClick();
-    void BtnExtOptClick();
-    void BtnMaskClick();
+    void btnDCBViewClicked();
+    void btnDCBFileClicked();
+    void btnHelpClicked();
+    void extEna0Clicked();
+    void extEna1Clicked();
+    void extEna2Clicked();
+    void btnBLQFileViewClicked();
+    void btnBLQFileClicked();
+    void btnEOPFileClicked();
+    void btnEOPViewClicked();
+    void btnFrequenciesClicked();
+    void btnMaskClicked();
     void NavSys6Click();
+    void updateEnable();
 
 protected:
+
     void showEvent(QShowEvent*);
 
 private:
-	snrmask_t SnrMask;
-	int RovPosTypeP,RefPosTypeP;
 
-    void GetOpt(void);
-    void SetOpt(void);
-    void LoadOpt(const QString &file);
-    void SaveOpt(const QString &file);
-    void ReadAntList(void);
-    void UpdateEnable(void);
-    void UpdateEnableExtErr(void);
+    snrmask_t snrMask;
+    int roverPositionType, ReferencePositionType;
+
+    void getOptions(void);
+    void setOptions(void);
+    void loadOptions(const QString &file);
+    void saveOptions(const QString &file);
+    void readAntennaList(void);
+    void updateEnableExtErr(void);
+
 public:
-	exterr_t ExtErr;
 	
     explicit OptDialog(QWidget *parent);
 };

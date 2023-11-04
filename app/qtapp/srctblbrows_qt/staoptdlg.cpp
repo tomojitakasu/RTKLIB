@@ -9,72 +9,67 @@
 extern MainForm *mainForm;
 
 //---------------------------------------------------------------------------
-StaListDialog::StaListDialog(QWidget* parent)
+StaListDialog::StaListDialog(QWidget *parent)
     : QDialog(parent)
 {
     setupUi(this);
 
-    connect(BtnCancel,SIGNAL(clicked(bool)),this,SLOT(reject()));
-    connect(BtnLoad,SIGNAL(clicked(bool)),this,SLOT(BtnLoadClick()));
-    connect(BtnOk,SIGNAL(clicked(bool)),this,SLOT(BtnOkClick()));
-    connect(BtnSave,SIGNAL(clicked(bool)),this,SLOT(BtnSaveClick()));
+    connect(BtnCancel, SIGNAL(clicked(bool)), this, SLOT(reject()));
+    connect(BtnLoad, SIGNAL(clicked(bool)), this, SLOT(btnLoadClicked()));
+    connect(BtnOk, SIGNAL(clicked(bool)), this, SLOT(btnOkClicked()));
+    connect(BtnSave, SIGNAL(clicked(bool)), this, SLOT(btnSaveClicked()));
 }
 //---------------------------------------------------------------------------
 void StaListDialog::showEvent(QShowEvent *event)
 {
     if (event->spontaneous()) return;
-    StaList->clear();
-    
-    for (int i=0;i<mainForm->StaList.count();i++) {
-        StaList->addItem(mainForm->StaList.at(i));
-    }
+
+    StationList->clear();
+
+    for (int i = 0; i < mainForm->stationList.count(); i++)
+        StationList->addItem(mainForm->stationList.at(i));
 }
 //---------------------------------------------------------------------------
-void StaListDialog::BtnOkClick()
+void StaListDialog::btnOkClicked()
 {
-    mainForm->StaList.clear();
-    
-    for (int i=0;i<StaList->count();i++) {
-        mainForm->StaList.append(StaList->item(i)->text());
-    }
+    mainForm->stationList.clear();
+
+    for (int i = 0; i < StationList->count(); i++)
+        mainForm->stationList.append(StationList->item(i)->text());
 }
 //---------------------------------------------------------------------------
-void StaListDialog::BtnLoadClick()
+void StaListDialog::btnLoadClicked()
 {
-    QString file;
-    QFile fp;
-    QByteArray buff;
-    
-    
-    file=QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Open...")));
+    QString filename;
+    QFile file;
+    QByteArray buffer;
 
-    fp.setFileName(file);
-    if (!fp.open(QIODevice::ReadOnly)) return;
-        
-    StaList->clear();
-    StaList->setVisible(false);
-    
-    while (!fp.atEnd())
-    {
-        buff=fp.readLine();
-        buff=buff.mid(buff.indexOf('#'));
-        StaList->addItem(buff);
+    filename = QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Open...")));
+
+    file.setFileName(filename);
+    if (!file.open(QIODevice::ReadOnly)) return;
+
+    StationList->clear();
+    StationList->setVisible(false);
+
+    while (!file.atEnd()) {
+        buffer = file.readLine();
+        buffer = buffer.mid(buffer.indexOf('#'));
+        StationList->addItem(buffer);
     }
 
-    StaList->setVisible(true);
+    StationList->setVisible(true);
 }
 //---------------------------------------------------------------------------
-void StaListDialog::BtnSaveClick()
+void StaListDialog::btnSaveClicked()
 {
-    QString file=QDir::toNativeSeparators(QFileDialog::getSaveFileName(this,tr("Save...")));
-    QFile fp;
+    QString filename = QDir::toNativeSeparators(QFileDialog::getSaveFileName(this, tr("Save...")));
+    QFile file;
 
-    fp.setFileName(file);
-    if (!fp.open(QIODevice::WriteOnly)) return;
+    file.setFileName(filename);
+    if (!file.open(QIODevice::WriteOnly)) return;
 
-    for (int i=0;i<StaList->count();i++)
-    {
-        fp.write((StaList->item(i)->text()+"\n").toLatin1());
-    }
+    for (int i = 0; i < StationList->count(); i++)
+        file.write((StationList->item(i)->text() + "\n").toLatin1());
 }
 //---------------------------------------------------------------------------

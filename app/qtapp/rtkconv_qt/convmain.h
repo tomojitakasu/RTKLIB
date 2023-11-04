@@ -20,35 +20,35 @@ class AboutDialog;
 class StartDialog;
 class TextViewer;
 
-//Helper Class ------------------------------------------------------------------
+// Conversion Thread Class ------------------------------------------------------------------
 
 class ConversionThread : public QThread
 {
     Q_OBJECT
 public:
-    char ifile[1024],*ofile[7];
+    char ifile[1024], *ofile[9];
     rnxopt_t rnxopt;
     int format;
 
-    explicit ConversionThread(QObject *parent):QThread(parent){
-        for (int i=0;i<7;i++)
+    explicit ConversionThread(QObject *parent) : QThread(parent) {
+        for (int i = 0; i < 9; i++)
         {
-            ofile[i]=new char[1024];
-            ofile[i][0]='\0';
+            ofile[i] = new char[1024];
+            ofile[i][0] = '\0';
         };
-        memset(&rnxopt,0,sizeof(rnxopt_t));
-        format=0;
-        ifile[0]='\0';
+        memset(&rnxopt, 0, sizeof(rnxopt_t));
+        format = 0;
+        ifile[0] = '\0';
     }
 
     ~ConversionThread() {
-        for (int i=0;i<7;i++) delete[] ofile[i];
+        for (int i = 0; i < 9; i++) delete[] ofile[i];
     }
 
 protected:
     void run() {
         // convert to rinex
-        convrnx(format,&rnxopt,ifile,ofile);
+        convrnx(format, &rnxopt, ifile, ofile);
     }
 };
 
@@ -56,70 +56,73 @@ protected:
 class MainWindow : public QMainWindow, public Ui::MainWindow
 {
     Q_OBJECT
+
 protected:
     void showEvent           (QShowEvent*);
     void closeEvent          (QCloseEvent*);
-    void dragEnterEvent      (QDragEnterEvent *event);
-    void dropEvent           (QDropEvent *event);
-public slots:
-    void FormCreate          ();
+    void dragEnterEvent      (QDragEnterEvent *);
+    void dropEvent           (QDropEvent *);
 
-    void BtnPlotClick        ();
-    void BtnConvertClick     ();
-    void BtnOptionsClick     ();
-    void BtnExitClick        ();
-    void BtnAboutClick       ();
-    void BtnTime1Click       ();
-    void BtnTime2Click       ();
-    void BtnInFileClick      ();
-    void BtnOutFile1Click    ();
-    void BtnOutFile2Click    ();
-    void BtnOutFile3Click    ();
-    void BtnOutFile4Click    ();
-    void BtnOutFileView1Click();
-    void BtnOutFileView2Click();
-    void BtnOutFileView3Click();
-    void BtnOutFileView4Click();
-    void BtnAbortClick       ();
+public slots:
+    void btnPlotClicked();
+    void btnConvertClicked();
+    void btnOptionsClicked();
+    void btnExitClicked();
+    void btnAboutClicked();
+    void btnTimeStartClicked();
+    void btnTimeStopClicked();
+    void btnInputFileClicked();
+    void btnOutputFile1Clicked();
+    void btnOutputFile2Clicked();
+    void btnOutputFile3Clicked();
+    void btnOutputFile4Clicked();
+    void btnOutputFile5Clicked();
+    void btnOutputFile6Clicked();
+    void btnOutputFile7Clicked();
+    void btnOutputFile8Clicked();
+    void btnOutputFile9Clicked();
+    void btnOutputFileView1Clicked();
+    void btnOutputFileView2Clicked();
+    void btnOutputFileView3Clicked();
+    void btnOutputFileView4Clicked();
+    void btnOutputFileView5Clicked();
+    void btnOutputFileView6Clicked();
+    void btnOutputFileView7Clicked();
+    void btnOutputFileView8Clicked();
+    void btnOutputFileView9Clicked();
+    void btnAbortClicked();
 	
-    void TimeStartFClick     ();
-    void TimeEndFClick       ();
-    void TimeIntFClick       ();
-    void OutDirEnaClick      ();
+    void timeStartClicked();
+    void timeEndClicked();
+    void TimeIntervalClicked();
+    void outputDirrectoryEnableClicked();
 	
-    void InFileChange();
-    void BtnOutFileView5Click();
-    void BtnOutFile5Click();
-    void FormatChange();
-    void BtnOutFileView6Click();
-    void BtnOutFile6Click();
-    void OutDirChange();
-    void BtnOutDirClick();
-    void BtnKeyClick();
-    void BtnPostClick();
-    void BtnOutFile7Click();
-    void BtnOutFileView7Click();
-    void BtnInFileViewClick();
-    void ConversionFinished();
-    void UpdateEnable();
+    void inputFileChanged();
+    void formatChanged();
+    void outputDirectoryChanged();
+    void btnOutputDirrectoryClicked();
+    void btnKeyClicked();
+    void btnPostClicked();
+    void btnInputFileViewClicked();
+    void conversionFinished();
+    void updateEnable();
 
 private:
-    QString IniFile,CmdPostExe;
+    QString iniFile, commandPostExe;
     ConversionThread *conversionThread;
-//    void DropFiles(TWMDropFiles msg); // for files drop
+
+    void readList(QComboBox* combo, QSettings *ini, const QString &key);
+    void writeList(QSettings *ini, const QString &key, const QComboBox *combo);
+    void addHistory(QComboBox *combo);
 	
-    void ReadList(QComboBox* combo, QSettings *ini, const QString &key);
-    void WriteList(QSettings *ini, const QString &key, const QComboBox *combo);
-    void AddHist(QComboBox *combo);
-	
-    int  AutoFormat(const QString &File);
-    void ConvertFile(void);
-    void SetOutFiles(const QString &infile);
-    void GetTime(gtime_t *ts, gtime_t *te, double *tint, double *tunit);
-    int  ExecCmd(const QString &cmd);
-    QString RepPath(const QString &File);
-    void LoadOpt(void);
-    void SaveOpt(void);
+    int autoFormat(const QString &file);
+    void convertFile(void);
+    void setOutputFiles(const QString &infile);
+    void getTime(gtime_t *ts, gtime_t *te, double *tint, double *tunit);
+    int  execCommand(const QString &cmd, QStringList &opt);
+    QString repPath(const QString &File);
+    void loadOptions(void);
+    void saveOptions(void);
 		
     ConvOptDialog *convOptDialog;
     TimeDialog *timeDialog;
@@ -128,13 +131,14 @@ private:
     StartDialog* startDialog;
     TextViewer *viewer;
 public:
-	gtime_t RnxTime;
-    QString RunBy,Marker,MarkerNo,MarkerType,Name[2],Rec[3],Ant[3];
-    QString RnxCode,Comment[2],RcvOption,ExSats;
-    QString CodeMask[6];
-	double AppPos[3],AntDel[3];
-	int RnxVer,RnxFile,NavSys,ObsType,FreqType,TraceLevel,EventEna;
-	int AutoPos,ScanObs,OutIono,OutTime,OutLeaps;
+    gtime_t rinexTime;
+    QString runBy, marker, markerNo, markerType, name[2], receiver[3], antenna[3];
+    QString rinexStationCode, comment[2], receiverOptions, excludedSatellites;
+    QString modeMask[7];
+    double approxPosition[3], antennaDelta[3], timeTolerance;
+    int rinexVersion, rinexFile, navSys, observationType, frequencyType, traceLevel;
+    int autoPosition, phaseShift, halfCycle, outputIonoCorr, outputTimeCorr, outputLeapSeconds, separateNavigation;
+    int enableGlonassFrequency, glonassFrequency[27];
 	
     explicit MainWindow(QWidget *parent=0);
 };

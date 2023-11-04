@@ -10,21 +10,28 @@ class QShowEvent;
 class SvrOptDialog : public QDialog, public Ui::SvrOptDialog
 {
     Q_OBJECT
+
 public slots:
-    void BtnOkClick();
-    void BtnPosClick();
-    void NmeaReqTClick();
-    void BtnLocalDirClick();
-    void StaInfoSelClick();
+    void btnOkClicked();
+    void btnPosClicked();
+    void nmeaReqChecked();
+    void btnLocalDirClicked();
+    void stationIdChecked();
+    void btnLogFileClicked();
+
 protected:
     void showEvent(QShowEvent*);
+
 private:
-    void UpdateEnable(void);
+    void updateEnable(void);
+
 public:
-    QString StaPosFile,ExeDirectory,LocalDirectory,ProxyAddress;
-    QString AntType,RcvType;
-	int SvrOpt[6],TraceLevel,NmeaReq,FileSwapMargin,StaId,StaSel;
-	double AntPos[3],AntOff[3];
+    QString stationPositionFile, exeDirectory, localDirectory, proxyAddress;
+    QString antennaType, receiverType, logFile;
+    int serverOptions[6], traceLevel, NmeaReq, fileSwapMargin, stationId, StaSel, RelayBack;
+    int progressBarRange;
+    double antennaPos[3], antennaOffset[3];
+
     explicit SvrOptDialog(QWidget *parent);
 };
 //---------------------------------------------------------------------------

@@ -53,15 +53,15 @@ static int is_ant(int type)
 static void gen_rtcm_obs(rtcm_t *rtcm, const int *type, int n, FILE *fp)
 {
     int i,j=0;
-    
+
     for (i=0;i<n;i++) {
         if (is_nav(type[i])||is_gnav(type[i])||is_ant(type[i])) continue;
         j=i; /* index of last message */
     }
     for (i=0;i<n;i++) {
         if (is_nav(type[i])||is_gnav(type[i])||is_ant(type[i])) continue;
-        
-        if (!gen_rtcm3(rtcm,type[i],i!=j)) continue;
+
+        if (!gen_rtcm3(rtcm,type[i],0,i!=j)) continue;
         if (fwrite(rtcm->buff,rtcm->nbyte,1,fp)<1) break;
     }
 }
@@ -70,36 +70,36 @@ static void gen_rtcm_nav(gtime_t time, rtcm_t *rtcm, const nav_t *nav,
                          int *index, const int *type, int n, FILE *fp)
 {
     int i,j,sat,prn;
-    
+
     for (i=index[0];i<nav->n;i++) {
-        
+
         if (time.time&&timediff(nav->eph[i].ttr,time)>-0.1) continue;
         sat=nav->eph[i].sat;
         rtcm->time=nav->eph[i].ttr;
         rtcm->nav.eph[sat-1]=nav->eph[i];
         rtcm->ephsat=sat;
-        
+
         for (j=0;j<n;j++) {
             if (!is_nav(type[j])) continue;
-            
-            if (!gen_rtcm3(rtcm,type[j],0)) continue;
+
+            if (!gen_rtcm3(rtcm,type[j],0,0)) continue;
             if (fwrite(rtcm->buff,rtcm->nbyte,1,fp)<1) break;
         }
         index[0]=i+1;
     }
     for (i=index[1];i<nav->ng;i++) {
-        
+
         if (time.time&&timediff(nav->geph[i].tof,time)>-0.1) continue;
         sat=nav->geph[i].sat;
         if (satsys(sat,&prn)!=SYS_GLO) continue;
         rtcm->time=nav->geph[i].tof;
         rtcm->nav.geph[prn-1]=nav->geph[i];
         rtcm->ephsat=sat;
-        
+
         for (j=0;j<n;j++) {
             if (!is_gnav(type[j])) continue;
-            
-            if (!gen_rtcm3(rtcm,type[j],0)) continue;
+
+            if (!gen_rtcm3(rtcm,type[j],0,0)) continue;
             if (fwrite(rtcm->buff,rtcm->nbyte,1,fp)<1) break;
         }
         index[1]=i+1;
@@ -109,11 +109,11 @@ static void gen_rtcm_nav(gtime_t time, rtcm_t *rtcm, const nav_t *nav,
 static void gen_rtcm_ant(rtcm_t *rtcm, const int *type, int n, FILE *fp)
 {
     int i;
-    
+
     for (i=0;i<n;i++) {
         if (!is_ant(type[i])) continue;
-        
-        if (!gen_rtcm3(rtcm,type[i],0)) continue;
+
+        if (!gen_rtcm3(rtcm,type[i],0,0)) continue;
         if (fwrite(rtcm->buff,rtcm->nbyte,1,fp)<1) break;
     }
 }
@@ -128,16 +128,16 @@ static int conv_rtcm(const int *type, int n, const char *outfile,
     eph_t eph0={0};
     geph_t geph0={0};
     int i,j,prn,index[2]={0};
-    
+
     if (!(rtcm.nav.eph =(eph_t  *)malloc(sizeof(eph_t )*MAXSAT   ))||
         !(rtcm.nav.geph=(geph_t *)malloc(sizeof(geph_t)*MAXPRNGLO))) return 0;
-    
+
     rtcm.staid=staid;
     rtcm.sta=*sta;
-    
+
     for (i=0;i<MAXSAT   ;i++) rtcm.nav.eph [i]=eph0;
     for (i=0;i<MAXPRNGLO;i++) rtcm.nav.geph[i]=geph0;
-    
+
     /* update glonass freq channel number */
     for (i=0;i<nav->ng;i++) {
         if (satsys(nav->geph[i].sat,&prn)!=SYS_GLO) continue;
@@ -147,11 +147,11 @@ static int conv_rtcm(const int *type, int n, const char *outfile,
         fprintf(stderr,"file open error: %s\n",outfile);
         return 0;
     }
-    /* gerate rtcm antenna info messages */
+    /* generate rtcm antenna info messages */
     gen_rtcm_ant(&rtcm,type,n,fp);
-    
+
     for (i=0;i<obs->n;i=j) {
-        
+
         /* extract epoch obs data */
         for (j=i+1;j<obs->n;j++) {
             if (timediff(obs->data[j].time,obs->data[i].time)>DTTOL) break;
@@ -160,23 +160,23 @@ static int conv_rtcm(const int *type, int n, const char *outfile,
         rtcm.seqno++;
         rtcm.obs.data=obs->data+i;
         rtcm.obs.n=j-i;
-        
+
         /* generate rtcm obs data messages */
         gen_rtcm_obs(&rtcm,type,n,fp);
-        
+
         /* generate rtcm nav data messages */
         gen_rtcm_nav(rtcm.time,&rtcm,nav,index,type,n,fp);
-        
+
         fprintf(stderr,"%s: NOBS=%2d\r",time_str(rtcm.time,0),rtcm.obs.n);
     }
-    /* gerate rtcm nav data messages */
+    /* generate rtcm nav data messages */
     gen_rtcm_nav(time0,&rtcm,nav,index,type,n,fp);
-    
+
     fclose(fp);
-    
+
     /* print statistics  */
     fprintf(stderr,"\n  MT  # OF MSGS\n");
-    
+
     for (i=1;i<299;i++) {
         if (!rtcm.nmsg3[i]) continue;
         fprintf(stderr,"%04d %10d\n",1000+i,rtcm.nmsg3[i]);
@@ -196,7 +196,7 @@ int main(int argc, char **argv)
     double es[6]={0},ee[6]={0},tint=0.0;
     char *infile[16]={0},*outfile="",buff[1024],*p;
     int i,n=0,m=0,type[16],trlevel=0,staid=0,ret=0;
-    
+
     for (i=1;i<argc;i++) {
         if (!strcmp(argv[i],"-ts")&&i+2<argc) {
             sscanf(argv[++i],"%lf/%lf/%lf",es  ,es+1,es+2);
@@ -223,20 +223,20 @@ int main(int argc, char **argv)
     }
     if (es[0]>0.0) ts=epoch2time(es);
     if (ee[0]>0.0) te=epoch2time(ee);
-    
+
     /* read rinex files */
     for (i=0;i<n;i++) {
         readrnxt(infile[i],0,ts,te,tint,"",&obs,&nav,&sta);
     }
     sortobs(&obs);
     uniqnav(&nav);
-    
+
     /* convert to rtcm messages */
     if (!conv_rtcm(type,m,outfile,&obs,&nav,&sta,staid)) ret=-1;
-    
+
     free(obs.data);
     freenav(&nav,0xFF);
-    
+
     if (trlevel>0) {
         traceclose();
     }

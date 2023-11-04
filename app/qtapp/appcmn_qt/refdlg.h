@@ -16,23 +16,23 @@ protected:
     void  showEvent(QShowEvent *);
 
 public slots:
-    void  BtnOKClick();
-    void  StaListDblClick(int, int);
-    void  BtnLoadClick();
-    void  BtnFindClick();
-    void  FindList(void);
+    void  btnOKClicked();
+    void  stationListDblClick(int, int);
+    void  btnLoadClicked();
+    void  btnFindClicked();
+    void  findList(void);
 
 private:
-    void  LoadList(void);
-    void  LoadSinex(void);
-    void  AddRef(int n, double *pos, const QString code, const QString name);
-    int   InputRef(void);
-    void  UpdateDist(void);
+    void  loadList(void);
+    void  loadSinex(void);
+    void  addReference(int n, double *pos, const QString code, const QString name);
+    int   inputReference(void);
+    void  updateDist(void);
 
 public:
-    QString StaPosFile,StaId,StaName;
-	int FontScale,Format;
-	double Pos[3],RovPos[3];
+    QString stationPositionFile, stationId, stationName;
+    int options, fontScale;
+    double position[3], RoverPosition[3];
 
     explicit RefDialog(QWidget* parent);
 };

@@ -2,6 +2,14 @@
 <ui version="4.0">
  <class>MaskOptDialog</class>
  <widget class="QWidget" name="MaskOptDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1017</width>
+    <height>242</height>
+   </rect>
+  </property>
   <property name="windowTitle">
    <string>SNR Mask</string>
   </property>
@@ -11,8 +19,11 @@
   <layout class="QGridLayout" name="gridLayout">
    <item row="3" column="0">
     <widget class="QLabel" name="Label1">
-     <property name="enabled">
-      <bool>true</bool>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
      <property name="toolTip">
       <string/>
@@ -24,8 +35,11 @@
    </item>
    <item row="2" column="8">
     <widget class="QLabel" name="Label11">
-     <property name="enabled">
-      <bool>true</bool>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
      <property name="toolTip">
       <string/>
@@ -37,8 +51,11 @@
    </item>
    <item row="2" column="7">
     <widget class="QLabel" name="Label10">
-     <property name="enabled">
-      <bool>true</bool>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
      <property name="toolTip">
       <string/>
@@ -49,61 +66,67 @@
     </widget>
    </item>
    <item row="4" column="4">
-    <widget class="QLineEdit" name="Mask_2_4">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QDoubleSpinBox" name="sBMask_2_4">
      <property name="toolTip">
       <string/>
      </property>
-     <property name="text">
-      <string>0</string>
+     <property name="text" stdset="0">
+      <string>0,00</string>
+     </property>
+     <property name="maximum">
+      <double>90.000000000000000</double>
      </property>
     </widget>
    </item>
    <item row="5" column="0">
     <widget class="QLabel" name="Label14">
-     <property name="enabled">
-      <bool>true</bool>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
      <property name="toolTip">
       <string/>
      </property>
      <property name="text">
-      <string>L5</string>
+      <string>L3</string>
      </property>
     </widget>
    </item>
    <item row="4" column="2">
-    <widget class="QLineEdit" name="Mask_2_2">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QDoubleSpinBox" name="sBMask_2_2">
      <property name="toolTip">
       <string/>
      </property>
-     <property name="text">
-      <string>0</string>
+     <property name="text" stdset="0">
+      <string>0,00</string>
+     </property>
+     <property name="maximum">
+      <double>90.000000000000000</double>
      </property>
     </widget>
    </item>
    <item row="4" column="3">
-    <widget class="QLineEdit" name="Mask_2_3">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QDoubleSpinBox" name="sBMask_2_3">
      <property name="toolTip">
       <string/>
      </property>
-     <property name="text">
-      <string>0</string>
+     <property name="text" stdset="0">
+      <string>0,00</string>
+     </property>
+     <property name="maximum">
+      <double>90.000000000000000</double>
      </property>
     </widget>
    </item>
    <item row="2" column="4">
     <widget class="QLabel" name="Label7">
-     <property name="enabled">
-      <bool>true</bool>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
      <property name="toolTip">
       <string/>
@@ -115,8 +138,11 @@
    </item>
    <item row="2" column="3">
     <widget class="QLabel" name="Label5">
-     <property name="enabled">
-      <bool>true</bool>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
      <property name="toolTip">
       <string/>
@@ -127,10 +153,7 @@
     </widget>
    </item>
    <item row="6" column="8" colspan="2">
-    <widget class="QPushButton" name="BtnCancel">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QPushButton" name="btnCancel">
      <property name="toolTip">
       <string/>
      </property>
@@ -140,10 +163,7 @@
     </widget>
    </item>
    <item row="6" column="6" colspan="2">
-    <widget class="QPushButton" name="BtnOk">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QPushButton" name="btnOk">
      <property name="toolTip">
       <string/>
      </property>
@@ -159,100 +179,103 @@
     </widget>
    </item>
    <item row="4" column="5">
-    <widget class="QLineEdit" name="Mask_2_5">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QDoubleSpinBox" name="sBMask_2_5">
      <property name="toolTip">
       <string/>
      </property>
-     <property name="text">
-      <string>0</string>
+     <property name="text" stdset="0">
+      <string>0,00</string>
+     </property>
+     <property name="maximum">
+      <double>90.000000000000000</double>
      </property>
     </widget>
    </item>
    <item row="4" column="7">
-    <widget class="QLineEdit" name="Mask_2_7">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QDoubleSpinBox" name="sBMask_2_7">
      <property name="toolTip">
       <string/>
      </property>
-     <property name="text">
-      <string>0</string>
+     <property name="text" stdset="0">
+      <string>0,00</string>
+     </property>
+     <property name="maximum">
+      <double>90.000000000000000</double>
      </property>
     </widget>
    </item>
    <item row="4" column="6">
-    <widget class="QLineEdit" name="Mask_2_6">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QDoubleSpinBox" name="sBMask_2_6">
      <property name="toolTip">
       <string/>
      </property>
-     <property name="text">
-      <string>0</string>
+     <property name="text" stdset="0">
+      <string>0,00</string>
+     </property>
+     <property name="maximum">
+      <double>90.000000000000000</double>
      </property>
     </widget>
    </item>
    <item row="5" column="1">
-    <widget class="QLineEdit" name="Mask_3_1">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QDoubleSpinBox" name="sBMask_3_1">
      <property name="toolTip">
       <string/>
      </property>
-     <property name="text">
-      <string>0</string>
+     <property name="text" stdset="0">
+      <string>0,00</string>
+     </property>
+     <property name="maximum">
+      <double>90.000000000000000</double>
      </property>
     </widget>
    </item>
    <item row="5" column="6">
-    <widget class="QLineEdit" name="Mask_3_6">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QDoubleSpinBox" name="sBMask_3_6">
      <property name="toolTip">
       <string/>
      </property>
-     <property name="text">
-      <string>0</string>
+     <property name="text" stdset="0">
+      <string>0,00</string>
+     </property>
+     <property name="maximum">
+      <double>90.000000000000000</double>
      </property>
     </widget>
    </item>
    <item row="5" column="5">
-    <widget class="QLineEdit" name="Mask_3_5">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QDoubleSpinBox" name="sBMask_3_5">
      <property name="toolTip">
       <string/>
      </property>
-     <property name="text">
-      <string>0</string>
+     <property name="text" stdset="0">
+      <string>0,00</string>
+     </property>
+     <property name="maximum">
+      <double>90.000000000000000</double>
      </property>
     </widget>
    </item>
    <item row="5" column="3">
-    <widget class="QLineEdit" name="Mask_3_3">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QDoubleSpinBox" name="sBMask_3_3">
      <property name="toolTip">
       <string/>
      </property>
-     <property name="text">
-      <string>0</string>
+     <property name="text" stdset="0">
+      <string>0,00</string>
+     </property>
+     <property name="maximum">
+      <double>90.000000000000000</double>
      </property>
     </widget>
    </item>
    <item row="4" column="0">
     <widget class="QLabel" name="Label13">
-     <property name="enabled">
-      <bool>true</bool>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
      <property name="toolTip">
       <string/>
@@ -263,22 +286,25 @@
     </widget>
    </item>
    <item row="3" column="9">
-    <widget class="QLineEdit" name="Mask_1_9">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QDoubleSpinBox" name="sBMask_1_9">
      <property name="toolTip">
       <string/>
      </property>
-     <property name="text">
-      <string>0</string>
+     <property name="text" stdset="0">
+      <string>0,00</string>
+     </property>
+     <property name="maximum">
+      <double>90.000000000000000</double>
      </property>
     </widget>
    </item>
    <item row="2" column="5">
     <widget class="QLabel" name="Label8">
-     <property name="enabled">
-      <bool>true</bool>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
      <property name="toolTip">
       <string/>
@@ -289,139 +315,142 @@
     </widget>
    </item>
    <item row="3" column="3">
-    <widget class="QLineEdit" name="Mask_1_3">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QDoubleSpinBox" name="sBMask_1_3">
      <property name="toolTip">
       <string/>
      </property>
-     <property name="text">
-      <string>0</string>
+     <property name="text" stdset="0">
+      <string>0,00</string>
+     </property>
+     <property name="maximum">
+      <double>90.000000000000000</double>
      </property>
     </widget>
    </item>
    <item row="3" column="1">
-    <widget class="QLineEdit" name="Mask_1_1">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QDoubleSpinBox" name="sBMask_1_1">
      <property name="toolTip">
       <string/>
      </property>
-     <property name="text">
-      <string>0</string>
+     <property name="text" stdset="0">
+      <string>0,00</string>
+     </property>
+     <property name="maximum">
+      <double>90.000000000000000</double>
      </property>
     </widget>
    </item>
    <item row="3" column="8">
-    <widget class="QLineEdit" name="Mask_1_8">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QDoubleSpinBox" name="sBMask_1_8">
      <property name="toolTip">
       <string/>
      </property>
-     <property name="text">
-      <string>0</string>
+     <property name="text" stdset="0">
+      <string>0,00</string>
+     </property>
+     <property name="maximum">
+      <double>90.000000000000000</double>
      </property>
     </widget>
    </item>
    <item row="3" column="7">
-    <widget class="QLineEdit" name="Mask_1_7">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QDoubleSpinBox" name="sBMask_1_7">
      <property name="toolTip">
       <string/>
      </property>
-     <property name="text">
-      <string>0</string>
+     <property name="text" stdset="0">
+      <string>0,00</string>
+     </property>
+     <property name="maximum">
+      <double>90.000000000000000</double>
      </property>
     </widget>
    </item>
    <item row="3" column="5">
-    <widget class="QLineEdit" name="Mask_1_5">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QDoubleSpinBox" name="sBMask_1_5">
      <property name="toolTip">
       <string/>
      </property>
-     <property name="text">
-      <string>0</string>
+     <property name="text" stdset="0">
+      <string>0,00</string>
+     </property>
+     <property name="maximum">
+      <double>90.000000000000000</double>
      </property>
     </widget>
    </item>
    <item row="4" column="9">
-    <widget class="QLineEdit" name="Mask_2_9">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QDoubleSpinBox" name="sBMask_2_9">
      <property name="toolTip">
       <string/>
      </property>
-     <property name="text">
-      <string>0</string>
+     <property name="text" stdset="0">
+      <string>0,00</string>
+     </property>
+     <property name="maximum">
+      <double>90.000000000000000</double>
      </property>
     </widget>
    </item>
    <item row="4" column="8">
-    <widget class="QLineEdit" name="Mask_2_8">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QDoubleSpinBox" name="sBMask_2_8">
      <property name="toolTip">
       <string/>
      </property>
-     <property name="text">
-      <string>0</string>
+     <property name="text" stdset="0">
+      <string>0,00</string>
+     </property>
+     <property name="maximum">
+      <double>90.000000000000000</double>
      </property>
     </widget>
    </item>
    <item row="5" column="2">
-    <widget class="QLineEdit" name="Mask_3_2">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QDoubleSpinBox" name="sBMask_3_2">
      <property name="toolTip">
       <string/>
      </property>
-     <property name="text">
-      <string>0</string>
+     <property name="text" stdset="0">
+      <string>0,00</string>
+     </property>
+     <property name="maximum">
+      <double>90.000000000000000</double>
      </property>
     </widget>
    </item>
    <item row="5" column="4">
-    <widget class="QLineEdit" name="Mask_3_4">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QDoubleSpinBox" name="sBMask_3_4">
      <property name="toolTip">
       <string/>
      </property>
-     <property name="text">
-      <string>0</string>
+     <property name="text" stdset="0">
+      <string>0,00</string>
+     </property>
+     <property name="maximum">
+      <double>90.000000000000000</double>
      </property>
     </widget>
    </item>
    <item row="3" column="2">
-    <widget class="QLineEdit" name="Mask_1_2">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QDoubleSpinBox" name="sBMask_1_2">
      <property name="toolTip">
       <string/>
      </property>
-     <property name="text">
-      <string>0</string>
+     <property name="text" stdset="0">
+      <string>0,00</string>
+     </property>
+     <property name="maximum">
+      <double>90.000000000000000</double>
      </property>
     </widget>
    </item>
    <item row="2" column="9">
     <widget class="QLabel" name="Label12">
-     <property name="enabled">
-      <bool>true</bool>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
      <property name="toolTip">
       <string/>
@@ -432,35 +461,38 @@
     </widget>
    </item>
    <item row="3" column="6">
-    <widget class="QLineEdit" name="Mask_1_6">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QDoubleSpinBox" name="sBMask_1_6">
      <property name="toolTip">
       <string/>
      </property>
-     <property name="text">
-      <string>0</string>
+     <property name="text" stdset="0">
+      <string>0,00</string>
+     </property>
+     <property name="maximum">
+      <double>90.000000000000000</double>
      </property>
     </widget>
    </item>
    <item row="3" column="4">
-    <widget class="QLineEdit" name="Mask_1_4">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QDoubleSpinBox" name="sBMask_1_4">
      <property name="toolTip">
       <string/>
      </property>
-     <property name="text">
-      <string>0</string>
+     <property name="text" stdset="0">
+      <string>0,00</string>
+     </property>
+     <property name="maximum">
+      <double>90.000000000000000</double>
      </property>
     </widget>
    </item>
    <item row="2" column="6">
     <widget class="QLabel" name="Label9">
-     <property name="enabled">
-      <bool>true</bool>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
      <property name="toolTip">
       <string/>
@@ -472,8 +504,11 @@
    </item>
    <item row="2" column="2">
     <widget class="QLabel" name="Label4">
-     <property name="enabled">
-      <bool>true</bool>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
      <property name="toolTip">
       <string/>
@@ -488,6 +523,12 @@
      <property name="enabled">
       <bool>true</bool>
      </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="toolTip">
       <string/>
      </property>
@@ -497,59 +538,65 @@
     </widget>
    </item>
    <item row="4" column="1">
-    <widget class="QLineEdit" name="Mask_2_1">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QDoubleSpinBox" name="sBMask_2_1">
      <property name="toolTip">
       <string/>
      </property>
-     <property name="text">
-      <string>0</string>
+     <property name="text" stdset="0">
+      <string>0,00</string>
+     </property>
+     <property name="maximum">
+      <double>90.000000000000000</double>
      </property>
     </widget>
    </item>
    <item row="5" column="8">
-    <widget class="QLineEdit" name="Mask_3_8">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QDoubleSpinBox" name="sBMask_3_8">
      <property name="toolTip">
       <string/>
      </property>
-     <property name="text">
-      <string>0</string>
+     <property name="text" stdset="0">
+      <string>0,00</string>
+     </property>
+     <property name="maximum">
+      <double>90.000000000000000</double>
      </property>
     </widget>
    </item>
    <item row="5" column="9">
-    <widget class="QLineEdit" name="Mask_3_9">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QDoubleSpinBox" name="sBMask_3_9">
      <property name="toolTip">
       <string/>
      </property>
-     <property name="text">
-      <string>0</string>
+     <property name="text" stdset="0">
+      <string>0,00</string>
+     </property>
+     <property name="maximum">
+      <double>90.000000000000000</double>
      </property>
     </widget>
    </item>
    <item row="5" column="7">
-    <widget class="QLineEdit" name="Mask_3_7">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QDoubleSpinBox" name="sBMask_3_7">
      <property name="toolTip">
       <string/>
      </property>
-     <property name="text">
-      <string>0</string>
+     <property name="text" stdset="0">
+      <string>0,00</string>
+     </property>
+     <property name="maximum">
+      <double>90.000000000000000</double>
      </property>
     </widget>
    </item>
    <item row="0" column="0" colspan="10">
     <widget class="QWidget" name="widget" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <property name="leftMargin">
        <number>0</number>
@@ -564,36 +611,27 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QCheckBox" name="MaskEna1">
+       <widget class="QCheckBox" name="cBMaskEnabled1">
         <property name="toolTip">
          <string/>
         </property>
         <property name="text">
          <string>Rover</string>
         </property>
-        <property name="checked">
-         <bool>false</bool>
-        </property>
        </widget>
       </item>
       <item>
-       <widget class="QCheckBox" name="MaskEna2">
+       <widget class="QCheckBox" name="cBMaskEnabled2">
         <property name="toolTip">
          <string/>
         </property>
         <property name="text">
          <string>Base Station</string>
         </property>
-        <property name="checked">
-         <bool>false</bool>
-        </property>
        </widget>
       </item>
       <item>
        <widget class="QLabel" name="Label3">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
         <property name="toolTip">
          <string/>
         </property>
@@ -604,9 +642,6 @@
       </item>
       <item>
        <widget class="QLabel" name="Label6">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
         <property name="toolTip">
          <string/>
         </property>
@@ -620,6 +655,39 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>cBMaskEnabled1</tabstop>
+  <tabstop>cBMaskEnabled2</tabstop>
+  <tabstop>sBMask_1_1</tabstop>
+  <tabstop>sBMask_1_2</tabstop>
+  <tabstop>sBMask_1_3</tabstop>
+  <tabstop>sBMask_1_4</tabstop>
+  <tabstop>sBMask_1_5</tabstop>
+  <tabstop>sBMask_1_6</tabstop>
+  <tabstop>sBMask_1_7</tabstop>
+  <tabstop>sBMask_1_8</tabstop>
+  <tabstop>sBMask_1_9</tabstop>
+  <tabstop>sBMask_2_1</tabstop>
+  <tabstop>sBMask_2_2</tabstop>
+  <tabstop>sBMask_2_3</tabstop>
+  <tabstop>sBMask_2_4</tabstop>
+  <tabstop>sBMask_2_5</tabstop>
+  <tabstop>sBMask_2_6</tabstop>
+  <tabstop>sBMask_2_7</tabstop>
+  <tabstop>sBMask_2_8</tabstop>
+  <tabstop>sBMask_2_9</tabstop>
+  <tabstop>sBMask_3_1</tabstop>
+  <tabstop>sBMask_3_2</tabstop>
+  <tabstop>sBMask_3_3</tabstop>
+  <tabstop>sBMask_3_4</tabstop>
+  <tabstop>sBMask_3_5</tabstop>
+  <tabstop>sBMask_3_6</tabstop>
+  <tabstop>sBMask_3_7</tabstop>
+  <tabstop>sBMask_3_8</tabstop>
+  <tabstop>sBMask_3_9</tabstop>
+  <tabstop>btnOk</tabstop>
+  <tabstop>btnCancel</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

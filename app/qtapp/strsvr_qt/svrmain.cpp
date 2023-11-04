@@ -19,6 +19,8 @@
 //                       add stream conversion function
 //                       add option -auto and -tray
 //---------------------------------------------------------------------------
+#include <clocale>
+
 #include <QTimer>
 #include <QCommandLineParser>
 #include <QFileInfo>
@@ -26,6 +28,7 @@
 #include <QMessageBox>
 #include <QSettings>
 #include <QMenu>
+#include <QStringList>
 
 #include "rtklib.h"
 #include "svroptdlg.h"
@@ -37,8 +40,9 @@
 #include "convdlg.h"
 #include "aboutdlg.h"
 #include "refdlg.h"
-#include "console.h"
+#include "mondlg.h"
 #include "svrmain.h"
+#include "mondlg.h"
 
 //---------------------------------------------------------------------------
 
@@ -47,9 +51,15 @@
 #define CLORANGE    QColor(0x00,0xAA,0xFF)
 
 #define MIN(x,y)    ((x)<(y)?(x):(y))
+#define MAX(x,y)    ((x)>(y)?(x):(y))
 
 strsvr_t strsvr;
 
+extern "C" {
+extern int showmsg(const char *, ...)  {return 0;}
+extern void settime(gtime_t) {}
+extern void settspan(gtime_t, gtime_t) {}
+}
 
 QString color2String(const QColor &c){
     return QString("rgb(%1,%2,%3)").arg(c.red()).arg(c.green()).arg(c.blue());
@@ -60,7 +70,7 @@ static void num2cnum(int num, char *str)
 {
     char buff[256],*p=buff,*q=str;
     int i,n;
-    n=sprintf(buff,"%u",(unsigned int)num);
+    n=sprintf(buff,"%u",(uint32_t)num);
     for (i=0;i<n;i++) {
         *q++=*p++;
         if ((n-i-1)%3==0&&i<n-1) *q++=',';
@@ -74,780 +84,928 @@ MainForm::MainForm(QWidget *parent)
     setupUi(this);
 
     QCoreApplication::setApplicationName(PRGNAME);
-    QCoreApplication::setApplicationVersion(QString(VER_RTKLIB)+ " "+ PATCH_LEVEL);
+    QCoreApplication::setApplicationVersion(QString(VER_RTKLIB) + " " + PATCH_LEVEL);
 
     setWindowIcon(QIcon(":/icons/rtk6.bmp"));
 
-    setlocale(LC_NUMERIC,"C"); // use point as decimal separator in formated output
+    setlocale(LC_NUMERIC, "C"); // use point as decimal separator in formatted output
 
-    QString file=QApplication::applicationFilePath();
+    QString file = QApplication::applicationFilePath();
     QFileInfo fi(file);
-    IniFile=fi.absolutePath()+"/"+fi.baseName()+".ini";
+    iniFile = fi.absolutePath() + "/" + fi.baseName() + ".ini";
 
-    TrayIcon = new QSystemTrayIcon(QIcon(":/icons/strsvr_Icon"));
+    trayIcon = new QSystemTrayIcon(QIcon(":/icons/strsvr_Icon"));
 
-    QMenu *trayMenu= new QMenu(this);
-    trayMenu->addAction(MenuExpand);
+    QMenu *trayMenu = new QMenu(this);
+    trayMenu->addAction(acMenuExpand);
     trayMenu->addSeparator();
-    trayMenu->addAction(MenuStart);
-    trayMenu->addAction(MenuStop);
+    trayMenu->addAction(acMenuStart);
+    trayMenu->addAction(acMenuStop);
     trayMenu->addSeparator();
-    trayMenu->addAction(MenuExit);
+    trayMenu->addAction(acMenuExit);
 
-    TrayIcon->setContextMenu(trayMenu);
+    trayIcon->setContextMenu(trayMenu);
 
     svrOptDialog = new SvrOptDialog(this);
-    console = new Console(this);
-    tcpOptDialog= new TcpOptDialog(this);
-    serialOptDialog= new SerialOptDialog(this);
-    fileOptDialog= new FileOptDialog(this);
-    ftpOptDialog= new FtpOptDialog(this);
+    tcpOptDialog = new TcpOptDialog(this);
+    serialOptDialog = new SerialOptDialog(this);
+    fileOptDialog = new FileOptDialog(this);
+    ftpOptDialog = new FtpOptDialog(this);
+    strMonDialog = new StrMonDialog(this);
 
-    StartTime.sec=StartTime.time=EndTime.sec=EndTime.time=0;
+    btnStop->setVisible(false);
 
-    connect(BtnExit,SIGNAL(clicked(bool)),this,SLOT(BtnExitClick()));
-    connect(BtnInput,SIGNAL(clicked(bool)),this,SLOT(BtnInputClick()));
-    connect(BtnStart,SIGNAL(clicked(bool)),this,SLOT(BtnStartClick()));
-    connect(BtnStop,SIGNAL(clicked(bool)),this,SLOT(BtnStopClick()));
-    connect(BtnOpt,SIGNAL(clicked(bool)),this,SLOT(BtnOptClick()));
-    connect(BtnCmd,SIGNAL(clicked(bool)),this,SLOT(BtnCmdClick()));
-    connect(BtnAbout,SIGNAL(clicked(bool)),this,SLOT(BtnAboutClick()));
-    connect(BtnStrMon,SIGNAL(clicked(bool)),this,SLOT(BtnStrMonClick()));
-    connect(BtnOutput1,SIGNAL(clicked(bool)),this,SLOT(BtnOutput1Click()));
-    connect(BtnOutput2,SIGNAL(clicked(bool)),this,SLOT(BtnOutput2Click()));
-    connect(BtnOutput3,SIGNAL(clicked(bool)),this,SLOT(BtnOutput3Click()));
-    connect(BtnTaskIcon,SIGNAL(clicked(bool)),this,SLOT(BtnTaskIconClick()));
-    connect(MenuStart,SIGNAL(triggered(bool)),this,SLOT(MenuStartClick()));
-    connect(MenuStop,SIGNAL(triggered(bool)),this,SLOT(MenuStopClick()));
-    connect(MenuExit,SIGNAL(triggered(bool)),this,SLOT(MenuExitClick()));
-    connect(MenuExpand,SIGNAL(triggered(bool)),this,SLOT(MenuExpandClick()));
-    connect(Output1,SIGNAL(currentIndexChanged(int)),this,SLOT(Output1Change()));
-    connect(Output2,SIGNAL(currentIndexChanged(int)),this,SLOT(Output2Change()));
-    connect(Output3,SIGNAL(currentIndexChanged(int)),this,SLOT(Output3Change()));
-    connect(BtnConv1,SIGNAL(clicked(bool)),this,SLOT(BtnConv1Click()));
-    connect(BtnConv2,SIGNAL(clicked(bool)),this,SLOT(BtnConv2Click()));
-    connect(BtnConv3,SIGNAL(clicked(bool)),this,SLOT(BtnConv3Click()));
-    connect(&Timer1,SIGNAL(timeout()),this,SLOT(Timer1Timer()));
-    connect(&Timer2,SIGNAL(timeout()),this,SLOT(Timer2Timer()));
-    connect(TrayIcon,SIGNAL(activated(QSystemTrayIcon::ActivationReason)),this,SLOT(TrayIconActivated(QSystemTrayIcon::ActivationReason)));
-    connect(Input,SIGNAL(currentIndexChanged(int)),this,SLOT(InputChange()));
+    startTime.sec = startTime.time = endTime.sec = endTime.time = 0;
 
-    Timer1.setInterval(50);
-    Timer2.setInterval(100);
+    connect(btnExit, SIGNAL(clicked(bool)), this, SLOT(btnExitClicked()));
+    connect(btnInput, SIGNAL(clicked(bool)), this, SLOT(btnInputClicked()));
+    connect(btnStart, SIGNAL(clicked(bool)), this, SLOT(btnStartClicked()));
+    connect(btnStop, SIGNAL(clicked(bool)), this, SLOT(btnStopClicked()));
+    connect(btnOpt, SIGNAL(clicked(bool)), this, SLOT(btnOptionsClicked()));
+    connect(btnCmd, SIGNAL(clicked(bool)), this, SLOT(BtnCommandClicked()));
+    connect(btnCmd1, SIGNAL(clicked(bool)), this, SLOT(BtnCommandClicked()));
+    connect(btnCmd2, SIGNAL(clicked(bool)), this, SLOT(BtnCommandClicked()));
+    connect(btnCmd3, SIGNAL(clicked(bool)), this, SLOT(BtnCommandClicked()));
+    connect(btnCmd4, SIGNAL(clicked(bool)), this, SLOT(BtnCommandClicked()));
+    connect(btnCmd5, SIGNAL(clicked(bool)), this, SLOT(BtnCommandClicked()));
+    connect(btnCmd6, SIGNAL(clicked(bool)), this, SLOT(BtnCommandClicked()));
+    connect(btnAbout, SIGNAL(clicked(bool)), this, SLOT(btnAboutClicked()));
+    connect(btnStreamMonitor, SIGNAL(clicked(bool)), this, SLOT(btnStreamMonitorClicked()));
+    connect(acMenuStart, SIGNAL(triggered(bool)), this, SLOT(menuStartClicked()));
+    connect(acMenuStop, SIGNAL(triggered(bool)), this, SLOT(menuStopClicked()));
+    connect(acMenuExit, SIGNAL(triggered(bool)), this, SLOT(menuExitClicked()));
+    connect(acMenuExpand, SIGNAL(triggered(bool)), this, SLOT(menuExpandClicked()));
+    connect(btnOutput1, SIGNAL(clicked(bool)), this, SLOT(btnOutputClicked()));
+    connect(btnOutput2, SIGNAL(clicked(bool)), this, SLOT(btnOutputClicked()));
+    connect(btnOutput3, SIGNAL(clicked(bool)), this, SLOT(btnOutputClicked()));
+    connect(btnOutput4, SIGNAL(clicked(bool)), this, SLOT(btnOutputClicked()));
+    connect(btnOutput5, SIGNAL(clicked(bool)), this, SLOT(btnOutputClicked()));
+    connect(btnOutput6, SIGNAL(clicked(bool)), this, SLOT(btnOutputClicked()));
+    connect(btnTaskIcon, SIGNAL(clicked(bool)), this, SLOT(btnTaskIconClicked()));
+    connect(cBOutput1, SIGNAL(currentIndexChanged(int)), this, SLOT(outputChanged()));
+    connect(cBOutput2, SIGNAL(currentIndexChanged(int)), this, SLOT(outputChanged()));
+    connect(cBOutput3, SIGNAL(currentIndexChanged(int)), this, SLOT(outputChanged()));
+    connect(cBOutput4, SIGNAL(currentIndexChanged(int)), this, SLOT(outputChanged()));
+    connect(cBOutput5, SIGNAL(currentIndexChanged(int)), this, SLOT(outputChanged()));
+    connect(cBOutput6, SIGNAL(currentIndexChanged(int)), this, SLOT(outputChanged()));
+    connect(btnConv1, SIGNAL(clicked(bool)), this, SLOT(btnConvertClicked()));
+    connect(btnConv2, SIGNAL(clicked(bool)), this, SLOT(btnConvertClicked()));
+    connect(btnConv3, SIGNAL(clicked(bool)), this, SLOT(btnConvertClicked()));
+    connect(btnConv4, SIGNAL(clicked(bool)), this, SLOT(btnConvertClicked()));
+    connect(btnConv5, SIGNAL(clicked(bool)), this, SLOT(btnConvertClicked()));
+    connect(btnConv6, SIGNAL(clicked(bool)), this, SLOT(btnConvertClicked()));
+    connect(btnLog1, SIGNAL(clicked(bool)), this, SLOT(btnLogClicked()));
+    connect(btnLog2, SIGNAL(clicked(bool)), this, SLOT(btnLogClicked()));
+    connect(btnLog3, SIGNAL(clicked(bool)), this, SLOT(btnLogClicked()));
+    connect(btnLog4, SIGNAL(clicked(bool)), this, SLOT(btnLogClicked()));
+    connect(btnLog5, SIGNAL(clicked(bool)), this, SLOT(btnLogClicked()));
+    connect(btnLog6, SIGNAL(clicked(bool)), this, SLOT(btnLogClicked()));
+    connect(&serverStatusTimer, SIGNAL(timeout()), this, SLOT(serverStatusTimerTimeout()));
+    connect(&streamMonitorTimer, SIGNAL(timeout()), this, SLOT(streamMonitorTimerTimeout()));
+    connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
+    connect(cBInput, SIGNAL(currentIndexChanged(int)), this, SLOT(inputChanged()));
 
-    QTimer::singleShot(100,this,SLOT(FormCreate()));
+    serverStatusTimer.setInterval(50);
+    streamMonitorTimer.setInterval(100);
+
+    QTimer::singleShot(100, this, SLOT(formCreated()));
 }
 // callback on form create --------------------------------------------------
-void MainForm::FormCreate()
+void MainForm::formCreated()
 {
-    int autorun=0,tasktray=0;
-    
-    strsvrinit(&strsvr,3);
-    
+    int autorun = 0, tasktray = 0;
+
+    strsvrinit(&strsvr, MAXSTR-1);
+
     setWindowTitle(QString("%1 ver.%2 %3").arg(PRGNAME).arg(VER_RTKLIB).arg(PATCH_LEVEL));
-    
+
 
     QCommandLineParser parser;
-    parser.setApplicationDescription("stream server");
+    parser.setApplicationDescription(tr("stream server qt"));
     parser.addHelpOption();
     parser.addVersionOption();
     parser.addPositionalArgument("source", QCoreApplication::translate("main", "Source file to copy."));
     parser.addPositionalArgument("destination", QCoreApplication::translate("main", "Destination directory."));
 
-     // A boolean option with a single name (-p)
-     QCommandLineOption showProgressOption("p", QCoreApplication::translate("main", "Show progress during copy"));
-     parser.addOption(showProgressOption);
+    // A boolean option with a single name (-p)
+    QCommandLineOption showProgressOption("p", QCoreApplication::translate("main", "Show progress during copy"));
+    parser.addOption(showProgressOption);
 
     QCommandLineOption trayOption(QStringList() << "tray",
-            QCoreApplication::translate("main", "start as task tray icon."));
+                      QCoreApplication::translate("main", "start as task tray icon."));
     parser.addOption(trayOption);
 
     QCommandLineOption autoOption(QStringList() << "auto",
-            QCoreApplication::translate("main", "auto start."));
+                      QCoreApplication::translate("main", "auto start."));
     parser.addOption(autoOption);
 
     QCommandLineOption windowTitleOption(QStringList() << "t",
-            QCoreApplication::translate("main", "window title."),
-            QCoreApplication::translate("main", "title"));
+                         QCoreApplication::translate("main", "window title."),
+                         QCoreApplication::translate("main", "title"));
     parser.addOption(windowTitleOption);
 
     QCommandLineOption iniFileOption(QStringList() << "i",
-            QCoreApplication::translate("main", "ini file path."),
-            QCoreApplication::translate("main", "file"));
+                     QCoreApplication::translate("main", "ini file path."),
+                     QCoreApplication::translate("main", "file"));
     parser.addOption(iniFileOption);
 
     parser.process(*QApplication::instance());
 
     if (parser.isSet(iniFileOption))
-        IniFile=parser.value(iniFileOption);
+        iniFile = parser.value(iniFileOption);
 
-    LoadOpt();
-    
+    loadOptions();
+
     if (parser.isSet(windowTitleOption))
         setWindowTitle(parser.value(windowTitleOption));
-    if (parser.isSet(autoOption)) autorun=1;
-    if (parser.isSet(trayOption)) tasktray=1;
+    if (parser.isSet(autoOption)) autorun = 1;
+    if (parser.isSet(trayOption)) tasktray = 1;
 
-    SetTrayIcon(0);
-    
+    setTrayIcon(0);
+
     if (tasktray) {
         setVisible(false);
-        TrayIcon->setVisible(true);
+        trayIcon->setVisible(true);
     }
-    if (autorun) {
-        SvrStart();
-    }
-    Timer1.start();
-    Timer2.start();
+    if (autorun)
+        serverStart();
+    serverStatusTimer.start();
+    streamMonitorTimer.start();
 }
 // callback on form close ---------------------------------------------------
 void MainForm::closeEvent(QCloseEvent *)
 {
-    SaveOpt();
+    saveOptions();
 }
 // callback on button-exit --------------------------------------------------
-void MainForm::BtnExitClick()
+void MainForm::btnExitClicked()
 {
     close();
 }
 // callback on button-start -------------------------------------------------
-void MainForm::BtnStartClick()
+void MainForm::btnStartClicked()
 {
-    SvrStart();
+    serverStart();
 }
 // callback on button-stop --------------------------------------------------
-void MainForm::BtnStopClick()
+void MainForm::btnStopClicked()
 {
-    SvrStop();
+    serverStop();
 }
 // callback on button-options -----------------------------------------------
-void MainForm::BtnOptClick()
+void MainForm::btnOptionsClicked()
 {
+    for (int i = 0; i < 6; i++) svrOptDialog->serverOptions[i] = serverOptions[i];
+    for (int i = 0; i < 3; i++) svrOptDialog->antennaPos[i] = antennaPosition[i];
+    for (int i = 0; i < 3; i++) svrOptDialog->antennaOffset[i] = antennaOffsets[i];
+    svrOptDialog->traceLevel = traceLevel;
+    svrOptDialog->NmeaReq = nmeaRequest;
+    svrOptDialog->fileSwapMargin = fileSwapMargin;
+    svrOptDialog->RelayBack = relayBack;
+    svrOptDialog->progressBarRange = progressBarRange;
+    svrOptDialog->stationPositionFile = stationPositionFile;
+    svrOptDialog->exeDirectory = exeDirectory;
+    svrOptDialog->localDirectory = localDirectory;
+    svrOptDialog->proxyAddress = proxyAddress;
+    svrOptDialog->stationId = stationId;
+    svrOptDialog->StaSel = stationSelect;
+    svrOptDialog->antennaType = antennaType;
+    svrOptDialog->receiverType = receiverType;
+    svrOptDialog->logFile = logFile;
 
-    for (int i=0;i<6;i++) svrOptDialog->SvrOpt[i]=SvrOpt[i];
-    for (int i=0;i<3;i++) svrOptDialog->AntPos[i]=AntPos[i];
-    for (int i=0;i<3;i++) svrOptDialog->AntOff[i]=AntOff[i];
-    svrOptDialog->TraceLevel=TraceLevel;
-    svrOptDialog->NmeaReq=NmeaReq;
-    svrOptDialog->FileSwapMargin=FileSwapMargin;
-    svrOptDialog->StaPosFile=StaPosFile;
-    svrOptDialog->ExeDirectory=ExeDirectory;
-    svrOptDialog->LocalDirectory=LocalDirectory;
-    svrOptDialog->ProxyAddress=ProxyAddress;
-    svrOptDialog->StaId=StaId;
-    svrOptDialog->StaSel=StaSel;
-    svrOptDialog->AntType=AntType;
-    svrOptDialog->RcvType=RcvType;
-    
     svrOptDialog->exec();
-    if (svrOptDialog->result()!=QDialog::Accepted) return;
-    
-    for (int i=0;i<6;i++) SvrOpt[i]=svrOptDialog->SvrOpt[i];
-    for (int i=0;i<3;i++) AntPos[i]=svrOptDialog->AntPos[i];
-    for (int i=0;i<3;i++) AntOff[i]=svrOptDialog->AntOff[i];
-    TraceLevel=svrOptDialog->TraceLevel;
-    NmeaReq=svrOptDialog->NmeaReq;
-    FileSwapMargin=svrOptDialog->FileSwapMargin;
-    StaPosFile=svrOptDialog->StaPosFile;
-    ExeDirectory=svrOptDialog->ExeDirectory;
-    LocalDirectory=svrOptDialog->LocalDirectory;
-    ProxyAddress=svrOptDialog->ProxyAddress;
-    StaId=svrOptDialog->StaId;
-    StaSel=svrOptDialog->StaSel;
-    AntType=svrOptDialog->AntType;
-    RcvType=svrOptDialog->RcvType;
+    if (svrOptDialog->result() != QDialog::Accepted) return;
+
+    for (int i = 0; i < 6; i++) serverOptions[i] = svrOptDialog->serverOptions[i];
+    for (int i = 0; i < 3; i++) antennaPosition[i] = svrOptDialog->antennaPos[i];
+    for (int i = 0; i < 3; i++) antennaOffsets[i] = svrOptDialog->antennaOffset[i];
+    traceLevel = svrOptDialog->traceLevel;
+    nmeaRequest = svrOptDialog->NmeaReq;
+    fileSwapMargin = svrOptDialog->fileSwapMargin;
+    relayBack = svrOptDialog->RelayBack;
+    progressBarRange = svrOptDialog->progressBarRange;
+    stationPositionFile = svrOptDialog->stationPositionFile;
+    exeDirectory = svrOptDialog->exeDirectory;
+    localDirectory = svrOptDialog->localDirectory;
+    proxyAddress = svrOptDialog->proxyAddress;
+    stationId = svrOptDialog->stationId;
+    stationSelect = svrOptDialog->StaSel;
+    antennaType = svrOptDialog->antennaType;
+    receiverType = svrOptDialog->receiverType;
+    logFile = svrOptDialog->logFile;
 }
 // callback on button-input-opt ---------------------------------------------
-void MainForm::BtnInputClick()
+void MainForm::btnInputClicked()
 {
-    switch (Input->currentIndex()) {
-        case 0: SerialOpt(0,0); break;
-        case 1: TcpOpt(0,1); break;
-        case 2: TcpOpt(0,0); break;
-        case 3: TcpOpt(0,3); break;
-        case 4: FileOpt(0,0); break;
-        case 5: FtpOpt(0,0); break;
-        case 6: FtpOpt(0,1); break;
+    switch (cBInput->currentIndex()) {
+        case 0: serialOptions(0, 0); break;
+        case 1: tcpClientOptions(0, 1); break; // TCP Client
+        case 2: tcpServerOptions(0, 2); break; // TCP Server
+        case 3: ntripClientOptions(0, 3); break; // Ntrip Client
+        case 4: udpServerOptions(0, 6); break;  // UDP Server
+        case 5: fileOptions(0, 0); break;
     }
 }
 // callback on button-input-cmd ---------------------------------------------
-void MainForm::BtnCmdClick()
+void MainForm::BtnCommandClicked()
 {
-    CmdOptDialog *cmdOptDialog= new CmdOptDialog(this);
+    CmdOptDialog *cmdOptDialog = new CmdOptDialog(this);
 
-    if (Input->currentIndex()==0) {
-        cmdOptDialog->Cmds[0]=Cmds[0];
-        cmdOptDialog->Cmds[1]=Cmds[1];
-        cmdOptDialog->CmdEna[0]=CmdEna[0];
-        cmdOptDialog->CmdEna[1]=CmdEna[1];
+
+    QPushButton *btn[] = { btnCmd, btnCmd1, btnCmd2, btnCmd3, btnCmd4, btnCmd5, btnCmd6 };
+    QComboBox *type[] = { cBInput, cBOutput1, cBOutput2, cBOutput3, cBOutput4, cBOutput5, cBOutput6 };
+    int i, j;
+
+    for (i = 0; i < MAXSTR; i++)
+        if (btn[i] == qobject_cast<QPushButton *>(sender())) break;
+    if (i >= MAXSTR) return;
+
+    for (j = 0; j < 3; j++) {
+        if (type[i]->currentText() == tr("Serial")) {
+            cmdOptDialog->commands[j] = commands[i][j];
+            cmdOptDialog->commandsEnabled[j] = commandsEnabled[i][j];
+        }
+        else {
+            cmdOptDialog->commands[j] = commandsTcp[i][j];
+            cmdOptDialog->commandsEnabled[j] = commandsEnabledTcp[i][j];
+        }
     }
-    else {
-        cmdOptDialog->Cmds[0]=CmdsTcp[0];
-        cmdOptDialog->Cmds[1]=CmdsTcp[1];
-        cmdOptDialog->CmdEna[0]=CmdEnaTcp[0];
-        cmdOptDialog->CmdEna[1]=CmdEnaTcp[1];
-    }
+	if (i==0) cmdOptDialog->setWindowTitle("Input Serial/TCP Commands");
+	else cmdOptDialog->setWindowTitle(QString("Output%1 Serial/TCP Commands").arg(i));
 
     cmdOptDialog->exec();
+    if (cmdOptDialog->result() != QDialog::Accepted) return;
 
-    if (cmdOptDialog->result()!=QDialog::Accepted) return;
-    if (Input->currentIndex()==0) {
-        Cmds[0]  =cmdOptDialog->Cmds[0];
-        Cmds[1]  =cmdOptDialog->Cmds[1];
-        CmdEna[0]=cmdOptDialog->CmdEna[0];
-        CmdEna[1]=cmdOptDialog->CmdEna[1];
-    }
-    else {
-        CmdsTcp[0]  =cmdOptDialog->Cmds[0];
-        CmdsTcp[1]  =cmdOptDialog->Cmds[1];
-        CmdEnaTcp[0]=cmdOptDialog->CmdEna[0];
-        CmdEnaTcp[1]=cmdOptDialog->CmdEna[1];
+    for (j=0;j<3;j++) {
+        if (type[i]->currentText() == tr("Serial")) {
+            commands[i][j] = cmdOptDialog->commands[j];
+            commandsEnabled[i][j] = cmdOptDialog->commandsEnabled[j];
+        }
+        else {
+            commandsTcp[i][j] = cmdOptDialog->commands[j];
+            commandsEnabledTcp[i][j] = cmdOptDialog->commandsEnabled[j];
+        }
     }
 
     delete cmdOptDialog;
 }
 // callback on button-output1-opt -------------------------------------------
-void MainForm::BtnOutput1Click()
+void MainForm::btnOutputClicked()
 {
-    switch (Output1->currentIndex()) {
-        case 1: SerialOpt(1,0); break;
-        case 2: TcpOpt(1,1); break;
-        case 3: TcpOpt(1,0); break;
-        case 4: TcpOpt(1,2); break;
-        case 5: FileOpt(1,1); break;
-    }
-}
-// callback on button-output2-opt -------------------------------------------
-void MainForm::BtnOutput2Click()
-{
-    switch (Output2->currentIndex()) {
-        case 1: SerialOpt(2,0); break;
-        case 2: TcpOpt(2,1); break;
-        case 3: TcpOpt(2,0); break;
-        case 4: TcpOpt(2,2); break;
-        case 5: FileOpt(2,1); break;
-    }
-}
-// callback on button-output3-opt -------------------------------------------
-void MainForm::BtnOutput3Click()
-{
-    switch (Output3->currentIndex()) {
-        case 1: SerialOpt(3,0); break;
-        case 2: TcpOpt(3,1); break;
-        case 3: TcpOpt(3,0); break;
-        case 4: TcpOpt(3,2); break;
-        case 5: FileOpt(3,1); break; 
-    }
-}
-// callback on button-output1-conv ------------------------------------------
-void MainForm::BtnConv1Click()
-{
-    ConvDialog *convDialog=new ConvDialog(this);
+    QPushButton *btn[]={btnOutput1, btnOutput2, btnOutput3, btnOutput4, btnOutput5, btnOutput6};
+    QComboBox *type[]={cBOutput1, cBOutput2, cBOutput3, cBOutput4, cBOutput5, cBOutput6};
+	int i;
 
-    convDialog->ConvEna=ConvEna[0];
-    convDialog->ConvInp=ConvInp[0];
-    convDialog->ConvOut=ConvOut[0];
-    convDialog->ConvMsg=ConvMsg[0];
-    convDialog->ConvOpt=ConvOpt[0];
+	for (i=0;i<MAXSTR-1;i++) {
+		if ((QPushButton *)sender()==btn[i]) break;
+	}
+	if (i>=MAXSTR-1) return;
+
+	switch (type[i]->currentIndex()) {
+		case 1: serialOptions  (i+1,0); break;
+		case 2: tcpClientOptions  (i+1,1); break;
+		case 3: tcpServerOptions  (i+1,2); break;
+		case 4: ntripServerOptions(i+1,3); break;
+		case 5: ntripCasterOptions(i+1,4); break;
+		case 6: udpClientOptions  (i+1,5); break;
+		case 7: fileOptions    (i+1,6); break;
+	}
+}
+// callback on button-output-conv ------------------------------------------
+void MainForm::btnConvertClicked()
+{
+    QPushButton *btn[]={btnConv1, btnConv2, btnConv3, btnConv4, btnConv5, btnConv6};
+    int i;
+
+    for (i=0;i<MAXSTR-1;i++) {
+        if ((QPushButton *)sender()==btn[i]) break;
+    }
+    if (i>=MAXSTR-1) return;
+
+    ConvDialog *convDialog = new ConvDialog(this);
+
+    convDialog->conversionEnabled=conversionEnabled[i];
+    convDialog->conversionInputFormat=ConversionInput[i];
+    convDialog->conversionOutputFormat=ConversionOutput[i];
+    convDialog->conversionMessage=conversionMessage[i];
+    convDialog->conversionOptions=conversionOptions[i];
+	convDialog->setWindowTitle(QString("Output%1 Conversion Options").arg(i+1));
 
     convDialog->exec();
-    if (convDialog->result()!=QDialog::Accepted) return;
+    if (convDialog->result() != QDialog::Accepted) return;
 
-    ConvEna[0]=convDialog->ConvEna;
-    ConvInp[0]=convDialog->ConvInp;
-    ConvOut[0]=convDialog->ConvOut;
-    ConvMsg[0]=convDialog->ConvMsg;
-    ConvOpt[0]=convDialog->ConvOpt;
-
-    delete convDialog;
-}
-// callback on button-output2-conv ------------------------------------------
-void MainForm::BtnConv2Click()
-{
-    ConvDialog *convDialog=new ConvDialog(this);
-
-    convDialog->ConvEna=ConvEna[1];
-    convDialog->ConvInp=ConvInp[1];
-    convDialog->ConvOut=ConvOut[1];
-    convDialog->ConvMsg=ConvMsg[1];
-    convDialog->ConvOpt=ConvOpt[1];
-
-    convDialog->exec();
-    if (convDialog->result()!=QDialog::Accepted) return;
-
-    ConvEna[1]=convDialog->ConvEna;
-    ConvInp[1]=convDialog->ConvInp;
-    ConvOut[1]=convDialog->ConvOut;
-    ConvMsg[1]=convDialog->ConvMsg;
-    ConvOpt[1]=convDialog->ConvOpt;
-
-    delete convDialog;
-}
-// callback on button-output3-conv ------------------------------------------
-void MainForm::BtnConv3Click()
-{
-    ConvDialog *convDialog=new ConvDialog(this);
-
-    convDialog->ConvEna=ConvEna[2];
-    convDialog->ConvInp=ConvInp[2];
-    convDialog->ConvOut=ConvOut[2];
-    convDialog->ConvMsg=ConvMsg[2];
-    convDialog->ConvOpt=ConvOpt[2];
-
-    convDialog->exec();
-    if (convDialog->result()!=QDialog::Accepted) return;
-
-    ConvEna[2]=convDialog->ConvEna;
-    ConvInp[2]=convDialog->ConvInp;
-    ConvOut[2]=convDialog->ConvOut;
-    ConvMsg[2]=convDialog->ConvMsg;
-    ConvOpt[2]=convDialog->ConvOpt;
+    conversionEnabled[i]=convDialog->conversionEnabled;
+    ConversionInput[i]=convDialog->conversionInputFormat;
+    ConversionOutput[i]=convDialog->conversionOutputFormat;
+    conversionMessage[i]=convDialog->conversionMessage;
+    conversionOptions[i]=convDialog->conversionOptions;
 
     delete convDialog;
 }
 // callback on buttn-about --------------------------------------------------
-void MainForm::BtnAboutClick()
+void MainForm::btnAboutClicked()
 {
-    AboutDialog *aboutDialog=new AboutDialog(this);
+    AboutDialog *aboutDialog = new AboutDialog(this);
 
-    aboutDialog->About=PRGNAME;
-    aboutDialog->IconIndex=6;
+    aboutDialog->aboutString = PRGNAME;
+    aboutDialog->iconIndex = 6;
     aboutDialog->exec();
 
     delete aboutDialog;
 }
 // callback on task-icon ----------------------------------------------------
-void MainForm::BtnTaskIconClick()
+void MainForm::btnTaskIconClicked()
 {
     setVisible(false);
-    TrayIcon->setVisible(true);
+    trayIcon->setVisible(true);
 }
 // callback on task-icon double-click ---------------------------------------
-void MainForm::TrayIconActivated(QSystemTrayIcon::ActivationReason reason)
+void MainForm::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
 {
-    if (reason!=QSystemTrayIcon::DoubleClick) return;
+    if (reason != QSystemTrayIcon::DoubleClick) return;
 
     setVisible(true);
-    TrayIcon->setVisible(false);
+    trayIcon->setVisible(false);
 }
 // callback on menu-expand --------------------------------------------------
-void MainForm::MenuExpandClick()
+void MainForm::menuExpandClicked()
 {
     setVisible(true);
-    TrayIcon->setVisible(false);
+    trayIcon->setVisible(false);
 }
 // callback on menu-start ---------------------------------------------------
-void MainForm::MenuStartClick()
+void MainForm::menuStartClicked()
 {
-    SvrStart();
+    serverStart();
 }
 // callback on menu-stop ----------------------------------------------------
-void MainForm::MenuStopClick()
+void MainForm::menuStopClicked()
 {
-    SvrStop();
+    serverStop();
 }
 // callback on menu-exit ----------------------------------------------------
-void MainForm::MenuExitClick()
+void MainForm::menuExitClicked()
 {
     close();
 }
 // callback on stream-monitor -----------------------------------------------
-void MainForm::BtnStrMonClick()
+void MainForm::btnStreamMonitorClicked()
 {
-    console->setWindowTitle("Input Monitor");
-    console->show();
+    strMonDialog->show();
 }
 // callback on input type change --------------------------------------------
-void MainForm::InputChange()
+void MainForm::inputChanged()
 {
-    UpdateEnable();
+    updateEnable();
 }
-// callback on output1 type change ------------------------------------------
-void MainForm::Output1Change()
+// callback on output type change ------------------------------------------
+void MainForm::outputChanged()
 {
-    UpdateEnable(); 
-}
-// callback on output2 type change ------------------------------------------
-void MainForm::Output2Change()
-{
-    UpdateEnable();
-}
-// callback on output3 type change ------------------------------------------
-void MainForm::Output3Change()
-{
-    UpdateEnable();
+    updateEnable();
 }
 // callback on interval timer -----------------------------------------------
-void MainForm::Timer1Timer()
+void MainForm::serverStatusTimerTimeout()
 {
-    QColor color[]={Qt::red,Qt::gray,CLORANGE,Qt::green,QColor(0x00,0xff,0x00)};
-    QLabel *e0[]={IndInput,IndOutput1,IndOutput2,IndOutput3};
-    QLabel *e1[]={InputByte,Output1Byte,Output2Byte,Output3Byte};
-    QLabel *e2[]={InputBps,Output1Bps,Output2Bps,Output3Bps};
-    gtime_t time=utc2gpst(timeget());
-    int stat[4]={0},byte[4]={0},bps[4]={0};
-    char msg[MAXSTRMSG*4]="",s1[256],s2[256];
-    double ctime,t[4];
-    
-    strsvrstat(&strsvr,stat,byte,bps,msg);
-    for (int i=0;i<4;i++) {
-        num2cnum(byte[i],s1);
-        num2cnum(bps[i],s2);
-        e0[i]->setStyleSheet(QString("background-color: %1").arg(color2String(color[stat[i]+1])));
+    QColor color[] = { Qt::red, Qt::white, CLORANGE, Qt::green, QColor(0x00, 0xff, 0x00), QColor(0xff, 0xff, 0x00) };
+    QLabel *e0[] = { indInput, indOutput1, indOutput2, indOutput3, indOutput4, indOutput5, indOutput6 };
+    QLabel *e1[] = { lblInputByte, lblOutput1Byte, lblOutput2Byte, lblOutput3Byte, lblOutput4Byte, lblOutput5Byte, lblOutput6Byte };
+    QLabel *e2[] = { lblInputBps, lblOutput1Bps, lblOutput2Bps, lblOutput3Bps, lblOutput4Bps, lblOutput5Bps, lblOutput6Bps};
+    QLabel *e3[] = {indLog, indLog1, indLog2, indLog3, indLog4, indLog5, indLog6};
+    gtime_t time = utc2gpst(timeget());
+    int stat[MAXSTR] = { 0 }, byte[MAXSTR] = { 0 }, bps[MAXSTR] = { 0 }, log_stat[MAXSTR]={0};
+    char msg[MAXSTRMSG * MAXSTR] = "", s1[256], s2[256];
+    double ctime, t[4], pos;
+
+    strsvrstat(&strsvr, stat, log_stat, byte, bps, msg);
+    for (int i = 0; i < MAXSTR; i++) {
+        num2cnum(byte[i], s1);
+        num2cnum(bps[i], s2);
+        e0[i]->setStyleSheet(QString("background-color: %1").arg(color2String(color[stat[i] + 1])));
         e1[i]->setText(s1);
         e2[i]->setText(s2);
+        e3[i]->setStyleSheet(QString("color :%1").arg(color2String(color[log_stat[i]+1])));
     }
-    Progress->setValue(!stat[0]?0:MIN(100,(int)(fmod(byte[0]/500.0,110.0))));
-    
-    time2str(time,s1,0);
-    Time->setText(QString(tr("%1 GPST")).arg(s1));
-    
-    if (Panel1->isEnabled()) {
-        ctime=timediff(EndTime,StartTime);
-    }
-    else {
-        ctime=timediff(time,StartTime);
-    }
-    ctime=floor(ctime);
-    t[0]=floor(ctime/86400.0); ctime-=t[0]*86400.0;
-    t[1]=floor(ctime/3600.0 ); ctime-=t[1]*3600.0;
-    t[2]=floor(ctime/60.0   ); ctime-=t[2]*60.0;
-    t[3]=ctime;
-    ConTime->setText(QString("%1d %2:%3:%4").arg(t[0],0,'f',0).arg(t[1],2,'f',0,QChar('0')).arg(t[2],2,'f',0,QChar('0')).arg(t[3],2,'f',2,QChar('0')));
-    
-    num2cnum(byte[0],s1); num2cnum(bps[0],s2);
-    TrayIcon->setToolTip(QString(tr("%1 bytes %2 bps")).arg(s1).arg(s2));
-    SetTrayIcon(stat[0]<=0?0:(stat[0]==3?2:1));
-    
-    Message->setText(msg);
+    pos = fmod(byte[0] / 1e3 / MAX(progressBarRange, 1), 1.0) * 110.0;
+    pBProgress->setValue(!stat[0] ? 0 : MIN((int)pos, 100));
+
+    time2str(time, s1, 0);
+    lblTime->setText(QString(tr("%1 GPST")).arg(s1));
+
+    if (Panel1->isEnabled())
+        ctime = timediff(endTime, startTime);
+    else
+        ctime = timediff(time, startTime);
+    ctime = floor(ctime);
+    t[0] = floor(ctime / 86400.0); ctime -= t[0] * 86400.0;
+    t[1] = floor(ctime / 3600.0); ctime -= t[1] * 3600.0;
+    t[2] = floor(ctime / 60.0); ctime -= t[2] * 60.0;
+    t[3] = ctime;
+    lblConnectionTime->setText(QString("%1d %2:%3:%4").arg(t[0], 0, 'f', 0).arg(t[1], 2, 'f', 0, QChar('0')).arg(t[2], 2, 'f', 0, QChar('0')).arg(t[3], 2, 'f', 2, QChar('0')));
+
+    num2cnum(byte[0], s1); num2cnum(bps[0], s2);
+    trayIcon->setToolTip(QString(tr("%1 bytes %2 bps")).arg(s1).arg(s2));
+    setTrayIcon(stat[0] <= 0 ? 0 : (stat[0] == 3 ? 2 : 1));
+
+    lblMessage->setText(msg);
+    lblMessage->setToolTip(msg);
 }
 // start stream server ------------------------------------------------------
-void MainForm::SvrStart(void)
+void MainForm::serverStart(void)
 {
-    strconv_t *conv[3]={0};
-    static char str[4][1024];
+    QComboBox *type[]={cBInput, cBOutput1, cBOutput2, cBOutput3, cBOutput4, cBOutput5, cBOutput6};
+    strconv_t *conv[MAXSTR-1]={0};
+    static char str1[MAXSTR][1024], str2[MAXSTR][1024];
     int itype[]={
-        STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPCLI,STR_FILE,STR_FTP,STR_HTTP
+        STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPCLI,STR_UDPSVR,
+        STR_FILE,STR_FTP,STR_HTTP
     };
     int otype[]={
-        STR_NONE,STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPSVR,STR_FILE
+        STR_NONE,STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPSVR,STR_NTRIPCAS,
+        STR_UDPCLI,STR_FILE
     };
-    int ip[]={0,1,1,1,2,3,3},strs[4]={0},opt[7]={0},n;
-    char *paths[4],filepath[1024],buff[1024];
-    char cmd[1024];
-    char *ant[3]={0},*rcv[3]={0},*p;
-    FILE *fp;
-    
-    if (TraceLevel>0) {
-        traceopen(TRACEFILE);
-        tracelevel(TraceLevel);
+    int strs[MAXSTR]={0},opt[8]={0};
+    char *pths[MAXSTR],*logs[MAXSTR],*cmds[MAXSTR]={0},*cmds_periodic[MAXSTR]={0};
+    char filepath[1024];
+    char *p;
+
+    if (traceLevel>0) {
+        traceopen(!logFile.isEmpty()?qPrintable(logFile):TRACEFILE);
+        tracelevel(traceLevel);
     }
-    for (int i=0;i<4;i++) paths[i]=str[i];
-    
-    strs[0]=itype[Input->currentIndex()];
-    strs[1]=otype[Output1->currentIndex()];
-    strs[2]=otype[Output2->currentIndex()];
-    strs[3]=otype[Output3->currentIndex()];
-    
-    strcpy(paths[0],qPrintable(Paths[0][ip[Input->currentIndex()]]));
-    strcpy(paths[1],!Output1->currentIndex()?"":qPrintable(Paths[1][ip[Output1->currentIndex()-1]]));
-    strcpy(paths[2],!Output2->currentIndex()?"":qPrintable(Paths[2][ip[Output2->currentIndex()-1]]));
-    strcpy(paths[3],!Output3->currentIndex()?"":qPrintable(Paths[3][ip[Output3->currentIndex()-1]]));
-    
-    if (Input->currentIndex()==0) {
-        if (CmdEna[0]) strncpy(cmd,qPrintable(Cmds[0]),1024);
+    for (int i = 0; i < MAXSTR; i++) {
+        pths[i] = str1[i];
+        logs[i] = str2[i];
     }
-    else if (Input->currentIndex()==1||Input->currentIndex()==3) {
-        if (CmdEnaTcp[0]) strncpy(cmd,qPrintable(CmdsTcp[0]),1024);
+
+    strs[0] = itype[type[0]->currentIndex()];
+    strcpy(pths[0], qPrintable(paths[0][type[0]->currentIndex()]));
+    strcpy(logs[0],type[0]->currentIndex()>5||!pathEnabled[0]?"":qPrintable(pathLog[0]));
+
+    for (int i=1;i<MAXSTR;i++) {
+        strs[i]=otype[type[i]->currentIndex()];
+        strcpy(pths[1], !type[i]->currentIndex() ? "" : qPrintable(paths[i][type[i]->currentIndex() - 1]));
+        strcpy(logs[i],!pathEnabled[i]?"":qPrintable(pathLog[i]));
+    }
+
+    for (int i=0;i<MAXSTR;i++) {
+        cmds[i] = cmds_periodic[i] = NULL;
+        if (strs[i]==STR_SERIAL) {
+            cmds[i] = new char[1024];
+            cmds_periodic[i] = new char[1024];
+            if (commandsEnabled[i][0]) strncpy(cmds[i],qPrintable(commands[i][0]), 1024);
+            if (commandsEnabled[i][2]) strncpy(cmds_periodic[i], qPrintable(commands[i][2]), 1024);
+        }
+        else if (strs[i]==STR_TCPCLI||strs[i]==STR_NTRIPCLI) {
+            cmds[i] = new char[1024];
+            cmds_periodic[i] = new char[1024];
+            if (commandsEnabledTcp[i][0]) strncpy(cmds[i], qPrintable(commandsTcp[i][0]), 1024);
+            if (commandsEnabledTcp[i][2]) strncpy(cmds_periodic[i], qPrintable(commandsTcp[i][2]), 1024);
+        }
     }
     for (int i=0;i<5;i++) {
-        opt[i]=SvrOpt[i];
+        opt[i]=serverOptions[i];
     }
-    opt[5]=NmeaReq?SvrOpt[5]:0;
-    opt[6]=FileSwapMargin;
-    
-    for (int i=1;i<4;i++) {
+    opt[5]=nmeaRequest?serverOptions[5]:0;
+    opt[6]=fileSwapMargin;
+    opt[7]=relayBack;
+
+    for (int i=1;i<MAXSTR;i++) { // for each out stream
         if (strs[i]!=STR_FILE) continue;
-        strcpy(filepath,paths[i]);
+        strcpy(filepath,pths[i]);
         if (strstr(filepath,"::A")) continue;
         if ((p=strstr(filepath,"::"))) *p='\0';
-        if (!(fp=fopen(filepath,"r"))) continue;
-        fclose(fp);
-        if (QMessageBox::question(this,tr("Overwrite"),tr("File %1 exists. \nDo you want to overwrite?").arg(filepath))!=QMessageBox::Yes) return;
+        if (!QFile::exists(filepath)) continue;
+        if (QMessageBox::question(this, tr("Overwrite"), tr("File %1 exists. \nDo you want to overwrite?").arg(filepath)) != QMessageBox::Yes) return;
     }
-    strsetdir(qPrintable(LocalDirectory));
-    strsetproxy(qPrintable(ProxyAddress));
-    
-    for (int i=0;i<3;i++) {
-        if (!ConvEna[i]) continue;
-        if (!(conv[i]=strconvnew(ConvInp[i],ConvOut[i],qPrintable(ConvMsg[i]),
-                                 StaId,StaSel,qPrintable(ConvOpt[i])))) continue;
-        strcpy(buff,qPrintable(AntType));
-        for (p=strtok(buff,","),n=0;p&&n<3;p=strtok(NULL,",")) ant[n++]=p;
-        strcpy(conv[i]->out.sta.antdes,ant[0]);
-        strcpy(conv[i]->out.sta.antsno,ant[1]);
-        conv[i]->out.sta.antsetup=atoi(ant[2]);
-        strcpy(buff,qPrintable(RcvType));
-        for (p=strtok(buff,","),n=0;p&&n<3;p=strtok(NULL,",")) rcv[n++]=p;
-        strcpy(conv[i]->out.sta.rectype,rcv[0]);
-        strcpy(conv[i]->out.sta.recver ,rcv[1]);
-        strcpy(conv[i]->out.sta.recsno ,rcv[2]);
-        matcpy(conv[i]->out.sta.pos,AntPos,3,1);
-        matcpy(conv[i]->out.sta.del,AntOff,3,1);
+    for (int i=0;i<MAXSTR;i++) { // for each log stream
+        if (!*logs[i]) continue;
+        strcpy(filepath,logs[i]);
+        if (strstr(filepath,"::A")) continue;
+        if ((p=strstr(filepath,"::"))) *p='\0';
+        if (!QFile::exists(filepath)) continue;
+        if (QMessageBox::question(this, tr("Overwrite"), tr("File %1 exists. \nDo you want to overwrite?").arg(filepath)) != QMessageBox::Yes) return;
+    }
+
+    strsetdir(qPrintable(localDirectory));
+    strsetproxy(qPrintable(proxyAddress));
+
+    for (int i=0;i<MAXSTR-1;i++) { // for each out stream
+        if (cBInput->currentIndex() == 2||cBInput->currentIndex() == 4) continue;
+        if (!conversionEnabled[i]) continue;
+        if (!(conv[i] = strconvnew(ConversionInput[i], ConversionOutput[i], qPrintable(conversionMessage[i]),
+                       stationId, stationSelect, qPrintable(conversionOptions[i])))) continue;
+        QStringList tokens = antennaType.split(',');
+        if (tokens.size() >= 3)
+        {
+            strcpy(conv[i]->out.sta.antdes, qPrintable(tokens.at(0)));
+            strcpy(conv[i]->out.sta.antsno, qPrintable(tokens.at(1)));
+            conv[i]->out.sta.antsetup = atoi(qPrintable(tokens.at(2)));
+        }
+        tokens = receiverType.split(',');
+        if (tokens.size() >= 3)
+        {
+            strcpy(conv[i]->out.sta.rectype, qPrintable(tokens.at(0)));
+            strcpy(conv[i]->out.sta.recver, qPrintable(tokens.at(1)));
+            strcpy(conv[i]->out.sta.recsno, qPrintable(tokens.at(2)));
+        }
+        matcpy(conv[i]->out.sta.pos,antennaPosition,3,1);
+        matcpy(conv[i]->out.sta.del,antennaOffsets,3,1);
     }
     // stream server start
-    if (!strsvrstart(&strsvr,opt,strs,paths,conv,cmd,AntPos)) return;
-    
-    StartTime=utc2gpst(timeget());
-    Panel1    ->setEnabled(false);
-    BtnStart  ->setVisible(false);
-    BtnStop   ->setVisible(true);
-    BtnOpt    ->setEnabled(false);
-    BtnExit   ->setEnabled(false);
-    MenuStart ->setEnabled(false);
-    MenuStop  ->setEnabled(true);
-    MenuExit  ->setEnabled(false);
-    SetTrayIcon(1);
+    if (!strsvrstart(&strsvr, opt, strs, pths, logs, conv, cmds, cmds_periodic, antennaPosition)) {
+        return;
+    }
+
+    for (int i = 0; i < 4; i++) {
+        if (cmds[i]) delete[] cmds[i];
+        if (cmds_periodic[i]) delete[] cmds_periodic[i];
+    };
+
+    startTime = utc2gpst(timeget());
+    Panel1->setEnabled(false);
+    btnStart->setVisible(false);
+    btnStop->setVisible(true);
+    btnOpt->setEnabled(false);
+    btnExit->setEnabled(false);
+    acMenuStart->setEnabled(false);
+    acMenuStop->setEnabled(true);
+    acMenuExit->setEnabled(false);
+    setTrayIcon(1);
+
 }
 // stop stream server -------------------------------------------------------
-void MainForm::SvrStop(void)
+void MainForm::serverStop(void)
 {
-    char cmd[1024];
-    
-    if (Input->currentIndex()==0) {
-        if (CmdEna[1]) strncpy(cmd,qPrintable(Cmds[1]),1024);
+    char *cmds[MAXSTR];
+    QComboBox *type[]={ cBInput, cBOutput1, cBOutput2, cBOutput3, cBOutput4, cBOutput5, cBOutput6};
+    const int itype[] = {
+        STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPCLI,STR_UDPSVR,STR_FILE,
+        STR_FTP,STR_HTTP    };
+    const int otype[] = {
+        STR_NONE,STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPSVR,STR_NTRIPCAS,
+        STR_FILE
+    };
+    int strs[MAXSTR];
+
+    strs[0] = itype[cBInput->currentIndex()];
+    for (int i=1;i<MAXSTR;i++) {
+        strs[1] = otype[type[i]->currentIndex()];
     }
-    else if (Input->currentIndex()==1||Input->currentIndex()==3) {
-        if (CmdEnaTcp[1]) strncpy(cmd,qPrintable(CmdsTcp[1]),1024);
+
+    for (int i = 0; i < MAXSTR; i++) {
+        cmds[i] = NULL;
+        if (strs[i] == STR_SERIAL) {
+            cmds[i] = new char[1024];
+            if (commandsEnabled[i][1]) strncpy(cmds[i], qPrintable(commands[i][1]), 1024);
+        } else if (strs[i] == STR_TCPCLI || strs[i] == STR_NTRIPCLI) {
+            cmds[i] = new char[1024];
+            if (commandsEnabledTcp[i][1]) strncpy(cmds[i], qPrintable(commandsTcp[i][1]), 1024);
+        }
     }
-    strsvrstop(&strsvr,cmd);
-    
-    EndTime=utc2gpst(timeget());
-    Panel1    ->setEnabled(true);
-    BtnStart  ->setVisible(true);
-    BtnStop   ->setVisible(false);
-    BtnOpt    ->setEnabled(true);
-    BtnExit   ->setEnabled(true);
-    MenuStart ->setEnabled(true);
-    MenuStop  ->setEnabled(false);
-    MenuExit  ->setEnabled(true);
-    SetTrayIcon(0);
-    
-    for (int i=0;i<3;i++) {
-        if (ConvEna[i]) strconvfree(strsvr.conv[i]);
+    strsvrstop(&strsvr, cmds);
+
+    endTime = utc2gpst(timeget());
+    Panel1->setEnabled(true);
+    btnStart->setVisible(true);
+    btnStop->setVisible(false);
+    btnOpt->setEnabled(true);
+    btnExit->setEnabled(true);
+    acMenuStart->setEnabled(true);
+    acMenuStop->setEnabled(false);
+    acMenuExit->setEnabled(true);
+    setTrayIcon(0);
+
+    for (int i = 0; i < MAXSTR - 1; i++) {
+        if (cmds[i]) delete[] cmds[i];
+        if (conversionEnabled[i]) strconvfree(strsvr.conv[i]);
     }
-    if (TraceLevel>0) traceclose();
+    if (traceLevel > 0) traceclose();
 }
 // callback on interval timer for stream monitor ----------------------------
-void MainForm::Timer2Timer()
+void MainForm::streamMonitorTimerTimeout()
 {
-    unsigned char *msg=0;
-    int len;
-    
-    lock(&strsvr.lock);
-    
-    len=strsvr.npb;
-    if (len>0&&(msg=(unsigned char *)malloc(len))) {
-        memcpy(msg,strsvr.pbuf,len);
-        strsvr.npb=0;
+    const QString types[]={
+        tr("None"),tr("Serial"),tr("File"),tr("TCP Server"),tr("TCP Client"),tr("UDP"),tr("Ntrip Sever"),
+        tr("Ntrip Client"),tr("FTP"),tr("HTTP"),tr("Ntrip Cast"),tr("UDP Server"),
+        tr("UDP Client")
+    };
+    const QString modes[]={tr("-"),tr("R"),tr("W"),tr("R/W")};
+    const QString states[]={tr("ERR"),tr("-"),tr("WAIT"),tr("CONN")};
+    unsigned char *msg = 0;
+    char *p;
+    int i,len,inb,inr,outb,outr;
+
+    if (strMonDialog->streamFormat) {
+        lock(&strsvr.lock);
+        len = strsvr.npb;
+        if (len > 0 && (msg = (unsigned char *)malloc(len))) {
+            memcpy(msg, strsvr.pbuf, len);
+            strsvr.npb = 0;
+        }
+        unlock(&strsvr.lock);
+        if (len <= 0 || !msg) return;
+        strMonDialog->addMessage(msg, len);
+        free(msg);
     }
-    unlock(&strsvr.lock);
-    
-    if (len<=0||!msg) return;
-    
-    console->AddMsg(msg,len);
-    
-    free(msg);
+    else {
+        if (!(msg = (unsigned char *)malloc(16000))) return;
+
+        for (i = 0, p = (char*)msg; i < MAXSTR; i++) {
+            p += sprintf(p, "[STREAM %d]\n", i);
+            strsum(strsvr.stream + i, &inb, &inr, &outb, &outr);
+            strstatx(strsvr.stream + i, p);
+            p += strlen(p);
+            if (inb > 0) {
+                p += sprintf(p,"  inb     = %d\n", inb);
+                p += sprintf(p,"  inr     = %d\n", inr);
+            }
+            if (outb > 0) {
+                p += sprintf(p,"  outb    = %d\n", outb);
+                p += sprintf(p,"  outr    = %d\n", outr);
+            }
+        }
+        strMonDialog->addMessage(msg,strlen((char*)msg));
+
+        free(msg);
+    }
 }
 // set serial options -------------------------------------------------------
-void MainForm::SerialOpt(int index, int opt)
+void MainForm::serialOptions(int index, int path)
 {
-    serialOptDialog->Path=Paths[index][0];
-    serialOptDialog->Opt=opt;
+    serialOptDialog->path = paths[index][path];
+    serialOptDialog->options = (index==0)?0:1;
 
     serialOptDialog->exec();
-    if (serialOptDialog->result()!=QDialog::Accepted) return;
-    Paths[index][0]=serialOptDialog->Path;
+    if (serialOptDialog->result() != QDialog::Accepted) return;
+    paths[index][path] = serialOptDialog->path;
 }
-// set tcp/ip options -------------------------------------------------------
-void MainForm::TcpOpt(int index, int opt)
+// set tcp server options -------------------------------------------------------
+void MainForm::tcpServerOptions(int index, int path)
 {
-    tcpOptDialog->Path=Paths[index][1];
-    tcpOptDialog->Opt=opt;
-    for (int i=0;i<MAXHIST;i++) tcpOptDialog->History[i]=TcpHistory[i];
-    for (int i=0;i<MAXHIST;i++) tcpOptDialog->MntpHist[i]=TcpMntpHist[i];
-
+    tcpOptDialog->path = paths[index][path];
+    tcpOptDialog->options = 0;
     tcpOptDialog->exec();
     if (tcpOptDialog->result()!=QDialog::Accepted) return;
+	paths[index][path]=tcpOptDialog->path;
+}
+// set tcp client options ---------------------------------------------------
+void MainForm::tcpClientOptions(int index, int path)
+{
+	tcpOptDialog->path=paths[index][path];
+	tcpOptDialog->options=1;
+    for (int i = 0; i < MAXHIST; i++) tcpOptDialog->history[i] = tcpHistory[i];
 
-    Paths[index][1]=tcpOptDialog->Path;
-    for (int i=0;i<MAXHIST;i++) TcpHistory[i]=tcpOptDialog->History[i];
-    for (int i=0;i<MAXHIST;i++) TcpMntpHist[i]=tcpOptDialog->MntpHist[i];
+    tcpOptDialog->exec();
+    if (tcpOptDialog->result() != QDialog::Accepted) return;
 
+    paths[index][path] = tcpOptDialog->path;
+    for (int i = 0; i < MAXHIST; i++) tcpHistory[i] = tcpOptDialog->history[i];
+}
+// set ntrip server options ---------------------------------------------------------
+void MainForm::ntripServerOptions(int index, int path)
+{
+    tcpOptDialog->path = paths[index][path];
+    tcpOptDialog->options = 2;
+    for (int i = 0; i < MAXHIST; i++) tcpOptDialog->history[i] = tcpHistory[i];
+    tcpOptDialog->exec();
+    if (tcpOptDialog->result() != QDialog::Accepted) return;
+
+    paths[index][path] = tcpOptDialog->path;
+    for (int i = 0; i < MAXHIST; i++) tcpHistory[i] = tcpOptDialog->history[i];
+}
+// set ntrip client options ---------------------------------------------------------
+void MainForm::ntripClientOptions(int index, int path)
+{
+    tcpOptDialog->path = paths[index][path];
+    tcpOptDialog->options = 3;
+    for (int i = 0; i < MAXHIST; i++) tcpOptDialog->history[i] = tcpHistory[i];
+    tcpOptDialog->exec();
+    if (tcpOptDialog->result() != QDialog::Accepted) return;
+
+    paths[index][path] = tcpOptDialog->path;
+    for (int i = 0; i < MAXHIST; i++) tcpHistory[i] = tcpOptDialog->history[i];
+}
+// set ntrip caster options ---------------------------------------------------------
+void MainForm::ntripCasterOptions(int index, int path)
+{
+    tcpOptDialog->path = paths[index][path];
+    tcpOptDialog->options = 4;
+    tcpOptDialog->exec();
+    if (tcpOptDialog->result() != QDialog::Accepted) return;
+
+    paths[index][path] = tcpOptDialog->path;
+}
+// set udp server options ---------------------------------------------------------
+void MainForm::udpServerOptions(int index, int path)
+{
+    tcpOptDialog->path = paths[index][path];
+    tcpOptDialog->options = 6;
+    tcpOptDialog->exec();
+    if (tcpOptDialog->result() != QDialog::Accepted) return;
+
+    paths[index][path] = tcpOptDialog->path;
+}
+// set udp client options ---------------------------------------------------------
+void MainForm::udpClientOptions(int index, int path)
+{
+    tcpOptDialog->path = paths[index][path];
+    tcpOptDialog->options = 7;
+    tcpOptDialog->exec();
+    if (tcpOptDialog->result() != QDialog::Accepted) return;
+
+    paths[index][path] = tcpOptDialog->path;
 }
 // set file options ---------------------------------------------------------
-void MainForm::FileOpt(int index, int opt)
+void MainForm::fileOptions(int index, int path)
 {
-    fileOptDialog->Path=Paths[index][2];
-    fileOptDialog->Opt=opt;
-
+    fileOptDialog->path = paths[index][path];
+    fileOptDialog->setWindowTitle("File Options");
+    fileOptDialog->options = (index==0)?0:1;
     fileOptDialog->exec();
-    if (fileOptDialog->result()!=QDialog::Accepted) return;
-    Paths[index][2]=fileOptDialog->Path;
-}
-// set ftp/http options -----------------------------------------------------
-void MainForm::FtpOpt(int index, int opt)
-{
-    ftpOptDialog->Path=Paths[index][3];
-    ftpOptDialog->Opt=opt;
-
-    ftpOptDialog->exec();
-    if (ftpOptDialog->result()!=QDialog::Accepted) return;
-
-    Paths[index][3]=ftpOptDialog->Path;
-
+    if (fileOptDialog->result() != QDialog::Accepted) return;
+    paths[index][path] = fileOptDialog->path;
 }
 // undate enable of widgets -------------------------------------------------
-void MainForm::UpdateEnable(void)
+void MainForm::updateEnable(void)
 {
-    BtnCmd->setEnabled(Input->currentIndex()<2||Input->currentIndex()==3);
-    LabelOutput1->setStyleSheet(QString("color :%1").arg(color2String(Output1->currentIndex()>0?Qt::black:Qt::gray)));
-    LabelOutput2->setStyleSheet(QString("color :%1").arg(color2String(Output2->currentIndex()>0?Qt::black:Qt::gray)));
-    LabelOutput3->setStyleSheet(QString("color :%1").arg(color2String(Output3->currentIndex()>0?Qt::black:Qt::gray)));
-    Output1Byte ->setStyleSheet(QString("color :%1").arg(color2String(Output1->currentIndex()>0?Qt::black:Qt::gray)));
-    Output2Byte ->setStyleSheet(QString("color :%1").arg(color2String(Output2->currentIndex()>0?Qt::black:Qt::gray)));
-    Output3Byte ->setStyleSheet(QString("color :%1").arg(color2String(Output3->currentIndex()>0?Qt::black:Qt::gray)));
-    Output1Bps  ->setStyleSheet(QString("color :%1").arg(color2String(Output1->currentIndex()>0?Qt::black:Qt::gray)));
-    Output2Bps  ->setStyleSheet(QString("color :%1").arg(color2String(Output2->currentIndex()>0?Qt::black:Qt::gray)));
-    Output3Bps  ->setStyleSheet(QString("color :%1").arg(color2String(Output3->currentIndex()>0?Qt::black:Qt::gray)));
-    BtnOutput1->setEnabled(Output1->currentIndex()>0);
-    BtnOutput2->setEnabled(Output2->currentIndex()>0);
-    BtnOutput3->setEnabled(Output3->currentIndex()>0);
-    BtnConv1  ->setEnabled(BtnOutput1->isEnabled());
-    BtnConv2  ->setEnabled(BtnOutput2->isEnabled());
-    BtnConv3  ->setEnabled(BtnOutput3->isEnabled());
+    QComboBox *type[]={cBOutput1, cBOutput2, cBOutput3, cBOutput4, cBOutput5, cBOutput6};
+    QLabel *label1[]={lblOutput1, lblOutput2, lblOutput3, lblOutput4, lblOutput5, lblOutput6};
+    QLabel *label2[]={lblOutput1Byte, lblOutput2Byte, lblOutput3Byte, lblOutput4Byte, lblOutput5Byte, lblOutput6Byte};
+    QLabel *label3[]={lblOutput1Bps, lblOutput2Bps, lblOutput3Bps, lblOutput4Bps, lblOutput5Bps, lblOutput6Bps};
+    QPushButton *btn1[]={btnOutput1, btnOutput2, btnOutput3, btnOutput4, btnOutput5, btnOutput6};
+    QPushButton *btn2[]={btnCmd1, btnCmd2, btnCmd3, btnCmd4, btnCmd5, btnCmd6};
+    QPushButton *btn3[]={btnConv1, btnConv2, btnConv3, btnConv4, btnConv5, btnConv6};
+    QPushButton *btn4[]={btnLog1, btnLog2, btnLog3, btnLog4, btnLog5, btnLog6};
+
+    btnCmd->setEnabled(cBInput->currentIndex() < 2 || cBInput->currentIndex() == 3);
+    for (int i=0;i<MAXSTR-1;i++) {
+        label1[i]->setStyleSheet(QString("color :%1").arg(color2String(type[i]->currentIndex() > 0 ? Qt::black : Qt::gray)));
+        label2[i]->setStyleSheet(QString("color :%1").arg(color2String(type[i]->currentIndex() > 0 ? Qt::black : Qt::gray)));
+        label3[i]->setStyleSheet(QString("color :%1").arg(color2String(type[i]->currentIndex() > 0 ? Qt::black : Qt::gray)));
+        btn1[i]->setEnabled(type[i]->currentIndex() > 0);
+        btn2[i]->setEnabled(btn1[i]->isEnabled() && (type[i]->currentIndex() == 1 || type[i]->currentIndex() == 2));
+        btn3[i]->setEnabled(btn1[i]->isEnabled() && cBInput->currentIndex() != 2 && cBInput->currentIndex() != 4);
+        btn4[i]->setEnabled(btn1[i]->isEnabled()&&(type[i]->currentIndex()==1||type[i]->currentIndex()==2));
+    }
 }
 // set task-tray icon -------------------------------------------------------
-void MainForm::SetTrayIcon(int index)
+void MainForm::setTrayIcon(int index)
 {
-    QString icon[]={":/icons/tray0.bmp",":/icons/tray1.bmp",":/icons/tray2.bmp"};
-    TrayIcon->setIcon(QIcon(icon[index]));
+    QString icon[] = { ":/icons/tray0.bmp", ":/icons/tray1.bmp", ":/icons/tray2.bmp" };
+
+    trayIcon->setIcon(QIcon(icon[index]));
 }
 // load options -------------------------------------------------------------
-void MainForm::LoadOpt(void)
+void MainForm::loadOptions(void)
 {
-    QSettings settings(IniFile,QSettings::IniFormat);
-    int optdef[]={10000,10000,1000,32768,10,0};
-    
-    Input  ->setCurrentIndex(settings.value("set/input",       0).toInt());
-    Output1->setCurrentIndex(settings.value("set/output1",     0).toInt());
-    Output2->setCurrentIndex(settings.value("set/output2",     0).toInt());
-    Output3->setCurrentIndex(settings.value("set/output3",     0).toInt());
-    TraceLevel        =settings.value("set/tracelevel",  0).toInt();
-    NmeaReq           =settings.value("set/nmeareq",     0).toInt();
-    FileSwapMargin    =settings.value("set/fswapmargin",30).toInt();
-    StaId             =settings.value("set/staid"       ,0).toInt();
-    StaSel            =settings.value("set/stasel"      ,0).toInt();
-    AntType           =settings.value("set/anttype",    "").toString();
-    RcvType           =settings.value("set/rcvtype",    "").toString();
-    
-    for (int i=0;i<6;i++) {
-        SvrOpt[i]=settings.value(QString("set/svropt_%1").arg(i),optdef[i]).toInt();
+    QSettings settings(iniFile, QSettings::IniFormat);
+    QComboBox *type[]={cBOutput1, cBOutput2, cBOutput3, cBOutput4, cBOutput5, cBOutput6};
+    int optdef[] = { 10000, 10000, 1000, 32768, 10, 0 };
+
+    cBInput->setCurrentIndex(settings.value("set/input", 0).toInt());
+    for (int i=0;i<MAXSTR-1;i++) {
+        type[i]->setCurrentIndex(settings.value(QString("set/output%1").arg(i), 0).toInt());
     }
-    for (int i=0;i<3;i++) {
-        AntPos[i]=settings.value(QString("set/antpos_%1").arg(i),0.0).toDouble();
-        AntOff[i]=settings.value(QString("set/antoff_%1").arg(i),0.0).toDouble();
+    traceLevel = settings.value("set/tracelevel", 0).toInt();
+    nmeaRequest = settings.value("set/nmeareq", 0).toInt();
+    fileSwapMargin = settings.value("set/fswapmargin", 30).toInt();
+    relayBack = settings.value("set/relayback", 30).toInt();
+    progressBarRange = settings.value("set/progbarrange", 30).toInt();
+    stationId = settings.value("set/staid", 0).toInt();
+    stationSelect = settings.value("set/stasel", 0).toInt();
+    antennaType = settings.value("set/anttype", "").toString();
+    receiverType = settings.value("set/rcvtype", "").toString();
+
+    for (int i = 0; i < 6; i++)
+        serverOptions[i] = settings.value(QString("set/svropt_%1").arg(i), optdef[i]).toInt();
+    for (int i = 0; i < 3; i++) {
+        antennaPosition[i] = settings.value(QString("set/antpos_%1").arg(i), 0.0).toDouble();
+        antennaOffsets[i] = settings.value(QString("set/antoff_%1").arg(i), 0.0).toDouble();
     }
-    for (int i=0;i<3;i++) {
-        ConvEna[i]=settings.value(QString("conv/ena_%1").arg(i), 0).toInt();
-        ConvInp[i]=settings.value(QString("conv/inp_%1").arg(i), 0).toInt();
-        ConvOut[i]=settings.value(QString("conv/out_%1").arg(i), 0).toInt();
-        ConvMsg[i]=settings.value (QString("conv/msg_%1").arg(i),"").toString();
-        ConvOpt[i]=settings.value (QString("conv/opt_%1").arg(i),"").toString();
+    for (int i = 0; i < MAXSTR - 1; i++) {
+        conversionEnabled[i] = settings.value(QString("conv/ena_%1").arg(i), 0).toInt();
+        ConversionInput[i] = settings.value(QString("conv/inp_%1").arg(i), 0).toInt();
+        ConversionOutput[i] = settings.value(QString("conv/out_%1").arg(i), 0).toInt();
+        conversionMessage[i] = settings.value(QString("conv/msg_%1").arg(i), "").toString();
+        conversionOptions[i] = settings.value(QString("conv/opt_%1").arg(i), "").toString();
     }
-    for (int i=0;i<2;i++) {
-        CmdEna   [i]=settings.value(QString("serial/cmdena_%1").arg(i),1).toInt();
-        CmdEnaTcp[i]=settings.value(QString("tcpip/cmdena_%1").arg(i),1).toInt();
-    }
-    for (int i=0;i<4;i++) for (int j=0;j<4;j++) {
-        Paths[i][j]=settings.value(QString("path/path_%1_%2").arg(i).arg(j),"").toString();
-    }
-    for (int i=0;i<2;i++) {
-        Cmds[i]=settings.value(QString("serial/cmd_%1").arg(i),"").toString();
-        Cmds[i]=Cmds[i].replace("@@","\n");
-    }
-    for (int i=0;i<2;i++) {
-        CmdsTcp[i]=settings.value(QString("tcpip/cmd_%1").arg(i),"").toString();
-        CmdsTcp[i]=CmdsTcp[i].replace("@@","\n");
-    }
-    for (int i=0;i<MAXHIST;i++) {
-        TcpHistory[i]=settings.value(QString("tcpopt/history%1").arg(i),"").toString();
-    }
-    for (int i=0;i<MAXHIST;i++) {
-        TcpMntpHist[i]=settings.value(QString("tcpopt/mntphist%1").arg(i),"").toString();
-    }
-    StaPosFile    =settings.value("stapos/staposfile",    "").toString();
-    ExeDirectory  =settings.value("dirs/exedirectory",  "").toString();
-    LocalDirectory=settings.value("dirs/localdirectory","").toString();
-    ProxyAddress  =settings.value("dirs/proxyaddress",  "").toString();
-    
-    UpdateEnable();
+    for (int i = 0; i < MAXSTR; i++)
+        for (int j = 0; j < 2; j++) {
+            commandsEnabled   [i][j] = settings.value(QString("serial/cmdena_%1_%2").arg(i).arg(j), 1).toInt();
+            commandsEnabledTcp[i][j] = settings.value(QString("tcpip/cmdena_%1_%2").arg(i).arg(j), 1).toInt();
+        }
+    for (int i = 0; i < MAXSTR; i++) for (int j = 0; j < 4; j++)
+            paths[i][j] = settings.value(QString("path/path_%1_%2").arg(i).arg(j), "").toString();
+	for (int i=0;i<MAXSTR;i++) {
+		pathLog[i]=settings.value(QString("path/path_log_%1").arg(i),"").toString();
+		pathEnabled[i]=settings.value(QString("path/path_ena_%1").arg(i),0).toInt();
+	}
+    for (int i = 0; i < MAXSTR; i++)
+        for (int j = 0; j < 2; j++) {
+            commands[i][j] = settings.value(QString("serial/cmd_%1_%2").arg(i).arg(j), "").toString();
+            commands[i][j] = commands[i][j].replace("@@", "\n");
+        }
+    for (int i = 0; i < MAXSTR; i++)
+        for (int j = 0; j < 2; j++) {
+            commandsTcp[i][j] = settings.value(QString("tcpip/cmd_%1_%2").arg(i).arg(j), "").toString();
+            commandsTcp[i][j] = commandsTcp[i][j].replace("@@", "\n");
+        }
+    for (int i = 0; i < MAXHIST; i++)
+        tcpHistory[i] = settings.value(QString("tcpopt/history%1").arg(i), "").toString();
+    for (int i = 0; i < MAXHIST; i++)
+        tcpMountpointHistory[i] = settings.value(QString("tcpopt/mntphist%1").arg(i), "").toString();
+    stationPositionFile = settings.value("stapos/staposfile", "").toString();
+    exeDirectory = settings.value("dirs/exedirectory", "").toString();
+    localDirectory = settings.value("dirs/localdirectory", "").toString();
+    proxyAddress = settings.value("dirs/proxyaddress", "").toString();
+    logFile = settings.value("file/logfile",       "").toString();
+
+    updateEnable();
 }
 // save options--------------------------------------------------------------
-void MainForm::SaveOpt(void)
+void MainForm::saveOptions(void)
 {
-    QSettings settings(IniFile,QSettings::IniFormat);
-    
-    settings.setValue("set/input",      Input  ->currentIndex());
-    settings.setValue("set/output1",    Output1->currentIndex());
-    settings.setValue("set/output2",    Output2->currentIndex());
-    settings.setValue("set/output3",    Output3->currentIndex());
-    settings.setValue("set/tracelevel", TraceLevel);
-    settings.setValue("set/nmeareq",    NmeaReq);
-    settings.setValue("set/fswapmargin",FileSwapMargin);
-    settings.setValue("set/staid",      StaId);
-    settings.setValue("set/stasel",     StaSel);
-    settings.setValue("set/anttype",    AntType);
-    settings.setValue("set/rcvtype",    RcvType);
-    
-    for (int i=0;i<6;i++) {
-        settings.setValue(QString("set/svropt_%1").arg(i),SvrOpt[i]);
+    QSettings settings(iniFile, QSettings::IniFormat);
+    QComboBox *type[]={cBOutput1, cBOutput2, cBOutput3, cBOutput4, cBOutput5, cBOutput6};
+
+    settings.setValue("set/input", cBInput->currentIndex());
+    for (int i=0;i<MAXSTR-1;i++) {
+        settings.setValue(QString("set/output%1").arg(i), type[i]->currentIndex());
     }
-    for (int i=0;i<3;i++) {
-        settings.setValue(QString("set/antpos_%1").arg(i),AntPos[i]);
-        settings.setValue(QString("set/antoff_%1").arg(i),AntOff[i]);
+    settings.setValue("set/tracelevel", traceLevel);
+    settings.setValue("set/nmeareq", nmeaRequest);
+    settings.setValue("set/fswapmargin", fileSwapMargin);
+    settings.setValue("set/relayback", relayBack);
+    settings.setValue("set/progbarrange", progressBarRange);
+    settings.setValue("set/staid", stationId);
+    settings.setValue("set/stasel", stationSelect);
+    settings.setValue("set/anttype", antennaType);
+    settings.setValue("set/rcvtype", receiverType);
+
+    for (int i = 0; i < 6; i++)
+        settings.setValue(QString("set/svropt_%1").arg(i), serverOptions[i]);
+    for (int i = 0; i < 3; i++) {
+        settings.setValue(QString("set/antpos_%1").arg(i), antennaPosition[i]);
+        settings.setValue(QString("set/antoff_%1").arg(i), antennaOffsets[i]);
     }
-    for (int i=0;i<3;i++) {
-        settings.setValue(QString("conv/ena_%1").arg(i),ConvEna[i]);
-        settings.setValue(QString("conv/inp_%1").arg(i),ConvInp[i]);
-        settings.setValue(QString("conv/out_%1").arg(i),ConvOut[i]);
-        settings.setValue(QString("conv/msg_%1").arg(i),ConvMsg[i]);
-        settings.setValue(QString("conv/opt_%1").arg(i),ConvOpt[i]);
+    for (int i = 0; i < MAXSTR - 1; i++) {
+        settings.setValue(QString("conv/ena_%1").arg(i), conversionEnabled[i]);
+        settings.setValue(QString("conv/inp_%1").arg(i), ConversionInput[i]);
+        settings.setValue(QString("conv/out_%1").arg(i), ConversionOutput[i]);
+        settings.setValue(QString("conv/msg_%1").arg(i), conversionMessage[i]);
+        settings.setValue(QString("conv/opt_%1").arg(i), conversionOptions[i]);
     }
-    for (int i=0;i<2;i++) {
-        settings.setValue(QString("serial/cmdena_%1").arg(i),CmdEna   [i]);
-        settings.setValue(QString("tcpip/cmdena_%1").arg(i),CmdEnaTcp[i]);
+    for (int i = 0; i < MAXSTR; i++)
+        for (int j = 0; j < 2; j++) {
+            settings.setValue(QString("serial/cmdena_%1_%2").arg(i).arg(j), commandsEnabled  [i][j]);
+            settings.setValue(QString("tcpip/cmdena_%1_%2").arg(i).arg(j), commandsEnabledTcp[i][j]);
+        }
+    for (int i = 0; i < MAXSTR; i++) for (int j = 0; j < 4; j++)
+            settings.setValue(QString("path/path_%1_%2").arg(i).arg(j), paths[i][j]);
+
+    for (int i=0;i<MAXSTR;i++) {
+        settings.setValue(QString("path/path_log_%1").arg(i), pathLog[i]);
+        settings.setValue(QString("path/path_ena_%1").arg(i), pathEnabled[i]);
     }
-    for (int i=0;i<4;i++) for (int j=0;j<4;j++) {
-        settings.setValue(QString("path/path_%1_%2").arg(i).arg(j),Paths[i][j]);
-    }
-    for (int i=0;i<2;i++) {
-        Cmds[i]=Cmds[i].replace("\n","@@");
-        settings.setValue(QString("serial/cmd_%1").arg(i),Cmds[i]);
-    }
-    for (int i=0;i<2;i++) {
-        CmdsTcp[i]=CmdsTcp[i].replace("\n","@@");
-        settings.setValue(QString("tcpip/cmd_%1").arg(i),CmdsTcp[i]);
-    }
-    for (int i=0;i<MAXHIST;i++) {
-        settings.setValue(QString("tcpopt/history%1").arg(i),tcpOptDialog->History[i]);
-    }
-    for (int i=0;i<MAXHIST;i++) {
-        settings.setValue(QString("tcpopt/mntphist%1").arg(i),tcpOptDialog->MntpHist[i]);
-    }
-    settings.setValue("stapos/staposfile"    ,StaPosFile    );
-    settings.setValue("dirs/exedirectory"  ,ExeDirectory  );
-    settings.setValue("dirs/localdirectory",LocalDirectory);
-    settings.setValue("dirs/proxyaddress"  ,ProxyAddress  );
+
+    for (int i = 0; i < MAXSTR; i++)
+        for (int j = 0; j < 2; j++) {
+            commands[j][i] = commands[j][i].replace("\n", "@@");
+            settings.setValue(QString("serial/cmd_%1_%2").arg(i).arg(j), commands[i][j]);
+        }
+    for (int i = 0; i < MAXSTR; i++)
+        for (int j = 0; j < 2; j++) {
+            commandsTcp[j][i] = commandsTcp[j][i].replace("\n", "@@");
+            settings.setValue(QString("tcpip/cmd_%1_%2").arg(i).arg(j), commandsTcp[i][j]);
+        }
+    for (int i = 0; i < MAXHIST; i++)
+        settings.setValue(QString("tcpopt/history%1").arg(i), tcpOptDialog->history[i]);
+
+    settings.setValue("stapos/staposfile", stationPositionFile);
+    settings.setValue("dirs/exedirectory", exeDirectory);
+    settings.setValue("dirs/localdirectory", localDirectory);
+    settings.setValue("dirs/proxyaddress", proxyAddress);
+    settings.setValue("file/logfile",logFile);
+}
+//---------------------------------------------------------------------------
+void MainForm::btnLogClicked()
+{
+    QPushButton *btn[]={btnLog, btnLog1, btnLog2, btnLog3, btnLog4, btnLog5, btnLog6};
+	int i;
+
+	for (i=0;i<MAXSTR;i++) {
+		if ((QPushButton *)sender()==btn[i]) break;
+	}
+	if (i>=MAXSTR) return;
+
+	fileOptDialog->path=pathLog[i];
+	fileOptDialog->pathEnabled=pathEnabled[i];
+	fileOptDialog->setWindowTitle((i==0)?tr("Input Log Options"):tr("Return Log Options"));
+	fileOptDialog->options=2;
+    fileOptDialog->exec();
+
+	if (fileOptDialog->result()!=QDialog::Accepted) return;
+	pathLog[i]=fileOptDialog->path;
+	pathEnabled[i]=fileOptDialog->pathEnabled;
 }
 //---------------------------------------------------------------------------

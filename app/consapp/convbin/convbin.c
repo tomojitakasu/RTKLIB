@@ -9,10 +9,10 @@
 * history : 2008/06/22 1.0 new
 *           2009/06/17 1.1 support glonass
 *           2009/12/19 1.2 fix bug on disable of glonass
-*                          fix bug on inproper header for rtcm2 and rtcm3
+*                          fix bug on improper header for rtcm2 and rtcm3
 *           2010/07/18 1.3 add option -v, -t, -h, -x
 *           2011/01/15 1.4 add option -ro, -hc, -hm, -hn, -ht, -ho, -hr, -ha,
-*                            -hp, -hd, -y, -c, -q 
+*                            -hp, -hd, -y, -c, -q
 *                          support gw10 and javad receiver, galileo, qzss
 *                          support rinex file name convention
 *           2012/10/22 1.5 add option -scan, -oi, -ot, -ol
@@ -42,7 +42,7 @@
 *           2020/11/30 1.20 include NavIC in default systems
 *                           force option -scan
 *                           delete option -noscan
-*                           surppress warnings
+*                           suppress warnings
 *-----------------------------------------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>
@@ -58,9 +58,9 @@
 /* help text -----------------------------------------------------------------*/
 static const char *help[]={
 "",
-" Synopsys",
+" Synopsis",
 "",
-" convbin [option ...] file", 
+" convbin [option ...] file",
 "",
 " Description",
 "",
@@ -118,7 +118,7 @@ static const char *help[]={
 "     -hm marker   rinex header: marker name",
 "     -hn markno   rinex header: marker number",
 "     -ht marktype rinex header: marker type",
-"     -ho observ   rinex header: oberver name and agency separated by /",
+"     -ho observ   rinex header: observer name and agency separated by /",
 "     -hr rec      rinex header: receiver number, type and version separated by /",
 "     -ha ant      rinex header: antenna number and type separated by /",
 "     -hp pos      rinex header: approx position x/y/z separated by /",
@@ -195,16 +195,16 @@ static int convbin(int format, rnxopt_t *opt, const char *ifile, char **file,
     char ifile_[1024],*ofile[NOUTFILE],*p;
     char *extnav=(opt->rnxver<=299||opt->navsys==SYS_GPS)?"N":"P";
     char *extlog="sbs";
-    
+
     /* replace wild-card (*) in input file by 0 */
     strcpy(ifile_,ifile);
     for (p=ifile_;*p;p++) if (*p=='*') *p='0';
 
     def=!file[0]&&!file[1]&&!file[2]&&!file[3]&&!file[4]&&!file[5]&&!file[6]&&
         !file[7]&&!file[8];
-    
+
     for (i=0;i<NOUTFILE;i++) ofile[i]=ofile_[i];
-    
+
     if (file[0]) strcpy(ofile[0],file[0]);
     else if (*opt->staid) {
         strcpy(ofile[0],"%r%n0.%yO");
@@ -296,7 +296,7 @@ static int convbin(int format, rnxopt_t *opt, const char *ifile, char **file,
         sprintf(ofile[i],"%s%c%s",dir,FILEPATHSEP,work);
     }
     fprintf(stderr,"input file  : %s (%s)\n",ifile,formatstrs[format]);
-    
+
     if (*ofile[0]) fprintf(stderr,"->rinex obs : %s\n",ofile[0]);
     if (*ofile[1]) fprintf(stderr,"->rinex nav : %s\n",ofile[1]);
     if (*ofile[2]) fprintf(stderr,"->rinex gnav: %s\n",ofile[2]);
@@ -306,7 +306,7 @@ static int convbin(int format, rnxopt_t *opt, const char *ifile, char **file,
     if (*ofile[6]) fprintf(stderr,"->rinex cnav: %s\n",ofile[6]);
     if (*ofile[7]) fprintf(stderr,"->rinex inav: %s\n",ofile[7]);
     if (*ofile[8]) fprintf(stderr,"->sbas log  : %s\n",ofile[8]);
-    
+
     if (!convrnx(format,opt,ifile,ofile)) {
         fprintf(stderr,"\n");
         return -1;
@@ -319,7 +319,7 @@ static void setmask(const char *argv, rnxopt_t *opt, int mask)
 {
     char buff[1024],*p;
     int i,code;
-    
+
     strcpy(buff,argv);
     for (p=strtok(buff,",");p;p=strtok(NULL,",")) {
         if (strlen(p)<4||p[1]!='L') continue;
@@ -348,15 +348,15 @@ static int get_filetime(const char *file, gtime_t *time)
     char path[1024],*paths[1],path_tag[1024];
 
     paths[0]=path;
-    
+
     if (!expath(file,paths,1)) return 0;
-    
+
     /* get start time of time-tag file */
     sprintf(path_tag,"%.1019s.tag",path);
     if ((fp=fopen(path_tag,"rb"))) {
         if (fread(buff,64,1,fp)==1&&!strncmp((char *)buff,"TIMETAG",7)&&
             fread(&time_time,4,1,fp)==1) {
-            time->time=time_time; 
+            time->time=time_time;
             time->sec=0.0;
             fclose(fp);
             return 1;
@@ -384,13 +384,13 @@ static int cmdopts(int argc, char **argv, rnxopt_t *opt, char **ifile,
     double epr[]={2010,1,1,0,0,0},span=0.0;
     int i,j,k,sat,nf=5,nc=2,format=-1;
     char *p,*sys,*fmt="",*paths[1],path[1024],buff[256];
-    
+
     opt->rnxver=304;
     opt->obstype=OBSTYPE_PR|OBSTYPE_CP;
     opt->navsys=SYS_GPS|SYS_GLO|SYS_GAL|SYS_QZS|SYS_SBS|SYS_CMP|SYS_IRN;
-    
+
     for (i=0;i<6;i++) for (j=0;j<64;j++) opt->mask[i][j]='1';
-    
+
     for (i=1;i<argc;i++) {
         if (!strcmp(argv[i],"-ts")&&i+2<argc) {
             sscanf(argv[++i],"%lf/%lf/%lf",eps,eps+1,eps+2);
@@ -486,7 +486,7 @@ static int cmdopts(int argc, char **argv, rnxopt_t *opt, char **ifile,
             opt->outleaps=1;
         }
         else if (!strcmp(argv[i],"-scan")) {
-            /* obsolute */ ;
+            /* obsolete */ ;
         }
         else if (!strcmp(argv[i],"-halfc")) {
             opt->halfcyc=1;
@@ -530,7 +530,7 @@ static int cmdopts(int argc, char **argv, rnxopt_t *opt, char **ifile,
             *trace=atoi(argv[++i]);
         }
         else if (!strncmp(argv[i],"-",1)) printhelp();
-        
+
         else *ifile=argv[i];
     }
     if (span>0.0&&opt->ts.time) {
@@ -541,7 +541,7 @@ static int cmdopts(int argc, char **argv, rnxopt_t *opt, char **ifile,
     if (nf>=3) opt->freqtype|=FREQTYPE_L3;
     if (nf>=4) opt->freqtype|=FREQTYPE_L4;
     if (nf>=5) opt->freqtype|=FREQTYPE_L5;
-    
+
     if (!opt->trtcm.time) {
         get_filetime(*ifile,&opt->trtcm);
     }
@@ -592,10 +592,10 @@ int main(int argc, char **argv)
     rnxopt_t opt={{0}};
     int format,trace=0,stat;
     char *ifile="",*ofile[NOUTFILE]={0},*dir="";
-    
+
     /* parse command line options */
     format=cmdopts(argc,argv,&opt,&ifile,ofile,&dir,&trace);
-    
+
     if (!*ifile) {
         fprintf(stderr,"no input file\n");
         return -1;
@@ -605,14 +605,14 @@ int main(int argc, char **argv)
         return -1;
     }
     sprintf(opt.prog,"%s %s",PRGNAME,VER_RTKLIB);
-    
+
     if (trace>0) {
         traceopen(TRACEFILE);
         tracelevel(trace);
     }
     stat=convbin(format,&opt,ifile,ofile,dir);
-    
+
     traceclose();
-    
+
     return stat;
 }

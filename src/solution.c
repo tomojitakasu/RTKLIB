@@ -1561,7 +1561,7 @@ extern int outsolheads(uint8_t *buff, const solopt_t *opt)
     p+=sprintf(p,"\r\n");
     return p-(char *)buff;
 }
-/* std-dev of soltuion -------------------------------------------------------*/
+/* std-dev of solution -------------------------------------------------------*/
 static double sol_std(const sol_t *sol)
 {
     /* approximate as max std-dev of 3-axis std-devs */
@@ -1625,7 +1625,7 @@ extern int outsols(uint8_t *buff, const sol_t *sol, const double *rb,
     return p-buff;
 }
 /* output solution extended ----------------------------------------------------
-* output solution exteneded infomation
+* output solution extended information
 * args   : uint8_t *buff    IO  output buffer
 *          sol_t  *sol      I   solution
 *          ssat_t *ssat     I   satellite status
@@ -1710,7 +1710,7 @@ extern void outsol(FILE *fp, const sol_t *sol, const double *rb,
     }
 }
 /* output solution extended ----------------------------------------------------
-* output solution exteneded infomation to file
+* output solution extended information to file
 * args   : FILE   *fp       I   output file pointer
 *          sol_t  *sol      I   solution
 *          ssat_t *ssat     I   satellite status

@@ -6,31 +6,13 @@
 
 QT       += widgets core gui
 
-greaterThan(QT_MAJOR_VERSION, 4) {
-    QT += widgets 
-}
-
-include(../../RTKLib.pri)
+include(../qtapp.pri)
 
 TARGET = rtkconv_qt
 TEMPLATE = app
 
-INCLUDEPATH += ../../src/ ../appcmn_qt 
+INCLUDEPATH += ../../../src/ ../appcmn_qt
 
-linux{
-    RTKLIB =../../src/libRTKLib.a
-    LIBS += -lpng $${RTKLIB}
-}
-win32 {
-    CONFIG(debug) {
-        RTKLIB = ../../src/debug/libRTKLib.a
-    } else {
-        RTKLIB =../../src/release/libRTKLib.a
-    }
-
-    LIBS+= $${RTKLIB} -lWs2_32 -lwinmm
-}
-PRE_TARGETDEPS = $${RTKLIB}
 SOURCES += \ 
     codeopt.cpp \
     convmain.cpp \
@@ -41,7 +23,10 @@ SOURCES += \
     ../appcmn_qt/keydlg.cpp \
     ../appcmn_qt/timedlg.cpp \
     ../appcmn_qt/viewer.cpp \
-    ../appcmn_qt/vieweropt.cpp
+    ../appcmn_qt/vieweropt.cpp \
+    ../appcmn_qt/glofcndlg.cpp \
+    ../appcmn_qt/mntpoptdlg.cpp \
+    ../appcmn_qt/freqdlg.cpp
 
 HEADERS  += \ 
     codeopt.h \
@@ -52,9 +37,12 @@ HEADERS  += \
     ../appcmn_qt/keydlg.h \
     ../appcmn_qt/timedlg.h \
     ../appcmn_qt/viewer.h \
-    ../appcmn_qt/vieweropt.h
+    ../appcmn_qt/vieweropt.h \
+    ../appcmn_qt/glofcndlg.h \
+    ../appcmn_qt/mntpoptdlg.h \
+    ../appcmn_qt/freqdlg.h
 
-FORMS    += \ 
+FORMS    += \
     codeopt.ui \
     convopt.ui \
     startdlg.ui \
@@ -63,7 +51,10 @@ FORMS    += \
     ../appcmn_qt/keydlg.ui \
     ../appcmn_qt/timedlg.ui \
     ../appcmn_qt/viewer.ui \
-    ../appcmn_qt/vieweropt.ui
+    ../appcmn_qt/vieweropt.ui \
+    ../appcmn_qt/glofcndlg.ui \
+    ../appcmn_qt/mntpoptdlg.ui \
+    ../appcmn_qt/freqdlg.ui
 
 RESOURCES += \
     rtkconv_qt.qrc

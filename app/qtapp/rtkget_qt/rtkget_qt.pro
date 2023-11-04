@@ -4,29 +4,11 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui widgets
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+include(../qtapp.pri)
 
-include(../../RTKLib.pri)
-
-INCLUDEPATH += ../../src/ ../appcmn_qt
-
-linux{
-    RTKLIB =../../src/libRTKLib.a
-    LIBS += -lpng $${RTKLIB}
-}
-win32 {
-    CONFIG(debug) {
-        RTKLIB = ../../src/debug/libRTKLib.a
-    } else {
-        RTKLIB =../../src/release/libRTKLib.a
-    }
-
-    LIBS+= $${RTKLIB} -lWs2_32 -lwinmm
-}
-
-PRE_TARGETDEPS = $${RTKLIB}
+INCLUDEPATH += ../../../src/ ../appcmn_qt
 
 TARGET = rtkget_qt
 TEMPLATE = app

@@ -13,13 +13,14 @@ class KeyDialog : public QDialog, private Ui::KeyDialog
     Q_OBJECT
 
 public slots:
-    void  BtnOkClick();
+    void  btnOkClicked();
 
 protected:
     void showEvent(QShowEvent*);
 
 public:
 	int Flag;
+
     explicit KeyDialog(QWidget* parent);
 };
 //---------------------------------------------------------------------------
