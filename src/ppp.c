@@ -389,10 +389,6 @@ static void corr_meas(const obsd_t *obs, const nav_t *nav, const double *azel,
         L[i]=obs->L[i]*CLIGHT/freq[i]-dants[i]-dantr[i]-phw*CLIGHT/freq[i];
         P[i]=obs->P[i]-dants[i]-dantr[i];
         codes[i] = obs->code[i];
-        /*if (sys==SYS_GPS||sys==SYS_GLO) {
-        if (obs->code[i]==CODE_L1C) P[i]+=nav->cbias[obs->sat-1][1][1];
-        if (obs->code[i]==CODE_L2C) P[i]+=nav->cbias[obs->sat-1][2][2];
-    }*/
     }
     
     
@@ -489,24 +485,6 @@ static void corr_meas(const obsd_t *obs, const nav_t *nav, const double *azel,
         {
             P[1]-=nav->ssr[obs->sat-1].cbias[CODE_L7I];
         }
-        /* BDS-2 */
-        /*Hence BDS-2/3 SSR-DCB not working
-        if (obs->code[0]==CODE_L2I)
-        {
-            P[0]-=nav->cbias[obs->sat-1][CODE_L2I][CODE_L6I];
-        }
-        if (obs->code[1]==CODE_L7I)
-        {
-            P[1]-=nav->cbias[obs->sat-1][CODE_L2I][CODE_L7I]+nav->cbias[obs->sat-1][CODE_L2I][CODE_L6I];
-        }
-        if (obs->code[2]==CODE_L5X)
-        {
-            P[1]-=nav->cbias[obs->sat-1][CODE_L1X][CODE_L5X]+nav->cbias[obs->sat-1][CODE_L1X][CODE_L6I]-nav->cbias[obs->sat-1][CODE_L2I][CODE_L6I];
-        }
-        if (obs->code[2]==CODE_L5P)
-        {
-            P[1]-=nav->cbias[obs->sat-1][CODE_L1P][CODE_L5P]+nav->cbias[obs->sat-1][CODE_L1P][CODE_L6I]-nav->cbias[obs->sat-1][CODE_L2I][CODE_L6I];
-        }*/
     }
     
 
