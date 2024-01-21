@@ -320,7 +320,7 @@ extern void readtec(const char *file, nav_t *nav, int opt)
     
     /* P1-P2 dcb */
     for (i=0;i<MAXSAT;i++) {
-        nav->cbias[i][0]=CLIGHT*dcb[i]*1E-9; /* ns->m */
+        nav->cbias[i][0][0]=CLIGHT*dcb[i]*1E-9; /* ns->m */
     }
 }
 /* interpolate tec grid data -------------------------------------------------*/
