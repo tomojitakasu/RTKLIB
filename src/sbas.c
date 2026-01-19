@@ -505,6 +505,7 @@ static void readmsgs(const char *file, int sel, gtime_t ts, gtime_t te,
             if (!(sbs_msgs=(sbsmsg_t *)realloc(sbs->msgs,sbs->nmax*sizeof(sbsmsg_t)))) {
                 trace(1,"readsbsmsg malloc error: nmax=%d\n",sbs->nmax);
                 free(sbs->msgs); sbs->msgs=NULL; sbs->n=sbs->nmax=0;
+                fclose(fp);
                 return;
             }
             sbs->msgs=sbs_msgs;
