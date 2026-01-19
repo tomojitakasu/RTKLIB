@@ -919,6 +919,17 @@ static int gentcp(tcp_t *tcp, int type, char *msg)
         setsockopt(tcp->sock,SOL_SOCKET,SO_REUSEADDR,(const char *)&opt,
                    sizeof(opt));
 #endif
+        if(tcp->saddr[0])
+        {
+            if(!(hp=gethostbyname(tcp->saddr))) {
+                sprintf(msg,"address error (%s)",tcp->saddr);
+                tracet(1,"gentcp: gethostbyname error addr=%s err=%d\n",tcp->saddr,errsock());
+                closesocket(tcp->sock);
+                tcp->state=-1;
+                return 0;
+            }
+            memcpy(&tcp->addr.sin_addr,hp->h_addr,hp->h_length);
+        }
         if (bind(tcp->sock,(struct sockaddr *)&tcp->addr,sizeof(tcp->addr))==-1) {
             sprintf(msg,"bind error (%d) : %d",errsock(),tcp->port);
             tracet(1,"gentcp: bind error port=%d err=%d\n",tcp->port,errsock());
