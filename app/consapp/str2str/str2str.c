@@ -92,7 +92,7 @@ static const char *help[]={
 " -opt opt          receiver dependent options",
 " -s  msec          timeout time (ms) [10000]",
 " -r  msec          reconnect interval (ms) [10000]",
-" -n  msec          nmea request cycle (m) [0]",
+" -n  msec          nmea request cycle (ms) [0]",
 " -f  sec           file swap margin (s) [30]",
 " -c  file          input commands file [no]",
 " -c1 file          output 1 commands file [no]",
