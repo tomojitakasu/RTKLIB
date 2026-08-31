@@ -902,6 +902,12 @@ static int decode_type1033(rtcm_t *rtcm)
     /* test station id */
     if (!test_staid(rtcm,staid)) return -1;
     
+    /* clamp descriptor lengths to the staging buffers capacity (32B, read loops cap at 31) */
+    if (n >31) n =31;
+    if (m >31) m =31;
+    if (n1>31) n1=31;
+    if (n2>31) n2=31;
+    if (n3>31) n3=31;
     strncpy(rtcm->sta.antdes, des,n ); rtcm->sta.antdes [n] ='\0';
     rtcm->sta.antsetup=setup;
     strncpy(rtcm->sta.antsno, sno,m ); rtcm->sta.antsno [m] ='\0';
